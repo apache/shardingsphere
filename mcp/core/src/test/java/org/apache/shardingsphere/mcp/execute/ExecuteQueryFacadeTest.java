@@ -126,12 +126,13 @@ class ExecuteQueryFacadeTest {
     void assertExecuteTransactionCommand() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPJdbcExecutionAdapter transactionAdapter = mock(MCPJdbcExecutionAdapter.class);
-        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, transactionAdapter);
+        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
+        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
+        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, jdbcExecutionAdapter, transactionResourceManager, mock(MetadataRefreshCoordinator.class));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMessage(), is("Transaction started."));
-        verify(transactionAdapter).beginTransaction("session-1", "logic_db");
+        verify(transactionResourceManager).beginTransaction("session-1", "logic_db");
     }
     
     @Test
@@ -183,14 +184,20 @@ class ExecuteQueryFacadeTest {
     }
     
     private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final MCPJdbcExecutionAdapter jdbcExecutionAdapter) {
-        return createFacade(databaseType, sessionManager, jdbcExecutionAdapter, mock(MetadataRefreshCoordinator.class));
+        return createFacade(databaseType, sessionManager, jdbcExecutionAdapter, mock(MCPJdbcTransactionResourceManager.class), mock(MetadataRefreshCoordinator.class));
     }
     
     private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager,
                                             final MCPJdbcExecutionAdapter jdbcExecutionAdapter, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
+        return createFacade(databaseType, sessionManager, jdbcExecutionAdapter, mock(MCPJdbcTransactionResourceManager.class), metadataRefreshCoordinator);
+    }
+    
+    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final MCPJdbcExecutionAdapter jdbcExecutionAdapter,
+                                            final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
-        return new ExecuteQueryFacade(capabilityBuilder, new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter), jdbcExecutionAdapter, metadataRefreshCoordinator);
+        return new ExecuteQueryFacade(capabilityBuilder, new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager),
+                jdbcExecutionAdapter, metadataRefreshCoordinator);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {

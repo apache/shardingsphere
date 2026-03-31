@@ -42,7 +42,7 @@ public final class ExecuteQueryFacade {
     
     private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
-    private final AuditRecorder auditRecorder =  new AuditRecorder();
+    private final AuditRecorder auditRecorder = new AuditRecorder();
     
     /**
      * Execute one MCP SQL request.

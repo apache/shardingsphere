@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
@@ -186,25 +187,20 @@ abstract class AbstractMCPE2ETest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    protected final MCPJdbcExecutionAdapter createMCPJdbcExecutionAdapter() {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
-        try {
-            initializeRuntimeDatabases(runtimeDatabases);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
-        }
-        return new MCPJdbcExecutionAdapter(runtimeDatabases);
-    }
-    
     protected final Map<String, String> createRequestHeaders() {
         return Map.of();
     }
     
     private void launchRuntimeInternal() {
         DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
-        MCPJdbcExecutionAdapter executionAdapter = createMCPJdbcExecutionAdapter();
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
+        try {
+            initializeRuntimeDatabases(runtimeDatabases);
+        } catch (final SQLException ex) {
+            throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
+        }
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                createRuntimeContext(createRuntimeDatabases(), databaseMetadataSnapshots, executionAdapter));
+                createRuntimeContext(runtimeDatabases, databaseMetadataSnapshots));
         try {
             httpServer.start();
         } catch (final IOException ex) {
@@ -215,13 +211,16 @@ abstract class AbstractMCPE2ETest {
     }
     
     private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs,
-                                                   final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcExecutionAdapter executionAdapter) {
+                                                   final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
+        MCPJdbcExecutionAdapter executionAdapter = new MCPJdbcExecutionAdapter(databaseConfigs, jdbcTransactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, executionAdapter);
+        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
-                capabilityBuilder, transactionCommandExecutor, new MCPJdbcExecutionAdapter(databaseConfigs), new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, executionAdapter, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
+                capabilityBuilder, transactionCommandExecutor, executionAdapter, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
+        return new MCPRuntimeContext(sessionManager,
+                databaseMetadataSnapshots, executionAdapter, jdbcTransactionResourceManager, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

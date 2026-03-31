@@ -35,7 +35,6 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class MCPJdbcExecutionAdapterTest {
@@ -79,85 +78,17 @@ class MCPJdbcExecutionAdapterTest {
     }
     
     @Test
-    void assertBeginTransaction() throws SQLException {
-        String jdbcUrl = createJdbcUrl("adapter-begin");
+    void assertExecuteUpdateWithinTransactionConnection() throws SQLException {
+        String jdbcUrl = createJdbcUrl("adapter-transaction");
         initializeDatabase(jdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
-        assertDoesNotThrow(() -> adapter.beginTransaction("session-1", "logic_db"));
-        adapter.closeSession("session-1");
-    }
-    
-    @Test
-    void assertCommitTransaction() throws SQLException {
-        String jdbcUrl = createJdbcUrl("adapter-commit");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
-        adapter.beginTransaction("session-1", "logic_db");
+        MCPJdbcTransactionResourceManager transactionResourceManager = createTransactionResourceManager(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl), transactionResourceManager);
+        transactionResourceManager.beginTransaction("session-1", "logic_db");
         adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
-        adapter.commitTransaction("session-1");
-        assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
-    }
-    
-    @Test
-    void assertRollbackTransaction() throws SQLException {
-        String jdbcUrl = createJdbcUrl("adapter-rollback");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
-        adapter.beginTransaction("session-1", "logic_db");
-        adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
-                new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
-        adapter.rollbackTransaction("session-1");
         assertThat(querySingleString(jdbcUrl), is("NEW"));
-    }
-    
-    @Test
-    void assertCreateSavepoint() throws SQLException {
-        String jdbcUrl = createJdbcUrl("adapter-savepoint");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
-        adapter.beginTransaction("session-1", "logic_db");
-        assertDoesNotThrow(() -> adapter.createSavepoint("session-1", "sp_1"));
-        adapter.closeSession("session-1");
-    }
-    
-    @Test
-    void assertRollbackToSavepoint() throws SQLException {
-        String jdbcUrl = createJdbcUrl("adapter-rollback-savepoint");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
-        adapter.beginTransaction("session-1", "logic_db");
-        adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
-                new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
-        adapter.createSavepoint("session-1", "sp_1");
-        adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'DONE' WHERE order_id = 1"),
-                new StatementClassifier().classify("UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
-        adapter.rollbackToSavepoint("session-1", "sp_1");
-        adapter.commitTransaction("session-1");
+        transactionResourceManager.commitTransaction("session-1");
         assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
-    }
-    
-    @Test
-    void assertReleaseSavepoint() throws SQLException {
-        String jdbcUrl = createJdbcUrl("adapter-release-savepoint");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
-        adapter.beginTransaction("session-1", "logic_db");
-        adapter.createSavepoint("session-1", "sp_1");
-        assertDoesNotThrow(() -> adapter.releaseSavepoint("session-1", "sp_1"));
-        adapter.closeSession("session-1");
-    }
-    
-    @Test
-    void assertCloseSession() throws SQLException {
-        String jdbcUrl = createJdbcUrl("adapter-close");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
-        adapter.beginTransaction("session-1", "logic_db");
-        adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
-                new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
-        adapter.closeSession("session-1");
-        assertThat(querySingleString(jdbcUrl), is("NEW"));
     }
     
     @Test
@@ -166,21 +97,34 @@ class MCPJdbcExecutionAdapterTest {
         String secondJdbcUrl = createJdbcUrl("adapter-cross-second");
         initializeDatabase(firstJdbcUrl);
         initializeDatabase(secondJdbcUrl);
-        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl));
-        adapter.beginTransaction("session-1", "logic_db");
+        MCPJdbcTransactionResourceManager transactionResourceManager = createTransactionResourceManager(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl), transactionResourceManager);
+        transactionResourceManager.beginTransaction("session-1", "logic_db");
         ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("analytics_db", "SELECT status FROM orders ORDER BY order_id"),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertFalse(actual.isSuccessful());
         assertThat(actual.getError().orElseThrow().getErrorCode().name(), is("TRANSACTION_STATE_ERROR"));
-        adapter.closeSession("session-1");
+        transactionResourceManager.closeSession("session-1");
     }
     
     private MCPJdbcExecutionAdapter createAdapter(final Map<String, String> jdbcUrls) {
+        return createAdapter(jdbcUrls, createTransactionResourceManager(jdbcUrls));
+    }
+    
+    private MCPJdbcExecutionAdapter createAdapter(final Map<String, String> jdbcUrls, final MCPJdbcTransactionResourceManager transactionResourceManager) {
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>();
         for (Entry<String, String> entry : jdbcUrls.entrySet()) {
             runtimeDatabases.put(entry.getKey(), new RuntimeDatabaseConfiguration("H2", entry.getValue(), "", "", "org.h2.Driver"));
         }
-        return new MCPJdbcExecutionAdapter(runtimeDatabases);
+        return new MCPJdbcExecutionAdapter(runtimeDatabases, transactionResourceManager);
+    }
+    
+    private MCPJdbcTransactionResourceManager createTransactionResourceManager(final Map<String, String> jdbcUrls) {
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>();
+        for (Entry<String, String> entry : jdbcUrls.entrySet()) {
+            runtimeDatabases.put(entry.getKey(), new RuntimeDatabaseConfiguration("H2", entry.getValue(), "", "", "org.h2.Driver"));
+        }
+        return new MCPJdbcTransactionResourceManager(runtimeDatabases);
     }
     
     private ExecutionRequest createExecutionRequest(final String databaseName, final String sql) {

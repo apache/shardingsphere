@@ -99,8 +99,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         
         private void closeManagedSession() {
             if (closed.compareAndSet(false, true)) {
-                runtimeContext.getSessionManager().closeSession(sessionId.get());
-                runtimeContext.getJdbcExecutionAdapter().closeSession(sessionId.get());
+                runtimeContext.closeSession(sessionId.get());
             }
         }
     }

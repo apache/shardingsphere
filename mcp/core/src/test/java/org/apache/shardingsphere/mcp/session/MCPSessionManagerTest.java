@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.session.MCPSessionManager.MCPSessionContext;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager.TransactionState;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,73 +32,7 @@ class MCPSessionManagerTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPSessionContext actual = sessionManager.createSession("session-1");
         assertThat(actual.getSessionId(), is("session-1"));
-        assertTrue(actual.isAutocommit());
-    }
-    
-    @Test
-    void assertBeginTransaction() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.beginTransaction("session-1", "logic_db");
-        MCPSessionContext actual = sessionManager.getSession("session-1");
-        assertFalse(actual.isAutocommit());
-        assertThat(actual.getTransactionState(), is(TransactionState.ACTIVE));
-        assertThat(actual.getBoundDatabase(), is("logic_db"));
-    }
-    
-    @Test
-    void assertRememberSavepoint() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.beginTransaction("session-1", "logic_db");
-        sessionManager.rememberSavepoint("session-1", "sp_1");
-        assertTrue(sessionManager.getSession("session-1").getSavepoints().contains("sp_1"));
-    }
-    
-    @Test
-    void assertCommitTransaction() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.beginTransaction("session-1", "logic_db");
-        sessionManager.rememberSavepoint("session-1", "sp_1");
-        sessionManager.commitTransaction("session-1");
-        MCPSessionContext actual = sessionManager.getSession("session-1");
-        assertTrue(actual.isAutocommit());
-        assertThat(actual.getTransactionState(), is(TransactionState.IDLE));
-        assertThat(actual.getSavepoints().size(), is(0));
-    }
-    
-    @Test
-    void assertRollbackTransaction() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.beginTransaction("session-1", "logic_db");
-        sessionManager.rememberSavepoint("session-1", "sp_1");
-        sessionManager.rollbackTransaction("session-1");
-        MCPSessionContext actual = sessionManager.getSession("session-1");
-        assertTrue(actual.isAutocommit());
-        assertThat(actual.getTransactionState(), is(TransactionState.IDLE));
-        assertThat(actual.getSavepoints().size(), is(0));
-    }
-    
-    @Test
-    void assertRollbackToSavepoint() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.beginTransaction("session-1", "logic_db");
-        sessionManager.rememberSavepoint("session-1", "sp_1");
-        sessionManager.rollbackToSavepoint("session-1", "sp_1");
-        assertTrue(sessionManager.getSession("session-1").getSavepoints().contains("sp_1"));
-    }
-    
-    @Test
-    void assertReleaseSavepoint() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        sessionManager.createSession("session-1");
-        sessionManager.beginTransaction("session-1", "logic_db");
-        sessionManager.rememberSavepoint("session-1", "sp_1");
-        sessionManager.releaseSavepoint("session-1", "sp_1");
-        assertFalse(sessionManager.getSession("session-1").getSavepoints().contains("sp_1"));
+        assertFalse(actual.isClosed());
     }
     
     @Test
@@ -113,13 +46,8 @@ class MCPSessionManagerTest {
     void assertCloseSession() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        sessionManager.beginTransaction("session-1", "logic_db");
-        sessionManager.rememberSavepoint("session-1", "sp_1");
         MCPSessionContext sessionContext = sessionManager.getSession("session-1");
         sessionManager.closeSession("session-1");
         assertTrue(sessionContext.isClosed());
-        assertTrue(sessionContext.isAutocommit());
-        assertThat(sessionContext.getTransactionState(), is(TransactionState.IDLE));
-        assertThat(sessionContext.getSavepoints().size(), is(0));
     }
 }

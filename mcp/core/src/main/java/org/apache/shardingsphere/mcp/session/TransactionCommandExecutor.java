@@ -20,11 +20,9 @@ package org.apache.shardingsphere.mcp.session;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-
-import java.util.Locale;
 
 /**
  * Execute MCP transaction-control and savepoint commands.
@@ -34,7 +32,7 @@ public final class TransactionCommandExecutor {
     
     private final MCPSessionManager sessionManager;
     
-    private final MCPJdbcExecutionAdapter jdbcExecutionAdapter;
+    private final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager;
     
     /**
      * Execute one transaction-control or savepoint command with resolved database capability.
@@ -48,6 +46,7 @@ public final class TransactionCommandExecutor {
     public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         try {
+            sessionManager.getSession(sessionId);
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
                 return executeBeginTransaction(sessionId, databaseName, databaseCapability, statementType);
             }
@@ -57,7 +56,7 @@ public final class TransactionCommandExecutor {
             if ("ROLLBACK".equals(statementType)) {
                 return executeRollback(sessionId, databaseCapability);
             }
-            String savepointName = classificationResult.getSavepointName().map(each -> each.toUpperCase(Locale.ENGLISH)).orElse("");
+            String savepointName = classificationResult.getSavepointName().orElse("");
             if ("SAVEPOINT".equals(statementType)) {
                 return executeSavepoint(sessionId, databaseCapability, savepointName);
             }
@@ -77,8 +76,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
         }
-        sessionManager.beginTransaction(sessionId, databaseName);
-        jdbcExecutionAdapter.beginTransaction(sessionId, databaseName);
+        jdbcTransactionResourceManager.beginTransaction(sessionId, databaseName);
         return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
     }
     
@@ -86,8 +84,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
         }
-        jdbcExecutionAdapter.commitTransaction(sessionId);
-        sessionManager.commitTransaction(sessionId);
+        jdbcTransactionResourceManager.commitTransaction(sessionId);
         return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
     }
     
@@ -95,8 +92,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
         }
-        jdbcExecutionAdapter.rollbackTransaction(sessionId);
-        sessionManager.rollbackTransaction(sessionId);
+        jdbcTransactionResourceManager.rollbackTransaction(sessionId);
         return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
     }
     
@@ -104,8 +100,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
         }
-        jdbcExecutionAdapter.createSavepoint(sessionId, savepointName);
-        sessionManager.rememberSavepoint(sessionId, savepointName);
+        jdbcTransactionResourceManager.createSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
     }
     
@@ -113,8 +108,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
         }
-        sessionManager.rollbackToSavepoint(sessionId, savepointName);
-        jdbcExecutionAdapter.rollbackToSavepoint(sessionId, savepointName);
+        jdbcTransactionResourceManager.rollbackToSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
@@ -122,8 +116,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
         }
-        sessionManager.releaseSavepoint(sessionId, savepointName);
-        jdbcExecutionAdapter.releaseSavepoint(sessionId, savepointName);
+        jdbcTransactionResourceManager.releaseSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
     }
 }

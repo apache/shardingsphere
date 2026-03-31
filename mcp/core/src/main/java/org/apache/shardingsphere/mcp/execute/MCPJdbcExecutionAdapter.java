@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
@@ -31,14 +30,12 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
-import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * MCP JDBC execution adapter.
@@ -48,7 +45,7 @@ public final class MCPJdbcExecutionAdapter {
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
-    private final Map<String, SessionConnectionContext> sessionConnections = new ConcurrentHashMap<>();
+    private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
     /**
      * Execute one classified request.
@@ -61,13 +58,18 @@ public final class MCPJdbcExecutionAdapter {
         Connection connection = null;
         boolean closeConnection = false;
         try {
-            Optional<SessionConnectionContext> sessionConnectionContext = findSessionConnection(executionRequest.getSessionId());
-            if (sessionConnectionContext.isPresent()) {
-                if (!sessionConnectionContext.get().getDatabaseName().equals(executionRequest.getDatabase())) {
-                    return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, "Cross-database transaction switching is not supported.");
+            try {
+                Optional<Connection> transactionConnection = transactionResourceManager.findTransactionConnection(executionRequest.getSessionId(), executionRequest.getDatabase());
+                if (transactionConnection.isPresent()) {
+                    connection = transactionConnection.get();
+                } else {
+                    connection = openConnection(executionRequest.getDatabase());
+                    closeConnection = true;
                 }
-                connection = sessionConnectionContext.get().getConnection();
-            } else {
+            } catch (final IllegalStateException ex) {
+                return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
+            }
+            if (null == connection) {
                 connection = openConnection(executionRequest.getDatabase());
                 closeConnection = true;
             }
@@ -113,115 +115,6 @@ public final class MCPJdbcExecutionAdapter {
         }
     }
     
-    /**
-     * Begin one session transaction.
-     *
-     * @param sessionId session identifier
-     * @param databaseName logical database name
-     * @throws IllegalStateException when the transaction is already active or the connection cannot be opened
-     */
-    public void beginTransaction(final String sessionId, final String databaseName) {
-        if (sessionConnections.containsKey(sessionId)) {
-            throw new IllegalStateException("Transaction already active.");
-        }
-        try {
-            Connection connection = openConnection(databaseName);
-            connection.setAutoCommit(false);
-            sessionConnections.put(sessionId, new SessionConnectionContext(databaseName, connection));
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
-        }
-    }
-    
-    /**
-     * Commit one session transaction.
-     *
-     * @param sessionId session identifier
-     * @throws IllegalStateException when commit fails
-     */
-    public void commitTransaction(final String sessionId) {
-        SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
-        try {
-            sessionConnectionContext.getConnection().commit();
-            sessionConnectionContext.getConnection().setAutoCommit(true);
-            sessionConnectionContext.getConnection().close();
-            sessionConnections.remove(sessionId);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
-        }
-    }
-    
-    /**
-     * Roll back one session transaction.
-     *
-     * @param sessionId session identifier
-     */
-    public void rollbackTransaction(final String sessionId) {
-        SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
-        rollbackAndClose(sessionId, sessionConnectionContext);
-    }
-    
-    /**
-     * Create one savepoint.
-     *
-     * @param sessionId session identifier
-     * @param savepointName savepoint name
-     * @throws IllegalStateException when the savepoint cannot be created
-     */
-    public void createSavepoint(final String sessionId, final String savepointName) {
-        SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
-        try {
-            sessionConnectionContext.addSavepoint(savepointName, sessionConnectionContext.getConnection().setSavepoint(savepointName));
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
-        }
-    }
-    
-    /**
-     * Roll back to one savepoint.
-     *
-     * @param sessionId session identifier
-     * @param savepointName savepoint name
-     * @throws IllegalStateException when the savepoint does not exist or rollback fails
-     */
-    public void rollbackToSavepoint(final String sessionId, final String savepointName) {
-        SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
-        Savepoint savepoint = sessionConnectionContext.findSavepoint(savepointName).orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
-        try {
-            sessionConnectionContext.getConnection().rollback(savepoint);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
-        }
-    }
-    
-    /**
-     * Release one savepoint.
-     *
-     * @param sessionId session identifier
-     * @param savepointName savepoint name
-     * @throws IllegalStateException when the savepoint does not exist or release fails
-     */
-    public void releaseSavepoint(final String sessionId, final String savepointName) {
-        SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
-        Savepoint savepoint = sessionConnectionContext.findSavepoint(savepointName).orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
-        try {
-            sessionConnectionContext.getConnection().releaseSavepoint(savepoint);
-            sessionConnectionContext.removeSavepoint(savepointName);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
-        }
-    }
-    
-    /**
-     * Close one session and roll back pending work.
-     *
-     * @param sessionId session identifier
-     */
-    public void closeSession(final String sessionId) {
-        Optional<SessionConnectionContext> sessionConnectionContext = findSessionConnection(sessionId);
-        sessionConnectionContext.ifPresent(optional -> rollbackAndClose(sessionId, optional));
-    }
-    
     private ExecuteQueryResponse createResultSetResponse(final ResultSet resultSet, final int maxRows) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
@@ -263,46 +156,4 @@ public final class MCPJdbcExecutionAdapter {
         }
     }
     
-    private Optional<SessionConnectionContext> findSessionConnection(final String sessionId) {
-        return Optional.ofNullable(sessionConnections.get(sessionId));
-    }
-    
-    private SessionConnectionContext getRequiredSessionConnection(final String sessionId) {
-        return findSessionConnection(sessionId).orElseThrow(() -> new IllegalStateException("No active transaction."));
-    }
-    
-    private void rollbackAndClose(final String sessionId, final SessionConnectionContext sessionConnectionContext) {
-        try {
-            sessionConnectionContext.getConnection().rollback();
-            sessionConnectionContext.getConnection().setAutoCommit(true);
-            sessionConnectionContext.getConnection().close();
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex.getMessage(), ex);
-        } finally {
-            sessionConnections.remove(sessionId);
-        }
-    }
-    
-    @RequiredArgsConstructor
-    @Getter
-    private static final class SessionConnectionContext {
-        
-        private final String databaseName;
-        
-        private final Connection connection;
-        
-        private final Map<String, Savepoint> savepoints = new ConcurrentHashMap<>();
-        
-        private void addSavepoint(final String savepointName, final Savepoint savepoint) {
-            savepoints.put(savepointName, savepoint);
-        }
-        
-        private Optional<Savepoint> findSavepoint(final String savepointName) {
-            return Optional.ofNullable(savepoints.get(savepointName));
-        }
-        
-        private void removeSavepoint(final String savepointName) {
-            savepoints.remove(savepointName);
-        }
-    }
 }

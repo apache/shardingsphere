@@ -22,11 +22,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -47,64 +44,6 @@ public final class MCPSessionManager {
         MCPSessionContext result = new MCPSessionContext(sessionId);
         ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, result), () -> new IllegalStateException("Session already exists."));
         return result;
-    }
-    
-    /**
-     * Transition the session into transaction state.
-     *
-     * @param sessionId session identifier
-     * @param databaseName logical database name
-     */
-    public void beginTransaction(final String sessionId, final String databaseName) {
-        getSession(sessionId).beginTransaction(normalizeValue(databaseName, "databaseName"));
-    }
-    
-    /**
-     * Record a savepoint name in the current session.
-     *
-     * @param sessionId session identifier
-     * @param savepointName savepoint name
-     */
-    public void rememberSavepoint(final String sessionId, final String savepointName) {
-        getSession(sessionId).rememberSavepoint(normalizeValue(savepointName, "savepointName"));
-    }
-    
-    /**
-     * Commit the active transaction for the session.
-     *
-     * @param sessionId session identifier
-     */
-    public void commitTransaction(final String sessionId) {
-        getSession(sessionId).commitTransaction();
-    }
-    
-    /**
-     * Roll back the active transaction for the session.
-     *
-     * @param sessionId session identifier
-     */
-    public void rollbackTransaction(final String sessionId) {
-        getSession(sessionId).rollbackTransaction();
-    }
-    
-    /**
-     * Roll back to one named savepoint in the active transaction.
-     *
-     * @param sessionId session identifier
-     * @param savepointName savepoint name
-     */
-    public void rollbackToSavepoint(final String sessionId, final String savepointName) {
-        getSession(sessionId).rollbackToSavepoint(normalizeValue(savepointName, "savepointName"));
-    }
-    
-    /**
-     * Release one named savepoint in the active transaction.
-     *
-     * @param sessionId session identifier
-     * @param savepointName savepoint name
-     */
-    public void releaseSavepoint(final String sessionId, final String savepointName) {
-        getSession(sessionId).releaseSavepoint(normalizeValue(savepointName, "savepointName"));
     }
     
     MCPSessionContext getSession(final String sessionId) {
@@ -129,15 +68,8 @@ public final class MCPSessionManager {
     public void closeSession(final String sessionId) {
         MCPSessionContext sessionContext = sessions.remove(sessionId);
         if (null != sessionContext) {
-            sessionContext.rollbackPendingWork();
             sessionContext.close();
         }
-    }
-    
-    private String normalizeValue(final String value, final String fieldName) {
-        String result = Objects.toString(value, "").trim();
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(fieldName + " cannot be empty."));
-        return result;
     }
     
     /**
@@ -149,71 +81,10 @@ public final class MCPSessionManager {
         
         private final String sessionId;
         
-        private final Set<String> savepoints = new LinkedHashSet<>();
-        
-        private boolean autocommit = true;
-        
-        private TransactionState transactionState = TransactionState.IDLE;
-        
-        private String boundDatabase = "";
-        
         private boolean closed;
-        
-        private void beginTransaction(final String databaseName) {
-            ShardingSpherePreconditions.checkState(TransactionState.ACTIVE != transactionState || boundDatabase.isEmpty() || boundDatabase.equals(databaseName),
-                    () -> new IllegalStateException("Cross-database transaction switching is not supported."));
-            boundDatabase = databaseName;
-            ShardingSpherePreconditions.checkState(TransactionState.ACTIVE != transactionState, () -> new IllegalStateException("Transaction already active."));
-            autocommit = false;
-            transactionState = TransactionState.ACTIVE;
-        }
-        
-        private void rememberSavepoint(final String savepointName) {
-            requireActiveTransaction();
-            savepoints.add(savepointName);
-        }
-        
-        private void commitTransaction() {
-            requireActiveTransaction();
-            rollbackPendingWork();
-        }
-        
-        private void rollbackTransaction() {
-            requireActiveTransaction();
-            rollbackPendingWork();
-        }
-        
-        private void rollbackToSavepoint(final String savepointName) {
-            requireActiveTransaction();
-            ShardingSpherePreconditions.checkContains(savepoints, savepointName, () -> new IllegalStateException("Savepoint does not exist."));
-        }
-        
-        private void releaseSavepoint(final String savepointName) {
-            requireActiveTransaction();
-            ShardingSpherePreconditions.checkState(savepoints.remove(savepointName), () -> new IllegalStateException("Savepoint does not exist."));
-        }
-        
-        private void rollbackPendingWork() {
-            autocommit = true;
-            transactionState = TransactionState.IDLE;
-            savepoints.clear();
-            boundDatabase = "";
-        }
-        
-        private void requireActiveTransaction() {
-            ShardingSpherePreconditions.checkState(TransactionState.ACTIVE == transactionState, () -> new IllegalStateException("No active transaction."));
-        }
         
         private void close() {
             closed = true;
         }
-    }
-    
-    /**
-     * Transaction states tracked by the session manager.
-     */
-    public enum TransactionState {
-        
-        IDLE, ACTIVE
     }
 }
