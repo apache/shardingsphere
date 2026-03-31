@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
-class ShardingSphereExecutionAdapterTest {
+class MCPJdbcExecutionAdapterTest {
     
     @TempDir
     private Path tempDir;
@@ -47,7 +47,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertExecuteQuery() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-query");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id"),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
@@ -58,7 +58,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertExecuteQueryWithTruncation() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-query-truncation");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id", 1),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
@@ -70,7 +70,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertExecuteUpdate() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-update");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
@@ -82,7 +82,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertBeginTransaction() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-begin");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         assertDoesNotThrow(() -> adapter.beginTransaction("session-1", "logic_db"));
         adapter.closeSession("session-1");
     }
@@ -91,7 +91,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertCommitTransaction() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-commit");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         adapter.beginTransaction("session-1", "logic_db");
         adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
@@ -103,7 +103,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertRollbackTransaction() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-rollback");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         adapter.beginTransaction("session-1", "logic_db");
         adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
@@ -115,7 +115,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertCreateSavepoint() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-savepoint");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         adapter.beginTransaction("session-1", "logic_db");
         assertDoesNotThrow(() -> adapter.createSavepoint("session-1", "sp_1"));
         adapter.closeSession("session-1");
@@ -125,7 +125,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertRollbackToSavepoint() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-rollback-savepoint");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         adapter.beginTransaction("session-1", "logic_db");
         adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
@@ -141,7 +141,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertReleaseSavepoint() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-release-savepoint");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         adapter.beginTransaction("session-1", "logic_db");
         adapter.createSavepoint("session-1", "sp_1");
         assertDoesNotThrow(() -> adapter.releaseSavepoint("session-1", "sp_1"));
@@ -152,7 +152,7 @@ class ShardingSphereExecutionAdapterTest {
     void assertCloseSession() throws SQLException {
         String jdbcUrl = createJdbcUrl("adapter-close");
         initializeDatabase(jdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
         adapter.beginTransaction("session-1", "logic_db");
         adapter.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
@@ -166,7 +166,7 @@ class ShardingSphereExecutionAdapterTest {
         String secondJdbcUrl = createJdbcUrl("adapter-cross-second");
         initializeDatabase(firstJdbcUrl);
         initializeDatabase(secondJdbcUrl);
-        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl));
+        MCPJdbcExecutionAdapter adapter = createAdapter(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl));
         adapter.beginTransaction("session-1", "logic_db");
         ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("analytics_db", "SELECT status FROM orders ORDER BY order_id"),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
@@ -175,12 +175,12 @@ class ShardingSphereExecutionAdapterTest {
         adapter.closeSession("session-1");
     }
     
-    private ShardingSphereExecutionAdapter createAdapter(final Map<String, String> jdbcUrls) {
+    private MCPJdbcExecutionAdapter createAdapter(final Map<String, String> jdbcUrls) {
         Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>();
         for (Entry<String, String> entry : jdbcUrls.entrySet()) {
             connectionProviders.put(entry.getKey(), () -> DriverManager.getConnection(entry.getValue()));
         }
-        return new ShardingSphereExecutionAdapter(connectionProviders);
+        return new MCPJdbcExecutionAdapter(connectionProviders);
     }
     
     private ExecutionRequest createExecutionRequest(final String databaseName, final String sql) {

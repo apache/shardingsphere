@@ -40,10 +40,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Real JDBC-backed execution adapter for the MCP runtime.
+ * MCP JDBC execution adapter.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereExecutionAdapter {
+public final class MCPJdbcExecutionAdapter {
     
     private final Map<String, ConnectionProvider> connectionProviders;
     

@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public final class DatabaseExecutionBackend {
     
-    private final ShardingSphereExecutionAdapter executionAdapter;
+    private final MCPJdbcExecutionAdapter executionAdapter;
     
     private final Consumer<String> metadataRefresher;
     
