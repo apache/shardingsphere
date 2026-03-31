@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
+import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
@@ -40,6 +41,8 @@ public final class ExecuteQueryFacade {
     private final TransactionCommandExecutor transactionCommandExecutor;
     
     private final AuditRecorder auditRecorder;
+    
+    private final MetadataRefreshCoordinator metadataRefreshCoordinator;
     
     /**
      * Execute one MCP SQL request.
@@ -96,7 +99,7 @@ public final class ExecuteQueryFacade {
     private ExecuteQueryResponse executeAndRefreshMetadata(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         ExecuteQueryResponse result = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
         if (result.isSuccessful()) {
-            executionRequest.getDatabaseExecutionBackend().refreshMetadata(executionRequest.getDatabase());
+            metadataRefreshCoordinator.refresh(executionRequest.getDatabase());
         }
         return result;
     }

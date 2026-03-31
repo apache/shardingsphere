@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
+import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
@@ -30,6 +31,8 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * MCP runtime context builder for tests.
@@ -52,7 +55,8 @@ public final class MCPRuntimeContextTestBuilder {
         MCPToolCatalog toolCatalog = new MCPToolCatalog();
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseExecutionBackend);
         AuditRecorder auditRecorder = new AuditRecorder();
-        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler, transactionCommandExecutor, auditRecorder);
+        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
+                transactionCommandExecutor, auditRecorder, mock(MetadataRefreshCoordinator.class));
         MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
         return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, databaseExecutionBackend, capabilityAssembler,
                 metadataResourceLoader, resourceUriResolver, metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);

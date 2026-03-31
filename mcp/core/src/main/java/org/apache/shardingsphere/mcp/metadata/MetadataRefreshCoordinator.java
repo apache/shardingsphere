@@ -1,0 +1,54 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.metadata;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
+import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * Metadata refresh coordinator.
+ */
+@RequiredArgsConstructor
+public final class MetadataRefreshCoordinator {
+    
+    private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
+    
+    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
+    
+    /**
+     * Refresh metadata snapshot for one logical database.
+     *
+     * @param databaseName logical database name
+     */
+    public void refresh(final String databaseName) {
+        DatabaseMetadataSnapshot databaseSnapshot = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)))
+                .findSnapshot(databaseName).orElseThrow(() -> new IllegalStateException(String.format("Failed to refresh metadata for database `%s`.", databaseName)));
+        databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
+    }
+    
+    private RuntimeDatabaseConfiguration getRequiredRuntimeDatabaseConfiguration(final String databaseName) {
+        return Optional.ofNullable(runtimeDatabases.get(databaseName)).orElseThrow(() -> new IllegalArgumentException(String.format("Database `%s` is not configured.", databaseName)));
+    }
+}

@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.execute;
+package org.apache.shardingsphere.mcp.metadata;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -28,31 +30,32 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class DatabaseExecutionBackendTest {
+class MetadataRefreshCoordinatorTest {
     
     @TempDir
     private Path tempDir;
     
     @Test
-    void assertCloseSessionRollbackTransaction() throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "database-execution-backend-close-session");
+    void assertRefresh() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-refresh-coordinator");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
-        DatabaseExecutionBackend backend = new DatabaseExecutionBackend(runtimeDatabases);
-        String sql = "UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1";
-        backend.beginTransaction("session-1", "logic_db");
-        ExecuteQueryResponse actual = backend.execute(new ExecutionRequest("session-1", "logic_db", "public", sql, 0, 0, backend), new StatementClassifier().classify(sql));
-        backend.closeSession("session-1");
-        assertTrue(actual.isSuccessful());
-        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
+        DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
+        MetadataRefreshCoordinator coordinator = new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots);
+        H2RuntimeTestSupport.executeStatements(jdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
+        coordinator.refresh("logic_db");
+        assertTrue(databaseMetadataSnapshots.getDatabaseTypes().containsKey("logic_db"));
+        assertThat(databaseMetadataSnapshots.getMetadataObjects().stream().map(MetadataObject::getName).toList(), hasItems("orders_archive"));
     }
     
     @Test
-    void assertCloseSessionWithoutOpenedTransaction() {
-        DatabaseExecutionBackend backend = new DatabaseExecutionBackend(Map.of());
-        backend.closeSession("session-1");
+    void assertRefreshWithUnconfiguredDatabase() {
+        MetadataRefreshCoordinator coordinator = new MetadataRefreshCoordinator(Map.of(), new DatabaseMetadataSnapshots(Map.of()));
+        assertThat(assertThrows(IllegalArgumentException.class, () -> coordinator.refresh("logic_db")).getMessage(), is("Database `logic_db` is not configured."));
     }
 }

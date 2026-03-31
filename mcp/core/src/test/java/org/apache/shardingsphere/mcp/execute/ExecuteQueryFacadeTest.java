@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.execute;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
+import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
@@ -150,7 +151,8 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteDdl() {
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
+        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder(), mock(DatabaseExecutionBackend.class), metadataRefreshCoordinator);
         DatabaseExecutionBackend databaseExecutionBackend = createDatabaseExecutionBackend(ExecuteQueryResponse.statementAck("CREATE", "Statement executed."));
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10, databaseExecutionBackend));
@@ -158,12 +160,13 @@ class ExecuteQueryFacadeTest {
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
-        verify(databaseExecutionBackend).refreshMetadata("logic_db");
+        verify(metadataRefreshCoordinator).refresh("logic_db");
     }
     
     @Test
     void assertExecuteDcl() {
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
+        MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder(), mock(DatabaseExecutionBackend.class), metadataRefreshCoordinator);
         DatabaseExecutionBackend databaseExecutionBackend = createDatabaseExecutionBackend(ExecuteQueryResponse.statementAck("GRANT", "Statement executed."));
         
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10, databaseExecutionBackend));
@@ -171,7 +174,7 @@ class ExecuteQueryFacadeTest {
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
-        verify(databaseExecutionBackend).refreshMetadata("logic_db");
+        verify(metadataRefreshCoordinator).refresh("logic_db");
     }
     
     @Test
@@ -206,11 +209,16 @@ class ExecuteQueryFacadeTest {
     
     private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder,
                                             final DatabaseExecutionBackend databaseExecutionBackend) {
+        return createFacade(databaseType, sessionManager, auditRecorder, databaseExecutionBackend, mock(MetadataRefreshCoordinator.class));
+    }
+    
+    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder,
+                                            final DatabaseExecutionBackend databaseExecutionBackend, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
                 new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseExecutionBackend),
-                auditRecorder);
+                auditRecorder, metadataRefreshCoordinator);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows, final DatabaseExecutionBackend databaseExecutionBackend) {

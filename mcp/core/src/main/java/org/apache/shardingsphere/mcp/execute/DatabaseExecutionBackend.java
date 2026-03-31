@@ -17,32 +17,19 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Database execution backend.
  */
-@RequiredArgsConstructor
 public final class DatabaseExecutionBackend {
-    
-    private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-    
-    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
     private final MCPJdbcExecutionAdapter executionAdapter;
     
-    public DatabaseExecutionBackend(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
-        this.runtimeDatabases = runtimeDatabases;
-        this.databaseMetadataSnapshots = databaseMetadataSnapshots;
+    public DatabaseExecutionBackend(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         executionAdapter = new MCPJdbcExecutionAdapter(runtimeDatabases);
     }
     
@@ -113,21 +100,6 @@ public final class DatabaseExecutionBackend {
      */
     public void releaseSavepoint(final String sessionId, final String savepointName) {
         executionAdapter.releaseSavepoint(sessionId, savepointName);
-    }
-    
-    /**
-     * Refresh backend metadata after committed changes.
-     *
-     * @param databaseName logical database name
-     */
-    public void refreshMetadata(final String databaseName) {
-        DatabaseMetadataSnapshots refreshedSnapshots = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)));
-        DatabaseMetadataSnapshot databaseSnapshot = refreshedSnapshots.findSnapshot(databaseName).orElseThrow(() -> new IllegalArgumentException("databaseSnapshot cannot be null"));
-        databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
-    }
-    
-    private RuntimeDatabaseConfiguration getRequiredRuntimeDatabaseConfiguration(final String databaseName) {
-        return Optional.ofNullable(runtimeDatabases.get(databaseName)).orElseThrow(() -> new IllegalArgumentException(String.format("Database `%s` is not configured.", databaseName)));
     }
     
     /**
