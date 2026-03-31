@@ -106,8 +106,8 @@ core_infra:
 test_framework:
   - '.github/workflows/e2e-sql.yml'
   - '.github/workflows/resources/filter/e2e-sql-filters.yml'
-  - '.github/workflows/resources/scripts/generate-e2e-sql-matrix.sh'
-  - '.github/workflows/resources/scripts/generate-remaining-matrix.sh'
+  - '.github/workflows/resources/scripts/e2e-sql/generate-e2e-sql-matrix.sh'
+  - '.github/workflows/resources/scripts/e2e-sql/generate-remaining-matrix.sh'
   - 'test/pom.xml'
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'

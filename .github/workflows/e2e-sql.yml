@@ -98,7 +98,7 @@ jobs:
             --arg test_framework         "$FILTER_TEST_FRAMEWORK" \
             --arg pom_changes            "$FILTER_POM_CHANGES" \
             '$ARGS.named')
-          bash .github/workflows/resources/scripts/generate-e2e-sql-matrix.sh "$filters"
+          bash .github/workflows/resources/scripts/e2e-sql/generate-e2e-sql-matrix.sh "$filters"
           echo "filter-json=$filters" >> "$GITHUB_OUTPUT"
       - name: Logs
         run: |
@@ -195,7 +195,7 @@ jobs:
           FULL_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.full-matrix }}
           SMOKE_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.smoke-matrix }}
         run: |
-          bash .github/workflows/resources/scripts/generate-remaining-matrix.sh \
+          bash .github/workflows/resources/scripts/e2e-sql/generate-remaining-matrix.sh \
             "$FILTER_JSON" \
             "$FULL_MATRIX" \
             "$SMOKE_MATRIX"
