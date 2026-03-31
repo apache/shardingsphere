@@ -34,8 +34,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ExecuteQueryFacade {
     
-    private final StatementClassifier statementClassifier;
-    
     private final MCPCapabilityBuilder capabilityBuilder;
     
     private final TransactionCommandExecutor transactionCommandExecutor;
@@ -60,7 +58,7 @@ public final class ExecuteQueryFacade {
         DatabaseCapability actualDatabaseCapability = databaseCapability.get();
         ClassificationResult classificationResult;
         try {
-            classificationResult = statementClassifier.classify(executionRequest.getSql());
+            classificationResult = new StatementClassifier().classify(executionRequest.getSql());
         } catch (final UnsupportedOperationException ex) {
             return recordFailure(executionRequest, "QUERY", MCPErrorCode.UNSUPPORTED, ex.getMessage());
         } catch (final IllegalArgumentException ex) {

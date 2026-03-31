@@ -190,9 +190,7 @@ class ExecuteQueryFacadeTest {
                                             final MCPJdbcExecutionAdapter jdbcExecutionAdapter, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
-        return new ExecuteQueryFacade(new StatementClassifier(), capabilityBuilder,
-                new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter),
-                jdbcExecutionAdapter, metadataRefreshCoordinator);
+        return new ExecuteQueryFacade(capabilityBuilder, new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter), jdbcExecutionAdapter, metadataRefreshCoordinator);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {

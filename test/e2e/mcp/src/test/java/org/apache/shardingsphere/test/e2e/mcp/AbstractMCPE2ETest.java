@@ -25,10 +25,8 @@ import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
-import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
-import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -221,10 +219,9 @@ abstract class AbstractMCPE2ETest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, executionAdapter);
-        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(new StatementClassifier(), capabilityBuilder, transactionCommandExecutor,
-                new MCPJdbcExecutionAdapter(databaseConfigs), new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
-        MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, executionAdapter, capabilityBuilder, transactionCommandExecutor, executeQueryFacade, payloadBuilder);
+        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
+                capabilityBuilder, transactionCommandExecutor, new MCPJdbcExecutionAdapter(databaseConfigs), new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, executionAdapter, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
