@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
-import org.apache.shardingsphere.mcp.jdbc.MCPJdbcDatabaseRuntimeFactory;
+import org.apache.shardingsphere.mcp.jdbc.MCPJdbcExecutionBackendFactory;
 import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
@@ -52,7 +52,7 @@ public final class MCPRuntimeContextBuilder {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MCPSessionManager sessionManager = new MCPSessionManager();
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        DatabaseExecutionBackend databaseExecutionBackend = new MCPJdbcDatabaseRuntimeFactory().create(runtimeDatabases, databaseMetadataSnapshots);
+        DatabaseExecutionBackend databaseExecutionBackend = new MCPJdbcExecutionBackendFactory().create(runtimeDatabases, databaseMetadataSnapshots);
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(databaseMetadataSnapshots);
         MetadataResourceLoader metadataResourceLoader = new MetadataResourceLoader();
         ResourceUriResolver resourceUriResolver = new ResourceUriResolver();

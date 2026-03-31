@@ -36,14 +36,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPJdbcDatabaseRuntimeFactoryTest {
+class MCPJdbcExecutionBackendFactoryTest {
     
     @TempDir
     private Path tempDir;
     
     @Test
     void assertCreateDatabaseRuntimeRefreshMetadataForTargetDatabase() throws SQLException {
-        MCPJdbcDatabaseRuntimeFactory databaseRuntimeFactory = new MCPJdbcDatabaseRuntimeFactory();
+        MCPJdbcExecutionBackendFactory databaseRuntimeFactory = new MCPJdbcExecutionBackendFactory();
         MCPJdbcMetadataLoader jdbcMetadataLoader = new MCPJdbcMetadataLoader();
         String firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "factory-refresh-first");
         String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "factory-refresh-second");
@@ -63,7 +63,7 @@ class MCPJdbcDatabaseRuntimeFactoryTest {
     
     @Test
     void assertCreateDatabaseRuntimePreserveSnapshotWhenRefreshFails() {
-        MCPJdbcDatabaseRuntimeFactory databaseRuntimeFactory = new MCPJdbcDatabaseRuntimeFactory();
+        MCPJdbcExecutionBackendFactory databaseRuntimeFactory = new MCPJdbcExecutionBackendFactory();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabaseConfigs = Map.of(
                 "logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.example.MissingDriver"));
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new DatabaseMetadataSnapshots(Map.of("logic_db",

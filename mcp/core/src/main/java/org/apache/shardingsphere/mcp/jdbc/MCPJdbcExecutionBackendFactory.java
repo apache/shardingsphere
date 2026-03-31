@@ -29,9 +29,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * MCP JDBC database runtime factory.
+ * MCP JDBC execution backend factory.
  */
-public final class MCPJdbcDatabaseRuntimeFactory {
+public final class MCPJdbcExecutionBackendFactory {
     
     /**
      * Create one adapter-backed database runtime.
@@ -45,8 +45,7 @@ public final class MCPJdbcDatabaseRuntimeFactory {
         for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
             connectionProviders.put(each.getKey(), () -> each.getValue().openConnection(each.getKey()));
         }
-        return new DatabaseExecutionBackend(new MCPJdbcExecutionAdapter(connectionProviders),
-                database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
+        return new DatabaseExecutionBackend(new MCPJdbcExecutionAdapter(connectionProviders), database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
     }
     
     private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
