@@ -38,13 +38,14 @@ import org.apache.shardingsphere.test.e2e.env.runtime.type.scenario.path.Scenari
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.Driver;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -151,10 +152,17 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
     
     private static Connection createConnection(final StorageContainerConnectOption connectOption, final String url, final String user, final String password) throws SQLException {
         try {
-            Class.forName(connectOption.getDriverClassName());
-            return DriverManager.getConnection(url, user, password);
-        } catch (final ClassNotFoundException ex) {
-            throw new SQLException("Driver class not found: " + connectOption.getDriverClassName(), ex);
+            Driver driver = (Driver) Class.forName(connectOption.getDriverClassName()).getDeclaredConstructor().newInstance();
+            Properties properties = new Properties();
+            properties.setProperty("user", user);
+            properties.setProperty("password", password);
+            Connection result = driver.connect(url, properties);
+            if (null == result) {
+                throw new SQLException(String.format("Driver `%s` does not accept URL `%s`", connectOption.getDriverClassName(), url));
+            }
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new SQLException(String.format("Failed to instantiate driver `%s`", connectOption.getDriverClassName()), ex);
         }
     }
     
