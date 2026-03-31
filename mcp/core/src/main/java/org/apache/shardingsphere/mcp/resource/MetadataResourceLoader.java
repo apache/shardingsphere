@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.util.Collection;
@@ -62,7 +62,7 @@ public final class MetadataResourceLoader {
     
     private Optional<DatabaseCapability> resolveDatabaseCapability(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
         databaseMetadataSnapshots.findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        return new DatabaseCapabilityAssembler(databaseMetadataSnapshots).assembleDatabaseCapability(databaseName);
+        return new DatabaseCapabilityBuilder(databaseMetadataSnapshots).assembleDatabaseCapability(databaseName);
     }
     
     private List<MetadataObject> filterMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest,

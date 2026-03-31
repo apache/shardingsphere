@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
-import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
@@ -183,14 +183,14 @@ abstract class AbstractMCPE2ETest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    protected final DatabaseExecutionBackend createDatabaseRuntime(final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+    protected final MCPJdbcExecutionAdapter createMCPJdbcExecutionAdapter() {
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
         try {
             initializeRuntimeDatabases(runtimeDatabases);
         } catch (final SQLException ex) {
             throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
         }
-        return new DatabaseExecutionBackend(runtimeDatabases, databaseMetadataSnapshots);
+        return new MCPJdbcExecutionAdapter(runtimeDatabases);
     }
     
     protected final Map<String, String> createRequestHeaders() {
@@ -199,9 +199,9 @@ abstract class AbstractMCPE2ETest {
     
     private void launchRuntimeInternal() {
         DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
-        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseRuntime(databaseMetadataSnapshots);
+        MCPJdbcExecutionAdapter executionAdapter = createMCPJdbcExecutionAdapter();
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                runtimeContextTestBuilder.build(databaseMetadataSnapshots, databaseExecutionBackend));
+                runtimeContextTestBuilder.build(createRuntimeDatabases(), databaseMetadataSnapshots, executionAdapter));
         try {
             httpServer.start();
         } catch (final IOException ex) {

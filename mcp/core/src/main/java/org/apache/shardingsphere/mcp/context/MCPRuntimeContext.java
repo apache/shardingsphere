@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.context;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
@@ -45,7 +45,7 @@ public final class MCPRuntimeContext {
     
     private final MCPJdbcExecutionAdapter jdbcExecutionAdapter;
     
-    private final DatabaseCapabilityAssembler capabilityAssembler;
+    private final DatabaseCapabilityBuilder capabilityAssembler;
     
     private final MetadataResourceLoader metadataResourceLoader;
     
