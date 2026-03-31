@@ -32,7 +32,7 @@ public final class TransactionCommandExecutor {
     
     private final MCPSessionManager sessionManager;
     
-    private final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager;
+    private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
     /**
      * Execute one transaction-control or savepoint command with resolved database capability.
@@ -76,7 +76,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
         }
-        jdbcTransactionResourceManager.beginTransaction(sessionId, databaseName);
+        transactionResourceManager.beginTransaction(sessionId, databaseName);
         return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
     }
     
@@ -84,7 +84,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
         }
-        jdbcTransactionResourceManager.commitTransaction(sessionId);
+        transactionResourceManager.commitTransaction(sessionId);
         return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
     }
     
@@ -92,7 +92,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Transaction control is not supported.");
         }
-        jdbcTransactionResourceManager.rollbackTransaction(sessionId);
+        transactionResourceManager.rollbackTransaction(sessionId);
         return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
     }
     
@@ -100,7 +100,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
         }
-        jdbcTransactionResourceManager.createSavepoint(sessionId, savepointName);
+        transactionResourceManager.createSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
     }
     
@@ -108,7 +108,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
         }
-        jdbcTransactionResourceManager.rollbackToSavepoint(sessionId, savepointName);
+        transactionResourceManager.rollbackToSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
@@ -116,7 +116,7 @@ public final class TransactionCommandExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Savepoint is not supported.");
         }
-        jdbcTransactionResourceManager.releaseSavepoint(sessionId, savepointName);
+        transactionResourceManager.releaseSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
     }
 }

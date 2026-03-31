@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -38,9 +38,9 @@ public final class MCPRuntimeContext {
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
-    private final MCPJdbcExecutionAdapter jdbcExecutionAdapter;
+    private final MCPJdbcStatementExecutor statementExecutor;
     
-    private final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager;
+    private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
     private final MCPCapabilityBuilder capabilityBuilder;
     
@@ -55,7 +55,7 @@ public final class MCPRuntimeContext {
      */
     public void closeSession(final String sessionId) {
         try {
-            jdbcTransactionResourceManager.closeSession(sessionId);
+            transactionResourceManager.closeSession(sessionId);
         } finally {
             sessionManager.closeSession(sessionId);
         }

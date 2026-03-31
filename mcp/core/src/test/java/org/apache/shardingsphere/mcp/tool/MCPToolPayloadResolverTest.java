@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
@@ -112,7 +112,7 @@ class MCPToolPayloadResolverTest {
     }
     
     private MCPToolPayloadResolver createResolver() {
-        return new MCPToolPayloadResolver(new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), createJdbcExecutionAdapter()));
+        return new MCPToolPayloadResolver(new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), createStatementExecutor()));
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
@@ -125,8 +125,8 @@ class MCPToolPayloadResolverTest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    private MCPJdbcExecutionAdapter createJdbcExecutionAdapter() {
-        MCPJdbcExecutionAdapter result = mock(MCPJdbcExecutionAdapter.class);
+    private MCPJdbcStatementExecutor createStatementExecutor() {
+        MCPJdbcStatementExecutor result = mock(MCPJdbcStatementExecutor.class);
         when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class))).thenReturn(
                 ExecuteQueryResponse.resultSet(List.of(
                         new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false),

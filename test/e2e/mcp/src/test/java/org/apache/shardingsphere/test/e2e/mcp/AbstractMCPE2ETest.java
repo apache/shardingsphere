@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableH
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
@@ -214,13 +214,13 @@ abstract class AbstractMCPE2ETest {
                                                    final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
-        MCPJdbcExecutionAdapter executionAdapter = new MCPJdbcExecutionAdapter(databaseConfigs, jdbcTransactionResourceManager);
+        MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, jdbcTransactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
-                capabilityBuilder, transactionCommandExecutor, executionAdapter, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
+                capabilityBuilder, transactionCommandExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
         return new MCPRuntimeContext(sessionManager,
-                databaseMetadataSnapshots, executionAdapter, jdbcTransactionResourceManager, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
+                databaseMetadataSnapshots, statementExecutor, jdbcTransactionResourceManager, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

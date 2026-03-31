@@ -38,10 +38,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * MCP JDBC execution adapter.
+ * MCP JDBC statement executor.
  */
 @RequiredArgsConstructor
-public final class MCPJdbcExecutionAdapter {
+public final class MCPJdbcStatementExecutor {
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     

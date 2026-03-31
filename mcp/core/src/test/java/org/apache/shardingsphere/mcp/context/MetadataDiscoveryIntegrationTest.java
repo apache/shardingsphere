@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.junit.jupiter.api.Test;
 
@@ -30,8 +29,7 @@ import static org.mockito.Mockito.mock;
 class MetadataDiscoveryIntegrationTest {
     
     private MCPRuntimeContext createRuntimeContext() {
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
-        return new MCPRuntimeContextTestFactory().create(new DatabaseMetadataSnapshots(Collections.emptyMap()), jdbcExecutionAdapter);
+        return new MCPRuntimeContextTestFactory().create(new DatabaseMetadataSnapshots(Collections.emptyMap()), mock());
     }
     
     @Test

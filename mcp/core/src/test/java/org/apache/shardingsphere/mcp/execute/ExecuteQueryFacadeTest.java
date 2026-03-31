@@ -90,45 +90,45 @@ class ExecuteQueryFacadeTest {
     
     @Test
     void assertExecuteWithUnknownCapability() {
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
-        ExecuteQueryFacade facade = createFacade("Unknown", new MCPSessionManager(), jdbcExecutionAdapter);
+        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
+        ExecuteQueryFacade facade = createFacade("Unknown", new MCPSessionManager(), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.NOT_FOUND));
-        verifyNoInteractions(jdbcExecutionAdapter);
+        verifyNoInteractions(statementExecutor);
     }
     
     @Test
     void assertExecuteQueryWithTruncation() {
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = createJdbcExecutionAdapter(createResultSetResponse(1, true));
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), jdbcExecutionAdapter);
+        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(1, true));
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
-        verify(jdbcExecutionAdapter).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
     }
     
     @Test
     void assertExecuteUpdate() {
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = createJdbcExecutionAdapter(ExecuteQueryResponse.updateCount("UPDATE", 3));
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), jdbcExecutionAdapter);
+        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.updateCount("UPDATE", 3));
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(3));
-        verify(jdbcExecutionAdapter).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
     }
     
     @Test
     void assertExecuteTransactionCommand() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
+        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, jdbcExecutionAdapter, transactionResourceManager, mock(MetadataRefreshCoordinator.class));
+        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, statementExecutor, transactionResourceManager, mock(MetadataRefreshCoordinator.class));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMessage(), is("Transaction started."));
@@ -138,74 +138,74 @@ class ExecuteQueryFacadeTest {
     @Test
     void assertExecuteDdl() {
         MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = createJdbcExecutionAdapter(ExecuteQueryResponse.statementAck("CREATE", "Statement executed."));
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), jdbcExecutionAdapter, metadataRefreshCoordinator);
+        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.statementAck("CREATE", "Statement executed."));
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
-        verify(jdbcExecutionAdapter).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
         verify(metadataRefreshCoordinator).refresh("logic_db");
     }
     
     @Test
     void assertExecuteDcl() {
         MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = createJdbcExecutionAdapter(ExecuteQueryResponse.statementAck("GRANT", "Statement executed."));
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), jdbcExecutionAdapter, metadataRefreshCoordinator);
+        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.statementAck("GRANT", "Statement executed."));
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
-        verify(jdbcExecutionAdapter).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
         verify(metadataRefreshCoordinator).refresh("logic_db");
     }
     
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
-        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), jdbcExecutionAdapter);
+        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
+        ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
-        verifyNoInteractions(jdbcExecutionAdapter);
+        verifyNoInteractions(statementExecutor);
     }
     
     @Test
     void assertExecuteExplainAnalyzeWithSupportedCapability() {
-        MCPJdbcExecutionAdapter jdbcExecutionAdapter = createJdbcExecutionAdapter(createResultSetResponse(2, false));
-        ExecuteQueryFacade facade = createFacade("H2", new MCPSessionManager(), jdbcExecutionAdapter);
+        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(2, false));
+        ExecuteQueryFacade facade = createFacade("H2", new MCPSessionManager(), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
-        verify(jdbcExecutionAdapter).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
     }
     
-    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final MCPJdbcExecutionAdapter jdbcExecutionAdapter) {
-        return createFacade(databaseType, sessionManager, jdbcExecutionAdapter, mock(MCPJdbcTransactionResourceManager.class), mock(MetadataRefreshCoordinator.class));
+    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final MCPJdbcStatementExecutor statementExecutor) {
+        return createFacade(databaseType, sessionManager, statementExecutor, mock(MCPJdbcTransactionResourceManager.class), mock(MetadataRefreshCoordinator.class));
     }
     
     private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager,
-                                            final MCPJdbcExecutionAdapter jdbcExecutionAdapter, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
-        return createFacade(databaseType, sessionManager, jdbcExecutionAdapter, mock(MCPJdbcTransactionResourceManager.class), metadataRefreshCoordinator);
+                                            final MCPJdbcStatementExecutor statementExecutor, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
+        return createFacade(databaseType, sessionManager, statementExecutor, mock(MCPJdbcTransactionResourceManager.class), metadataRefreshCoordinator);
     }
     
-    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final MCPJdbcExecutionAdapter jdbcExecutionAdapter,
+    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final MCPJdbcStatementExecutor statementExecutor,
                                             final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
         return new ExecuteQueryFacade(capabilityBuilder, new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager),
-                jdbcExecutionAdapter, metadataRefreshCoordinator);
+                statementExecutor, metadataRefreshCoordinator);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
         return new ExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000);
     }
     
-    private MCPJdbcExecutionAdapter createJdbcExecutionAdapter(final ExecuteQueryResponse response) {
-        MCPJdbcExecutionAdapter result = mock(MCPJdbcExecutionAdapter.class);
+    private MCPJdbcStatementExecutor createStatementExecutor(final ExecuteQueryResponse response) {
+        MCPJdbcStatementExecutor result = mock(MCPJdbcStatementExecutor.class);
         when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class))).thenReturn(response);
         return result;
     }
