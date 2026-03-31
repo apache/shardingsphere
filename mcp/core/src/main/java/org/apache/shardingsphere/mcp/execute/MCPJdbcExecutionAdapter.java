@@ -69,10 +69,6 @@ public final class MCPJdbcExecutionAdapter {
             } catch (final IllegalStateException ex) {
                 return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
             }
-            if (null == connection) {
-                connection = openConnection(executionRequest.getDatabase());
-                closeConnection = true;
-            }
             applySchema(connection, executionRequest.getSchema());
             try (Statement statement = connection.createStatement()) {
                 if (0 < executionRequest.getMaxRows()) {
