@@ -18,9 +18,15 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
+import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Database execution backend.
@@ -30,7 +36,11 @@ public final class DatabaseExecutionBackend {
     
     private final MCPJdbcExecutionAdapter executionAdapter;
     
-    private final Consumer<String> metadataRefresher;
+    private final MCPJdbcMetadataLoader metadataLoader;
+    
+    private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
+    
+    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
     /**
      * Execute one classified request.
@@ -107,7 +117,13 @@ public final class DatabaseExecutionBackend {
      * @param databaseName logical database name
      */
     public void refreshMetadata(final String databaseName) {
-        metadataRefresher.accept(databaseName);
+        DatabaseMetadataSnapshots refreshedSnapshots = metadataLoader.load(Collections.singletonMap(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)));
+        DatabaseMetadataSnapshot databaseSnapshot = refreshedSnapshots.findSnapshot(databaseName).orElseThrow(() -> new IllegalArgumentException("databaseSnapshot cannot be null"));
+        databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
+    }
+    
+    private RuntimeDatabaseConfiguration getRequiredRuntimeDatabaseConfiguration(final String databaseName) {
+        return Optional.ofNullable(runtimeDatabases.get(databaseName)).orElseThrow(() -> new IllegalArgumentException(String.format("Database `%s` is not configured.", databaseName)));
     }
     
     /**

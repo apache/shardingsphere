@@ -19,10 +19,7 @@ package org.apache.shardingsphere.mcp.jdbc;
 
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
-
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -38,12 +35,6 @@ public final class MCPJdbcExecutionBackendFactory {
      * @return database runtime
      */
     public DatabaseExecutionBackend create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
-        return new DatabaseExecutionBackend(new MCPJdbcExecutionAdapter(runtimeDatabases), database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
-    }
-    
-    private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
-        DatabaseMetadataSnapshots refreshedSnapshots = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, runtimeDatabaseConfig));
-        DatabaseMetadataSnapshot databaseSnapshot = refreshedSnapshots.findSnapshot(databaseName).orElseThrow(() -> new IllegalArgumentException("databaseSnapshot cannot be null"));
-        databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
+        return new DatabaseExecutionBackend(new MCPJdbcExecutionAdapter(runtimeDatabases), new MCPJdbcMetadataLoader(), runtimeDatabases, databaseMetadataSnapshots);
     }
 }
