@@ -21,4 +21,7 @@
     <!--<test-case sql="SELECT * FROM t_order_item_join_view WHERE order_id > ?" db-types="MySQL,PostgreSQL,openGauss" scenario-types="db_tbl_sql_federation">
         <assertion parameters="1000:int" expected-data-source-name="read_dataset" />
     </test-case>-->
+    <test-case sql="SELECT version()" db-types="PostgreSQL" scenario-types="db_tbl_sql_federation">
+        <assertion />
+    </test-case>
 </e2e-test-cases>
