@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
@@ -45,7 +46,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public final class MCPJdbcExecutionAdapter {
     
-    private final Map<String, ConnectionProvider> connectionProviders;
+    private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
     private final Map<String, SessionConnectionContext> sessionConnections = new ConcurrentHashMap<>();
     
@@ -248,9 +249,9 @@ public final class MCPJdbcExecutionAdapter {
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {
-        ConnectionProvider connectionProvider = Optional.ofNullable(connectionProviders.get(databaseName))
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = Optional.ofNullable(runtimeDatabases.get(databaseName))
                 .orElseThrow(() -> new IllegalStateException(String.format("Database `%s` is not configured.", databaseName)));
-        return connectionProvider.getConnection();
+        return runtimeDatabaseConfig.openConnection(databaseName);
     }
     
     private void applySchema(final Connection connection, final String schemaName) throws SQLException {

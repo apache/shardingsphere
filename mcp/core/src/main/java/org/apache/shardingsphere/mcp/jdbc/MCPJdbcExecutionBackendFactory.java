@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.mcp.jdbc;
 
-import org.apache.shardingsphere.mcp.execute.ConnectionProvider;
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * MCP JDBC execution backend factory.
@@ -41,11 +38,7 @@ public final class MCPJdbcExecutionBackendFactory {
      * @return database runtime
      */
     public DatabaseExecutionBackend create(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
-        Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
-        for (Entry<String, RuntimeDatabaseConfiguration> each : runtimeDatabases.entrySet()) {
-            connectionProviders.put(each.getKey(), () -> each.getValue().openConnection(each.getKey()));
-        }
-        return new DatabaseExecutionBackend(new MCPJdbcExecutionAdapter(connectionProviders), database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
+        return new DatabaseExecutionBackend(new MCPJdbcExecutionAdapter(runtimeDatabases), database -> refreshMetadata(database, runtimeDatabases.get(database), databaseMetadataSnapshots));
     }
     
     private void refreshMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {

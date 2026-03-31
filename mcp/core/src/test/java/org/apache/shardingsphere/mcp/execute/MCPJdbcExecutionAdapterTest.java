@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.junit.jupiter.api.Test;
@@ -176,11 +177,11 @@ class MCPJdbcExecutionAdapterTest {
     }
     
     private MCPJdbcExecutionAdapter createAdapter(final Map<String, String> jdbcUrls) {
-        Map<String, ConnectionProvider> connectionProviders = new LinkedHashMap<>();
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>();
         for (Entry<String, String> entry : jdbcUrls.entrySet()) {
-            connectionProviders.put(entry.getKey(), () -> DriverManager.getConnection(entry.getValue()));
+            runtimeDatabases.put(entry.getKey(), new RuntimeDatabaseConfiguration("H2", entry.getValue(), "", "", "org.h2.Driver"));
         }
-        return new MCPJdbcExecutionAdapter(connectionProviders);
+        return new MCPJdbcExecutionAdapter(runtimeDatabases);
     }
     
     private ExecutionRequest createExecutionRequest(final String databaseName, final String sql) {
