@@ -44,8 +44,9 @@ class PostgreSQLSQLFederationFunctionRegisterTest {
     void assertRegisterPgCatalogFunctions() {
         SchemaPlus schemaPlus = Frameworks.createRootSchema(true);
         register.registerFunction(schemaPlus, "pg_catalog");
-        assertFunction(schemaPlus.getFunctions("pg_table_is_visible"), "pgTableIsVisible");
-        assertFunction(schemaPlus.getFunctions("pg_get_userbyid"), "pgGetUserById");
+        assertFunction(schemaPlus.getFunctions("pg_table_is_visible"), PostgreSQLSystemFunction.class, "pgTableIsVisible");
+        assertFunction(schemaPlus.getFunctions("pg_get_userbyid"), PostgreSQLSystemFunction.class, "pgGetUserById");
+        assertFunction(schemaPlus.getFunctions("version"), PostgreSQLSystemFunction.class, "version");
     }
     
     @Test
@@ -54,12 +55,13 @@ class PostgreSQLSQLFederationFunctionRegisterTest {
         register.registerFunction(schemaPlus, "public");
         assertThat(schemaPlus.getFunctions("pg_table_is_visible").size(), is(0));
         assertThat(schemaPlus.getFunctions("pg_get_userbyid").size(), is(0));
+        assertTrue(schemaPlus.getFunctions("version").isEmpty());
     }
     
-    private void assertFunction(final Collection<Function> functions, final String expectedMethod) {
+    private void assertFunction(final Collection<Function> functions, final Class<?> expectedClass, final String expectedMethod) {
         assertThat(functions.size(), is(1));
         ScalarFunctionImpl actualFunction = (ScalarFunctionImpl) functions.iterator().next();
-        assertTrue(PostgreSQLSystemFunction.class.isAssignableFrom(actualFunction.method.getDeclaringClass()));
+        assertTrue(expectedClass.isAssignableFrom(actualFunction.method.getDeclaringClass()));
         assertThat(actualFunction.method.getName(), is(expectedMethod));
     }
 }

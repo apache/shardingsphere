@@ -47,4 +47,16 @@ public final class PostgreSQLSystemFunction {
     public static String pgGetUserById(final Long oid) {
         return "mock user";
     }
+    
+    /**
+     * Mock version function.
+     *
+     * @return PostgreSQL version string
+     */
+    @SuppressWarnings("unused")
+    public static String version() {
+        return "PostgreSQL "
+                + org.apache.shardingsphere.infra.version.ShardingSphereVersion.VERSION
+                + "-ShardingSphere-Proxy";
+    }
 }
