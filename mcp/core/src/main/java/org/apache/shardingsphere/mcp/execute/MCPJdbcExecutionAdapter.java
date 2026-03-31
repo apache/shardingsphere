@@ -56,7 +56,7 @@ public final class MCPJdbcExecutionAdapter {
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         Connection connection = null;
-        boolean closeConnection = false;
+        boolean needCloseConnection = false;
         try {
             try {
                 Optional<Connection> transactionConnection = transactionResourceManager.findTransactionConnection(executionRequest.getSessionId(), executionRequest.getDatabase());
@@ -64,7 +64,7 @@ public final class MCPJdbcExecutionAdapter {
                     connection = transactionConnection.get();
                 } else {
                     connection = openConnection(executionRequest.getDatabase());
-                    closeConnection = true;
+                    needCloseConnection = true;
                 }
             } catch (final IllegalStateException ex) {
                 return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
@@ -102,7 +102,7 @@ public final class MCPJdbcExecutionAdapter {
         } catch (final SQLException ex) {
             return ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, ex.getMessage());
         } finally {
-            if (closeConnection && null != connection) {
+            if (needCloseConnection && null != connection) {
                 try {
                     connection.close();
                 } catch (final SQLException ignored) {
@@ -151,5 +151,4 @@ public final class MCPJdbcExecutionAdapter {
         } catch (final SQLFeatureNotSupportedException ignored) {
         }
     }
-    
 }
