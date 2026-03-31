@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.session;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.Locale;
-import java.util.Optional;
 
 /**
  * Execute MCP transaction-control and savepoint commands.
@@ -34,28 +32,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class TransactionCommandExecutor {
     
-    private final DatabaseCapabilityAssembler capabilityAssembler;
-    
     private final MCPSessionManager sessionManager;
     
     private final MCPJdbcExecutionAdapter jdbcExecutionAdapter;
-    
-    /**
-     * Execute one transaction-control or savepoint command with pre-classified SQL metadata.
-     *
-     * @param sessionId session identifier
-     * @param databaseName logical database name
-     * @param databaseType database type
-     * @param classificationResult statement classification result
-     * @return execution response
-     */
-    public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final String databaseType, final ClassificationResult classificationResult) {
-        Optional<DatabaseCapability> databaseCapability = capabilityAssembler.assembleDatabaseCapability(databaseName, databaseType);
-        if (databaseCapability.isEmpty()) {
-            return ExecuteQueryResponse.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
-        }
-        return execute(sessionId, databaseName, databaseCapability.get(), classificationResult);
-    }
     
     /**
      * Execute one transaction-control or savepoint command with resolved database capability.

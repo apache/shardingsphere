@@ -192,7 +192,7 @@ class ExecuteQueryFacadeTest {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
-                new TransactionCommandExecutor(capabilityAssembler, sessionManager, jdbcExecutionAdapter),
+                new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter),
                 jdbcExecutionAdapter, auditRecorder, metadataRefreshCoordinator);
     }
     

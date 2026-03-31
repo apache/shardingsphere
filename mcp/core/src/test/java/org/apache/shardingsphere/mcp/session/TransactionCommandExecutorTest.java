@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.mcp.session;
 
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityAssembler;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,6 +31,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -49,9 +52,9 @@ class TransactionCommandExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         prepareTransactionState(sessionManager, sql);
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify(sql));
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify(sql));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getStatementType(), is(expectedStatementType));
@@ -75,9 +78,9 @@ class TransactionCommandExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
         sessionManager.beginTransaction("session-1", "warehouse");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", "Hive", new StatementClassifier().classify("SAVEPOINT sp_1"));
+        ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -90,9 +93,9 @@ class TransactionCommandExecutorTest {
         MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("BEGIN"));
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getStatementType(), is("BEGIN"));
@@ -105,9 +108,9 @@ class TransactionCommandExecutorTest {
         MCPJdbcExecutionAdapter jdbcExecutionAdapter = mock(MCPJdbcExecutionAdapter.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("SELECT 1"));
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -121,9 +124,9 @@ class TransactionCommandExecutorTest {
         doThrow(new IllegalStateException("Transaction is not active.")).when(jdbcExecutionAdapter).commitTransaction("session-1");
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(createCapabilityAssembler(), sessionManager, jdbcExecutionAdapter);
+        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", "MySQL", new StatementClassifier().classify("COMMIT"));
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT"));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -142,7 +145,13 @@ class TransactionCommandExecutorTest {
     }
     
     private DatabaseCapabilityAssembler createCapabilityAssembler() {
-        return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Collections.emptyMap()));
+        return new DatabaseCapabilityAssembler(new DatabaseMetadataSnapshots(Map.of(
+                "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
+                "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
+    }
+    
+    private DatabaseCapability createCapability(final String databaseName) {
+        return createCapabilityAssembler().assembleDatabaseCapability(databaseName).orElseThrow(IllegalStateException::new);
     }
     
     private void assertDatabaseExecution(final String sql, final MCPJdbcExecutionAdapter jdbcExecutionAdapter) {
