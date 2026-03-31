@@ -17,13 +17,21 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+
+import java.util.function.Consumer;
 
 /**
  * Database execution backend.
  */
-public interface DatabaseExecutionBackend {
+@RequiredArgsConstructor
+public final class DatabaseExecutionBackend {
+    
+    private final ShardingSphereExecutionAdapter executionAdapter;
+    
+    private final Consumer<String> metadataRefresher;
     
     /**
      * Execute one classified request.
@@ -33,7 +41,9 @@ public interface DatabaseExecutionBackend {
      * @param databaseCapability resolved database capability
      * @return execution response
      */
-    ExecuteQueryResponse execute(ExecutionRequest executionRequest, ClassificationResult classificationResult, DatabaseCapability databaseCapability);
+    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult, final DatabaseCapability databaseCapability) {
+        return executionAdapter.execute(executionRequest, classificationResult);
+    }
     
     /**
      * Begin one transaction on the backend.
@@ -41,21 +51,27 @@ public interface DatabaseExecutionBackend {
      * @param sessionId session identifier
      * @param databaseName logical database name
      */
-    void beginTransaction(String sessionId, String databaseName);
+    public void beginTransaction(final String sessionId, final String databaseName) {
+        executionAdapter.beginTransaction(sessionId, databaseName);
+    }
     
     /**
      * Commit one backend transaction.
      *
      * @param sessionId session identifier
      */
-    void commitTransaction(String sessionId);
+    public void commitTransaction(final String sessionId) {
+        executionAdapter.commitTransaction(sessionId);
+    }
     
     /**
      * Roll back one backend transaction.
      *
      * @param sessionId session identifier
      */
-    void rollbackTransaction(String sessionId);
+    public void rollbackTransaction(final String sessionId) {
+        executionAdapter.rollbackTransaction(sessionId);
+    }
     
     /**
      * Create one backend savepoint.
@@ -63,7 +79,9 @@ public interface DatabaseExecutionBackend {
      * @param sessionId session identifier
      * @param savepointName savepoint name
      */
-    void createSavepoint(String sessionId, String savepointName);
+    public void createSavepoint(final String sessionId, final String savepointName) {
+        executionAdapter.createSavepoint(sessionId, savepointName);
+    }
     
     /**
      * Roll back one backend savepoint.
@@ -71,7 +89,9 @@ public interface DatabaseExecutionBackend {
      * @param sessionId session identifier
      * @param savepointName savepoint name
      */
-    void rollbackToSavepoint(String sessionId, String savepointName);
+    public void rollbackToSavepoint(final String sessionId, final String savepointName) {
+        executionAdapter.rollbackToSavepoint(sessionId, savepointName);
+    }
     
     /**
      * Release one backend savepoint.
@@ -79,19 +99,25 @@ public interface DatabaseExecutionBackend {
      * @param sessionId session identifier
      * @param savepointName savepoint name
      */
-    void releaseSavepoint(String sessionId, String savepointName);
+    public void releaseSavepoint(final String sessionId, final String savepointName) {
+        executionAdapter.releaseSavepoint(sessionId, savepointName);
+    }
     
     /**
      * Refresh backend metadata after committed changes.
      *
      * @param databaseName logical database name
      */
-    void refreshMetadata(String databaseName);
+    public void refreshMetadata(final String databaseName) {
+        metadataRefresher.accept(databaseName);
+    }
     
     /**
      * Close one backend session and release resources.
      *
      * @param sessionId session identifier
      */
-    void closeSession(String sessionId);
+    public void closeSession(final String sessionId) {
+        executionAdapter.closeSession(sessionId);
+    }
 }

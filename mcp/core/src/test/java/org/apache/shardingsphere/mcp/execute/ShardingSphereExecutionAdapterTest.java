@@ -36,6 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.mock;
 
 class ShardingSphereExecutionAdapterTest {
     
@@ -51,6 +52,18 @@ class ShardingSphereExecutionAdapterTest {
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
+    }
+    
+    @Test
+    void assertExecuteQueryWithTruncation() throws SQLException {
+        String jdbcUrl = createJdbcUrl("adapter-query-truncation");
+        initializeDatabase(jdbcUrl);
+        ShardingSphereExecutionAdapter adapter = createAdapter(Map.of("logic_db", jdbcUrl));
+        ExecuteQueryResponse actual = adapter.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id", 1),
+                new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
+        assertThat(actual.getRows().size(), is(1));
+        assertFalse(actual.isTruncated());
     }
     
     @Test
@@ -171,7 +184,11 @@ class ShardingSphereExecutionAdapterTest {
     }
     
     private ExecutionRequest createExecutionRequest(final String databaseName, final String sql) {
-        return new ExecutionRequest("session-1", databaseName, "public", sql, 10, 1000, new FixtureDatabaseExecutionBackend(Map.of(), Map.of()));
+        return createExecutionRequest(databaseName, sql, 10);
+    }
+    
+    private ExecutionRequest createExecutionRequest(final String databaseName, final String sql, final int maxRows) {
+        return new ExecutionRequest("session-1", databaseName, "public", sql, maxRows, 1000, mock(DatabaseExecutionBackend.class));
     }
     
     private String createJdbcUrl(final String databaseName) {

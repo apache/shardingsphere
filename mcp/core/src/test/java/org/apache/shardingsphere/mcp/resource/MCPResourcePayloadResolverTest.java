@@ -19,10 +19,9 @@ package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
-import org.apache.shardingsphere.mcp.execute.FixtureDatabaseExecutionBackend;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MCPResourcePayloadResolverTest {
     
@@ -84,8 +84,8 @@ class MCPResourcePayloadResolverTest {
     }
     
     private MCPResourcePayloadResolver createResolver() {
-        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(),
-                new FixtureDatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap())));
+        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        return new MCPResourcePayloadResolver(new MCPRuntimeContextTestBuilder().build(createDatabaseMetadataSnapshots(), databaseExecutionBackend));
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {

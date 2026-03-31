@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.execute.FixtureDatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MCPToolCatalogTest {
     
@@ -100,7 +100,7 @@ class MCPToolCatalogTest {
     
     @Test
     void assertCreateExecutionRequest() {
-        DatabaseExecutionBackend databaseExecutionBackend = new FixtureDatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap());
+        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
         
         ExecutionRequest actual = toolCatalog.createExecutionRequest("session-id",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1", "max_rows", "20", "timeout_ms", 3000), databaseExecutionBackend);

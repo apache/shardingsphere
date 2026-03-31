@@ -34,8 +34,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -45,6 +43,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class ExecuteQueryFacadeTest {
     
@@ -94,116 +97,137 @@ class ExecuteQueryFacadeTest {
     @Test
     void assertExecuteWithUnknownCapability() {
         ExecuteQueryFacade facade = createFacade("Unknown", new MCPSessionManager(), new AuditRecorder());
+        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10, databaseExecutionBackend));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.NOT_FOUND));
+        verifyNoInteractions(databaseExecutionBackend);
     }
     
     @Test
     void assertExecuteQueryWithTruncation() {
         ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
+        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseExecutionBackend(createResultSetResponse(1, true));
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1, databaseExecutionBackend));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
+        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class), any());
     }
     
     @Test
     void assertExecuteUpdate() {
         ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
+        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseExecutionBackend(ExecuteQueryResponse.updateCount("UPDATE", 3));
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10, databaseExecutionBackend));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(3));
+        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class), any());
     }
     
     @Test
     void assertExecuteTransactionCommand() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, new AuditRecorder());
+        DatabaseExecutionBackend transactionBackend = mock(DatabaseExecutionBackend.class);
+        ExecuteQueryFacade facade = createFacade("MySQL", sessionManager, new AuditRecorder(), transactionBackend);
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10, mock(DatabaseExecutionBackend.class)));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMessage(), is("Transaction started."));
+        verify(transactionBackend).beginTransaction("session-1", "logic_db");
     }
     
     @Test
     void assertExecuteDdl() {
         ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
+        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseExecutionBackend(ExecuteQueryResponse.statementAck("CREATE", "Statement executed."));
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10, databaseExecutionBackend));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
+        verify(databaseExecutionBackend).refreshMetadata("logic_db");
     }
     
     @Test
     void assertExecuteDcl() {
         ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
+        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseExecutionBackend(ExecuteQueryResponse.statementAck("GRANT", "Statement executed."));
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10, databaseExecutionBackend));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
+        verify(databaseExecutionBackend).refreshMetadata("logic_db");
     }
     
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
         ExecuteQueryFacade facade = createFacade("MySQL", new MCPSessionManager(), new AuditRecorder());
+        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10, databaseExecutionBackend));
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
         assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
+        verifyNoInteractions(databaseExecutionBackend);
     }
     
     @Test
     void assertExecuteExplainAnalyzeWithSupportedCapability() {
         ExecuteQueryFacade facade = createFacade("H2", new MCPSessionManager(), new AuditRecorder());
+        DatabaseExecutionBackend databaseExecutionBackend = createDatabaseExecutionBackend(createResultSetResponse(2, false));
         
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10, databaseExecutionBackend));
         
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
+        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class), any());
     }
     
     private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder) {
+        return createFacade(databaseType, sessionManager, auditRecorder, mock(DatabaseExecutionBackend.class));
+    }
+    
+    private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder,
+                                            final DatabaseExecutionBackend databaseExecutionBackend) {
         DatabaseCapabilityAssembler capabilityAssembler = new DatabaseCapabilityAssembler(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
         return new ExecuteQueryFacade(new StatementClassifier(), capabilityAssembler,
-                new TransactionCommandExecutor(capabilityAssembler, sessionManager, new FixtureDatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap())),
+                new TransactionCommandExecutor(capabilityAssembler, sessionManager, databaseExecutionBackend),
                 auditRecorder);
     }
     
-    private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
-        return new ExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000, createRuntime());
+    private ExecutionRequest createExecutionRequest(final String sql, final int maxRows, final DatabaseExecutionBackend databaseExecutionBackend) {
+        return new ExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000, databaseExecutionBackend);
     }
     
-    private DatabaseExecutionBackend createRuntime() {
-        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
-        columns.add(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false));
-        columns.add(new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
-        LinkedList<List<Object>> rows = new LinkedList<>();
-        rows.add(new LinkedList<>(List.of(1, "NEW")));
-        rows.add(new LinkedList<>(List.of(2, "DONE")));
-        Map<String, QueryResult> queryResults = new LinkedHashMap<>();
-        queryResults.put("logic_db:orders", new QueryResult(columns, new LinkedList<>(rows)));
-        Map<String, Integer> updateCounts = new LinkedHashMap<>();
-        updateCounts.put("logic_db:orders", 3);
-        return new FixtureDatabaseExecutionBackend(queryResults, updateCounts);
+    private DatabaseExecutionBackend createDatabaseExecutionBackend(final ExecuteQueryResponse response) {
+        DatabaseExecutionBackend result = mock(DatabaseExecutionBackend.class);
+        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class), any())).thenReturn(response);
+        return result;
+    }
+    
+    private ExecuteQueryResponse createResultSetResponse(final int rowCount, final boolean truncated) {
+        List<ExecuteQueryColumnDefinition> columns = List.of(
+                new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false),
+                new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
+        List<List<Object>> rows = 1 == rowCount ? List.of(List.of(1, "NEW")) : List.of(List.of(1, "NEW"), List.of(2, "DONE"));
+        return ExecuteQueryResponse.resultSet(columns, rows, truncated);
     }
 }

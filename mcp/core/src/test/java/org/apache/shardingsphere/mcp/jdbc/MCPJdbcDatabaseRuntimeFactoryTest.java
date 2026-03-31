@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPJdbcDatabaseExecutionBackendFactoryTest {
+class MCPJdbcDatabaseRuntimeFactoryTest {
     
     @TempDir
     private Path tempDir;

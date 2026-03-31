@@ -19,10 +19,11 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestBuilder;
+import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
-import org.apache.shardingsphere.mcp.execute.FixtureDatabaseExecutionBackend;
-import org.apache.shardingsphere.mcp.execute.QueryResult;
+import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -30,7 +31,6 @@ import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +39,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MCPToolPayloadResolverTest {
     
@@ -123,14 +126,12 @@ class MCPToolPayloadResolverTest {
     }
     
     private DatabaseExecutionBackend createDatabaseExecutionBackend() {
-        LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
-        columns.add(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false));
-        columns.add(new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
-        LinkedList<List<Object>> rows = new LinkedList<>();
-        rows.add(new LinkedList<>(List.of(1, "NEW")));
-        rows.add(new LinkedList<>(List.of(2, "DONE")));
-        Map<String, QueryResult> queryResults = new LinkedHashMap<>();
-        queryResults.put("logic_db:orders", new QueryResult(columns, rows));
-        return new FixtureDatabaseExecutionBackend(queryResults, Map.of());
+        DatabaseExecutionBackend result = mock(DatabaseExecutionBackend.class);
+        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class), any())).thenReturn(
+                ExecuteQueryResponse.resultSet(List.of(
+                        new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false),
+                        new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true)),
+                        List.of(List.of(1, "NEW")), true));
+        return result;
     }
 }

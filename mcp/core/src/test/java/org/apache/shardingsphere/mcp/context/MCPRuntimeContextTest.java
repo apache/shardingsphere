@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
-import org.apache.shardingsphere.mcp.execute.FixtureDatabaseExecutionBackend;
+import org.apache.shardingsphere.mcp.execute.DatabaseExecutionBackend;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +26,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 class MCPRuntimeContextTest {
     
@@ -52,7 +53,7 @@ class MCPRuntimeContextTest {
     }
     
     private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContextTestBuilder().build(new DatabaseMetadataSnapshots(Collections.emptyMap()),
-                new FixtureDatabaseExecutionBackend(Collections.emptyMap(), Collections.emptyMap()));
+        DatabaseExecutionBackend databaseExecutionBackend = mock(DatabaseExecutionBackend.class);
+        return new MCPRuntimeContextTestBuilder().build(new DatabaseMetadataSnapshots(Collections.emptyMap()), databaseExecutionBackend);
     }
 }
