@@ -56,9 +56,6 @@ public final class DatabaseCapabilityAssembler {
      * @return database-level capability when the database type is supported
      */
     public Optional<DatabaseCapability> assembleDatabaseCapability(final String databaseName) {
-        if (null == databaseMetadataSnapshots) {
-            return Optional.empty();
-        }
         Optional<String> databaseType = databaseMetadataSnapshots.findDatabaseType(databaseName);
         return databaseType.isPresent() ? assembleDatabaseCapability(databaseName, databaseType.get()) : Optional.empty();
     }
@@ -75,9 +72,6 @@ public final class DatabaseCapabilityAssembler {
     }
     
     private String getDatabaseVersion(final String databaseName) {
-        if (null == databaseMetadataSnapshots) {
-            return "";
-        }
         Optional<DatabaseMetadataSnapshot> databaseSnapshot = databaseMetadataSnapshots.findSnapshot(databaseName);
         return databaseSnapshot.map(DatabaseMetadataSnapshot::getDatabaseVersion).orElse("");
     }

@@ -31,9 +31,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseCapabilityAssemblerTest {
@@ -98,11 +96,6 @@ class DatabaseCapabilityAssemblerTest {
     @Test
     void assertAssembleDatabaseCapabilityWithUnknownDatabaseType() {
         assertFalse(createAssembler().assembleDatabaseCapability("logic_db", "unknown").isPresent());
-    }
-    
-    @Test
-    void assertConstructWithNullMetadataCatalog() {
-        assertNotNull(assertDoesNotThrow(() -> new DatabaseCapabilityAssembler(null)));
     }
     
     private DatabaseCapabilityAssembler createAssembler() {
