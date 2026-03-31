@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 
 import java.util.Map;
 
@@ -53,7 +52,6 @@ public final class MCPRuntimeContextBuilder {
         MCPJdbcExecutionAdapter jdbcExecutionAdapter = new MCPJdbcExecutionAdapter(runtimeDatabases);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        MetadataToolDispatcher metadataToolDispatcher = new MetadataToolDispatcher();
         MCPToolCatalog toolCatalog = new MCPToolCatalog();
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, jdbcExecutionAdapter);
         AuditRecorder auditRecorder = new AuditRecorder();
@@ -62,6 +60,6 @@ public final class MCPRuntimeContextBuilder {
                 transactionCommandExecutor, jdbcExecutionAdapter, auditRecorder, metadataRefreshCoordinator);
         MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
         return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, jdbcExecutionAdapter, capabilityBuilder,
-                new MetadataResourceLoader(), metadataToolDispatcher, toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
+                new MetadataResourceLoader(), toolCatalog, transactionCommandExecutor, auditRecorder, executeQueryFacade, payloadBuilder);
     }
 }
