@@ -22,10 +22,11 @@ import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * Load normalized metadata resources for the MCP public object model.
@@ -43,11 +44,11 @@ public final class MetadataResourceLoader {
         if (MetadataObjectType.DATABASE == resourceRequest.getObjectType()) {
             return ResourceLoadResult.success(filterDatabases(databaseMetadataSnapshots, resourceRequest));
         }
-        Optional<DatabaseCapability> databaseCapability = resolveDatabaseCapability(databaseMetadataSnapshots, resourceRequest.getDatabase());
-        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(databaseCapability, MetadataObjectType.INDEX)) {
+        Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseMetadataSnapshots, resourceRequest.getDatabase());
+        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(supportedMetadataObjectTypes, MetadataObjectType.INDEX)) {
             return ResourceLoadResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
-        return ResourceLoadResult.success(filterMetadataObjects(databaseMetadataSnapshots, resourceRequest, databaseCapability));
+        return ResourceLoadResult.success(filterMetadataObjects(databaseMetadataSnapshots, resourceRequest, supportedMetadataObjectTypes));
     }
     
     private List<MetadataObject> filterDatabases(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest) {
@@ -60,13 +61,14 @@ public final class MetadataResourceLoader {
         return sortMetadataObjects(result);
     }
     
-    private Optional<DatabaseCapability> resolveDatabaseCapability(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
+    private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
         databaseMetadataSnapshots.findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        return new MCPCapabilityBuilder(databaseMetadataSnapshots).assembleDatabaseCapability(databaseName);
+        return new MCPCapabilityBuilder(databaseMetadataSnapshots).assembleDatabaseCapability(databaseName)
+                .map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
     }
     
     private List<MetadataObject> filterMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest,
-                                                       final Optional<DatabaseCapability> databaseCapability) {
+                                                       final Set<MetadataObjectType> supportedMetadataObjectTypes) {
         List<MetadataObject> result = new LinkedList<>();
         for (MetadataObject each : databaseMetadataSnapshots.getMetadataObjects()) {
             if (!resourceRequest.getDatabase().equals(each.getDatabase())) {
@@ -87,15 +89,15 @@ public final class MetadataResourceLoader {
             if (!resourceRequest.getParentObjectName().isEmpty() && !resourceRequest.getParentObjectName().equals(each.getParentObjectName())) {
                 continue;
             }
-            if (supportsObjectType(databaseCapability, each.getObjectType())) {
+            if (supportsObjectType(supportedMetadataObjectTypes, each.getObjectType())) {
                 result.add(each);
             }
         }
         return sortMetadataObjects(result);
     }
     
-    private boolean supportsObjectType(final Optional<DatabaseCapability> databaseCapability, final MetadataObjectType metadataObjectType) {
-        return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(metadataObjectType);
+    private boolean supportsObjectType(final Set<MetadataObjectType> supportedMetadataObjectTypes, final MetadataObjectType metadataObjectType) {
+        return supportedMetadataObjectTypes.contains(metadataObjectType);
     }
     
     private List<MetadataObject> sortMetadataObjects(final Collection<MetadataObject> metadataObjects) {
