@@ -42,9 +42,9 @@ public final class ExecuteQueryFacade {
     
     private final MCPJdbcExecutionAdapter jdbcExecutionAdapter;
     
-    private final AuditRecorder auditRecorder;
-    
     private final MetadataRefreshCoordinator metadataRefreshCoordinator;
+    
+    private final AuditRecorder auditRecorder =  new AuditRecorder();
     
     /**
      * Execute one MCP SQL request.

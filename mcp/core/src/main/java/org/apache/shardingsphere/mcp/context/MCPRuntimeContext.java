@@ -19,13 +19,11 @@ package org.apache.shardingsphere.mcp.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcExecutionAdapter;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
 
@@ -44,11 +42,7 @@ public final class MCPRuntimeContext {
     
     private final MCPCapabilityBuilder capabilityBuilder;
     
-    private final MetadataResourceLoader metadataResourceLoader;
-    
     private final TransactionCommandExecutor transactionCommandExecutor;
-    
-    private final AuditRecorder auditRecorder;
     
     private final ExecuteQueryFacade executeQueryFacade;
     

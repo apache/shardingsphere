@@ -34,9 +34,7 @@ class MCPRuntimeContextTest {
     void assertCreate() {
         MCPRuntimeContext actual = createRuntimeContext();
         assertNotNull(actual.getCapabilityBuilder());
-        assertNotNull(actual.getMetadataResourceLoader());
         assertNotNull(actual.getTransactionCommandExecutor());
-        assertNotNull(actual.getAuditRecorder());
         assertNotNull(actual.getExecuteQueryFacade());
         assertNotNull(actual.getPayloadBuilder());
     }
