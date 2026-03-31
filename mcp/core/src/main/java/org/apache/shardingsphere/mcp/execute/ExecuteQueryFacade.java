@@ -108,8 +108,7 @@ public final class ExecuteQueryFacade {
     
     private ExecuteQueryResponse recordResult(final ExecutionRequest executionRequest, final ExecuteQueryResponse response, final String transactionMarker) {
         if (response.isSuccessful()) {
-            auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(),
-                    executionRequest.getSql(), true, transactionMarker);
+            auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, transactionMarker);
             return response;
         }
         MCPErrorCode errorCode = response.getError().get().getErrorCode();
@@ -119,8 +118,7 @@ public final class ExecuteQueryFacade {
     
     private ExecuteQueryResponse recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final MCPErrorCode errorCode, final String message) {
         ExecuteQueryResponse result = ExecuteQueryResponse.error(errorCode, message);
-        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(),
-                executionRequest.getSql(), false, errorCode, transactionMarker);
+        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, errorCode, transactionMarker);
         return result;
     }
 }
