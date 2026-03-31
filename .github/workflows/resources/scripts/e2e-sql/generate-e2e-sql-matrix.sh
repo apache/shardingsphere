@@ -63,7 +63,7 @@ ALL_SCENARIOS=$(jq -cn '[
 ALL_ADAPTERS='["proxy","jdbc"]'
 ALL_MODES='["Standalone","Cluster"]'
 ALL_DATABASES='["MySQL","PostgreSQL"]'
-SMOKE_SCENARIOS='["tbl"]'
+SMOKE_SCENARIOS='["db","tbl"]'
 
 # Build matrix JSON from dimension arrays and scenarios, applying exclude/include rules
 build_matrix() {

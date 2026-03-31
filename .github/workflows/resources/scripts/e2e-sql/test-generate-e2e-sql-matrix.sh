@@ -138,7 +138,7 @@ assert_full_trigger() {
   assert_eq "$label: has-jobs" "true" "$(get_output "$outputs" "has-jobs")"
   local smoke_matrix
   smoke_matrix=$(get_output "$outputs" "smoke-matrix")
-  assert_scenarios "$label: smoke-matrix uses default scenario" "$smoke_matrix" '["tbl"]'
+  assert_scenarios "$label: smoke-matrix uses default scenarios" "$smoke_matrix" '["db","tbl"]'
   local full_matrix
   full_matrix=$(get_output "$outputs" "full-matrix")
   assert_all_scenarios "$label: full-matrix has all 21 scenarios" "$full_matrix"
