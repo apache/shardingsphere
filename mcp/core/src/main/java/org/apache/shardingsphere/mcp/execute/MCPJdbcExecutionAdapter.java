@@ -186,8 +186,7 @@ public final class MCPJdbcExecutionAdapter {
      */
     public void rollbackToSavepoint(final String sessionId, final String savepointName) {
         SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
-        Savepoint savepoint = sessionConnectionContext.findSavepoint(savepointName)
-                .orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
+        Savepoint savepoint = sessionConnectionContext.findSavepoint(savepointName).orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
         try {
             sessionConnectionContext.getConnection().rollback(savepoint);
         } catch (final SQLException ex) {
@@ -204,8 +203,7 @@ public final class MCPJdbcExecutionAdapter {
      */
     public void releaseSavepoint(final String sessionId, final String savepointName) {
         SessionConnectionContext sessionConnectionContext = getRequiredSessionConnection(sessionId);
-        Savepoint savepoint = sessionConnectionContext.findSavepoint(savepointName)
-                .orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
+        Savepoint savepoint = sessionConnectionContext.findSavepoint(savepointName).orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
         try {
             sessionConnectionContext.getConnection().releaseSavepoint(savepoint);
             sessionConnectionContext.removeSavepoint(savepointName);
