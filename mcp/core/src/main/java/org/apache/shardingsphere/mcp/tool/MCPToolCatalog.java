@@ -30,9 +30,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Core MCP tool catalog and contract normalization.
+ * MCP tool catalog.
  */
 public final class MCPToolCatalog {
     
@@ -49,9 +50,9 @@ public final class MCPToolCatalog {
             ToolDefinition.GET_CAPABILITIES,
             ToolDefinition.EXECUTE_QUERY);
     
-    private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS = createSupportedToolDescriptors();
+    private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS = SUPPORTED_TOOLS.stream().map(ToolDefinition::getDescriptor).collect(Collectors.toList());
     
-    private static final List<String> SUPPORTED_TOOL_NAMES = createSupportedToolNames();
+    private static final List<String> SUPPORTED_TOOL_NAMES = SUPPORTED_TOOL_DESCRIPTORS.stream().map(MCPToolDescriptor::getName).collect(Collectors.toList());
     
     /**
      * Get supported tool names.
@@ -163,22 +164,6 @@ public final class MCPToolCatalog {
     
     private IllegalStateException createUnknownToolException(final String toolName) {
         return new IllegalStateException(String.format("Unknown MCP tool `%s`.", toolName));
-    }
-    
-    private static List<MCPToolDescriptor> createSupportedToolDescriptors() {
-        List<MCPToolDescriptor> result = new ArrayList<>(SUPPORTED_TOOLS.size());
-        for (ToolDefinition each : SUPPORTED_TOOLS) {
-            result.add(each.getDescriptor());
-        }
-        return List.copyOf(result);
-    }
-    
-    private static List<String> createSupportedToolNames() {
-        List<String> result = new ArrayList<>(SUPPORTED_TOOL_DESCRIPTORS.size());
-        for (MCPToolDescriptor each : SUPPORTED_TOOL_DESCRIPTORS) {
-            result.add(each.getName());
-        }
-        return List.copyOf(result);
     }
     
     private static ToolRequest createPagedMetadataToolRequest(final String toolName, final Map<String, Object> arguments) {
