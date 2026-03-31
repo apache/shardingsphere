@@ -118,7 +118,7 @@ class ExecuteQueryFacadeTest {
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
-        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class), any());
+        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
     }
     
     @Test
@@ -131,7 +131,7 @@ class ExecuteQueryFacadeTest {
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(3));
-        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class), any());
+        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
     }
     
     @Test
@@ -197,7 +197,7 @@ class ExecuteQueryFacadeTest {
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
-        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class), any());
+        verify(databaseExecutionBackend).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
     }
     
     private ExecuteQueryFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final AuditRecorder auditRecorder) {
@@ -219,7 +219,7 @@ class ExecuteQueryFacadeTest {
     
     private DatabaseExecutionBackend createDatabaseExecutionBackend(final ExecuteQueryResponse response) {
         DatabaseExecutionBackend result = mock(DatabaseExecutionBackend.class);
-        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class), any())).thenReturn(response);
+        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class))).thenReturn(response);
         return result;
     }
     

@@ -71,31 +71,30 @@ public final class ExecuteQueryFacade {
                         executionRequest.getDatabase(), actualDatabaseCapability, classificationResult),
                         classificationResult.getStatementType());
             case QUERY:
-                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, actualDatabaseCapability),
+                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             case DML:
-                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, actualDatabaseCapability),
+                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             case DDL:
-                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, actualDatabaseCapability),
+                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             case DCL:
-                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, actualDatabaseCapability),
+                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             case EXPLAIN_ANALYZE:
                 if (!actualDatabaseCapability.isSupportsExplainAnalyze()) {
                     return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
                 }
-                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, actualDatabaseCapability),
+                return recordResult(executionRequest, executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult),
                         classificationResult.getStatementType());
             default:
                 return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
     }
     
-    private ExecuteQueryResponse executeAndRefreshMetadata(final ExecutionRequest executionRequest, final ClassificationResult classificationResult,
-                                                           final DatabaseCapability databaseCapability) {
-        ExecuteQueryResponse result = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult, databaseCapability);
+    private ExecuteQueryResponse executeAndRefreshMetadata(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+        ExecuteQueryResponse result = executionRequest.getDatabaseExecutionBackend().execute(executionRequest, classificationResult);
         if (result.isSuccessful()) {
             executionRequest.getDatabaseExecutionBackend().refreshMetadata(executionRequest.getDatabase());
         }

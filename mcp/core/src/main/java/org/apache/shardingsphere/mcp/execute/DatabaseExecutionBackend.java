@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 import java.util.function.Consumer;
@@ -38,10 +37,9 @@ public final class DatabaseExecutionBackend {
      *
      * @param executionRequest execution request
      * @param classificationResult classification result
-     * @param databaseCapability resolved database capability
      * @return execution response
      */
-    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult, final DatabaseCapability databaseCapability) {
+    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         return executionAdapter.execute(executionRequest, classificationResult);
     }
     

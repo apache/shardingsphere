@@ -127,7 +127,7 @@ class MCPToolPayloadResolverTest {
     
     private DatabaseExecutionBackend createDatabaseExecutionBackend() {
         DatabaseExecutionBackend result = mock(DatabaseExecutionBackend.class);
-        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class), any())).thenReturn(
+        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class))).thenReturn(
                 ExecuteQueryResponse.resultSet(List.of(
                         new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false),
                         new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true)),
