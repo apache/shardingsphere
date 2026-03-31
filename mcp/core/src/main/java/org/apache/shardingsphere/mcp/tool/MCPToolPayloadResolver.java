@@ -35,6 +35,8 @@ public final class MCPToolPayloadResolver {
     
     private final MCPRuntimeContext runtimeContext;
     
+    MCPToolCatalog toolCatalog = new MCPToolCatalog();
+    
     /**
      * Resolve one tool call.
      *
@@ -44,7 +46,7 @@ public final class MCPToolPayloadResolver {
      * @return payload result
      */
     public MCPToolPayloadResult resolve(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        if (!runtimeContext.getToolCatalog().contains(toolName)) {
+        if (!toolCatalog.contains(toolName)) {
             return error("invalid_request", "Unsupported tool.");
         }
         switch (toolName) {
@@ -58,7 +60,7 @@ public final class MCPToolPayloadResolver {
     }
     
     private MCPToolPayloadResult resolveGetCapabilities(final Map<String, Object> arguments) {
-        String database = runtimeContext.getToolCatalog().getCapabilityDatabase(arguments);
+        String database = toolCatalog.getCapabilityDatabase(arguments);
         if (database.isEmpty()) {
             return MCPToolPayloadResult.success(runtimeContext.getCapabilityBuilder().assembleServiceCapability());
         }
@@ -68,7 +70,7 @@ public final class MCPToolPayloadResolver {
     }
     
     private MCPToolPayloadResult resolveExecuteQuery(final String sessionId, final Map<String, Object> arguments) {
-        ExecutionRequest executionRequest = runtimeContext.getToolCatalog().createExecutionRequest(sessionId, arguments);
+        ExecutionRequest executionRequest = toolCatalog.createExecutionRequest(sessionId, arguments);
         if (executionRequest.getDatabase().isEmpty() || executionRequest.getSql().isEmpty()) {
             return error("invalid_request", "Database and sql are required.");
         }
@@ -81,7 +83,7 @@ public final class MCPToolPayloadResolver {
     
     private MCPToolPayloadResult resolveMetadataTool(final String toolName, final Map<String, Object> arguments) {
         ToolDispatchResult result = new MetadataToolDispatcher().dispatch(
-                runtimeContext.getDatabaseMetadataSnapshots(), runtimeContext.getToolCatalog().createMetadataToolRequest(toolName, arguments));
+                runtimeContext.getDatabaseMetadataSnapshots(), toolCatalog.createMetadataToolRequest(toolName, arguments));
         if (!result.isSuccessful()) {
             return error(runtimeContext.getPayloadBuilder().toDomainErrorCode(result.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), result.getMessage());
         }

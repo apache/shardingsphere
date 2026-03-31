@@ -44,7 +44,7 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        toolCatalog = runtimeContext.getToolCatalog();
+        toolCatalog = new MCPToolCatalog();
         toolCallHandler = new MCPToolCallHandler(new MCPToolPayloadResolver(runtimeContext));
         mcpToolJsonSchemaAdapter = new MCPToolJsonSchemaAdapter();
     }

@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
-import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
 /**
  * MCP runtime context.
@@ -46,8 +45,6 @@ public final class MCPRuntimeContext {
     private final MCPCapabilityBuilder capabilityBuilder;
     
     private final MetadataResourceLoader metadataResourceLoader;
-    
-    private final MCPToolCatalog toolCatalog;
     
     private final TransactionCommandExecutor transactionCommandExecutor;
     
