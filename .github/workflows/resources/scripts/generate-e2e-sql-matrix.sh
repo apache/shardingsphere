@@ -258,16 +258,19 @@ fi
 
 if [ "$feature_distsql" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "distsql_rdl"
   add_scenario "distsql_rdl"
 fi
 
 if [ "$feature_sql_federation" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "db_tbl_sql_federation"
   add_scenario "db_tbl_sql_federation"
 fi
 
 if [ "$feature_broadcast" = "true" ]; then
   any_feature_triggered=true
+  add_smoke_scenario "empty_rules"
   add_scenario "empty_rules"
 fi
 

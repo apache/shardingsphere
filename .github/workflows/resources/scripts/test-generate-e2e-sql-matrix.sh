@@ -307,7 +307,7 @@ echo ""
 echo "--- #18: feature_distsql ---"
 outputs=$(run_script "$(build_filters feature_distsql=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
-assert_scenarios "#18: distsql smoke fallback scenarios" "$smoke" '["tbl"]'
+assert_scenarios "#18: distsql smoke scenarios" "$smoke" '["distsql_rdl"]'
 full=$(get_output "$outputs" "full-matrix")
 assert_scenarios "#18: distsql scenarios" "$full" '["distsql_rdl"]'
 assert_all_dimensions "#18" "$full"
@@ -316,7 +316,7 @@ echo ""
 echo "--- #19: feature_sql_federation ---"
 outputs=$(run_script "$(build_filters feature_sql_federation=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
-assert_scenarios "#19: sql_federation smoke fallback scenarios" "$smoke" '["tbl"]'
+assert_scenarios "#19: sql_federation smoke scenarios" "$smoke" '["db_tbl_sql_federation"]'
 full=$(get_output "$outputs" "full-matrix")
 assert_scenarios "#19: sql_federation scenarios" "$full" '["db_tbl_sql_federation"]'
 assert_all_dimensions "#19" "$full"
@@ -325,7 +325,7 @@ echo ""
 echo "--- #20: feature_broadcast ---"
 outputs=$(run_script "$(build_filters feature_broadcast=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
-assert_scenarios "#20: broadcast smoke fallback scenarios" "$smoke" '["tbl"]'
+assert_scenarios "#20: broadcast smoke scenarios" "$smoke" '["empty_rules"]'
 full=$(get_output "$outputs" "full-matrix")
 assert_scenarios "#20: broadcast scenarios" "$full" '["empty_rules"]'
 assert_all_dimensions "#20" "$full"
