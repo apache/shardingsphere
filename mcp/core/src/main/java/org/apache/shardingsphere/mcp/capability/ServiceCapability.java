@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,7 @@ import java.util.Set;
 /**
  * Service-level capability view.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ServiceCapability {
     
@@ -33,10 +35,4 @@ public final class ServiceCapability {
     private final List<String> supportedTools;
     
     private final Set<StatementClass> supportedStatementClasses;
-    
-    ServiceCapability(final List<String> supportedResources, final List<String> supportedTools, final Set<StatementClass> supportedStatementClasses) {
-        this.supportedResources = supportedResources;
-        this.supportedTools = supportedTools;
-        this.supportedStatementClasses = supportedStatementClasses;
-    }
 }
