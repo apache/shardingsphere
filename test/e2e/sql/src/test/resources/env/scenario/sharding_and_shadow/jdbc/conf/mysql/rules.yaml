@@ -20,6 +20,7 @@ databaseName: sharding_and_shadow
 dataSources:
   db_0:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_0?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -30,6 +31,7 @@ dataSources:
     minPoolSize: 2
   db_1:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_1?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -40,6 +42,7 @@ dataSources:
     minPoolSize: 2
   db_2:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_2?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -50,6 +53,7 @@ dataSources:
     minPoolSize: 2
   db_3:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_3?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -60,6 +64,7 @@ dataSources:
     minPoolSize: 2
   db_4:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_4?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -70,6 +75,7 @@ dataSources:
     minPoolSize: 2
   db_5:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_5?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -80,6 +86,7 @@ dataSources:
     minPoolSize: 2
   db_6:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_6?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -90,6 +97,7 @@ dataSources:
     minPoolSize: 2
   db_7:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_7?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -100,6 +108,7 @@ dataSources:
     minPoolSize: 2
   db_8:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_8?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -110,6 +119,7 @@ dataSources:
     minPoolSize: 2
   db_9:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/db_9?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -120,6 +130,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_0:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_0?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -130,6 +141,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_1:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_1?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -140,6 +152,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_2:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_2?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -150,6 +163,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_3:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_3?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -160,6 +174,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_4:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_4?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -170,6 +185,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_5:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_5?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -180,6 +196,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_6:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_6?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -190,6 +207,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_7:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_7?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -200,6 +218,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_8:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_8?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -210,6 +229,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_9:
     url: jdbc:mysql://mysql.sharding_and_shadow.host:3306/shadow_db_9?useSSL=true&requireSSL=true&enabledTLSProtocols=TLSv1.2,TLSv1.3&verifyServerCertificate=false&useServerPrepStmts=true&useLocalSessionState=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&allowMultiQueries=true&rewriteBatchedStatements=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

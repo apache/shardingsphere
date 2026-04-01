@@ -24,6 +24,7 @@
 databaseName: sharding_db
 dataSources:
   ds_0:
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql.default.host:3306/ds_0?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@9876
@@ -33,6 +34,7 @@ dataSources:
     maxPoolSize: 4
     minPoolSize: 2
   ds_1:
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://mysql.default.host:3306/ds_1?useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@9876

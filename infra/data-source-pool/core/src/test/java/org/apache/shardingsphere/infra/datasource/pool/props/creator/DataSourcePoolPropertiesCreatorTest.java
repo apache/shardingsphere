@@ -167,6 +167,7 @@ class DataSourcePoolPropertiesCreatorTest {
     
     private void assertConnectionConfiguration(final ConnectionConfiguration actual) {
         assertThat(actual.getDataSourceClassName(), is(MockedDataSource.class.getName()));
+        assertThat(actual.getDriverClassName(), is(MockedDataSource.class.getName()));
         assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
@@ -186,14 +187,16 @@ class DataSourcePoolPropertiesCreatorTest {
     }
     
     private static DataSourceConfiguration createDataSourceConfiguration(final Properties customProperties) {
-        ConnectionConfiguration connectionConfig = new ConnectionConfiguration(MockedDataSource.class.getName(), "jdbc:mock://127.0.0.1/foo_ds", "root", "root");
+        ConnectionConfiguration connectionConfig = new ConnectionConfiguration(MockedDataSource.class.getName(), MockedDataSource.class.getName(),
+                "jdbc:mock://127.0.0.1/foo_ds", "root", "root");
         PoolConfiguration poolConfig = new PoolConfiguration(1000L, 2000L, 3000L, 8, 2, false, customProperties);
         return new DataSourceConfiguration(connectionConfig, poolConfig);
     }
     
     private static Map<String, Object> createExpectedPropertiesWithDataSourceConfiguration(final String url, final Properties jdbcUrlProperties) {
-        Map<String, Object> result = new LinkedHashMap<>(11, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("dataSourceClassName", MockedDataSource.class.getName());
+        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("url", url);
         result.put("username", "root");
         result.put("password", "root");
@@ -221,6 +224,7 @@ class DataSourcePoolPropertiesCreatorTest {
     private static Map<String, Object> createBaseProperties() {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("dataSourceClassName", MockedDataSource.class.getName());
+        result.put("driverClassName", MockedDataSource.class.getName());
         result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("username", "root");
         result.put("password", "root");
