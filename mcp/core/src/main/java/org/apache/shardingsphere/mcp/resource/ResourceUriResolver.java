@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
 import java.util.Collections;
 import java.util.List;

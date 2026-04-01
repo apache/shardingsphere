@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.metadata;
+package org.apache.shardingsphere.mcp.metadata.model;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collection;
 
 /**
- * Supported normalized and excluded metadata object types used by discovery.
+ * Database metadata snapshot.
  */
-public enum MetadataObjectType {
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseMetadataSnapshot {
     
-    DATABASE, SCHEMA, TABLE, VIEW, COLUMN, INDEX, MATERIALIZED_VIEW, SEQUENCE, ROUTINE, TRIGGER, EVENT, SYNONYM, DATABASE_SPECIFIC
+    private final String databaseType;
+    
+    private final String databaseVersion;
+    
+    private final Collection<MetadataObject> metadataObjects;
 }

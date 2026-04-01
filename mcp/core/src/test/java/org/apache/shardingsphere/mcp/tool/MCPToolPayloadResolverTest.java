@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.MetadataObject;
-import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.metadata.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
 
 import java.util.Collections;

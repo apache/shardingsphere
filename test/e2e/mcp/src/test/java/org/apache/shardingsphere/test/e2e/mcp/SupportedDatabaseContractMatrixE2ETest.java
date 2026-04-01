@@ -19,9 +19,9 @@ package org.apache.shardingsphere.test.e2e.mcp;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
-import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

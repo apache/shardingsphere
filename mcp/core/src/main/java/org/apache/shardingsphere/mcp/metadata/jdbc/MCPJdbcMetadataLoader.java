@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.metadata;
+package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.util.Collections;

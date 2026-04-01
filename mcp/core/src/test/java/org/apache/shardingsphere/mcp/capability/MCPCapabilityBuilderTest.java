@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.capability;
 
-import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.junit.jupiter.api.Test;

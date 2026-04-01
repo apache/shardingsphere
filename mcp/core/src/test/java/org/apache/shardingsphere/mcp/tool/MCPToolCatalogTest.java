@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

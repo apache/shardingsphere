@@ -24,9 +24,9 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.MCPJdbcMetadataLoader;
-import org.apache.shardingsphere.mcp.metadata.MCPJdbcMetadataRefresher;
-import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataLoader;
+import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.metadata;
+package org.apache.shardingsphere.mcp.metadata.model;
 
 import lombok.Getter;
 
