@@ -206,10 +206,12 @@ public final class MySQLDMLStatementVisitor extends MySQLStatementVisitor implem
         if (null != ctx.NTILE()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));
         }
-        if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE()) {
+        // MARIADB CHANGED BEGIN
+        if (null != ctx.LEAD() || null != ctx.LAG() || null != ctx.FIRST_VALUE() || null != ctx.LAST_VALUE() || null != ctx.MEDIAN()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
             appendLeadLagParameters(result.getParameters(), ctx.leadLagInfo());
         }
+        // MARIADB CHANGED END
         if (null != ctx.NTH_VALUE()) {
             result.getParameters().add((ExpressionSegment) visit(ctx.expr()));
             result.getParameters().add((ExpressionSegment) visit(ctx.simpleExpr()));

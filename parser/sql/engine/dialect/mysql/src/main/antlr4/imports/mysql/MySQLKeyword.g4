@@ -443,6 +443,12 @@ CUME_DIST
     : C U M E UL_ D I S T
     ;
 
+// MARIADB ADDED BEGIN
+CYCLE
+    : C Y C L E
+    ;
+// MARIADB ADDED END
+
 CURRENT
     : C U R R E N T
     ;
@@ -1510,6 +1516,12 @@ MEDIUMINT
 MEDIUMTEXT
     : M E D I U M T E X T
     ;
+
+// MARIADB ADDED BEGIN
+MEDIAN
+    : M E D I A N
+    ;
+// MARIADB ADDED END
 
 MEMBER
     : M E M B E R
