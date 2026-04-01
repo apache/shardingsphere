@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.protocol;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.resource.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.MetadataObject;
 
 import java.util.LinkedHashMap;
 import java.util.List;

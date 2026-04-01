@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolution.ResourceUriResolutionType;
 import org.junit.jupiter.api.Test;
 

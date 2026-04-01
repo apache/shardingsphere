@@ -19,6 +19,9 @@ package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
+import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.util.Collection;

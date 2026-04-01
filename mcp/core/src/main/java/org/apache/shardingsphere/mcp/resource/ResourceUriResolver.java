@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +30,8 @@ public final class ResourceUriResolver {
     
     private static final String RESOURCE_PREFIX = "shardingsphere://";
     
-    private static final String RESOURCE_CAPABILITIES = "shardingsphere://capabilities";
-    
     private static final List<String> SUPPORTED_RESOURCES = List.of(
-            RESOURCE_CAPABILITIES,
+            "shardingsphere://capabilities",
             "shardingsphere://databases",
             "shardingsphere://databases/{database}",
             "shardingsphere://databases/{database}/capabilities",
@@ -64,7 +64,7 @@ public final class ResourceUriResolver {
      * @return resolved resource contract when supported
      */
     public Optional<ResourceUriResolution> resolve(final String resourceUri) {
-        if (RESOURCE_CAPABILITIES.equals(resourceUri)) {
+        if ("shardingsphere://capabilities".equals(resourceUri)) {
             return Optional.of(ResourceUriResolution.serviceCapabilities());
         }
         List<String> segments = splitResourceUri(resourceUri);

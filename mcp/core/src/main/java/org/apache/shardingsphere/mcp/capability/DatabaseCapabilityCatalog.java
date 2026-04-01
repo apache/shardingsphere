@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.capability;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
 
 import java.util.LinkedHashSet;
 import java.util.Locale;

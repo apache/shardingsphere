@@ -20,6 +20,10 @@ package org.apache.shardingsphere.mcp.resource;
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
+import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;

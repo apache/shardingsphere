@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
 
 /**
  * Request contract for one metadata resource load.

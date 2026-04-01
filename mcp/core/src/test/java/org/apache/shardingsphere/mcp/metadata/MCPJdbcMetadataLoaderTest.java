@@ -19,9 +19,6 @@ package org.apache.shardingsphere.mcp.metadata;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.resource.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;

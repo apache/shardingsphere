@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource;
+package org.apache.shardingsphere.mcp.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

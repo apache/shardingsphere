@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.resource.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
 import org.apache.shardingsphere.mcp.resource.ResourceRequest;

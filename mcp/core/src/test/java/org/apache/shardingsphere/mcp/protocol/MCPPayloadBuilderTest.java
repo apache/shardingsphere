@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mcp.capability.ResultBehavior;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 import org.apache.shardingsphere.mcp.capability.TransactionBoundaryBehavior;
-import org.apache.shardingsphere.mcp.resource.MetadataObject;
-import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

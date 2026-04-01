@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.capability;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.metadata.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
