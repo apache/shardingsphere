@@ -46,6 +46,7 @@ class YamlProxyDataSourceConfigurationSwapperTest {
     private void assertConnectionConfig(final DataSourceConfiguration actualDataSourceConfig) {
         ConnectionConfiguration actualConnection = actualDataSourceConfig.getConnection();
         assertNotNull(actualConnection);
+        assertThat(actualConnection.getDriverClassName(), is("org.h2.Driver"));
         assertThat(actualConnection.getUrl(), is("jdbc:h2:mem:foo_db;DB_CLOSE_DELAY=-1"));
         assertThat(actualConnection.getUsername(), is("sa"));
         assertThat(actualConnection.getPassword(), is(""));

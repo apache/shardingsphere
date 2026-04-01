@@ -20,6 +20,7 @@ databaseName: tbl
 dataSources:
   tbl:
     url: jdbc:mysql://mysql.tbl.host:3306/tbl?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

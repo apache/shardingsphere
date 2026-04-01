@@ -33,6 +33,7 @@ public final class ConnectionPropertySynonyms extends PropertySynonyms {
     
     static {
         STANDARD_PROPERTY_KEYS.add("dataSourceClassName");
+        STANDARD_PROPERTY_KEYS.add("driverClassName");
         STANDARD_PROPERTY_KEYS.add("url");
         STANDARD_PROPERTY_KEYS.add("username");
         STANDARD_PROPERTY_KEYS.add("password");

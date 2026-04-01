@@ -20,6 +20,7 @@ databaseName: readwrite_splitting
 dataSources:
   write_ds:
     url: jdbc:mysql://mysql.readwrite_splitting.host:3306/write_ds?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   read_0:
     url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_0?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -38,6 +40,7 @@ dataSources:
     minPoolSize: 2
   read_1:
     url: jdbc:mysql://mysql.readwrite_splitting.host:3306/read_1?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
