@@ -253,6 +253,15 @@ public final class PipelineContainerComposer implements AutoCloseable {
     }
     
     /**
+     * Get storage container driver class name.
+     *
+     * @return driver class name
+     */
+    public String getDriverClassName() {
+        return DatabaseTypedSPILoader.getService(StorageContainerOption.class, databaseType).getConnectOption().getDriverClassName();
+    }
+    
+    /**
      * Show storage units names.
      *
      * @return storage units names

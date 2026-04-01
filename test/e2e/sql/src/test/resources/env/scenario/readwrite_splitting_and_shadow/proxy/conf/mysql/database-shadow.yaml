@@ -20,6 +20,7 @@ databaseName: readwrite_splitting_and_shadow
 dataSources:
   write_db:
     url: jdbc:mysql://mysql.readwrite_splitting_and_shadow.host:3306/write_db?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   write_db_shadow:
     url: jdbc:mysql://mysql.readwrite_splitting_and_shadow.host:3306/write_db_shadow?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -38,6 +40,7 @@ dataSources:
     minPoolSize: 2
   read_0:
     url: jdbc:mysql://mysql.readwrite_splitting_and_shadow.host:3306/read_0?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -47,6 +50,7 @@ dataSources:
     minPoolSize: 2
   read_1:
     url: jdbc:mysql://mysql.readwrite_splitting_and_shadow.host:3306/read_1?useSSL=false&characterEncoding=utf-8&tinyInt1isBit=true
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

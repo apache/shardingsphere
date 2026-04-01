@@ -19,6 +19,7 @@ databaseName: readwrite_splitting_db
 
 dataSources:
   write_ds:
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/write_ds
     username: root
     password:
@@ -28,6 +29,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 1
   read_ds_0:
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/read_ds_0
     username: root
     password:
@@ -37,6 +39,7 @@ dataSources:
     maxPoolSize: 50
     minPoolSize: 1
   read_ds_1:
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/read_ds_1
     username: root
     password:

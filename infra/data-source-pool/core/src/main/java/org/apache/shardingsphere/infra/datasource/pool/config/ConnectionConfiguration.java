@@ -29,6 +29,8 @@ public final class ConnectionConfiguration {
     
     private final String dataSourceClassName;
     
+    private final String driverClassName;
+    
     private final String url;
     
     private final String username;

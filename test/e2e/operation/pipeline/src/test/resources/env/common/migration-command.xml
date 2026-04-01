@@ -22,7 +22,7 @@
         URL="${ds0}",
         USER="${user}",
         PASSWORD="${password}",
-        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
+        PROPERTIES("driverClassName"="${driverClassName}","maximumPoolSize"="50","idleTimeout"="30000")
         );
     </register-migration-source-storage-unit-template>
     
@@ -31,17 +31,17 @@
         URL="${ds2}",
         USER="${user}",
         PASSWORD="${password}",
-        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
+        PROPERTIES("driverClassName"="${driverClassName}","maximumPoolSize"="50","idleTimeout"="30000")
         ),ds_3 (
         URL="${ds3}",
         USER="${user}",
         PASSWORD="${password}",
-        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
+        PROPERTIES("driverClassName"="${driverClassName}","maximumPoolSize"="50","idleTimeout"="30000")
         ),ds_4 (
         URL="${ds4}",
         USER="${user}",
         PASSWORD="${password}",
-        PROPERTIES("maximumPoolSize"="50","idleTimeout"="30000")
+        PROPERTIES("driverClassName"="${driverClassName}","maximumPoolSize"="50","idleTimeout"="30000")
         )
     </register-migration-target-storage-unit-template>
     
