@@ -17,7 +17,9 @@
 #
 
 # Usage: generate-e2e-sql-matrix.sh '<json-with-all-18-filter-labels>'
-# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>, and need-proxy-image=<true|false> to $GITHUB_OUTPUT
+# Environment:
+#   FULL_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
+# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>, need-proxy-image=<true|false>, and full-matrix-algorithm=<cartesian|pairwise|auto> to $GITHUB_OUTPUT
 
 set -euo pipefail
 
@@ -107,6 +109,133 @@ build_matrix() {
     '
 }
 
+build_pairwise_matrix() {
+  local candidate_matrix="$1"
+  local scenario_list_json="$2"
+  local job_file selected_file
+  job_file=$(mktemp)
+  selected_file=$(mktemp)
+  echo "$candidate_matrix" | jq -c '.include[]' > "$job_file"
+  declare -a jobs job_keys job_pairs job_scores job_scenarios selected_indexes
+  local line key pairs score scenario pair idx
+  local best_idx best_score best_key candidate_score candidate_key candidate_new
+  local pick_idx pick_new pick_score pick_key required_scenario
+  local selected_keys_blob covered_pairs_blob all_pairs_blob
+  selected_keys_blob=$'\n'
+  covered_pairs_blob=$'\n'
+  all_pairs_blob=$'\n'
+  while IFS= read -r line; do
+    idx="${#jobs[@]}"
+    jobs+=("$line")
+    key=$(echo "$line" | jq -r '[.adapter,.mode,.database,.scenario,.["additional-options"]] | join("|")')
+    pairs=$(echo "$line" | jq -r '[
+      ("am:" + .adapter + "|" + .mode),
+      ("ad:" + .adapter + "|" + .database),
+      ("md:" + .mode + "|" + .database),
+      ("as:" + .adapter + "|" + .scenario),
+      ("ms:" + .mode + "|" + .scenario),
+      ("ds:" + .database + "|" + .scenario)
+    ] | join(",")')
+    score=$(echo "$line" | jq -r '((if .adapter == "proxy" then 4 else 0 end) + (if .mode == "Cluster" then 2 else 0 end) + (if .database == "MySQL" then 1 else 0 end) + (if .["additional-options"] == "" then 1 else 0 end))')
+    scenario=$(echo "$line" | jq -r '.scenario')
+    job_keys[$idx]="$key"
+    job_pairs[$idx]="$pairs"
+    job_scores[$idx]="$score"
+    job_scenarios[$idx]="$scenario"
+    IFS=',' read -r -a _pairs <<< "$pairs"
+    for pair in "${_pairs[@]}"; do
+      case "$all_pairs_blob" in
+        *$'\n'"$pair"$'\n'*) ;;
+        *) all_pairs_blob+="$pair"$'\n' ;;
+      esac
+    done
+  done < "$job_file"
+  if [ "${#jobs[@]}" -eq 0 ]; then
+    rm -f "$job_file" "$selected_file"
+    echo '{"include":[]}'
+    return
+  fi
+  add_selected_index() {
+    local idx="$1"
+    local _key="${job_keys[$idx]}"
+    local _pair
+    case "$selected_keys_blob" in
+      *$'\n'"$_key"$'\n'*) return ;;
+      *) selected_keys_blob+="${_key}"$'\n' ;;
+    esac
+    selected_indexes+=("$idx")
+    IFS=',' read -r -a _pairs <<< "${job_pairs[$idx]}"
+    for _pair in "${_pairs[@]}"; do
+      case "$covered_pairs_blob" in
+        *$'\n'"$_pair"$'\n'*) ;;
+        *) covered_pairs_blob+="${_pair}"$'\n' ;;
+      esac
+    done
+  }
+  count_new_pairs() {
+    local idx="$1"
+    local _pair _count=0
+    IFS=',' read -r -a _pairs <<< "${job_pairs[$idx]}"
+    for _pair in "${_pairs[@]}"; do
+      case "$covered_pairs_blob" in
+        *$'\n'"$_pair"$'\n'*) ;;
+        *) _count=$((_count + 1)) ;;
+      esac
+    done
+    echo "$_count"
+  }
+  for idx in "${!jobs[@]}"; do
+    if [ "$(echo "${jobs[$idx]}" | jq -r '.["additional-options"] != ""')" = "true" ]; then
+      add_selected_index "$idx"
+    fi
+  done
+  while IFS= read -r required_scenario; do
+    best_idx=-1
+    best_score=-1
+    best_key=""
+    for idx in "${!jobs[@]}"; do
+      [ "${job_scenarios[$idx]}" = "$required_scenario" ] || continue
+      candidate_score="${job_scores[$idx]}"
+      candidate_key="${job_keys[$idx]}"
+      if [ "$best_idx" -lt 0 ] || [ "$candidate_score" -gt "$best_score" ] || { [ "$candidate_score" -eq "$best_score" ] && [[ "$candidate_key" < "$best_key" ]]; }; then
+        best_idx="$idx"
+        best_score="$candidate_score"
+        best_key="$candidate_key"
+      fi
+    done
+    [ "$best_idx" -lt 0 ] || add_selected_index "$best_idx"
+  done < <(echo "$scenario_list_json" | jq -r '.[]')
+  while true; do
+    pick_idx=-1
+    pick_new=0
+    pick_score=-1
+    pick_key=""
+    for idx in "${!jobs[@]}"; do
+      candidate_key="${job_keys[$idx]}"
+      case "$selected_keys_blob" in
+        *$'\n'"$candidate_key"$'\n'*) continue ;;
+      esac
+      candidate_new=$(count_new_pairs "$idx")
+      [ "$candidate_new" -gt 0 ] || continue
+      candidate_score="${job_scores[$idx]}"
+      if [ "$pick_idx" -lt 0 ] || [ "$candidate_new" -gt "$pick_new" ] || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -gt "$pick_score" ]; } || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -eq "$pick_score" ] && [[ "$candidate_key" < "$pick_key" ]]; }; then
+        pick_idx="$idx"
+        pick_new="$candidate_new"
+        pick_score="$candidate_score"
+        pick_key="$candidate_key"
+      fi
+    done
+    [ "$pick_idx" -lt 0 ] && break
+    add_selected_index "$pick_idx"
+  done
+  for idx in "${selected_indexes[@]}"; do
+    echo "${jobs[$idx]}" >> "$selected_file"
+  done
+  pairwise_matrix=$(jq -sc '{include: .}' "$selected_file")
+  rm -f "$job_file" "$selected_file"
+  echo "$pairwise_matrix"
+}
+
 log_counts() {
   local name="$1"
   local matrix_json="$2"
@@ -121,11 +250,21 @@ if [ "$core_infra" = "true" ] || [ "$test_framework" = "true" ] || [ "$pom_chang
   echo "::notice::Base filters triggered (core_infra=$core_infra, test_framework=$test_framework, pom_changes=$pom_changes)"
 fi
 
-# Handle workflow_dispatch: run full tests when manually triggered
+manual_dispatch=false
 if [ "${GITHUB_EVENT_NAME:-}" = "workflow_dispatch" ]; then
-  any_base_change=true
-  echo "::notice::workflow_dispatch detected, enabling full test matrix"
+  manual_dispatch=true
+  echo "::notice::workflow_dispatch detected"
 fi
+
+requested_full_matrix_algorithm="${FULL_MATRIX_ALGORITHM_INPUT:-auto}"
+case "$requested_full_matrix_algorithm" in
+  auto|cartesian|pairwise)
+    ;;
+  *)
+    echo "::warning::Invalid FULL_MATRIX_ALGORITHM_INPUT=$requested_full_matrix_algorithm, fallback to auto"
+    requested_full_matrix_algorithm="auto"
+    ;;
+esac
 
 # Check whether any relevant dimension changed at all
 any_relevant_change=false
@@ -139,6 +278,11 @@ if [ "$feature_sharding" = "true" ] || [ "$feature_encrypt" = "true" ] || \
    [ "$any_base_change" = "true" ]; then
   any_relevant_change=true
   echo "::notice::At least one relevant filter is true, will generate jobs based on dimensions and scenarios"
+fi
+
+if [ "$manual_dispatch" = "true" ]; then
+  any_relevant_change=true
+  echo "::notice::workflow_dispatch enforces relevant-change path"
 fi
 
 if [ "$any_relevant_change" = "false" ]; then
@@ -281,7 +425,25 @@ if [ "$any_feature_triggered" = "true" ]; then
   echo "::notice::Feature filters triggered, including all adapters, modes, and databases"
 fi
 
-echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases"
+if [ "$manual_dispatch" = "true" ]; then
+  adapters=$ALL_ADAPTERS
+  modes=$ALL_MODES
+  databases=$ALL_DATABASES
+  echo "::notice::workflow_dispatch uses all adapters, modes, and databases"
+fi
+
+effective_full_matrix_algorithm="$requested_full_matrix_algorithm"
+if [ "$effective_full_matrix_algorithm" = "auto" ]; then
+  if [ "$manual_dispatch" = "true" ]; then
+    effective_full_matrix_algorithm="cartesian"
+  elif [ "$any_base_change" = "true" ] || [ "$any_feature_triggered" = "true" ]; then
+    effective_full_matrix_algorithm="pairwise"
+  else
+    effective_full_matrix_algorithm="cartesian"
+  fi
+fi
+
+echo "::notice::any_base_change=$any_base_change, any_feature_triggered=$any_feature_triggered, dimensions adapters=$adapters modes=$modes databases=$databases, full-matrix-algorithm(requested=$requested_full_matrix_algorithm,effective=$effective_full_matrix_algorithm)"
 
 # Generate smoke-matrix from default or feature-mapped smoke scenarios, and DO NOT add the extra passthrough job
 if [ "$any_feature_triggered" = "true" ]; then
@@ -300,7 +462,10 @@ SMOKE_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$smoke_scenarios_
 log_counts "smoke-matrix" "$SMOKE_MATRIX"
 
 # Build full-matrix scenarios
-if [ "$any_base_change" = "true" ]; then
+if [ "$manual_dispatch" = "true" ]; then
+  full_scenarios_json="$ALL_SCENARIOS"
+  echo "::notice::full-matrix reason=workflow-dispatch, use all scenarios: $full_scenarios_json"
+elif [ "$any_base_change" = "true" ]; then
   full_scenarios_json="$ALL_SCENARIOS"
   echo "::notice::full-matrix reason=base-change, use all scenarios: $full_scenarios_json"
 else
@@ -314,7 +479,13 @@ else
   fi
 fi
 
-FULL_MATRIX=$(build_matrix "$adapters" "$modes" "$databases" "$full_scenarios_json" true)
+FULL_MATRIX_CANDIDATE=$(build_matrix "$adapters" "$modes" "$databases" "$full_scenarios_json" true)
+if [ "$effective_full_matrix_algorithm" = "pairwise" ]; then
+  FULL_MATRIX=$(build_pairwise_matrix "$FULL_MATRIX_CANDIDATE" "$full_scenarios_json")
+  echo "::notice::full-matrix reduction applied: candidate=$(echo "$FULL_MATRIX_CANDIDATE" | jq '.include | length'), reduced=$(echo "$FULL_MATRIX" | jq '.include | length')"
+else
+  FULL_MATRIX="$FULL_MATRIX_CANDIDATE"
+fi
 log_counts "full-matrix" "$FULL_MATRIX"
 
 # Determine whether there are any jobs at all (based on full-matrix)
@@ -325,6 +496,7 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
+  echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
   echo "::notice::No jobs generated after applying all filters and rules, skipping job execution"
   exit 0
 fi
@@ -338,6 +510,7 @@ echo "full-matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
 echo "need-proxy-image=$NEED_PROXY_IMAGE" >> "$GITHUB_OUTPUT"
+echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
 echo "::notice::Generated $(echo "$SMOKE_MATRIX" | jq '.include | length') smoke jobs and $(echo "$FULL_MATRIX" | jq '.include | length') full jobs. Proxy image needed: $NEED_PROXY_IMAGE"
 
 exit 0
