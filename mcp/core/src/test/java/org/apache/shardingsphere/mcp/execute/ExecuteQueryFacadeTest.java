@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.session.MCPJdbcTransactionCommandExecutor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -196,7 +195,7 @@ class ExecuteQueryFacadeTest {
                                             final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
-        return new ExecuteQueryFacade(capabilityBuilder, new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager),
+        return new ExecuteQueryFacade(capabilityBuilder, new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager),
                 statementExecutor, metadataRefreshCoordinator);
     }
     

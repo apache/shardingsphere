@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.session;
+package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.execute.ClassificationResult;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 /**
- * MCP JDBC transaction command executor.
+ * MCP JDBC transaction statement executor.
  */
 @RequiredArgsConstructor
-public final class MCPJdbcTransactionCommandExecutor {
+public final class MCPJdbcTransactionStatementExecutor {
     
     private final MCPSessionManager sessionManager;
     

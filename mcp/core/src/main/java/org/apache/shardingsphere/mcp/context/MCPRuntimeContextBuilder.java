@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.session.MCPJdbcTransactionCommandExecutor;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 
 import java.util.Map;
 
@@ -47,11 +47,11 @@ public final class MCPRuntimeContextBuilder {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
-        MCPJdbcTransactionCommandExecutor transactionCommandExecutor = new MCPJdbcTransactionCommandExecutor(sessionManager, transactionResourceManager);
+        MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots);
-        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(capabilityBuilder, transactionCommandExecutor, statementExecutor, metadataRefreshCoordinator);
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, statementExecutor, transactionResourceManager, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
+        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(capabilityBuilder, transactionStatementExecutor, statementExecutor, metadataRefreshCoordinator);
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, statementExecutor, transactionResourceManager, capabilityBuilder, transactionStatementExecutor, executeQueryFacade);
     }
 }

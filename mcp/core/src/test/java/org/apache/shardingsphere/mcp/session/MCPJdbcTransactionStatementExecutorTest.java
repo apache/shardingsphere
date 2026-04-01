@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.session;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
@@ -43,7 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-class MCPJdbcTransactionCommandExecutorTest {
+class MCPJdbcTransactionStatementExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")
@@ -51,7 +52,7 @@ class MCPJdbcTransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify(sql));
         
@@ -76,7 +77,7 @@ class MCPJdbcTransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1"));
         
@@ -91,7 +92,7 @@ class MCPJdbcTransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
         
@@ -106,7 +107,7 @@ class MCPJdbcTransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1"));
         
@@ -122,7 +123,7 @@ class MCPJdbcTransactionCommandExecutorTest {
         doThrow(new IllegalStateException("Transaction is not active.")).when(jdbcTransactionResourceManager).commitTransaction("session-1");
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT"));
         

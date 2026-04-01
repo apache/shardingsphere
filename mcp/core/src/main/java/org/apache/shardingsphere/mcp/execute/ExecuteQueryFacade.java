@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.session.MCPJdbcTransactionCommandExecutor;
 
 import java.util.Optional;
 
@@ -36,7 +35,7 @@ public final class ExecuteQueryFacade {
     
     private final MCPCapabilityBuilder capabilityBuilder;
     
-    private final MCPJdbcTransactionCommandExecutor transactionCommandExecutor;
+    private final MCPJdbcTransactionStatementExecutor transactionStatementExecutor;
     
     private final MCPJdbcStatementExecutor statementExecutor;
     
@@ -70,7 +69,7 @@ public final class ExecuteQueryFacade {
         switch (classificationResult.getStatementClass()) {
             case TRANSACTION_CONTROL:
             case SAVEPOINT:
-                return recordResult(executionRequest, transactionCommandExecutor.execute(executionRequest.getSessionId(),
+                return recordResult(executionRequest, transactionStatementExecutor.execute(executionRequest.getSessionId(),
                         executionRequest.getDatabase(), actualDatabaseCapability, classificationResult),
                         classificationResult.getStatementType());
             case QUERY:
