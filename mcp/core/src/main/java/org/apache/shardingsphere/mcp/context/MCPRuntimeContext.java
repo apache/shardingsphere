@@ -23,9 +23,9 @@ import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 
 /**
  * MCP runtime context.
@@ -36,15 +36,15 @@ public final class MCPRuntimeContext {
     
     private final MCPSessionManager sessionManager;
     
-    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
+    private final MCPJdbcTransactionResourceManager transactionResourceManager;
+    
+    private final MCPJdbcTransactionStatementExecutor transactionStatementExecutor;
     
     private final MCPJdbcStatementExecutor statementExecutor;
     
-    private final MCPJdbcTransactionResourceManager transactionResourceManager;
+    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
     private final MCPCapabilityBuilder capabilityBuilder;
-    
-    private final MCPJdbcTransactionStatementExecutor transactionStatementExecutor;
     
     private final ExecuteQueryFacade executeQueryFacade;
     

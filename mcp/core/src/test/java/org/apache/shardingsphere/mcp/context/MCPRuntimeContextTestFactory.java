@@ -41,10 +41,10 @@ public final class MCPRuntimeContextTestFactory {
      */
     public MCPRuntimeContext create(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcStatementExecutor statementExecutor) {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
+        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(capabilityBuilder, transactionStatementExecutor, statementExecutor, mock());
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, statementExecutor, jdbcTransactionResourceManager, capabilityBuilder, transactionStatementExecutor, executeQueryFacade);
+        return new MCPRuntimeContext(sessionManager, transactionResourceManager, transactionStatementExecutor, statementExecutor, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
     }
 }

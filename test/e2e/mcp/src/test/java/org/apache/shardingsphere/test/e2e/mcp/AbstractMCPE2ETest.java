@@ -212,13 +212,13 @@ abstract class AbstractMCPE2ETest {
     
     private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
-        MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, jdbcTransactionResourceManager);
+        MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
+        MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
+        MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, transactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
                 capabilityBuilder, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, statementExecutor, jdbcTransactionResourceManager, capabilityBuilder, transactionStatementExecutor, executeQueryFacade);
+        return new MCPRuntimeContext(sessionManager, transactionResourceManager, transactionStatementExecutor, statementExecutor, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

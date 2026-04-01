@@ -46,12 +46,12 @@ public final class MCPRuntimeContextBuilder {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
-        MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
+        MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots);
-        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(capabilityBuilder, transactionStatementExecutor, statementExecutor, metadataRefreshCoordinator);
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, statementExecutor, transactionResourceManager, capabilityBuilder, transactionStatementExecutor, executeQueryFacade);
+        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
+                capabilityBuilder, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots));
+        return new MCPRuntimeContext(sessionManager, transactionResourceManager, transactionStatementExecutor, statementExecutor, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
     }
 }
