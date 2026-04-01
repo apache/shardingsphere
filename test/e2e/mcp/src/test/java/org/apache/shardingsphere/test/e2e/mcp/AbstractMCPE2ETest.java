@@ -23,9 +23,10 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
+import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
@@ -33,7 +34,6 @@ import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -216,9 +216,9 @@ abstract class AbstractMCPE2ETest {
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, transactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
+        MCPSQLExecutionFacade executionFacade = new MCPSQLExecutionFacade(
                 capabilityBuilder, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, transactionResourceManager, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
+        return new MCPRuntimeContext(sessionManager, transactionResourceManager, databaseMetadataSnapshots, capabilityBuilder, executionFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
