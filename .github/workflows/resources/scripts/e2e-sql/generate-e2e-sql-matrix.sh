@@ -25,29 +25,19 @@ set -euo pipefail
 
 FILTERS_JSON="$1"
 
-get_filter() {
-  echo "$FILTERS_JSON" | jq -r ".$1"
-}
-
 # Read all 18 filter labels
-adapter_proxy=$(get_filter adapter_proxy)
-adapter_jdbc=$(get_filter adapter_jdbc)
-mode_standalone=$(get_filter mode_standalone)
-mode_cluster=$(get_filter mode_cluster)
-mode_core=$(get_filter mode_core)
-database_mysql=$(get_filter database_mysql)
-database_postgresql=$(get_filter database_postgresql)
-feature_sharding=$(get_filter feature_sharding)
-feature_encrypt=$(get_filter feature_encrypt)
-feature_readwrite_splitting=$(get_filter feature_readwrite_splitting)
-feature_shadow=$(get_filter feature_shadow)
-feature_mask=$(get_filter feature_mask)
-feature_broadcast=$(get_filter feature_broadcast)
-feature_distsql=$(get_filter feature_distsql)
-feature_sql_federation=$(get_filter feature_sql_federation)
-core_infra=$(get_filter core_infra)
-test_framework=$(get_filter test_framework)
-pom_changes=$(get_filter pom_changes)
+IFS=$'\t' read -r \
+  adapter_proxy adapter_jdbc mode_standalone mode_cluster mode_core \
+  database_mysql database_postgresql \
+  feature_sharding feature_encrypt feature_readwrite_splitting feature_shadow feature_mask \
+  feature_broadcast feature_distsql feature_sql_federation \
+  core_infra test_framework pom_changes <<< "$(echo "$FILTERS_JSON" | jq -r '[
+    .adapter_proxy, .adapter_jdbc, .mode_standalone, .mode_cluster, .mode_core,
+    .database_mysql, .database_postgresql,
+    .feature_sharding, .feature_encrypt, .feature_readwrite_splitting, .feature_shadow, .feature_mask,
+    .feature_broadcast, .feature_distsql, .feature_sql_federation,
+    .core_infra, .test_framework, .pom_changes
+  ] | @tsv')"
 
 ALL_SCENARIOS=$(jq -cn '[
   "empty_rules", "distsql_rdl", "passthrough",
@@ -115,40 +105,46 @@ build_pairwise_matrix() {
   local job_file selected_file
   job_file=$(mktemp)
   selected_file=$(mktemp)
-  echo "$candidate_matrix" | jq -c '.include[]' > "$job_file"
-  declare -a jobs job_keys job_pairs job_scores job_scenarios selected_indexes
-  local line key pairs score scenario pair idx
-  local best_idx best_score best_key candidate_score candidate_key candidate_new
-  local pick_idx pick_new pick_score pick_key required_scenario
-  local selected_keys_blob covered_pairs_blob all_pairs_blob
-  selected_keys_blob=$'\n'
+  echo "$candidate_matrix" | jq -r '
+    .include[] |
+    [
+      ([
+        ("am:" + .adapter + "|" + .mode),
+        ("ad:" + .adapter + "|" + .database),
+        ("md:" + .mode + "|" + .database),
+        ("as:" + .adapter + "|" + .scenario),
+        ("ms:" + .mode + "|" + .scenario),
+        ("ds:" + .database + "|" + .scenario)
+      ] | join(",")),
+      ((if .adapter == "proxy" then 4 else 0 end) + (if .mode == "Cluster" then 2 else 0 end) + (if .database == "MySQL" then 1 else 0 end) + (if .["additional-options"] == "" then 1 else 0 end) | tostring),
+      .scenario,
+      (if .["additional-options"] != "" then "true" else "false" end),
+      (tojson)
+    ] | @tsv
+  ' > "$job_file"
+  declare -a jobs job_scores job_scenarios job_has_additional selected_indexes selected_flags
+  declare -a job_pair_1 job_pair_2 job_pair_3 job_pair_4 job_pair_5 job_pair_6
+  local pairs score scenario has_additional job_json idx
+  local pair1 pair2 pair3 pair4 pair5 pair6
+  local best_idx best_score candidate_score candidate_new
+  local pick_idx pick_new pick_score required_scenario new_pairs
+  local _pair
+  local covered_pairs_blob
   covered_pairs_blob=$'\n'
-  all_pairs_blob=$'\n'
-  while IFS= read -r line; do
+  while IFS=$'\t' read -r pairs score scenario has_additional job_json; do
+    IFS=',' read -r pair1 pair2 pair3 pair4 pair5 pair6 <<< "$pairs"
     idx="${#jobs[@]}"
-    jobs+=("$line")
-    key=$(echo "$line" | jq -r '[.adapter,.mode,.database,.scenario,.["additional-options"]] | join("|")')
-    pairs=$(echo "$line" | jq -r '[
-      ("am:" + .adapter + "|" + .mode),
-      ("ad:" + .adapter + "|" + .database),
-      ("md:" + .mode + "|" + .database),
-      ("as:" + .adapter + "|" + .scenario),
-      ("ms:" + .mode + "|" + .scenario),
-      ("ds:" + .database + "|" + .scenario)
-    ] | join(",")')
-    score=$(echo "$line" | jq -r '((if .adapter == "proxy" then 4 else 0 end) + (if .mode == "Cluster" then 2 else 0 end) + (if .database == "MySQL" then 1 else 0 end) + (if .["additional-options"] == "" then 1 else 0 end))')
-    scenario=$(echo "$line" | jq -r '.scenario')
-    job_keys[$idx]="$key"
-    job_pairs[$idx]="$pairs"
+    jobs[$idx]="$job_json"
     job_scores[$idx]="$score"
     job_scenarios[$idx]="$scenario"
-    IFS=',' read -r -a _pairs <<< "$pairs"
-    for pair in "${_pairs[@]}"; do
-      case "$all_pairs_blob" in
-        *$'\n'"$pair"$'\n'*) ;;
-        *) all_pairs_blob+="$pair"$'\n' ;;
-      esac
-    done
+    job_has_additional[$idx]="$has_additional"
+    selected_flags[$idx]=0
+    job_pair_1[$idx]="$pair1"
+    job_pair_2[$idx]="$pair2"
+    job_pair_3[$idx]="$pair3"
+    job_pair_4[$idx]="$pair4"
+    job_pair_5[$idx]="$pair5"
+    job_pair_6[$idx]="$pair6"
   done < "$job_file"
   if [ "${#jobs[@]}" -eq 0 ]; then
     rm -f "$job_file" "$selected_file"
@@ -157,15 +153,11 @@ build_pairwise_matrix() {
   fi
   add_selected_index() {
     local idx="$1"
-    local _key="${job_keys[$idx]}"
     local _pair
-    case "$selected_keys_blob" in
-      *$'\n'"$_key"$'\n'*) return ;;
-      *) selected_keys_blob+="${_key}"$'\n' ;;
-    esac
+    [ "${selected_flags[$idx]}" -eq 1 ] && return
+    selected_flags[$idx]=1
     selected_indexes+=("$idx")
-    IFS=',' read -r -a _pairs <<< "${job_pairs[$idx]}"
-    for _pair in "${_pairs[@]}"; do
+    for _pair in "${job_pair_1[$idx]}" "${job_pair_2[$idx]}" "${job_pair_3[$idx]}" "${job_pair_4[$idx]}" "${job_pair_5[$idx]}" "${job_pair_6[$idx]}"; do
       case "$covered_pairs_blob" in
         *$'\n'"$_pair"$'\n'*) ;;
         *) covered_pairs_blob+="${_pair}"$'\n' ;;
@@ -174,33 +166,29 @@ build_pairwise_matrix() {
   }
   count_new_pairs() {
     local idx="$1"
-    local _pair _count=0
-    IFS=',' read -r -a _pairs <<< "${job_pairs[$idx]}"
-    for _pair in "${_pairs[@]}"; do
+    new_pairs=0
+    local _pair
+    for _pair in "${job_pair_1[$idx]}" "${job_pair_2[$idx]}" "${job_pair_3[$idx]}" "${job_pair_4[$idx]}" "${job_pair_5[$idx]}" "${job_pair_6[$idx]}"; do
       case "$covered_pairs_blob" in
         *$'\n'"$_pair"$'\n'*) ;;
-        *) _count=$((_count + 1)) ;;
+        *) new_pairs=$((new_pairs + 1)) ;;
       esac
     done
-    echo "$_count"
   }
   for idx in "${!jobs[@]}"; do
-    if [ "$(echo "${jobs[$idx]}" | jq -r '.["additional-options"] != ""')" = "true" ]; then
+    if [ "${job_has_additional[$idx]}" = "true" ]; then
       add_selected_index "$idx"
     fi
   done
   while IFS= read -r required_scenario; do
     best_idx=-1
     best_score=-1
-    best_key=""
     for idx in "${!jobs[@]}"; do
       [ "${job_scenarios[$idx]}" = "$required_scenario" ] || continue
       candidate_score="${job_scores[$idx]}"
-      candidate_key="${job_keys[$idx]}"
-      if [ "$best_idx" -lt 0 ] || [ "$candidate_score" -gt "$best_score" ] || { [ "$candidate_score" -eq "$best_score" ] && [[ "$candidate_key" < "$best_key" ]]; }; then
+      if [ "$best_idx" -lt 0 ] || [ "$candidate_score" -gt "$best_score" ] || { [ "$candidate_score" -eq "$best_score" ] && [ "$idx" -lt "$best_idx" ]; }; then
         best_idx="$idx"
         best_score="$candidate_score"
-        best_key="$candidate_key"
       fi
     done
     [ "$best_idx" -lt 0 ] || add_selected_index "$best_idx"
@@ -209,20 +197,16 @@ build_pairwise_matrix() {
     pick_idx=-1
     pick_new=0
     pick_score=-1
-    pick_key=""
     for idx in "${!jobs[@]}"; do
-      candidate_key="${job_keys[$idx]}"
-      case "$selected_keys_blob" in
-        *$'\n'"$candidate_key"$'\n'*) continue ;;
-      esac
-      candidate_new=$(count_new_pairs "$idx")
+      [ "${selected_flags[$idx]}" -eq 1 ] && continue
+      count_new_pairs "$idx"
+      candidate_new="$new_pairs"
       [ "$candidate_new" -gt 0 ] || continue
       candidate_score="${job_scores[$idx]}"
-      if [ "$pick_idx" -lt 0 ] || [ "$candidate_new" -gt "$pick_new" ] || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -gt "$pick_score" ]; } || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -eq "$pick_score" ] && [[ "$candidate_key" < "$pick_key" ]]; }; then
+      if [ "$pick_idx" -lt 0 ] || [ "$candidate_new" -gt "$pick_new" ] || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -gt "$pick_score" ]; } || { [ "$candidate_new" -eq "$pick_new" ] && [ "$candidate_score" -eq "$pick_score" ] && [ "$idx" -lt "$pick_idx" ]; }; then
         pick_idx="$idx"
         pick_new="$candidate_new"
         pick_score="$candidate_score"
-        pick_key="$candidate_key"
       fi
     done
     [ "$pick_idx" -lt 0 ] && break
@@ -480,9 +464,15 @@ else
 fi
 
 FULL_MATRIX_CANDIDATE=$(build_matrix "$adapters" "$modes" "$databases" "$full_scenarios_json" true)
+FULL_MATRIX_CANDIDATE_COUNT=$(echo "$FULL_MATRIX_CANDIDATE" | jq '.include | length')
 if [ "$effective_full_matrix_algorithm" = "pairwise" ]; then
-  FULL_MATRIX=$(build_pairwise_matrix "$FULL_MATRIX_CANDIDATE" "$full_scenarios_json")
-  echo "::notice::full-matrix reduction applied: candidate=$(echo "$FULL_MATRIX_CANDIDATE" | jq '.include | length'), reduced=$(echo "$FULL_MATRIX" | jq '.include | length')"
+  if [ "$FULL_MATRIX_CANDIDATE_COUNT" -le 20 ]; then
+    FULL_MATRIX="$FULL_MATRIX_CANDIDATE"
+    echo "::notice::full-matrix pairwise skipped due to small candidate set: candidate=$FULL_MATRIX_CANDIDATE_COUNT"
+  else
+    FULL_MATRIX=$(build_pairwise_matrix "$FULL_MATRIX_CANDIDATE" "$full_scenarios_json")
+    echo "::notice::full-matrix reduction applied: candidate=$FULL_MATRIX_CANDIDATE_COUNT, reduced=$(echo "$FULL_MATRIX" | jq '.include | length')"
+  fi
 else
   FULL_MATRIX="$FULL_MATRIX_CANDIDATE"
 fi
