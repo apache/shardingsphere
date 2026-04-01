@@ -52,6 +52,6 @@ public final class MCPRuntimeContextBuilder {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
                 capabilityBuilder, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, transactionResourceManager, transactionStatementExecutor, statementExecutor, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
+        return new MCPRuntimeContext(sessionManager, transactionResourceManager, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
     }
 }

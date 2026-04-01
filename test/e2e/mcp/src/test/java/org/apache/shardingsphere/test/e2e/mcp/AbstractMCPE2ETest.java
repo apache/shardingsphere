@@ -218,7 +218,7 @@ abstract class AbstractMCPE2ETest {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
                 capabilityBuilder, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, transactionResourceManager, transactionStatementExecutor, statementExecutor, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
+        return new MCPRuntimeContext(sessionManager, transactionResourceManager, databaseMetadataSnapshots, capabilityBuilder, executeQueryFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
