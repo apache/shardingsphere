@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Resolve MCP resource URIs into core resource contracts.
+ * Resource URI resolver.
  */
 public final class ResourceUriResolver {
     
-    private static final String RESOURCE_SCHEME_PREFIX = "shardingsphere://";
+    private static final String RESOURCE_PREFIX = "shardingsphere://";
     
     private static final String RESOURCE_CAPABILITIES = "shardingsphere://capabilities";
     
@@ -58,7 +58,7 @@ public final class ResourceUriResolver {
     }
     
     /**
-     * Resolve one resource URI.
+     * Resolve resource URI.
      *
      * @param resourceUri resource URI
      * @return resolved resource contract when supported
@@ -78,6 +78,14 @@ public final class ResourceUriResolver {
             return 3 == segments.size() ? Optional.of(ResourceUriResolution.databaseCapabilities(segments.get(1))) : Optional.empty();
         }
         return createMetadataResourceResolution(segments);
+    }
+    
+    private List<String> splitResourceUri(final String resourceUri) {
+        if (null == resourceUri || !resourceUri.startsWith(RESOURCE_PREFIX)) {
+            return Collections.emptyList();
+        }
+        String actualUri = resourceUri.substring(RESOURCE_PREFIX.length());
+        return actualUri.isEmpty() ? Collections.emptyList() : List.of(actualUri.split("/"));
     }
     
     private Optional<ResourceUriResolution> createMetadataResourceResolution(final List<String> segments) {
@@ -158,13 +166,5 @@ public final class ResourceUriResolver {
             return Optional.of(ResourceUriResolution.metadata(new ResourceRequest(databaseName, schemaName, MetadataObjectType.INDEX, segments.get(7), "TABLE", tableName)));
         }
         return Optional.empty();
-    }
-    
-    private List<String> splitResourceUri(final String resourceUri) {
-        if (null == resourceUri || !resourceUri.startsWith(RESOURCE_SCHEME_PREFIX)) {
-            return Collections.emptyList();
-        }
-        String actualUri = resourceUri.substring(RESOURCE_SCHEME_PREFIX.length());
-        return actualUri.isEmpty() ? Collections.emptyList() : List.of(actualUri.split("/"));
     }
 }

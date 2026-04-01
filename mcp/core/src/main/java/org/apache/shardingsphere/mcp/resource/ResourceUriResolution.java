@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
@@ -28,6 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceUriResolution {
     
+    @Getter
     private final ResourceUriResolutionType type;
     
     private final String database;
@@ -61,15 +63,6 @@ public final class ResourceUriResolution {
      */
     public static ResourceUriResolution metadata(final ResourceRequest resourceRequest) {
         return new ResourceUriResolution(ResourceUriResolutionType.METADATA, "", resourceRequest);
-    }
-    
-    /**
-     * Get resolution type.
-     *
-     * @return resolution type
-     */
-    public ResourceUriResolutionType getType() {
-        return type;
     }
     
     /**
