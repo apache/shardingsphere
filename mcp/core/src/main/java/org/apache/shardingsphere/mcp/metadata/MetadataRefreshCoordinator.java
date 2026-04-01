@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.mcp.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,13 +35,15 @@ public final class MetadataRefreshCoordinator {
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
+    private final MCPJdbcMetadataLoader metadataLoader;
+    
     /**
      * Refresh metadata snapshot for one logical database.
      *
      * @param databaseName logical database name
      */
     public void refresh(final String databaseName) {
-        DatabaseMetadataSnapshot databaseSnapshot = new MCPJdbcMetadataLoader().load(Collections.singletonMap(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)))
+        DatabaseMetadataSnapshot databaseSnapshot = metadataLoader.load(Map.of(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)))
                 .findSnapshot(databaseName).orElseThrow(() -> new IllegalStateException(String.format("Failed to refresh metadata for database `%s`.", databaseName)));
         databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
     }

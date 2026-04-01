@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.metadata;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
@@ -45,8 +44,9 @@ class MetadataRefreshCoordinatorTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-refresh-coordinator");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
-        DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        MetadataRefreshCoordinator coordinator = new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots);
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        DatabaseMetadataSnapshots databaseMetadataSnapshots = metadataLoader.load(runtimeDatabases);
+        MetadataRefreshCoordinator coordinator = new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots, metadataLoader);
         H2RuntimeTestSupport.executeStatements(jdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
         coordinator.refresh("logic_db");
         assertTrue(databaseMetadataSnapshots.getDatabaseTypes().containsKey("logic_db"));
@@ -55,7 +55,7 @@ class MetadataRefreshCoordinatorTest {
     
     @Test
     void assertRefreshWithUnconfiguredDatabase() {
-        MetadataRefreshCoordinator coordinator = new MetadataRefreshCoordinator(Map.of(), new DatabaseMetadataSnapshots(Map.of()));
+        MetadataRefreshCoordinator coordinator = new MetadataRefreshCoordinator(Map.of(), new DatabaseMetadataSnapshots(Map.of()), new MCPJdbcMetadataLoader());
         assertThat(assertThrows(IllegalArgumentException.class, () -> coordinator.refresh("logic_db")).getMessage(), is("Database `logic_db` is not configured."));
     }
 }
