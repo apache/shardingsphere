@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
+import org.apache.shardingsphere.mcp.session.MCPJdbcTransactionCommandExecutor;
 
 import java.util.Map;
 
@@ -47,7 +47,7 @@ public final class MCPRuntimeContextBuilder {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
-        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, transactionResourceManager);
+        MCPJdbcTransactionCommandExecutor transactionCommandExecutor = new MCPJdbcTransactionCommandExecutor(sessionManager, transactionResourceManager);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MetadataRefreshCoordinator metadataRefreshCoordinator = new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots);

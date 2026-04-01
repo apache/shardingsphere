@@ -26,10 +26,10 @@ import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 
 /**
- * Execute MCP transaction-control and savepoint commands.
+ * MCP JDBC transaction command executor.
  */
 @RequiredArgsConstructor
-public final class TransactionCommandExecutor {
+public final class MCPJdbcTransactionCommandExecutor {
     
     private final MCPSessionManager sessionManager;
     

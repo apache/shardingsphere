@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-class TransactionCommandExecutorTest {
+class MCPJdbcTransactionCommandExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")
@@ -51,7 +51,7 @@ class TransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify(sql));
         
@@ -76,7 +76,7 @@ class TransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1"));
         
@@ -91,7 +91,7 @@ class TransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
         
@@ -106,7 +106,7 @@ class TransactionCommandExecutorTest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1"));
         
@@ -122,7 +122,7 @@ class TransactionCommandExecutorTest {
         doThrow(new IllegalStateException("Transaction is not active.")).when(jdbcTransactionResourceManager).commitTransaction("session-1");
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        TransactionCommandExecutor executor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionCommandExecutor executor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         
         ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT"));
         

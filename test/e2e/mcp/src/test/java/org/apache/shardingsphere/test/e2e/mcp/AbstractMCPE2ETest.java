@@ -33,7 +33,7 @@ import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
+import org.apache.shardingsphere.mcp.session.MCPJdbcTransactionCommandExecutor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -215,7 +215,7 @@ abstract class AbstractMCPE2ETest {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, jdbcTransactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
-        TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
+        MCPJdbcTransactionCommandExecutor transactionCommandExecutor = new MCPJdbcTransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(
                 capabilityBuilder, transactionCommandExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
         return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, statementExecutor, jdbcTransactionResourceManager, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);

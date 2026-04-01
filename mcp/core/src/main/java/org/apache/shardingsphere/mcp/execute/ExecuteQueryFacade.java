@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.session.TransactionCommandExecutor;
+import org.apache.shardingsphere.mcp.session.MCPJdbcTransactionCommandExecutor;
 
 import java.util.Optional;
 
@@ -36,7 +36,7 @@ public final class ExecuteQueryFacade {
     
     private final MCPCapabilityBuilder capabilityBuilder;
     
-    private final TransactionCommandExecutor transactionCommandExecutor;
+    private final MCPJdbcTransactionCommandExecutor transactionCommandExecutor;
     
     private final MCPJdbcStatementExecutor statementExecutor;
     
