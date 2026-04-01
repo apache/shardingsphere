@@ -33,7 +33,8 @@ import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPRequestValidator.ResponseStatus;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -64,7 +65,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final HttpServletStreamableServerTransportProvider delegate;
     
-    private final MCPRuntimeContext runtimeContext;
+    private final MCPSessionManager sessionManager;
     
     private final StreamableHttpMCPRequestValidator requestValidator;
     
@@ -72,10 +73,10 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final AtomicBoolean closed;
     
-    StreamableHttpMCPServlet(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
+    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
-        this.runtimeContext = runtimeContext;
-        requestValidator = new StreamableHttpMCPRequestValidator(runtimeContext.getSessionManager());
+        this.sessionManager = sessionManager;
+        requestValidator = new StreamableHttpMCPRequestValidator(sessionManager);
         securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
         closed = new AtomicBoolean();
     }
@@ -89,7 +90,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
         delegate.setSessionFactory(initializeRequest -> {
             McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(normalizeInitializeRequest(initializeRequest));
-            runtimeContext.getSessionManager().createSession(result.session().getId());
+            sessionManager.createSession(result.session().getId());
             return result;
         });
     }
@@ -107,12 +108,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     @Override
-    public reactor.core.publisher.Mono<Void> notifyClients(final String method, final Object params) {
+    public Mono<Void> notifyClients(final String method, final Object params) {
         return delegate.notifyClients(method, params);
     }
     
     @Override
-    public reactor.core.publisher.Mono<Void> notifyClient(final String sessionId, final String method, final Object params) {
+    public Mono<Void> notifyClient(final String sessionId, final String method, final Object params) {
         return delegate.notifyClient(sessionId, method, params);
     }
     
@@ -197,19 +198,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
         Optional<ResponseStatus> validationFailure = doExecute(request, response, sessionId);
         if (validationFailure.isEmpty() && 200 == response.getStatus()) {
-            runtimeContext.closeSession(sessionId);
+            sessionManager.closeSession(sessionId);
         }
     }
     
     @Override
-    public reactor.core.publisher.Mono<Void> closeGracefully() {
-        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> closeAllSessions()) : reactor.core.publisher.Mono.empty();
-    }
-    
-    private void closeAllSessions() {
-        for (String each : runtimeContext.getSessionManager().getSessions()) {
-            runtimeContext.closeSession(each);
-        }
+    public Mono<Void> closeGracefully() {
+        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> sessionManager.closeAllSessions()) : Mono.empty();
     }
     
     @Override

@@ -40,11 +40,11 @@ public final class MCPRuntimeContextTestFactory {
      * @return MCP runtime context
      */
     public MCPRuntimeContext create(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcStatementExecutor statementExecutor) {
-        MCPSessionManager sessionManager = new MCPSessionManager();
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
+        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(capabilityBuilder, transactionStatementExecutor, statementExecutor, mock());
-        return new MCPRuntimeContext(sessionManager, transactionResourceManager, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
     }
 }

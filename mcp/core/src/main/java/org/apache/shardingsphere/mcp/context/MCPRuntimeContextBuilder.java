@@ -41,17 +41,18 @@ public final class MCPRuntimeContextBuilder {
      *
      * @param runtimeDatabases runtime databases
      * @return built context
+     * @throws IllegalArgumentException if runtime databases are empty
      */
     public MCPRuntimeContext build(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
-        MCPSessionManager sessionManager = new MCPSessionManager();
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
+        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(
                 capabilityBuilder, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, transactionResourceManager, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
     }
 }

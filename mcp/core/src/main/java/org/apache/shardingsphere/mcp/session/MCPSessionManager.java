@@ -17,24 +17,28 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * MCP session manager.
  */
-@Getter
+@RequiredArgsConstructor
 public final class MCPSessionManager {
+    
+    private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
     private final Set<String> sessions = new ConcurrentSkipListSet<>();
     
     /**
      * Create a new session.
      *
-     * @param sessionId session identifier
+     * @param sessionId session id
      */
     public void createSession(final String sessionId) {
         ShardingSpherePreconditions.checkState(sessions.add(sessionId), () -> new IllegalStateException("Session already exists."));
@@ -43,8 +47,8 @@ public final class MCPSessionManager {
     /**
      * Determine whether a session exists.
      *
-     * @param sessionId session identifier
-     * @return {@code true} when the session exists
+     * @param sessionId session id
+     * @return session exists or not
      */
     public boolean hasSession(final String sessionId) {
         return sessions.contains(sessionId);
@@ -56,6 +60,19 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        sessions.remove(sessionId);
+        try {
+            transactionResourceManager.closeSession(sessionId);
+        } finally {
+            sessions.remove(sessionId);
+        }
+    }
+    
+    /**
+     * Close all current sessions.
+     */
+    public void closeAllSessions() {
+        for (String each : new LinkedHashSet<>(sessions)) {
+            closeSession(each);
+        }
     }
 }

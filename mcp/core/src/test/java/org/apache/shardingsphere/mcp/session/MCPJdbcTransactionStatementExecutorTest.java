@@ -50,7 +50,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     @MethodSource("assertExecuteCases")
     void assertExecute(final String name, final String sql, final String expectedStatementType, final String expectedMessage) {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
@@ -75,7 +75,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     @Test
     void assertExecuteWithUnsupportedSavepoint() {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
@@ -90,7 +90,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     @Test
     void assertExecuteWithClassificationResult() {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
@@ -105,7 +105,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     @Test
     void assertExecuteWithInvalidCommand() {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
@@ -121,7 +121,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     void assertExecuteWithNoActiveTransaction() {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         doThrow(new IllegalStateException("Transaction is not active.")).when(jdbcTransactionResourceManager).commitTransaction("session-1");
-        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         

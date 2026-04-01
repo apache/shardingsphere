@@ -90,7 +90,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteWithUnknownCapability() {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPSQLExecutionFacade facade = createFacade("Unknown", new MCPSessionManager(), statementExecutor);
+        MCPSQLExecutionFacade facade = createFacade("Unknown", new MCPSessionManager(mock()), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -101,7 +101,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteQueryWithTruncation() {
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(1, true));
-        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor);
+        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(mock()), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
@@ -113,7 +113,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteUpdate() {
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.updateCount("UPDATE", 3));
-        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor);
+        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(mock()), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
@@ -123,7 +123,7 @@ class MCPSQLExecutionFacadeTest {
     
     @Test
     void assertExecuteTransactionCommand() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
@@ -138,7 +138,7 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteDdl() {
         MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.statementAck("CREATE", "Statement executed."));
-        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(mock()), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
@@ -151,7 +151,7 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteDcl() {
         MetadataRefreshCoordinator metadataRefreshCoordinator = mock(MetadataRefreshCoordinator.class);
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.statementAck("GRANT", "Statement executed."));
-        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(mock()), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
@@ -163,7 +163,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(), statementExecutor);
+        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(mock()), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -174,7 +174,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteExplainAnalyzeWithSupportedCapability() {
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(2, false));
-        MCPSQLExecutionFacade facade = createFacade("H2", new MCPSessionManager(), statementExecutor);
+        MCPSQLExecutionFacade facade = createFacade("H2", new MCPSessionManager(mock()), statementExecutor);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));

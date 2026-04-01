@@ -25,7 +25,7 @@ import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -34,11 +34,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 final class SessionManagedStdioTransportProvider extends StdioServerTransportProvider {
     
-    private final MCPRuntimeContext runtimeContext;
+    private final MCPSessionManager sessionManager;
     
-    SessionManagedStdioTransportProvider(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
+    SessionManagedStdioTransportProvider(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
-        this.runtimeContext = runtimeContext;
+        this.sessionManager = sessionManager;
     }
     
     @Override
@@ -55,7 +55,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         SessionClosingTransport managedTransport = new SessionClosingTransport(transport);
         McpServerSession session = sessionFactory.create(managedTransport);
         String sessionId = session.getId();
-        runtimeContext.getSessionManager().createSession(sessionId);
+        sessionManager.createSession(sessionId);
         managedTransport.bindSessionId(sessionId);
         return session;
     }
@@ -99,7 +99,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         
         private void closeManagedSession() {
             if (closed.compareAndSet(false, true)) {
-                runtimeContext.closeSession(sessionId.get());
+                sessionManager.closeSession(sessionId.get());
             }
         }
     }
