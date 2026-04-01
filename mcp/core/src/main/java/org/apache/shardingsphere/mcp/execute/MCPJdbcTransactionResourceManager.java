@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Manage MCP JDBC transaction-bound resources.
+ * MCP JDBC transaction resource manager.
  */
 @RequiredArgsConstructor
 public final class MCPJdbcTransactionResourceManager {
@@ -50,7 +50,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @throws IllegalStateException when the active transaction is bound to a different database
      */
     public Optional<Connection> findTransactionConnection(final String sessionId, final String databaseName) {
-        Optional<TransactionResourceContext> transactionResource = findTransactionResource(sessionId);
+        Optional<TransactionResourceContext> transactionResource = findTransactionResourceContext(sessionId);
         if (transactionResource.isEmpty()) {
             return Optional.empty();
         }
@@ -68,7 +68,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @throws IllegalStateException when the transaction is already active or the connection cannot be opened
      */
     public void beginTransaction(final String sessionId, final String databaseName) {
-        Optional<TransactionResourceContext> transactionResource = findTransactionResource(sessionId);
+        Optional<TransactionResourceContext> transactionResource = findTransactionResourceContext(sessionId);
         if (transactionResource.isPresent()) {
             if (!transactionResource.get().getDatabaseName().equals(databaseName)) {
                 throw new IllegalStateException("Cross-database transaction switching is not supported.");
@@ -91,7 +91,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @throws IllegalStateException when commit fails
      */
     public void commitTransaction(final String sessionId) {
-        TransactionResourceContext transactionResource = getRequiredTransactionResource(sessionId);
+        TransactionResourceContext transactionResource = getTransactionResourceContext(sessionId);
         try {
             transactionResource.getConnection().commit();
             transactionResource.getConnection().setAutoCommit(true);
@@ -108,7 +108,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @param sessionId session identifier
      */
     public void rollbackTransaction(final String sessionId) {
-        rollbackAndClose(sessionId, getRequiredTransactionResource(sessionId));
+        rollbackAndClose(sessionId, getTransactionResourceContext(sessionId));
     }
     
     /**
@@ -119,7 +119,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @throws IllegalStateException when the savepoint cannot be created
      */
     public void createSavepoint(final String sessionId, final String savepointName) {
-        TransactionResourceContext transactionResource = getRequiredTransactionResource(sessionId);
+        TransactionResourceContext transactionResource = getTransactionResourceContext(sessionId);
         String actualSavepointName = normalizeSavepointName(savepointName);
         try {
             transactionResource.addSavepoint(actualSavepointName, transactionResource.getConnection().setSavepoint(actualSavepointName));
@@ -136,7 +136,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @throws IllegalStateException when the savepoint does not exist or rollback fails
      */
     public void rollbackToSavepoint(final String sessionId, final String savepointName) {
-        TransactionResourceContext transactionResource = getRequiredTransactionResource(sessionId);
+        TransactionResourceContext transactionResource = getTransactionResourceContext(sessionId);
         Savepoint savepoint = transactionResource.findSavepoint(normalizeSavepointName(savepointName)).orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
         try {
             transactionResource.getConnection().rollback(savepoint);
@@ -153,7 +153,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @throws IllegalStateException when the savepoint does not exist or release fails
      */
     public void releaseSavepoint(final String sessionId, final String savepointName) {
-        TransactionResourceContext transactionResource = getRequiredTransactionResource(sessionId);
+        TransactionResourceContext transactionResource = getTransactionResourceContext(sessionId);
         String actualSavepointName = normalizeSavepointName(savepointName);
         Savepoint savepoint = transactionResource.findSavepoint(actualSavepointName).orElseThrow(() -> new IllegalStateException("Savepoint does not exist."));
         try {
@@ -170,16 +170,16 @@ public final class MCPJdbcTransactionResourceManager {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        Optional<TransactionResourceContext> transactionResource = findTransactionResource(sessionId);
+        Optional<TransactionResourceContext> transactionResource = findTransactionResourceContext(sessionId);
         transactionResource.ifPresent(optional -> rollbackAndClose(sessionId, optional));
     }
     
-    private Optional<TransactionResourceContext> findTransactionResource(final String sessionId) {
+    private Optional<TransactionResourceContext> findTransactionResourceContext(final String sessionId) {
         return Optional.ofNullable(transactionResources.get(sessionId));
     }
     
-    private TransactionResourceContext getRequiredTransactionResource(final String sessionId) {
-        return findTransactionResource(sessionId).orElseThrow(() -> new IllegalStateException("No active transaction."));
+    private TransactionResourceContext getTransactionResourceContext(final String sessionId) {
+        return findTransactionResourceContext(sessionId).orElseThrow(() -> new IllegalStateException("No active transaction."));
     }
     
     private void rollbackAndClose(final String sessionId, final TransactionResourceContext transactionResource) {
