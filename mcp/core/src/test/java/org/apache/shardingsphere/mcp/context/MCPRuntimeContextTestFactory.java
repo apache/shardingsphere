@@ -45,7 +45,6 @@ public final class MCPRuntimeContextTestFactory {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         TransactionCommandExecutor transactionCommandExecutor = new TransactionCommandExecutor(sessionManager, jdbcTransactionResourceManager);
         ExecuteQueryFacade executeQueryFacade = new ExecuteQueryFacade(capabilityBuilder, transactionCommandExecutor, statementExecutor, mock());
-        return new MCPRuntimeContext(
-                databaseMetadataSnapshots, sessionManager, statementExecutor, jdbcTransactionResourceManager, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
+        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, statementExecutor, jdbcTransactionResourceManager, capabilityBuilder, transactionCommandExecutor, executeQueryFacade);
     }
 }
