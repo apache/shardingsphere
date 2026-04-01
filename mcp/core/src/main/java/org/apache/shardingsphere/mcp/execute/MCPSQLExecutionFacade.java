@@ -28,10 +28,10 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import java.util.Optional;
 
 /**
- * Execute the unified MCP {@code execute_query} contract against a database execution backend.
+ * MCP SQL execution facade.
  */
 @RequiredArgsConstructor
-public final class ExecuteQueryFacade {
+public final class MCPSQLExecutionFacade {
     
     private final MCPCapabilityBuilder capabilityBuilder;
     

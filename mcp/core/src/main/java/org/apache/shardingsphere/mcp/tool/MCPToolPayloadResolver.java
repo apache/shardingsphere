@@ -77,7 +77,7 @@ public final class MCPToolPayloadResolver {
         if (executionRequest.getDatabase().isEmpty() || executionRequest.getSql().isEmpty()) {
             return error("invalid_request", "Database and sql are required.");
         }
-        ExecuteQueryResponse response = runtimeContext.getExecuteQueryFacade().execute(executionRequest);
+        ExecuteQueryResponse response = runtimeContext.getSqlExecutionFacade().execute(executionRequest);
         Object payload = payloadBuilder.createExecuteQueryPayload(response);
         return response.isSuccessful()
                 ? MCPToolPayloadResult.success(payload)

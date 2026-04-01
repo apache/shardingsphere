@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.context;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
-import org.apache.shardingsphere.mcp.execute.ExecuteQueryFacade;
+import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -40,12 +40,12 @@ public final class MCPRuntimeContext {
     
     private final MCPCapabilityBuilder capabilityBuilder;
     
-    private final ExecuteQueryFacade executeQueryFacade;
+    private final MCPSQLExecutionFacade sqlExecutionFacade;
     
     /**
-     * Close one MCP session and any bound JDBC transaction resources.
+     * Close session.
      *
-     * @param sessionId session identifier
+     * @param sessionId session id
      */
     public void closeSession(final String sessionId) {
         try {
