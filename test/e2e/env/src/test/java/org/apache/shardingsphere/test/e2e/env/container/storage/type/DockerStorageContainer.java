@@ -27,7 +27,6 @@ import org.apache.shardingsphere.test.e2e.env.container.constants.StorageContain
 import org.apache.shardingsphere.test.e2e.env.container.storage.StorageContainer;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountConfigurationResourceGenerator;
 import org.apache.shardingsphere.test.e2e.env.container.storage.mount.MountSQLResourceGenerator;
-import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerConnectOption;
 import org.apache.shardingsphere.test.e2e.env.container.storage.option.StorageContainerOption;
 import org.apache.shardingsphere.test.e2e.env.container.util.DockerImageVersion;
 import org.apache.shardingsphere.test.e2e.env.container.util.JdbcConnectCheckingWaitStrategy;
@@ -123,7 +122,7 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
         String password = option.getCreateOption().isSupportDockerEntrypoint()
                 ? StorageContainerConstants.CHECK_READY_PASSWORD
                 : option.getCreateOption().getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse("");
-        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> createConnection(option.getConnectOption(), getURL(), user, password)));
+        setWaitStrategy(new JdbcConnectCheckingWaitStrategy(() -> DriverManager.getConnection(getURL(), user, password)));
         withStartupTimeout(Duration.ofSeconds(option.getCreateOption().getStartupTimeoutSeconds()));
     }
     
@@ -140,21 +139,12 @@ public final class DockerStorageContainer extends DockerE2EContainer implements 
             return;
         }
         try (
-                Connection connection = createConnection(option.getConnectOption(), option.getConnectOption().getURL("localhost", getFirstMappedPort()),
+                Connection connection = DriverManager.getConnection(option.getConnectOption().getURL("localhost", getFirstMappedPort()),
                         option.getCreateOption().getDefaultUserWhenUnsupportedDockerEntrypoint().orElse(""),
                         option.getCreateOption().getDefaultPasswordWhenUnsupportedDockerEntrypoint().orElse(""))) {
             for (String each : new MountSQLResourceGenerator(option.getType(), option.getCreateOption()).generate(majorVersion, scenario).keySet()) {
                 SQLScriptUtils.execute(connection, each);
             }
-        }
-    }
-    
-    private static Connection createConnection(final StorageContainerConnectOption connectOption, final String url, final String user, final String password) throws SQLException {
-        try {
-            Class.forName(connectOption.getDriverClassName());
-            return DriverManager.getConnection(url, user, password);
-        } catch (final ClassNotFoundException ex) {
-            throw new SQLException("Driver class not found: " + connectOption.getDriverClassName(), ex);
         }
     }
     
