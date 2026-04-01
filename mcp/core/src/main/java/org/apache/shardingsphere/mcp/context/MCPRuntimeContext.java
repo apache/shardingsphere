@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.context;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
@@ -34,6 +35,7 @@ public final class MCPRuntimeContext {
     
     private final MCPSessionManager sessionManager;
     
+    @Getter(AccessLevel.NONE)
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
