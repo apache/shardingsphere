@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -31,14 +31,14 @@ final class StreamableHttpMCPRequestValidator {
     
     private static final String PROTOCOL_HEADER = "MCP-Protocol-Version";
     
-    private final MCPRuntimeContext runtimeContext;
+    private final MCPSessionManager sessionManager;
     
     Optional<ResponseStatus> validateSessionId(final String sessionId) {
         return sessionId.isEmpty() ? Optional.of(new ResponseStatus(400, "Session ID required in mcp-session-id header")) : Optional.empty();
     }
     
     Optional<ResponseStatus> validateSessionRequest(final HttpServletRequest request, final String sessionId) {
-        if (!runtimeContext.getSessionManager().hasSession(sessionId)) {
+        if (!sessionManager.hasSession(sessionId)) {
             return Optional.of(new ResponseStatus(404, "Session does not exist."));
         }
         String actualProtocolVersion = normalizeProtocolVersion(request.getHeader(PROTOCOL_HEADER));

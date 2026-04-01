@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +27,6 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +36,7 @@ class StreamableHttpMCPRequestValidatorTest {
     
     @Test
     void assertValidateSessionIdWithMissingSessionId() {
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(mock(MCPRuntimeContext.class));
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(mock());
         StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionId("").orElseThrow();
         assertThat(actual.getStatusCode(), is(400));
         assertThat(actual.getMessage(), is("Session ID required in mcp-session-id header"));
@@ -48,7 +46,7 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequestWithUnknownSession() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(false);
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(sessionManager);
         HttpServletRequest request = mock(HttpServletRequest.class);
         StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionRequest(request, "session-id").orElseThrow();
         assertThat(actual.getStatusCode(), is(404));
@@ -59,7 +57,7 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequestWithProtocolMismatch() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(sessionManager);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(PROTOCOL_HEADER)).thenReturn("2024-11-05");
         StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionRequest(request, "session-id").orElseThrow();
@@ -71,7 +69,7 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequest() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(sessionManager);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(PROTOCOL_HEADER)).thenReturn(MCPTransportConstants.PROTOCOL_VERSION);
         Optional<StreamableHttpMCPRequestValidator.ResponseStatus> actual = validator.validateSessionRequest(request, "session-id");
@@ -82,15 +80,9 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequestWithoutProtocolHeader() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
-        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(createRuntimeContext(sessionManager));
+        StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(sessionManager);
         HttpServletRequest request = mock(HttpServletRequest.class);
         Optional<StreamableHttpMCPRequestValidator.ResponseStatus> actual = validator.validateSessionRequest(request, "session-id");
         assertTrue(actual.isEmpty());
-    }
-    
-    private MCPRuntimeContext createRuntimeContext(final MCPSessionManager sessionManager) {
-        MCPRuntimeContext result = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
-        when(result.getSessionManager()).thenReturn(sessionManager);
-        return result;
     }
 }
