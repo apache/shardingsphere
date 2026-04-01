@@ -124,6 +124,18 @@ build_pairwise_matrix() {
   ' > "$job_file"
   declare -a jobs job_scores job_scenarios job_has_additional selected_indexes selected_flags
   declare -a job_pair_1 job_pair_2 job_pair_3 job_pair_4 job_pair_5 job_pair_6
+  jobs=()
+  job_scores=()
+  job_scenarios=()
+  job_has_additional=()
+  selected_indexes=()
+  selected_flags=()
+  job_pair_1=()
+  job_pair_2=()
+  job_pair_3=()
+  job_pair_4=()
+  job_pair_5=()
+  job_pair_6=()
   local pairs score scenario has_additional job_json idx
   local pair1 pair2 pair3 pair4 pair5 pair6
   local best_idx best_score candidate_score candidate_new
