@@ -207,7 +207,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private void closeAllSessions() {
-        for (String each : runtimeContext.getSessionManager().getSessions().keySet()) {
+        for (String each : runtimeContext.getSessionManager().getSessions()) {
             runtimeContext.closeSession(each);
         }
     }

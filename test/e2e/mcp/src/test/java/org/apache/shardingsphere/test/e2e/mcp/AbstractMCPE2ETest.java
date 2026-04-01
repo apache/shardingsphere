@@ -210,8 +210,7 @@ abstract class AbstractMCPE2ETest {
         this.httpServer = httpServer;
     }
     
-    private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs,
-                                                   final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+    private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         MCPSessionManager sessionManager = new MCPSessionManager();
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, jdbcTransactionResourceManager);

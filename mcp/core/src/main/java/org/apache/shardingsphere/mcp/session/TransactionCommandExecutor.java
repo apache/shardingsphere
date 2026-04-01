@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.session;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
@@ -46,7 +47,7 @@ public final class TransactionCommandExecutor {
     public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         try {
-            sessionManager.getSession(sessionId);
+            ShardingSpherePreconditions.checkState(sessionManager.hasSession(sessionId), () -> new IllegalStateException("Session does not exist."));
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
                 return executeBeginTransaction(sessionId, databaseName, databaseCapability, statementType);
             }

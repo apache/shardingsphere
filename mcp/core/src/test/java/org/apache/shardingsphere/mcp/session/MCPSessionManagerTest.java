@@ -17,11 +17,9 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import org.apache.shardingsphere.mcp.session.MCPSessionManager.MCPSessionContext;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,10 +27,7 @@ class MCPSessionManagerTest {
     
     @Test
     void assertCreateSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager();
-        MCPSessionContext actual = sessionManager.createSession("session-1");
-        assertThat(actual.getSessionId(), is("session-1"));
-        assertFalse(actual.isClosed());
+        assertDoesNotThrow(() -> new MCPSessionManager().createSession("session-1"));
     }
     
     @Test
@@ -46,8 +41,8 @@ class MCPSessionManagerTest {
     void assertCloseSession() {
         MCPSessionManager sessionManager = new MCPSessionManager();
         sessionManager.createSession("session-1");
-        MCPSessionContext sessionContext = sessionManager.getSession("session-1");
+        assertTrue(sessionManager.hasSession("session-1"));
         sessionManager.closeSession("session-1");
-        assertTrue(sessionContext.isClosed());
+        assertFalse(sessionManager.hasSession("session-1"));
     }
 }

@@ -17,14 +17,11 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * MCP session manager.
@@ -32,22 +29,15 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public final class MCPSessionManager {
     
-    private final Map<String, MCPSessionContext> sessions = new ConcurrentHashMap<>();
+    private final Set<String> sessions = new ConcurrentSkipListSet<>();
     
     /**
      * Create a new session.
      *
      * @param sessionId session identifier
-     * @return created session context
      */
-    public MCPSessionContext createSession(final String sessionId) {
-        MCPSessionContext result = new MCPSessionContext(sessionId);
-        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, result), () -> new IllegalStateException("Session already exists."));
-        return result;
-    }
-    
-    MCPSessionContext getSession(final String sessionId) {
-        return Optional.ofNullable(sessions.get(sessionId)).orElseThrow(() -> new IllegalStateException("Session does not exist."));
+    public void createSession(final String sessionId) {
+        ShardingSpherePreconditions.checkState(sessions.add(sessionId), () -> new IllegalStateException("Session already exists."));
     }
     
     /**
@@ -57,7 +47,7 @@ public final class MCPSessionManager {
      * @return {@code true} when the session exists
      */
     public boolean hasSession(final String sessionId) {
-        return sessions.containsKey(sessionId);
+        return sessions.contains(sessionId);
     }
     
     /**
@@ -66,25 +56,6 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        MCPSessionContext sessionContext = sessions.remove(sessionId);
-        if (null != sessionContext) {
-            sessionContext.close();
-        }
-    }
-    
-    /**
-     * MCP session context.
-     */
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    @Getter
-    public static final class MCPSessionContext {
-        
-        private final String sessionId;
-        
-        private boolean closed;
-        
-        private void close() {
-            closed = true;
-        }
+        sessions.remove(sessionId);
     }
 }
