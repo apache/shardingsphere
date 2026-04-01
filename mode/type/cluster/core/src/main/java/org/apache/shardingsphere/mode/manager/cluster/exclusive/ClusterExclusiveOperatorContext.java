@@ -24,9 +24,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.mode.repository.cluster.core.lock.DistributedLockHolder;
 import org.apache.shardingsphere.mode.repository.cluster.lock.DistributedLock;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -37,35 +35,23 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
     
     private final ClusterPersistRepository repository;
     
-    private final Collection<String> exclusiveOperationKeys = new CopyOnWriteArraySet<>();
-    
     @Override
     public Optional<ExclusiveLockHandle> start(final String operationKey, final long timeoutMillis) {
-        if (!exclusiveOperationKeys.add(operationKey)) {
-            return Optional.empty();
-        }
-        DistributedLock distributedLock = DistributedLockHolder.getDistributedLock(operationKey, repository);
+        final DistributedLock distributedLock = DistributedLockHolder.getDistributedLock(operationKey, repository);
         if (!distributedLock.tryLock(timeoutMillis)) {
-            exclusiveOperationKeys.remove(operationKey);
             return Optional.empty();
         }
-        return Optional.of(new ClusterExclusiveLockHandle(operationKey, distributedLock, exclusiveOperationKeys));
+        return Optional.of(new ClusterExclusiveLockHandle(distributedLock));
     }
     
     private static final class ClusterExclusiveLockHandle implements ExclusiveLockHandle {
         
-        private final String operationKey;
-        
         private final DistributedLock distributedLock;
-        
-        private final Collection<String> exclusiveOperationKeys;
         
         private final AtomicBoolean closed = new AtomicBoolean();
         
-        private ClusterExclusiveLockHandle(final String operationKey, final DistributedLock distributedLock, final Collection<String> exclusiveOperationKeys) {
-            this.operationKey = operationKey;
+        private ClusterExclusiveLockHandle(final DistributedLock distributedLock) {
             this.distributedLock = distributedLock;
-            this.exclusiveOperationKeys = exclusiveOperationKeys;
         }
         
         @Override
@@ -73,11 +59,7 @@ public final class ClusterExclusiveOperatorContext implements ExclusiveOperatorC
             if (!closed.compareAndSet(false, true)) {
                 return;
             }
-            try {
-                distributedLock.unlock();
-            } finally {
-                exclusiveOperationKeys.remove(operationKey);
-            }
+            distributedLock.unlock();
         }
     }
 }

@@ -32,7 +32,6 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -40,51 +39,48 @@ class ClusterExclusiveOperatorContextTest {
     
     @Test
     void assertStartReturnsHandle() {
-        StubDistributedLock distributedLock = new StubDistributedLock(true);
+        final StubDistributedLock distributedLock = new StubDistributedLock(true);
         assertTrue(new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).isPresent());
         assertThat(distributedLock.tryLockCallCount, is(1));
     }
     
     @Test
-    void assertStartReturnsEmptyWhenKeyExists() {
-        StubDistributedLock distributedLock = new StubDistributedLock(true);
-        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
-        ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
-        assertFalse(context.start("op", 50L).isPresent());
-        assertThat(distributedLock.tryLockCallCount, is(1));
-        lockHandle.close();
+    void assertStartPassesTimeoutMillisToDistributedLock() {
+        final long timeoutMillis = 50L;
+        final StubDistributedLock distributedLock = new StubDistributedLock(true);
+        new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", timeoutMillis);
+        assertThat(distributedLock.timeoutMillis, is(timeoutMillis));
     }
     
     @Test
     void assertCloseUnlock() {
-        StubDistributedLock distributedLock = new StubDistributedLock(true);
+        final StubDistributedLock distributedLock = new StubDistributedLock(true);
         new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).orElseThrow(AssertionError::new).close();
         assertThat(distributedLock.unlockCallCount, is(1));
     }
     
     @Test
-    void assertStartReturnsHandleAfterClose() {
-        StubDistributedLock distributedLock = new StubDistributedLock(true, true);
-        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
-        ExclusiveLockHandle firstHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
-        firstHandle.close();
-        Optional<ExclusiveLockHandle> actual = context.start("op", 50L);
-        assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow(AssertionError::new), not(firstHandle));
+    void assertCloseUnlockOnlyOnce() {
+        final StubDistributedLock distributedLock = new StubDistributedLock(true);
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
+        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        lockHandle.close();
+        lockHandle.close();
+        assertThat(distributedLock.unlockCallCount, is(1));
     }
     
     @Test
-    void assertStartRemovesOperationKeyAfterTryLockFailure() {
-        StubDistributedLock distributedLock = new StubDistributedLock(false, true);
-        ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
-        assertFalse(context.start("op", 50L).isPresent());
-        assertTrue(context.start("op", 50L).isPresent());
-        assertThat(distributedLock.tryLockCallCount, is(2));
+    void assertStartReturnsEmptyAfterTryLockFailure() {
+        final StubDistributedLock distributedLock = new StubDistributedLock(false);
+        assertFalse(new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).isPresent());
+        assertThat(distributedLock.tryLockCallCount, is(1));
     }
     
     private static final class StubDistributedLock implements DistributedLock {
         
         private final List<Boolean> tryLockResults;
+        
+        private long timeoutMillis;
         
         private int tryLockCallCount;
         
@@ -99,6 +95,7 @@ class ClusterExclusiveOperatorContextTest {
         
         @Override
         public boolean tryLock(final long timeoutMillis) {
+            this.timeoutMillis = timeoutMillis;
             tryLockCallCount++;
             return tryLockResults.remove(0);
         }
