@@ -47,16 +47,14 @@ public final class MCPJdbcTransactionResourceManager {
      * @param sessionId session identifier
      * @param databaseName logical database name
      * @return transaction-bound connection when present
-     * @throws IllegalStateException when the active transaction is bound to a different database
      */
     public Optional<Connection> findTransactionConnection(final String sessionId, final String databaseName) {
         Optional<TransactionResourceContext> transactionResource = findTransactionResourceContext(sessionId);
         if (transactionResource.isEmpty()) {
             return Optional.empty();
         }
-        if (!transactionResource.get().getDatabaseName().equals(databaseName)) {
-            throw new IllegalStateException("Cross-database transaction switching is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(transactionResource.get().getDatabaseName().equals(databaseName),
+                () -> new IllegalStateException("Cross-database transaction switching is not supported."));
         return Optional.of(transactionResource.get().getConnection());
     }
     
@@ -70,9 +68,7 @@ public final class MCPJdbcTransactionResourceManager {
     public void beginTransaction(final String sessionId, final String databaseName) {
         Optional<TransactionResourceContext> transactionResource = findTransactionResourceContext(sessionId);
         if (transactionResource.isPresent()) {
-            if (!transactionResource.get().getDatabaseName().equals(databaseName)) {
-                throw new IllegalStateException("Cross-database transaction switching is not supported.");
-            }
+            ShardingSpherePreconditions.checkState(transactionResource.get().getDatabaseName().equals(databaseName), () -> new IllegalStateException("Cross-database transaction switching is not supported."));
             throw new IllegalStateException("Transaction already active.");
         }
         try {
