@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MCPJdbcMetadataLoader;
-import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
+import org.apache.shardingsphere.mcp.metadata.MCPJdbcMetadataRefresher;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -51,12 +51,11 @@ public final class MCPRuntimeContextBuilder {
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
-        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        DatabaseMetadataSnapshots databaseMetadataSnapshots = metadataLoader.load(runtimeDatabases);
+        DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(
                 capabilityBuilder, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor,
-                new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots, metadataLoader));
+                new MCPJdbcMetadataRefresher(runtimeDatabases, databaseMetadataSnapshots));
         return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
     }
 }

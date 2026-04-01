@@ -26,16 +26,14 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Metadata refresh coordinator.
+ * MCP JDBC metadata refresh coordinator.
  */
 @RequiredArgsConstructor
-public final class MetadataRefreshCoordinator {
+public final class MCPJdbcMetadataRefresher {
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
-    
-    private final MCPJdbcMetadataLoader metadataLoader;
     
     /**
      * Refresh metadata snapshot for one logical database.
@@ -43,7 +41,7 @@ public final class MetadataRefreshCoordinator {
      * @param databaseName logical database name
      */
     public void refresh(final String databaseName) {
-        DatabaseMetadataSnapshot databaseSnapshot = metadataLoader.load(Map.of(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)))
+        DatabaseMetadataSnapshot databaseSnapshot = new MCPJdbcMetadataLoader().load(Map.of(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)))
                 .findSnapshot(databaseName).orElseThrow(() -> new IllegalStateException(String.format("Failed to refresh metadata for database `%s`.", databaseName)));
         databaseMetadataSnapshots.replaceSnapshot(databaseName, databaseSnapshot);
     }
