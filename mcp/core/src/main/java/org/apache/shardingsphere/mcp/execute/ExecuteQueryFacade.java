@@ -54,7 +54,6 @@ public final class ExecuteQueryFacade {
         if (databaseCapability.isEmpty()) {
             return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
         }
-        DatabaseCapability actualDatabaseCapability = databaseCapability.get();
         ClassificationResult classificationResult;
         try {
             classificationResult = new StatementClassifier().classify(executionRequest.getSql());
@@ -63,33 +62,26 @@ public final class ExecuteQueryFacade {
         } catch (final IllegalArgumentException ex) {
             return recordFailure(executionRequest, "QUERY", MCPErrorCode.INVALID_REQUEST, ex.getMessage());
         }
-        if (!actualDatabaseCapability.getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
+        if (!databaseCapability.get().getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
             return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
         switch (classificationResult.getStatementClass()) {
             case TRANSACTION_CONTROL:
             case SAVEPOINT:
-                return recordResult(executionRequest, transactionStatementExecutor.execute(executionRequest.getSessionId(),
-                        executionRequest.getDatabase(), actualDatabaseCapability, classificationResult),
-                        classificationResult.getStatementType());
+                return recordResult(executionRequest, transactionStatementExecutor.execute(
+                        executionRequest.getSessionId(), executionRequest.getDatabase(), databaseCapability.get(), classificationResult), classificationResult.getStatementType());
             case QUERY:
-                return recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult),
-                        classificationResult.getStatementType());
+                return recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
             case DML:
-                return recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult),
-                        classificationResult.getStatementType());
+                return recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
             case DDL:
-                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult),
-                        classificationResult.getStatementType());
+                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult), classificationResult.getStatementType());
             case DCL:
-                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult),
-                        classificationResult.getStatementType());
+                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult), classificationResult.getStatementType());
             case EXPLAIN_ANALYZE:
-                if (!actualDatabaseCapability.isSupportsExplainAnalyze()) {
-                    return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
-                }
-                return recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult),
-                        classificationResult.getStatementType());
+                return databaseCapability.get().isSupportsExplainAnalyze()
+                        ? recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType())
+                        : recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
             default:
                 return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
         }
