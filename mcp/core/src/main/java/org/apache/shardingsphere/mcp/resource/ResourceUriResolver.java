@@ -42,11 +42,11 @@ public final class ResourceUriResolver {
             "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
             "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
             "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
+            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
             "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
             "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
-            "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-            "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}");
+            "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}");
     
     /**
      * Get supported resource URI surfaces.
