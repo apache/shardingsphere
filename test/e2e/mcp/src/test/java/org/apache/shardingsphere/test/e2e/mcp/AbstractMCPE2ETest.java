@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MetadataObject;
 import org.apache.shardingsphere.mcp.resource.MetadataObjectType;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -213,12 +214,13 @@ abstract class AbstractMCPE2ETest {
     private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, transactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MCPSQLExecutionFacade executionFacade = new MCPSQLExecutionFacade(
-                capabilityBuilder, sessionManager, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, capabilityBuilder, executionFacade);
+                capabilityBuilder, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, capabilityBuilder, executionFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

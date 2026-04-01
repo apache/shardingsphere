@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import static org.mockito.Mockito.mock;
@@ -42,9 +43,10 @@ public final class MCPRuntimeContextTestFactory {
     public MCPRuntimeContext create(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcStatementExecutor statementExecutor) {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(capabilityBuilder, sessionManager, transactionStatementExecutor, statementExecutor, mock());
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
+        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(capabilityBuilder, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, mock());
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
     }
 }

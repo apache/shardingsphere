@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPRequestValidator.ResponseStatus;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
 
@@ -67,15 +68,19 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final MCPSessionManager sessionManager;
     
+    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
+    
     private final StreamableHttpMCPRequestValidator requestValidator;
     
     private final ServerTransportSecurityValidator securityValidator;
     
     private final AtomicBoolean closed;
     
-    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
+    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final MCPSessionExecutionCoordinator sessionExecutionCoordinator,
+                             final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
         this.sessionManager = sessionManager;
+        this.sessionExecutionCoordinator = sessionExecutionCoordinator;
         requestValidator = new StreamableHttpMCPRequestValidator(sessionManager);
         securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
         closed = new AtomicBoolean();
@@ -198,13 +203,13 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         String sessionId = Objects.toString(request.getHeader(SESSION_HEADER), "").trim();
         Optional<ResponseStatus> validationFailure = doExecute(request, response, sessionId);
         if (validationFailure.isEmpty() && 200 == response.getStatus()) {
-            sessionManager.closeSession(sessionId);
+            sessionExecutionCoordinator.closeSession(sessionId);
         }
     }
     
     @Override
     public Mono<Void> closeGracefully() {
-        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> sessionManager.closeAllSessions()) : Mono.empty();
+        return closed.compareAndSet(false, true) ? delegate.closeGracefully().doFinally(ignored -> sessionExecutionCoordinator.closeAllSessions()) : Mono.empty();
     }
     
     @Override

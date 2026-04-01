@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -94,7 +95,7 @@ class MCPSQLExecutionFacadeTest {
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(
-                capabilityBuilder, sessionManager, new MCPJdbcTransactionStatementExecutor(sessionManager, mock(MCPJdbcTransactionResourceManager.class)),
+                capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, mock(MCPJdbcTransactionResourceManager.class)),
                 statementExecutor, mock(MetadataRefreshCoordinator.class));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
@@ -215,7 +216,7 @@ class MCPSQLExecutionFacadeTest {
         }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
-        return new MCPSQLExecutionFacade(capabilityBuilder, sessionManager, new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager),
+        return new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager),
                 statementExecutor, metadataRefreshCoordinator);
     }
     

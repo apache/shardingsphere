@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.Map;
@@ -47,12 +48,13 @@ public final class MCPRuntimeContextBuilder {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(
-                capabilityBuilder, sessionManager, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
+                capabilityBuilder, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(runtimeDatabases, databaseMetadataSnapshots));
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
     }
 }

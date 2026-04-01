@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -161,7 +162,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
                                                final MCPJdbcTransactionResourceManager transactionResourceManager) {
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
-        return new MCPSQLExecutionFacade(capabilityBuilder, sessionManager, new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager),
+        return new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager),
                 statementExecutor, mock(MetadataRefreshCoordinator.class));
     }
     

@@ -25,6 +25,7 @@ import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
 
@@ -36,9 +37,12 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     private final MCPSessionManager sessionManager;
     
-    SessionManagedStdioTransportProvider(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper) {
+    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
+    
+    SessionManagedStdioTransportProvider(final MCPSessionManager sessionManager, final MCPSessionExecutionCoordinator sessionExecutionCoordinator, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
         this.sessionManager = sessionManager;
+        this.sessionExecutionCoordinator = sessionExecutionCoordinator;
     }
     
     @Override
@@ -99,7 +103,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
         
         private void closeManagedSession() {
             if (closed.compareAndSet(false, true)) {
-                sessionManager.closeSession(sessionId.get());
+                sessionExecutionCoordinator.closeSession(sessionId.get());
             }
         }
     }

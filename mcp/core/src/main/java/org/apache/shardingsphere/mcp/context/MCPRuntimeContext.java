@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.resource.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 /**
@@ -32,6 +33,8 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 public final class MCPRuntimeContext {
     
     private final MCPSessionManager sessionManager;
+    
+    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     

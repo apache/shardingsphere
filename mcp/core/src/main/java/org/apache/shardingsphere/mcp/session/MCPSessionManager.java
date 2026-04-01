@@ -24,9 +24,9 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 /**
  * MCP session manager.
@@ -58,25 +58,6 @@ public final class MCPSessionManager {
     }
     
     /**
-     * Execute one operation while holding the session execution lock.
-     *
-     * @param sessionId session id
-     * @param operation guarded operation
-     * @param <T> return type
-     * @return operation result
-     */
-    public <T> T executeWithSessionLock(final String sessionId, final Supplier<T> operation) {
-        SessionContext sessionContext = getRequiredSessionContext(sessionId);
-        sessionContext.executionLock.lock();
-        try {
-            ShardingSpherePreconditions.checkState(sessionContext == sessions.get(sessionId), MCPSessionNotExistedException::new);
-            return operation.get();
-        } finally {
-            sessionContext.executionLock.unlock();
-        }
-    }
-    
-    /**
      * Close the session and rollback any pending work.
      *
      * @param sessionId session identifier
@@ -86,18 +67,10 @@ public final class MCPSessionManager {
         if (sessionContext.isEmpty()) {
             return;
         }
-        sessionContext.get().executionLock.lock();
         try {
-            if (sessionContext.get() != sessions.get(sessionId)) {
-                return;
-            }
-            try {
-                transactionResourceManager.closeSession(sessionId);
-            } finally {
-                sessions.remove(sessionId, sessionContext.get());
-            }
+            transactionResourceManager.closeSession(sessionId);
         } finally {
-            sessionContext.get().executionLock.unlock();
+            sessions.remove(sessionId, sessionContext.get());
         }
     }
     
@@ -110,16 +83,24 @@ public final class MCPSessionManager {
         }
     }
     
-    private Optional<SessionContext> findSessionContext(final String sessionId) {
+    Optional<SessionContext> findSessionContext(final String sessionId) {
         return Optional.ofNullable(sessions.get(sessionId));
     }
     
-    private SessionContext getRequiredSessionContext(final String sessionId) {
+    SessionContext getRequiredSessionContext(final String sessionId) {
         return findSessionContext(sessionId).orElseThrow(MCPSessionNotExistedException::new);
     }
     
-    private static final class SessionContext {
+    Set<String> getSessionIds() {
+        return new LinkedHashSet<>(sessions.keySet());
+    }
+    
+    static final class SessionContext {
         
         private final ReentrantLock executionLock = new ReentrantLock(true);
+        
+        ReentrantLock getExecutionLock() {
+            return executionLock;
+        }
     }
 }

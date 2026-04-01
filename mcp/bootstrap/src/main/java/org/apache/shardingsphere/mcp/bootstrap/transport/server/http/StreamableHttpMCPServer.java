@@ -59,7 +59,8 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
         this.config = config;
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
-        transportServlet = new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), jsonMapper, config.getBindHost(), config.getEndpointPath());
+        transportServlet = new StreamableHttpMCPServlet(
+                runtimeContext.getSessionManager(), runtimeContext.getSessionExecutionCoordinator(), jsonMapper, config.getBindHost(), config.getEndpointPath());
     }
     
     @Override

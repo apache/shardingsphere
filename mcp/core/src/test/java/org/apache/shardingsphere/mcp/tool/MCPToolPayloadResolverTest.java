@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
@@ -48,7 +49,6 @@ class MCPToolPayloadResolverTest {
     @Test
     void assertResolveWithUnsupportedTool() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "unsupported_tool", Map.of());
-        
         assertFalse(actual.isSuccessful());
         assertThat(actual.getErrorCode(), is("invalid_request"));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Unsupported tool."));
@@ -57,7 +57,6 @@ class MCPToolPayloadResolverTest {
     @Test
     void assertResolveServiceCapabilities() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "get_capabilities", Map.of());
-        
         assertTrue(actual.isSuccessful());
         assertThat(actual.getPayload(), isA(ServiceCapability.class));
         assertTrue(((ServiceCapability) actual.getPayload()).getSupportedTools().contains("execute_query"));
@@ -66,7 +65,6 @@ class MCPToolPayloadResolverTest {
     @Test
     void assertResolveDatabaseCapabilitiesWithUnknownDatabase() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "get_capabilities", Map.of("database", "missing_db"));
-        
         assertFalse(actual.isSuccessful());
         assertThat(actual.getErrorCode(), is("not_found"));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Database capability does not exist."));
@@ -75,7 +73,6 @@ class MCPToolPayloadResolverTest {
     @Test
     void assertResolveExecuteQueryWithInvalidRequest() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "execute_query", Map.of("database", "logic_db"));
-        
         assertFalse(actual.isSuccessful());
         assertThat(actual.getErrorCode(), is("invalid_request"));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Database and sql are required."));
@@ -85,7 +82,6 @@ class MCPToolPayloadResolverTest {
     void assertResolveExecuteQuery() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "max_rows", 1));
-        
         assertTrue(actual.isSuccessful());
         assertThat(actual.getPayload(), isA(Map.class));
         assertThat(((Map<?, ?>) actual.getPayload()).get("result_kind"), is("result_set"));
@@ -96,7 +92,6 @@ class MCPToolPayloadResolverTest {
     @Test
     void assertResolveMetadataTool() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "list_databases", Map.of());
-        
         assertTrue(actual.isSuccessful());
         assertThat(actual.getPayload(), isA(Map.class));
         assertThat(((List<?>) ((Map<?, ?>) actual.getPayload()).get("items")).size(), is(2));
@@ -105,14 +100,15 @@ class MCPToolPayloadResolverTest {
     @Test
     void assertResolveMetadataToolWithInvalidRequest() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "list_tables", Map.of("database", "logic_db"));
-        
         assertFalse(actual.isSuccessful());
         assertThat(actual.getErrorCode(), is("invalid_request"));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Schema is required."));
     }
     
     private MCPToolPayloadResolver createResolver() {
-        return new MCPToolPayloadResolver(new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), createStatementExecutor()));
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), createStatementExecutor());
+        runtimeContext.getSessionManager().createSession("session-1");
+        return new MCPToolPayloadResolver(runtimeContext);
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {

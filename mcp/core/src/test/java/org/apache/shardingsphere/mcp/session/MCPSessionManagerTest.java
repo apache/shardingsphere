@@ -20,13 +20,6 @@ package org.apache.shardingsphere.mcp.session;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -60,21 +53,6 @@ class MCPSessionManagerTest {
     }
     
     @Test
-    void assertExecuteWithSessionLock() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        sessionManager.createSession("session-1");
-        String actual = sessionManager.executeWithSessionLock("session-1", () -> "done");
-        assertThat(actual, is("done"));
-    }
-    
-    @Test
-    void assertExecuteWithSessionLockAndMissingSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> sessionManager.executeWithSessionLock("session-1", () -> "done"));
-        assertThat(actual.getMessage(), is("Session does not exist."));
-    }
-    
-    @Test
     void assertCloseSession() {
         MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
@@ -91,40 +69,6 @@ class MCPSessionManagerTest {
         sessionManager.closeSession("session-1");
         verify(transactionResourceManager).closeSession("session-1");
         assertFalse(sessionManager.hasSession("session-1"));
-    }
-    
-    @Test
-    void assertCloseSessionWaitsForGuardedExecution() throws InterruptedException, ExecutionException {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
-        sessionManager.createSession("session-1");
-        CountDownLatch executionStarted = new CountDownLatch(1);
-        CountDownLatch releaseExecution = new CountDownLatch(1);
-        CountDownLatch closeCompleted = new CountDownLatch(1);
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        try {
-            Future<String> executionFuture = executorService.submit(() -> sessionManager.executeWithSessionLock("session-1", () -> {
-                executionStarted.countDown();
-                awaitLatch(releaseExecution);
-                return "done";
-            }));
-            assertTrue(executionStarted.await(1, TimeUnit.SECONDS));
-            assertFalse(executionFuture.isDone());
-            Future<Void> closeFuture = executorService.submit(() -> {
-                sessionManager.closeSession("session-1");
-                closeCompleted.countDown();
-                return null;
-            });
-            assertFalse(closeFuture.isDone());
-            assertFalse(closeCompleted.await(200, TimeUnit.MILLISECONDS));
-            releaseExecution.countDown();
-            assertThat(executionFuture.get(), is("done"));
-            closeFuture.get();
-            verify(transactionResourceManager).closeSession("session-1");
-            assertFalse(sessionManager.hasSession("session-1"));
-        } finally {
-            executorService.shutdownNow();
-        }
     }
     
     @Test
@@ -152,12 +96,4 @@ class MCPSessionManagerTest {
         assertFalse(sessionManager.hasSession("session-2"));
     }
     
-    private void awaitLatch(final CountDownLatch latch) {
-        try {
-            latch.await(1, TimeUnit.SECONDS);
-        } catch (final InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(ex);
-        }
-    }
 }
