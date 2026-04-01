@@ -217,7 +217,7 @@ abstract class AbstractMCPE2ETest {
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, transactionResourceManager);
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
         MCPSQLExecutionFacade executionFacade = new MCPSQLExecutionFacade(
-                capabilityBuilder, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
+                capabilityBuilder, sessionManager, transactionStatementExecutor, statementExecutor, new MetadataRefreshCoordinator(databaseConfigs, databaseMetadataSnapshots));
         return new MCPRuntimeContext(sessionManager, databaseMetadataSnapshots, capabilityBuilder, executionFacade);
     }
     
