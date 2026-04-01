@@ -118,6 +118,21 @@ class MCPJdbcTransactionStatementExecutorTest {
     }
     
     @Test
+    void assertExecuteWithMissingSession() {
+        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
+        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
+        
+        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
+        
+        assertFalse(actual.isSuccessful());
+        assertTrue(actual.getError().isPresent());
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
+        assertThat(actual.getError().get().getMessage(), is("Session does not exist."));
+        verifyNoInteractions(jdbcTransactionResourceManager);
+    }
+    
+    @Test
     void assertExecuteWithNoActiveTransaction() {
         MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         doThrow(new IllegalStateException("Transaction is not active.")).when(jdbcTransactionResourceManager).commitTransaction("session-1");

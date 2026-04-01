@@ -88,6 +88,23 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
+    void assertExecuteWithMissingSession() {
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
+        MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
+                new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
+        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
+        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(
+                capabilityBuilder, sessionManager, new MCPJdbcTransactionStatementExecutor(sessionManager, mock(MCPJdbcTransactionResourceManager.class)),
+                statementExecutor, mock(MetadataRefreshCoordinator.class));
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
+        assertFalse(actual.isSuccessful());
+        assertTrue(actual.getError().isPresent());
+        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.NOT_FOUND));
+        assertThat(actual.getError().get().getMessage(), is("Session does not exist."));
+        verifyNoInteractions(statementExecutor);
+    }
+    
+    @Test
     void assertExecuteWithUnknownCapability() {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPSQLExecutionFacade facade = createFacade("Unknown", new MCPSessionManager(mock()), statementExecutor);
@@ -193,9 +210,12 @@ class MCPSQLExecutionFacadeTest {
     
     private MCPSQLExecutionFacade createFacade(final String databaseType, final MCPSessionManager sessionManager, final MCPJdbcStatementExecutor statementExecutor,
                                                final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager, final MetadataRefreshCoordinator metadataRefreshCoordinator) {
+        if (!sessionManager.hasSession("session-1")) {
+            sessionManager.createSession("session-1");
+        }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
-        return new MCPSQLExecutionFacade(capabilityBuilder, new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager),
+        return new MCPSQLExecutionFacade(capabilityBuilder, sessionManager, new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager),
                 statementExecutor, metadataRefreshCoordinator);
     }
     

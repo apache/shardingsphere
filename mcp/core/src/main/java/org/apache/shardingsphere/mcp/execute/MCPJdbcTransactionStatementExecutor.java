@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 
 /**
  * MCP JDBC transaction statement executor.
@@ -46,7 +47,7 @@ public final class MCPJdbcTransactionStatementExecutor {
     public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         try {
-            ShardingSpherePreconditions.checkState(sessionManager.hasSession(sessionId), () -> new IllegalStateException("Session does not exist."));
+            ShardingSpherePreconditions.checkState(sessionManager.hasSession(sessionId), MCPSessionNotExistedException::new);
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
                 return executeBeginTransaction(sessionId, databaseName, databaseCapability, statementType);
             }

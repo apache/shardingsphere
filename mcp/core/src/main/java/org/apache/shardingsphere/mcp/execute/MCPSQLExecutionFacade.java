@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.metadata.MetadataRefreshCoordinator;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.Optional;
 
@@ -34,6 +36,8 @@ import java.util.Optional;
 public final class MCPSQLExecutionFacade {
     
     private final MCPCapabilityBuilder capabilityBuilder;
+    
+    private final MCPSessionManager sessionManager;
     
     private final MCPJdbcTransactionStatementExecutor transactionStatementExecutor;
     
@@ -50,6 +54,14 @@ public final class MCPSQLExecutionFacade {
      * @return execution response
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
+        try {
+            return sessionManager.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest));
+        } catch (final MCPSessionNotExistedException ex) {
+            return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, ex.getMessage());
+        }
+    }
+    
+    private ExecuteQueryResponse executeInternal(final ExecutionRequest executionRequest) {
         Optional<DatabaseCapability> databaseCapability = capabilityBuilder.buildDatabaseCapability(executionRequest.getDatabase());
         if (databaseCapability.isEmpty()) {
             return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, "Database capability does not exist.");

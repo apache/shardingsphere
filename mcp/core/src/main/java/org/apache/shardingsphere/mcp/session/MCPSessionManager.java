@@ -22,8 +22,11 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 
 import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
  * MCP session manager.
@@ -33,7 +36,7 @@ public final class MCPSessionManager {
     
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
-    private final Set<String> sessions = new ConcurrentSkipListSet<>();
+    private final Map<String, SessionContext> sessions = new ConcurrentHashMap<>();
     
     /**
      * Create a new session.
@@ -41,7 +44,7 @@ public final class MCPSessionManager {
      * @param sessionId session id
      */
     public void createSession(final String sessionId) {
-        ShardingSpherePreconditions.checkState(sessions.add(sessionId), () -> new IllegalStateException("Session already exists."));
+        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new SessionContext()), () -> new IllegalStateException("Session already exists."));
     }
     
     /**
@@ -51,7 +54,26 @@ public final class MCPSessionManager {
      * @return session exists or not
      */
     public boolean hasSession(final String sessionId) {
-        return sessions.contains(sessionId);
+        return sessions.containsKey(sessionId);
+    }
+    
+    /**
+     * Execute one operation while holding the session execution lock.
+     *
+     * @param sessionId session id
+     * @param operation guarded operation
+     * @param <T> return type
+     * @return operation result
+     */
+    public <T> T executeWithSessionLock(final String sessionId, final Supplier<T> operation) {
+        SessionContext sessionContext = getRequiredSessionContext(sessionId);
+        sessionContext.executionLock.lock();
+        try {
+            ShardingSpherePreconditions.checkState(sessionContext == sessions.get(sessionId), MCPSessionNotExistedException::new);
+            return operation.get();
+        } finally {
+            sessionContext.executionLock.unlock();
+        }
     }
     
     /**
@@ -60,10 +82,22 @@ public final class MCPSessionManager {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
+        Optional<SessionContext> sessionContext = findSessionContext(sessionId);
+        if (sessionContext.isEmpty()) {
+            return;
+        }
+        sessionContext.get().executionLock.lock();
         try {
-            transactionResourceManager.closeSession(sessionId);
+            if (sessionContext.get() != sessions.get(sessionId)) {
+                return;
+            }
+            try {
+                transactionResourceManager.closeSession(sessionId);
+            } finally {
+                sessions.remove(sessionId, sessionContext.get());
+            }
         } finally {
-            sessions.remove(sessionId);
+            sessionContext.get().executionLock.unlock();
         }
     }
     
@@ -71,8 +105,21 @@ public final class MCPSessionManager {
      * Close all current sessions.
      */
     public void closeAllSessions() {
-        for (String each : new LinkedHashSet<>(sessions)) {
+        for (String each : new LinkedHashSet<>(sessions.keySet())) {
             closeSession(each);
         }
+    }
+    
+    private Optional<SessionContext> findSessionContext(final String sessionId) {
+        return Optional.ofNullable(sessions.get(sessionId));
+    }
+    
+    private SessionContext getRequiredSessionContext(final String sessionId) {
+        return findSessionContext(sessionId).orElseThrow(MCPSessionNotExistedException::new);
+    }
+    
+    private static final class SessionContext {
+        
+        private final ReentrantLock executionLock = new ReentrantLock(true);
     }
 }
