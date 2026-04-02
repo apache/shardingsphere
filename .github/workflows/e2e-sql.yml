@@ -23,6 +23,16 @@ on:
     paths-ignore:
       - '**/*.md'
   workflow_dispatch:
+    inputs:
+      full_matrix_algorithm:
+        description: Full matrix generation algorithm
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - cartesian
+          - pairwise
 
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
@@ -50,6 +60,11 @@ jobs:
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
       has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
       need-proxy-image: ${{ steps.generate-matrix.outputs.need-proxy-image }}
+      full-matrix-algorithm: ${{ steps.generate-matrix.outputs.full-matrix-algorithm }}
+      full-smoke-overlap-count: ${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}
+      estimated-stage2-jobs: ${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}
+      total-two-stage-jobs: ${{ steps.generate-matrix.outputs.total-two-stage-jobs }}
+      effective-reduction-ratio: ${{ steps.generate-matrix.outputs.effective-reduction-ratio }}
       filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
     steps:
       - uses: actions/checkout@v6.0.1
@@ -77,6 +92,7 @@ jobs:
           FILTER_CORE_INFRA: ${{ steps.filter.outputs.core_infra }}
           FILTER_TEST_FRAMEWORK: ${{ steps.filter.outputs.test_framework }}
           FILTER_POM_CHANGES: ${{ steps.filter.outputs.pom_changes }}
+          FULL_MATRIX_ALGORITHM_INPUT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_matrix_algorithm || 'auto' }}
         run: |
           filters=$(jq -cn \
             --arg adapter_proxy          "$FILTER_ADAPTER_PROXY" \
@@ -105,6 +121,11 @@ jobs:
           echo "smoke-matrix=${{ steps.generate-matrix.outputs.smoke-matrix }}"
           echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
           echo "need-proxy-image=${{ steps.generate-matrix.outputs.need-proxy-image }}"
+          echo "full-matrix-algorithm=${{ steps.generate-matrix.outputs.full-matrix-algorithm }}"
+          echo "full-smoke-overlap-count=${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}"
+          echo "estimated-stage2-jobs=${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}"
+          echo "total-two-stage-jobs=${{ steps.generate-matrix.outputs.total-two-stage-jobs }}"
+          echo "effective-reduction-ratio=${{ steps.generate-matrix.outputs.effective-reduction-ratio }}"
           echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
 
   prepare-e2e-artifacts:
