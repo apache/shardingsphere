@@ -496,7 +496,7 @@
             <column name="status" start-index="41" stop-index="46" />
         </columns>
         <values>
-            <value>
+            <value start-index="55" stop-index="66" literal-stop-index="75">
                 <assignment-value>
                     <parameter-marker-expression parameter-index="0" start-index="59" stop-index="59" />
                     <literal-expression value="1000" start-index="59" stop-index="62" />
@@ -510,7 +510,7 @@
                     <literal-expression value="init" start-index="69" stop-index="74" />
                 </assignment-value>
             </value>
-            <value>
+            <value start-index="69" stop-index="80" literal-start-index="78" literal-stop-index="98">
                 <assignment-value>
                     <parameter-marker-expression parameter-index="3" start-index="73" stop-index="73" />
                     <literal-expression value="1100" start-index="82" stop-index="85" />
