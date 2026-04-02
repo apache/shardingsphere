@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 public final class DatabaseSchemaTableColumnsHandler extends AbstractResourceHandler {
     
     public DatabaseSchemaTableColumnsHandler() {
-        super("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns", 100);
+        super("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns");
     }
     
     @Override

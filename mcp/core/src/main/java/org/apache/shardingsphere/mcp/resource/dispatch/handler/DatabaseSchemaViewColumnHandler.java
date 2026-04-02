@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 public final class DatabaseSchemaViewColumnHandler extends AbstractResourceHandler {
     
     public DatabaseSchemaViewColumnHandler() {
-        super("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}", 140);
+        super("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}");
     }
     
     @Override

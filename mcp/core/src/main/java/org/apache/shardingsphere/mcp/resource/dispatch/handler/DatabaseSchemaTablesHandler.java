@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 public final class DatabaseSchemaTablesHandler extends AbstractResourceHandler {
     
     public DatabaseSchemaTablesHandler() {
-        super("shardingsphere://databases/{database}/schemas/{schema}/tables", 70);
+        super("shardingsphere://databases/{database}/schemas/{schema}/tables");
     }
     
     @Override

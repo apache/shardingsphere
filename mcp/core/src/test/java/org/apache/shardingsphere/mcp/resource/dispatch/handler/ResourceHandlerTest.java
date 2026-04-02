@@ -45,12 +45,6 @@ class ResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
-    void assertGetOrder(final HandlerCase handlerCase) {
-        assertThat(handlerCase.getHandler().getOrder(), is(handlerCase.getExpectedOrder()));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
         Optional<ResourceUriMatch> uriMatch = resourceUriMatcher.match(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri());
         
@@ -74,49 +68,49 @@ class ResourceHandlerTest {
     
     private static Stream<HandlerCase> handlerCases() {
         return Stream.of(
-                new HandlerCase("service capabilities", new ServiceCapabilitiesHandler(), "shardingsphere://capabilities", 10,
+                new HandlerCase("service capabilities", new ServiceCapabilitiesHandler(), "shardingsphere://capabilities",
                         "shardingsphere://capabilities", ResourceReadPlanType.SERVICE_CAPABILITIES, "", null, "", "", "", "", ""),
-                new HandlerCase("databases", new DatabasesHandler(), "shardingsphere://databases", 20,
+                new HandlerCase("databases", new DatabasesHandler(), "shardingsphere://databases",
                         "shardingsphere://databases", ResourceReadPlanType.METADATA, "", MetadataObjectType.DATABASE, "", "", "", "", ""),
-                new HandlerCase("database", new DatabaseHandler(), "shardingsphere://databases/{database}", 30,
+                new HandlerCase("database", new DatabaseHandler(), "shardingsphere://databases/{database}",
                         "shardingsphere://databases/logic_db", ResourceReadPlanType.METADATA, "", MetadataObjectType.DATABASE, "", "", "logic_db", "", ""),
-                new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities", 40,
+                new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities",
                         "shardingsphere://databases/logic_db/capabilities", ResourceReadPlanType.DATABASE_CAPABILITIES, "logic_db", null, "", "", "", "", ""),
-                new HandlerCase("database schemas", new DatabaseSchemasHandler(), "shardingsphere://databases/{database}/schemas", 50,
+                new HandlerCase("database schemas", new DatabaseSchemasHandler(), "shardingsphere://databases/{database}/schemas",
                         "shardingsphere://databases/logic_db/schemas", ResourceReadPlanType.METADATA, "", MetadataObjectType.SCHEMA, "logic_db", "", "", "", ""),
-                new HandlerCase("database schema", new DatabaseSchemaHandler(), "shardingsphere://databases/{database}/schemas/{schema}", 60,
+                new HandlerCase("database schema", new DatabaseSchemaHandler(), "shardingsphere://databases/{database}/schemas/{schema}",
                         "shardingsphere://databases/logic_db/schemas/public", ResourceReadPlanType.METADATA, "", MetadataObjectType.SCHEMA, "logic_db", "public", "public", "", ""),
-                new HandlerCase("database schema tables", new DatabaseSchemaTablesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables", 70,
+                new HandlerCase("database schema tables", new DatabaseSchemaTablesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables",
                         "shardingsphere://databases/logic_db/schemas/public/tables", ResourceReadPlanType.METADATA, "", MetadataObjectType.TABLE, "logic_db", "public", "", "", ""),
-                new HandlerCase("database schema views", new DatabaseSchemaViewsHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views", 80,
+                new HandlerCase("database schema views", new DatabaseSchemaViewsHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views",
                         "shardingsphere://databases/logic_db/schemas/public/views", ResourceReadPlanType.METADATA, "", MetadataObjectType.VIEW, "logic_db", "public", "", "", ""),
-                new HandlerCase("database schema table", new DatabaseSchemaTableHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}", 90,
+                new HandlerCase("database schema table", new DatabaseSchemaTableHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders", ResourceReadPlanType.METADATA, "", MetadataObjectType.TABLE, "logic_db", "public", "orders", "", ""),
                 new HandlerCase("database schema table columns", new DatabaseSchemaTableColumnsHandler(),
-                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns", 100,
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns", ResourceReadPlanType.METADATA, "",
                         MetadataObjectType.COLUMN, "logic_db", "public", "", "TABLE", "orders"),
                 new HandlerCase("database schema table column", new DatabaseSchemaTableColumnHandler(),
-                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}", 110,
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", ResourceReadPlanType.METADATA, "",
                         MetadataObjectType.COLUMN, "logic_db", "public", "order_id", "TABLE", "orders"),
-                new HandlerCase("database schema view", new DatabaseSchemaViewHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views/{view}", 120,
+                new HandlerCase("database schema view", new DatabaseSchemaViewHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view", ResourceReadPlanType.METADATA, "", MetadataObjectType.VIEW,
                         "logic_db", "public", "orders_view", "", ""),
                 new HandlerCase("database schema view columns", new DatabaseSchemaViewColumnsHandler(),
-                        "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns", 130,
+                        "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns", ResourceReadPlanType.METADATA, "",
                         MetadataObjectType.COLUMN, "logic_db", "public", "", "VIEW", "orders_view"),
                 new HandlerCase("database schema view column", new DatabaseSchemaViewColumnHandler(),
-                        "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}", 140,
+                        "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns/order_id", ResourceReadPlanType.METADATA, "",
                         MetadataObjectType.COLUMN, "logic_db", "public", "order_id", "VIEW", "orders_view"),
                 new HandlerCase("database schema table indexes", new DatabaseSchemaTableIndexesHandler(),
-                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes", 150,
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes", ResourceReadPlanType.METADATA, "",
                         MetadataObjectType.INDEX, "logic_db", "public", "", "TABLE", "orders"),
                 new HandlerCase("database schema table index", new DatabaseSchemaTableIndexHandler(),
-                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}", 160,
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", ResourceReadPlanType.METADATA, "",
                         MetadataObjectType.INDEX, "logic_db", "public", "order_idx", "TABLE", "orders"));
     }
@@ -128,8 +122,6 @@ class ResourceHandlerTest {
         private final ResourceHandler handler;
         
         private final String expectedUriTemplate;
-        
-        private final int expectedOrder;
         
         private final String resourceUri;
         
@@ -149,14 +141,13 @@ class ResourceHandlerTest {
         
         private final String expectedParentObjectName;
         
-        private HandlerCase(final String description, final ResourceHandler handler, final String expectedUriTemplate, final int expectedOrder, final String resourceUri,
+        private HandlerCase(final String description, final ResourceHandler handler, final String expectedUriTemplate, final String resourceUri,
                             final ResourceReadPlanType expectedType, final String expectedDatabase, final MetadataObjectType expectedObjectType,
                             final String expectedRequestDatabase, final String expectedRequestSchema, final String expectedObjectName,
                             final String expectedParentObjectType, final String expectedParentObjectName) {
             this.description = description;
             this.handler = handler;
             this.expectedUriTemplate = expectedUriTemplate;
-            this.expectedOrder = expectedOrder;
             this.resourceUri = resourceUri;
             this.expectedType = expectedType;
             this.expectedDatabase = expectedDatabase;
@@ -174,10 +165,6 @@ class ResourceHandlerTest {
         
         private String getExpectedUriTemplate() {
             return expectedUriTemplate;
-        }
-        
-        private int getExpectedOrder() {
-            return expectedOrder;
         }
         
         private String getResourceUri() {

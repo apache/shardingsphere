@@ -34,8 +34,6 @@ public abstract class AbstractResourceHandler implements ResourceHandler {
     
     private final String uriTemplate;
     
-    private final int order;
-    
     protected final String getRequiredVariable(final ResourceUriMatch uriMatch, final String variableName) {
         String result = uriMatch.getUriVariables().get(variableName);
         if (null == result || result.isEmpty()) {

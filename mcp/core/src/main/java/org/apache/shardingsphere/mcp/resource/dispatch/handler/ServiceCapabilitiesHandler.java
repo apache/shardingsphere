@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 public final class ServiceCapabilitiesHandler extends AbstractResourceHandler {
     
     public ServiceCapabilitiesHandler() {
-        super("shardingsphere://capabilities", 10);
+        super("shardingsphere://capabilities");
     }
     
     @Override

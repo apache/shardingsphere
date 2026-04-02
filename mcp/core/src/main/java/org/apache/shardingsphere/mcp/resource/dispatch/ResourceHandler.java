@@ -35,13 +35,6 @@ public interface ResourceHandler extends ShardingSphereSPI {
     String getUriTemplate();
     
     /**
-     * Get handler order.
-     *
-     * @return handler order
-     */
-    int getOrder();
-    
-    /**
      * Handle one matched resource URI.
      *
      * @param uriMatch resource URI match

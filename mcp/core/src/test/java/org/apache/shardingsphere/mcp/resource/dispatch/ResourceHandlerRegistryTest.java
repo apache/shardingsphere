@@ -47,22 +47,15 @@ class ResourceHandlerRegistryTest {
     @Test
     void assertCreateRegistryWithDuplicateTemplate() {
         assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
-                new TestResourceHandler("shardingsphere://capabilities", 10),
-                new TestResourceHandler("shardingsphere://capabilities", 20))));
+                new TestResourceHandler("shardingsphere://capabilities"),
+                new TestResourceHandler("shardingsphere://capabilities"))));
     }
     
     @Test
     void assertCreateRegistryWithDuplicateRouteSignature() {
         assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
-                new TestResourceHandler("shardingsphere://databases/{database}", 10),
-                new TestResourceHandler("shardingsphere://databases/{logic_db}", 20))));
-    }
-    
-    @Test
-    void assertCreateRegistryWithDuplicateOrder() {
-        assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
-                new TestResourceHandler("shardingsphere://capabilities", 10),
-                new TestResourceHandler("shardingsphere://databases", 10))));
+                new TestResourceHandler("shardingsphere://databases/{database}"),
+                new TestResourceHandler("shardingsphere://databases/{logic_db}"))));
     }
     
     @Test
@@ -74,21 +67,13 @@ class ResourceHandlerRegistryTest {
         
         private final String uriTemplate;
         
-        private final int order;
-        
-        private TestResourceHandler(final String uriTemplate, final int order) {
+        private TestResourceHandler(final String uriTemplate) {
             this.uriTemplate = uriTemplate;
-            this.order = order;
         }
         
         @Override
         public String getUriTemplate() {
             return uriTemplate;
-        }
-        
-        @Override
-        public int getOrder() {
-            return order;
         }
         
         @Override

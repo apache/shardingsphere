@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +43,10 @@ public final class ResourceHandlerRegistry {
     
     ResourceHandlerRegistry(final Collection<ResourceHandler> handlers) {
         ResourceUriMatcher uriMatcher = new ResourceUriMatcher();
-        List<ResourceHandler> orderedHandlers = new ArrayList<>(handlers);
-        orderedHandlers.sort(Comparator.comparingInt(ResourceHandler::getOrder));
-        validateHandlers(orderedHandlers, uriMatcher);
-        this.handlers = orderedHandlers;
-        supportedResources = orderedHandlers.stream().map(ResourceHandler::getUriTemplate).collect(Collectors.toList());
+        List<ResourceHandler> registeredHandlers = new ArrayList<>(handlers);
+        validateHandlers(registeredHandlers, uriMatcher);
+        this.handlers = registeredHandlers;
+        supportedResources = registeredHandlers.stream().map(ResourceHandler::getUriTemplate).collect(Collectors.toList());
     }
     
     private void validateHandlers(final Collection<ResourceHandler> handlers, final ResourceUriMatcher uriMatcher) {
@@ -57,7 +55,6 @@ public final class ResourceHandlerRegistry {
         }
         Map<String, Class<?>> registeredTemplates = new HashMap<>(handlers.size(), 1F);
         Map<String, Class<?>> registeredSignatures = new HashMap<>(handlers.size(), 1F);
-        Map<Integer, Class<?>> registeredOrders = new HashMap<>(handlers.size(), 1F);
         for (ResourceHandler each : handlers) {
             if (null == each.getUriTemplate() || each.getUriTemplate().isEmpty()) {
                 throw new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName()));
@@ -72,11 +69,6 @@ public final class ResourceHandlerRegistry {
             if (null != previousSignatureClass) {
                 throw new IllegalArgumentException(String.format("Duplicate resource URI route signature `%s` with `%s` and `%s`.",
                         routeSignature, previousSignatureClass.getName(), each.getClass().getName()));
-            }
-            Class<?> previousOrderClass = registeredOrders.putIfAbsent(each.getOrder(), each.getClass());
-            if (null != previousOrderClass) {
-                throw new IllegalArgumentException(String.format("Duplicate resource handler order `%d` with `%s` and `%s`.",
-                        each.getOrder(), previousOrderClass.getName(), each.getClass().getName()));
             }
         }
     }

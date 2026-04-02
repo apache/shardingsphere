@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 public final class DatabaseHandler extends AbstractResourceHandler {
     
     public DatabaseHandler() {
-        super("shardingsphere://databases/{database}", 30);
+        super("shardingsphere://databases/{database}");
     }
     
     @Override

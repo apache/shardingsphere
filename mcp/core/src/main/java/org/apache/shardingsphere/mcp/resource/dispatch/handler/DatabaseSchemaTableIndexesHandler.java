@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 public final class DatabaseSchemaTableIndexesHandler extends AbstractResourceHandler {
     
     public DatabaseSchemaTableIndexesHandler() {
-        super("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes", 150);
+        super("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes");
     }
     
     @Override
