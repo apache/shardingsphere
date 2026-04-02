@@ -78,7 +78,7 @@
                 <expr>
                     <values-expression>
                         <values>
-                            <value>
+                            <value start-index="7" stop-index="14">
                                 <assignment-value>
                                     <literal-expression value="1" start-index="11" stop-index="11" />
                                 </assignment-value>
@@ -99,7 +99,7 @@
                 <expr>
                     <values-expression>
                         <values>
-                            <value>
+                            <value start-index="7" stop-index="14">
                                 <assignment-value>
                                     <literal-expression value="1" start-index="11" stop-index="11" />
                                 </assignment-value>
@@ -107,7 +107,7 @@
                                     <literal-expression value="2" start-index="13" stop-index="13" />
                                 </assignment-value>
                             </value>
-                            <value>
+                            <value start-index="17" stop-index="24">
                                 <assignment-value>
                                     <literal-expression value="3" start-index="21" stop-index="21" />
                                 </assignment-value>
