@@ -100,6 +100,23 @@ build_matrix() {
 }
 
 build_pairwise_matrix() {
+  # Algorithm note:
+  # This implementation is NOT ACTS/IPOG itself. It is a deterministic greedy
+  # 2-way covering strategy with mandatory scenario anchors:
+  #   1) Start from constrained candidate jobs (existing include/exclude rules).
+  #   2) Preselect additional-options jobs (to preserve required special cases).
+  #   3) Select one anchor job per scenario.
+  #   4) Greedily add the job that covers the most uncovered parameter pairs.
+  #
+  # This approach follows public combinatorial-testing principles and does not
+  # copy ACTS implementation code.
+  # References:
+  # - NIST combinatorial testing project (ACTS/IPOG background):
+  #   https://csrc.nist.gov/projects/automated-combinatorial-testing-for-software
+  # - Interaction rule overview:
+  #   https://csrc.nist.gov/projects/automated-combinatorial-testing-for-software/combinatorial-methods-in-testing/interactions-involved-in-software-failures
+  # - Greedy set-cover approximation idea (well-known heuristic):
+  #   https://en.wikipedia.org/wiki/Set_cover_problem
   local candidate_matrix="$1"
   local scenario_list_json="$2"
   local job_file selected_file
