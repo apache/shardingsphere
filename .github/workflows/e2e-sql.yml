@@ -63,6 +63,8 @@ jobs:
       full-matrix-algorithm: ${{ steps.generate-matrix.outputs.full-matrix-algorithm }}
       full-smoke-overlap-count: ${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}
       estimated-stage2-jobs: ${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}
+      total-two-stage-jobs: ${{ steps.generate-matrix.outputs.total-two-stage-jobs }}
+      effective-reduction-ratio: ${{ steps.generate-matrix.outputs.effective-reduction-ratio }}
       filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
     steps:
       - uses: actions/checkout@v6.0.1
@@ -122,6 +124,8 @@ jobs:
           echo "full-matrix-algorithm=${{ steps.generate-matrix.outputs.full-matrix-algorithm }}"
           echo "full-smoke-overlap-count=${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}"
           echo "estimated-stage2-jobs=${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}"
+          echo "total-two-stage-jobs=${{ steps.generate-matrix.outputs.total-two-stage-jobs }}"
+          echo "effective-reduction-ratio=${{ steps.generate-matrix.outputs.effective-reduction-ratio }}"
           echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
 
   prepare-e2e-artifacts:

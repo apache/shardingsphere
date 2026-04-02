@@ -20,7 +20,8 @@
 # Environment:
 #   FULL_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
 # Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>, need-proxy-image=<true|false>,
-#         full-matrix-algorithm=<cartesian|pairwise|auto>, full-smoke-overlap-count=<N>, and estimated-stage2-jobs=<N> to $GITHUB_OUTPUT
+#         full-matrix-algorithm=<cartesian|pairwise|auto>, full-smoke-overlap-count=<N>, estimated-stage2-jobs=<N>,
+#         total-two-stage-jobs=<N>, and effective-reduction-ratio=<0..1> to $GITHUB_OUTPUT
 
 set -euo pipefail
 
@@ -527,7 +528,13 @@ FULL_SMOKE_OVERLAP_COUNT=$(jq -n --argjson full "$FULL_MATRIX" --argjson smoke "
   ] | length
 ')
 ESTIMATED_STAGE2_JOBS=$((FULL_JOB_COUNT - FULL_SMOKE_OVERLAP_COUNT))
-echo "::notice::matrix-breakdown full=$FULL_JOB_COUNT smoke=$SMOKE_JOB_COUNT overlap=$FULL_SMOKE_OVERLAP_COUNT estimated-stage2=$ESTIMATED_STAGE2_JOBS"
+TOTAL_TWO_STAGE_JOBS=$((SMOKE_JOB_COUNT + ESTIMATED_STAGE2_JOBS))
+if [ "$FULL_MATRIX_CANDIDATE_COUNT" -eq 0 ]; then
+  EFFECTIVE_REDUCTION_RATIO="0"
+else
+  EFFECTIVE_REDUCTION_RATIO=$(jq -cn --argjson candidate "$FULL_MATRIX_CANDIDATE_COUNT" --argjson total "$TOTAL_TWO_STAGE_JOBS" '1 - ($total / $candidate)')
+fi
+echo "::notice::matrix-breakdown full=$FULL_JOB_COUNT smoke=$SMOKE_JOB_COUNT overlap=$FULL_SMOKE_OVERLAP_COUNT estimated-stage2=$ESTIMATED_STAGE2_JOBS total-two-stage=$TOTAL_TWO_STAGE_JOBS effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO"
 if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
   echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
@@ -537,6 +544,8 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
   echo "full-smoke-overlap-count=0" >> "$GITHUB_OUTPUT"
   echo "estimated-stage2-jobs=0" >> "$GITHUB_OUTPUT"
+  echo "total-two-stage-jobs=0" >> "$GITHUB_OUTPUT"
+  echo "effective-reduction-ratio=0" >> "$GITHUB_OUTPUT"
   echo "::notice::No jobs generated after applying all filters and rules, skipping job execution"
   exit 0
 fi
@@ -553,6 +562,8 @@ echo "need-proxy-image=$NEED_PROXY_IMAGE" >> "$GITHUB_OUTPUT"
 echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
 echo "full-smoke-overlap-count=$FULL_SMOKE_OVERLAP_COUNT" >> "$GITHUB_OUTPUT"
 echo "estimated-stage2-jobs=$ESTIMATED_STAGE2_JOBS" >> "$GITHUB_OUTPUT"
-echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $FULL_JOB_COUNT full jobs, overlap=$FULL_SMOKE_OVERLAP_COUNT, estimated stage2 jobs=$ESTIMATED_STAGE2_JOBS. Proxy image needed: $NEED_PROXY_IMAGE"
+echo "total-two-stage-jobs=$TOTAL_TWO_STAGE_JOBS" >> "$GITHUB_OUTPUT"
+echo "effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO" >> "$GITHUB_OUTPUT"
+echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $FULL_JOB_COUNT full jobs, overlap=$FULL_SMOKE_OVERLAP_COUNT, estimated stage2 jobs=$ESTIMATED_STAGE2_JOBS, total two-stage jobs=$TOTAL_TWO_STAGE_JOBS, effective reduction ratio=$EFFECTIVE_REDUCTION_RATIO. Proxy image needed: $NEED_PROXY_IMAGE"
 
 exit 0
