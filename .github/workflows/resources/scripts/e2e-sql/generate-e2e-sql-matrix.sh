@@ -304,6 +304,7 @@ if [ "$any_relevant_change" = "false" ]; then
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
   echo "smoke-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
+  echo "full-matrix-algorithm=auto" >> "$GITHUB_OUTPUT"
   echo "::notice::No relevant filters triggered, skipping job generation"
   exit 0
 fi
