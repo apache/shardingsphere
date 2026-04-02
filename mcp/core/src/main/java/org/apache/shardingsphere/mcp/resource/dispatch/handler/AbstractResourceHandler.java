@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
 /**
  * Abstract resource handler.
@@ -33,15 +32,6 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 public abstract class AbstractResourceHandler implements ResourceHandler {
     
     private final String uriTemplate;
-    
-    protected final String getRequiredVariable(final ResourceUriMatch uriMatch, final String variableName) {
-        String result = uriMatch.getUriVariables().get(variableName);
-        if (null == result || result.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Missing resource URI variable `%s` for template `%s`.",
-                    variableName, uriMatch.getUriTemplate()));
-        }
-        return result;
-    }
     
     protected final ResourceReadPlan createServiceCapabilitiesPlan() {
         return ResourceReadPlan.serviceCapabilities();

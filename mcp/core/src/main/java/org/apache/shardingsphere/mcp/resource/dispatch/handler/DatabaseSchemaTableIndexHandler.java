@@ -32,7 +32,7 @@ public final class DatabaseSchemaTableIndexHandler extends AbstractResourceHandl
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createMetadataPlan(getRequiredVariable(uriMatch, "database"), getRequiredVariable(uriMatch, "schema"),
-                MetadataObjectType.INDEX, getRequiredVariable(uriMatch, "index"), "TABLE", getRequiredVariable(uriMatch, "table"));
+        return createMetadataPlan(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
+                MetadataObjectType.INDEX, uriMatch.getVariable("index"), "TABLE", uriMatch.getVariable("table"));
     }
 }

@@ -31,6 +31,6 @@ public final class DatabaseCapabilitiesHandler extends AbstractResourceHandler {
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createDatabaseCapabilitiesPlan(getRequiredVariable(uriMatch, "database"));
+        return createDatabaseCapabilitiesPlan(uriMatch.getVariable("database"));
     }
 }

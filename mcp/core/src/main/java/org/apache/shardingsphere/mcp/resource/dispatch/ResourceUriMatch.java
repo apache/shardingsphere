@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
 
@@ -34,4 +35,16 @@ public final class ResourceUriMatch {
     private final String uriTemplate;
     
     private final Map<String, String> uriVariables;
+    
+    /**
+     * Get variable.
+     * 
+     * @param variableName variable name
+     * @return variable
+     */
+    public String getVariable(final String variableName) {
+        String result = uriVariables.get(variableName);
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing resource URI variable `%s` for template `%s`.", variableName, uriTemplate)));
+        return result;
+    }
 }

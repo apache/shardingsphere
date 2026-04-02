@@ -32,8 +32,8 @@ public final class DatabaseSchemaHandler extends AbstractResourceHandler {
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        String databaseName = getRequiredVariable(uriMatch, "database");
-        String schemaName = getRequiredVariable(uriMatch, "schema");
+        String databaseName = uriMatch.getVariable("database");
+        String schemaName = uriMatch.getVariable("schema");
         return createMetadataPlan(databaseName, schemaName, MetadataObjectType.SCHEMA, schemaName, "", "");
     }
 }

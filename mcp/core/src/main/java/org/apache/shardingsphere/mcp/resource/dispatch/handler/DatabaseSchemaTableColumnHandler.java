@@ -32,7 +32,7 @@ public final class DatabaseSchemaTableColumnHandler extends AbstractResourceHand
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createMetadataPlan(getRequiredVariable(uriMatch, "database"), getRequiredVariable(uriMatch, "schema"),
-                MetadataObjectType.COLUMN, getRequiredVariable(uriMatch, "column"), "TABLE", getRequiredVariable(uriMatch, "table"));
+        return createMetadataPlan(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
+                MetadataObjectType.COLUMN, uriMatch.getVariable("column"), "TABLE", uriMatch.getVariable("table"));
     }
 }

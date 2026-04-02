@@ -32,6 +32,6 @@ public final class DatabaseHandler extends AbstractResourceHandler {
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createMetadataPlan("", "", MetadataObjectType.DATABASE, getRequiredVariable(uriMatch, "database"), "", "");
+        return createMetadataPlan("", "", MetadataObjectType.DATABASE, uriMatch.getVariable("database"), "", "");
     }
 }
