@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 
@@ -42,6 +43,9 @@ public final class CreateViewPushDownMetaDataRefresher implements PushDownMetaDa
         ShardingSphereTable actualViewMetaData = metaDataLoader.loadCreatedView(database, logicDataSourceName, schemaName, sqlStatement.getView().getTableName().getIdentifier(), props);
         metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(actualViewMetaData));
         metaDataManagerPersistService.alterViews(database, schemaName, Collections.singleton(new ShardingSphereView(actualViewMetaData.getName(), sqlStatement.getViewDefinition())));
+        if (TableRefreshUtils.isSingleTable(actualViewMetaData.getName(), database) && TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, actualViewMetaData.getName())) {
+            metaDataManagerPersistService.alterSingleRuleConfiguration(database, database.getRuleMetaData());
+        }
     }
     
     @Override
