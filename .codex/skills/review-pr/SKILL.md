@@ -56,6 +56,17 @@ description: >-
     - one config-disabled or feature-flag-off path,
     - one original symptom path that is only partially covered by tests.
     If any of these remain unresolved, set `Merge Verdict: Not Mergeable`.
+15. If a PR changes SQL parser behavior, grammar, visitor logic, supported SQL cases, or parser tests for a dialect,
+    you must complete both syntax-validity review and dialect-family impact review before concluding:
+    - Every SQL syntax added, changed, accepted, rejected, or suggested in the review must be backed by the target database's official documentation for the exact database family and relevant version.
+    - This applies both to the PR's changed SQL syntax and to any SQL syntax examples or recommendations you propose in review comments.
+    - Follow the SQL parsing maintenance relationships defined by the repo conventions, for example `MySQL -> MariaDB, Doris`.
+    - If the PR changes a trunk dialect parser, inspect whether each branch dialect that reuses or copies that parser logic has the same root cause, regression risk, or missing validation.
+    - If the PR changes a branch dialect parser, inspect whether the same root cause also exists in the corresponding trunk dialect or sibling branch dialects because of shared or copied grammar / visitor logic.
+    - For each related dialect, classify it as: `same issue confirmed`, `not applicable with evidence`, or `unresolved`.
+    - If official documentation support is missing, ambiguous, or contradicts the PR behavior, bias to `Merge Verdict: Not Mergeable`.
+    - If any related dialect remains unresolved, or the review skips the family scan, bias to `Merge Verdict: Not Mergeable`.
+    - Do not recommend unsupported or undocumented SQL syntax in review feedback.
 
 ## Execution Boundary
 
@@ -69,6 +80,17 @@ Priority from high to low:
 2. Related issues in the same repo, relevant module code/tests, historical behavior (optional git blame/log).
 3. ShardingSphere official docs and official repo conventions.
 4. External authoritative specs only when necessary (official standards/docs only).
+
+For SQL parser reviews:
+
+- Prefer the target database's official SQL reference/manual as first-class evidence.
+- When the PR or your review comment mentions a concrete SQL syntax form, cite the exact official doc page that supports that form.
+- If the official docs do not clearly support the syntax, do not infer support from another dialect, secondary article, or parser implementation alone.
+- Build a dialect-family evidence set when parser logic changes:
+  - Check repo conventions for trunk/branch relationships first.
+  - If the touched dialect is a trunk parser, inspect affected branch dialect parser files, tests, and doc paths.
+  - If the touched dialect is a branch parser, inspect the trunk parser and any sibling branch dialects that may share or copy the same logic.
+- Check ShardingSphere docs/examples/release notes when parser behavior changes, especially if the PR alters supported syntax, unsupported syntax, or dialect-specific examples.
 
 Forbidden sources:
 
@@ -90,6 +112,8 @@ Before deep review, answer:
 4. Are there file changes unrelated to the stated goal?
 5. Does the patch change documented semantics such as name resolution, default schema, fallback precedence, or routing order?
 6. Is there at least one counterexample or negative scenario validated, not only the reported happy path?
+7. If SQL parser is changed, has the review checked related trunk / branch dialects and confirmed whether the same issue also exists there?
+8. If SQL parser is changed, do official docs and ShardingSphere docs both support the new behavior, or is a doc update required?
 
 Triage policy:
 
@@ -108,6 +132,7 @@ When information gaps block mergeability, request at least:
 - Minimal reproducible input (SQL/request/config snippet) with expected vs actual behavior.
 - Key logs or stack traces.
 - Test evidence mapped one-to-one with fix points (new or adjusted tests).
+- For SQL parser reviews: official documentation links/pages for the exact syntax and version, plus any affected ShardingSphere doc paths or examples.
 
 ## Review Workflow
 
@@ -120,12 +145,18 @@ When information gaps block mergeability, request at least:
    - Compatibility: behavior/config/API-SPI/SQL dialect versions
    - Regression: similar statements, adjacent features, exception branches
    - For parser, binder, routing, and default-schema changes, explicitly compare the new behavior against official dialect semantics and check whether precedence or shadowing rules changed
+   - For SQL parser changes, build the dialect-family map first using repo conventions, then expand the review to related trunk / branch dialects that reuse, share, or copy the touched parser logic
+   - For SQL parser changes, verify every changed syntax form in the PR against the target database's official documentation, and reject syntax support that cannot be proven from official docs
+   - For SQL parser review comments, ensure every suggested SQL syntax example or recommended acceptance/rejection rule is also supported by the target database's official documentation; do not suggest parser behavior that official docs do not support
+   - For each related dialect in the same parser family, decide whether the same root cause exists, whether the PR also fixes it, and whether extra review feedback is required; do not silently treat unreviewed related dialects as safe
+   - Check ShardingSphere docs, examples, and release-note expectations for parser behavior changes; if docs and parser behavior diverge, require correction or explicit explanation
    - If shared code is touched, build a blast-radius list of affected dialects/features and review at least one non-target example against its documented semantics
    - If config flags or temporary properties exist on the touched path, review both enabled and disabled states
 5. Test adequacy:
    - Is there a failing case first or reproducible steps?
    - Are major branches, boundaries, and counterexamples covered?
    - Are tests mapped one-to-one with fix points?
+   - For SQL parser family scans, check whether each related dialect with the same root cause has direct validation or explicit evidence for non-applicability
    - Distinguish fixture-assisted validation from production-path validation; if tests bypass the real assembly chain,
      metadata loader, SPI discovery path, or routing path, state that gap explicitly and downgrade confidence
    - If the PR adds multiple static metadata definitions, verify that regression tests cover the originally reported objects one-to-one; do not infer coverage from a single representative object unless the code path is truly identical and that equivalence is stated
@@ -146,9 +177,11 @@ When information gaps block mergeability, request at least:
 - Is it only adding null checks/defaults/try-catch without fixing root cause?
 - Does it introduce silent error swallowing or downgrade to wrong semantics?
 - Are adjacent paths sharing the same root cause also validated?
+- If SQL parser is touched, were related trunk / branch dialects checked for the same root cause or divergence in shared / copied parser logic?
 - Does the fix preserve the original precedence or lookup semantics for adjacent valid cases?
 - Would a same-name or shadowing case take a different path after this patch?
 - If the fix sits in shared code, would another dialect or feature now take a different path from its documented semantics?
+- Do the target database official docs and ShardingSphere docs/examples both support the resulting parser behavior, or is a documentation mismatch still open?
 - Does the config-disabled or feature-flag-off path still behave correctly?
 
 If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Mergeable`.
@@ -166,6 +199,8 @@ If the root-cause chain cannot be fully proven fixed, set `Merge Verdict: Not Me
   - Feature-flag or disabled-path compatibility
 - Functional degradation risk: old-scenario regression, boundary input behavior changes, error-code/exception semantic drift.
 - Cross-dialect/shared-path risk: a target-specific fix changing generic behavior for other databases or features.
+- SQL parser family risk: the target dialect is fixed but branch dialects or copied parser variants still retain the same defect or become inconsistent.
+- Documentation risk: parser behavior changes without matching official-doc support or without aligning ShardingSphere docs/examples.
 - Operational risk: config migration complexity, gray-release and rollback complexity.
 - Supply-chain risk: vulnerabilities, licenses, transitive dependency changes from new deps.
 
@@ -176,6 +211,7 @@ Each review must declare:
 - `Reviewed Scope`: files/modules actually reviewed this round.
 - `Not Reviewed Scope`: unreviewed or only superficially reviewed areas.
 - `Need Expert Review`: whether domain reviewers are required (security, concurrency, performance, protocol, etc.).
+- For SQL parser reviews, `Reviewed Scope` must explicitly name the target dialect, any related trunk / branch dialects checked, and the documentation pages / repo doc paths used to validate syntax behavior.
 
 ## Multi-Round Change Request Comparison Rules
 
