@@ -970,10 +970,8 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (int index = 0; index < ctx.assignmentValues().size(); index++) {
-            AssignmentValuesContext each = ctx.assignmentValues(index);
-            InsertValuesSegment insertValuesSegment = (InsertValuesSegment) visit(each);
-            result.add(new InsertValuesSegment(ctx.ROW(index).getSymbol().getStartIndex(), insertValuesSegment.getStopIndex(), insertValuesSegment.getValues()));
+        for (AssignmentValuesContext each : ctx.assignmentValues()) {
+            result.add((InsertValuesSegment) visit(each));
         }
         return result;
     }
