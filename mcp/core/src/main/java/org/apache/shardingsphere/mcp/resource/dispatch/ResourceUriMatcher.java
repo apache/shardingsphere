@@ -60,7 +60,7 @@ public final class ResourceUriMatcher {
                 return Optional.empty();
             }
         }
-        return Optional.of(new ResourceUriMatch(resourceUri, uriTemplate, Collections.unmodifiableMap(uriVariables)));
+        return Optional.of(new ResourceUriMatch(uriTemplate, uriVariables));
     }
     
     /**

@@ -30,8 +30,6 @@ import java.util.Map;
 @Getter
 public final class ResourceUriMatch {
     
-    private final String resourceUri;
-    
     private final String uriTemplate;
     
     private final Map<String, String> uriVariables;

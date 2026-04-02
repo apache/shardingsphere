@@ -34,10 +34,8 @@ class ResourceUriMatcherTest {
     @Test
     void assertMatch() {
         Optional<ResourceUriMatch> actual = resourceUriPatternMatcher.match("shardingsphere://capabilities", "shardingsphere://capabilities");
-        
         assertTrue(actual.isPresent());
         assertThat(actual.get().getUriTemplate(), is("shardingsphere://capabilities"));
-        assertThat(actual.get().getResourceUri(), is("shardingsphere://capabilities"));
     }
     
     @Test
