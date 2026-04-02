@@ -1604,7 +1604,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         } else {
             insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        return InsertStatement.builder().databaseType(databaseType)
+                .insertColumns(insertColumns)
+                .values(null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList()))
+                .build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -1684,7 +1687,10 @@ public abstract class DorisStatementVisitor extends DorisStatementBaseVisitor<AS
         } else {
             insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        return InsertStatement.builder().databaseType(databaseType)
+                .insertColumns(insertColumns)
+                .values(null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList()))
+                .build();
     }
     
     private List<ColumnSegment> createInsertColumns(final FieldsContext fields) {
