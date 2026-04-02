@@ -19,7 +19,8 @@
 # Usage: generate-e2e-sql-matrix.sh '<json-with-all-18-filter-labels>'
 # Environment:
 #   FULL_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
-# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>, need-proxy-image=<true|false>, and full-matrix-algorithm=<cartesian|pairwise|auto> to $GITHUB_OUTPUT
+# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>, need-proxy-image=<true|false>,
+#         full-matrix-algorithm=<cartesian|pairwise|auto>, full-smoke-overlap-count=<N>, and estimated-stage2-jobs=<N> to $GITHUB_OUTPUT
 
 set -euo pipefail
 
@@ -510,6 +511,23 @@ log_counts "full-matrix" "$FULL_MATRIX"
 
 # Determine whether there are any jobs at all (based on full-matrix)
 FULL_JOB_COUNT=$(echo "$FULL_MATRIX" | jq '.include | length')
+SMOKE_JOB_COUNT=$(echo "$SMOKE_MATRIX" | jq '.include | length')
+FULL_SMOKE_OVERLAP_COUNT=$(jq -n --argjson full "$FULL_MATRIX" --argjson smoke "$SMOKE_MATRIX" '
+  [
+    $full.include[] as $job |
+    select(
+      [$smoke.include[] | select(
+        .adapter == $job.adapter and
+        .mode == $job.mode and
+        .database == $job.database and
+        .scenario == $job.scenario and
+        .["additional-options"] == $job["additional-options"]
+      )] | length > 0
+    )
+  ] | length
+')
+ESTIMATED_STAGE2_JOBS=$((FULL_JOB_COUNT - FULL_SMOKE_OVERLAP_COUNT))
+echo "::notice::matrix-breakdown full=$FULL_JOB_COUNT smoke=$SMOKE_JOB_COUNT overlap=$FULL_SMOKE_OVERLAP_COUNT estimated-stage2=$ESTIMATED_STAGE2_JOBS"
 if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
   echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
@@ -517,6 +535,8 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
   echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
   echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
+  echo "full-smoke-overlap-count=0" >> "$GITHUB_OUTPUT"
+  echo "estimated-stage2-jobs=0" >> "$GITHUB_OUTPUT"
   echo "::notice::No jobs generated after applying all filters and rules, skipping job execution"
   exit 0
 fi
@@ -531,6 +551,8 @@ echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
 echo "need-proxy-image=$NEED_PROXY_IMAGE" >> "$GITHUB_OUTPUT"
 echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
-echo "::notice::Generated $(echo "$SMOKE_MATRIX" | jq '.include | length') smoke jobs and $(echo "$FULL_MATRIX" | jq '.include | length') full jobs. Proxy image needed: $NEED_PROXY_IMAGE"
+echo "full-smoke-overlap-count=$FULL_SMOKE_OVERLAP_COUNT" >> "$GITHUB_OUTPUT"
+echo "estimated-stage2-jobs=$ESTIMATED_STAGE2_JOBS" >> "$GITHUB_OUTPUT"
+echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $FULL_JOB_COUNT full jobs, overlap=$FULL_SMOKE_OVERLAP_COUNT, estimated stage2 jobs=$ESTIMATED_STAGE2_JOBS. Proxy image needed: $NEED_PROXY_IMAGE"
 
 exit 0
