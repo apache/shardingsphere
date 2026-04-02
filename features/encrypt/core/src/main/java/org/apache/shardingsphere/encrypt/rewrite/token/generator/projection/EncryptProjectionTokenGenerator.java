@@ -362,19 +362,29 @@ public final class EncryptProjectionTokenGenerator {
         return Optional.empty();
     }
     
+    private String getDerivedColumnName(final ColumnProjection columnProjection, final String actualColumnName, final EncryptDerivedColumnSuffix suffix) {
+        return TableSourceType.TEMPORARY_TABLE == columnProjection.getColumnBoundInfo().getTableSourceType() ? getDerivedColumnName(columnProjection, suffix) : actualColumnName;
+    }
+    
+    private String getDerivedColumnName(final ColumnProjection columnProjection, final EncryptDerivedColumnSuffix suffix) {
+        return null == suffix ? columnProjection.getName().getValue() : suffix.getDerivedColumnName(columnProjection.getName().getValue(), databaseType);
+    }
+    
     private Collection<Projection> generateProjectionsInInsertSelectSubquery(final EncryptColumn encryptColumn, final ColumnProjection columnProjection) {
-        IdentifierValue columnName = new IdentifierValue(encryptColumn.getCipher().getName(), columnProjection.getName().getQuoteCharacter());
+        String derivedColumnName = getDerivedColumnName(columnProjection, encryptColumn.getCipher().getName(), EncryptDerivedColumnSuffix.CIPHER);
+        QuoteCharacter quoteCharacter = getQuoteCharacter(columnProjection);
+        IdentifierValue columnName = new IdentifierValue(derivedColumnName, quoteCharacter);
         Collection<Projection> result = new LinkedList<>();
         ParenthesesSegment leftParentheses = columnProjection.getLeftParentheses().orElse(null);
         ParenthesesSegment rightParentheses = columnProjection.getRightParentheses().orElse(null);
         result.add(new ColumnProjection(columnProjection.getOwner().orElse(null), columnName, null, databaseType, leftParentheses, rightParentheses));
         IdentifierValue columOwner = columnProjection.getOwner().orElse(null);
-        encryptColumn.getAssistedQuery()
-                .ifPresent(optional -> result.add(
-                        new ColumnProjection(columOwner, new IdentifierValue(optional.getName(), dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType, leftParentheses, rightParentheses)));
-        encryptColumn.getLikeQuery()
-                .ifPresent(optional -> result.add(
-                        new ColumnProjection(columOwner, new IdentifierValue(optional.getName(), dialectDatabaseMetaData.getQuoteCharacter()), null, databaseType, leftParentheses, rightParentheses)));
+        encryptColumn.getAssistedQuery().ifPresent(optional -> result.add(new ColumnProjection(columOwner,
+                new IdentifierValue(getDerivedColumnName(columnProjection, optional.getName(), EncryptDerivedColumnSuffix.ASSISTED_QUERY), quoteCharacter), null,
+                databaseType, leftParentheses, rightParentheses)));
+        encryptColumn.getLikeQuery().ifPresent(optional -> result.add(new ColumnProjection(columOwner,
+                new IdentifierValue(getDerivedColumnName(columnProjection, optional.getName(), EncryptDerivedColumnSuffix.LIKE_QUERY), quoteCharacter), null, databaseType,
+                leftParentheses, rightParentheses)));
         return result;
     }
     
