@@ -79,6 +79,15 @@ assert_eq() {
   fi
 }
 
+assert_not_empty() {
+  local desc="$1" actual="$2"
+  if [ -n "$actual" ]; then
+    pass "$desc"
+  else
+    fail "$desc" "expected non-empty value"
+  fi
+}
+
 assert_all_scenarios() {
   local desc="$1" matrix_json="$2"
   local expected actual
@@ -142,6 +151,23 @@ assert_less_than() {
   fi
 }
 
+assert_matrix_breakdown_consistency() {
+  local desc="$1" outputs="$2"
+  local smoke_matrix full_matrix overlap stage2 total
+  local smoke_count full_count expected_stage2 expected_total
+  smoke_matrix=$(get_output "$outputs" "smoke-matrix")
+  full_matrix=$(get_output "$outputs" "full-matrix")
+  overlap=$(get_output "$outputs" "full-smoke-overlap-count")
+  stage2=$(get_output "$outputs" "estimated-stage2-jobs")
+  total=$(get_output "$outputs" "total-two-stage-jobs")
+  smoke_count=$(echo "$smoke_matrix" | jq '.include | length')
+  full_count=$(echo "$full_matrix" | jq '.include | length')
+  expected_stage2=$((full_count - overlap))
+  expected_total=$((smoke_count + stage2))
+  assert_eq "$desc: stage2=full-overlap" "$expected_stage2" "$stage2"
+  assert_eq "$desc: total=smoke+stage2" "$expected_total" "$total"
+}
+
 # Common assertions for full-trigger tests (base change / workflow_dispatch)
 assert_full_trigger() {
   local label="$1" outputs="$2" expected_algorithm="$3"
@@ -156,6 +182,11 @@ assert_full_trigger() {
   assert_no_excludes "$label: full-matrix has no excluded combinations" "$full_matrix"
   assert_extra_passthrough_job "$label: full-matrix has extra passthrough job" "$full_matrix"
   assert_eq "$label: need-proxy-image" "true" "$(get_output "$outputs" "need-proxy-image")"
+  assert_not_empty "$label: full-smoke-overlap-count exists" "$(get_output "$outputs" "full-smoke-overlap-count")"
+  assert_not_empty "$label: estimated-stage2-jobs exists" "$(get_output "$outputs" "estimated-stage2-jobs")"
+  assert_not_empty "$label: total-two-stage-jobs exists" "$(get_output "$outputs" "total-two-stage-jobs")"
+  assert_not_empty "$label: effective-reduction-ratio exists" "$(get_output "$outputs" "effective-reduction-ratio")"
+  assert_matrix_breakdown_consistency "$label: matrix-breakdown consistency" "$outputs"
 }
 
 # ---------- prerequisite check ----------
