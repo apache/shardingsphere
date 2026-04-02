@@ -1,0 +1,60 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
+import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
+
+/**
+ * Abstract resource handler.
+ */
+@RequiredArgsConstructor
+@Getter
+public abstract class AbstractResourceHandler implements ResourceHandler {
+    
+    private final String uriTemplate;
+    
+    private final int order;
+    
+    protected final String getRequiredVariable(final ResourceUriMatch uriMatch, final String variableName) {
+        String result = uriMatch.getUriVariables().get(variableName);
+        if (null == result || result.isEmpty()) {
+            throw new IllegalArgumentException(String.format("Missing resource URI variable `%s` for template `%s`.",
+                    variableName, uriMatch.getUriTemplate()));
+        }
+        return result;
+    }
+    
+    protected final ResourceReadPlan createServiceCapabilitiesPlan() {
+        return ResourceReadPlan.serviceCapabilities();
+    }
+    
+    protected final ResourceReadPlan createDatabaseCapabilitiesPlan(final String databaseName) {
+        return ResourceReadPlan.databaseCapabilities(databaseName);
+    }
+    
+    protected final ResourceReadPlan createMetadataPlan(final String databaseName, final String schemaName, final MetadataObjectType objectType,
+                                                        final String objectName, final String parentObjectType, final String parentObjectName) {
+        return ResourceReadPlan.metadata(new MetadataResourceQuery(databaseName, schemaName, objectType, objectName, parentObjectType, parentObjectName));
+    }
+}

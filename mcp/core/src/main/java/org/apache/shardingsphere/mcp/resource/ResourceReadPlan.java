@@ -24,45 +24,45 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 
 /**
- * Resolved MCP resource URI contract.
+ * Read plan derived from one MCP resource URI.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceUriResolution {
+public final class ResourceReadPlan {
     
     @Getter
-    private final ResourceUriResolutionType type;
+    private final ResourceReadPlanType type;
     
     private final String database;
     
-    private final ResourceRequest resourceRequest;
+    private final MetadataResourceQuery metadataResourceQuery;
     
     /**
-     * Create one service capability resolution.
+     * Create one service capability plan.
      *
-     * @return resource URI resolution
+     * @return resource read plan
      */
-    public static ResourceUriResolution serviceCapabilities() {
-        return new ResourceUriResolution(ResourceUriResolutionType.SERVICE_CAPABILITIES, "", null);
+    public static ResourceReadPlan serviceCapabilities() {
+        return new ResourceReadPlan(ResourceReadPlanType.SERVICE_CAPABILITIES, "", null);
     }
     
     /**
-     * Create one database capability resolution.
+     * Create one database capability plan.
      *
      * @param databaseName logical database name
-     * @return resource URI resolution
+     * @return resource read plan
      */
-    public static ResourceUriResolution databaseCapabilities(final String databaseName) {
-        return new ResourceUriResolution(ResourceUriResolutionType.DATABASE_CAPABILITIES, databaseName, null);
+    public static ResourceReadPlan databaseCapabilities(final String databaseName) {
+        return new ResourceReadPlan(ResourceReadPlanType.DATABASE_CAPABILITIES, databaseName, null);
     }
     
     /**
-     * Create one metadata resource resolution.
+     * Create one metadata resource plan.
      *
-     * @param resourceRequest metadata resource request
-     * @return resource URI resolution
+     * @param metadataResourceQuery metadata resource query
+     * @return resource read plan
      */
-    public static ResourceUriResolution metadata(final ResourceRequest resourceRequest) {
-        return new ResourceUriResolution(ResourceUriResolutionType.METADATA, "", resourceRequest);
+    public static ResourceReadPlan metadata(final MetadataResourceQuery metadataResourceQuery) {
+        return new ResourceReadPlan(ResourceReadPlanType.METADATA, "", metadataResourceQuery);
     }
     
     /**
@@ -71,22 +71,22 @@ public final class ResourceUriResolution {
      * @return database name when present
      */
     public Optional<String> getDatabase() {
-        return ResourceUriResolutionType.DATABASE_CAPABILITIES == type ? Optional.of(database) : Optional.empty();
+        return ResourceReadPlanType.DATABASE_CAPABILITIES == type ? Optional.of(database) : Optional.empty();
     }
     
     /**
-     * Get metadata resource request when resolving metadata resources.
+     * Get metadata resource query when reading metadata resources.
      *
-     * @return metadata resource request when present
+     * @return metadata resource query when present
      */
-    public Optional<ResourceRequest> getResourceRequest() {
-        return ResourceUriResolutionType.METADATA == type ? Optional.of(resourceRequest) : Optional.empty();
+    public Optional<MetadataResourceQuery> getMetadataResourceQuery() {
+        return ResourceReadPlanType.METADATA == type ? Optional.of(metadataResourceQuery) : Optional.empty();
     }
     
     /**
-     * Resource URI resolution type.
+     * Resource read plan type.
      */
-    public enum ResourceUriResolutionType {
+    public enum ResourceReadPlanType {
         
         SERVICE_CAPABILITIES,
         

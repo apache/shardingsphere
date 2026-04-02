@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
@@ -37,7 +36,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,8 +56,7 @@ class MCPToolPayloadResolverTest {
     void assertResolveServiceCapabilities() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "get_capabilities", Map.of());
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getPayload(), isA(ServiceCapability.class));
-        assertTrue(((ServiceCapability) actual.getPayload()).getSupportedTools().contains("execute_query"));
+        assertTrue(((List<?>) actual.getPayload().get("supportedTools")).contains("execute_query"));
     }
     
     @Test
@@ -83,18 +80,16 @@ class MCPToolPayloadResolverTest {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "max_rows", 1));
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getPayload(), isA(Map.class));
-        assertThat(((Map<?, ?>) actual.getPayload()).get("result_kind"), is("result_set"));
-        assertThat(((List<?>) ((Map<?, ?>) actual.getPayload()).get("rows")).size(), is(1));
-        assertTrue((Boolean) ((Map<?, ?>) actual.getPayload()).get("truncated"));
+        assertThat(actual.getPayload().get("result_kind"), is("result_set"));
+        assertThat(((List<?>) actual.getPayload().get("rows")).size(), is(1));
+        assertTrue((Boolean) actual.getPayload().get("truncated"));
     }
     
     @Test
     void assertResolveMetadataTool() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "list_databases", Map.of());
         assertTrue(actual.isSuccessful());
-        assertThat(actual.getPayload(), isA(Map.class));
-        assertThat(((List<?>) ((Map<?, ?>) actual.getPayload()).get("items")).size(), is(2));
+        assertThat(((List<?>) actual.getPayload().get("items")).size(), is(2));
     }
     
     @Test

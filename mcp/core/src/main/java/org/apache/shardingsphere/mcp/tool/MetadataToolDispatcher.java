@@ -21,24 +21,23 @@ import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceLoader;
-import org.apache.shardingsphere.mcp.resource.ResourceLoadResult;
-import org.apache.shardingsphere.mcp.resource.ResourceRequest;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceReader;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceResult;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Dispatch metadata discovery tools on top of the normalized metadata resource loader.
+ * Dispatch metadata discovery tools on top of the normalized metadata resource reader.
  */
 public final class MetadataToolDispatcher {
     
-    private final MetadataResourceLoader resourceLoader = new MetadataResourceLoader();
+    private final MetadataResourceReader metadataResourceReader = new MetadataResourceReader();
     
     /**
      * Dispatch one metadata tool request.
@@ -50,28 +49,28 @@ public final class MetadataToolDispatcher {
     public ToolDispatchResult dispatch(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ToolRequest toolRequest) {
         switch (toolRequest.getToolName()) {
             case "list_databases":
-                return paginate(resourceLoader.load(databaseMetadataSnapshots, new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", "")),
+                return paginate(metadataResourceReader.read(databaseMetadataSnapshots, new MetadataResourceQuery("", "", MetadataObjectType.DATABASE, "", "", "")),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_schemas":
-                return paginate(validateAndLoad(databaseMetadataSnapshots, toolRequest, MetadataObjectType.SCHEMA, "", true, false),
+                return paginate(validateAndRead(databaseMetadataSnapshots, toolRequest, MetadataObjectType.SCHEMA, "", true, false),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_tables":
-                return paginate(validateAndLoad(databaseMetadataSnapshots, toolRequest, MetadataObjectType.TABLE, "", true, true),
+                return paginate(validateAndRead(databaseMetadataSnapshots, toolRequest, MetadataObjectType.TABLE, "", true, true),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_views":
-                return paginate(validateAndLoad(databaseMetadataSnapshots, toolRequest, MetadataObjectType.VIEW, "", true, true),
+                return paginate(validateAndRead(databaseMetadataSnapshots, toolRequest, MetadataObjectType.VIEW, "", true, true),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_columns":
                 if (toolRequest.getObjectName().isEmpty() || toolRequest.getParentObjectType().isEmpty()) {
                     return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Parent object type and object name are required.");
                 }
-                return paginate(validateAndLoad(databaseMetadataSnapshots, toolRequest, MetadataObjectType.COLUMN, toolRequest.getParentObjectType(), true, true),
+                return paginate(validateAndRead(databaseMetadataSnapshots, toolRequest, MetadataObjectType.COLUMN, toolRequest.getParentObjectType(), true, true),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_indexes":
                 if (toolRequest.getObjectName().isEmpty()) {
                     return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Table name is required.");
                 }
-                return paginate(validateAndLoad(databaseMetadataSnapshots, toolRequest, MetadataObjectType.INDEX, "TABLE", true, true),
+                return paginate(validateAndRead(databaseMetadataSnapshots, toolRequest, MetadataObjectType.INDEX, "TABLE", true, true),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "search_metadata":
                 return searchMetadata(databaseMetadataSnapshots, toolRequest);
@@ -84,15 +83,15 @@ public final class MetadataToolDispatcher {
         }
     }
     
-    private ResourceLoadResult validateAndLoad(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ToolRequest toolRequest, final MetadataObjectType objectType,
-                                               final String parentObjectType, final boolean requireDatabase, final boolean requireSchema) {
+    private MetadataResourceResult validateAndRead(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ToolRequest toolRequest, final MetadataObjectType objectType,
+                                                   final String parentObjectType, final boolean requireDatabase, final boolean requireSchema) {
         if (requireDatabase && toolRequest.getDatabase().isEmpty()) {
-            return ResourceLoadResult.error(MCPErrorCode.INVALID_REQUEST, "Database is required.");
+            return MetadataResourceResult.error(MCPErrorCode.INVALID_REQUEST, "Database is required.");
         }
         if (requireSchema && toolRequest.getSchema().isEmpty()) {
-            return ResourceLoadResult.error(MCPErrorCode.INVALID_REQUEST, "Schema is required.");
+            return MetadataResourceResult.error(MCPErrorCode.INVALID_REQUEST, "Schema is required.");
         }
-        return resourceLoader.load(databaseMetadataSnapshots, new ResourceRequest(toolRequest.getDatabase(), toolRequest.getSchema(), objectType, "",
+        return metadataResourceReader.read(databaseMetadataSnapshots, new MetadataResourceQuery(toolRequest.getDatabase(), toolRequest.getSchema(), objectType, "",
                 parentObjectType, toolRequest.getObjectName()));
     }
     
@@ -100,26 +99,27 @@ public final class MetadataToolDispatcher {
         if (!toolRequest.getSchema().isEmpty() && toolRequest.getDatabase().isEmpty()) {
             return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Schema cannot be provided without database.");
         }
-        List<MetadataObject> result = new LinkedList<>();
+        List<MetadataObject> result = new ArrayList<>();
         if (toolRequest.getDatabase().isEmpty()) {
-            ResourceLoadResult databaseResult = resourceLoader.load(databaseMetadataSnapshots, new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", ""));
+            MetadataResourceResult databaseResult = metadataResourceReader.read(databaseMetadataSnapshots, new MetadataResourceQuery("", "", MetadataObjectType.DATABASE, "", "", ""));
             for (MetadataObject each : databaseResult.getMetadataObjects()) {
-                result.addAll(loadSearchResults(databaseMetadataSnapshots, each.getDatabase(), toolRequest));
+                result.addAll(readSearchResults(databaseMetadataSnapshots, each.getDatabase(), toolRequest));
             }
         } else {
-            result.addAll(loadSearchResults(databaseMetadataSnapshots, toolRequest.getDatabase(), toolRequest));
+            result.addAll(readSearchResults(databaseMetadataSnapshots, toolRequest.getDatabase(), toolRequest));
         }
         return paginate(result, toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
     }
     
-    private List<MetadataObject> loadSearchResults(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName, final ToolRequest toolRequest) {
-        List<MetadataObject> result = new LinkedList<>();
+    private List<MetadataObject> readSearchResults(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName, final ToolRequest toolRequest) {
+        List<MetadataObject> result = new ArrayList<>();
         for (MetadataObjectType each : getSearchObjectTypes(toolRequest.getObjectTypes())) {
-            ResourceLoadResult loadResult = resourceLoader.load(databaseMetadataSnapshots, new ResourceRequest(databaseName, toolRequest.getSchema(), each, "", "", ""));
-            if (!loadResult.isSuccessful()) {
+            MetadataResourceResult metadataResourceResult = metadataResourceReader.read(
+                    databaseMetadataSnapshots, new MetadataResourceQuery(databaseName, toolRequest.getSchema(), each, "", "", ""));
+            if (!metadataResourceResult.isSuccessful()) {
                 continue;
             }
-            result.addAll(loadResult.getMetadataObjects());
+            result.addAll(metadataResourceResult.getMetadataObjects());
         }
         return result;
     }
@@ -148,13 +148,13 @@ public final class MetadataToolDispatcher {
         if (toolRequest.getDatabase().isEmpty() || toolRequest.getSchema().isEmpty() || toolRequest.getObjectName().isEmpty()) {
             return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Database, schema, and object name are required.");
         }
-        ResourceLoadResult objectResult = resourceLoader.load(databaseMetadataSnapshots, new ResourceRequest(toolRequest.getDatabase(), toolRequest.getSchema(),
+        MetadataResourceResult objectResult = metadataResourceReader.read(databaseMetadataSnapshots, new MetadataResourceQuery(toolRequest.getDatabase(), toolRequest.getSchema(),
                 objectType, toolRequest.getObjectName(), "", ""));
         if (!objectResult.isSuccessful()) {
-            return ToolDispatchResult.fromResourceLoadResult(objectResult);
+            return ToolDispatchResult.fromMetadataResourceResult(objectResult);
         }
         List<MetadataObject> result = new ArrayList<>(objectResult.getMetadataObjects());
-        ResourceLoadResult columnResult = resourceLoader.load(databaseMetadataSnapshots, new ResourceRequest(toolRequest.getDatabase(), toolRequest.getSchema(),
+        MetadataResourceResult columnResult = metadataResourceReader.read(databaseMetadataSnapshots, new MetadataResourceQuery(toolRequest.getDatabase(), toolRequest.getSchema(),
                 MetadataObjectType.COLUMN, "", objectType.name(), toolRequest.getObjectName()));
         if (columnResult.isSuccessful()) {
             result.addAll(columnResult.getMetadataObjects());
@@ -162,11 +162,11 @@ public final class MetadataToolDispatcher {
         return ToolDispatchResult.success(result, "");
     }
     
-    private ToolDispatchResult paginate(final ResourceLoadResult loadResult, final String query, final int pageSize, final String pageToken) {
-        if (!loadResult.isSuccessful()) {
-            return ToolDispatchResult.fromResourceLoadResult(loadResult);
+    private ToolDispatchResult paginate(final MetadataResourceResult metadataResourceResult, final String query, final int pageSize, final String pageToken) {
+        if (!metadataResourceResult.isSuccessful()) {
+            return ToolDispatchResult.fromMetadataResourceResult(metadataResourceResult);
         }
-        return paginate(loadResult.getMetadataObjects(), query, pageSize, pageToken);
+        return paginate(metadataResourceResult.getMetadataObjects(), query, pageSize, pageToken);
     }
     
     private ToolDispatchResult paginate(final Collection<MetadataObject> metadataObjects, final String query, final int pageSize, final String pageToken) {
@@ -187,7 +187,7 @@ public final class MetadataToolDispatcher {
     }
     
     private List<MetadataObject> filterByQuery(final Collection<MetadataObject> metadataObjects, final String query) {
-        List<MetadataObject> result = new LinkedList<>();
+        List<MetadataObject> result = new ArrayList<>();
         for (MetadataObject each : metadataObjects) {
             if (matchesSearch(each, query)) {
                 result.add(each);

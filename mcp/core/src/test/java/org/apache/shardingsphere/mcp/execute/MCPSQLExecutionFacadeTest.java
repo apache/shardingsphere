@@ -115,7 +115,8 @@ class MCPSQLExecutionFacadeTest {
         }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("Unknown", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager),
+                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -134,7 +135,8 @@ class MCPSQLExecutionFacadeTest {
         }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager),
+                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
@@ -154,7 +156,8 @@ class MCPSQLExecutionFacadeTest {
         }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager),
+                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
@@ -174,7 +177,8 @@ class MCPSQLExecutionFacadeTest {
         }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager),
+                new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMessage(), is("Transaction started."));
@@ -218,7 +222,8 @@ class MCPSQLExecutionFacadeTest {
         }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager),
+                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
@@ -237,7 +242,8 @@ class MCPSQLExecutionFacadeTest {
         }
         MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("H2", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager),
+                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));

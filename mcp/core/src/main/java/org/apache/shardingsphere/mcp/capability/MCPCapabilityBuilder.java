@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.capability;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
 import java.util.Optional;
@@ -36,7 +36,7 @@ public final class MCPCapabilityBuilder {
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
-    private final ResourceUriResolver resourceUriResolver = new ResourceUriResolver();
+    private final ResourceDispatcher resourceDispatcher = new ResourceDispatcher();
     
     /**
      * Build the service-level capability.
@@ -44,7 +44,7 @@ public final class MCPCapabilityBuilder {
      * @return service-level capability
      */
     public ServiceCapability buildServiceCapability() {
-        return new ServiceCapability(resourceUriResolver.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
+        return new ServiceCapability(resourceDispatcher.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
     }
     
     /**
@@ -54,8 +54,7 @@ public final class MCPCapabilityBuilder {
      * @return database-level capability when the database type is supported
      */
     public Optional<DatabaseCapability> buildDatabaseCapability(final String databaseName) {
-        Optional<String> databaseType = databaseMetadataSnapshots.findDatabaseType(databaseName);
-        return databaseType.isPresent() ? DatabaseCapabilityCatalog.find(databaseName, databaseType.get(), getDatabaseVersion(databaseName)) : Optional.empty();
+        return databaseMetadataSnapshots.findDatabaseType(databaseName).flatMap(each -> DatabaseCapabilityCatalog.find(databaseName, each, getDatabaseVersion(databaseName)));
     }
     
     private String getDatabaseVersion(final String databaseName) {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.protocol;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.ResultBehavior;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 import org.apache.shardingsphere.mcp.capability.TransactionBoundaryBehavior;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
@@ -38,6 +39,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPPayloadBuilderTest {
     
     private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+    
+    @Test
+    void assertCreateServiceCapabilityPayload() {
+        ServiceCapability capability = new ServiceCapability(List.of("shardingsphere://capabilities"), List.of("get_capabilities"), Set.of(StatementClass.QUERY));
+        
+        Map<String, Object> actual = payloadBuilder.createServiceCapabilityPayload(capability);
+        
+        assertThat(actual.get("supportedResources"), is(List.of("shardingsphere://capabilities")));
+        assertThat(actual.get("supportedTools"), is(List.of("get_capabilities")));
+        assertThat(actual.get("supportedStatementClasses"), is(Set.of(StatementClass.QUERY)));
+    }
     
     @Test
     void assertCreateDatabaseCapabilityPayload() {

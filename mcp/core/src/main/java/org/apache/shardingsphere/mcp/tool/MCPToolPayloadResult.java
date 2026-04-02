@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
 
+import java.util.Map;
+
 /**
  * Transport-neutral payload result for one MCP tool call.
  */
@@ -31,9 +33,9 @@ public final class MCPToolPayloadResult {
     
     private final String message;
     
-    private final Object payload;
+    private final Map<String, Object> payload;
     
-    private MCPToolPayloadResult(final boolean successful, final String errorCode, final String message, final Object payload) {
+    private MCPToolPayloadResult(final boolean successful, final String errorCode, final String message, final Map<String, Object> payload) {
         this.successful = successful;
         this.errorCode = errorCode;
         this.message = message;
@@ -46,7 +48,7 @@ public final class MCPToolPayloadResult {
      * @param payload payload
      * @return result
      */
-    public static MCPToolPayloadResult success(final Object payload) {
+    public static MCPToolPayloadResult success(final Map<String, Object> payload) {
         return new MCPToolPayloadResult(true, "", "", payload);
     }
     
@@ -58,7 +60,7 @@ public final class MCPToolPayloadResult {
      * @param payload error payload
      * @return result
      */
-    public static MCPToolPayloadResult error(final String errorCode, final String message, final Object payload) {
+    public static MCPToolPayloadResult error(final String errorCode, final String message, final Map<String, Object> payload) {
         return new MCPToolPayloadResult(false, errorCode, message, payload);
     }
 }

@@ -36,18 +36,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MetadataResourceLoaderTest {
+class MetadataResourceReaderTest {
     
     @Test
     void assertConstruct() {
-        MetadataResourceLoader actual = assertDoesNotThrow(MetadataResourceLoader::new);
+        MetadataResourceReader actual = assertDoesNotThrow(MetadataResourceReader::new);
         assertNotNull(actual);
     }
     
     @Test
-    void assertLoadDatabases() {
-        MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("", "", MetadataObjectType.DATABASE, "", "", ""));
+    void assertReadDatabases() {
+        MetadataResourceReader reader = createReader();
+        MetadataResourceResult actual = reader.read(createDatabaseMetadataSnapshots(), new MetadataResourceQuery("", "", MetadataObjectType.DATABASE, "", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(3));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("analytics_db"));
@@ -55,18 +55,18 @@ class MetadataResourceLoaderTest {
     }
     
     @Test
-    void assertLoadDatabaseByObjectName() {
-        MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("", "", MetadataObjectType.DATABASE, "logic_db", "", ""));
+    void assertReadDatabaseByObjectName() {
+        MetadataResourceReader reader = createReader();
+        MetadataResourceResult actual = reader.read(createDatabaseMetadataSnapshots(), new MetadataResourceQuery("", "", MetadataObjectType.DATABASE, "logic_db", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(1));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("logic_db"));
     }
     
     @Test
-    void assertLoadTableMetadata() {
-        MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("logic_db", "public", MetadataObjectType.TABLE, "", "", ""));
+    void assertReadTableMetadata() {
+        MetadataResourceReader reader = createReader();
+        MetadataResourceResult actual = reader.read(createDatabaseMetadataSnapshots(), new MetadataResourceQuery("logic_db", "public", MetadataObjectType.TABLE, "", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(2));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("order_items"));
@@ -74,9 +74,9 @@ class MetadataResourceLoaderTest {
     }
     
     @Test
-    void assertLoadColumnsByParentObject() {
-        MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("logic_db", "public", MetadataObjectType.COLUMN, "", "TABLE", "orders"));
+    void assertReadColumnsByParentObject() {
+        MetadataResourceReader reader = createReader();
+        MetadataResourceResult actual = reader.read(createDatabaseMetadataSnapshots(), new MetadataResourceQuery("logic_db", "public", MetadataObjectType.COLUMN, "", "TABLE", "orders"));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(2));
         assertThat(actual.getMetadataObjects().get(0).getName(), is("order_id"));
@@ -84,9 +84,9 @@ class MetadataResourceLoaderTest {
     }
     
     @Test
-    void assertLoadWithUnsupportedIndexResource() {
-        MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("warehouse", "warehouse", MetadataObjectType.INDEX, "", "TABLE", "facts"));
+    void assertReadWithUnsupportedIndexResource() {
+        MetadataResourceReader reader = createReader();
+        MetadataResourceResult actual = reader.read(createDatabaseMetadataSnapshots(), new MetadataResourceQuery("warehouse", "warehouse", MetadataObjectType.INDEX, "", "TABLE", "facts"));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.UNSUPPORTED));
@@ -94,18 +94,18 @@ class MetadataResourceLoaderTest {
     }
     
     @Test
-    void assertLoadWithExcludedObjectType() {
-        MetadataResourceLoader loader = createLoader();
-        ResourceLoadResult actual = loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "", "", ""));
+    void assertReadWithExcludedObjectType() {
+        MetadataResourceReader reader = createReader();
+        MetadataResourceResult actual = reader.read(createDatabaseMetadataSnapshots(), new MetadataResourceQuery("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "", "", ""));
         assertTrue(actual.isSuccessful());
         assertThat(actual.getMetadataObjects().size(), is(0));
     }
     
     @Test
-    void assertLoadWithUnknownDatabase() {
-        MetadataResourceLoader loader = createLoader();
+    void assertReadWithUnknownDatabase() {
+        MetadataResourceReader reader = createReader();
         IllegalStateException actual = assertThrows(IllegalStateException.class,
-                () -> loader.load(createDatabaseMetadataSnapshots(), new ResourceRequest("missing_db", "public", MetadataObjectType.TABLE, "", "", "")));
+                () -> reader.read(createDatabaseMetadataSnapshots(), new MetadataResourceQuery("missing_db", "public", MetadataObjectType.TABLE, "", "", "")));
         assertThat(actual.getMessage(), is("Database does not exist."));
     }
     
@@ -144,7 +144,7 @@ class MetadataResourceLoaderTest {
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     
-    private MetadataResourceLoader createLoader() {
-        return new MetadataResourceLoader();
+    private MetadataResourceReader createReader() {
+        return new MetadataResourceReader();
     }
 }

@@ -23,8 +23,8 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.MCPResourcePayloadResolver;
-import org.apache.shardingsphere.mcp.resource.ResourceUriResolver;
+import org.apache.shardingsphere.mcp.resource.MCPResourceController;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,9 +36,9 @@ public final class MCPResourceSpecificationFactory {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
-    private final ResourceUriResolver resourceUriResolver;
+    private final ResourceDispatcher resourceDispatcher;
     
-    private final MCPResourcePayloadResolver resourcePayloadResolver;
+    private final MCPResourceController resourceController;
     
     /**
      * Create MCP resource specification factory.
@@ -46,8 +46,8 @@ public final class MCPResourceSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        resourceUriResolver = new ResourceUriResolver();
-        resourcePayloadResolver = new MCPResourcePayloadResolver(runtimeContext);
+        resourceDispatcher = new ResourceDispatcher();
+        resourceController = new MCPResourceController(runtimeContext);
     }
     
     /**
@@ -56,7 +56,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        return resourceUriResolver.getSupportedResources().stream()
+        return resourceDispatcher.getSupportedResources().stream()
                 .filter(each -> !isTemplatedResource(each)).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
@@ -66,7 +66,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return resourceUriResolver.getSupportedResources().stream()
+        return resourceDispatcher.getSupportedResources().stream()
                 .filter(this::isTemplatedResource)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
@@ -95,7 +95,6 @@ public final class MCPResourceSpecificationFactory {
     }
     
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
-        Object payload = resourcePayloadResolver.resolve(request.uri());
-        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
+        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(resourceController.handle(request.uri())))));
     }
 }

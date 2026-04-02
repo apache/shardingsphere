@@ -25,39 +25,39 @@ import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 
 import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 /**
- * Load normalized metadata resources for the MCP public object model.
+ * Read normalized metadata resources for the MCP public object model.
  */
-public final class MetadataResourceLoader {
+public final class MetadataResourceReader {
     
     /**
-     * Load one metadata resource view from the supplied catalog.
+     * Read one metadata resource view from the supplied catalog.
      *
      * @param databaseMetadataSnapshots database metadata snapshots
-     * @param resourceRequest resource request
-     * @return loaded metadata resource result
+     * @param metadataResourceQuery metadata resource query
+     * @return metadata resource result
      */
-    public ResourceLoadResult load(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest) {
-        if (MetadataObjectType.DATABASE == resourceRequest.getObjectType()) {
-            return ResourceLoadResult.success(filterDatabases(databaseMetadataSnapshots, resourceRequest));
+    public MetadataResourceResult read(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MetadataResourceQuery metadataResourceQuery) {
+        if (MetadataObjectType.DATABASE == metadataResourceQuery.getObjectType()) {
+            return MetadataResourceResult.success(filterDatabases(databaseMetadataSnapshots, metadataResourceQuery));
         }
-        Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseMetadataSnapshots, resourceRequest.getDatabase());
-        if (MetadataObjectType.INDEX == resourceRequest.getObjectType() && !supportsObjectType(supportedMetadataObjectTypes, MetadataObjectType.INDEX)) {
-            return ResourceLoadResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
+        Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseMetadataSnapshots, metadataResourceQuery.getDatabase());
+        if (MetadataObjectType.INDEX == metadataResourceQuery.getObjectType() && !supportsObjectType(supportedMetadataObjectTypes, MetadataObjectType.INDEX)) {
+            return MetadataResourceResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
-        return ResourceLoadResult.success(filterMetadataObjects(databaseMetadataSnapshots, resourceRequest, supportedMetadataObjectTypes));
+        return MetadataResourceResult.success(filterMetadataObjects(databaseMetadataSnapshots, metadataResourceQuery, supportedMetadataObjectTypes));
     }
     
-    private List<MetadataObject> filterDatabases(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest) {
-        List<MetadataObject> result = new LinkedList<>();
+    private List<MetadataObject> filterDatabases(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MetadataResourceQuery metadataResourceQuery) {
+        List<MetadataObject> result = new ArrayList<>(databaseMetadataSnapshots.getDatabaseTypes().size());
         for (String each : databaseMetadataSnapshots.getDatabaseTypes().keySet()) {
-            if (resourceRequest.getObjectName().isEmpty() || each.equals(resourceRequest.getObjectName())) {
+            if (metadataResourceQuery.getObjectName().isEmpty() || each.equals(metadataResourceQuery.getObjectName())) {
                 result.add(new MetadataObject(each, "", MetadataObjectType.DATABASE, each, "", ""));
             }
         }
@@ -70,26 +70,26 @@ public final class MetadataResourceLoader {
                 .map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
     }
     
-    private List<MetadataObject> filterMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ResourceRequest resourceRequest,
+    private List<MetadataObject> filterMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MetadataResourceQuery metadataResourceQuery,
                                                        final Set<MetadataObjectType> supportedMetadataObjectTypes) {
-        List<MetadataObject> result = new LinkedList<>();
+        List<MetadataObject> result = new ArrayList<>();
         for (MetadataObject each : databaseMetadataSnapshots.getMetadataObjects()) {
-            if (!resourceRequest.getDatabase().equals(each.getDatabase())) {
+            if (!metadataResourceQuery.getDatabase().equals(each.getDatabase())) {
                 continue;
             }
-            if (!resourceRequest.getSchema().isEmpty() && !resourceRequest.getSchema().equals(each.getSchema())) {
+            if (!metadataResourceQuery.getSchema().isEmpty() && !metadataResourceQuery.getSchema().equals(each.getSchema())) {
                 continue;
             }
-            if (resourceRequest.getObjectType() != each.getObjectType()) {
+            if (metadataResourceQuery.getObjectType() != each.getObjectType()) {
                 continue;
             }
-            if (!resourceRequest.getObjectName().isEmpty() && !resourceRequest.getObjectName().equals(each.getName())) {
+            if (!metadataResourceQuery.getObjectName().isEmpty() && !metadataResourceQuery.getObjectName().equals(each.getName())) {
                 continue;
             }
-            if (!resourceRequest.getParentObjectType().isEmpty() && !resourceRequest.getParentObjectType().equals(each.getParentObjectType())) {
+            if (!metadataResourceQuery.getParentObjectType().isEmpty() && !metadataResourceQuery.getParentObjectType().equals(each.getParentObjectType())) {
                 continue;
             }
-            if (!resourceRequest.getParentObjectName().isEmpty() && !resourceRequest.getParentObjectName().equals(each.getParentObjectName())) {
+            if (!metadataResourceQuery.getParentObjectName().isEmpty() && !metadataResourceQuery.getParentObjectName().equals(each.getParentObjectName())) {
                 continue;
             }
             if (supportsObjectType(supportedMetadataObjectTypes, each.getObjectType())) {
@@ -104,7 +104,7 @@ public final class MetadataResourceLoader {
     }
     
     private List<MetadataObject> sortMetadataObjects(final Collection<MetadataObject> metadataObjects) {
-        List<MetadataObject> result = new LinkedList<>(metadataObjects);
+        List<MetadataObject> result = new ArrayList<>(metadataObjects);
         result.sort(Comparator.comparing(MetadataObject::getDatabase)
                 .thenComparing(MetadataObject::getSchema)
                 .thenComparing(each -> each.getObjectType().name())

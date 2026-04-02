@@ -65,7 +65,7 @@ public final class MCPToolPayloadResolver {
     private MCPToolPayloadResult resolveGetCapabilities(final Map<String, Object> arguments) {
         String database = toolCatalog.getCapabilityDatabase(arguments);
         if (database.isEmpty()) {
-            return MCPToolPayloadResult.success(runtimeContext.getCapabilityBuilder().buildServiceCapability());
+            return MCPToolPayloadResult.success(payloadBuilder.createServiceCapabilityPayload(runtimeContext.getCapabilityBuilder().buildServiceCapability()));
         }
         Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().buildDatabaseCapability(database);
         return capability.map(optional -> MCPToolPayloadResult.success(payloadBuilder.createDatabaseCapabilityPayload(optional)))
@@ -78,7 +78,7 @@ public final class MCPToolPayloadResolver {
             return error("invalid_request", "Database and sql are required.");
         }
         ExecuteQueryResponse response = runtimeContext.getSqlExecutionFacade().execute(executionRequest);
-        Object payload = payloadBuilder.createExecuteQueryPayload(response);
+        Map<String, Object> payload = payloadBuilder.createExecuteQueryPayload(response);
         return response.isSuccessful()
                 ? MCPToolPayloadResult.success(payload)
                 : MCPToolPayloadResult.error(payloadBuilder.toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), payload);

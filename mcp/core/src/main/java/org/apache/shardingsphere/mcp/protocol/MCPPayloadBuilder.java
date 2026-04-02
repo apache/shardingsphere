@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.protocol;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 
 import java.util.LinkedHashMap;
@@ -29,6 +30,20 @@ import java.util.Map;
  * Build transport-neutral MCP payloads.
  */
 public final class MCPPayloadBuilder {
+    
+    /**
+     * Create service capability payload.
+     *
+     * @param capability service capability
+     * @return payload
+     */
+    public Map<String, Object> createServiceCapabilityPayload(final ServiceCapability capability) {
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        result.put("supportedResources", capability.getSupportedResources());
+        result.put("supportedTools", capability.getSupportedTools());
+        result.put("supportedStatementClasses", capability.getSupportedStatementClasses());
+        return result;
+    }
     
     /**
      * Create database capability payload.

@@ -15,28 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource;
+package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+
+import java.util.Map;
 
 /**
- * Request contract for one metadata resource load.
+ * Matched resource URI route.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ResourceRequest {
+public final class ResourceUriMatch {
     
-    private final String database;
+    private final String resourceUri;
     
-    private final String schema;
+    private final String uriTemplate;
     
-    private final MetadataObjectType objectType;
-    
-    private final String objectName;
-    
-    private final String parentObjectType;
-    
-    private final String parentObjectName;
+    private final Map<String, String> uriVariables;
 }

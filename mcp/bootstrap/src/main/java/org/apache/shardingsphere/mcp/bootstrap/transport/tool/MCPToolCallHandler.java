@@ -39,7 +39,7 @@ final class MCPToolCallHandler {
         return result.isSuccessful() ? successToolResult(result.getPayload()) : errorToolResult(result);
     }
     
-    private McpSchema.CallToolResult successToolResult(final Object payload) {
+    private McpSchema.CallToolResult successToolResult(final Map<String, Object> payload) {
         return McpSchema.CallToolResult.builder()
                 .structuredContent(payload)
                 .addTextContent(JsonUtils.toJsonString(payload))
