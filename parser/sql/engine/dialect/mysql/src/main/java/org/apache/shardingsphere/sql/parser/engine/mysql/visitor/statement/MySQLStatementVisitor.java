@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
@@ -888,12 +887,8 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (int index = 0; index < ctx.getChildCount(); index++) {
-            if (!(ctx.getChild(index) instanceof AssignmentValuesContext)) {
-                continue;
-            }
-            InsertValuesSegment valuesSegment = (InsertValuesSegment) visit(ctx.getChild(index));
-            result.add(new InsertValuesSegment(((TerminalNodeImpl) ctx.getChild(index - 1)).symbol.getStartIndex(), valuesSegment.getStopIndex(), valuesSegment.getValues()));
+        for (AssignmentValuesContext each : ctx.assignmentValues()) {
+            result.add((InsertValuesSegment) visit(each));
         }
         return result;
     }
@@ -1687,7 +1682,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
+        Collection<InsertValuesSegment> insertValuesSegments =
+                null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList());
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(insertValuesSegments).build();
     }
     
     private InsertStatement.InsertStatementBuilder createInsertStatementBuilder(final InsertStatement insertStatement) {
