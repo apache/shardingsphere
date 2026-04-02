@@ -29,89 +29,158 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClusterExclusiveOperatorContextTest {
     
     @Test
-    void assertStartReturnsHandle() {
-        final StubDistributedLock distributedLock = new StubDistributedLock(true);
-        assertTrue(new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).isPresent());
-        assertThat(distributedLock.tryLockCallCount, is(1));
+    void assertStart() {
+        final SharedState sharedState = new SharedState();
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
+        assertTrue(context.start("op", 50L).isPresent());
+        assertThat(sharedState.tryLockCallCount.get(), is(1));
     }
     
     @Test
-    void assertStartPassesTimeoutMillisToDistributedLock() {
-        final long timeoutMillis = 50L;
-        final StubDistributedLock distributedLock = new StubDistributedLock(true);
-        new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", timeoutMillis);
-        assertThat(distributedLock.timeoutMillis, is(timeoutMillis));
+    void assertStartWhenOperationKeyExists() {
+        final SharedState sharedState = new SharedState();
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
+        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        try {
+            assertFalse(context.start("op", 1L).isPresent());
+            assertThat(sharedState.tryLockCallCount.get(), is(1));
+        } finally {
+            lockHandle.close();
+        }
     }
     
     @Test
-    void assertCloseUnlock() {
-        final StubDistributedLock distributedLock = new StubDistributedLock(true);
-        new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).orElseThrow(AssertionError::new).close();
-        assertThat(distributedLock.unlockCallCount, is(1));
+    void assertStartWaitsUntilOperationKeyReleased() throws InterruptedException, ExecutionException, TimeoutException {
+        final SharedState sharedState = new SharedState();
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
+        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        final ExecutorService executorService = Executors.newSingleThreadExecutor();
+        try {
+            final Future<Optional<ExclusiveLockHandle>> future = executorService.submit(() -> context.start("op", 500L));
+            TimeUnit.MILLISECONDS.sleep(100L);
+            assertFalse(future.isDone());
+            assertThat(sharedState.tryLockCallCount.get(), is(1));
+            lockHandle.close();
+            final Optional<ExclusiveLockHandle> actual = future.get(1L, TimeUnit.SECONDS);
+            assertTrue(actual.isPresent());
+            assertThat(sharedState.tryLockCallCount.get(), is(2));
+            actual.orElseThrow(AssertionError::new).close();
+        } finally {
+            executorService.shutdownNow();
+        }
     }
     
     @Test
-    void assertCloseUnlockOnlyOnce() {
-        final StubDistributedLock distributedLock = new StubDistributedLock(true);
-        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock));
+    void assertClose() {
+        final SharedState sharedState = new SharedState();
+        new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true)).start("op", 50L).orElseThrow(AssertionError::new).close();
+        assertThat(sharedState.unlockCallCount.get(), is(1));
+    }
+    
+    @Test
+    void assertCloseOnlyUnlockOnce() {
+        final SharedState sharedState = new SharedState();
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true));
         final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
         lockHandle.close();
         lockHandle.close();
-        assertThat(distributedLock.unlockCallCount, is(1));
+        assertThat(sharedState.unlockCallCount.get(), is(1));
     }
     
     @Test
-    void assertStartReturnsEmptyAfterTryLockFailure() {
-        final StubDistributedLock distributedLock = new StubDistributedLock(false);
-        assertFalse(new ClusterExclusiveOperatorContext(new StubClusterPersistRepository(distributedLock)).start("op", 50L).isPresent());
-        assertThat(distributedLock.tryLockCallCount, is(1));
+    void assertStartAfterClose() {
+        final SharedState sharedState = new SharedState();
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, true, true));
+        final ExclusiveLockHandle firstHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        firstHandle.close();
+        final Optional<ExclusiveLockHandle> actual = context.start("op", 50L);
+        assertTrue(actual.isPresent());
+        assertThat(actual.orElseThrow(AssertionError::new), not(firstHandle));
     }
     
-    private static final class StubDistributedLock implements DistributedLock {
+    @Test
+    void assertStartAfterTryLockFailure() {
+        final SharedState sharedState = new SharedState();
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(new FreshLockClusterPersistRepository(sharedState, false, true));
+        assertFalse(context.start("op", 50L).isPresent());
+        assertTrue(context.start("op", 50L).isPresent());
+        assertThat(sharedState.tryLockCallCount.get(), is(2));
+    }
+    
+    @Test
+    void assertStartWithFreshLockInstances() {
+        final SharedState sharedState = new SharedState();
+        final FreshLockClusterPersistRepository repository = new FreshLockClusterPersistRepository(sharedState, true, true);
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(repository);
+        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        try {
+            assertFalse(context.start("op", 1L).isPresent());
+            assertThat(repository.getDistributedLockCallCount.get(), is(1));
+        } finally {
+            lockHandle.close();
+        }
+        context.start("op", 50L).orElseThrow(AssertionError::new).close();
+        assertThat(repository.getDistributedLockCallCount.get(), is(2));
+    }
+    
+    @Test
+    void assertStartWithDefaultDistributedLockFallback() {
+        final DefaultLockClusterPersistRepository repository = new DefaultLockClusterPersistRepository();
+        final ClusterExclusiveOperatorContext context = new ClusterExclusiveOperatorContext(repository);
+        final ExclusiveLockHandle lockHandle = context.start("op", 50L).orElseThrow(AssertionError::new);
+        try {
+            assertFalse(context.start("op", 1L).isPresent());
+            assertThat(repository.persistExclusiveEphemeralCallCount.get(), is(1));
+        } finally {
+            lockHandle.close();
+        }
+        context.start("op", 50L).orElseThrow(AssertionError::new).close();
+        assertThat(repository.persistExclusiveEphemeralCallCount.get(), is(2));
+    }
+    
+    private static final class SharedState {
         
-        private final List<Boolean> tryLockResults;
+        private final AtomicInteger tryLockCallCount = new AtomicInteger();
         
-        private long timeoutMillis;
+        private final AtomicInteger unlockCallCount = new AtomicInteger();
         
-        private int tryLockCallCount;
+        private final List<Boolean> tryLockResults = new LinkedList<>();
         
-        private int unlockCallCount;
+        private void addTryLockResult(final boolean tryLockResult) {
+            tryLockResults.add(tryLockResult);
+        }
+    }
+    
+    private static final class FreshLockClusterPersistRepository implements ClusterPersistRepository {
         
-        private StubDistributedLock(final boolean... tryLockResults) {
-            this.tryLockResults = new LinkedList<>();
+        private final SharedState sharedState;
+        
+        private final AtomicInteger getDistributedLockCallCount = new AtomicInteger();
+        
+        private FreshLockClusterPersistRepository(final SharedState sharedState, final boolean... tryLockResults) {
+            this.sharedState = sharedState;
             for (boolean each : tryLockResults) {
-                this.tryLockResults.add(each);
+                sharedState.addTryLockResult(each);
             }
-        }
-        
-        @Override
-        public boolean tryLock(final long timeoutMillis) {
-            this.timeoutMillis = timeoutMillis;
-            tryLockCallCount++;
-            return tryLockResults.remove(0);
-        }
-        
-        @Override
-        public void unlock() {
-            unlockCallCount++;
-        }
-    }
-    
-    private static final class StubClusterPersistRepository implements ClusterPersistRepository {
-        
-        private final DistributedLock distributedLock;
-        
-        private StubClusterPersistRepository(final DistributedLock distributedLock) {
-            this.distributedLock = distributedLock;
         }
         
         @Override
@@ -152,11 +221,104 @@ class ClusterExclusiveOperatorContextTest {
         
         @Override
         public Optional<DistributedLock> getDistributedLock(final String lockKey) {
-            return Optional.of(distributedLock);
+            getDistributedLockCallCount.incrementAndGet();
+            return Optional.of(new FreshDistributedLock(sharedState));
         }
         
         @Override
         public void delete(final String key) {
+        }
+        
+        @Override
+        public void watch(final String key, final DataChangedEventListener listener) {
+        }
+        
+        @Override
+        public void removeDataListener(final String key) {
+        }
+        
+        @Override
+        public void close() {
+        }
+        
+        @Override
+        public String getType() {
+            return "STUB";
+        }
+    }
+    
+    private static final class FreshDistributedLock implements DistributedLock {
+        
+        private final SharedState sharedState;
+        
+        private FreshDistributedLock(final SharedState sharedState) {
+            this.sharedState = sharedState;
+        }
+        
+        @Override
+        public boolean tryLock(final long timeoutMillis) {
+            sharedState.tryLockCallCount.incrementAndGet();
+            return sharedState.tryLockResults.remove(0);
+        }
+        
+        @Override
+        public void unlock() {
+            sharedState.unlockCallCount.incrementAndGet();
+        }
+    }
+    
+    private static final class DefaultLockClusterPersistRepository implements ClusterPersistRepository {
+        
+        private final Set<String> ephemeralKeys = ConcurrentHashMap.newKeySet();
+        
+        private final AtomicInteger persistExclusiveEphemeralCallCount = new AtomicInteger();
+        
+        @Override
+        public void init(final ClusterPersistRepositoryConfiguration config, final ComputeNodeInstanceContext computeNodeInstanceContext) {
+        }
+        
+        @Override
+        public String query(final String key) {
+            return null;
+        }
+        
+        @Override
+        public List<String> getChildrenKeys(final String key) {
+            return Collections.emptyList();
+        }
+        
+        @Override
+        public boolean isExisted(final String key) {
+            return ephemeralKeys.contains(key);
+        }
+        
+        @Override
+        public void persist(final String key, final String value) {
+        }
+        
+        @Override
+        public void update(final String key, final String value) {
+        }
+        
+        @Override
+        public void persistEphemeral(final String key, final String value) {
+            ephemeralKeys.add(key);
+        }
+        
+        @Override
+        public boolean persistExclusiveEphemeral(final String key, final String value) {
+            persistExclusiveEphemeralCallCount.incrementAndGet();
+            return ephemeralKeys.add(key);
+        }
+        
+        @Override
+        public Optional<DistributedLock> getDistributedLock(final String lockKey) {
+            return Optional.empty();
+        }
+        
+        @Override
+        public void delete(final String key) {
+            ephemeralKeys.remove(key);
         }
         
         @Override
