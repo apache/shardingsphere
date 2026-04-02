@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Registry for resource handlers.
+ * Resource handler registry.
  */
 @Getter
 public final class ResourceHandlerRegistry {
@@ -38,9 +38,6 @@ public final class ResourceHandlerRegistry {
     
     private final List<String> supportedResources;
     
-    /**
-     * Create registry from SPI.
-     */
     public ResourceHandlerRegistry() {
         this(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
     }
