@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceResult;
 
 import java.util.Collections;
@@ -29,6 +30,7 @@ import java.util.Optional;
 /**
  * Dispatch result for one metadata tool request.
  */
+@RequiredArgsConstructor
 @Getter
 public final class ToolDispatchResult {
     
@@ -41,15 +43,6 @@ public final class ToolDispatchResult {
     private final MCPErrorCode errorCode;
     
     private final String message;
-    
-    private ToolDispatchResult(final List<MetadataObject> metadataObjects, final String nextPageToken,
-                               final boolean successful, final MCPErrorCode errorCode, final String message) {
-        this.metadataObjects = metadataObjects;
-        this.nextPageToken = nextPageToken;
-        this.successful = successful;
-        this.errorCode = errorCode;
-        this.message = message;
-    }
     
     static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
         return new ToolDispatchResult(metadataObjects, nextPageToken, true, MCPErrorCode.INVALID_REQUEST, "");

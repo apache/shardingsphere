@@ -32,6 +32,8 @@ import java.util.Optional;
 @Getter
 public final class ExecuteQueryResponse {
     
+    private static final ExecuteQueryErrorDetail ABSENT_ERROR_DETAIL = new ExecuteQueryErrorDetail(MCPErrorCode.INVALID_REQUEST, "");
+    
     private final ExecuteQueryResultKind resultKind;
     
     private final List<ExecuteQueryColumnDefinition> columns;
@@ -62,7 +64,7 @@ public final class ExecuteQueryResponse {
      * @return result-set response
      */
     public static ExecuteQueryResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, true, createAbsentErrorDetail());
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, true, ABSENT_ERROR_DETAIL);
     }
     
     /**
@@ -74,7 +76,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
-                statementType, "OK", "", false, true, createAbsentErrorDetail());
+                statementType, "OK", "", false, true, ABSENT_ERROR_DETAIL);
     }
     
     /**
@@ -86,7 +88,7 @@ public final class ExecuteQueryResponse {
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                statementType, "OK", message, false, true, createAbsentErrorDetail());
+                statementType, "OK", message, false, true, ABSENT_ERROR_DETAIL);
     }
     
     /**
@@ -109,9 +111,5 @@ public final class ExecuteQueryResponse {
      */
     public Optional<ExecuteQueryErrorDetail> getError() {
         return successful ? Optional.empty() : Optional.of(error);
-    }
-    
-    private static ExecuteQueryErrorDetail createAbsentErrorDetail() {
-        return new ExecuteQueryErrorDetail(MCPErrorCode.INVALID_REQUEST, "");
     }
 }

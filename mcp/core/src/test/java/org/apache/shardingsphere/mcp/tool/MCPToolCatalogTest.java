@@ -53,24 +53,17 @@ class MCPToolCatalogTest {
         assertThat(actualGetCapabilities.getInputDefinition().getFields().get(0).getName(), is("database"));
         assertFalse(actualGetCapabilities.getInputDefinition().getFields().get(0).isRequired());
         assertThat(actualGetCapabilities.getInputDefinition().getFields().get(0).getValueDefinition().getType(), is(MCPToolValueDefinition.Type.STRING));
+        MCPToolDescriptor actualSearchMetadata = toolCatalog.findToolDescriptor("search_metadata").orElseThrow();
+        assertThat(actualSearchMetadata.getTitle(), is("Search Metadata"));
+        assertThat(actualSearchMetadata.getDispatchKind(), is(MCPToolDispatchKind.METADATA));
+        MCPToolDescriptor actualExecuteQuery = toolCatalog.findToolDescriptor("execute_query").orElseThrow();
+        assertThat(actualExecuteQuery.getDispatchKind(), is(MCPToolDispatchKind.EXECUTION));
     }
     
     @Test
-    void assertContains() {
-        assertTrue(toolCatalog.contains("execute_query"));
-        assertFalse(toolCatalog.contains("unsupported_tool"));
-    }
-    
-    @Test
-    void assertGetTitle() {
-        assertThat(toolCatalog.getTitle("search_metadata"), is("Search Metadata"));
-    }
-    
-    @Test
-    void assertIsMetadataTool() {
-        assertTrue(toolCatalog.isMetadataTool("describe_table"));
-        assertFalse(toolCatalog.isMetadataTool("get_capabilities"));
-        assertFalse(toolCatalog.isMetadataTool("execute_query"));
+    void assertFindToolDescriptor() {
+        assertTrue(toolCatalog.findToolDescriptor("execute_query").isPresent());
+        assertFalse(toolCatalog.findToolDescriptor("unsupported_tool").isPresent());
     }
     
     @Test

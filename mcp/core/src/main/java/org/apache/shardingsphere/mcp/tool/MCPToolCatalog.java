@@ -83,36 +83,6 @@ public final class MCPToolCatalog {
     }
     
     /**
-     * Determine whether the named tool exists.
-     *
-     * @param toolName tool name
-     * @return {@code true} when supported
-     */
-    public boolean contains(final String toolName) {
-        return findToolDescriptor(toolName).isPresent();
-    }
-    
-    /**
-     * Get tool title.
-     *
-     * @param toolName tool name
-     * @return tool title
-     */
-    public String getTitle(final String toolName) {
-        return getRequiredToolDescriptor(toolName).getTitle();
-    }
-    
-    /**
-     * Determine whether the named tool dispatches through metadata discovery.
-     *
-     * @param toolName tool name
-     * @return {@code true} when the tool is a metadata tool
-     */
-    public boolean isMetadataTool(final String toolName) {
-        return findToolDescriptor(toolName).map(MCPToolDescriptor::isMetadataTool).orElse(false);
-    }
-    
-    /**
      * Create a metadata tool request for the named tool.
      *
      * @param toolName tool name
@@ -145,10 +115,6 @@ public final class MCPToolCatalog {
                 integerArgument(arguments, "max_rows", 0), integerArgument(arguments, "timeout_ms", 0));
     }
     
-    private MCPToolDescriptor getRequiredToolDescriptor(final String toolName) {
-        return findToolDescriptor(toolName).orElseThrow(() -> createUnknownToolException(toolName));
-    }
-    
     private ToolDefinition getRequiredToolDefinition(final String toolName) {
         return findToolDefinition(toolName).orElseThrow(() -> createUnknownToolException(toolName));
     }
@@ -169,40 +135,6 @@ public final class MCPToolCatalog {
     private static ToolRequest createPagedMetadataToolRequest(final String toolName, final Map<String, Object> arguments) {
         return createToolRequest(toolName, arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
                 "", "", Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
-    }
-    
-    private static ToolRequest createListDatabasesRequest(final Map<String, Object> arguments) {
-        return createToolRequest("list_databases", arguments, "", "", "", "", Collections.emptySet(), 100, "");
-    }
-    
-    private static ToolRequest createListSchemasRequest(final Map<String, Object> arguments) {
-        return createToolRequest("list_schemas", arguments, stringArgument(arguments, "database"), "", "", "", Collections.emptySet(), 100, "");
-    }
-    
-    private static ToolRequest createListColumnsRequest(final Map<String, Object> arguments) {
-        return createToolRequest("list_columns", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                stringArgument(arguments, "object_name"), stringArgument(arguments, "object_type").toUpperCase(Locale.ENGLISH),
-                Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
-    }
-    
-    private static ToolRequest createListIndexesRequest(final Map<String, Object> arguments) {
-        return createToolRequest("list_indexes", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                stringArgument(arguments, "table"), "TABLE", Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
-    }
-    
-    private static ToolRequest createSearchMetadataRequest(final Map<String, Object> arguments) {
-        return createToolRequest("search_metadata", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                "", "", objectTypes(arguments), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
-    }
-    
-    private static ToolRequest createDescribeTableRequest(final Map<String, Object> arguments) {
-        return createToolRequest("describe_table", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                stringArgument(arguments, "table"), "", Collections.emptySet(), 100, "");
-    }
-    
-    private static ToolRequest createDescribeViewRequest(final Map<String, Object> arguments) {
-        return createToolRequest("describe_view", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                stringArgument(arguments, "view"), "", Collections.emptySet(), 100, "");
     }
     
     private static ToolRequest createToolRequest(final String toolName, final Map<String, Object> arguments, final String databaseName,
@@ -262,7 +194,7 @@ public final class MCPToolCatalog {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createListDatabasesRequest(arguments);
+                return createToolRequest("list_databases", arguments, "", "", "", "", Collections.emptySet(), 100, "");
             }
         },
         
@@ -271,7 +203,7 @@ public final class MCPToolCatalog {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createListSchemasRequest(arguments);
+                return createToolRequest("list_schemas", arguments, stringArgument(arguments, "database"), "", "", "", Collections.emptySet(), 100, "");
             }
         },
         
@@ -304,7 +236,9 @@ public final class MCPToolCatalog {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createListColumnsRequest(arguments);
+                return createToolRequest("list_columns", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                        stringArgument(arguments, "object_name"), stringArgument(arguments, "object_type").toUpperCase(Locale.ENGLISH),
+                        Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
             }
         },
         
@@ -318,7 +252,8 @@ public final class MCPToolCatalog {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createListIndexesRequest(arguments);
+                return createToolRequest("list_indexes", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                        stringArgument(arguments, "table"), "TABLE", Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
             }
         },
         
@@ -332,7 +267,8 @@ public final class MCPToolCatalog {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createSearchMetadataRequest(arguments);
+                return createToolRequest("search_metadata", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                        "", "", objectTypes(arguments), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
             }
         },
         
@@ -343,7 +279,8 @@ public final class MCPToolCatalog {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createDescribeTableRequest(arguments);
+                return createToolRequest("describe_table", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                        stringArgument(arguments, "table"), "", Collections.emptySet(), 100, "");
             }
         },
         
@@ -354,7 +291,8 @@ public final class MCPToolCatalog {
             
             @Override
             ToolRequest createMetadataToolRequest(final Map<String, Object> arguments) {
-                return createDescribeViewRequest(arguments);
+                return createToolRequest("describe_view", arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
+                        stringArgument(arguments, "view"), "", Collections.emptySet(), 100, "");
             }
         },
         
@@ -424,6 +362,6 @@ public final class MCPToolCatalog {
     }
     
     private static MCPToolFieldDefinition optionalStringArrayField(final String name, final String description) {
-        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.stringArray(description));
+        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.array(description, MCPToolValueDefinition.string("Array element value.")));
     }
 }

@@ -29,11 +29,11 @@ import java.util.Map;
  */
 public final class MCPResourceController {
     
-    private final ResourceDispatcher resourceDispatcher = new ResourceDispatcher();
-    
     private final ResourceHandlerContext resourceHandlerContext;
     
-    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+    private final ResourceDispatcher resourceDispatcher;
+    
+    private final MCPPayloadBuilder payloadBuilder;
     
     /**
      * Create MCP resource controller.
@@ -42,6 +42,8 @@ public final class MCPResourceController {
      */
     public MCPResourceController(final MCPRuntimeContext runtimeContext) {
         resourceHandlerContext = new ResourceHandlerContext(runtimeContext);
+        resourceDispatcher = new ResourceDispatcher();
+        payloadBuilder = new MCPPayloadBuilder();
     }
     
     /**
@@ -52,7 +54,7 @@ public final class MCPResourceController {
      */
     public Map<String, Object> handle(final String resourceUri) {
         return resourceDispatcher.dispatch(resourceUri)
-                .map(each -> each.getHandler().handle(resourceHandlerContext, each.getUriMatch()))
+                .map(optional -> optional.getHandler().handle(resourceHandlerContext, optional.getUriMatch()))
                 .map(this::toPayload)
                 .orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
@@ -67,8 +69,7 @@ public final class MCPResourceController {
                 return toResourcePayload(resourceHandlerResult.getMetadataResourceResult().orElseThrow());
             case ERROR:
                 return payloadBuilder.createErrorPayload(
-                        payloadBuilder.toDomainErrorCode(resourceHandlerResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)),
-                        resourceHandlerResult.getMessage());
+                        payloadBuilder.toDomainErrorCode(resourceHandlerResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), resourceHandlerResult.getMessage());
             default:
                 throw new IllegalStateException(String.format("Unsupported resource handler result type `%s`.", resourceHandlerResult.getType()));
         }

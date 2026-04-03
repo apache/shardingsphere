@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MCP tool input value definition.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolValueDefinition {
     
@@ -30,12 +32,6 @@ public final class MCPToolValueDefinition {
     private final String description;
     
     private final MCPToolValueDefinition itemDefinition;
-    
-    private MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition) {
-        this.type = type;
-        this.description = description;
-        this.itemDefinition = itemDefinition;
-    }
     
     /**
      * Create string tool input value definition.
@@ -66,16 +62,6 @@ public final class MCPToolValueDefinition {
      */
     public static MCPToolValueDefinition array(final String description, final MCPToolValueDefinition itemDefinition) {
         return new MCPToolValueDefinition(Type.ARRAY, description, itemDefinition);
-    }
-    
-    /**
-     * Create string-array tool input value definition.
-     *
-     * @param description description
-     * @return string-array tool input value definition
-     */
-    public static MCPToolValueDefinition stringArray(final String description) {
-        return array(description, string("Array element value."));
     }
     
     /**

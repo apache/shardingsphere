@@ -49,7 +49,7 @@ public final class MCPToolPayloadResolver {
      * @return payload result
      */
     public MCPToolPayloadResult resolve(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        if (!toolCatalog.contains(toolName)) {
+        if (toolCatalog.findToolDescriptor(toolName).isEmpty()) {
             return error("invalid_request", "Unsupported tool.");
         }
         switch (toolName) {

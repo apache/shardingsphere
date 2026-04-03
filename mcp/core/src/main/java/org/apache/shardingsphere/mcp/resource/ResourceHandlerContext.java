@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -24,27 +25,14 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import java.util.Optional;
 
 /**
- * Resource handler execution context.
+ * Resource handler context.
  */
+@RequiredArgsConstructor
 public final class ResourceHandlerContext {
     
     private final MCPRuntimeContext runtimeContext;
     
-    private final MetadataResourceReader metadataResourceReader;
-    
-    /**
-     * Create resource handler context.
-     *
-     * @param runtimeContext runtime context
-     */
-    public ResourceHandlerContext(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext, new MetadataResourceReader());
-    }
-
-    private ResourceHandlerContext(final MCPRuntimeContext runtimeContext, final MetadataResourceReader metadataResourceReader) {
-        this.runtimeContext = runtimeContext;
-        this.metadataResourceReader = metadataResourceReader;
-    }
+    private final MetadataResourceReader metadataResourceReader = new MetadataResourceReader();
     
     /**
      * Get service capability.
