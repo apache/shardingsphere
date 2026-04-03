@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
@@ -36,8 +36,8 @@ public final class DatabaseSchemaTableIndexesHandler implements ResourceHandler 
     }
     
     @Override
-    public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return ResourceReadPlan.metadata(new MetadataResourceQuery(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
+    public ResourceQueryPlan handle(final ResourceUriMatch uriMatch) {
+        return ResourceQueryPlan.metadata(new MetadataResourceQuery(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
                 MetadataObjectType.INDEX, "", "TABLE", uriMatch.getVariable("table")));
     }
 }

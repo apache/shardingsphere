@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
 
 /**
  * Handler for one MCP resource URI template.
@@ -40,5 +40,5 @@ public interface ResourceHandler extends ShardingSphereSPI {
      * @param uriMatch resource URI match
      * @return resource read plan
      */
-    ResourceReadPlan handle(ResourceUriMatch uriMatch);
+    ResourceQueryPlan handle(ResourceUriMatch uriMatch);
 }

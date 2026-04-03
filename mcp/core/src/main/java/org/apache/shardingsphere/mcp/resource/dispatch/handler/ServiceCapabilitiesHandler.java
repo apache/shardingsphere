@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
@@ -34,7 +34,7 @@ public final class ServiceCapabilitiesHandler implements ResourceHandler {
     }
     
     @Override
-    public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return ResourceReadPlan.serviceCapabilities();
+    public ResourceQueryPlan handle(final ResourceUriMatch uriMatch) {
+        return ResourceQueryPlan.serviceCapabilities();
     }
 }

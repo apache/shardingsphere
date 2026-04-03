@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan.ResourceReadPlanType;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan.ResourceReadPlanType;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatcher;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
@@ -48,7 +48,7 @@ class ResourceHandlerTest {
     void assertHandle(final HandlerCase handlerCase) {
         Optional<ResourceUriMatch> uriMatch = resourceUriMatcher.match(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri());
         
-        ResourceReadPlan actual = handlerCase.getHandler().handle(uriMatch.orElseThrow());
+        ResourceQueryPlan actual = handlerCase.getHandler().handle(uriMatch.orElseThrow());
         assertThat(actual.getType(), is(handlerCase.getExpectedType()));
         if (ResourceReadPlanType.DATABASE_CAPABILITIES == handlerCase.getExpectedType()) {
             assertThat(actual.getDatabase().orElse(""), is(handlerCase.getExpectedDatabase()));

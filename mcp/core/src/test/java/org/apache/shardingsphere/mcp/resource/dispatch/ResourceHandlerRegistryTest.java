@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -77,8 +77,8 @@ class ResourceHandlerRegistryTest {
         }
         
         @Override
-        public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-            return ResourceReadPlan.serviceCapabilities();
+        public ResourceQueryPlan handle(final ResourceUriMatch uriMatch) {
+            return ResourceQueryPlan.serviceCapabilities();
         }
     }
 }

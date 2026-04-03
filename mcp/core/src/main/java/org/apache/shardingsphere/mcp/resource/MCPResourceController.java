@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
@@ -48,11 +47,11 @@ public final class MCPResourceController {
      * @return payload
      */
     public Map<String, Object> handle(final String resourceUri) {
-        Optional<ResourceReadPlan> readPlan = resourceDispatcher.dispatch(resourceUri);
+        Optional<ResourceQueryPlan> readPlan = resourceDispatcher.dispatch(resourceUri);
         return readPlan.map(this::handle).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
-    private Map<String, Object> handle(final ResourceReadPlan readPlan) {
+    private Map<String, Object> handle(final ResourceQueryPlan readPlan) {
         switch (readPlan.getType()) {
             case SERVICE_CAPABILITIES:
                 return payloadBuilder.createServiceCapabilityPayload(runtimeContext.getCapabilityBuilder().buildServiceCapability());
@@ -64,8 +63,8 @@ public final class MCPResourceController {
     }
     
     private Map<String, Object> createDatabaseCapabilityPayload(final String databaseName) {
-        Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().buildDatabaseCapability(databaseName);
-        return capability.map(payloadBuilder::createDatabaseCapabilityPayload).orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
+        return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(databaseName)
+                .map(payloadBuilder::createDatabaseCapabilityPayload).orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }
     
     private Map<String, Object> toResourcePayload(final MetadataResourceResult metadataResourceResult) {

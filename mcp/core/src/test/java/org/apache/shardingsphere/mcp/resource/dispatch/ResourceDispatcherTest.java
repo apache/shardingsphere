@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
-import org.apache.shardingsphere.mcp.resource.ResourceReadPlan.ResourceReadPlanType;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
+import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan.ResourceReadPlanType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -42,7 +42,7 @@ class ResourceDispatcherTest {
     
     @Test
     void assertDispatchServiceCapabilities() {
-        Optional<ResourceReadPlan> actual = resourceDispatcher.dispatch("shardingsphere://capabilities");
+        Optional<ResourceQueryPlan> actual = resourceDispatcher.dispatch("shardingsphere://capabilities");
         
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is(ResourceReadPlanType.SERVICE_CAPABILITIES));
@@ -50,7 +50,7 @@ class ResourceDispatcherTest {
     
     @Test
     void assertDispatchDatabaseCapabilities() {
-        Optional<ResourceReadPlan> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/capabilities");
+        Optional<ResourceQueryPlan> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/capabilities");
         
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is(ResourceReadPlanType.DATABASE_CAPABILITIES));
@@ -59,7 +59,7 @@ class ResourceDispatcherTest {
     
     @Test
     void assertDispatchMetadataColumns() {
-        Optional<ResourceReadPlan> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
+        Optional<ResourceQueryPlan> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
         
         assertTrue(actual.isPresent());
         assertThat(actual.get().getType(), is(ResourceReadPlanType.METADATA));
@@ -73,7 +73,7 @@ class ResourceDispatcherTest {
     
     @Test
     void assertDispatchInvalidUri() {
-        Optional<ResourceReadPlan> actual = resourceDispatcher.dispatch("shardingsphere://unknown");
+        Optional<ResourceQueryPlan> actual = resourceDispatcher.dispatch("shardingsphere://unknown");
         
         assertFalse(actual.isPresent());
     }

@@ -24,12 +24,12 @@ import lombok.RequiredArgsConstructor;
 import java.util.Optional;
 
 /**
- * Read plan derived from one MCP resource URI.
+ * Resource query plan.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ResourceReadPlan {
+@Getter
+public final class ResourceQueryPlan {
     
-    @Getter
     private final ResourceReadPlanType type;
     
     private final String database;
@@ -41,8 +41,8 @@ public final class ResourceReadPlan {
      *
      * @return resource read plan
      */
-    public static ResourceReadPlan serviceCapabilities() {
-        return new ResourceReadPlan(ResourceReadPlanType.SERVICE_CAPABILITIES, "", null);
+    public static ResourceQueryPlan serviceCapabilities() {
+        return new ResourceQueryPlan(ResourceReadPlanType.SERVICE_CAPABILITIES, "", null);
     }
     
     /**
@@ -51,8 +51,8 @@ public final class ResourceReadPlan {
      * @param databaseName logical database name
      * @return resource read plan
      */
-    public static ResourceReadPlan databaseCapabilities(final String databaseName) {
-        return new ResourceReadPlan(ResourceReadPlanType.DATABASE_CAPABILITIES, databaseName, null);
+    public static ResourceQueryPlan databaseCapabilities(final String databaseName) {
+        return new ResourceQueryPlan(ResourceReadPlanType.DATABASE_CAPABILITIES, databaseName, null);
     }
     
     /**
@@ -61,8 +61,8 @@ public final class ResourceReadPlan {
      * @param metadataResourceQuery metadata resource query
      * @return resource read plan
      */
-    public static ResourceReadPlan metadata(final MetadataResourceQuery metadataResourceQuery) {
-        return new ResourceReadPlan(ResourceReadPlanType.METADATA, "", metadataResourceQuery);
+    public static ResourceQueryPlan metadata(final MetadataResourceQuery metadataResourceQuery) {
+        return new ResourceQueryPlan(ResourceReadPlanType.METADATA, "", metadataResourceQuery);
     }
     
     /**
