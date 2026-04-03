@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,11 +37,7 @@ public final class ResourceHandlerRegistry {
     
     private final List<String> supportedResources;
     
-    public ResourceHandlerRegistry() {
-        this(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
-    }
-    
-    ResourceHandlerRegistry(final Collection<ResourceHandler> handlers) {
+    public ResourceHandlerRegistry(final Collection<ResourceHandler> handlers) {
         ResourceUriMatcher uriMatcher = new ResourceUriMatcher();
         List<ResourceHandler> registeredHandlers = new ArrayList<>(handlers);
         validateHandlers(registeredHandlers, uriMatcher);
@@ -59,11 +54,13 @@ public final class ResourceHandlerRegistry {
                     () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
             Class<?> previousTemplateClass = registeredTemplates.putIfAbsent(each.getUriTemplate(), each.getClass());
             ShardingSpherePreconditions.checkState(null == previousTemplateClass,
-                    () -> new IllegalArgumentException(String.format("Duplicate resource URI template `%s` with `%s` and `%s`.", each.getUriTemplate(), previousTemplateClass.getName(), each.getClass().getName())));
+                    () -> new IllegalArgumentException(String.format("Duplicate resource URI template `%s` with `%s` and `%s`.",
+                            each.getUriTemplate(), previousTemplateClass.getName(), each.getClass().getName())));
             String routeSignature = uriMatcher.createRouteSignature(each.getUriTemplate());
             Class<?> previousSignatureClass = registeredSignatures.putIfAbsent(routeSignature, each.getClass());
             ShardingSpherePreconditions.checkState(null == previousSignatureClass,
-                    () -> new IllegalArgumentException(String.format("Duplicate resource URI route signature `%s` with `%s` and `%s`.", routeSignature, previousSignatureClass.getName(), each.getClass().getName())));
+                    () -> new IllegalArgumentException(String.format("Duplicate resource URI route signature `%s` with `%s` and `%s`.",
+                            routeSignature, previousSignatureClass.getName(), each.getClass().getName())));
         }
     }
 }

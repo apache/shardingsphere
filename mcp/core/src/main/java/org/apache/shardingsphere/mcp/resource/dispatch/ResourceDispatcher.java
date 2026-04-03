@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
 
 import java.util.List;
@@ -31,11 +32,8 @@ public final class ResourceDispatcher {
     
     private final ResourceHandlerMapping handlerMapping;
     
-    /**
-     * Create resource dispatcher.
-     */
     public ResourceDispatcher() {
-        handlerRegistry = new ResourceHandlerRegistry();
+        handlerRegistry = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
         handlerMapping = new ResourceHandlerMapping(handlerRegistry);
     }
     
@@ -57,5 +55,4 @@ public final class ResourceDispatcher {
     public Optional<ResourceQueryPlan> dispatch(final String resourceUri) {
         return handlerMapping.findHandler(resourceUri).map(optional -> optional.getHandler().handle(optional.getUriMatch()));
     }
-    
 }

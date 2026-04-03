@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
 import org.junit.jupiter.api.Test;
 
@@ -30,14 +31,14 @@ class ResourceHandlerRegistryTest {
     
     @Test
     void assertGetHandlers() {
-        ResourceHandlerRegistry actual = new ResourceHandlerRegistry();
+        ResourceHandlerRegistry actual = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
         
         assertThat(actual.getHandlers().size(), is(16));
     }
     
     @Test
     void assertGetSupportedResources() {
-        ResourceHandlerRegistry actual = new ResourceHandlerRegistry();
+        ResourceHandlerRegistry actual = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
         
         assertThat(actual.getSupportedResources().size(), is(16));
         assertThat(actual.getSupportedResources().get(0), is("shardingsphere://capabilities"));

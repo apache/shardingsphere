@@ -34,12 +34,8 @@ public final class ResourceHandlerMapping {
      * @param handlerRegistry handler registry
      */
     public ResourceHandlerMapping(final ResourceHandlerRegistry handlerRegistry) {
-        this(handlerRegistry, new ResourceUriMatcher());
-    }
-    
-    ResourceHandlerMapping(final ResourceHandlerRegistry handlerRegistry, final ResourceUriMatcher uriMatcher) {
         this.handlerRegistry = handlerRegistry;
-        this.uriMatcher = uriMatcher;
+        this.uriMatcher = new ResourceUriMatcher();
     }
     
     /**
