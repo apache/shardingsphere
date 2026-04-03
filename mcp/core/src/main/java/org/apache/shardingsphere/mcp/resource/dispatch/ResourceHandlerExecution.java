@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
 
 /**
  * Matched resource URI handler execution.
@@ -29,5 +30,5 @@ public final class ResourceHandlerExecution {
     
     private final ResourceHandler handler;
     
-    private final ResourceUriMatch uriMatch;
+    private final UriTemplateMatch uriMatch;
 }

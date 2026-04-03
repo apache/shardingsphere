@@ -17,16 +17,10 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +28,6 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class MCPResourceControllerTest {
     
@@ -83,18 +76,6 @@ class MCPResourceControllerTest {
     }
     
     private MCPResourceController createController() {
-        return new MCPResourceController(new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), mock(MCPJdbcStatementExecutor.class)));
-    }
-    
-    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", "", List.of(
-                new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", "", List.of(
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""))));
-        return new DatabaseMetadataSnapshots(databaseSnapshots);
+        return new MCPResourceController(ResourceTestDataFactory.createRuntimeContext());
     }
 }

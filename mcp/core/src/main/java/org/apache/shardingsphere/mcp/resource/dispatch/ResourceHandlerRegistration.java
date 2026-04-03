@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.dispatch;
 
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.uri.UriTemplate;
 
 /**
- * Handler for service capabilities resource URI.
+ * Resource handler registration with compiled URI template.
  */
-public final class ServiceCapabilitiesHandler implements ResourceHandler {
+@RequiredArgsConstructor
+@Getter
+public final class ResourceHandlerRegistration {
     
-    @Override
-    public String getUriTemplate() {
-        return "shardingsphere://capabilities";
-    }
+    private final ResourceHandler handler;
     
-    @Override
-    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final UriTemplateMatch uriTemplateMatch) {
-        return ResourceHandlerResult.serviceCapability(resourceHandlerContext.getServiceCapability());
-    }
+    private final UriTemplate uriTemplate;
 }

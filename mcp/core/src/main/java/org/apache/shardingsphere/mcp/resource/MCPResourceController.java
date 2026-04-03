@@ -17,28 +17,32 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * MCP resource controller.
  */
-@RequiredArgsConstructor
 public final class MCPResourceController {
-    
-    private final MCPRuntimeContext runtimeContext;
     
     private final ResourceDispatcher resourceDispatcher = new ResourceDispatcher();
     
-    private final MetadataResourceReader metadataResourceReader = new MetadataResourceReader();
+    private final ResourceHandlerContext resourceHandlerContext;
     
     private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+    
+    /**
+     * Create MCP resource controller.
+     *
+     * @param runtimeContext runtime context
+     */
+    public MCPResourceController(final MCPRuntimeContext runtimeContext) {
+        resourceHandlerContext = new ResourceHandlerContext(runtimeContext);
+    }
     
     /**
      * Handle resource URI.
@@ -47,24 +51,27 @@ public final class MCPResourceController {
      * @return payload
      */
     public Map<String, Object> handle(final String resourceUri) {
-        Optional<ResourceQueryPlan> queryPlan = resourceDispatcher.dispatch(resourceUri);
-        return queryPlan.map(this::handle).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
+        return resourceDispatcher.dispatch(resourceUri)
+                .map(each -> each.getHandler().handle(resourceHandlerContext, each.getUriMatch()))
+                .map(this::toPayload)
+                .orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
-    private Map<String, Object> handle(final ResourceQueryPlan queryPlan) {
-        switch (queryPlan.getType()) {
-            case SERVICE_CAPABILITIES:
-                return payloadBuilder.createServiceCapabilityPayload(runtimeContext.getCapabilityBuilder().buildServiceCapability());
-            case DATABASE_CAPABILITIES:
-                return createDatabaseCapabilityPayload(queryPlan.getDatabase().orElse(""));
+    private Map<String, Object> toPayload(final ResourceHandlerResult resourceHandlerResult) {
+        switch (resourceHandlerResult.getType()) {
+            case SERVICE_CAPABILITY:
+                return payloadBuilder.createServiceCapabilityPayload(resourceHandlerResult.getServiceCapability().orElseThrow());
+            case DATABASE_CAPABILITY:
+                return payloadBuilder.createDatabaseCapabilityPayload(resourceHandlerResult.getDatabaseCapability().orElseThrow());
+            case METADATA:
+                return toResourcePayload(resourceHandlerResult.getMetadataResourceResult().orElseThrow());
+            case ERROR:
+                return payloadBuilder.createErrorPayload(
+                        payloadBuilder.toDomainErrorCode(resourceHandlerResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)),
+                        resourceHandlerResult.getMessage());
             default:
-                return toResourcePayload(metadataResourceReader.read(runtimeContext.getDatabaseMetadataSnapshots(), queryPlan.getMetadataResourceQuery().orElseThrow()));
+                throw new IllegalStateException(String.format("Unsupported resource handler result type `%s`.", resourceHandlerResult.getType()));
         }
-    }
-    
-    private Map<String, Object> createDatabaseCapabilityPayload(final String databaseName) {
-        return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(databaseName)
-                .map(payloadBuilder::createDatabaseCapabilityPayload).orElseGet(() -> payloadBuilder.createErrorPayload("not_found", "Database capability does not exist."));
     }
     
     private Map<String, Object> toResourcePayload(final MetadataResourceResult metadataResourceResult) {

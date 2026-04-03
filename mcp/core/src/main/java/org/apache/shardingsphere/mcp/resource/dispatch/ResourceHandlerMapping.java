@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
+import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+
 import java.util.Optional;
 
 /**
@@ -26,8 +28,6 @@ public final class ResourceHandlerMapping {
     
     private final ResourceHandlerRegistry handlerRegistry;
     
-    private final ResourceUriMatcher uriMatcher;
-    
     /**
      * Create handler mapping.
      *
@@ -35,7 +35,6 @@ public final class ResourceHandlerMapping {
      */
     public ResourceHandlerMapping(final ResourceHandlerRegistry handlerRegistry) {
         this.handlerRegistry = handlerRegistry;
-        uriMatcher = new ResourceUriMatcher();
     }
     
     /**
@@ -45,10 +44,10 @@ public final class ResourceHandlerMapping {
      * @return matched handler execution
      */
     public Optional<ResourceHandlerExecution> findHandler(final String resourceUri) {
-        for (ResourceHandler each : handlerRegistry.getHandlers()) {
-            Optional<ResourceUriMatch> uriMatch = uriMatcher.match(each.getUriTemplate(), resourceUri);
+        for (ResourceHandlerRegistration each : handlerRegistry.getHandlerRegistrations()) {
+            Optional<UriTemplateMatch> uriMatch = each.getUriTemplate().match(resourceUri);
             if (uriMatch.isPresent()) {
-                return Optional.of(new ResourceHandlerExecution(each, uriMatch.get()));
+                return Optional.of(new ResourceHandlerExecution(each.getHandler(), uriMatch.get()));
             }
         }
         return Optional.empty();

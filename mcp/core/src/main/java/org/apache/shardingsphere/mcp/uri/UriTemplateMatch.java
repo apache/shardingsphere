@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch;
+package org.apache.shardingsphere.mcp.uri;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -24,25 +24,26 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import java.util.Map;
 
 /**
- * Matched resource URI route.
+ * Matched URI template result.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ResourceUriMatch {
+public final class UriTemplateMatch {
     
-    private final String uriTemplate;
+    private final String template;
     
-    private final Map<String, String> uriVariables;
+    private final Map<String, String> variables;
     
     /**
-     * Get variable.
-     * 
+     * Get one template variable.
+     *
      * @param variableName variable name
-     * @return variable
+     * @return variable value
      */
     public String getVariable(final String variableName) {
-        String result = uriVariables.get(variableName);
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing resource URI variable `%s` for template `%s`.", variableName, uriTemplate)));
+        String result = variables.get(variableName);
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(
+                String.format("Missing URI template variable `%s` for template `%s`.", variableName, template)));
         return result;
     }
 }

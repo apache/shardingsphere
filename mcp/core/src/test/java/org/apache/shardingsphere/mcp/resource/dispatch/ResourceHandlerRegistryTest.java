@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
+import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
+import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -33,7 +36,7 @@ class ResourceHandlerRegistryTest {
     void assertGetHandlers() {
         ResourceHandlerRegistry actual = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
         
-        assertThat(actual.getHandlers().size(), is(16));
+        assertThat(actual.getHandlerRegistrations().size(), is(16));
     }
     
     @Test
@@ -53,10 +56,10 @@ class ResourceHandlerRegistryTest {
     }
     
     @Test
-    void assertCreateRegistryWithDuplicateRouteSignature() {
+    void assertCreateRegistryWithOverlapTemplate() {
         assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
                 new TestResourceHandler("shardingsphere://databases/{database}"),
-                new TestResourceHandler("shardingsphere://databases/{logic_db}"))));
+                new TestResourceHandler("shardingsphere://databases/default_db"))));
     }
     
     @Test
@@ -78,8 +81,8 @@ class ResourceHandlerRegistryTest {
         }
         
         @Override
-        public ResourceQueryPlan handle(final ResourceUriMatch uriMatch) {
-            return ResourceQueryPlan.serviceCapabilities();
+        public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final UriTemplateMatch uriTemplateMatch) {
+            return ResourceHandlerResult.error(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI.");
         }
     }
 }

@@ -17,25 +17,29 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
-import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
-import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan.ResourceReadPlanType;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatcher;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
+import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
+import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
+import org.apache.shardingsphere.mcp.uri.UriTemplate;
+import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
     
-    private final ResourceUriMatcher resourceUriMatcher = new ResourceUriMatcher();
+    private final ResourceHandlerContext resourceHandlerContext = new ResourceHandlerContext(ResourceTestDataFactory.createRuntimeContext());
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
@@ -46,73 +50,75 @@ class ResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        Optional<ResourceUriMatch> uriMatch = resourceUriMatcher.match(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri());
-        
-        ResourceQueryPlan actual = handlerCase.getHandler().handle(uriMatch.orElseThrow());
-        assertThat(actual.getType(), is(handlerCase.getExpectedType()));
-        if (ResourceReadPlanType.DATABASE_CAPABILITIES == handlerCase.getExpectedType()) {
-            assertThat(actual.getDatabase().orElse(""), is(handlerCase.getExpectedDatabase()));
+        ResourceHandlerResult actual = handlerCase.getHandler().handle(resourceHandlerContext, match(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
+        assertThat(actual.getType().name(), is(handlerCase.getExpectedType().name()));
+        if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
+            assertThat(actual.getDatabaseCapability().orElseThrow().getDatabase(), is(handlerCase.getExpectedDatabase()));
             return;
         }
-        if (ResourceReadPlanType.SERVICE_CAPABILITIES == handlerCase.getExpectedType()) {
+        if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
+            assertTrue(actual.getServiceCapability().orElseThrow().getSupportedResources().contains("shardingsphere://capabilities"));
             return;
         }
-        MetadataResourceQuery actualQuery = actual.getMetadataResourceQuery().orElseThrow();
-        assertThat(actualQuery.getDatabase(), is(handlerCase.getExpectedRequestDatabase()));
-        assertThat(actualQuery.getSchema(), is(handlerCase.getExpectedRequestSchema()));
-        assertThat(actualQuery.getObjectType(), is(handlerCase.getExpectedObjectType()));
-        assertThat(actualQuery.getObjectName(), is(handlerCase.getExpectedObjectName()));
-        assertThat(actualQuery.getParentObjectType(), is(handlerCase.getExpectedParentObjectType()));
-        assertThat(actualQuery.getParentObjectName(), is(handlerCase.getExpectedParentObjectName()));
+        assertTrue(actual.getMetadataResourceResult().orElseThrow().isSuccessful());
+        assertThat(actual.getMetadataResourceResult().orElseThrow().getMetadataObjects().stream().map(MetadataObject::getName).toList(),
+                is(handlerCase.getExpectedObjectNames()));
+    }
+    
+    @Test
+    void assertHandleWithUnsupportedIndexResource() {
+        ResourceHandlerResult actual = new DatabaseSchemaTableIndexesHandler().handle(resourceHandlerContext,
+                match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                        "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
+        assertThat(actual.getType().name(), is(HandlerResultType.METADATA.name()));
+        assertFalse(actual.getMetadataResourceResult().orElseThrow().isSuccessful());
+        assertThat(actual.getMetadataResourceResult().orElseThrow().getErrorCode().orElseThrow(), is(MCPErrorCode.UNSUPPORTED));
+    }
+
+    private UriTemplateMatch match(final String uriTemplate, final String resourceUri) {
+        return new UriTemplate(uriTemplate).match(resourceUri).orElseThrow();
     }
     
     private static Stream<HandlerCase> handlerCases() {
         return Stream.of(
                 new HandlerCase("service capabilities", new ServiceCapabilitiesHandler(), "shardingsphere://capabilities",
-                        "shardingsphere://capabilities", ResourceReadPlanType.SERVICE_CAPABILITIES, "", null, "", "", "", "", ""),
+                        "shardingsphere://capabilities", HandlerResultType.SERVICE_CAPABILITY, "", List.of()),
                 new HandlerCase("databases", new DatabasesHandler(), "shardingsphere://databases",
-                        "shardingsphere://databases", ResourceReadPlanType.METADATA, "", MetadataObjectType.DATABASE, "", "", "", "", ""),
+                        "shardingsphere://databases", HandlerResultType.METADATA, "", List.of("logic_db", "warehouse")),
                 new HandlerCase("database", new DatabaseHandler(), "shardingsphere://databases/{database}",
-                        "shardingsphere://databases/logic_db", ResourceReadPlanType.METADATA, "", MetadataObjectType.DATABASE, "", "", "logic_db", "", ""),
+                        "shardingsphere://databases/logic_db", HandlerResultType.METADATA, "", List.of("logic_db")),
                 new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities",
-                        "shardingsphere://databases/logic_db/capabilities", ResourceReadPlanType.DATABASE_CAPABILITIES, "logic_db", null, "", "", "", "", ""),
+                        "shardingsphere://databases/logic_db/capabilities", HandlerResultType.DATABASE_CAPABILITY, "logic_db", List.of()),
                 new HandlerCase("database schemas", new DatabaseSchemasHandler(), "shardingsphere://databases/{database}/schemas",
-                        "shardingsphere://databases/logic_db/schemas", ResourceReadPlanType.METADATA, "", MetadataObjectType.SCHEMA, "logic_db", "", "", "", ""),
+                        "shardingsphere://databases/logic_db/schemas", HandlerResultType.METADATA, "", List.of("public")),
                 new HandlerCase("database schema", new DatabaseSchemaHandler(), "shardingsphere://databases/{database}/schemas/{schema}",
-                        "shardingsphere://databases/logic_db/schemas/public", ResourceReadPlanType.METADATA, "", MetadataObjectType.SCHEMA, "logic_db", "public", "public", "", ""),
+                        "shardingsphere://databases/logic_db/schemas/public", HandlerResultType.METADATA, "", List.of("public")),
                 new HandlerCase("database schema tables", new DatabaseSchemaTablesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables",
-                        "shardingsphere://databases/logic_db/schemas/public/tables", ResourceReadPlanType.METADATA, "", MetadataObjectType.TABLE, "logic_db", "public", "", "", ""),
+                        "shardingsphere://databases/logic_db/schemas/public/tables", HandlerResultType.METADATA, "", List.of("order_items", "orders")),
                 new HandlerCase("database schema views", new DatabaseSchemaViewsHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views",
-                        "shardingsphere://databases/logic_db/schemas/public/views", ResourceReadPlanType.METADATA, "", MetadataObjectType.VIEW, "logic_db", "public", "", "", ""),
+                        "shardingsphere://databases/logic_db/schemas/public/views", HandlerResultType.METADATA, "", List.of("orders_view")),
                 new HandlerCase("database schema table", new DatabaseSchemaTableHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
-                        "shardingsphere://databases/logic_db/schemas/public/tables/orders", ResourceReadPlanType.METADATA, "", MetadataObjectType.TABLE, "logic_db", "public", "orders", "", ""),
+                        "shardingsphere://databases/logic_db/schemas/public/tables/orders", HandlerResultType.METADATA, "", List.of("orders")),
                 new HandlerCase("database schema table columns", new DatabaseSchemaTableColumnsHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
-                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns", ResourceReadPlanType.METADATA, "",
-                        MetadataObjectType.COLUMN, "logic_db", "public", "", "TABLE", "orders"),
+                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema table column", new DatabaseSchemaTableColumnHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
-                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", ResourceReadPlanType.METADATA, "",
-                        MetadataObjectType.COLUMN, "logic_db", "public", "order_id", "TABLE", "orders"),
+                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema view", new DatabaseSchemaViewHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
-                        "shardingsphere://databases/logic_db/schemas/public/views/orders_view", ResourceReadPlanType.METADATA, "", MetadataObjectType.VIEW,
-                        "logic_db", "public", "orders_view", "", ""),
+                        "shardingsphere://databases/logic_db/schemas/public/views/orders_view", HandlerResultType.METADATA, "", List.of("orders_view")),
                 new HandlerCase("database schema view columns", new DatabaseSchemaViewColumnsHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
-                        "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns", ResourceReadPlanType.METADATA, "",
-                        MetadataObjectType.COLUMN, "logic_db", "public", "", "VIEW", "orders_view"),
+                        "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema view column", new DatabaseSchemaViewColumnHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
-                        "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns/order_id", ResourceReadPlanType.METADATA, "",
-                        MetadataObjectType.COLUMN, "logic_db", "public", "order_id", "VIEW", "orders_view"),
+                        "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
                 new HandlerCase("database schema table indexes", new DatabaseSchemaTableIndexesHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes", ResourceReadPlanType.METADATA, "",
-                        MetadataObjectType.INDEX, "logic_db", "public", "", "TABLE", "orders"),
+                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes", HandlerResultType.METADATA, "", List.of("order_idx")),
                 new HandlerCase("database schema table index", new DatabaseSchemaTableIndexHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
-                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", ResourceReadPlanType.METADATA, "",
-                        MetadataObjectType.INDEX, "logic_db", "public", "order_idx", "TABLE", "orders"));
+                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")));
     }
     
     private static final class HandlerCase {
@@ -125,38 +131,21 @@ class ResourceHandlerTest {
         
         private final String resourceUri;
         
-        private final ResourceReadPlanType expectedType;
+        private final HandlerResultType expectedType;
         
         private final String expectedDatabase;
         
-        private final MetadataObjectType expectedObjectType;
-        
-        private final String expectedRequestDatabase;
-        
-        private final String expectedRequestSchema;
-        
-        private final String expectedObjectName;
-        
-        private final String expectedParentObjectType;
-        
-        private final String expectedParentObjectName;
+        private final List<String> expectedObjectNames;
         
         private HandlerCase(final String description, final ResourceHandler handler, final String expectedUriTemplate, final String resourceUri,
-                            final ResourceReadPlanType expectedType, final String expectedDatabase, final MetadataObjectType expectedObjectType,
-                            final String expectedRequestDatabase, final String expectedRequestSchema, final String expectedObjectName,
-                            final String expectedParentObjectType, final String expectedParentObjectName) {
+                            final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
             this.description = description;
             this.handler = handler;
             this.expectedUriTemplate = expectedUriTemplate;
             this.resourceUri = resourceUri;
             this.expectedType = expectedType;
             this.expectedDatabase = expectedDatabase;
-            this.expectedObjectType = expectedObjectType;
-            this.expectedRequestDatabase = expectedRequestDatabase;
-            this.expectedRequestSchema = expectedRequestSchema;
-            this.expectedObjectName = expectedObjectName;
-            this.expectedParentObjectType = expectedParentObjectType;
-            this.expectedParentObjectName = expectedParentObjectName;
+            this.expectedObjectNames = expectedObjectNames;
         }
         
         private ResourceHandler getHandler() {
@@ -171,7 +160,7 @@ class ResourceHandlerTest {
             return resourceUri;
         }
         
-        private ResourceReadPlanType getExpectedType() {
+        private HandlerResultType getExpectedType() {
             return expectedType;
         }
         
@@ -179,33 +168,22 @@ class ResourceHandlerTest {
             return expectedDatabase;
         }
         
-        private MetadataObjectType getExpectedObjectType() {
-            return expectedObjectType;
-        }
-        
-        private String getExpectedRequestDatabase() {
-            return expectedRequestDatabase;
-        }
-        
-        private String getExpectedRequestSchema() {
-            return expectedRequestSchema;
-        }
-        
-        private String getExpectedObjectName() {
-            return expectedObjectName;
-        }
-        
-        private String getExpectedParentObjectType() {
-            return expectedParentObjectType;
-        }
-        
-        private String getExpectedParentObjectName() {
-            return expectedParentObjectName;
+        private List<String> getExpectedObjectNames() {
+            return expectedObjectNames;
         }
         
         @Override
         public String toString() {
             return description;
         }
+    }
+    
+    private enum HandlerResultType {
+        
+        SERVICE_CAPABILITY,
+        
+        DATABASE_CAPABILITY,
+        
+        METADATA
     }
 }

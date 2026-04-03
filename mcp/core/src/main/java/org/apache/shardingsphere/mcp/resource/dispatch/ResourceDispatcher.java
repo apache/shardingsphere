@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.resource.ResourceQueryPlan;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,9 +49,9 @@ public final class ResourceDispatcher {
      * Dispatch resource URI.
      *
      * @param resourceUri resource URI
-     * @return resource read plan when supported
+     * @return resource handler execution when supported
      */
-    public Optional<ResourceQueryPlan> dispatch(final String resourceUri) {
-        return handlerMapping.findHandler(resourceUri).map(optional -> optional.getHandler().handle(optional.getUriMatch()));
+    public Optional<ResourceHandlerExecution> dispatch(final String resourceUri) {
+        return handlerMapping.findHandler(resourceUri);
     }
 }
