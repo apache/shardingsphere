@@ -181,7 +181,6 @@ assert_full_trigger() {
   assert_all_scenarios "$label: full-matrix has all 21 scenarios" "$full_matrix"
   assert_no_excludes "$label: full-matrix has no excluded combinations" "$full_matrix"
   assert_extra_passthrough_job "$label: full-matrix has extra passthrough job" "$full_matrix"
-  assert_eq "$label: need-proxy-image" "true" "$(get_output "$outputs" "need-proxy-image")"
   assert_not_empty "$label: full-smoke-overlap-count exists" "$(get_output "$outputs" "full-smoke-overlap-count")"
   assert_not_empty "$label: estimated-stage2-jobs exists" "$(get_output "$outputs" "estimated-stage2-jobs")"
   assert_not_empty "$label: total-two-stage-jobs exists" "$(get_output "$outputs" "total-two-stage-jobs")"
@@ -271,7 +270,6 @@ echo "--- #9: adapter_jdbc only ---"
 outputs=$(run_script "$(build_filters adapter_jdbc=true)")
 smoke=$(get_output "$outputs" "smoke-matrix")
 assert_all_field_eq "#9: smoke all adapter=jdbc" "$smoke" "adapter" "jdbc"
-assert_eq "#9: need-proxy-image" "false" "$(get_output "$outputs" "need-proxy-image")"
 
 echo ""
 echo "--- #10: database_mysql only ---"

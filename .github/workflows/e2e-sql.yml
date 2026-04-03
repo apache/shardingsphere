@@ -59,7 +59,6 @@ jobs:
       full-matrix: ${{ steps.generate-matrix.outputs.full-matrix }}
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
       has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
-      need-proxy-image: ${{ steps.generate-matrix.outputs.need-proxy-image }}
       full-matrix-algorithm: ${{ steps.generate-matrix.outputs.full-matrix-algorithm }}
       full-smoke-overlap-count: ${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}
       estimated-stage2-jobs: ${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}
@@ -120,7 +119,6 @@ jobs:
         run: |
           echo "smoke-matrix=${{ steps.generate-matrix.outputs.smoke-matrix }}"
           echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
-          echo "need-proxy-image=${{ steps.generate-matrix.outputs.need-proxy-image }}"
           echo "full-matrix-algorithm=${{ steps.generate-matrix.outputs.full-matrix-algorithm }}"
           echo "full-smoke-overlap-count=${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}"
           echo "estimated-stage2-jobs=${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}"
