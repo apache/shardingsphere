@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -46,8 +49,8 @@ class ResourceHandlerResultTest {
     
     @Test
     void assertMetadata() {
-        ResourceHandlerResult actual = ResourceHandlerResult.metadata(new ResourceHandlerContext(ResourceTestDataFactory.createRuntimeContext()).readMetadata(
-                new MetadataResourceQuery("logic_db", "public", MetadataObjectType.TABLE, "", "", "")));
+        ResourceHandlerResult actual = ResourceHandlerResult.metadata(
+                MetadataResourceResult.success(List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))));
         assertThat(actual.getType(), is(ResourceHandlerResult.ResourceHandlerResultType.METADATA));
         assertTrue(actual.getMetadataResourceResult().orElseThrow().isSuccessful());
     }

@@ -21,8 +21,10 @@ import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerContextTest {
@@ -40,12 +42,21 @@ class ResourceHandlerContextTest {
     }
     
     @Test
-    void assertReadMetadata() {
-        MetadataResourceResult actual = resourceHandlerContext.readMetadata(
-                new MetadataResourceQuery("logic_db", "public", MetadataObjectType.TABLE, "", "", ""));
-        assertTrue(actual.isSuccessful());
-        assertThat(actual.getMetadataObjects().size(), is(2));
-        assertThat(actual.getMetadataObjects().get(0).getName(), is("order_items"));
+    void assertGetDatabaseMetadataSnapshots() {
+        assertThat(resourceHandlerContext.getDatabaseMetadataSnapshots().getDatabaseTypes().size(), is(2));
+        assertThat(resourceHandlerContext.getDatabaseMetadataSnapshots().getDatabaseTypes().keySet(), hasItem("logic_db"));
+    }
+    
+    @Test
+    void assertGetSupportedMetadataObjectTypes() {
+        assertTrue(resourceHandlerContext.getSupportedMetadataObjectTypes("logic_db").contains(MetadataObjectType.TABLE));
+    }
+    
+    @Test
+    void assertGetSupportedMetadataObjectTypesWithUnknownDatabase() {
+        IllegalStateException actual = assertThrows(IllegalStateException.class,
+                () -> resourceHandlerContext.getSupportedMetadataObjectTypes("missing_db"));
+        assertThat(actual.getMessage(), is("Database does not exist."));
     }
     
     @Test

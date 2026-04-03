@@ -21,8 +21,12 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.ServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Resource handler context.
@@ -31,8 +35,6 @@ import java.util.Optional;
 public final class ResourceHandlerContext {
     
     private final MCPRuntimeContext runtimeContext;
-    
-    private final MetadataResourceReader metadataResourceReader = new MetadataResourceReader();
     
     /**
      * Get service capability.
@@ -54,12 +56,22 @@ public final class ResourceHandlerContext {
     }
     
     /**
-     * Read metadata resource.
+     * Get database metadata snapshots.
      *
-     * @param metadataResourceQuery metadata resource query
-     * @return metadata resource result
+     * @return database metadata snapshots
      */
-    public MetadataResourceResult readMetadata(final MetadataResourceQuery metadataResourceQuery) {
-        return metadataResourceReader.read(runtimeContext.getDatabaseMetadataSnapshots(), metadataResourceQuery);
+    public DatabaseMetadataSnapshots getDatabaseMetadataSnapshots() {
+        return runtimeContext.getDatabaseMetadataSnapshots();
+    }
+    
+    /**
+     * Get supported metadata object types.
+     *
+     * @param databaseName logical database name
+     * @return supported metadata object types
+     */
+    public Set<MetadataObjectType> getSupportedMetadataObjectTypes(final String databaseName) {
+        getDatabaseMetadataSnapshots().findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
+        return findDatabaseCapability(databaseName).map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
     }
 }

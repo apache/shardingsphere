@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
@@ -36,7 +34,7 @@ public final class DatabaseHandler implements ResourceHandler {
     
     @Override
     public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
-        return ResourceHandlerResult.metadata(resourceHandlerContext.readMetadata(
-                new MetadataResourceQuery("", "", MetadataObjectType.DATABASE, uriVariables.getRequired("database"), "", "")));
+        String databaseName = uriVariables.getRequired("database");
+        return MetadataHandlerUtils.createDatabasesResult(resourceHandlerContext, databaseName::equals);
     }
 }
