@@ -26,40 +26,38 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ResourceHandlerResultTest {
+class MCPResourceResponseTest {
     
     @Test
     void assertServiceCapability() {
-        ResourceHandlerResult actual = ResourceHandlerResult.serviceCapability(ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildServiceCapability());
-        assertThat(actual.getType(), is(ResourceHandlerResult.ResourceHandlerResultType.SERVICE_CAPABILITY));
-        assertTrue(actual.getServiceCapability().isPresent());
-        assertFalse(actual.getDatabaseCapability().isPresent());
+        MCPResourceResponse actual = MCPResourceResponse.serviceCapability(ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildServiceCapability());
+        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.SERVICE_CAPABILITY));
+        assertTrue(actual.getServiceCapability().getSupportedResources().contains("shardingsphere://capabilities"));
     }
     
     @Test
     void assertDatabaseCapability() {
-        ResourceHandlerResult actual = ResourceHandlerResult.databaseCapability(
+        MCPResourceResponse actual = MCPResourceResponse.databaseCapability(
                 ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildDatabaseCapability("logic_db").orElseThrow());
-        assertThat(actual.getType(), is(ResourceHandlerResult.ResourceHandlerResultType.DATABASE_CAPABILITY));
-        assertThat(actual.getDatabaseCapability().orElseThrow().getDatabase(), is("logic_db"));
+        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.DATABASE_CAPABILITY));
+        assertThat(actual.getDatabaseCapability().getDatabase(), is("logic_db"));
     }
     
     @Test
     void assertMetadata() {
-        ResourceHandlerResult actual = ResourceHandlerResult.metadata(
+        MCPResourceResponse actual = MCPResourceResponse.metadata(
                 MetadataResourceResult.success(List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))));
-        assertThat(actual.getType(), is(ResourceHandlerResult.ResourceHandlerResultType.METADATA));
-        assertTrue(actual.getMetadataResourceResult().orElseThrow().isSuccessful());
+        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.METADATA));
+        assertTrue(actual.getMetadataResourceResult().isSuccessful());
     }
     
     @Test
     void assertError() {
-        ResourceHandlerResult actual = ResourceHandlerResult.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
-        assertThat(actual.getType(), is(ResourceHandlerResult.ResourceHandlerResultType.ERROR));
-        assertThat(actual.getErrorCode().orElseThrow(), is(MCPErrorCode.NOT_FOUND));
+        MCPResourceResponse actual = MCPResourceResponse.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
+        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.ERROR));
+        assertThat(actual.getErrorCode(), is(MCPErrorCode.NOT_FOUND));
         assertThat(actual.getMessage(), is("Database capability does not exist."));
     }
 }

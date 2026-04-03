@@ -57,19 +57,18 @@ public final class MCPResourceController {
                 .map(this::toPayload).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
-    private Map<String, Object> toPayload(final ResourceHandlerResult resourceHandlerResult) {
-        switch (resourceHandlerResult.getType()) {
+    private Map<String, Object> toPayload(final MCPResourceResponse resourceResponse) {
+        switch (resourceResponse.getType()) {
             case SERVICE_CAPABILITY:
-                return payloadBuilder.createServiceCapabilityPayload(resourceHandlerResult.getServiceCapability().orElseThrow());
+                return payloadBuilder.createServiceCapabilityPayload(resourceResponse.getServiceCapability());
             case DATABASE_CAPABILITY:
-                return payloadBuilder.createDatabaseCapabilityPayload(resourceHandlerResult.getDatabaseCapability().orElseThrow());
+                return payloadBuilder.createDatabaseCapabilityPayload(resourceResponse.getDatabaseCapability());
             case METADATA:
-                return toResourcePayload(resourceHandlerResult.getMetadataResourceResult().orElseThrow());
+                return toResourcePayload(resourceResponse.getMetadataResourceResult());
             case ERROR:
-                return payloadBuilder.createErrorPayload(
-                        payloadBuilder.toDomainErrorCode(resourceHandlerResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), resourceHandlerResult.getMessage());
+                return payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(resourceResponse.getErrorCode()), resourceResponse.getMessage());
             default:
-                throw new IllegalStateException(String.format("Unsupported resource handler result type `%s`.", resourceHandlerResult.getType()));
+                throw new IllegalStateException(String.format("Unsupported resource response type `%s`.", resourceResponse.getType()));
         }
     }
     

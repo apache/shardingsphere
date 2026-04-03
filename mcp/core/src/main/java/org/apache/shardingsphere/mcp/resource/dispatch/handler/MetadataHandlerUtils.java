@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceResult;
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
+import org.apache.shardingsphere.mcp.resource.MCPResourceResponse;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,16 +39,16 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MetadataHandlerUtils {
     
-    static ResourceHandlerResult createDatabasesResult(final MCPRuntimeContext runtimeContext, final Predicate<String> predicate) {
+    static MCPResourceResponse createDatabasesResult(final MCPRuntimeContext runtimeContext, final Predicate<String> predicate) {
         return createSortedMetadataResult(runtimeContext.getDatabaseMetadataSnapshots().getDatabaseTypes().keySet().stream()
                 .filter(predicate).map(each -> new MetadataObject(each, "", MetadataObjectType.DATABASE, each, "", "")).collect(Collectors.toList()));
     }
     
-    static ResourceHandlerResult createMetadataResult(final MCPRuntimeContext runtimeContext, final String databaseName,
-                                                      final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
+    static MCPResourceResponse createMetadataResult(final MCPRuntimeContext runtimeContext, final String databaseName,
+                                                    final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
         Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(runtimeContext, databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
-            return ResourceHandlerResult.metadata(MetadataResourceResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database."));
+            return MCPResourceResponse.metadata(MetadataResourceResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database."));
         }
         if (!supportedMetadataObjectTypes.contains(objectType)) {
             return createSortedMetadataResult(Collections.emptyList());
@@ -62,8 +62,8 @@ final class MetadataHandlerUtils {
         return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(databaseName).map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
     }
     
-    private static ResourceHandlerResult createSortedMetadataResult(final Collection<MetadataObject> metadataObjects) {
-        return ResourceHandlerResult.metadata(MetadataResourceResult.success(sortMetadataObjects(metadataObjects)));
+    private static MCPResourceResponse createSortedMetadataResult(final Collection<MetadataObject> metadataObjects) {
+        return MCPResourceResponse.metadata(MetadataResourceResult.success(sortMetadataObjects(metadataObjects)));
     }
     
     private static List<MetadataObject> sortMetadataObjects(final Collection<MetadataObject> metadataObjects) {
