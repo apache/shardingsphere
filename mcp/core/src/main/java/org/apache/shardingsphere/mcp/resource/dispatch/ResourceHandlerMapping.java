@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
 
 import java.util.Optional;
@@ -24,18 +25,10 @@ import java.util.Optional;
 /**
  * Resource handler mapping.
  */
+@RequiredArgsConstructor
 public final class ResourceHandlerMapping {
     
     private final ResourceHandlerRegistry handlerRegistry;
-    
-    /**
-     * Create handler mapping.
-     *
-     * @param handlerRegistry handler registry
-     */
-    public ResourceHandlerMapping(final ResourceHandlerRegistry handlerRegistry) {
-        this.handlerRegistry = handlerRegistry;
-    }
     
     /**
      * Find handler for one resource URI.

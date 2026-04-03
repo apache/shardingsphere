@@ -51,16 +51,7 @@ public final class ResourceDispatcher {
      * Dispatch resource URI.
      *
      * @param resourceUri resource URI
-     * @return resource handler execution when supported
-     */
-    public Optional<ResourceHandlerExecution> dispatch(final String resourceUri) {
-        return handlerMapping.findHandler(resourceUri);
-    }
-    
-    /**
-     * Dispatch resource URI.
-     *
-     * @param resourceUri resource URI
+     * @param resourceHandlerContext resource handler context
      * @return resource handler result
      */
     public Optional<ResourceHandlerResult> dispatch(final String resourceUri, final ResourceHandlerContext resourceHandlerContext) {

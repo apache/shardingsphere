@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
-import org.apache.shardingsphere.mcp.resource.dispatch.handler.ServiceCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
+import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceResult;
+import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
@@ -31,6 +34,8 @@ class ResourceDispatcherTest {
     
     private final ResourceDispatcher resourceDispatcher = new ResourceDispatcher();
     
+    private final ResourceHandlerContext resourceHandlerContext = new ResourceHandlerContext(ResourceTestDataFactory.createRuntimeContext());
+    
     @Test
     void assertGetSupportedResources() {
         assertThat(resourceDispatcher.getSupportedResources().size(), is(16));
@@ -40,34 +45,37 @@ class ResourceDispatcherTest {
     
     @Test
     void assertDispatchServiceCapabilities() {
-        Optional<ResourceHandlerExecution> actual = resourceDispatcher.dispatch("shardingsphere://capabilities");
+        Optional<ResourceHandlerResult> actual = resourceDispatcher.dispatch("shardingsphere://capabilities", resourceHandlerContext);
         
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getHandler().getClass(), is(ServiceCapabilitiesHandler.class));
+        ResourceHandlerResult actualResult = actual.orElseThrow();
+        assertTrue(actualResult.getServiceCapability().isPresent());
     }
     
     @Test
     void assertDispatchDatabaseCapabilities() {
-        Optional<ResourceHandlerExecution> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/capabilities");
+        Optional<ResourceHandlerResult> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/capabilities", resourceHandlerContext);
         
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getUriMatch().getVariable("database"), is("logic_db"));
+        ResourceHandlerResult actualResult = actual.orElseThrow();
+        assertThat(actualResult.getDatabaseCapability().orElseThrow().getDatabaseType(), is("MySQL"));
     }
     
     @Test
     void assertDispatchMetadataColumns() {
-        Optional<ResourceHandlerExecution> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
+        Optional<ResourceHandlerResult> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", resourceHandlerContext);
         
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getUriMatch().getVariable("database"), is("logic_db"));
-        assertThat(actual.orElseThrow().getUriMatch().getVariable("schema"), is("public"));
-        assertThat(actual.orElseThrow().getUriMatch().getVariable("table"), is("orders"));
-        assertThat(actual.orElseThrow().getUriMatch().getVariable("column"), is("order_id"));
+        ResourceHandlerResult actualResult = actual.orElseThrow();
+        MetadataResourceResult actualMetadataResult = actualResult.getMetadataResourceResult().orElseThrow();
+        assertTrue(actualMetadataResult.isSuccessful());
+        assertThat(actualMetadataResult.getMetadataObjects().size(), is(1));
+        assertThat(actualMetadataResult.getMetadataObjects().get(0).getName(), is("order_id"));
     }
     
     @Test
     void assertDispatchInvalidUri() {
-        Optional<ResourceHandlerExecution> actual = resourceDispatcher.dispatch("shardingsphere://unknown");
+        Optional<ResourceHandlerResult> actual = resourceDispatcher.dispatch("shardingsphere://unknown", resourceHandlerContext);
         
         assertFalse(actual.isPresent());
     }
