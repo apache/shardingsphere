@@ -53,10 +53,8 @@ public final class MCPResourceController {
      * @return payload
      */
     public Map<String, Object> handle(final String resourceUri) {
-        return resourceDispatcher.dispatch(resourceUri)
-                .map(optional -> optional.getHandler().handle(resourceHandlerContext, optional.getUriMatch()))
-                .map(this::toPayload)
-                .orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
+        return resourceDispatcher.dispatch(resourceUri, resourceHandlerContext)
+                .map(this::toPayload).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
     private Map<String, Object> toPayload(final ResourceHandlerResult resourceHandlerResult) {
