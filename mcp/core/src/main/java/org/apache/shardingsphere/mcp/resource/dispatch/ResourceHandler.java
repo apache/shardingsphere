@@ -21,27 +21,27 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for one MCP resource URI template.
+ * Handler for one MCP resource URI pattern.
  */
 @SingletonSPI
 public interface ResourceHandler extends ShardingSphereSPI {
     
     /**
-     * Get URI template.
+     * Get URI pattern.
      *
-     * @return URI template
+     * @return URI pattern
      */
-    String getUriTemplate();
+    String getUriPattern();
     
     /**
      * Handle one matched resource URI.
      *
      * @param resourceHandlerContext resource handler context
-     * @param uriTemplateMatch matched uri template
+     * @param uriVariables matched URI variables
      * @return resource handler result
      */
-    ResourceHandlerResult handle(ResourceHandlerContext resourceHandlerContext, MCPUriTemplateMatch uriTemplateMatch);
+    ResourceHandlerResult handle(ResourceHandlerContext resourceHandlerContext, MCPUriVariables uriVariables);
 }

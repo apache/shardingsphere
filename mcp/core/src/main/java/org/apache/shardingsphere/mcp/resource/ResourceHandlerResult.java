@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import java.util.Optional;
 
 /**
- * Resource handler execution result.
+ * Resource handler result.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceHandlerResult {

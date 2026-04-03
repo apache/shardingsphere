@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplate;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,14 +43,14 @@ class ResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
-    void assertGetUriTemplate(final HandlerCase handlerCase) {
-        assertThat(handlerCase.getHandler().getUriTemplate(), is(handlerCase.getExpectedUriTemplate()));
+    void assertGetUriPattern(final HandlerCase handlerCase) {
+        assertThat(handlerCase.getHandler().getUriPattern(), is(handlerCase.getExpectedUriPattern()));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        ResourceHandlerResult actual = handlerCase.getHandler().handle(resourceHandlerContext, match(handlerCase.getExpectedUriTemplate(), handlerCase.getResourceUri()));
+        ResourceHandlerResult actual = handlerCase.getHandler().handle(resourceHandlerContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
         assertThat(actual.getType().name(), is(handlerCase.getExpectedType().name()));
         if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
             assertThat(actual.getDatabaseCapability().orElseThrow().getDatabase(), is(handlerCase.getExpectedDatabase()));
@@ -75,8 +75,8 @@ class ResourceHandlerTest {
         assertThat(actual.getMetadataResourceResult().orElseThrow().getErrorCode().orElseThrow(), is(MCPErrorCode.UNSUPPORTED));
     }
 
-    private MCPUriTemplateMatch match(final String uriTemplate, final String resourceUri) {
-        return new MCPUriTemplate(uriTemplate).match(resourceUri).orElseThrow();
+    private MCPUriVariables match(final String uriPattern, final String resourceUri) {
+        return new MCPUriPattern(uriPattern).match(resourceUri).orElseThrow();
     }
     
     private static Stream<HandlerCase> handlerCases() {
@@ -127,7 +127,7 @@ class ResourceHandlerTest {
         
         private final ResourceHandler handler;
         
-        private final String expectedUriTemplate;
+        private final String expectedUriPattern;
         
         private final String resourceUri;
         
@@ -137,11 +137,11 @@ class ResourceHandlerTest {
         
         private final List<String> expectedObjectNames;
         
-        private HandlerCase(final String description, final ResourceHandler handler, final String expectedUriTemplate, final String resourceUri,
+        private HandlerCase(final String description, final ResourceHandler handler, final String expectedUriPattern, final String resourceUri,
                             final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
             this.description = description;
             this.handler = handler;
-            this.expectedUriTemplate = expectedUriTemplate;
+            this.expectedUriPattern = expectedUriPattern;
             this.resourceUri = resourceUri;
             this.expectedType = expectedType;
             this.expectedDatabase = expectedDatabase;
@@ -152,8 +152,8 @@ class ResourceHandlerTest {
             return handler;
         }
         
-        private String getExpectedUriTemplate() {
-            return expectedUriTemplate;
+        private String getExpectedUriPattern() {
+            return expectedUriPattern;
         }
         
         private String getResourceUri() {

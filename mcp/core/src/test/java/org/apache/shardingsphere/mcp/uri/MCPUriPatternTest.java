@@ -27,53 +27,53 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UriTemplateTest {
+class MCPUriPatternTest {
     
     @Test
     void assertMatch() {
-        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate("shardingsphere://capabilities").match("shardingsphere://capabilities");
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").match("shardingsphere://capabilities");
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getTemplate(), is("shardingsphere://capabilities"));
+        assertTrue(actual.orElseThrow().getVariables().isEmpty());
     }
     
     @Test
     void assertMatchWithVariables() {
-        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate(
+        Optional<MCPUriVariables> actual = new MCPUriPattern(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}")
                 .match("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getVariable("database"), is("logic_db"));
-        assertThat(actual.orElseThrow().getVariable("schema"), is("public"));
-        assertThat(actual.orElseThrow().getVariable("table"), is("orders"));
-        assertThat(actual.orElseThrow().getVariable("column"), is("order_id"));
+        assertThat(actual.orElseThrow().getRequired("database"), is("logic_db"));
+        assertThat(actual.orElseThrow().getRequired("schema"), is("public"));
+        assertThat(actual.orElseThrow().getRequired("table"), is("orders"));
+        assertThat(actual.orElseThrow().getRequired("column"), is("order_id"));
     }
     
     @Test
     void assertMatchWithInvalidUri() {
-        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate("shardingsphere://capabilities").match("unsupported://capabilities");
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").match("unsupported://capabilities");
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertGetRouteSignature() {
-        String actual = new MCPUriTemplate("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}").getRouteSignature();
+        String actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}").getRouteSignature();
         assertThat(actual, is("shardingsphere://databases/{}/schemas/{}/tables/{}/columns/{}"));
     }
     
     @Test
     void assertOverlaps() {
-        boolean actual = new MCPUriTemplate("shardingsphere://databases/{database}").overlaps(new MCPUriTemplate("shardingsphere://databases/default_db"));
+        boolean actual = new MCPUriPattern("shardingsphere://databases/{database}").overlaps(new MCPUriPattern("shardingsphere://databases/default_db"));
         assertTrue(actual);
     }
     
     @Test
-    void assertCreateWithInvalidTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("invalid-template"));
+    void assertCreateWithInvalidPattern() {
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriPattern("invalid-template"));
     }
     
     @Test
     void assertGetVariableWithMissingVariable() {
-        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate("shardingsphere://capabilities").match("shardingsphere://capabilities");
-        assertThrows(IllegalArgumentException.class, () -> actual.orElseThrow().getVariable("database"));
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").match("shardingsphere://capabilities");
+        assertThrows(IllegalArgumentException.class, () -> actual.orElseThrow().getRequired("database"));
     }
 }

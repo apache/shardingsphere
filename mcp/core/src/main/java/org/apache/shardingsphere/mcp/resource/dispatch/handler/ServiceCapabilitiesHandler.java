@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
  * Handler for service capabilities resource URI.
@@ -28,12 +28,12 @@ import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 public final class ServiceCapabilitiesHandler implements ResourceHandler {
     
     @Override
-    public String getUriTemplate() {
+    public String getUriPattern() {
         return "shardingsphere://capabilities";
     }
     
     @Override
-    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriTemplateMatch uriTemplateMatch) {
+    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
         return ResourceHandlerResult.serviceCapability(resourceHandlerContext.getServiceCapability());
     }
 }

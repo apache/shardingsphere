@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
  * Handler for database schema resource URI.
@@ -30,14 +30,14 @@ import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 public final class DatabaseSchemaHandler implements ResourceHandler {
     
     @Override
-    public String getUriTemplate() {
+    public String getUriPattern() {
         return "shardingsphere://databases/{database}/schemas/{schema}";
     }
     
     @Override
-    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriTemplateMatch uriTemplateMatch) {
-        String schemaName = uriTemplateMatch.getVariable("schema");
+    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
+        String schemaName = uriVariables.getRequired("schema");
         return ResourceHandlerResult.metadata(resourceHandlerContext.readMetadata(new MetadataResourceQuery(
-                uriTemplateMatch.getVariable("database"), schemaName, MetadataObjectType.SCHEMA, schemaName, "", "")));
+                uriVariables.getRequired("database"), schemaName, MetadataObjectType.SCHEMA, schemaName, "", "")));
     }
 }

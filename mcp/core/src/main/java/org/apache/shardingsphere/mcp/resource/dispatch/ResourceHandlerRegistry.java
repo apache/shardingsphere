@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplate;
+import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,36 +42,36 @@ public final class ResourceHandlerRegistry {
         List<ResourceHandlerRegistration> registeredHandlers = createHandlerRegistrations(handlers);
         validateHandlerRegistrations(registeredHandlers);
         handlerRegistrations = registeredHandlers;
-        supportedResources = registeredHandlers.stream().map(each -> each.getUriTemplate().getTemplate()).collect(Collectors.toList());
+        supportedResources = registeredHandlers.stream().map(each -> each.getUriPattern().getPattern()).collect(Collectors.toList());
     }
     
     private List<ResourceHandlerRegistration> createHandlerRegistrations(final Collection<ResourceHandler> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         List<ResourceHandlerRegistration> result = new ArrayList<>(handlers.size());
         for (ResourceHandler each : handlers) {
-            ShardingSpherePreconditions.checkState(null != each.getUriTemplate() && !each.getUriTemplate().isEmpty(),
-                    () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
-            result.add(new ResourceHandlerRegistration(each, new MCPUriTemplate(each.getUriTemplate())));
+            ShardingSpherePreconditions.checkState(null != each.getUriPattern() && !each.getUriPattern().isEmpty(),
+                    () -> new IllegalArgumentException(String.format("Resource URI pattern is required for `%s`.", each.getClass().getName())));
+            result.add(new ResourceHandlerRegistration(each, new MCPUriPattern(each.getUriPattern())));
         }
         return result;
     }
     
     private void validateHandlerRegistrations(final List<ResourceHandlerRegistration> handlerRegistrations) {
-        Map<String, Class<?>> registeredTemplates = new HashMap<>(handlerRegistrations.size(), 1F);
+        Map<String, Class<?>> registeredPatterns = new HashMap<>(handlerRegistrations.size(), 1F);
         for (ResourceHandlerRegistration each : handlerRegistrations) {
-            String template = each.getUriTemplate().getTemplate();
-            Class<?> previousTemplateClass = registeredTemplates.putIfAbsent(template, each.getHandler().getClass());
-            ShardingSpherePreconditions.checkState(null == previousTemplateClass,
-                    () -> new IllegalArgumentException(String.format("Duplicate resource URI template `%s` with `%s` and `%s`.",
-                            template, previousTemplateClass.getName(), each.getHandler().getClass().getName())));
+            String pattern = each.getUriPattern().getPattern();
+            Class<?> previousPatternClass = registeredPatterns.putIfAbsent(pattern, each.getHandler().getClass());
+            ShardingSpherePreconditions.checkState(null == previousPatternClass,
+                    () -> new IllegalArgumentException(String.format("Duplicate resource URI pattern `%s` with `%s` and `%s`.",
+                            pattern, previousPatternClass.getName(), each.getHandler().getClass().getName())));
         }
         for (int i = 0; i < handlerRegistrations.size(); i++) {
             ResourceHandlerRegistration current = handlerRegistrations.get(i);
             for (int j = i + 1; j < handlerRegistrations.size(); j++) {
                 ResourceHandlerRegistration other = handlerRegistrations.get(j);
-                ShardingSpherePreconditions.checkState(!current.getUriTemplate().overlaps(other.getUriTemplate()), () -> new IllegalArgumentException(
-                        String.format("Overlapping resource URI templates `%s` with `%s` and `%s`.",
-                                current.getUriTemplate().getTemplate(), current.getHandler().getClass().getName(), other.getHandler().getClass().getName())));
+                ShardingSpherePreconditions.checkState(!current.getUriPattern().overlaps(other.getUriPattern()), () -> new IllegalArgumentException(
+                        String.format("Overlapping resource URI patterns `%s` with `%s` and `%s`.",
+                                current.getUriPattern().getPattern(), current.getHandler().getClass().getName(), other.getHandler().getClass().getName())));
             }
         }
     }

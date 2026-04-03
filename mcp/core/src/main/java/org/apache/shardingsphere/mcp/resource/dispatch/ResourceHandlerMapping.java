@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 import java.util.Optional;
 
@@ -34,13 +34,13 @@ public final class ResourceHandlerMapping {
      * Find handler for one resource URI.
      *
      * @param resourceUri resource URI
-     * @return matched handler execution
+     * @return matched resource handler resolution
      */
-    public Optional<ResourceHandlerExecution> findHandler(final String resourceUri) {
+    public Optional<MCPResourceHandlerResolution> findHandler(final String resourceUri) {
         for (ResourceHandlerRegistration each : handlerRegistry.getHandlerRegistrations()) {
-            Optional<MCPUriTemplateMatch> uriMatch = each.getUriTemplate().match(resourceUri);
-            if (uriMatch.isPresent()) {
-                return Optional.of(new ResourceHandlerExecution(each.getHandler(), uriMatch.get()));
+            Optional<MCPUriVariables> uriVariables = each.getUriPattern().match(resourceUri);
+            if (uriVariables.isPresent()) {
+                return Optional.of(new MCPResourceHandlerResolution(each.getHandler(), uriVariables.get()));
             }
         }
         return Optional.empty();

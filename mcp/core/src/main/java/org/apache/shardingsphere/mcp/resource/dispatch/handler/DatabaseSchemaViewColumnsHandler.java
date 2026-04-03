@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
  * Handler for database schema view columns resource URI.
@@ -30,14 +30,14 @@ import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 public final class DatabaseSchemaViewColumnsHandler implements ResourceHandler {
     
     @Override
-    public String getUriTemplate() {
+    public String getUriPattern() {
         return "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns";
     }
     
     @Override
-    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriTemplateMatch uriTemplateMatch) {
+    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
         return ResourceHandlerResult.metadata(resourceHandlerContext.readMetadata(new MetadataResourceQuery(
-                uriTemplateMatch.getVariable("database"), uriTemplateMatch.getVariable("schema"), MetadataObjectType.COLUMN, "",
-                "VIEW", uriTemplateMatch.getVariable("view"))));
+                uriVariables.getRequired("database"), uriVariables.getRequired("schema"), MetadataObjectType.COLUMN, "",
+                "VIEW", uriVariables.getRequired("view"))));
     }
 }

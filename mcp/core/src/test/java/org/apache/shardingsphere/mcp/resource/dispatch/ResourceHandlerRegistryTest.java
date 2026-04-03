@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
-import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -50,14 +50,14 @@ class ResourceHandlerRegistryTest {
     }
     
     @Test
-    void assertCreateRegistryWithDuplicateTemplate() {
+    void assertCreateRegistryWithDuplicatePattern() {
         assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
                 new TestResourceHandler("shardingsphere://capabilities"),
                 new TestResourceHandler("shardingsphere://capabilities"))));
     }
     
     @Test
-    void assertCreateRegistryWithOverlapTemplate() {
+    void assertCreateRegistryWithOverlapPattern() {
         assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
                 new TestResourceHandler("shardingsphere://databases/{database}"),
                 new TestResourceHandler("shardingsphere://databases/default_db"))));
@@ -71,15 +71,15 @@ class ResourceHandlerRegistryTest {
     @RequiredArgsConstructor
     private static final class TestResourceHandler implements ResourceHandler {
         
-        private final String uriTemplate;
+        private final String uriPattern;
         
         @Override
-        public String getUriTemplate() {
-            return uriTemplate;
+        public String getUriPattern() {
+            return uriPattern;
         }
         
         @Override
-        public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriTemplateMatch uriTemplateMatch) {
+        public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
             return ResourceHandlerResult.error(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI.");
         }
     }

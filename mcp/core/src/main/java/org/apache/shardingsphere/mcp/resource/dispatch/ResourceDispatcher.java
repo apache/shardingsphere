@@ -55,6 +55,6 @@ public final class ResourceDispatcher {
      * @return resource handler result
      */
     public Optional<ResourceHandlerResult> dispatch(final String resourceUri, final ResourceHandlerContext resourceHandlerContext) {
-        return handlerMapping.findHandler(resourceUri).map(optional -> optional.getHandler().handle(resourceHandlerContext, optional.getUriMatch()));
+        return handlerMapping.findHandler(resourceUri).map(optional -> optional.getHandler().handle(resourceHandlerContext, optional.getUriVariables()));
     }
 }
