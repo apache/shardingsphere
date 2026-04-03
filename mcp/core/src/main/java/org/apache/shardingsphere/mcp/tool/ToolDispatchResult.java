@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceResult;
+import org.apache.shardingsphere.mcp.resource.MCPMetadataQueryResult;
 
 import java.util.Collections;
 import java.util.List;
@@ -52,10 +52,10 @@ public final class ToolDispatchResult {
         return new ToolDispatchResult(Collections.emptyList(), "", false, errorCode, message);
     }
     
-    static ToolDispatchResult fromMetadataResourceResult(final MetadataResourceResult metadataResourceResult) {
-        return metadataResourceResult.isSuccessful()
-                ? success(metadataResourceResult.getMetadataObjects(), "")
-                : error(metadataResourceResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), metadataResourceResult.getMessage());
+    static ToolDispatchResult fromMetadataResult(final MCPMetadataQueryResult metadataResult) {
+        return metadataResult.isSuccessful()
+                ? success(metadataResult.getMetadataObjects(), "")
+                : error(metadataResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), metadataResult.getMessage());
     }
     
     /**

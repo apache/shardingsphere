@@ -20,8 +20,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.MetadataResourceResult;
-import org.apache.shardingsphere.mcp.resource.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.resource.MCPResourceResult;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
@@ -35,7 +34,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
@@ -51,7 +49,7 @@ class ResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        MCPResourceResponse actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
+        MCPResourceResult actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
         assertThat(actual.getType().name(), is(handlerCase.getExpectedType().name()));
         if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
             assertThat(actual.getDatabaseCapability().getDatabase(), is(handlerCase.getExpectedDatabase()));
@@ -61,21 +59,17 @@ class ResourceHandlerTest {
             assertTrue(actual.getServiceCapability().getSupportedResources().contains("shardingsphere://capabilities"));
             return;
         }
-        MetadataResourceResult actualMetadataResult = actual.getMetadataResourceResult();
-        assertTrue(actualMetadataResult.isSuccessful());
-        assertThat(actualMetadataResult.getMetadataObjects().stream().map(MetadataObject::getName).toList(),
+        assertThat(actual.getMetadataObjects().stream().map(MetadataObject::getName).toList(),
                 is(handlerCase.getExpectedObjectNames()));
     }
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        MCPResourceResponse actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
+        MCPResourceResult actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
                 match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
-        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.METADATA));
-        MetadataResourceResult actualMetadataResult = actual.getMetadataResourceResult();
-        assertFalse(actualMetadataResult.isSuccessful());
-        assertThat(actualMetadataResult.getErrorCode().orElseThrow(), is(MCPErrorCode.UNSUPPORTED));
+        assertThat(actual.getType(), is(MCPResourceResult.ResourceResultType.ERROR));
+        assertThat(actual.getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
     }
 
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {

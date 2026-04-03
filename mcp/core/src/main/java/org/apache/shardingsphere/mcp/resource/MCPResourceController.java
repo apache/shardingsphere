@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
 
@@ -57,24 +56,18 @@ public final class MCPResourceController {
                 .map(this::toPayload).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
-    private Map<String, Object> toPayload(final MCPResourceResponse resourceResponse) {
-        switch (resourceResponse.getType()) {
+    private Map<String, Object> toPayload(final MCPResourceResult resourceResult) {
+        switch (resourceResult.getType()) {
             case SERVICE_CAPABILITY:
-                return payloadBuilder.createServiceCapabilityPayload(resourceResponse.getServiceCapability());
+                return payloadBuilder.createServiceCapabilityPayload(resourceResult.getServiceCapability());
             case DATABASE_CAPABILITY:
-                return payloadBuilder.createDatabaseCapabilityPayload(resourceResponse.getDatabaseCapability());
+                return payloadBuilder.createDatabaseCapabilityPayload(resourceResult.getDatabaseCapability());
             case METADATA:
-                return toResourcePayload(resourceResponse.getMetadataResourceResult());
+                return payloadBuilder.createMetadataItemsPayload(resourceResult.getMetadataObjects(), "");
             case ERROR:
-                return payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(resourceResponse.getErrorCode()), resourceResponse.getMessage());
+                return payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(resourceResult.getErrorCode()), resourceResult.getMessage());
             default:
-                throw new IllegalStateException(String.format("Unsupported resource response type `%s`.", resourceResponse.getType()));
+                throw new IllegalStateException(String.format("Unsupported resource result type `%s`.", resourceResult.getType()));
         }
-    }
-    
-    private Map<String, Object> toResourcePayload(final MetadataResourceResult metadataResourceResult) {
-        return metadataResourceResult.isSuccessful()
-                ? payloadBuilder.createMetadataItemsPayload(metadataResourceResult.getMetadataObjects(), "")
-                : payloadBuilder.createErrorPayload(payloadBuilder.toDomainErrorCode(metadataResourceResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), metadataResourceResult.getMessage());
     }
 }

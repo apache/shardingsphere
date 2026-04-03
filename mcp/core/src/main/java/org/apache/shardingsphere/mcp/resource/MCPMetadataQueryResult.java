@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Result for one metadata resource read.
+ * MCP metadata query result.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class MetadataResourceResult {
+public final class MCPMetadataQueryResult {
     
     private final List<MetadataObject> metadataObjects;
     
@@ -43,24 +43,24 @@ public final class MetadataResourceResult {
     private final String message;
     
     /**
-     * Create a successful metadata resource result.
+     * Create a successful metadata result.
      *
      * @param metadataObjects loaded metadata objects
-     * @return successful metadata resource result
+     * @return successful metadata result
      */
-    public static MetadataResourceResult success(final List<MetadataObject> metadataObjects) {
-        return new MetadataResourceResult(metadataObjects, true, MCPErrorCode.INVALID_REQUEST, "");
+    public static MCPMetadataQueryResult success(final List<MetadataObject> metadataObjects) {
+        return new MCPMetadataQueryResult(metadataObjects, true, MCPErrorCode.INVALID_REQUEST, "");
     }
     
     /**
-     * Create an error metadata resource result.
+     * Create an error metadata result.
      *
      * @param errorCode unified error code
      * @param message error message
-     * @return failed metadata resource result
+     * @return failed metadata result
      */
-    public static MetadataResourceResult error(final MCPErrorCode errorCode, final String message) {
-        return new MetadataResourceResult(Collections.emptyList(), false, errorCode, message);
+    public static MCPMetadataQueryResult error(final MCPErrorCode errorCode, final String message) {
+        return new MCPMetadataQueryResult(Collections.emptyList(), false, errorCode, message);
     }
     
     /**

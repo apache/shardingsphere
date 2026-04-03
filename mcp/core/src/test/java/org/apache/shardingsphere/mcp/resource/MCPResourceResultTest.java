@@ -28,35 +28,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MCPResourceResponseTest {
+class MCPResourceResultTest {
     
     @Test
     void assertServiceCapability() {
-        MCPResourceResponse actual = MCPResourceResponse.serviceCapability(ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildServiceCapability());
-        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.SERVICE_CAPABILITY));
+        MCPResourceResult actual = MCPResourceResult.serviceCapability(ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildServiceCapability());
+        assertThat(actual.getType(), is(MCPResourceResult.ResourceResultType.SERVICE_CAPABILITY));
         assertTrue(actual.getServiceCapability().getSupportedResources().contains("shardingsphere://capabilities"));
     }
     
     @Test
     void assertDatabaseCapability() {
-        MCPResourceResponse actual = MCPResourceResponse.databaseCapability(
+        MCPResourceResult actual = MCPResourceResult.databaseCapability(
                 ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildDatabaseCapability("logic_db").orElseThrow());
-        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.DATABASE_CAPABILITY));
+        assertThat(actual.getType(), is(MCPResourceResult.ResourceResultType.DATABASE_CAPABILITY));
         assertThat(actual.getDatabaseCapability().getDatabase(), is("logic_db"));
     }
     
     @Test
     void assertMetadata() {
-        MCPResourceResponse actual = MCPResourceResponse.metadata(
-                MetadataResourceResult.success(List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))));
-        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.METADATA));
-        assertTrue(actual.getMetadataResourceResult().isSuccessful());
+        MCPResourceResult actual = MCPResourceResult.metadata(List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", "")));
+        assertThat(actual.getType(), is(MCPResourceResult.ResourceResultType.METADATA));
+        assertThat(actual.getMetadataObjects().size(), is(1));
+        assertThat(actual.getMetadataObjects().get(0).getObjectType(), is(MetadataObjectType.TABLE));
     }
     
     @Test
     void assertError() {
-        MCPResourceResponse actual = MCPResourceResponse.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
-        assertThat(actual.getType(), is(MCPResourceResponse.ResourceResponseType.ERROR));
+        MCPResourceResult actual = MCPResourceResult.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
+        assertThat(actual.getType(), is(MCPResourceResult.ResourceResultType.ERROR));
         assertThat(actual.getErrorCode(), is(MCPErrorCode.NOT_FOUND));
         assertThat(actual.getMessage(), is("Database capability does not exist."));
     }
