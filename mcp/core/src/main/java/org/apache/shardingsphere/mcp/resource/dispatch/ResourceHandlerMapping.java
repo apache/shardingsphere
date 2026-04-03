@@ -35,7 +35,7 @@ public final class ResourceHandlerMapping {
      */
     public ResourceHandlerMapping(final ResourceHandlerRegistry handlerRegistry) {
         this.handlerRegistry = handlerRegistry;
-        this.uriMatcher = new ResourceUriMatcher();
+        uriMatcher = new ResourceUriMatcher();
     }
     
     /**
@@ -53,8 +53,7 @@ public final class ResourceHandlerMapping {
                 continue;
             }
             if (null != result) {
-                throw new IllegalStateException(String.format("Ambiguous resource URI `%s` matched `%s` and `%s`.",
-                        resourceUri, result.getHandler().getClass().getName(), each.getClass().getName()));
+                throw new IllegalStateException(String.format("Ambiguous resource URI `%s` matched `%s` and `%s`.", resourceUri, result.getHandler().getClass().getName(), each.getClass().getName()));
             }
             result = new ResourceHandlerExecution(each, uriMatch.get());
         }
