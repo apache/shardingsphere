@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -68,13 +70,10 @@ public final class ResourceUriMatcher {
      *
      * @param uriTemplate URI template
      * @return route signature
-     * @throws IllegalArgumentException when the URI template is invalid
      */
     public String createRouteSignature(final String uriTemplate) {
         List<String> segments = splitSegments(uriTemplate);
-        if (segments.isEmpty()) {
-            throw new IllegalArgumentException(String.format("Invalid resource URI template `%s`.", uriTemplate));
-        }
+        ShardingSpherePreconditions.checkNotEmpty(segments, () -> new IllegalArgumentException(String.format("Invalid resource URI template `%s`.", uriTemplate)));
         StringBuilder result = new StringBuilder(RESOURCE_PREFIX);
         for (int i = 0; i < segments.size(); i++) {
             if (0 < i) {

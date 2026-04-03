@@ -28,11 +28,9 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
  */
 public final class DatabaseSchemaTableHandler implements ResourceHandler {
     
-    private static final String URI_TEMPLATE = "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}";
-    
     @Override
     public String getUriTemplate() {
-        return URI_TEMPLATE;
+        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}";
     }
     
     @Override

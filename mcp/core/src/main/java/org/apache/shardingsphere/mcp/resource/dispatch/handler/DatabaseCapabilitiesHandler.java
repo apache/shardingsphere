@@ -26,11 +26,9 @@ import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
  */
 public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     
-    private static final String URI_TEMPLATE = "shardingsphere://databases/{database}/capabilities";
-    
     @Override
     public String getUriTemplate() {
-        return URI_TEMPLATE;
+        return "shardingsphere://databases/{database}/capabilities";
     }
     
     @Override
