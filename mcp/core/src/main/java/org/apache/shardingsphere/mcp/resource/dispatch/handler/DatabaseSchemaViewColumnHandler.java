@@ -18,21 +18,26 @@
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
 /**
  * Handler for database schema view column resource URI.
  */
-public final class DatabaseSchemaViewColumnHandler extends AbstractResourceHandler {
+public final class DatabaseSchemaViewColumnHandler implements ResourceHandler {
     
-    public DatabaseSchemaViewColumnHandler() {
-        super("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}");
+    private static final String URI_TEMPLATE = "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}";
+    
+    @Override
+    public String getUriTemplate() {
+        return URI_TEMPLATE;
     }
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createMetadataPlan(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
-                MetadataObjectType.COLUMN, uriMatch.getVariable("column"), "VIEW", uriMatch.getVariable("view"));
+        return ResourceReadPlan.metadata(new MetadataResourceQuery(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
+                MetadataObjectType.COLUMN, uriMatch.getVariable("column"), "VIEW", uriMatch.getVariable("view")));
     }
 }

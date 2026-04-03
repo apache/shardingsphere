@@ -18,20 +18,25 @@
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
 /**
  * Handler for databases resource URI.
  */
-public final class DatabasesHandler extends AbstractResourceHandler {
+public final class DatabasesHandler implements ResourceHandler {
     
-    public DatabasesHandler() {
-        super("shardingsphere://databases");
+    private static final String URI_TEMPLATE = "shardingsphere://databases";
+    
+    @Override
+    public String getUriTemplate() {
+        return URI_TEMPLATE;
     }
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createMetadataPlan("", "", MetadataObjectType.DATABASE, "", "", "");
+        return ResourceReadPlan.metadata(new MetadataResourceQuery("", "", MetadataObjectType.DATABASE, "", "", ""));
     }
 }

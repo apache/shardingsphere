@@ -18,19 +18,23 @@
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
 /**
  * Handler for database capabilities resource URI.
  */
-public final class DatabaseCapabilitiesHandler extends AbstractResourceHandler {
+public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     
-    public DatabaseCapabilitiesHandler() {
-        super("shardingsphere://databases/{database}/capabilities");
+    private static final String URI_TEMPLATE = "shardingsphere://databases/{database}/capabilities";
+    
+    @Override
+    public String getUriTemplate() {
+        return URI_TEMPLATE;
     }
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createDatabaseCapabilitiesPlan(uriMatch.getVariable("database"));
+        return ResourceReadPlan.databaseCapabilities(uriMatch.getVariable("database"));
     }
 }

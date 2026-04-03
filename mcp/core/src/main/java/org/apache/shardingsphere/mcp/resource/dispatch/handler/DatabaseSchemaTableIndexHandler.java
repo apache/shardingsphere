@@ -18,21 +18,26 @@
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
 /**
  * Handler for database schema table index resource URI.
  */
-public final class DatabaseSchemaTableIndexHandler extends AbstractResourceHandler {
+public final class DatabaseSchemaTableIndexHandler implements ResourceHandler {
     
-    public DatabaseSchemaTableIndexHandler() {
-        super("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}");
+    private static final String URI_TEMPLATE = "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}";
+    
+    @Override
+    public String getUriTemplate() {
+        return URI_TEMPLATE;
     }
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createMetadataPlan(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
-                MetadataObjectType.INDEX, uriMatch.getVariable("index"), "TABLE", uriMatch.getVariable("table"));
+        return ResourceReadPlan.metadata(new MetadataResourceQuery(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
+                MetadataObjectType.INDEX, uriMatch.getVariable("index"), "TABLE", uriMatch.getVariable("table")));
     }
 }

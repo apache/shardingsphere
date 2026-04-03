@@ -18,21 +18,26 @@
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.MetadataResourceQuery;
 import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
 /**
  * Handler for database schema table resource URI.
  */
-public final class DatabaseSchemaTableHandler extends AbstractResourceHandler {
+public final class DatabaseSchemaTableHandler implements ResourceHandler {
     
-    public DatabaseSchemaTableHandler() {
-        super("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}");
+    private static final String URI_TEMPLATE = "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}";
+    
+    @Override
+    public String getUriTemplate() {
+        return URI_TEMPLATE;
     }
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createMetadataPlan(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
-                MetadataObjectType.TABLE, uriMatch.getVariable("table"), "", "");
+        return ResourceReadPlan.metadata(new MetadataResourceQuery(uriMatch.getVariable("database"), uriMatch.getVariable("schema"),
+                MetadataObjectType.TABLE, uriMatch.getVariable("table"), "", ""));
     }
 }

@@ -18,19 +18,23 @@
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.resource.ResourceReadPlan;
+import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceUriMatch;
 
 /**
  * Handler for service capabilities resource URI.
  */
-public final class ServiceCapabilitiesHandler extends AbstractResourceHandler {
+public final class ServiceCapabilitiesHandler implements ResourceHandler {
     
-    public ServiceCapabilitiesHandler() {
-        super("shardingsphere://capabilities");
+    private static final String URI_TEMPLATE = "shardingsphere://capabilities";
+    
+    @Override
+    public String getUriTemplate() {
+        return URI_TEMPLATE;
     }
     
     @Override
     public ResourceReadPlan handle(final ResourceUriMatch uriMatch) {
-        return createServiceCapabilitiesPlan();
+        return ResourceReadPlan.serviceCapabilities();
     }
 }
