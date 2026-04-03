@@ -134,9 +134,9 @@ public final class MCPUriPattern {
     }
     
     /**
-     * Parse one URI with current pattern.
+     * Parse URI.
      *
-     * @param uri uri text
+     * @param uri URI
      * @return parsed variables when present
      */
     public Optional<MCPUriVariables> parse(final String uri) {
