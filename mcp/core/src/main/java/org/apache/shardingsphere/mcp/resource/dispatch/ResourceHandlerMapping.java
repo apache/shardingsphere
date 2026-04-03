@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 import java.util.Optional;
 
 /**
- * Handler mapping for resource URI handlers.
+ * Resource handler mapping.
  */
 public final class ResourceHandlerMapping {
     
@@ -43,20 +43,14 @@ public final class ResourceHandlerMapping {
      *
      * @param resourceUri resource URI
      * @return matched handler execution
-     * @throws IllegalStateException when more than one handler matches
      */
     public Optional<ResourceHandlerExecution> findHandler(final String resourceUri) {
-        ResourceHandlerExecution result = null;
         for (ResourceHandler each : handlerRegistry.getHandlers()) {
             Optional<ResourceUriMatch> uriMatch = uriMatcher.match(each.getUriTemplate(), resourceUri);
-            if (uriMatch.isEmpty()) {
-                continue;
+            if (uriMatch.isPresent()) {
+                return Optional.of(new ResourceHandlerExecution(each, uriMatch.get()));
             }
-            if (null != result) {
-                throw new IllegalStateException(String.format("Ambiguous resource URI `%s` matched `%s` and `%s`.", resourceUri, result.getHandler().getClass().getName(), each.getClass().getName()));
-            }
-            result = new ResourceHandlerExecution(each, uriMatch.get());
         }
-        return null == result ? Optional.empty() : Optional.of(result);
+        return Optional.empty();
     }
 }
