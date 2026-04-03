@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
+import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +32,8 @@ public final class ResourceDispatcher {
     
     private final ResourceHandlerRegistry handlerRegistry;
     
-    private final ResourceHandlerMapping handlerMapping;
-    
     public ResourceDispatcher() {
         handlerRegistry = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
-        handlerMapping = new ResourceHandlerMapping(handlerRegistry);
     }
     
     /**
@@ -55,6 +53,16 @@ public final class ResourceDispatcher {
      * @return resource handler result
      */
     public Optional<ResourceHandlerResult> dispatch(final String resourceUri, final ResourceHandlerContext resourceHandlerContext) {
-        return handlerMapping.findHandler(resourceUri).map(optional -> optional.getHandler().handle(resourceHandlerContext, optional.getUriVariables()));
+        return findHandler(resourceUri).map(optional -> optional.getHandler().handle(resourceHandlerContext, optional.getUriVariables()));
+    }
+    
+    private Optional<MCPResourceHandlerResolution> findHandler(final String resourceUri) {
+        for (ResourceHandlerRegistration each : handlerRegistry.getHandlerRegistrations()) {
+            Optional<MCPUriVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
+            if (matchedUriVariables.isPresent()) {
+                return Optional.of(new MCPResourceHandlerResolution(each.getHandler(), matchedUriVariables.get()));
+            }
+        }
+        return Optional.empty();
     }
 }
