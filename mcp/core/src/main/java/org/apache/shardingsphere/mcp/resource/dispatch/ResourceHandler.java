@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
@@ -39,9 +39,9 @@ public interface ResourceHandler extends ShardingSphereSPI {
     /**
      * Handle one matched resource URI.
      *
-     * @param resourceHandlerContext resource handler context
+     * @param runtimeContext runtime context
      * @param uriVariables matched URI variables
      * @return resource handler result
      */
-    ResourceHandlerResult handle(ResourceHandlerContext resourceHandlerContext, MCPUriVariables uriVariables);
+    ResourceHandlerResult handle(MCPRuntimeContext runtimeContext, MCPUriVariables uriVariables);
 }

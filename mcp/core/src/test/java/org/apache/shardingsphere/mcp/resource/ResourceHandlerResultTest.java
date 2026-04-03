@@ -33,7 +33,7 @@ class ResourceHandlerResultTest {
     
     @Test
     void assertServiceCapability() {
-        ResourceHandlerResult actual = ResourceHandlerResult.serviceCapability(new ResourceHandlerContext(ResourceTestDataFactory.createRuntimeContext()).getServiceCapability());
+        ResourceHandlerResult actual = ResourceHandlerResult.serviceCapability(ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildServiceCapability());
         assertThat(actual.getType(), is(ResourceHandlerResult.ResourceHandlerResultType.SERVICE_CAPABILITY));
         assertTrue(actual.getServiceCapability().isPresent());
         assertFalse(actual.getDatabaseCapability().isPresent());
@@ -42,7 +42,7 @@ class ResourceHandlerResultTest {
     @Test
     void assertDatabaseCapability() {
         ResourceHandlerResult actual = ResourceHandlerResult.databaseCapability(
-                new ResourceHandlerContext(ResourceTestDataFactory.createRuntimeContext()).findDatabaseCapability("logic_db").orElseThrow());
+                ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildDatabaseCapability("logic_db").orElseThrow());
         assertThat(actual.getType(), is(ResourceHandlerResult.ResourceHandlerResultType.DATABASE_CAPABILITY));
         assertThat(actual.getDatabaseCapability().orElseThrow().getDatabase(), is("logic_db"));
     }

@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
     
-    private final ResourceHandlerContext resourceHandlerContext = new ResourceHandlerContext(ResourceTestDataFactory.createRuntimeContext());
+    private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
@@ -50,7 +50,7 @@ class ResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        ResourceHandlerResult actual = handlerCase.getHandler().handle(resourceHandlerContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
+        ResourceHandlerResult actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
         assertThat(actual.getType().name(), is(handlerCase.getExpectedType().name()));
         if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
             assertThat(actual.getDatabaseCapability().orElseThrow().getDatabase(), is(handlerCase.getExpectedDatabase()));
@@ -67,7 +67,7 @@ class ResourceHandlerTest {
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        ResourceHandlerResult actual = new DatabaseSchemaTableIndexesHandler().handle(resourceHandlerContext,
+        ResourceHandlerResult actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
                 match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
         assertThat(actual.getType().name(), is(HandlerResultType.METADATA.name()));

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
@@ -34,11 +34,11 @@ public final class DatabaseSchemaTableColumnsHandler implements ResourceHandler 
     }
     
     @Override
-    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
+    public ResourceHandlerResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getRequired("database");
         String schemaName = uriVariables.getRequired("schema");
         String tableName = uriVariables.getRequired("table");
-        return MetadataHandlerUtils.createMetadataResult(resourceHandlerContext, databaseName, MetadataObjectType.COLUMN,
+        return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.COLUMN,
                 each -> schemaName.equals(each.getSchema()) && "TABLE".equals(each.getParentObjectType()) && tableName.equals(each.getParentObjectName()));
     }
 }

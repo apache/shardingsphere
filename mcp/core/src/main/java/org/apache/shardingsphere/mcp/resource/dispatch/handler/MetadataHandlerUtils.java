@@ -19,11 +19,12 @@ package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.MetadataResourceResult;
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 
 import java.util.Collection;
@@ -38,22 +39,27 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class MetadataHandlerUtils {
     
-    static ResourceHandlerResult createDatabasesResult(final ResourceHandlerContext resourceHandlerContext, final Predicate<String> predicate) {
-        return createSortedMetadataResult(resourceHandlerContext.getDatabaseMetadataSnapshots().getDatabaseTypes().keySet().stream()
+    static ResourceHandlerResult createDatabasesResult(final MCPRuntimeContext runtimeContext, final Predicate<String> predicate) {
+        return createSortedMetadataResult(runtimeContext.getDatabaseMetadataSnapshots().getDatabaseTypes().keySet().stream()
                 .filter(predicate).map(each -> new MetadataObject(each, "", MetadataObjectType.DATABASE, each, "", "")).collect(Collectors.toList()));
     }
     
-    static ResourceHandlerResult createMetadataResult(final ResourceHandlerContext resourceHandlerContext, final String databaseName,
+    static ResourceHandlerResult createMetadataResult(final MCPRuntimeContext runtimeContext, final String databaseName,
                                                       final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
-        Set<MetadataObjectType> supportedMetadataObjectTypes = resourceHandlerContext.getSupportedMetadataObjectTypes(databaseName);
+        Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(runtimeContext, databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
             return ResourceHandlerResult.metadata(MetadataResourceResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database."));
         }
         if (!supportedMetadataObjectTypes.contains(objectType)) {
             return createSortedMetadataResult(Collections.emptyList());
         }
-        return createSortedMetadataResult(resourceHandlerContext.getDatabaseMetadataSnapshots().getMetadataObjects().stream()
+        return createSortedMetadataResult(runtimeContext.getDatabaseMetadataSnapshots().getMetadataObjects().stream()
                 .filter(each -> databaseName.equals(each.getDatabase()) && objectType == each.getObjectType() && predicate.test(each)).collect(Collectors.toList()));
+    }
+    
+    private static Set<MetadataObjectType> getSupportedMetadataObjectTypes(final MCPRuntimeContext runtimeContext, final String databaseName) {
+        runtimeContext.getDatabaseMetadataSnapshots().findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
+        return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(databaseName).map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
     }
     
     private static ResourceHandlerResult createSortedMetadataResult(final Collection<MetadataObject> metadataObjects) {

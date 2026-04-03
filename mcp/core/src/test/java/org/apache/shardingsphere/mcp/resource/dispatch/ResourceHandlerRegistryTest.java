@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 import org.junit.jupiter.api.Test;
@@ -79,7 +79,7 @@ class ResourceHandlerRegistryTest {
         }
         
         @Override
-        public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
+        public ResourceHandlerResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
             return ResourceHandlerResult.error(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI.");
         }
     }

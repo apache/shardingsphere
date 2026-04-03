@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
-import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
@@ -33,8 +33,8 @@ public final class DatabaseHandler implements ResourceHandler {
     }
     
     @Override
-    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriVariables uriVariables) {
+    public ResourceHandlerResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getRequired("database");
-        return MetadataHandlerUtils.createDatabasesResult(resourceHandlerContext, databaseName::equals);
+        return MetadataHandlerUtils.createDatabasesResult(runtimeContext, databaseName::equals);
     }
 }

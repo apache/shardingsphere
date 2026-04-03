@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public final class MCPResourceController {
     
-    private final ResourceHandlerContext resourceHandlerContext;
+    private final MCPRuntimeContext runtimeContext;
     
     private final ResourceDispatcher resourceDispatcher;
     
@@ -41,7 +41,7 @@ public final class MCPResourceController {
      * @param runtimeContext runtime context
      */
     public MCPResourceController(final MCPRuntimeContext runtimeContext) {
-        resourceHandlerContext = new ResourceHandlerContext(runtimeContext);
+        this.runtimeContext = runtimeContext;
         resourceDispatcher = new ResourceDispatcher();
         payloadBuilder = new MCPPayloadBuilder();
     }
@@ -53,7 +53,7 @@ public final class MCPResourceController {
      * @return payload
      */
     public Map<String, Object> handle(final String resourceUri) {
-        return resourceDispatcher.dispatch(resourceUri, resourceHandlerContext)
+        return resourceDispatcher.dispatch(resourceUri, runtimeContext)
                 .map(this::toPayload).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
