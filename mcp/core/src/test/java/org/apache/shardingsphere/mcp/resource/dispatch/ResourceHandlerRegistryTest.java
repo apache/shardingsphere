@@ -37,7 +37,7 @@ class ResourceHandlerRegistryTest {
     void assertGetHandlers() {
         ResourceHandlerRegistry actual = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
         
-        assertThat(actual.getHandlerRegistrations().size(), is(16));
+        assertThat(actual.getRegisteredHandlers().size(), is(16));
     }
     
     @Test
