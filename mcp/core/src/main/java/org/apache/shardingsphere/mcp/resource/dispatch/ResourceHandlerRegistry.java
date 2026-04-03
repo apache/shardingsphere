@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 
 import java.util.ArrayList;
@@ -50,26 +51,19 @@ public final class ResourceHandlerRegistry {
     }
     
     private void validateHandlers(final Collection<ResourceHandler> handlers, final ResourceUriMatcher uriMatcher) {
-        if (handlers.isEmpty()) {
-            throw new IllegalStateException("No resource handlers are registered.");
-        }
+        ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<String, Class<?>> registeredTemplates = new HashMap<>(handlers.size(), 1F);
         Map<String, Class<?>> registeredSignatures = new HashMap<>(handlers.size(), 1F);
         for (ResourceHandler each : handlers) {
-            if (null == each.getUriTemplate() || each.getUriTemplate().isEmpty()) {
-                throw new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName()));
-            }
+            ShardingSpherePreconditions.checkState(null != each.getUriTemplate() && !each.getUriTemplate().isEmpty(),
+                    () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
             Class<?> previousTemplateClass = registeredTemplates.putIfAbsent(each.getUriTemplate(), each.getClass());
-            if (null != previousTemplateClass) {
-                throw new IllegalArgumentException(String.format("Duplicate resource URI template `%s` with `%s` and `%s`.",
-                        each.getUriTemplate(), previousTemplateClass.getName(), each.getClass().getName()));
-            }
+            ShardingSpherePreconditions.checkState(null == previousTemplateClass,
+                    () -> new IllegalArgumentException(String.format("Duplicate resource URI template `%s` with `%s` and `%s`.", each.getUriTemplate(), previousTemplateClass.getName(), each.getClass().getName())));
             String routeSignature = uriMatcher.createRouteSignature(each.getUriTemplate());
             Class<?> previousSignatureClass = registeredSignatures.putIfAbsent(routeSignature, each.getClass());
-            if (null != previousSignatureClass) {
-                throw new IllegalArgumentException(String.format("Duplicate resource URI route signature `%s` with `%s` and `%s`.",
-                        routeSignature, previousSignatureClass.getName(), each.getClass().getName()));
-            }
+            ShardingSpherePreconditions.checkState(null == previousSignatureClass,
+                    () -> new IllegalArgumentException(String.format("Duplicate resource URI route signature `%s` with `%s` and `%s`.", routeSignature, previousSignatureClass.getName(), each.getClass().getName())));
         }
     }
 }
