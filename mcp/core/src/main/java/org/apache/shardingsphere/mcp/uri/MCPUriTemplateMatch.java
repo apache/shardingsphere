@@ -24,11 +24,11 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import java.util.Map;
 
 /**
- * Matched URI template result.
+ * MCP URI template match.
  */
 @RequiredArgsConstructor
 @Getter
-public final class UriTemplateMatch {
+public final class MCPUriTemplateMatch {
     
     private final String template;
     

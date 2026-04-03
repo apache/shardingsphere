@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 
 import java.util.Optional;
 
@@ -38,7 +38,7 @@ public final class ResourceHandlerMapping {
      */
     public Optional<ResourceHandlerExecution> findHandler(final String resourceUri) {
         for (ResourceHandlerRegistration each : handlerRegistry.getHandlerRegistrations()) {
-            Optional<UriTemplateMatch> uriMatch = each.getUriTemplate().match(resourceUri);
+            Optional<MCPUriTemplateMatch> uriMatch = each.getUriTemplate().match(resourceUri);
             if (uriMatch.isPresent()) {
                 return Optional.of(new ResourceHandlerExecution(each.getHandler(), uriMatch.get()));
             }

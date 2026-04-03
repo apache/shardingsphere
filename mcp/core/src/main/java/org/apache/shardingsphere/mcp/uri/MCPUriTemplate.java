@@ -30,10 +30,10 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Strict URI template used by MCP dispatch.
+ * MCP URI template.
  */
 @Getter
-public final class UriTemplate {
+public final class MCPUriTemplate {
     
     private final String template;
     
@@ -46,7 +46,7 @@ public final class UriTemplate {
      *
      * @param template template text
      */
-    public UriTemplate(final String template) {
+    public MCPUriTemplate(final String template) {
         this.template = template;
         parsedTemplate = parseTemplate(template);
         routeSignature = createRouteSignature(parsedTemplate);
@@ -58,7 +58,7 @@ public final class UriTemplate {
      * @param uri uri text
      * @return matched result when present
      */
-    public Optional<UriTemplateMatch> match(final String uri) {
+    public Optional<MCPUriTemplateMatch> match(final String uri) {
         ParsedUri parsedUri;
         try {
             parsedUri = parseUri(uri);
@@ -80,7 +80,7 @@ public final class UriTemplate {
                 return Optional.empty();
             }
         }
-        return Optional.of(new UriTemplateMatch(template, variables));
+        return Optional.of(new MCPUriTemplateMatch(template, variables));
     }
     
     /**
@@ -89,9 +89,8 @@ public final class UriTemplate {
      * @param other other template
      * @return whether overlap exists
      */
-    public boolean overlaps(final UriTemplate other) {
-        if (!parsedTemplate.getScheme().equals(other.parsedTemplate.getScheme())
-                || parsedTemplate.getSegments().size() != other.parsedTemplate.getSegments().size()) {
+    public boolean overlaps(final MCPUriTemplate other) {
+        if (!parsedTemplate.getScheme().equals(other.parsedTemplate.getScheme()) || parsedTemplate.getSegments().size() != other.parsedTemplate.getSegments().size()) {
             return false;
         }
         for (int i = 0; i < parsedTemplate.getSegments().size(); i++) {

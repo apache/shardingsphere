@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 
 /**
  * Handler for database capabilities resource URI.
@@ -34,7 +34,7 @@ public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     }
     
     @Override
-    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final UriTemplateMatch uriTemplateMatch) {
+    public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriTemplateMatch uriTemplateMatch) {
         return resourceHandlerContext.findDatabaseCapability(uriTemplateMatch.getVariable("database"))
                 .map(ResourceHandlerResult::databaseCapability)
                 .orElseGet(() -> ResourceHandlerResult.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist."));

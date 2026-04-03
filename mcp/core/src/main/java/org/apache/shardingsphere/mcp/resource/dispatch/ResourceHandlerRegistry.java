@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.uri.UriTemplate;
+import org.apache.shardingsphere.mcp.uri.MCPUriTemplate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +51,7 @@ public final class ResourceHandlerRegistry {
         for (ResourceHandler each : handlers) {
             ShardingSpherePreconditions.checkState(null != each.getUriTemplate() && !each.getUriTemplate().isEmpty(),
                     () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
-            result.add(new ResourceHandlerRegistration(each, new UriTemplate(each.getUriTemplate())));
+            result.add(new ResourceHandlerRegistration(each, new MCPUriTemplate(each.getUriTemplate())));
         }
         return result;
     }

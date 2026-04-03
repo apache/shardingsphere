@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.UriTemplate;
-import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriTemplate;
+import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -75,8 +75,8 @@ class ResourceHandlerTest {
         assertThat(actual.getMetadataResourceResult().orElseThrow().getErrorCode().orElseThrow(), is(MCPErrorCode.UNSUPPORTED));
     }
 
-    private UriTemplateMatch match(final String uriTemplate, final String resourceUri) {
-        return new UriTemplate(uriTemplate).match(resourceUri).orElseThrow();
+    private MCPUriTemplateMatch match(final String uriTemplate, final String resourceUri) {
+        return new MCPUriTemplate(uriTemplate).match(resourceUri).orElseThrow();
     }
     
     private static Stream<HandlerCase> handlerCases() {

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
-import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 
 /**
  * Handler for one MCP resource URI template.
@@ -43,5 +43,5 @@ public interface ResourceHandler extends ShardingSphereSPI {
      * @param uriTemplateMatch matched uri template
      * @return resource handler result
      */
-    ResourceHandlerResult handle(ResourceHandlerContext resourceHandlerContext, UriTemplateMatch uriTemplateMatch);
+    ResourceHandlerResult handle(ResourceHandlerContext resourceHandlerContext, MCPUriTemplateMatch uriTemplateMatch);
 }

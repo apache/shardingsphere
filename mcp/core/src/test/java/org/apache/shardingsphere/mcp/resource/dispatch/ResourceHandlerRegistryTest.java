@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerContext;
 import org.apache.shardingsphere.mcp.resource.ResourceHandlerResult;
-import org.apache.shardingsphere.mcp.uri.UriTemplateMatch;
+import org.apache.shardingsphere.mcp.uri.MCPUriTemplateMatch;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -67,13 +68,10 @@ class ResourceHandlerRegistryTest {
         assertThrows(IllegalStateException.class, () -> new ResourceHandlerRegistry(List.of()));
     }
     
+    @RequiredArgsConstructor
     private static final class TestResourceHandler implements ResourceHandler {
         
         private final String uriTemplate;
-        
-        private TestResourceHandler(final String uriTemplate) {
-            this.uriTemplate = uriTemplate;
-        }
         
         @Override
         public String getUriTemplate() {
@@ -81,7 +79,7 @@ class ResourceHandlerRegistryTest {
         }
         
         @Override
-        public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final UriTemplateMatch uriTemplateMatch) {
+        public ResourceHandlerResult handle(final ResourceHandlerContext resourceHandlerContext, final MCPUriTemplateMatch uriTemplateMatch) {
             return ResourceHandlerResult.error(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI.");
         }
     }

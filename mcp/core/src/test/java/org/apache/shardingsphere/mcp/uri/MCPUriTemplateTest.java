@@ -31,14 +31,14 @@ class UriTemplateTest {
     
     @Test
     void assertMatch() {
-        Optional<UriTemplateMatch> actual = new UriTemplate("shardingsphere://capabilities").match("shardingsphere://capabilities");
+        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate("shardingsphere://capabilities").match("shardingsphere://capabilities");
         assertTrue(actual.isPresent());
         assertThat(actual.orElseThrow().getTemplate(), is("shardingsphere://capabilities"));
     }
     
     @Test
     void assertMatchWithVariables() {
-        Optional<UriTemplateMatch> actual = new UriTemplate(
+        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}")
                 .match("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
         assertTrue(actual.isPresent());
@@ -50,31 +50,30 @@ class UriTemplateTest {
     
     @Test
     void assertMatchWithInvalidUri() {
-        Optional<UriTemplateMatch> actual = new UriTemplate("shardingsphere://capabilities").match("unsupported://capabilities");
+        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate("shardingsphere://capabilities").match("unsupported://capabilities");
         assertFalse(actual.isPresent());
     }
     
     @Test
     void assertGetRouteSignature() {
-        String actual = new UriTemplate("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}").getRouteSignature();
+        String actual = new MCPUriTemplate("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}").getRouteSignature();
         assertThat(actual, is("shardingsphere://databases/{}/schemas/{}/tables/{}/columns/{}"));
     }
     
     @Test
     void assertOverlaps() {
-        boolean actual = new UriTemplate("shardingsphere://databases/{database}")
-                .overlaps(new UriTemplate("shardingsphere://databases/default_db"));
+        boolean actual = new MCPUriTemplate("shardingsphere://databases/{database}").overlaps(new MCPUriTemplate("shardingsphere://databases/default_db"));
         assertTrue(actual);
     }
     
     @Test
     void assertCreateWithInvalidTemplate() {
-        assertThrows(IllegalArgumentException.class, () -> new UriTemplate("invalid-template"));
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriTemplate("invalid-template"));
     }
     
     @Test
     void assertGetVariableWithMissingVariable() {
-        Optional<UriTemplateMatch> actual = new UriTemplate("shardingsphere://capabilities").match("shardingsphere://capabilities");
+        Optional<MCPUriTemplateMatch> actual = new MCPUriTemplate("shardingsphere://capabilities").match("shardingsphere://capabilities");
         assertThrows(IllegalArgumentException.class, () -> actual.orElseThrow().getVariable("database"));
     }
 }
