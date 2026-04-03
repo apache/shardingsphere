@@ -47,18 +47,18 @@ public final class MCPResourceController {
      * @return payload
      */
     public Map<String, Object> handle(final String resourceUri) {
-        Optional<ResourceQueryPlan> readPlan = resourceDispatcher.dispatch(resourceUri);
-        return readPlan.map(this::handle).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
+        Optional<ResourceQueryPlan> queryPlan = resourceDispatcher.dispatch(resourceUri);
+        return queryPlan.map(this::handle).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
     }
     
-    private Map<String, Object> handle(final ResourceQueryPlan readPlan) {
-        switch (readPlan.getType()) {
+    private Map<String, Object> handle(final ResourceQueryPlan queryPlan) {
+        switch (queryPlan.getType()) {
             case SERVICE_CAPABILITIES:
                 return payloadBuilder.createServiceCapabilityPayload(runtimeContext.getCapabilityBuilder().buildServiceCapability());
             case DATABASE_CAPABILITIES:
-                return createDatabaseCapabilityPayload(readPlan.getDatabase().orElse(""));
+                return createDatabaseCapabilityPayload(queryPlan.getDatabase().orElse(""));
             default:
-                return toResourcePayload(metadataResourceReader.read(runtimeContext.getDatabaseMetadataSnapshots(), readPlan.getMetadataResourceQuery().orElseThrow()));
+                return toResourcePayload(metadataResourceReader.read(runtimeContext.getDatabaseMetadataSnapshots(), queryPlan.getMetadataResourceQuery().orElseThrow()));
         }
     }
     
