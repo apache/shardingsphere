@@ -69,7 +69,7 @@ public final class ResourceHandlerRegistry {
             ResourceHandlerRegistration current = handlerRegistrations.get(i);
             for (int j = i + 1; j < handlerRegistrations.size(); j++) {
                 ResourceHandlerRegistration other = handlerRegistrations.get(j);
-                ShardingSpherePreconditions.checkState(!current.getUriPattern().overlaps(other.getUriPattern()), () -> new IllegalArgumentException(
+                ShardingSpherePreconditions.checkState(!current.getUriPattern().isOverlaps(other.getUriPattern()), () -> new IllegalArgumentException(
                         String.format("Overlapping resource URI patterns `%s` with `%s` and `%s`.",
                                 current.getUriPattern().getPattern(), current.getHandler().getClass().getName(), other.getHandler().getClass().getName())));
             }

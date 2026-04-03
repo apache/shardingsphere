@@ -132,11 +132,11 @@ public final class MCPUriPattern {
      * Determine whether current pattern overlaps with another pattern.
      *
      * @param other other pattern
-     * @return whether overlap exists
+     * @return overlap or not
      */
-    public boolean overlaps(final MCPUriPattern other) {
+    public boolean isOverlaps(final MCPUriPattern other) {
         List<String> leftSegments = extractPathSegments(pattern, SCHEME.length() + SCHEME_SEPARATOR.length());
-        List<String> rightSegments = extractPathSegments(other.pattern, SCHEME.length() + SCHEME_SEPARATOR.length());
+        List<String> rightSegments = extractPathSegments(other.getPattern(), SCHEME.length() + SCHEME_SEPARATOR.length());
         if (leftSegments.size() != rightSegments.size()) {
             return false;
         }
