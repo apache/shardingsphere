@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.uri;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,17 +31,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MCPUriPatternTest {
     
     @Test
-    void assertMatch() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").match("shardingsphere://capabilities");
+    void assertGetPattern() {
+        MCPUriPattern actual = new MCPUriPattern("shardingsphere://capabilities");
+        assertThat(actual.getPattern(), is("shardingsphere://capabilities"));
+    }
+    
+    @Test
+    void assertCreateWithUnsupportedScheme() {
+        assertThrows(IllegalArgumentException.class, () -> new MCPUriPattern("unsupported://capabilities"));
+    }
+    
+    @Test
+    void assertParse() {
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
         assertTrue(actual.isPresent());
         assertTrue(actual.orElseThrow().getVariables().isEmpty());
     }
     
     @Test
-    void assertMatchWithVariables() {
+    void assertGetVariableNames() {
+        MCPUriPattern actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}");
+        assertThat(actual.getVariableNames(), is(List.of("database", "schema", "table", "column")));
+    }
+    
+    @Test
+    void assertParseWithVariables() {
         Optional<MCPUriVariables> actual = new MCPUriPattern(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}")
-                .match("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
+                .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
         assertTrue(actual.isPresent());
         assertThat(actual.orElseThrow().getRequired("database"), is("logic_db"));
         assertThat(actual.orElseThrow().getRequired("schema"), is("public"));
@@ -49,8 +67,8 @@ class MCPUriPatternTest {
     }
     
     @Test
-    void assertMatchWithInvalidUri() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").match("unsupported://capabilities");
+    void assertParseWithInvalidUri() {
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("unsupported://capabilities");
         assertFalse(actual.isPresent());
     }
     
@@ -73,7 +91,7 @@ class MCPUriPatternTest {
     
     @Test
     void assertGetVariableWithMissingVariable() {
-        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").match("shardingsphere://capabilities");
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
         assertThrows(IllegalArgumentException.class, () -> actual.orElseThrow().getRequired("database"));
     }
 }

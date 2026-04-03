@@ -38,7 +38,7 @@ public final class ResourceHandlerMapping {
      */
     public Optional<MCPResourceHandlerResolution> findHandler(final String resourceUri) {
         for (ResourceHandlerRegistration each : handlerRegistry.getHandlerRegistrations()) {
-            Optional<MCPUriVariables> uriVariables = each.getUriPattern().match(resourceUri);
+            Optional<MCPUriVariables> uriVariables = each.getUriPattern().parse(resourceUri);
             if (uriVariables.isPresent()) {
                 return Optional.of(new MCPResourceHandlerResolution(each.getHandler(), uriVariables.get()));
             }

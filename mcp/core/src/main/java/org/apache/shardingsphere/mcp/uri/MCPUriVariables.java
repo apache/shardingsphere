@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.uri;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Map;
@@ -26,11 +25,14 @@ import java.util.Map;
 /**
  * MCP URI variables.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPUriVariables {
     
     private final Map<String, String> variables;
+    
+    public MCPUriVariables(final Map<String, String> variables) {
+        this.variables = Map.copyOf(variables);
+    }
     
     /**
      * Get one URI variable.

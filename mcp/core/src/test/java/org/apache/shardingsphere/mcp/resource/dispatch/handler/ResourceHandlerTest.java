@@ -76,7 +76,7 @@ class ResourceHandlerTest {
     }
 
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {
-        return new MCPUriPattern(uriPattern).match(resourceUri).orElseThrow();
+        return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
     }
     
     private static Stream<HandlerCase> handlerCases() {
