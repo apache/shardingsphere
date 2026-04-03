@@ -53,14 +53,10 @@ public final class ResourceDispatcher {
      * @return resource handler result
      */
     public Optional<ResourceHandlerResult> dispatch(final String resourceUri, final ResourceHandlerContext resourceHandlerContext) {
-        return findHandler(resourceUri).map(optional -> optional.getHandler().handle(resourceHandlerContext, optional.getUriVariables()));
-    }
-    
-    private Optional<MCPResourceHandlerResolution> findHandler(final String resourceUri) {
         for (ResourceHandlerRegistration each : handlerRegistry.getHandlerRegistrations()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getUriPattern().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
-                return Optional.of(new MCPResourceHandlerResolution(each.getHandler(), matchedUriVariables.get()));
+                return Optional.of(each.getHandler().handle(resourceHandlerContext, matchedUriVariables.get()));
             }
         }
         return Optional.empty();
