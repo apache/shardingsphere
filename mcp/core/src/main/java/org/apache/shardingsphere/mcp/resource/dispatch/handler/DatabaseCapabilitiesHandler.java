@@ -35,7 +35,7 @@ public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     
     @Override
     public ResourceHandlerResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(uriVariables.getRequired("database"))
+        return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(uriVariables.getVariable("database"))
                 .map(ResourceHandlerResult::databaseCapability)
                 .orElseGet(() -> ResourceHandlerResult.error(MCPErrorCode.NOT_FOUND, "Database capability does not exist."));
     }

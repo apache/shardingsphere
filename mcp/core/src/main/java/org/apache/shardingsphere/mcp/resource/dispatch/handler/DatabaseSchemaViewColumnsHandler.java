@@ -35,9 +35,9 @@ public final class DatabaseSchemaViewColumnsHandler implements ResourceHandler {
     
     @Override
     public ResourceHandlerResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        String databaseName = uriVariables.getRequired("database");
-        String schemaName = uriVariables.getRequired("schema");
-        String viewName = uriVariables.getRequired("view");
+        String databaseName = uriVariables.getVariable("database");
+        String schemaName = uriVariables.getVariable("schema");
+        String viewName = uriVariables.getVariable("view");
         return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.COLUMN,
                 each -> schemaName.equals(each.getSchema()) && "VIEW".equals(each.getParentObjectType()) && viewName.equals(each.getParentObjectName()));
     }

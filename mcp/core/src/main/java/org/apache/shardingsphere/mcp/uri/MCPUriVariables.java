@@ -33,12 +33,12 @@ public final class MCPUriVariables {
     private final Map<String, String> variables;
     
     /**
-     * Get one URI variable.
+     * Get variable.
      *
      * @param variableName variable name
      * @return variable value
      */
-    public String getRequired(final String variableName) {
+    public String getVariable(final String variableName) {
         String result = variables.get(variableName);
         ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing URI variable `%s`.", variableName)));
         return result;

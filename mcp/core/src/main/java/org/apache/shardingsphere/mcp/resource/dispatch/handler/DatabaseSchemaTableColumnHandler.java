@@ -35,10 +35,10 @@ public final class DatabaseSchemaTableColumnHandler implements ResourceHandler {
     
     @Override
     public ResourceHandlerResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        String databaseName = uriVariables.getRequired("database");
-        String schemaName = uriVariables.getRequired("schema");
-        String tableName = uriVariables.getRequired("table");
-        String columnName = uriVariables.getRequired("column");
+        String databaseName = uriVariables.getVariable("database");
+        String schemaName = uriVariables.getVariable("schema");
+        String tableName = uriVariables.getVariable("table");
+        String columnName = uriVariables.getVariable("column");
         return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.COLUMN, each -> schemaName.equals(each.getSchema())
                 && "TABLE".equals(each.getParentObjectType()) && tableName.equals(each.getParentObjectName()) && columnName.equals(each.getName()));
     }

@@ -35,9 +35,9 @@ public final class DatabaseSchemaTableHandler implements ResourceHandler {
     
     @Override
     public ResourceHandlerResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        String databaseName = uriVariables.getRequired("database");
-        String schemaName = uriVariables.getRequired("schema");
-        String tableName = uriVariables.getRequired("table");
+        String databaseName = uriVariables.getVariable("database");
+        String schemaName = uriVariables.getVariable("schema");
+        String tableName = uriVariables.getVariable("table");
         return MetadataHandlerUtils.createMetadataResult(
                 runtimeContext, databaseName, MetadataObjectType.TABLE, each -> schemaName.equals(each.getSchema()) && tableName.equals(each.getName()));
     }
