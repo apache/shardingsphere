@@ -19,7 +19,7 @@
 # Usage: generate-e2e-sql-matrix.sh '<json-with-all-18-filter-labels>'
 # Environment:
 #   FULL_MATRIX_ALGORITHM_INPUT: auto|cartesian|pairwise (optional, default auto)
-# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>, need-proxy-image=<true|false>,
+# Output: writes smoke-matrix=<JSON>, full-matrix=<JSON>, matrix=<JSON>(alias for full), has-jobs=<true|false>,
 #         full-matrix-algorithm=<cartesian|pairwise|auto>, full-smoke-overlap-count=<N>, estimated-stage2-jobs=<N>,
 #         total-two-stage-jobs=<N>, and effective-reduction-ratio=<0..1> to $GITHUB_OUTPUT
 
@@ -303,7 +303,6 @@ fi
 if [ "$any_relevant_change" = "false" ]; then
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
-  echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
   echo "smoke-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "full-matrix-algorithm=auto" >> "$GITHUB_OUTPUT"
@@ -540,7 +539,6 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   echo "full-matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "matrix={\"include\":[]}" >> "$GITHUB_OUTPUT"
   echo "has-jobs=false" >> "$GITHUB_OUTPUT"
-  echo "need-proxy-image=false" >> "$GITHUB_OUTPUT"
   echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
   echo "full-smoke-overlap-count=0" >> "$GITHUB_OUTPUT"
   echo "estimated-stage2-jobs=0" >> "$GITHUB_OUTPUT"
@@ -550,20 +548,15 @@ if [ "$FULL_JOB_COUNT" -eq 0 ]; then
   exit 0
 fi
 
-HAS_PROXY_SMOKE=$(echo "$SMOKE_MATRIX" | jq '[.include[] | select(.adapter == "proxy")] | length > 0')
-HAS_PROXY_FULL=$(echo "$FULL_MATRIX" | jq '[.include[] | select(.adapter == "proxy")] | length > 0')
-NEED_PROXY_IMAGE=$(jq -cn --argjson a "$HAS_PROXY_SMOKE" --argjson b "$HAS_PROXY_FULL" '$a or $b')
-
 echo "smoke-matrix=$(echo "$SMOKE_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "full-matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "matrix=$(echo "$FULL_MATRIX" | jq -c .)" >> "$GITHUB_OUTPUT"
 echo "has-jobs=true" >> "$GITHUB_OUTPUT"
-echo "need-proxy-image=$NEED_PROXY_IMAGE" >> "$GITHUB_OUTPUT"
 echo "full-matrix-algorithm=$effective_full_matrix_algorithm" >> "$GITHUB_OUTPUT"
 echo "full-smoke-overlap-count=$FULL_SMOKE_OVERLAP_COUNT" >> "$GITHUB_OUTPUT"
 echo "estimated-stage2-jobs=$ESTIMATED_STAGE2_JOBS" >> "$GITHUB_OUTPUT"
 echo "total-two-stage-jobs=$TOTAL_TWO_STAGE_JOBS" >> "$GITHUB_OUTPUT"
 echo "effective-reduction-ratio=$EFFECTIVE_REDUCTION_RATIO" >> "$GITHUB_OUTPUT"
-echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $FULL_JOB_COUNT full jobs, overlap=$FULL_SMOKE_OVERLAP_COUNT, estimated stage2 jobs=$ESTIMATED_STAGE2_JOBS, total two-stage jobs=$TOTAL_TWO_STAGE_JOBS, effective reduction ratio=$EFFECTIVE_REDUCTION_RATIO. Proxy image needed: $NEED_PROXY_IMAGE"
+echo "::notice::Generated $SMOKE_JOB_COUNT smoke jobs, $FULL_JOB_COUNT full jobs, overlap=$FULL_SMOKE_OVERLAP_COUNT, estimated stage2 jobs=$ESTIMATED_STAGE2_JOBS, total two-stage jobs=$TOTAL_TWO_STAGE_JOBS, effective reduction ratio=$EFFECTIVE_REDUCTION_RATIO"
 
 exit 0
