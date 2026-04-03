@@ -40,13 +40,9 @@ public final class MCPUriPattern {
     
     private static final String SCHEME = "shardingsphere";
     
-    private static final String VARIABLE_PLACEHOLDER = "{}";
-    
     private final String pattern;
     
     private final List<String> variableNames;
-    
-    private final String routeSignature;
     
     private final Pattern compiledRegex;
     
@@ -56,7 +52,6 @@ public final class MCPUriPattern {
         validateScheme(pattern, schemeSeparatorIndex);
         List<String> pathSegments = extractPathSegments(pattern, schemeSeparatorIndex + SCHEME_SEPARATOR.length());
         variableNames = extractVariableNames(pattern, pathSegments);
-        routeSignature = createRouteSignature(pathSegments);
         compiledRegex = compileRegex(pathSegments);
     }
     
@@ -99,19 +94,6 @@ public final class MCPUriPattern {
         String result = pathSegment.substring(1, pathSegment.length() - 1);
         ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("URI pattern variable is required in `%s`.", pattern)));
         return result;
-    }
-    
-    private String createRouteSignature(final List<String> pathSegments) {
-        StringBuilder result = new StringBuilder(SCHEME);
-        result.append(SCHEME_SEPARATOR);
-        for (int i = 0; i < pathSegments.size(); i++) {
-            if (0 < i) {
-                result.append('/');
-            }
-            String each = pathSegments.get(i);
-            result.append(isVariableSegment(each) ? VARIABLE_PLACEHOLDER : each);
-        }
-        return result.toString();
     }
     
     private Pattern compileRegex(final List<String> pathSegments) {
@@ -158,15 +140,15 @@ public final class MCPUriPattern {
      * @return whether overlap exists
      */
     public boolean overlaps(final MCPUriPattern other) {
-        List<String> leftSegments = extractPathSegments(routeSignature, SCHEME.length() + SCHEME_SEPARATOR.length());
-        List<String> rightSegments = extractPathSegments(other.routeSignature, SCHEME.length() + SCHEME_SEPARATOR.length());
+        List<String> leftSegments = extractPathSegments(pattern, SCHEME.length() + SCHEME_SEPARATOR.length());
+        List<String> rightSegments = extractPathSegments(other.pattern, SCHEME.length() + SCHEME_SEPARATOR.length());
         if (leftSegments.size() != rightSegments.size()) {
             return false;
         }
         for (int i = 0; i < leftSegments.size(); i++) {
             String left = leftSegments.get(i);
             String right = rightSegments.get(i);
-            if (!VARIABLE_PLACEHOLDER.equals(left) && !VARIABLE_PLACEHOLDER.equals(right) && !left.equals(right)) {
+            if (!isVariableSegment(left) && !isVariableSegment(right) && !left.equals(right)) {
                 return false;
             }
         }

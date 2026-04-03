@@ -73,12 +73,6 @@ class MCPUriPatternTest {
     }
     
     @Test
-    void assertGetRouteSignature() {
-        String actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}").getRouteSignature();
-        assertThat(actual, is("shardingsphere://databases/{}/schemas/{}/tables/{}/columns/{}"));
-    }
-    
-    @Test
     void assertOverlaps() {
         boolean actual = new MCPUriPattern("shardingsphere://databases/{database}").overlaps(new MCPUriPattern("shardingsphere://databases/default_db"));
         assertTrue(actual);
