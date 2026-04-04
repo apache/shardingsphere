@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -65,7 +67,16 @@ class ExecuteQueryResponseTest {
         assertThat(actual.getStatementType(), is("ERROR"));
         assertThat(actual.getStatus(), is("ERROR"));
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.UNSUPPORTED));
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void assertToPayloadWithError() {
+        Map<String, Object> actual = ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Feature is not supported.").toPayload();
+        
+        assertThat(String.valueOf(((Map<String, Object>) actual.get("error")).get("error_code")), is("unsupported"));
+        assertThat(String.valueOf(actual.get("message")), is("Feature is not supported."));
     }
     
     @Test

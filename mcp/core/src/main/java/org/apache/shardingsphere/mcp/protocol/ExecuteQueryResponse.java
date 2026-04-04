@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.protocol;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -35,7 +36,7 @@ import java.util.Optional;
 @Getter
 public final class ExecuteQueryResponse implements MCPPayload {
     
-    private static final ExecuteQueryErrorDetail ABSENT_ERROR_DETAIL = new ExecuteQueryErrorDetail(MCPErrorCode.INVALID_REQUEST, "");
+    private static final MCPErrorPayload ABSENT_ERROR_DETAIL = new MCPErrorPayload(MCPErrorCode.INVALID_REQUEST, "");
     
     private final ExecuteQueryResultKind resultKind;
     
@@ -56,7 +57,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
     private final boolean successful;
     
     @Getter(AccessLevel.NONE)
-    private final ExecuteQueryErrorDetail error;
+    private final MCPErrorPayload error;
     
     /**
      * Create a result-set response.
@@ -102,17 +103,17 @@ public final class ExecuteQueryResponse implements MCPPayload {
      * @return error response
      */
     public static ExecuteQueryResponse error(final MCPErrorCode errorCode, final String message) {
-        ExecuteQueryErrorDetail errorDetail = new ExecuteQueryErrorDetail(errorCode, message);
+        MCPErrorPayload errorPayload = new MCPErrorPayload(errorCode, message);
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                "ERROR", "ERROR", errorDetail.getMessage(), false, false, errorDetail);
+                "ERROR", "ERROR", errorPayload.getMessage(), false, false, errorPayload);
     }
     
     /**
-     * Get the error detail when one exists.
+     * Get error.
      *
-     * @return optional error detail
+     * @return error
      */
-    public Optional<ExecuteQueryErrorDetail> getError() {
+    public Optional<MCPErrorPayload> getError() {
         return successful ? Optional.empty() : Optional.of(error);
     }
     
@@ -135,7 +136,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
             result.put("message", message);
         }
         result.put("truncated", truncated);
-        getError().ifPresent(error -> result.putAll(error.toPayload()));
+        getError().ifPresent(error -> result.put("error", error.toPayload()));
         return result;
     }
 }

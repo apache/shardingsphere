@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource.response;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryResult;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 
 /**
  * Factory for MCP resource responses.

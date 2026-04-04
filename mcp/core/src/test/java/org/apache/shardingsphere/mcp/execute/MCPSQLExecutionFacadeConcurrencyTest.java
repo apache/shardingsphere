@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
@@ -84,7 +84,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             ExecuteQueryResponse secondActual = secondFuture.get();
             assertTrue(firstActual.isSuccessful());
             assertFalse(secondActual.isSuccessful());
-            assertThat(secondActual.getError().orElseThrow().getErrorCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
+            assertThat(secondActual.getError().orElseThrow().getCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
             assertThat(maxExecutions.get(), is(1));
         } finally {
             executorService.shutdownNow();

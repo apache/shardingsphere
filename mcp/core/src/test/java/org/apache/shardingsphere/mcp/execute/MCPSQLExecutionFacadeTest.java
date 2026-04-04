@@ -20,12 +20,12 @@ package org.apache.shardingsphere.mcp.execute;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.StatementClass;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
@@ -99,7 +99,7 @@ class MCPSQLExecutionFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.NOT_FOUND));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.NOT_FOUND));
         assertThat(actual.getError().get().getMessage(), is("Session does not exist."));
         verifyNoInteractions(statementExecutor);
     }
@@ -120,7 +120,7 @@ class MCPSQLExecutionFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.NOT_FOUND));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.NOT_FOUND));
         verifyNoInteractions(statementExecutor);
     }
     
@@ -227,7 +227,7 @@ class MCPSQLExecutionFacadeTest {
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.UNSUPPORTED));
         verifyNoInteractions(statementExecutor);
     }
     

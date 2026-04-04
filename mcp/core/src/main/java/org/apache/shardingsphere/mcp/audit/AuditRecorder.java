@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -41,7 +41,7 @@ public final class AuditRecorder {
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success,
                                             final String transactionMarker) {
-        return record(sessionId, databaseName, OperationClass.QUERY_EXECUTION, sql, success, false, MCPErrorCode.INVALID_REQUEST, transactionMarker);
+        return record(sessionId, databaseName, sql, success, false, MCPErrorCode.INVALID_REQUEST, transactionMarker);
     }
     
     /**
@@ -57,12 +57,12 @@ public final class AuditRecorder {
      */
     public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success,
                                             final MCPErrorCode errorCode, final String transactionMarker) {
-        return record(sessionId, databaseName, OperationClass.QUERY_EXECUTION, sql, success, true, errorCode, transactionMarker);
+        return record(sessionId, databaseName, sql, success, true, errorCode, transactionMarker);
     }
     
-    private AuditRecord record(final String sessionId, final String databaseName, final OperationClass operationClass, final String operationSource,
+    private AuditRecord record(final String sessionId, final String databaseName, final String operationSource,
                                final boolean success, final boolean errorCodePresent, final MCPErrorCode errorCode, final String transactionMarker) {
-        return new AuditRecord(sessionId, databaseName, operationClass, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
+        return new AuditRecord(sessionId, databaseName, OperationClass.QUERY_EXECUTION, digest(operationSource), success, errorCodePresent, errorCode, transactionMarker, Instant.now().toString());
     }
     
     private String digest(final String value) {

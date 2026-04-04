@@ -103,7 +103,7 @@ class MCPJdbcStatementExecutorTest {
         ExecuteQueryResponse actual = statementExecutor.execute(createExecutionRequest("analytics_db", "SELECT status FROM orders ORDER BY order_id"),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertFalse(actual.isSuccessful());
-        assertThat(actual.getError().orElseThrow().getErrorCode().name(), is("TRANSACTION_STATE_ERROR"));
+        assertThat(actual.getError().orElseThrow().getCode().name(), is("TRANSACTION_STATE_ERROR"));
         transactionResourceManager.closeSession("session-1");
     }
     

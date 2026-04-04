@@ -22,10 +22,10 @@ import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -83,7 +83,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.UNSUPPORTED));
         verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
@@ -113,7 +113,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.INVALID_REQUEST));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.INVALID_REQUEST));
         verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
@@ -127,7 +127,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
         assertThat(actual.getError().get().getMessage(), is("Session does not exist."));
         verifyNoInteractions(jdbcTransactionResourceManager);
     }
@@ -144,7 +144,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         
         assertFalse(actual.isSuccessful());
         assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getErrorCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
+        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
         verify(jdbcTransactionResourceManager).commitTransaction("session-1");
     }
     

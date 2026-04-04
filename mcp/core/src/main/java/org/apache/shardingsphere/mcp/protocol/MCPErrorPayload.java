@@ -17,10 +17,33 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Locale;
+import java.util.Map;
+
 /**
- * MCP error code.
+ * MCP error payload.
  */
-public enum MCPErrorCode {
+@RequiredArgsConstructor
+@Getter
+public final class MCPErrorPayload implements MCPPayload {
     
-    INVALID_REQUEST, NOT_FOUND, UNSUPPORTED, CONFLICT, TIMEOUT, UNAVAILABLE, TRANSACTION_STATE_ERROR, QUERY_FAILED
+    private final MCPErrorCode code;
+    
+    private final String message;
+    
+    @Override
+    public Map<String, Object> toPayload() {
+        return Map.of("error_code", code.name().toLowerCase(Locale.ENGLISH), "message", message);
+    }
+    
+    /**
+     * MCP error code.
+     */
+    public enum MCPErrorCode {
+        
+        INVALID_REQUEST, NOT_FOUND, UNSUPPORTED, CONFLICT, TIMEOUT, UNAVAILABLE, TRANSACTION_STATE_ERROR, QUERY_FAILED
+    }
 }

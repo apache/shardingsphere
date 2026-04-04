@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryErrorDetail;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 
 import java.util.Map;
@@ -91,6 +91,6 @@ public final class MCPToolPayloadResolver {
     }
     
     private MCPToolPayloadResult error(final MCPErrorCode errorCode, final String message) {
-        return MCPToolPayloadResult.error(new ExecuteQueryErrorDetail(errorCode, message), new ExecuteQueryErrorDetail(errorCode, message).toPayload());
+        return MCPToolPayloadResult.error(new MCPErrorPayload(errorCode, message), new MCPErrorPayload(errorCode, message).toPayload());
     }
 }
