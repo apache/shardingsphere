@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.capability;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.MCPResourceDispatcher;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.junit.jupiter.api.Test;
 
@@ -39,7 +39,7 @@ class MCPCapabilityBuilderTest {
     @Test
     void assertBuildServiceCapability() {
         ServiceCapability actual = createCapabilityBuilder().buildServiceCapability();
-        assertThat(actual.getSupportedResources(), is(new MCPResourceDispatcher().getSupportedResources()));
+        assertThat(actual.getSupportedResources(), is(ResourceHandlerRegistry.getSupportedResources()));
         assertThat(actual.getSupportedResources().size(), is(16));
         assertThat(actual.getSupportedResources().get(0), is("shardingsphere://capabilities"));
         assertThat(actual.getSupportedTools(), is(new MCPToolCatalog().getSupportedTools()));

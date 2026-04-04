@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.resource;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
@@ -45,9 +46,9 @@ class MCPResourceDispatcherTest {
     
     @Test
     void assertGetSupportedResources() {
-        assertThat(resourceDispatcher.getSupportedResources().size(), is(16));
-        assertThat(resourceDispatcher.getSupportedResources().get(0), is("shardingsphere://capabilities"));
-        assertThat(resourceDispatcher.getSupportedResources().get(15), is("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+        assertThat(ResourceHandlerRegistry.getSupportedResources().size(), is(16));
+        assertThat(ResourceHandlerRegistry.getSupportedResources().get(0), is("shardingsphere://capabilities"));
+        assertThat(ResourceHandlerRegistry.getSupportedResources().get(15), is("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }
     
     @Test

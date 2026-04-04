@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.resource.MCPResourceDispatcher;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        return dispatcher.getSupportedResources().stream()
+        return ResourceHandlerRegistry.getSupportedResources().stream()
                 .filter(each -> !isTemplatedResource(each)).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
@@ -66,7 +67,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return dispatcher.getSupportedResources().stream()
+        return ResourceHandlerRegistry.getSupportedResources().stream()
                 .filter(this::isTemplatedResource)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());

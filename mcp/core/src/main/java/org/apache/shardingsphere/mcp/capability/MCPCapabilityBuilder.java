@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.resource.MCPResourceDispatcher;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
 import java.util.Optional;
@@ -44,7 +45,7 @@ public final class MCPCapabilityBuilder {
      * @return service-level capability
      */
     public ServiceCapability buildServiceCapability() {
-        return new ServiceCapability(dispatcher.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
+        return new ServiceCapability(ResourceHandlerRegistry.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
     }
     
     /**

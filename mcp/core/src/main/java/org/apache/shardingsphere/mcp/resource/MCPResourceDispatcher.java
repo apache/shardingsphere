@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -32,15 +31,6 @@ import java.util.Optional;
  * MCP resource dispatcher.
  */
 public final class MCPResourceDispatcher {
-    
-    /**
-     * Get supported resource URI surfaces.
-     *
-     * @return supported resource URI surfaces
-     */
-    public List<String> getSupportedResources() {
-        return ResourceHandlerRegistry.getSupportedResources();
-    }
     
     /**
      * Dispatch resource URI.
