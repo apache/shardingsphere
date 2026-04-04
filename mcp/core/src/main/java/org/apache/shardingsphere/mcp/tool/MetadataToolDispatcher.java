@@ -18,16 +18,18 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityCatalog;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -223,8 +225,8 @@ public final class MetadataToolDispatcher {
     }
     
     private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
-        databaseMetadataSnapshots.findDatabaseType(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        return new MCPCapabilityBuilder(databaseMetadataSnapshots).buildDatabaseCapability(databaseName)
+        DatabaseMetadataSnapshot snapshot = databaseMetadataSnapshots.findSnapshot(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
+        return DatabaseCapabilityCatalog.find(databaseName, snapshot.getDatabaseType(), snapshot.getDatabaseVersion())
                 .map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
     }
     
