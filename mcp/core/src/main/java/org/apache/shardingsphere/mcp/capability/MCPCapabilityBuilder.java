@@ -32,7 +32,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class MCPCapabilityBuilder {
     
-    private static final Set<StatementClass> SUPPORTED_STATEMENT_CLASSES = Set.of(StatementClass.values());
+    private static final Set<SupportedMCPStatement> SUPPORTED_STATEMENT_CLASSES = Set.of(SupportedMCPStatement.values());
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     

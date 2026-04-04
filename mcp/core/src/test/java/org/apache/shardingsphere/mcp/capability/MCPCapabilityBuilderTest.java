@@ -46,7 +46,7 @@ class MCPCapabilityBuilderTest {
         assertThat(actual.getSupportedTools().size(), is(11));
         assertThat(actual.getSupportedTools().get(5), is("list_indexes"));
         assertThat(actual.getSupportedStatementClasses().size(), is(7));
-        assertTrue(actual.getSupportedStatementClasses().contains(StatementClass.EXPLAIN_ANALYZE));
+        assertTrue(actual.getSupportedStatementClasses().contains(SupportedMCPStatement.EXPLAIN_ANALYZE));
     }
     
     @Test

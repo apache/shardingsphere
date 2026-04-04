@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.capability.StatementClass;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -43,7 +43,7 @@ class MCPResourceControllerTest {
         Map<String, Object> actual = new MCPResourceController(ResourceTestDataFactory.createRuntimeContext()).handle("shardingsphere://capabilities").toPayload();
         assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://databases/{database}/capabilities"));
         assertTrue(((List<?>) actual.get("supportedTools")).contains("get_capabilities"));
-        assertTrue(((Set<?>) actual.get("supportedStatementClasses")).contains(StatementClass.QUERY));
+        assertTrue(((Set<?>) actual.get("supportedStatementClasses")).contains(SupportedMCPStatement.QUERY));
     }
     
     @Test

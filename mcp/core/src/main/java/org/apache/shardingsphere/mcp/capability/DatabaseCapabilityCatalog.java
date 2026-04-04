@@ -165,20 +165,20 @@ public final class DatabaseCapabilityCatalog {
         return result;
     }
     
-    private static Set<StatementClass> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplainAnalyze) {
-        Set<StatementClass> result = new LinkedHashSet<>(16, 1F);
-        result.add(StatementClass.QUERY);
-        result.add(StatementClass.DML);
-        result.add(StatementClass.DDL);
-        result.add(StatementClass.DCL);
+    private static Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplainAnalyze) {
+        Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
+        result.add(SupportedMCPStatement.QUERY);
+        result.add(SupportedMCPStatement.DML);
+        result.add(SupportedMCPStatement.DDL);
+        result.add(SupportedMCPStatement.DCL);
         if (TransactionCapability.NONE != transactionCapability) {
-            result.add(StatementClass.TRANSACTION_CONTROL);
+            result.add(SupportedMCPStatement.TRANSACTION_CONTROL);
         }
         if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
-            result.add(StatementClass.SAVEPOINT);
+            result.add(SupportedMCPStatement.SAVEPOINT);
         }
         if (supportsExplainAnalyze) {
-            result.add(StatementClass.EXPLAIN_ANALYZE);
+            result.add(SupportedMCPStatement.EXPLAIN_ANALYZE);
         }
         return result;
     }

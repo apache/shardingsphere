@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
-import org.apache.shardingsphere.mcp.capability.StatementClass;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
@@ -54,7 +54,7 @@ class MCPSQLExecutionFacadeTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyCases")
-    void assertClassify(final String name, final String sql, final StatementClass expectedStatementClass, final String expectedStatementType,
+    void assertClassify(final String name, final String sql, final SupportedMCPStatement expectedStatementClass, final String expectedStatementType,
                         final String expectedTargetObjectName, final String expectedSavepointName) {
         StatementClassifier classifier = new StatementClassifier();
         ClassificationResult actual = classifier.classify(sql);
@@ -66,13 +66,13 @@ class MCPSQLExecutionFacadeTest {
     
     static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
-                Arguments.of("query", "SELECT * FROM orders", StatementClass.QUERY, "QUERY", "orders", ""),
-                Arguments.of("dml", "UPDATE orders SET status = 'DONE'", StatementClass.DML, "UPDATE", "orders", ""),
-                Arguments.of("ddl", "CREATE TABLE orders", StatementClass.DDL, "CREATE", "orders", ""),
-                Arguments.of("dcl", "GRANT SELECT ON orders TO app_user", StatementClass.DCL, "GRANT", "", ""),
-                Arguments.of("transaction", "BEGIN", StatementClass.TRANSACTION_CONTROL, "BEGIN", "", ""),
-                Arguments.of("savepoint", "SAVEPOINT sp_1", StatementClass.SAVEPOINT, "SAVEPOINT", "", "sp_1"),
-                Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM orders", StatementClass.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", "orders", ""));
+                Arguments.of("query", "SELECT * FROM orders", SupportedMCPStatement.QUERY, "QUERY", "orders", ""),
+                Arguments.of("dml", "UPDATE orders SET status = 'DONE'", SupportedMCPStatement.DML, "UPDATE", "orders", ""),
+                Arguments.of("ddl", "CREATE TABLE orders", SupportedMCPStatement.DDL, "CREATE", "orders", ""),
+                Arguments.of("dcl", "GRANT SELECT ON orders TO app_user", SupportedMCPStatement.DCL, "GRANT", "", ""),
+                Arguments.of("transaction", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "", ""),
+                Arguments.of("savepoint", "SAVEPOINT sp_1", SupportedMCPStatement.SAVEPOINT, "SAVEPOINT", "", "sp_1"),
+                Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", "orders", ""));
     }
     
     @Test

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.capability;
 
 /**
- * Supported statement classes.
+ * Supported MCP statement.
  */
-public enum StatementClass {
+public enum SupportedMCPStatement {
     
     QUERY, DML, DDL, DCL, TRANSACTION_CONTROL, SAVEPOINT, EXPLAIN_ANALYZE
 }

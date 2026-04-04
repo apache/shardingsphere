@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import org.apache.shardingsphere.mcp.capability.StatementClass;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 
 /**
  * Classify one SQL statement into the MCP statement classes.
@@ -39,25 +39,25 @@ public final class StatementClassifier {
             throw new UnsupportedOperationException("Statement is banned by the MCP contract.");
         }
         if (upperSql.startsWith("EXPLAIN ANALYZE")) {
-            return new ClassificationResult(StatementClass.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, extractTargetObject(actualSql), extractSavepointName(actualSql));
+            return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, extractTargetObject(actualSql), extractSavepointName(actualSql));
         }
         if (upperSql.startsWith("ROLLBACK TO SAVEPOINT") || upperSql.startsWith("RELEASE SAVEPOINT") || upperSql.startsWith("SAVEPOINT ")) {
-            return new ClassificationResult(StatementClass.SAVEPOINT, extractStatementType(upperSql), actualSql, "", extractSavepointName(actualSql));
+            return new ClassificationResult(SupportedMCPStatement.SAVEPOINT, extractStatementType(upperSql), actualSql, "", extractSavepointName(actualSql));
         }
         if (isTransactionControlStatement(upperSql)) {
-            return new ClassificationResult(StatementClass.TRANSACTION_CONTROL, extractStatementType(upperSql), actualSql, "", "");
+            return new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractStatementType(upperSql), actualSql, "", "");
         }
         if (upperSql.startsWith("SELECT") || upperSql.startsWith("WITH")) {
-            return new ClassificationResult(StatementClass.QUERY, "QUERY", actualSql, extractTargetObject(actualSql), "");
+            return new ClassificationResult(SupportedMCPStatement.QUERY, "QUERY", actualSql, extractTargetObject(actualSql), "");
         }
         if (upperSql.startsWith("INSERT") || upperSql.startsWith("UPDATE") || upperSql.startsWith("DELETE") || upperSql.startsWith("MERGE")) {
-            return new ClassificationResult(StatementClass.DML, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
+            return new ClassificationResult(SupportedMCPStatement.DML, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
         }
         if (upperSql.startsWith("CREATE") || upperSql.startsWith("ALTER") || upperSql.startsWith("DROP") || upperSql.startsWith("TRUNCATE")) {
-            return new ClassificationResult(StatementClass.DDL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
+            return new ClassificationResult(SupportedMCPStatement.DDL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
         }
         if (upperSql.startsWith("GRANT") || upperSql.startsWith("REVOKE")) {
-            return new ClassificationResult(StatementClass.DCL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
+            return new ClassificationResult(SupportedMCPStatement.DCL, extractStatementType(upperSql), actualSql, extractTargetObject(actualSql), "");
         }
         throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
     }

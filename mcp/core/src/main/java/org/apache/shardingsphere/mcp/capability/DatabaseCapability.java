@@ -38,7 +38,7 @@ public final class DatabaseCapability {
     
     private final Set<MetadataObjectType> supportedMetadataObjectTypes;
     
-    private final Set<StatementClass> supportedStatementClasses;
+    private final Set<SupportedMCPStatement> supportedStatementClasses;
     
     private final boolean supportsTransactionControl;
     

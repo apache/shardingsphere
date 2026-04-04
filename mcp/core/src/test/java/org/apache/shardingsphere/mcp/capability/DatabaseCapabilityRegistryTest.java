@@ -62,7 +62,7 @@ class DatabaseCapabilityRegistryTest {
         
         assertTrue(actual.isPresent(), caseName);
         assertThat(actual.get().isSupportsExplainAnalyze(), is(expected));
-        assertThat(actual.get().getSupportedStatementClasses().contains(StatementClass.EXPLAIN_ANALYZE), is(expected));
+        assertThat(actual.get().getSupportedStatementClasses().contains(SupportedMCPStatement.EXPLAIN_ANALYZE), is(expected));
     }
     
     @Test
