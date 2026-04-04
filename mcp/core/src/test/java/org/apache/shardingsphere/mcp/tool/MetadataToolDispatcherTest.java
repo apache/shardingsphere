@@ -89,9 +89,8 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("search_metadata", "", "public", "", "", "order", Set.of(), 10, ""));
         assertFalse(actual.isSuccessful());
-        assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
-        assertThat(actual.getMessage(), is("Schema cannot be provided without database."));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.INVALID_REQUEST));
+        assertThat(actual.getError().getMessage(), is("Schema cannot be provided without database."));
     }
     
     @Test
@@ -109,8 +108,7 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_indexes", "warehouse", "warehouse", "facts", "", "", Set.of(), 10, ""));
         assertFalse(actual.isSuccessful());
-        assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.UNSUPPORTED));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.UNSUPPORTED));
     }
     
     @Test
@@ -118,9 +116,8 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "invalid"));
         assertFalse(actual.isSuccessful());
-        assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
-        assertThat(actual.getMessage(), is("Invalid page token."));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.INVALID_REQUEST));
+        assertThat(actual.getError().getMessage(), is("Invalid page token."));
     }
     
     @Test
@@ -137,9 +134,8 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("unsupported_tool", "", "", "", "", "", Set.of(), 10, ""));
         assertFalse(actual.isSuccessful());
-        assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
-        assertThat(actual.getMessage(), is("Unsupported metadata tool."));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.INVALID_REQUEST));
+        assertThat(actual.getError().getMessage(), is("Unsupported metadata tool."));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -148,9 +144,8 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), toolRequest);
         assertFalse(actual.isSuccessful());
-        assertTrue(actual.getErrorCode().isPresent());
-        assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
-        assertThat(actual.getMessage(), is(expectedMessage));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.INVALID_REQUEST));
+        assertThat(actual.getError().getMessage(), is(expectedMessage));
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {

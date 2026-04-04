@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryResult;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Dispatch result for one metadata tool request.
@@ -40,16 +40,14 @@ public final class ToolDispatchResult {
     
     private final boolean successful;
     
-    private final MCPErrorCode errorCode;
-    
-    private final String message;
+    private final MCPError error;
     
     static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken, true, MCPErrorCode.INVALID_REQUEST, "");
+        return new ToolDispatchResult(metadataObjects, nextPageToken, true, null);
     }
     
     static ToolDispatchResult error(final MCPErrorCode errorCode, final String message) {
-        return new ToolDispatchResult(Collections.emptyList(), "", false, errorCode, message);
+        return new ToolDispatchResult(Collections.emptyList(), "", false, new MCPError(errorCode, message));
     }
     
     static ToolDispatchResult fromMetadataResult(final MetadataQueryResult metadataResult) {
@@ -57,11 +55,11 @@ public final class ToolDispatchResult {
     }
     
     /**
-     * Get the error code when one exists.
+     * Get error.
      *
-     * @return optional error code
+     * @return error
      */
-    public Optional<MCPErrorCode> getErrorCode() {
-        return successful ? Optional.empty() : Optional.of(errorCode);
+    public MCPError getError() {
+        return successful ? new MCPError(MCPErrorCode.INVALID_REQUEST, "") : error;
     }
 }
