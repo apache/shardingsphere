@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.provider.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
@@ -52,10 +52,10 @@ public final class MCPRuntimeContextBuilder {
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
         DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots);
         MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(
-                capabilityBuilder, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor,
+                databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor,
                 new MCPJdbcMetadataRefresher(runtimeDatabases, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, databaseCapabilityProvider, sqlExecutionFacade);
     }
 }

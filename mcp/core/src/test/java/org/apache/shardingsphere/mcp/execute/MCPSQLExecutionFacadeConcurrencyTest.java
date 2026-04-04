@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.provider.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
@@ -155,10 +155,10 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final MCPJdbcStatementExecutor statementExecutor,
                                                final MCPJdbcTransactionResourceManager transactionResourceManager) {
-        MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
         return new MCPSQLExecutionFacade(
-                capabilityBuilder, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor, mock());
+                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor, mock());
     }
     
     private ExecutionRequest createExecutionRequest(final String sessionId, final String sql) {

@@ -15,43 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability;
+package org.apache.shardingsphere.mcp.capability.provider;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
 import java.util.Optional;
-import java.util.Set;
 
 /**
- * MCP capability builder.
+ * MCP database capability provider.
  */
 @RequiredArgsConstructor
-public final class MCPCapabilityBuilder {
-    
-    private static final Set<SupportedMCPStatement> SUPPORTED_STATEMENT_CLASSES = Set.of(SupportedMCPStatement.values());
+public final class MCPDatabaseCapabilityProvider {
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
     /**
-     * Build the service-level capability.
-     *
-     * @return service-level capability
-     */
-    public ServiceCapability buildServiceCapability() {
-        return new ServiceCapability(ResourceHandlerRegistry.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
-    }
-    
-    /**
-     * Build the database-level capability.
+     * Provide the database-level capability.
      *
      * @param databaseName logical database name
      * @return database-level capability when the database type is supported
      */
-    public Optional<DatabaseCapability> buildDatabaseCapability(final String databaseName) {
+    public Optional<DatabaseCapability> provide(final String databaseName) {
         return databaseMetadataSnapshots.findDatabaseType(databaseName).flatMap(each -> DatabaseCapabilityCatalog.find(databaseName, each, getDatabaseVersion(databaseName)));
     }
     

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.context;
 
-import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.provider.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
@@ -44,9 +44,9 @@ public final class MCPRuntimeContextTestFactory {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
-        MCPCapabilityBuilder capabilityBuilder = new MCPCapabilityBuilder(databaseMetadataSnapshots);
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(capabilityBuilder, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, mock());
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, capabilityBuilder, sqlExecutionFacade);
+        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, mock());
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, databaseCapabilityProvider, sqlExecutionFacade);
     }
 }

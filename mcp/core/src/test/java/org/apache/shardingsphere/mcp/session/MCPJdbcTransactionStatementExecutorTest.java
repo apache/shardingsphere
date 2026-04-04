@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.provider.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
@@ -130,14 +130,14 @@ class MCPJdbcTransactionStatementExecutorTest {
         verify(jdbcTransactionResourceManager).commitTransaction("session-1");
     }
     
-    private MCPCapabilityBuilder createCapabilityBuilder() {
-        return new MCPCapabilityBuilder(new DatabaseMetadataSnapshots(Map.of(
+    private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
+        return new MCPDatabaseCapabilityProvider(new DatabaseMetadataSnapshots(Map.of(
                 "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
                 "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
     }
     
     private DatabaseCapability createCapability(final String databaseName) {
-        return createCapabilityBuilder().buildDatabaseCapability(databaseName).orElseThrow(IllegalStateException::new);
+        return createDatabaseCapabilityBuilder().provide(databaseName).orElseThrow(IllegalStateException::new);
     }
     
     private void assertDatabaseExecution(final String sql, final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager) {
