@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.protocol.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import java.util.List;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 /**
- * Dispatch result for one metadata tool request.
+ * Exception for invalid MCP requests.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ToolDispatchResult {
+public class MCPInvalidRequestException extends MCPProtocolException {
     
-    private final List<MetadataObject> metadataObjects;
+    private static final long serialVersionUID = -8436073259040535745L;
     
-    private final String nextPageToken;
+    public MCPInvalidRequestException(final String message) {
+        super(MCPErrorCode.INVALID_REQUEST, message);
+    }
     
-    static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken);
+    public MCPInvalidRequestException(final String message, final Throwable cause) {
+        super(MCPErrorCode.INVALID_REQUEST, message, cause);
     }
 }

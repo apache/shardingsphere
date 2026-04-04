@@ -85,7 +85,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         
         assertThat(actual.statusCode(), is(200));
         assertFalse(Boolean.parseBoolean(String.valueOf(getStructuredContent(actual.body()).get("ok"))));
-        assertThat(String.valueOf(getNestedPayload(getStructuredContent(actual.body()), "error").get("error_code")), is("transaction_state_error"));
+        assertThat(String.valueOf(getStructuredContent(actual.body()).get("error_code")), is("transaction_state_error"));
     }
     
     @Test

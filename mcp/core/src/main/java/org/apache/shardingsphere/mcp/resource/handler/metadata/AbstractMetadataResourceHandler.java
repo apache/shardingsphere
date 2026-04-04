@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.metadata.query.MetadataObjectQueryCondition
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponseFactory;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 
 abstract class AbstractMetadataResourceHandler implements ResourceHandler {
     
@@ -40,8 +40,7 @@ abstract class AbstractMetadataResourceHandler implements ResourceHandler {
     
     private MCPResponse queryMetadataObjects(final MCPRuntimeContext runtimeContext, final String databaseName,
                                              final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
-        return MCPResourceResponseFactory.fromMetadataQueryResult(
-                metadataQueryService.queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, objectType, queryCondition));
+        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, objectType, queryCondition));
     }
     
     protected final MCPResponse queryMetadataObject(final MCPRuntimeContext runtimeContext, final String databaseName,

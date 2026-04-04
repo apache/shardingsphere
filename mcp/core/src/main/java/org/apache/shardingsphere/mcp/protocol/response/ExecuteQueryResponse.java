@@ -22,15 +22,12 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
-import org.apache.shardingsphere.mcp.protocol.MCPError;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Unified response model for the MCP {@code execute_query} tool.
@@ -55,9 +52,6 @@ public final class ExecuteQueryResponse implements MCPResponse {
     
     private final boolean truncated;
     
-    @Getter(AccessLevel.NONE)
-    private final MCPError error;
-    
     /**
      * Create a result-set response.
      *
@@ -67,7 +61,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @return result-set response
      */
     public static ExecuteQueryResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, null);
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated);
     }
     
     /**
@@ -78,8 +72,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @return update-count response
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
-                statementType, "OK", "", false, null);
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows, statementType, "OK", "", false);
     }
     
     /**
@@ -90,20 +83,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @return acknowledgement response
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                statementType, "OK", message, false, null);
-    }
-    
-    /**
-     * Create an error response.
-     *
-     * @param errorCode unified error code
-     * @param message error message
-     * @return error response
-     */
-    public static ExecuteQueryResponse error(final MCPErrorCode errorCode, final String message) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                "ERROR", "ERROR", message, false, new MCPError(errorCode, message));
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0, statementType, "OK", message, false);
     }
     
     /**
@@ -112,16 +92,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @return successful or not
      */
     public boolean isSuccessful() {
-        return null == error;
-    }
-    
-    /**
-     * Get error.
-     *
-     * @return error
-     */
-    public Optional<MCPError> getError() {
-        return null == error ? Optional.empty() : Optional.of(error);
+        return true;
     }
     
     @Override
@@ -133,7 +104,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
         if (!columns.isEmpty()) {
             result.put("columns", columns);
         }
-        if (!rows.isEmpty()) {
+        if (null != rows && !rows.isEmpty()) {
             result.put("rows", rows);
         }
         if (0 != affectedRows) {
@@ -143,7 +114,6 @@ public final class ExecuteQueryResponse implements MCPResponse {
             result.put("message", message);
         }
         result.put("truncated", truncated);
-        getError().ifPresent(optional -> result.put("error", new MCPErrorResponse(optional).toPayload()));
         return result;
     }
 }

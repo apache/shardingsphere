@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.protocol.MCPError;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
+import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedResourceUriException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPProtocolErrorConverter;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
@@ -47,7 +47,11 @@ public final class MCPResourceController {
      * @return payload
      */
     public Map<String, Object> handle(final String resourceUri) {
-        return dispatch(resourceUri, runtimeContext).orElseGet(() -> new MCPErrorResponse(new MCPError(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI."))).toPayload();
+        try {
+            return dispatch(resourceUri, runtimeContext).orElseThrow(UnsupportedResourceUriException::new).toPayload();
+        } catch (final MCPProtocolException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
+            return MCPProtocolErrorConverter.toPayload(ex);
+        }
     }
     
     private Optional<MCPResponse> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {

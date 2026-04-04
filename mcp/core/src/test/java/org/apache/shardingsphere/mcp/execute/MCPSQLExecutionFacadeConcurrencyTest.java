@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
@@ -81,10 +83,10 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             assertFalse(secondCompleted.await(200, TimeUnit.MILLISECONDS));
             releaseFirstInvocation.countDown();
             ExecuteQueryResponse firstActual = firstFuture.get();
-            ExecuteQueryResponse secondActual = secondFuture.get();
+            ExecutionException actual = assertThrows(ExecutionException.class, secondFuture::get);
             assertTrue(firstActual.isSuccessful());
-            assertFalse(secondActual.isSuccessful());
-            assertThat(secondActual.getError().orElseThrow().getCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
+            assertThat(actual.getCause(), isA(MCPTransactionStateException.class));
+            assertThat(actual.getCause().getMessage(), is("Transaction already active."));
             assertThat(maxExecutions.get(), is(1));
         } finally {
             executorService.shutdownNow();

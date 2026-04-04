@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.protocol.exception;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import java.util.List;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 /**
- * Dispatch result for one metadata tool request.
+ * Exception for unavailable MCP services.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ToolDispatchResult {
+public class MCPUnavailableException extends MCPProtocolException {
     
-    private final List<MetadataObject> metadataObjects;
+    private static final long serialVersionUID = 5302834723598338378L;
     
-    private final String nextPageToken;
-    
-    static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken);
+    public MCPUnavailableException(final String message) {
+        super(MCPErrorCode.UNAVAILABLE, message);
     }
 }

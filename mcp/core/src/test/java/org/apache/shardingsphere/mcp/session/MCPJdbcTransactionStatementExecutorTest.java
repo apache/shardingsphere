@@ -24,8 +24,10 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,7 +39,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -79,11 +81,9 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1"));
-        
-        assertFalse(actual.isSuccessful());
-        assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.UNSUPPORTED));
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
+                () -> executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1")));
+        assertThat(actual.getMessage(), is("Savepoint is not supported."));
         verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
@@ -109,11 +109,9 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1"));
-        
-        assertFalse(actual.isSuccessful());
-        assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.INVALID_REQUEST));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1")));
+        assertThat(actual.getMessage(), is("Statement is not a transaction command."));
         verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
@@ -123,12 +121,9 @@ class MCPJdbcTransactionStatementExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager(mock());
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
-        
-        assertFalse(actual.isSuccessful());
-        assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
-        assertThat(actual.getError().get().getMessage(), is("Session does not exist."));
+        MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class,
+                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN")));
+        assertThat(actual.getMessage(), is("Session does not exist."));
         verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
@@ -140,11 +135,9 @@ class MCPJdbcTransactionStatementExecutorTest {
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager);
         
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT"));
-        
-        assertFalse(actual.isSuccessful());
-        assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.TRANSACTION_STATE_ERROR));
+        MCPTransactionStateException actual = assertThrows(MCPTransactionStateException.class,
+                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT")));
+        assertThat(actual.getMessage(), is("Transaction is not active."));
         verify(jdbcTransactionResourceManager).commitTransaction("session-1");
     }
     

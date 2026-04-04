@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.session;
 
+import org.apache.shardingsphere.mcp.protocol.exception.MCPNotFoundException;
+
 /**
  * MCP session not existed exception.
  */
-public final class MCPSessionNotExistedException extends IllegalStateException {
+public final class MCPSessionNotExistedException extends MCPNotFoundException {
     
     private static final long serialVersionUID = 5778112177342183016L;
     

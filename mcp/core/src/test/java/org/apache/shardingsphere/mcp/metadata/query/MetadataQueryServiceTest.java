@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.metadata.query;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetadataQueryServiceTest {
@@ -55,27 +55,24 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryMetadataObjectsBySchemaAndName() {
-        MetadataQueryResult actual = metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, "logic_db",
+        List<MetadataObject> actual = metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, "logic_db",
                 MetadataObjectType.TABLE, MetadataObjectQueryCondition.schemaAndObject("public", "orders"));
-        assertTrue(actual.isSuccessful());
-        assertThat(actual.getMetadataObjects().size(), is(1));
-        assertThat(actual.getMetadataObjects().get(0).getName(), is("orders"));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getName(), is("orders"));
     }
     
     @Test
     void assertQueryMetadataObjectsByParentAndName() {
-        MetadataQueryResult actual = metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, "logic_db",
+        List<MetadataObject> actual = metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, "logic_db",
                 MetadataObjectType.COLUMN, MetadataObjectQueryCondition.parentAndObject("public", "TABLE", "orders", "order_id"));
-        assertTrue(actual.isSuccessful());
-        assertThat(actual.getMetadataObjects().size(), is(1));
-        assertThat(actual.getMetadataObjects().get(0).getName(), is("order_id"));
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getName(), is("order_id"));
     }
     
     @Test
     void assertQueryMetadataObjectsWithUnsupportedIndexType() {
-        MetadataQueryResult actual = metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, "warehouse",
-                MetadataObjectType.INDEX, MetadataObjectQueryCondition.parent("warehouse", "TABLE", "facts"));
-        assertFalse(actual.isSuccessful());
-        assertThat(actual.getError().getCode(), is(MCPErrorCode.UNSUPPORTED));
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, "warehouse",
+                MetadataObjectType.INDEX, MetadataObjectQueryCondition.parent("warehouse", "TABLE", "facts")));
+        assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
     }
 }

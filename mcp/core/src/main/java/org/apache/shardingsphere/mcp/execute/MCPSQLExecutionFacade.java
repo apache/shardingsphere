@@ -22,8 +22,13 @@ import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.MCPCapabilityBuilder;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
+import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.response.MCPProtocolErrorConverter;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 
@@ -57,69 +62,65 @@ public final class MCPSQLExecutionFacade {
         try {
             return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest));
         } catch (final MCPSessionNotExistedException ex) {
-            return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, ex.getMessage());
+            throw recordFailure(executionRequest, "QUERY", ex);
         }
     }
     
     private ExecuteQueryResponse executeInternal(final ExecutionRequest executionRequest) {
         Optional<DatabaseCapability> databaseCapability = capabilityBuilder.buildDatabaseCapability(executionRequest.getDatabase());
         if (databaseCapability.isEmpty()) {
-            return recordFailure(executionRequest, "QUERY", MCPErrorCode.NOT_FOUND, "Database capability does not exist.");
+            throw recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException());
         }
         ClassificationResult classificationResult;
         try {
             classificationResult = new StatementClassifier().classify(executionRequest.getSql());
         } catch (final UnsupportedOperationException ex) {
-            return recordFailure(executionRequest, "QUERY", MCPErrorCode.UNSUPPORTED, ex.getMessage());
+            throw recordFailure(executionRequest, "QUERY", ex);
         } catch (final IllegalArgumentException ex) {
-            return recordFailure(executionRequest, "QUERY", MCPErrorCode.INVALID_REQUEST, ex.getMessage());
+            throw recordFailure(executionRequest, "QUERY", ex);
         }
         if (!databaseCapability.get().getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
-            return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
+            throw recordFailure(executionRequest, classificationResult.getStatementType(), new StatementClassNotSupportedException());
         }
-        switch (classificationResult.getStatementClass()) {
-            case TRANSACTION_CONTROL:
-            case SAVEPOINT:
-                return recordResult(executionRequest, transactionStatementExecutor.execute(
-                        executionRequest.getSessionId(), executionRequest.getDatabase(), databaseCapability.get(), classificationResult), classificationResult.getStatementType());
-            case QUERY:
-                return recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
-            case DML:
-                return recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
-            case DDL:
-                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult), classificationResult.getStatementType());
-            case DCL:
-                return recordResult(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult), classificationResult.getStatementType());
-            case EXPLAIN_ANALYZE:
-                return databaseCapability.get().isSupportsExplainAnalyze()
-                        ? recordResult(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType())
-                        : recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "EXPLAIN ANALYZE is not supported.");
-            default:
-                return recordFailure(executionRequest, classificationResult.getStatementType(), MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
+        try {
+            switch (classificationResult.getStatementClass()) {
+                case TRANSACTION_CONTROL:
+                case SAVEPOINT:
+                    return recordSuccess(executionRequest, transactionStatementExecutor.execute(
+                            executionRequest.getSessionId(), executionRequest.getDatabase(), databaseCapability.get(), classificationResult), classificationResult.getStatementType());
+                case QUERY:
+                case DML:
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
+                case DDL:
+                case DCL:
+                    return recordSuccess(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult), classificationResult.getStatementType());
+                case EXPLAIN_ANALYZE:
+                    if (!databaseCapability.get().isSupportsExplainAnalyze()) {
+                        throw new MCPUnsupportedException("EXPLAIN ANALYZE is not supported.");
+                    }
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
+                default:
+                    throw new StatementClassNotSupportedException();
+            }
+        } catch (final MCPProtocolException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
+            throw recordFailure(executionRequest, classificationResult.getStatementType(), ex);
         }
     }
     
     private ExecuteQueryResponse executeAndRefreshMetadata(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         ExecuteQueryResponse result = statementExecutor.execute(executionRequest, classificationResult);
-        if (result.isSuccessful()) {
-            jdbcMetadataRefresher.refresh(executionRequest.getDatabase());
-        }
+        jdbcMetadataRefresher.refresh(executionRequest.getDatabase());
         return result;
     }
     
-    private ExecuteQueryResponse recordResult(final ExecutionRequest executionRequest, final ExecuteQueryResponse response, final String transactionMarker) {
-        if (response.isSuccessful()) {
-            auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, transactionMarker);
-            return response;
-        }
-        MCPErrorCode errorCode = response.getError().get().getCode();
-        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, errorCode, transactionMarker);
+    private ExecuteQueryResponse recordSuccess(final ExecutionRequest executionRequest, final ExecuteQueryResponse response, final String transactionMarker) {
+        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, transactionMarker);
         return response;
     }
     
-    private ExecuteQueryResponse recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final MCPErrorCode errorCode, final String message) {
-        ExecuteQueryResponse result = ExecuteQueryResponse.error(errorCode, message);
-        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, errorCode, transactionMarker);
-        return result;
+    private <T extends RuntimeException> T recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final T ex) {
+        MCPError error = MCPProtocolErrorConverter.toError(ex);
+        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, error.getCode(), transactionMarker);
+        return ex;
     }
 }

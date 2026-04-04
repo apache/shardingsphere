@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -62,36 +59,10 @@ class ExecuteQueryResponseTest {
     }
     
     @Test
-    void assertError() {
-        ExecuteQueryResponse actual = ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Feature is not supported.");
-        
-        assertThat(actual.getStatementType(), is("ERROR"));
-        assertThat(actual.getStatus(), is("ERROR"));
-        assertTrue(actual.getError().isPresent());
-        assertThat(actual.getError().get().getCode(), is(MCPErrorCode.UNSUPPORTED));
-    }
-    
-    @Test
-    @SuppressWarnings("unchecked")
-    void assertToPayloadWithError() {
-        Map<String, Object> actual = ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Feature is not supported.").toPayload();
-        
-        assertThat(String.valueOf(((Map<String, Object>) actual.get("error")).get("error_code")), is("unsupported"));
-        assertThat(String.valueOf(actual.get("message")), is("Feature is not supported."));
-    }
-    
-    @Test
     void assertIsSuccessful() {
         ExecuteQueryResponse actual = ExecuteQueryResponse.resultSet(List.of(), List.of(), false);
         
         assertTrue(actual.isSuccessful());
-    }
-    
-    @Test
-    void assertIsSuccessfulWithError() {
-        ExecuteQueryResponse actual = ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, "Failure.");
-        
-        assertFalse(actual.isSuccessful());
     }
     
     @Test

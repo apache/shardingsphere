@@ -20,8 +20,15 @@ package org.apache.shardingsphere.mcp.execute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPTimeoutException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.protocol.exception.QueryDidNotReturnResultSetException;
+import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -53,6 +60,12 @@ public final class MCPJdbcStatementExecutor {
      * @param executionRequest execution request
      * @param classificationResult classification result
      * @return execution response
+     * @throws MCPTransactionStateException when the current transaction state blocks execution
+     * @throws MCPTimeoutException when the JDBC execution times out
+     * @throws MCPUnsupportedException when the JDBC driver or statement class is unsupported
+     * @throws MCPInvalidRequestException when the SQL is invalid for the target database
+     * @throws MCPQueryFailedException when query execution fails
+     * @throws MCPUnavailableException when the runtime database configuration is unavailable
      */
     public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         Connection connection = null;
@@ -67,7 +80,7 @@ public final class MCPJdbcStatementExecutor {
                     needCloseConnection = true;
                 }
             } catch (final IllegalStateException ex) {
-                return ExecuteQueryResponse.error(MCPErrorCode.TRANSACTION_STATE_ERROR, ex.getMessage());
+                throw new MCPTransactionStateException(ex.getMessage(), ex);
             }
             applySchema(connection, executionRequest.getSchema());
             try (Statement statement = connection.createStatement()) {
@@ -81,26 +94,27 @@ public final class MCPJdbcStatementExecutor {
                 switch (classificationResult.getStatementClass()) {
                     case QUERY:
                     case EXPLAIN_ANALYZE:
-                        return hasResultSet
-                                ? createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows())
-                                : ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, "Query did not return a result set.");
+                        if (!hasResultSet) {
+                            throw new QueryDidNotReturnResultSetException();
+                        }
+                        return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows());
                     case DML:
                         return ExecuteQueryResponse.updateCount(classificationResult.getStatementType(), statement.getUpdateCount());
                     case DDL:
                     case DCL:
                         return ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed.");
                     default:
-                        return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, "Statement class is not supported.");
+                        throw new StatementClassNotSupportedException();
                 }
             }
         } catch (final SQLTimeoutException ex) {
-            return ExecuteQueryResponse.error(MCPErrorCode.TIMEOUT, ex.getMessage());
+            throw new MCPTimeoutException(ex.getMessage(), ex);
         } catch (final SQLFeatureNotSupportedException ex) {
-            return ExecuteQueryResponse.error(MCPErrorCode.UNSUPPORTED, ex.getMessage());
+            throw new MCPUnsupportedException(ex.getMessage(), ex);
         } catch (final SQLSyntaxErrorException ex) {
-            return ExecuteQueryResponse.error(MCPErrorCode.INVALID_REQUEST, ex.getMessage());
+            throw new MCPInvalidRequestException(ex.getMessage(), ex);
         } catch (final SQLException ex) {
-            return ExecuteQueryResponse.error(MCPErrorCode.QUERY_FAILED, ex.getMessage());
+            throw new MCPQueryFailedException(ex.getMessage(), ex);
         } finally {
             if (needCloseConnection && null != connection) {
                 try {
@@ -137,7 +151,7 @@ public final class MCPJdbcStatementExecutor {
     
     private Connection openConnection(final String databaseName) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = Optional.ofNullable(runtimeDatabases.get(databaseName))
-                .orElseThrow(() -> new IllegalStateException(String.format("Database `%s` is not configured.", databaseName)));
+                .orElseThrow(() -> new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName)));
         return runtimeDatabaseConfig.openConnection(databaseName);
     }
     

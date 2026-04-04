@@ -15,41 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.protocol.exception;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 /**
- * Transport-neutral payload result for one MCP tool call.
+ * Base runtime exception for MCP protocol errors.
  */
-@RequiredArgsConstructor
 @Getter
-public final class MCPToolPayloadResult {
+public abstract class MCPProtocolException extends RuntimeException {
     
-    private final Map<String, Object> payload;
+    private static final long serialVersionUID = -7954139596323843321L;
     
-    private final boolean successful;
+    private final MCPErrorCode errorCode;
     
-    /**
-     * Create a successful result.
-     *
-     * @param payload payload
-     * @return result
-     */
-    public static MCPToolPayloadResult success(final Map<String, Object> payload) {
-        return new MCPToolPayloadResult(payload, true);
+    protected MCPProtocolException(final MCPErrorCode errorCode, final String message) {
+        super(message);
+        this.errorCode = errorCode;
     }
     
-    /**
-     * Create an error result.
-     *
-     * @param payload error payload
-     * @return result
-     */
-    public static MCPToolPayloadResult error(final Map<String, Object> payload) {
-        return new MCPToolPayloadResult(payload, false);
+    protected MCPProtocolException(final MCPErrorCode errorCode, final String message, final Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
     }
 }

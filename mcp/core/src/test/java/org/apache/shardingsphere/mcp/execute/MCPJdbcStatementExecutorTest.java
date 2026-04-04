@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import java.util.Map.Entry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MCPJdbcStatementExecutorTest {
     
@@ -100,10 +102,10 @@ class MCPJdbcStatementExecutorTest {
         MCPJdbcTransactionResourceManager transactionResourceManager = createTransactionResourceManager(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl));
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl), transactionResourceManager);
         transactionResourceManager.beginTransaction("session-1", "logic_db");
-        ExecuteQueryResponse actual = statementExecutor.execute(createExecutionRequest("analytics_db", "SELECT status FROM orders ORDER BY order_id"),
-                new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
-        assertFalse(actual.isSuccessful());
-        assertThat(actual.getError().orElseThrow().getCode().name(), is("TRANSACTION_STATE_ERROR"));
+        MCPTransactionStateException actual = assertThrows(MCPTransactionStateException.class,
+                () -> statementExecutor.execute(createExecutionRequest("analytics_db", "SELECT status FROM orders ORDER BY order_id"),
+                        new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id")));
+        assertThat(actual.getMessage(), is("Cross-database transaction switching is not supported."));
         transactionResourceManager.closeSession("session-1");
     }
     

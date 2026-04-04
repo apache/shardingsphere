@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaVie
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemasHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
@@ -53,6 +53,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
@@ -87,11 +88,10 @@ class ResourceHandlerTest {
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        MCPResponse actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
                 match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-                        "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
-        assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPErrorResponse.class));
-        assertThat(actual.toPayload().get("error_code"), is("unsupported"));
+                        "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
+        assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
     }
     
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {

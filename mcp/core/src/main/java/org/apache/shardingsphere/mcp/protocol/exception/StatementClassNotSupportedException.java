@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import java.util.List;
+package org.apache.shardingsphere.mcp.protocol.exception;
 
 /**
- * Dispatch result for one metadata tool request.
+ * Exception for unsupported statement classes.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ToolDispatchResult {
+public final class StatementClassNotSupportedException extends MCPUnsupportedException {
     
-    private final List<MetadataObject> metadataObjects;
+    private static final long serialVersionUID = 3648275985803132887L;
     
-    private final String nextPageToken;
-    
-    static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken);
+    public StatementClassNotSupportedException() {
+        super("Statement class is not supported.");
     }
 }

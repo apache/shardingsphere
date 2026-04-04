@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import java.util.List;
+package org.apache.shardingsphere.mcp.protocol.exception;
 
 /**
- * Dispatch result for one metadata tool request.
+ * Exception for absent database capabilities.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ToolDispatchResult {
+public final class DatabaseCapabilityNotFoundException extends MCPNotFoundException {
     
-    private final List<MetadataObject> metadataObjects;
+    private static final long serialVersionUID = 1272153261931319286L;
     
-    private final String nextPageToken;
-    
-    static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken);
+    public DatabaseCapabilityNotFoundException() {
+        super("Database capability does not exist.");
     }
 }

@@ -50,7 +50,7 @@ final class MCPToolCallHandler {
     private McpSchema.CallToolResult errorToolResult(final MCPToolPayloadResult result) {
         return McpSchema.CallToolResult.builder()
                 .structuredContent(result.getPayload())
-                .addTextContent(JsonUtils.toJsonString(Map.of("error_code", result.getError().getCode(), "message", result.getError().getMessage())))
+                .addTextContent(JsonUtils.toJsonString(result.getPayload()))
                 .isError(Boolean.TRUE)
                 .build();
     }

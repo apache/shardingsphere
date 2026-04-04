@@ -23,7 +23,8 @@ import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPNotFoundException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -71,15 +72,17 @@ public final class MetadataQueryService {
      * @param objectType metadata object type
      * @param queryCondition metadata object query condition
      * @return metadata query result
+     * @throws MCPNotFoundException when the logical database does not exist
+     * @throws MCPUnsupportedException when the metadata object type is unsupported by the database
      */
-    public MetadataQueryResult queryMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
+    public List<MetadataObject> queryMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
                                                     final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
         Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseMetadataSnapshots, databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
-            return MetadataQueryResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
+            throw new MCPUnsupportedException("Index resources are not supported for the current database.");
         }
         if (!supportedMetadataObjectTypes.contains(objectType)) {
-            return MetadataQueryResult.success(Collections.emptyList());
+            return Collections.emptyList();
         }
         List<MetadataObject> result = new LinkedList<>();
         for (MetadataObject each : databaseMetadataSnapshots.getMetadataObjects()) {
@@ -87,13 +90,25 @@ public final class MetadataQueryService {
                 result.add(each);
             }
         }
-        return MetadataQueryResult.success(sortMetadataObjects(result));
+        return sortMetadataObjects(result);
+    }
+    
+    /**
+     * Judge whether the metadata object type is supported for the database.
+     *
+     * @param databaseMetadataSnapshots database metadata snapshots
+     * @param databaseName database name
+     * @param objectType metadata object type
+     * @return whether supported or not
+     */
+    public boolean isSupportedMetadataObjectType(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName, final MetadataObjectType objectType) {
+        return getSupportedMetadataObjectTypes(databaseMetadataSnapshots, databaseName).contains(objectType);
     }
     
     private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
         Optional<DatabaseMetadataSnapshot> snapshot = databaseMetadataSnapshots.findSnapshot(databaseName);
         if (snapshot.isEmpty()) {
-            throw new IllegalStateException("Database does not exist.");
+            throw new MCPNotFoundException("Database does not exist.");
         }
         DatabaseMetadataSnapshot databaseMetadataSnapshot = snapshot.get();
         Optional<DatabaseCapability> databaseCapability =

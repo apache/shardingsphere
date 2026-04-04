@@ -84,8 +84,8 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest {
                 Map.of("database", "warehouse", "schema", "warehouse", "sql", "SAVEPOINT sp_1"));
         
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> error = getNestedPayload(getStructuredContent(actual.body()), "error");
-        assertThat(String.valueOf(error.get("error_code")), is("unsupported"));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("unsupported"));
     }
     
     @Test
@@ -100,8 +100,8 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest {
                 Map.of("database", "analytics_db", "schema", "public", "sql", "BEGIN"));
         
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> error = getNestedPayload(getStructuredContent(actual.body()), "error");
-        assertThat(String.valueOf(error.get("error_code")), is("transaction_state_error"));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
     }
     
     @Test
@@ -114,7 +114,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest {
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1; SELECT 2"));
         
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> error = getNestedPayload(getStructuredContent(actual.body()), "error");
-        assertThat(String.valueOf(error.get("error_code")), is("invalid_request"));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
     }
 }

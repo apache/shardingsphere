@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,8 +129,8 @@ public final class MCPToolCatalog {
         return Optional.empty();
     }
     
-    private IllegalStateException createUnknownToolException(final String toolName) {
-        return new IllegalStateException(String.format("Unknown MCP tool `%s`.", toolName));
+    private UnsupportedToolException createUnknownToolException(final String toolName) {
+        return new UnsupportedToolException();
     }
     
     private static ToolRequest createPagedMetadataToolRequest(final String toolName, final Map<String, Object> arguments) {
