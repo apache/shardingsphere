@@ -94,6 +94,6 @@ public final class MCPToolPayloadResolver {
     }
     
     private MCPToolPayloadResult error(final MCPErrorCode errorCode, final String message) {
-        return MCPToolPayloadResult.error(new MCPError(errorCode, message), new MCPErrorResponse(errorCode, message).toPayload());
+        return MCPToolPayloadResult.error(new MCPError(errorCode, message), new MCPErrorResponse(new MCPError(errorCode, message)).toPayload());
     }
 }

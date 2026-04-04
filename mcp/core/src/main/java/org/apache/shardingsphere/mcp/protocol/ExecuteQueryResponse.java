@@ -135,7 +135,7 @@ public final class ExecuteQueryResponse implements MCPResourceResponse {
             result.put("message", message);
         }
         result.put("truncated", truncated);
-        getError().ifPresent(error -> result.put("error", new MCPErrorResponse(error.getCode(), error.getMessage()).toPayload()));
+        getError().ifPresent(optional -> result.put("error", new MCPErrorResponse(optional).toPayload()));
         return result;
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
@@ -57,7 +58,7 @@ class MCPResourceResponseTest {
     
     @Test
     void assertError() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPErrorCode.NOT_FOUND, "Database capability does not exist.").toPayload();
+        Map<String, Object> actual = new MCPErrorResponse(new MCPError(MCPErrorCode.NOT_FOUND, "Database capability does not exist.")).toPayload();
         assertThat(actual.get("error_code"), is("not_found"));
         assertThat(actual.get("message"), is("Database capability does not exist."));
     }

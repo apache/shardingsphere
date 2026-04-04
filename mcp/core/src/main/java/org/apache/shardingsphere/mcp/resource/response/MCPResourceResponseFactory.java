@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.resource.response;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryResult;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 /**
@@ -37,6 +38,6 @@ public final class MCPResourceResponseFactory {
     public static MCPResourceResponse fromMetadataQueryResult(final MetadataQueryResult metadataQueryResult) {
         return metadataQueryResult.isSuccessful()
                 ? new MCPMetadataResponse(metadataQueryResult.getMetadataObjects())
-                : new MCPErrorResponse(metadataQueryResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), metadataQueryResult.getMessage());
+                : new MCPErrorResponse(new MCPError(metadataQueryResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), metadataQueryResult.getMessage()));
     }
 }

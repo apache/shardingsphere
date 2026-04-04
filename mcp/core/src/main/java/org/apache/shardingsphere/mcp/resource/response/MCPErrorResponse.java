@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.response;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 
 import java.util.Locale;
 import java.util.Map;
@@ -29,12 +29,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MCPErrorResponse implements MCPResourceResponse {
     
-    private final MCPErrorCode errorCode;
-    
-    private final String message;
+    private final MCPError error;
     
     @Override
     public Map<String, Object> toPayload() {
-        return Map.of("error_code", errorCode.name().toLowerCase(Locale.ENGLISH), "message", message);
+        return Map.of("error_code", error.getCode().name().toLowerCase(Locale.ENGLISH), "message", error.getMessage());
     }
 }

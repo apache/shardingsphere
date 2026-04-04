@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
@@ -39,6 +40,6 @@ public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(uriVariables.getVariable("database"))
                 .<MCPResourceResponse>map(MCPDatabaseCapabilityResponse::new)
-                .orElseGet(() -> new MCPErrorResponse(MCPErrorCode.NOT_FOUND, "Database capability does not exist."));
+                .orElseGet(() -> new MCPErrorResponse(new MCPError(MCPErrorCode.NOT_FOUND, "Database capability does not exist.")));
     }
 }

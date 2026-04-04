@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
@@ -46,7 +47,7 @@ public final class MCPResourceController {
      * @return payload
      */
     public Map<String, Object> handle(final String resourceUri) {
-        return dispatch(resourceUri, runtimeContext).orElseGet(() -> new MCPErrorResponse(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI.")).toPayload();
+        return dispatch(resourceUri, runtimeContext).orElseGet(() -> new MCPErrorResponse(new MCPError(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI."))).toPayload();
     }
     
     private Optional<MCPResourceResponse> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {
