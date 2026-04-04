@@ -22,9 +22,8 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
 
 import java.util.Collections;
@@ -43,7 +42,7 @@ final class MCPToolCallHandler {
         try {
             payload = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
             isFailed = false;
-        } catch (final MCPProtocolException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
+        } catch (final Exception ex) {
             payload = new MCPErrorResponse(MCPErrorConverter.convert(ex)).toPayload();
             isFailed = true;
         }
