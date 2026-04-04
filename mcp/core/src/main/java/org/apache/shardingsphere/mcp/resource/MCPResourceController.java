@@ -31,7 +31,7 @@ public final class MCPResourceController {
     
     private final MCPRuntimeContext runtimeContext;
     
-    private final ResourceDispatcher dispatcher = new ResourceDispatcher();
+    private final MCPResourceDispatcher dispatcher = new MCPResourceDispatcher();
     
     private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
     

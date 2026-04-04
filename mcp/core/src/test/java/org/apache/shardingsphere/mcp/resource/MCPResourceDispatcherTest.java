@@ -35,9 +35,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ResourceDispatcherTest {
+class MCPResourceDispatcherTest {
     
-    private final ResourceDispatcher resourceDispatcher = new ResourceDispatcher();
+    private final MCPResourceDispatcher resourceDispatcher = new MCPResourceDispatcher();
     
     private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
     

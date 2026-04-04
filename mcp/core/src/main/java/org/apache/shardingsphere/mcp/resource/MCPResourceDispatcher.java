@@ -30,13 +30,13 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Dispatcher for resource URIs.
+ * MCP resource dispatcher.
  */
-public final class ResourceDispatcher {
+public final class MCPResourceDispatcher {
     
     private final ResourceHandlerRegistry handlerRegistry;
     
-    public ResourceDispatcher() {
+    public MCPResourceDispatcher() {
         handlerRegistry = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
     }
     

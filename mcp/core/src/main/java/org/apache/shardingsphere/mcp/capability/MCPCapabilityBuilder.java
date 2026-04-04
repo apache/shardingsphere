@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.capability;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.resource.ResourceDispatcher;
+import org.apache.shardingsphere.mcp.resource.MCPResourceDispatcher;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
 import java.util.Optional;
@@ -36,7 +36,7 @@ public final class MCPCapabilityBuilder {
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
-    private final ResourceDispatcher resourceDispatcher = new ResourceDispatcher();
+    private final MCPResourceDispatcher resourceDispatcher = new MCPResourceDispatcher();
     
     /**
      * Build the service-level capability.
