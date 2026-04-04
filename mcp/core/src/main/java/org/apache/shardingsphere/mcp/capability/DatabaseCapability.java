@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Database-level 
+ * Database-level capability payload.
  */
 @RequiredArgsConstructor
 @Getter

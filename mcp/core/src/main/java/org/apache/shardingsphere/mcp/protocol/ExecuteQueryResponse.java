@@ -59,7 +59,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
     private final ExecuteQueryErrorDetail error;
     
     /**
-     * Create a result-set 
+     * Create a result-set response.
      *
      * @param columns column definitions
      * @param rows result rows
@@ -71,7 +71,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
     }
     
     /**
-     * Create an update-count 
+     * Create an update-count response.
      *
      * @param statementType statement type
      * @param affectedRows affected row count
@@ -83,7 +83,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
     }
     
     /**
-     * Create a statement acknowledgement 
+     * Create a statement acknowledgement response.
      *
      * @param statementType statement type
      * @param message acknowledgement message
@@ -95,7 +95,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
     }
     
     /**
-     * Create an error 
+     * Create an error response.
      *
      * @param errorCode unified error code
      * @param message error message

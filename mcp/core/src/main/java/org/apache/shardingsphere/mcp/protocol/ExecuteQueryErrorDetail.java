@@ -36,6 +36,6 @@ public final class ExecuteQueryErrorDetail implements MCPPayload {
     
     @Override
     public Map<String, Object> toPayload() {
-        return Map.of("error", Map.of("error_code", errorCode.name().toLowerCase(Locale.ENGLISH), "message", message));
+        return Map.of("error_code", errorCode.name().toLowerCase(Locale.ENGLISH), "message", message);
     }
 }
