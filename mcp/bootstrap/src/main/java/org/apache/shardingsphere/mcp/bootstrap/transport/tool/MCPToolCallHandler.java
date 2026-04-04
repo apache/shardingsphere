@@ -42,7 +42,9 @@ final class MCPToolCallHandler {
         try {
             payload = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
             isFailed = false;
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             payload = new MCPErrorResponse(MCPErrorConverter.convert(ex)).toPayload();
             isFailed = true;
         }
