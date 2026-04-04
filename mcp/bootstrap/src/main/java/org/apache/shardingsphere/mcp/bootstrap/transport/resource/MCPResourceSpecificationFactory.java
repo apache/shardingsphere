@@ -24,7 +24,6 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.MCPResourceController;
-import org.apache.shardingsphere.mcp.resource.MCPResourceDispatcher;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 
 import java.util.List;
@@ -37,8 +36,6 @@ public final class MCPResourceSpecificationFactory {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
-    private final MCPResourceDispatcher dispatcher;
-    
     private final MCPResourceController controller;
     
     /**
@@ -47,7 +44,6 @@ public final class MCPResourceSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        dispatcher = new MCPResourceDispatcher();
         controller = new MCPResourceController(runtimeContext);
     }
     
