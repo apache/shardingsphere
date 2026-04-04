@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.response;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
-import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.capability.ServiceCapability;
+import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
+
+import java.util.Map;
 
 /**
- * Handler for database resource URI.
+ * Response for service capability resources.
  */
-public final class DatabaseHandler implements ResourceHandler {
+@RequiredArgsConstructor
+public final class MCPServiceCapabilityResponse implements MCPResourceResponse {
+    
+    private final ServiceCapability serviceCapability;
     
     @Override
-    public String getUriPattern() {
-        return "shardingsphere://databases/{database}";
-    }
-    
-    @Override
-    public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        String databaseName = uriVariables.getVariable("database");
-        return MetadataHandlerUtils.createDatabasesResult(runtimeContext, databaseName::equals);
+    public Map<String, Object> toPayload(final MCPPayloadBuilder payloadBuilder) {
+        return payloadBuilder.createServiceCapabilityPayload(serviceCapability);
     }
 }

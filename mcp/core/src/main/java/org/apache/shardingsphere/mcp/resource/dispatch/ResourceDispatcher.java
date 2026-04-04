@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.MCPResourceResult;
+import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
@@ -52,9 +52,9 @@ public final class ResourceDispatcher {
      *
      * @param resourceUri resource URI
      * @param runtimeContext runtime context
-     * @return resource result
+     * @return resource response
      */
-    public Optional<MCPResourceResult> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {
+    public Optional<MCPResourceResponse> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {
         for (Entry<MCPUriPattern, ResourceHandler> each : handlerRegistry.getRegisteredHandlers().entrySet()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {

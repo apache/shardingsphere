@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.MCPResourceResult;
+import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
@@ -33,7 +34,7 @@ public final class ServiceCapabilitiesHandler implements ResourceHandler {
     }
     
     @Override
-    public MCPResourceResult handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        return MCPResourceResult.serviceCapability(runtimeContext.getCapabilityBuilder().buildServiceCapability());
+    public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
+        return new MCPServiceCapabilityResponse(runtimeContext.getCapabilityBuilder().buildServiceCapability());
     }
 }

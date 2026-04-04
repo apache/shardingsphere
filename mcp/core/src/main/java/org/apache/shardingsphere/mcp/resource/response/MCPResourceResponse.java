@@ -15,35 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource;
+package org.apache.shardingsphere.mcp.resource.response;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
 
 import java.util.Map;
 
 /**
- * MCP resource controller.
+ * MCP resource response.
  */
-@RequiredArgsConstructor
-public final class MCPResourceController {
-    
-    private final MCPRuntimeContext runtimeContext;
-    
-    private final ResourceDispatcher dispatcher = new ResourceDispatcher();
-    
-    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+public interface MCPResourceResponse {
     
     /**
-     * Handle resource URI.
+     * Convert response to payload.
      *
-     * @param resourceUri resource URI
+     * @param payloadBuilder payload builder
      * @return payload
      */
-    public Map<String, Object> handle(final String resourceUri) {
-        return dispatcher.dispatch(resourceUri, runtimeContext)
-                .map(each -> each.toPayload(payloadBuilder)).orElseGet(() -> payloadBuilder.createErrorPayload("invalid_request", "Unsupported resource URI."));
-    }
+    Map<String, Object> toPayload(MCPPayloadBuilder payloadBuilder);
 }

@@ -18,10 +18,17 @@
 package org.apache.shardingsphere.mcp.resource.dispatch;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.MCPResourceResult;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
+import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -35,6 +42,8 @@ class ResourceDispatcherTest {
     
     private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
     
+    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+    
     @Test
     void assertGetSupportedResources() {
         assertThat(resourceDispatcher.getSupportedResources().size(), is(16));
@@ -44,37 +53,45 @@ class ResourceDispatcherTest {
     
     @Test
     void assertDispatchServiceCapabilities() {
-        Optional<MCPResourceResult> actual = resourceDispatcher.dispatch("shardingsphere://capabilities", runtimeContext);
+        Optional<MCPResourceResponse> actual = resourceDispatcher.dispatch("shardingsphere://capabilities", runtimeContext);
         
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getType(), is(MCPResourceResult.ResourceResultType.SERVICE_CAPABILITY));
+        assertThat(actual.orElseThrow(), org.hamcrest.Matchers.instanceOf(MCPServiceCapabilityResponse.class));
     }
     
     @Test
     void assertDispatchDatabaseCapabilities() {
-        Optional<MCPResourceResult> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/capabilities", runtimeContext);
+        Optional<MCPResourceResponse> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/capabilities", runtimeContext);
         
         assertTrue(actual.isPresent());
-        MCPResourceResult actualResult = actual.orElseThrow();
-        assertThat(actualResult.getType(), is(MCPResourceResult.ResourceResultType.DATABASE_CAPABILITY));
-        assertThat(actualResult.getDatabaseCapability().getDatabaseType(), is("MySQL"));
+        MCPResourceResponse actualResult = actual.orElseThrow();
+        assertThat(actualResult, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
+        Map<String, Object> actualPayload = actualResult.toPayload(payloadBuilder);
+        assertThat(actualPayload.get("databaseType"), is("MySQL"));
     }
     
     @Test
     void assertDispatchMetadataColumns() {
-        Optional<MCPResourceResult> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", runtimeContext);
+        Optional<MCPResourceResponse> actual = resourceDispatcher.dispatch("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", runtimeContext);
         
         assertTrue(actual.isPresent());
-        MCPResourceResult actualResult = actual.orElseThrow();
-        assertThat(actualResult.getType(), is(MCPResourceResult.ResourceResultType.METADATA));
-        assertThat(actualResult.getMetadataObjects().size(), is(1));
-        assertThat(actualResult.getMetadataObjects().get(0).getName(), is("order_id"));
+        MCPResourceResponse actualResult = actual.orElseThrow();
+        assertThat(actualResult, org.hamcrest.Matchers.instanceOf(MCPMetadataResponse.class));
+        Map<String, Object> actualPayload = actualResult.toPayload(payloadBuilder);
+        List<MetadataObject> actualItems = getMetadataObjects(actualPayload);
+        assertThat(actualItems.size(), is(1));
+        assertThat(actualItems.get(0).getName(), is("order_id"));
     }
     
     @Test
     void assertDispatchInvalidUri() {
-        Optional<MCPResourceResult> actual = resourceDispatcher.dispatch("shardingsphere://unknown", runtimeContext);
+        Optional<MCPResourceResponse> actual = resourceDispatcher.dispatch("shardingsphere://unknown", runtimeContext);
         
         assertFalse(actual.isPresent());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<MetadataObject> getMetadataObjects(final Map<String, Object> payload) {
+        return (List<MetadataObject>) payload.get("items");
     }
 }

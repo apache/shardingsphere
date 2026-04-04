@@ -19,8 +19,12 @@ package org.apache.shardingsphere.mcp.resource.dispatch.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.MCPResourceResult;
+import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
+import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
@@ -30,6 +34,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,6 +45,8 @@ class ResourceHandlerTest {
     
     private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
     
+    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetUriPattern(final HandlerCase handlerCase) {
@@ -49,31 +56,39 @@ class ResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        MCPResourceResult actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
-        assertThat(actual.getType().name(), is(handlerCase.getExpectedType().name()));
+        MCPResourceResponse actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
+        Map<String, Object> actualPayload = actual.toPayload(payloadBuilder);
         if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
-            assertThat(actual.getDatabaseCapability().getDatabase(), is(handlerCase.getExpectedDatabase()));
+            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
+            assertThat(actualPayload.get("database"), is(handlerCase.getExpectedDatabase()));
             return;
         }
         if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
-            assertTrue(actual.getServiceCapability().getSupportedResources().contains("shardingsphere://capabilities"));
+            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPServiceCapabilityResponse.class));
+            assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
             return;
         }
-        assertThat(actual.getMetadataObjects().stream().map(MetadataObject::getName).toList(),
+        assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMetadataResponse.class));
+        assertThat(getMetadataObjects(actualPayload).stream().map(MetadataObject::getName).toList(),
                 is(handlerCase.getExpectedObjectNames()));
     }
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        MCPResourceResult actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
+        MCPResourceResponse actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
                 match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
-        assertThat(actual.getType(), is(MCPResourceResult.ResourceResultType.ERROR));
-        assertThat(actual.getErrorCode(), is(MCPErrorCode.UNSUPPORTED));
+        assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPErrorResponse.class));
+        assertThat(actual.toPayload(payloadBuilder).get("error_code"), is("unsupported"));
     }
 
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {
         return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<MetadataObject> getMetadataObjects(final Map<String, Object> payload) {
+        return (List<MetadataObject>) payload.get("items");
     }
     
     private static Stream<HandlerCase> handlerCases() {
