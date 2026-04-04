@@ -21,6 +21,7 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
 import org.junit.jupiter.api.Test;
 
@@ -67,5 +68,22 @@ class MCPToolCallHandlerTest {
         assertThat(actual.structuredContent(), is(payload));
         assertThat(actual.content().get(0), isA(TextContent.class));
         assertThat(((TextContent) actual.content().get(0)).text(), is(JsonUtils.toJsonString(payload)));
+    }
+    
+    @Test
+    void assertHandleWithException() {
+        MCPToolPayloadResolver toolPayloadResolver = mock(MCPToolPayloadResolver.class);
+        MCPToolCallHandler toolCallHandler = new MCPToolCallHandler(toolPayloadResolver);
+        McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+        when(exchange.sessionId()).thenReturn("session-1");
+        when(toolPayloadResolver.resolve("session-1", "unsupported_tool", Map.of())).thenThrow(new UnsupportedToolException());
+        McpSchema.CallToolResult actual = toolCallHandler.handle(exchange, new McpSchema.CallToolRequest("unsupported_tool", null));
+        @SuppressWarnings("unchecked")
+        Map<String, Object> actualStructuredContent = (Map<String, Object>) actual.structuredContent();
+        verify(toolPayloadResolver).resolve("session-1", "unsupported_tool", Map.of());
+        assertTrue(actual.isError());
+        assertThat(actualStructuredContent.get("error_code"), is("invalid_request"));
+        assertThat(actualStructuredContent.get("message"), is("Unsupported tool."));
+        assertThat(actual.content().get(0), isA(TextContent.class));
     }
 }

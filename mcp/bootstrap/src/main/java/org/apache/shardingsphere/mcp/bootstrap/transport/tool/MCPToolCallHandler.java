@@ -38,16 +38,17 @@ final class MCPToolCallHandler {
     McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
         Map<String, Object> payload;
-        boolean isFailed;
         try {
             payload = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
-            isFailed = false;
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             payload = new MCPErrorResponse(MCPErrorConverter.convert(ex)).toPayload();
-            isFailed = true;
         }
-        return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isFailed).build();
+        return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError(payload)).build();
+    }
+    
+    private boolean isError(final Map<String, Object> payload) {
+        return payload.containsKey("error_code");
     }
 }
