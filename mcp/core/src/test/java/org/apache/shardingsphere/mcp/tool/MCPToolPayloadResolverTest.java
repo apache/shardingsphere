@@ -27,6 +27,9 @@ import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +39,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -45,9 +49,8 @@ class MCPToolPayloadResolverTest {
     
     @Test
     void assertResolveWithUnsupportedTool() {
-        Map<String, Object> actual = createResolver().resolve("session-1", "unsupported_tool", Map.of());
-        assertThat(actual.get("error_code"), is("invalid_request"));
-        assertThat(actual.get("message"), is("Unsupported tool."));
+        UnsupportedToolException actualException = assertThrows(UnsupportedToolException.class, () -> createResolver().resolve("session-1", "unsupported_tool", Map.of()));
+        assertThat(actualException.getMessage(), is("Unsupported tool."));
     }
     
     @Test
@@ -58,16 +61,16 @@ class MCPToolPayloadResolverTest {
     
     @Test
     void assertResolveDatabaseCapabilitiesWithUnknownDatabase() {
-        Map<String, Object> actual = createResolver().resolve("session-1", "get_capabilities", Map.of("database", "missing_db"));
-        assertThat(actual.get("error_code"), is("not_found"));
-        assertThat(actual.get("message"), is("Database capability does not exist."));
+        DatabaseCapabilityNotFoundException actualException =
+                assertThrows(DatabaseCapabilityNotFoundException.class, () -> createResolver().resolve("session-1", "get_capabilities", Map.of("database", "missing_db")));
+        assertThat(actualException.getMessage(), is("Database capability does not exist."));
     }
     
     @Test
     void assertResolveExecuteQueryWithInvalidRequest() {
-        Map<String, Object> actual = createResolver().resolve("session-1", "execute_query", Map.of("database", "logic_db"));
-        assertThat(actual.get("error_code"), is("invalid_request"));
-        assertThat(actual.get("message"), is("Database and sql are required."));
+        MCPInvalidRequestException actualException =
+                assertThrows(MCPInvalidRequestException.class, () -> createResolver().resolve("session-1", "execute_query", Map.of("database", "logic_db")));
+        assertThat(actualException.getMessage(), is("Database and sql are required."));
     }
     
     @Test
@@ -87,9 +90,9 @@ class MCPToolPayloadResolverTest {
     
     @Test
     void assertResolveMetadataToolWithInvalidRequest() {
-        Map<String, Object> actual = createResolver().resolve("session-1", "list_tables", Map.of("database", "logic_db"));
-        assertThat(actual.get("error_code"), is("invalid_request"));
-        assertThat(actual.get("message"), is("Schema is required."));
+        MCPInvalidRequestException actualException =
+                assertThrows(MCPInvalidRequestException.class, () -> createResolver().resolve("session-1", "list_tables", Map.of("database", "logic_db")));
+        assertThat(actualException.getMessage(), is("Schema is required."));
     }
     
     private MCPToolPayloadResolver createResolver() {
