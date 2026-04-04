@@ -44,37 +44,33 @@ public final class MCPProtocolErrorConverter {
     public static MCPError toError(final Throwable cause) {
         if (cause instanceof MCPProtocolException) {
             MCPProtocolException protocolException = (MCPProtocolException) cause;
-            return new MCPError(protocolException.getErrorCode(), toMessage(protocolException.getMessage(), protocolException.getErrorCode()));
-        }
-        if (cause instanceof SQLTimeoutException) {
-            return new MCPError(MCPErrorCode.TIMEOUT, toMessage(cause.getMessage(), MCPErrorCode.TIMEOUT));
-        }
-        if (cause instanceof SQLFeatureNotSupportedException) {
-            return new MCPError(MCPErrorCode.UNSUPPORTED, toMessage(cause.getMessage(), MCPErrorCode.UNSUPPORTED));
+            return getError(protocolException.getErrorCode(), protocolException);
         }
         if (cause instanceof SQLSyntaxErrorException) {
-            return new MCPError(MCPErrorCode.INVALID_REQUEST, toMessage(cause.getMessage(), MCPErrorCode.INVALID_REQUEST));
+            return getError(MCPErrorCode.INVALID_REQUEST, cause);
         }
-        if (cause instanceof SQLException) {
-            return new MCPError(MCPErrorCode.QUERY_FAILED, toMessage(cause.getMessage(), MCPErrorCode.QUERY_FAILED));
+        if (cause instanceof SQLTimeoutException) {
+            return getError(MCPErrorCode.TIMEOUT, cause);
         }
-        if (cause instanceof IllegalArgumentException) {
-            return new MCPError(MCPErrorCode.INVALID_REQUEST, toMessage(cause.getMessage(), MCPErrorCode.INVALID_REQUEST));
+        if (cause instanceof SQLFeatureNotSupportedException) {
+            return getError(MCPErrorCode.UNSUPPORTED, cause);
         }
         if (cause instanceof UnsupportedOperationException) {
-            return new MCPError(MCPErrorCode.UNSUPPORTED, toMessage(cause.getMessage(), MCPErrorCode.UNSUPPORTED));
+            return getError(MCPErrorCode.UNSUPPORTED, cause);
+        }
+        if (cause instanceof SQLException) {
+            return getError(MCPErrorCode.QUERY_FAILED, cause);
+        }
+        if (cause instanceof IllegalArgumentException) {
+            return getError(MCPErrorCode.INVALID_REQUEST, cause);
         }
         if (cause instanceof IllegalStateException) {
-            return new MCPError(MCPErrorCode.TRANSACTION_STATE_ERROR, toMessage(cause.getMessage(), MCPErrorCode.TRANSACTION_STATE_ERROR));
+            return getError(MCPErrorCode.TRANSACTION_STATE_ERROR, cause);
         }
-        return new MCPError(MCPErrorCode.UNAVAILABLE, toMessage(null == cause ? "" : cause.getMessage(), MCPErrorCode.UNAVAILABLE));
+        return getError(MCPErrorCode.UNAVAILABLE, cause);
     }
     
-    private static String toMessage(final String message, final MCPErrorCode errorCode) {
-        String actualMessage = Objects.toString(message, "").trim();
-        if (actualMessage.isEmpty()) {
-            return MCPErrorCode.UNAVAILABLE == errorCode ? "Service is temporarily unavailable." : "MCP operation failed.";
-        }
-        return actualMessage;
+    private static MCPError getError(final MCPErrorCode errorCode, final Throwable cause) {
+        return new MCPError(errorCode, Objects.toString(cause.getMessage(), errorCode.getDefaultMessage()).trim());
     }
 }

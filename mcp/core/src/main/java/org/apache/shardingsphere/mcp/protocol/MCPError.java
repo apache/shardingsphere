@@ -34,8 +34,19 @@ public final class MCPError {
     /**
      * MCP error code.
      */
+    @RequiredArgsConstructor
+    @Getter
     public enum MCPErrorCode {
         
-        INVALID_REQUEST, NOT_FOUND, UNSUPPORTED, CONFLICT, TIMEOUT, UNAVAILABLE, TRANSACTION_STATE_ERROR, QUERY_FAILED
+        INVALID_REQUEST("Invalid request."),
+        NOT_FOUND("MCP operation not found."),
+        UNSUPPORTED("Unsupported MCP operation."),
+        CONFLICT("MCP operation conflict."),
+        TIMEOUT("MCP operation timeout."),
+        TRANSACTION_STATE_ERROR("MCP transaction operation failed."),
+        QUERY_FAILED("MCP query failed."),
+        UNAVAILABLE("Service is temporarily unavailable.");
+        
+        private final String defaultMessage;
     }
 }
