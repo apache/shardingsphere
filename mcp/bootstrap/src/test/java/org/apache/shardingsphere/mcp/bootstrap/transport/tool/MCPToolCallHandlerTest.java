@@ -64,13 +64,11 @@ class MCPToolCallHandlerTest {
         MCPToolPayloadResolver toolPayloadResolver = mock(MCPToolPayloadResolver.class);
         MCPToolCallHandler toolCallHandler = new MCPToolCallHandler(toolPayloadResolver);
         McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
-        Map<String, Object> payload = Map.of("error_code", "invalid_request", "message", "Unsupported tool.");
+        Map<String, Object> payload = Map.of("error_code", "INVALID_REQUEST", "message", "Unsupported tool.");
         when(exchange.sessionId()).thenReturn("session-1");
         when(toolPayloadResolver.resolve("session-1", "unsupported_tool", Map.of()))
                 .thenReturn(MCPToolPayloadResult.error(new ExecuteQueryErrorDetail(MCPErrorCode.INVALID_REQUEST, "Unsupported tool."), payload));
-        
         McpSchema.CallToolResult actual = toolCallHandler.handle(exchange, new McpSchema.CallToolRequest("unsupported_tool", null));
-        
         verify(toolPayloadResolver).resolve("session-1", "unsupported_tool", Map.of());
         assertTrue(actual.isError());
         assertThat(actual.structuredContent(), is(payload));
