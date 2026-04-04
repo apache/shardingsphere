@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.resource.response;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +32,19 @@ public final class MCPMetadataResponse implements MCPResourceResponse {
     
     private final List<MetadataObject> metadataObjects;
     
+    private final String nextPageToken;
+    
+    public MCPMetadataResponse(final List<MetadataObject> metadataObjects) {
+        this(metadataObjects, "");
+    }
+    
     @Override
-    public Map<String, Object> toPayload(final MCPPayloadBuilder payloadBuilder) {
-        return payloadBuilder.createMetadataItemsPayload(metadataObjects, "");
+    public Map<String, Object> toPayload() {
+        Map<String, Object> result = new LinkedHashMap<>(metadataObjects.size() + 1, 1F);
+        result.put("items", metadataObjects);
+        if (null != nextPageToken && !nextPageToken.isEmpty()) {
+            result.put("next_page_token", nextPageToken);
+        }
+        return result;
     }
 }

@@ -20,14 +20,22 @@ package org.apache.shardingsphere.mcp.protocol;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Locale;
+import java.util.Map;
+
 /**
  * Error detail payload.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteQueryErrorDetail {
+public final class ExecuteQueryErrorDetail implements MCPPayload {
     
     private final MCPErrorCode errorCode;
     
     private final String message;
+    
+    @Override
+    public Map<String, Object> toPayload() {
+        return Map.of("error", Map.of("error_code", errorCode.name().toLowerCase(Locale.ENGLISH), "message", message));
+    }
 }

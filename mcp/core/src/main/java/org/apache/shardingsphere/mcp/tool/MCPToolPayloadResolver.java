@@ -21,9 +21,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryErrorDetail;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 
 import java.util.Map;
 import java.util.Optional;
@@ -38,8 +39,6 @@ public final class MCPToolPayloadResolver {
     
     private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
     
-    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-    
     /**
      * Resolve one tool call.
      *
@@ -50,7 +49,7 @@ public final class MCPToolPayloadResolver {
      */
     public MCPToolPayloadResult resolve(final String sessionId, final String toolName, final Map<String, Object> arguments) {
         if (toolCatalog.findToolDescriptor(toolName).isEmpty()) {
-            return error("invalid_request", "Unsupported tool.");
+            return error(MCPErrorCode.INVALID_REQUEST, "Unsupported tool.");
         }
         switch (toolName) {
             case "get_capabilities":
@@ -65,33 +64,33 @@ public final class MCPToolPayloadResolver {
     private MCPToolPayloadResult resolveGetCapabilities(final Map<String, Object> arguments) {
         String database = toolCatalog.getCapabilityDatabase(arguments);
         if (database.isEmpty()) {
-            return MCPToolPayloadResult.success(payloadBuilder.createServiceCapabilityPayload(runtimeContext.getCapabilityBuilder().buildServiceCapability()));
+            return MCPToolPayloadResult.success(runtimeContext.getCapabilityBuilder().buildServiceCapability().toPayload());
         }
         Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().buildDatabaseCapability(database);
-        return capability.map(optional -> MCPToolPayloadResult.success(payloadBuilder.createDatabaseCapabilityPayload(optional)))
-                .orElseGet(() -> error("not_found", "Database capability does not exist."));
+        return capability.map(optional -> MCPToolPayloadResult.success(optional.toPayload()))
+                .orElseGet(() -> error(MCPErrorCode.NOT_FOUND, "Database capability does not exist."));
     }
     
     private MCPToolPayloadResult resolveExecuteQuery(final String sessionId, final Map<String, Object> arguments) {
         ExecutionRequest executionRequest = toolCatalog.createExecutionRequest(sessionId, arguments);
         if (executionRequest.getDatabase().isEmpty() || executionRequest.getSql().isEmpty()) {
-            return error("invalid_request", "Database and sql are required.");
+            return error(MCPErrorCode.INVALID_REQUEST, "Database and sql are required.");
         }
         ExecuteQueryResponse response = runtimeContext.getSqlExecutionFacade().execute(executionRequest);
-        Map<String, Object> payload = payloadBuilder.createExecuteQueryPayload(response);
+        Map<String, Object> payload = response.toPayload();
         return response.isSuccessful()
                 ? MCPToolPayloadResult.success(payload)
-                : MCPToolPayloadResult.error(payloadBuilder.toDomainErrorCode(response.getError().get().getErrorCode()), response.getError().get().getMessage(), payload);
+                : MCPToolPayloadResult.error(response.getError().get(), payload);
     }
     
     private MCPToolPayloadResult resolveMetadataTool(final String toolName, final Map<String, Object> arguments) {
         ToolDispatchResult result = new MetadataToolDispatcher().dispatch(runtimeContext.getDatabaseMetadataSnapshots(), toolCatalog.createMetadataToolRequest(toolName, arguments));
         return result.isSuccessful()
-                ? MCPToolPayloadResult.success(payloadBuilder.createMetadataItemsPayload(result.getMetadataObjects(), result.getNextPageToken()))
-                : error(payloadBuilder.toDomainErrorCode(result.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST)), result.getMessage());
+                ? MCPToolPayloadResult.success(new MCPMetadataResponse(result.getMetadataObjects(), result.getNextPageToken()).toPayload())
+                : error(result.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), result.getMessage());
     }
     
-    private MCPToolPayloadResult error(final String errorCode, final String message) {
-        return MCPToolPayloadResult.error(errorCode, message, payloadBuilder.createErrorPayload(errorCode, message));
+    private MCPToolPayloadResult error(final MCPErrorCode errorCode, final String message) {
+        return MCPToolPayloadResult.error(new ExecuteQueryErrorDetail(errorCode, message), new ExecuteQueryErrorDetail(errorCode, message).toPayload());
     }
 }

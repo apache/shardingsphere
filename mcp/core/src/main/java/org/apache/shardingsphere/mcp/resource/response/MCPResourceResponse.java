@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.resource.response;
 
-import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
-
 import java.util.Map;
 
 /**
@@ -29,8 +27,7 @@ public interface MCPResourceResponse {
     /**
      * Convert response to payload.
      *
-     * @param payloadBuilder payload builder
      * @return payload
      */
-    Map<String, Object> toPayload(MCPPayloadBuilder payloadBuilder);
+    Map<String, Object> toPayload();
 }

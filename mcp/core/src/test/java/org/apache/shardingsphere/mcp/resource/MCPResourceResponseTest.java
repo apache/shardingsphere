@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.resource;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
@@ -36,31 +35,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPResourceResponseTest {
     
-    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-    
     @Test
     void assertServiceCapability() {
-        Map<String, Object> actual = new MCPServiceCapabilityResponse(ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildServiceCapability()).toPayload(payloadBuilder);
+        Map<String, Object> actual = new MCPServiceCapabilityResponse(ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildServiceCapability()).toPayload();
         assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://capabilities"));
     }
     
     @Test
     void assertDatabaseCapability() {
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(
-                ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildDatabaseCapability("logic_db").orElseThrow()).toPayload(payloadBuilder);
+                ResourceTestDataFactory.createRuntimeContext().getCapabilityBuilder().buildDatabaseCapability("logic_db").orElseThrow()).toPayload();
         assertThat(actual.get("database"), is("logic_db"));
         assertThat(actual.get("databaseType"), is("MySQL"));
     }
     
     @Test
     void assertMetadata() {
-        Map<String, Object> actual = new MCPMetadataResponse(List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))).toPayload(payloadBuilder);
+        Map<String, Object> actual = new MCPMetadataResponse(List.of(new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))).toPayload();
         assertThat(((List<?>) actual.get("items")).size(), is(1));
     }
     
     @Test
     void assertError() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPErrorCode.NOT_FOUND, "Database capability does not exist.").toPayload(payloadBuilder);
+        Map<String, Object> actual = new MCPErrorResponse(MCPErrorCode.NOT_FOUND, "Database capability does not exist.").toPayload();
         assertThat(actual.get("error_code"), is("not_found"));
         assertThat(actual.get("message"), is("Database capability does not exist."));
     }

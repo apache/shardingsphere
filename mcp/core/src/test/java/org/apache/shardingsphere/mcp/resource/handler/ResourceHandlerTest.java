@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
+import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler;
@@ -41,7 +41,6 @@ import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 import org.junit.jupiter.api.Test;
@@ -60,8 +59,6 @@ class ResourceHandlerTest {
     
     private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
     
-    private final MCPPayloadBuilder payloadBuilder = new MCPPayloadBuilder();
-    
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetUriPattern(final HandlerCase handlerCase) {
@@ -72,7 +69,7 @@ class ResourceHandlerTest {
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
         MCPResourceResponse actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
-        Map<String, Object> actualPayload = actual.toPayload(payloadBuilder);
+        Map<String, Object> actualPayload = actual.toPayload();
         if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
             assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
             assertThat(actualPayload.get("database"), is(handlerCase.getExpectedDatabase()));
@@ -94,7 +91,7 @@ class ResourceHandlerTest {
                 match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
         assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPErrorResponse.class));
-        assertThat(actual.toPayload(payloadBuilder).get("error_code"), is("unsupported"));
+        assertThat(actual.toPayload().get("error_code"), is("unsupported"));
     }
     
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {

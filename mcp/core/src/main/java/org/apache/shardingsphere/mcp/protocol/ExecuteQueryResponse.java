@@ -22,7 +22,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -30,7 +33,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ExecuteQueryResponse {
+public final class ExecuteQueryResponse implements MCPPayload {
     
     private static final ExecuteQueryErrorDetail ABSENT_ERROR_DETAIL = new ExecuteQueryErrorDetail(MCPErrorCode.INVALID_REQUEST, "");
     
@@ -56,7 +59,7 @@ public final class ExecuteQueryResponse {
     private final ExecuteQueryErrorDetail error;
     
     /**
-     * Create a result-set response.
+     * Create a result-set 
      *
      * @param columns column definitions
      * @param rows result rows
@@ -68,7 +71,7 @@ public final class ExecuteQueryResponse {
     }
     
     /**
-     * Create an update-count response.
+     * Create an update-count 
      *
      * @param statementType statement type
      * @param affectedRows affected row count
@@ -80,7 +83,7 @@ public final class ExecuteQueryResponse {
     }
     
     /**
-     * Create a statement acknowledgement response.
+     * Create a statement acknowledgement 
      *
      * @param statementType statement type
      * @param message acknowledgement message
@@ -92,7 +95,7 @@ public final class ExecuteQueryResponse {
     }
     
     /**
-     * Create an error response.
+     * Create an error 
      *
      * @param errorCode unified error code
      * @param message error message
@@ -111,5 +114,28 @@ public final class ExecuteQueryResponse {
      */
     public Optional<ExecuteQueryErrorDetail> getError() {
         return successful ? Optional.empty() : Optional.of(error);
+    }
+    
+    @Override
+    public Map<String, Object> toPayload() {
+        Map<String, Object> result = new LinkedHashMap<>(32, 1F);
+        result.put("result_kind", resultKind.name().toLowerCase(Locale.ENGLISH));
+        result.put("statement_type", statementType);
+        result.put("status", status);
+        if (!columns.isEmpty()) {
+            result.put("columns", columns);
+        }
+        if (!rows.isEmpty()) {
+            result.put("rows", rows);
+        }
+        if (0 != affectedRows) {
+            result.put("affected_rows", affectedRows);
+        }
+        if (!message.isEmpty()) {
+            result.put("message", message);
+        }
+        result.put("truncated", truncated);
+        getError().ifPresent(error -> result.putAll(error.toPayload()));
+        return result;
     }
 }

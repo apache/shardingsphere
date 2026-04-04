@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryErrorDetail;
 
 import java.util.Map;
 
 /**
  * Transport-neutral payload result for one MCP tool call.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolPayloadResult {
     
@@ -34,13 +37,6 @@ public final class MCPToolPayloadResult {
     private final String message;
     
     private final Map<String, Object> payload;
-    
-    private MCPToolPayloadResult(final boolean successful, final String errorCode, final String message, final Map<String, Object> payload) {
-        this.successful = successful;
-        this.errorCode = errorCode;
-        this.message = message;
-        this.payload = payload;
-    }
     
     /**
      * Create a successful result.
@@ -56,11 +52,10 @@ public final class MCPToolPayloadResult {
      * Create an error result.
      *
      * @param errorCode error code
-     * @param message error message
      * @param payload error payload
      * @return result
      */
-    public static MCPToolPayloadResult error(final String errorCode, final String message, final Map<String, Object> payload) {
-        return new MCPToolPayloadResult(false, errorCode, message, payload);
+    public static MCPToolPayloadResult error(final ExecuteQueryErrorDetail errorCode, final Map<String, Object> payload) {
+        return new MCPToolPayloadResult(false, errorCode.getErrorCode().name(), errorCode.getMessage(), payload);
     }
 }

@@ -19,20 +19,27 @@ package org.apache.shardingsphere.mcp.capability;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.protocol.MCPPayload;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
- * Service-level capability view.
+ * Service capability.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ServiceCapability {
+public final class ServiceCapability implements MCPPayload {
     
     private final List<String> supportedResources;
     
     private final List<String> supportedTools;
     
     private final Set<StatementClass> supportedStatementClasses;
+    
+    @Override
+    public Map<String, Object> toPayload() {
+        return Map.of("supportedResources", supportedResources, "supportedTools", supportedTools, "supportedStatementClasses", supportedStatementClasses);
+    }
 }
