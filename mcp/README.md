@@ -183,20 +183,7 @@ Enable STDIO only when the client will communicate over the process `stdin` and 
 
 ### Run with STDIO only
 
-If you want to verify the packaged runtime with HTTP disabled, create a dedicated configuration file such as `conf/mcp-stdio.yaml`:
-
-```yaml
-transport:
-  http:
-    enabled: false
-    bindHost: 127.0.0.1
-    port: 18088
-    endpointPath: /mcp
-  stdio:
-    enabled: true
-```
-
-Then start the runtime with that file:
+The packaged runtime now ships `conf/mcp-stdio.yaml` out of the box. Start with that file:
 
 ```bash
 bin/start.sh conf/mcp-stdio.yaml
@@ -227,6 +214,35 @@ Reference:
 - If you expose the HTTP endpoint outside localhost, place it behind a trusted network boundary, gateway, or reverse proxy.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.
+
+## Registry and OCI Publication
+
+- Official MCP Registry metadata lives in `mcp/server.json`.
+- The published server name is `io.github.apache/shardingsphere-mcp`.
+- The first public package type is OCI on GHCR: `ghcr.io/apache/shardingsphere-mcp:<version>`.
+- The release workflow updates `mcp/server.json` to the GitHub release version before publishing to the official MCP Registry.
+
+### Run the published image over stdio
+
+```bash
+docker run --rm -i \
+  -e SHARDINGSPHERE_MCP_TRANSPORT=stdio \
+  ghcr.io/apache/shardingsphere-mcp:5.5.4
+```
+
+### Run the published image over HTTP
+
+```bash
+docker run --rm -p 18088:18088 \
+  ghcr.io/apache/shardingsphere-mcp:5.5.4
+```
+
+Notes:
+
+- `SHARDINGSPHERE_MCP_TRANSPORT=stdio` selects the packaged `conf/mcp-stdio.yaml`.
+- Leaving `SHARDINGSPHERE_MCP_TRANSPORT` unset keeps the Docker image on the HTTP default.
+- If you need a custom config path inside the container, set `SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/your-config.yaml`.
+- `.github/workflows/mcp-build.yml` publishes the GHCR image and then runs `mcp-publisher publish`.
 
 ## Development Pointers
 

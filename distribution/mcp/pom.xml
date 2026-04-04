@@ -123,6 +123,7 @@
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/ext-lib" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/logs" />
                                 <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/start.sh" perm="755" />
+                                <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/docker-entrypoint.sh" perm="755" />
                             </target>
                         </configuration>
                     </execution>

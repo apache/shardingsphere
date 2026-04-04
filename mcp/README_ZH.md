@@ -183,20 +183,7 @@ STDIO 现在实现为真实的 MCP stdio transport，适用于由本地 MCP clie
 
 ### 只启用 STDIO 启动
 
-如果你想在关闭 HTTP 的情况下验证发行包，可以创建一个专用配置文件，例如 `conf/mcp-stdio.yaml`：
-
-```yaml
-transport:
-  http:
-    enabled: false
-    bindHost: 127.0.0.1
-    port: 18088
-    endpointPath: /mcp
-  stdio:
-    enabled: true
-```
-
-然后使用这个配置文件启动：
+发行包现在已经内置了 `conf/mcp-stdio.yaml`，可以直接使用这个配置启动：
 
 ```bash
 bin/start.sh conf/mcp-stdio.yaml
@@ -227,6 +214,35 @@ bin/start.sh conf/mcp-stdio.yaml
 - 如果 HTTP 端点要暴露到 localhost 之外，建议放在受信网络、上游网关或反向代理之后。
 - 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。
+
+## Registry 与 OCI 发布
+
+- 官方 MCP Registry 元数据位于 `mcp/server.json`。
+- 对外发布的 server name 是 `io.github.apache/shardingsphere-mcp`。
+- 首个公开 package 形态是 GHCR 上的 OCI image：`ghcr.io/apache/shardingsphere-mcp:<version>`。
+- release workflow 会在发布到官方 MCP Registry 之前，把 `mcp/server.json` 里的版本更新为 GitHub release 版本。
+
+### 以 stdio 模式运行已发布镜像
+
+```bash
+docker run --rm -i \
+  -e SHARDINGSPHERE_MCP_TRANSPORT=stdio \
+  ghcr.io/apache/shardingsphere-mcp:5.5.4
+```
+
+### 以 HTTP 模式运行已发布镜像
+
+```bash
+docker run --rm -p 18088:18088 \
+  ghcr.io/apache/shardingsphere-mcp:5.5.4
+```
+
+说明：
+
+- `SHARDINGSPHERE_MCP_TRANSPORT=stdio` 会切到发行包内置的 `conf/mcp-stdio.yaml`。
+- 如果不设置 `SHARDINGSPHERE_MCP_TRANSPORT`，Docker image 会保持现有的 HTTP 默认启动方式。
+- 如果容器内需要指定自定义配置文件，可以设置 `SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/your-config.yaml`。
+- `.github/workflows/mcp-build.yml` 会先发布 GHCR image，再执行 `mcp-publisher publish`。
 
 ## 开发参考
 

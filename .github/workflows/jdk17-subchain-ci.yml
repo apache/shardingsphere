@@ -62,6 +62,27 @@ jobs:
         run: ./mvnw -pl mcp,test/e2e/mcp -am test -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Package JDK 17 Subchain Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+      - name: Validate MCP Registry Metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
+          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
+            echo "Packaged MCP distribution was not found." 1>&2
+            exit 1
+          fi
+          test -f "${DISTRIBUTION_HOME}/conf/mcp-stdio.yaml"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          server = json.loads(Path("mcp/server.json").read_text())
+          assert server["name"] == "io.github.apache/shardingsphere-mcp"
+          package = server["packages"][0]
+          assert package["registryType"] == "oci"
+          assert package["transport"]["type"] == "stdio"
+          assert package["environmentVariables"][0]["name"] == "SHARDINGSPHERE_MCP_TRANSPORT"
+          PY
+          grep -q 'io.modelcontextprotocol.server.name="io.github.apache/shardingsphere-mcp"' distribution/mcp/Dockerfile
       - name: Run JDK 17 Subchain Distribution Smoke
         shell: bash
         run: |
@@ -116,4 +137,6 @@ jobs:
             -X DELETE http://127.0.0.1:18088/mcp)
           test "${DELETE_STATUS}" = "200"
       - name: Build JDK 17 Subchain Docker Image
-        run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local .
+        run: docker build -f distribution/mcp/Dockerfile -t shardingsphere-mcp-ci:local distribution/mcp/target
+      - name: Run JDK 17 Subchain STDIO Container Smoke
+        run: python3 .github/workflows/resources/scripts/mcp-stdio-smoke.py shardingsphere-mcp-ci:local
