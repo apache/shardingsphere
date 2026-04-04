@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.protocol.error.MCPProtocolErrorConverter;
+import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
@@ -51,7 +51,7 @@ public final class MCPResourceController {
         try {
             return dispatch(resourceUri, runtimeContext).orElseThrow(UnsupportedResourceUriException::new).toPayload();
         } catch (final MCPProtocolException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
-            return new MCPErrorResponse(MCPProtocolErrorConverter.toError(ex)).toPayload();
+            return new MCPErrorResponse(MCPErrorConverter.convert(ex)).toPayload();
         }
     }
     

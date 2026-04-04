@@ -29,10 +29,10 @@ import java.sql.SQLTimeoutException;
 import java.util.Objects;
 
 /**
- * Converter for MCP protocol errors.
+ * MCP error converter.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPProtocolErrorConverter {
+public final class MCPErrorConverter {
     
     /**
      * Convert throwable to MCP error.
@@ -40,36 +40,36 @@ public final class MCPProtocolErrorConverter {
      * @param cause throwable
      * @return MCP error
      */
-    public static MCPError toError(final Throwable cause) {
+    public static MCPError convert(final Throwable cause) {
         if (cause instanceof MCPProtocolException) {
             MCPProtocolException protocolException = (MCPProtocolException) cause;
-            return getError(protocolException.getErrorCode(), protocolException);
+            return createError(protocolException.getErrorCode(), protocolException);
         }
         if (cause instanceof SQLSyntaxErrorException) {
-            return getError(MCPErrorCode.INVALID_REQUEST, cause);
+            return createError(MCPErrorCode.INVALID_REQUEST, cause);
         }
         if (cause instanceof SQLTimeoutException) {
-            return getError(MCPErrorCode.TIMEOUT, cause);
+            return createError(MCPErrorCode.TIMEOUT, cause);
         }
         if (cause instanceof SQLFeatureNotSupportedException) {
-            return getError(MCPErrorCode.UNSUPPORTED, cause);
+            return createError(MCPErrorCode.UNSUPPORTED, cause);
         }
         if (cause instanceof UnsupportedOperationException) {
-            return getError(MCPErrorCode.UNSUPPORTED, cause);
+            return createError(MCPErrorCode.UNSUPPORTED, cause);
         }
         if (cause instanceof SQLException) {
-            return getError(MCPErrorCode.QUERY_FAILED, cause);
+            return createError(MCPErrorCode.QUERY_FAILED, cause);
         }
         if (cause instanceof IllegalArgumentException) {
-            return getError(MCPErrorCode.INVALID_REQUEST, cause);
+            return createError(MCPErrorCode.INVALID_REQUEST, cause);
         }
         if (cause instanceof IllegalStateException) {
-            return getError(MCPErrorCode.TRANSACTION_STATE_ERROR, cause);
+            return createError(MCPErrorCode.TRANSACTION_STATE_ERROR, cause);
         }
-        return getError(MCPErrorCode.UNAVAILABLE, cause);
+        return createError(MCPErrorCode.UNAVAILABLE, cause);
     }
     
-    private static MCPError getError(final MCPErrorCode errorCode, final Throwable cause) {
+    private static MCPError createError(final MCPErrorCode errorCode, final Throwable cause) {
         return new MCPError(errorCode, Objects.toString(cause.getMessage(), errorCode.getDefaultMessage()).trim());
     }
 }

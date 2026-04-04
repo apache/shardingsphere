@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.error.MCPProtocolErrorConverter;
+import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 
@@ -74,9 +74,7 @@ public final class MCPSQLExecutionFacade {
         ClassificationResult classificationResult;
         try {
             classificationResult = new StatementClassifier().classify(executionRequest.getSql());
-        } catch (final UnsupportedOperationException ex) {
-            throw recordFailure(executionRequest, "QUERY", ex);
-        } catch (final IllegalArgumentException ex) {
+        } catch (final UnsupportedOperationException | IllegalArgumentException ex) {
             throw recordFailure(executionRequest, "QUERY", ex);
         }
         if (!databaseCapability.get().getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
@@ -119,7 +117,7 @@ public final class MCPSQLExecutionFacade {
     }
     
     private <T extends RuntimeException> T recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final T ex) {
-        MCPError error = MCPProtocolErrorConverter.toError(ex);
+        MCPError error = MCPErrorConverter.convert(ex);
         auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, error.getCode(), transactionMarker);
         return ex;
     }

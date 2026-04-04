@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.protocol.error.MCPProtocolErrorConverter;
+import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLTimeoutException;
@@ -31,32 +31,32 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class MCPProtocolErrorConverterTest {
+class MCPErrorConverterTest {
     
     @Test
-    void assertToErrorWithProtocolException() {
-        MCPError actual = MCPProtocolErrorConverter.toError(new UnsupportedToolException());
+    void assertConvertWithProtocolException() {
+        MCPError actual = MCPErrorConverter.convert(new UnsupportedToolException());
         assertThat(actual.getCode(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(actual.getMessage(), is("Unsupported tool."));
     }
     
     @Test
-    void assertToErrorWithSqlTimeoutException() {
-        MCPError actual = MCPProtocolErrorConverter.toError(new SQLTimeoutException("Timed out."));
+    void assertConvertWithSqlTimeoutException() {
+        MCPError actual = MCPErrorConverter.convert(new SQLTimeoutException("Timed out."));
         assertThat(actual.getCode(), is(MCPErrorCode.TIMEOUT));
         assertThat(actual.getMessage(), is("Timed out."));
     }
     
     @Test
     void assertToPayloadWithNotFoundException() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPProtocolErrorConverter.toError(new DatabaseCapabilityNotFoundException())).toPayload();
+        Map<String, Object> actual = new MCPErrorResponse(MCPErrorConverter.convert(new DatabaseCapabilityNotFoundException())).toPayload();
         assertThat(actual.get("error_code"), is("not_found"));
         assertThat(actual.get("message"), is("Database capability does not exist."));
     }
     
     @Test
     void assertToPayloadWithUnknownException() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPProtocolErrorConverter.toError(new RuntimeException())).toPayload();
+        Map<String, Object> actual = new MCPErrorResponse(MCPErrorConverter.convert(new RuntimeException())).toPayload();
         assertThat(actual.get("error_code"), is("unavailable"));
         assertThat(actual.get("message"), is("Service is temporarily unavailable."));
     }
