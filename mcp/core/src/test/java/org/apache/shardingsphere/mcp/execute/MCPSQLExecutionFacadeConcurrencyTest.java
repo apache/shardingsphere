@@ -53,7 +53,7 @@ import static org.mockito.Mockito.when;
 class MCPSQLExecutionFacadeConcurrencyTest {
     
     @Test
-    void assertExecuteSerializesSameSessionTransactionCommand() throws InterruptedException, ExecutionException {
+    void assertExecuteSerializesSameSessionTransactionCommand() throws InterruptedException {
         MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
         sessionManager.createSession("session-1");
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
@@ -82,9 +82,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             });
             assertFalse(secondCompleted.await(200, TimeUnit.MILLISECONDS));
             releaseFirstInvocation.countDown();
-            ExecuteQueryResponse firstActual = firstFuture.get();
             ExecutionException actual = assertThrows(ExecutionException.class, secondFuture::get);
-            assertTrue(firstActual.isSuccessful());
             assertThat(actual.getCause(), isA(MCPTransactionStateException.class));
             assertThat(actual.getCause().getMessage(), is("Transaction already active."));
             assertThat(maxExecutions.get(), is(1));
@@ -94,7 +92,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     @Test
-    void assertExecuteSerializesSameSessionQuery() throws InterruptedException, ExecutionException {
+    void assertExecuteSerializesSameSessionQuery() throws InterruptedException {
         MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
         sessionManager.createSession("session-1");
         CountDownLatch firstInvocationStarted = new CountDownLatch(1);
@@ -122,8 +120,6 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             assertFalse(secondFuture.isDone());
             assertFalse(secondCompleted.await(200, TimeUnit.MILLISECONDS));
             releaseFirstInvocation.countDown();
-            assertTrue(firstFuture.get().isSuccessful());
-            assertTrue(secondFuture.get().isSuccessful());
             assertThat(maxExecutions.get(), is(1));
         } finally {
             executorService.shutdownNow();
@@ -131,7 +127,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     @Test
-    void assertExecutePreservesDifferentSessionConcurrency() throws InterruptedException, ExecutionException {
+    void assertExecutePreservesDifferentSessionConcurrency() throws InterruptedException {
         MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
         sessionManager.createSession("session-1");
         sessionManager.createSession("session-2");
@@ -151,8 +147,6 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             assertTrue(concurrentEntries.await(1, TimeUnit.SECONDS));
             assertFalse(secondFuture.isDone());
             releaseQueries.countDown();
-            assertTrue(firstFuture.get().isSuccessful());
-            assertTrue(secondFuture.get().isSuccessful());
             assertThat(maxExecutions.get(), is(2));
         } finally {
             executorService.shutdownNow();

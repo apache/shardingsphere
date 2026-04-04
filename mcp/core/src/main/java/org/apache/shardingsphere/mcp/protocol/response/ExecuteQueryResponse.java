@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Unified response model for the MCP {@code execute_query} tool.
+ * Execute query response.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -84,15 +84,6 @@ public final class ExecuteQueryResponse implements MCPResponse {
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0, statementType, "OK", message, false);
-    }
-    
-    /**
-     * Whether to successful.
-     *
-     * @return successful or not
-     */
-    public boolean isSuccessful() {
-        return true;
     }
     
     @Override

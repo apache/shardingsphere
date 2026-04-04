@@ -32,7 +32,6 @@ class ExecuteQueryResponseTest {
     @Test
     void assertResultSet() {
         ExecuteQueryResponse actual = ExecuteQueryResponse.resultSet(List.of(new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false)), List.of(List.of(1)), true);
-        
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getColumns().size(), is(1));
         assertThat(actual.getRows().size(), is(1));
@@ -42,7 +41,6 @@ class ExecuteQueryResponseTest {
     @Test
     void assertUpdateCount() {
         ExecuteQueryResponse actual = ExecuteQueryResponse.updateCount("UPDATE", 2);
-        
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getStatementType(), is("UPDATE"));
         assertThat(actual.getAffectedRows(), is(2));
@@ -52,23 +50,13 @@ class ExecuteQueryResponseTest {
     @Test
     void assertStatementAck() {
         ExecuteQueryResponse actual = ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
-        
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getStatementType(), is("COMMIT"));
         assertThat(actual.getMessage(), is("Transaction committed."));
     }
     
     @Test
-    void assertIsSuccessful() {
-        ExecuteQueryResponse actual = ExecuteQueryResponse.resultSet(List.of(), List.of(), false);
-        
-        assertTrue(actual.isSuccessful());
-    }
-    
-    @Test
     void assertResultSetWithNullRows() {
-        ExecuteQueryResponse actual = ExecuteQueryResponse.resultSet(List.of(), null, false);
-        
-        assertNull(actual.getRows());
+        assertNull(ExecuteQueryResponse.resultSet(List.of(), null, false).getRows());
     }
 }
