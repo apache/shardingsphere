@@ -15,19 +15,19 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mcp.resource.handler.type.ServiceCapabilitiesHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabasesHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseCapabilitiesHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemasHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTablesHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewsHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableColumnsHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableColumnHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewColumnsHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewColumnHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableIndexesHandler
-org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableIndexHandler
+org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler
+org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemasHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTablesHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewsHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableColumnsHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableColumnHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewColumnsHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewColumnHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableIndexesHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableIndexHandler

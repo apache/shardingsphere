@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.handler.type;
+package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.handler.MetadataHandlerUtils;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for databases resource URI.
+ * Handler for database schema tables resource URI.
  */
-public final class DatabasesHandler implements ResourceHandler {
+public final class DatabaseSchemaTablesHandler extends AbstractMetadataResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases";
+        return "shardingsphere://databases/{database}/schemas/{schema}/tables";
     }
     
     @Override
     public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        return MetadataHandlerUtils.createDatabasesResult(runtimeContext, each -> true);
+        String databaseName = uriVariables.getVariable("database");
+        String schemaName = uriVariables.getVariable("schema");
+        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.TABLE, each -> schemaName.equals(each.getSchema()));
     }
 }

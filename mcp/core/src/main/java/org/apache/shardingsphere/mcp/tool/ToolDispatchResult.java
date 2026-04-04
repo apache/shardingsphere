@@ -20,7 +20,9 @@ package org.apache.shardingsphere.mcp.tool;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryResult;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +52,7 @@ public final class ToolDispatchResult {
         return new ToolDispatchResult(Collections.emptyList(), "", false, errorCode, message);
     }
     
-    static ToolDispatchResult fromMetadataResult(final MCPMetadataQueryResult metadataResult) {
+    static ToolDispatchResult fromMetadataResult(final MetadataQueryResult metadataResult) {
         return metadataResult.isSuccessful()
                 ? success(metadataResult.getMetadataObjects(), "")
                 : error(metadataResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), metadataResult.getMessage());

@@ -15,26 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.handler.type;
+package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for service capabilities resource URI.
+ * Handler for database schema table resource URI.
  */
-public final class ServiceCapabilitiesHandler implements ResourceHandler {
+public final class DatabaseSchemaTableHandler extends AbstractMetadataResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://capabilities";
+        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}";
     }
     
     @Override
     public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        return new MCPServiceCapabilityResponse(runtimeContext.getCapabilityBuilder().buildServiceCapability());
+        String databaseName = uriVariables.getVariable("database");
+        String schemaName = uriVariables.getVariable("schema");
+        String tableName = uriVariables.getVariable("table");
+        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.TABLE,
+                each -> schemaName.equals(each.getSchema()) && tableName.equals(each.getName()));
     }
 }

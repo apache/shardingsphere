@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.metadata.query;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * MCP metadata query result.
+ * Result for one metadata query.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class MCPMetadataQueryResult {
+public final class MetadataQueryResult {
     
     private final List<MetadataObject> metadataObjects;
     
@@ -43,24 +43,24 @@ public final class MCPMetadataQueryResult {
     private final String message;
     
     /**
-     * Create a successful metadata result.
+     * Create a successful metadata query result.
      *
      * @param metadataObjects loaded metadata objects
-     * @return successful metadata result
+     * @return successful metadata query result
      */
-    public static MCPMetadataQueryResult success(final List<MetadataObject> metadataObjects) {
-        return new MCPMetadataQueryResult(metadataObjects, true, MCPErrorCode.INVALID_REQUEST, "");
+    public static MetadataQueryResult success(final List<MetadataObject> metadataObjects) {
+        return new MetadataQueryResult(metadataObjects, true, MCPErrorCode.INVALID_REQUEST, "");
     }
     
     /**
-     * Create an error metadata result.
+     * Create a failed metadata query result.
      *
      * @param errorCode unified error code
      * @param message error message
-     * @return failed metadata result
+     * @return failed metadata query result
      */
-    public static MCPMetadataQueryResult error(final MCPErrorCode errorCode, final String message) {
-        return new MCPMetadataQueryResult(Collections.emptyList(), false, errorCode, message);
+    public static MetadataQueryResult error(final MCPErrorCode errorCode, final String message) {
+        return new MetadataQueryResult(Collections.emptyList(), false, errorCode, message);
     }
     
     /**
