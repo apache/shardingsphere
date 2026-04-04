@@ -37,9 +37,9 @@ import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaVie
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemasHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
@@ -68,7 +68,7 @@ class ResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        MCPResourceResponse actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
+        MCPResponse actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
         Map<String, Object> actualPayload = actual.toPayload();
         if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
             assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
@@ -87,7 +87,7 @@ class ResourceHandlerTest {
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        MCPResourceResponse actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
+        MCPResponse actual = new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
                 match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes"));
         assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPErrorResponse.class));

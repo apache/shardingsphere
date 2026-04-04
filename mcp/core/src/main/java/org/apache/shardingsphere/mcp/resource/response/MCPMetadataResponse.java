@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource.response;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.Map;
  * Response for metadata resources.
  */
 @RequiredArgsConstructor
-public final class MCPMetadataResponse implements MCPResourceResponse {
+public final class MCPMetadataResponse implements MCPResponse {
     
     private final List<MetadataObject> metadataObjects;
     

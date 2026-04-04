@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.execute;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.sql.Connection;

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
@@ -50,7 +50,7 @@ public final class MCPResourceController {
         return dispatch(resourceUri, runtimeContext).orElseGet(() -> new MCPErrorResponse(new MCPError(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI."))).toPayload();
     }
     
-    private Optional<MCPResourceResponse> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {
+    private Optional<MCPResponse> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {
         for (Entry<MCPUriPattern, ResourceHandler> each : ResourceHandlerRegistry.getRegisteredHandlers().entrySet()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {

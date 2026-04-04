@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
@@ -32,7 +32,7 @@ public final class DatabasesHandler extends AbstractMetadataResourceHandler {
     }
     
     @Override
-    public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         return queryDatabases(runtimeContext, each -> true);
     }
 }

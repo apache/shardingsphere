@@ -15,14 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.protocol;
+package org.apache.shardingsphere.mcp.protocol.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -36,7 +37,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ExecuteQueryResponse implements MCPResourceResponse {
+public final class ExecuteQueryResponse implements MCPResponse {
     
     private final ExecuteQueryResultKind resultKind;
     

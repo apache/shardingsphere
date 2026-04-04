@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponseFactory;
 
 import java.util.function.Predicate;
@@ -31,13 +31,13 @@ abstract class AbstractMetadataResourceHandler implements ResourceHandler {
     
     private final MetadataQueryService metadataQueryService = new MetadataQueryService();
     
-    protected final MCPResourceResponse queryDatabases(final MCPRuntimeContext runtimeContext, final Predicate<String> predicate) {
+    protected final MCPResponse queryDatabases(final MCPRuntimeContext runtimeContext, final Predicate<String> predicate) {
         return MCPResourceResponseFactory.fromMetadataQueryResult(
                 metadataQueryService.queryDatabases(runtimeContext.getDatabaseMetadataSnapshots(), predicate));
     }
     
-    protected final MCPResourceResponse queryMetadataObjects(final MCPRuntimeContext runtimeContext, final String databaseName,
-                                                             final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
+    protected final MCPResponse queryMetadataObjects(final MCPRuntimeContext runtimeContext, final String databaseName,
+                                                     final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
         return MCPResourceResponseFactory.fromMetadataQueryResult(
                 metadataQueryService.queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, objectType, predicate));
     }

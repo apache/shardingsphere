@@ -15,24 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.response;
+package org.apache.shardingsphere.mcp.protocol.response;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.MCPError;
-
-import java.util.Locale;
 import java.util.Map;
 
 /**
- * Response for resource errors.
+ * MCP response.
  */
-@RequiredArgsConstructor
-public final class MCPErrorResponse implements MCPResourceResponse {
+public interface MCPResponse {
     
-    private final MCPError error;
-    
-    @Override
-    public Map<String, Object> toPayload() {
-        return Map.of("error_code", error.getCode().name().toLowerCase(Locale.ENGLISH), "message", error.getMessage());
-    }
+    /**
+     * Convert response to payload.
+     *
+     * @return payload
+     */
+    Map<String, Object> toPayload();
 }
