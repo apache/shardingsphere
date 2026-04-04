@@ -27,7 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Build transport-neutral MCP payloads.
+ * MCP payload builder.
  */
 public final class MCPPayloadBuilder {
     
@@ -38,7 +38,7 @@ public final class MCPPayloadBuilder {
      * @return payload
      */
     public Map<String, Object> createServiceCapabilityPayload(final ServiceCapability capability) {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("supportedResources", capability.getSupportedResources());
         result.put("supportedTools", capability.getSupportedTools());
         result.put("supportedStatementClasses", capability.getSupportedStatementClasses());

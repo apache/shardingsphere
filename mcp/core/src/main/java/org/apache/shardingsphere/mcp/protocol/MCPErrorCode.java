@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.protocol;
 
 /**
- * Unified error code family for MCP.
+ * MCP error code.
  */
 public enum MCPErrorCode {
     
