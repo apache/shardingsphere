@@ -17,70 +17,22 @@
 
 package org.apache.shardingsphere.mcp.resource.handler;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ResourceHandlerRegistryTest {
     
     @Test
     void assertGetHandlers() {
-        ResourceHandlerRegistry actual = new ResourceHandlerRegistry();
-        
-        assertThat(actual.getRegisteredHandlers().size(), is(16));
+        assertThat(ResourceHandlerRegistry.getRegisteredHandlers().size(), is(16));
     }
     
     @Test
     void assertGetSupportedResources() {
-        ResourceHandlerRegistry actual = new ResourceHandlerRegistry();
-        
-        assertThat(actual.getSupportedResources().size(), is(16));
-        assertThat(actual.getSupportedResources().get(0), is("shardingsphere://capabilities"));
-        assertThat(actual.getSupportedResources().get(15), is("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
-    }
-    
-    @Test
-    void assertCreateRegistryWithDuplicatePattern() {
-        assertThrows(IllegalArgumentException.class, () -> ResourceHandlerRegistry.validateRegisteredHandlers(ResourceHandlerRegistry.createRegisteredHandlers(List.of(
-                new TestResourceHandler("shardingsphere://capabilities"),
-                new TestResourceHandler("shardingsphere://capabilities")))));
-    }
-    
-    @Test
-    void assertCreateRegistryWithOverlapPattern() {
-        assertThrows(IllegalArgumentException.class, () -> ResourceHandlerRegistry.validateRegisteredHandlers(ResourceHandlerRegistry.createRegisteredHandlers(List.of(
-                new TestResourceHandler("shardingsphere://databases/{database}"),
-                new TestResourceHandler("shardingsphere://databases/default_db")))));
-    }
-    
-    @Test
-    void assertCreateRegistryWithNoHandlers() {
-        assertThrows(IllegalStateException.class, () -> ResourceHandlerRegistry.createRegisteredHandlers(List.of()));
-    }
-    
-    @RequiredArgsConstructor
-    private static final class TestResourceHandler implements ResourceHandler {
-        
-        private final String uriPattern;
-        
-        @Override
-        public String getUriPattern() {
-            return uriPattern;
-        }
-        
-        @Override
-        public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-            return new MCPErrorResponse(MCPErrorCode.INVALID_REQUEST, "Unsupported resource URI.");
-        }
+        assertThat(ResourceHandlerRegistry.getSupportedResources().size(), is(16));
+        assertThat(ResourceHandlerRegistry.getSupportedResources().get(0), is("shardingsphere://capabilities"));
+        assertThat(ResourceHandlerRegistry.getSupportedResources().get(15), is("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }
 }

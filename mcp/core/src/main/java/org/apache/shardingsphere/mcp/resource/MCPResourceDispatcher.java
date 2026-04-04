@@ -33,15 +33,13 @@ import java.util.Optional;
  */
 public final class MCPResourceDispatcher {
     
-    private final ResourceHandlerRegistry handlerRegistry = new ResourceHandlerRegistry();
-    
     /**
      * Get supported resource URI surfaces.
      *
      * @return supported resource URI surfaces
      */
     public List<String> getSupportedResources() {
-        return handlerRegistry.getSupportedResources();
+        return ResourceHandlerRegistry.getSupportedResources();
     }
     
     /**
@@ -52,7 +50,7 @@ public final class MCPResourceDispatcher {
      * @return resource response
      */
     public Optional<MCPResourceResponse> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {
-        for (Entry<MCPUriPattern, ResourceHandler> each : handlerRegistry.getRegisteredHandlers().entrySet()) {
+        for (Entry<MCPUriPattern, ResourceHandler> each : ResourceHandlerRegistry.getRegisteredHandlers().entrySet()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
                 return Optional.of(each.getValue().handle(runtimeContext, matchedUriVariables.get()));

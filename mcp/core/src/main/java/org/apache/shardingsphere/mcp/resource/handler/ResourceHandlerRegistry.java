@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mcp.resource.handler;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.Map.Entry;
 /**
  * Resource handler registry.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceHandlerRegistry {
     
     private static final Map<MCPUriPattern, ResourceHandler> REGISTERED_HANDLERS;
@@ -40,13 +42,13 @@ public final class ResourceHandlerRegistry {
     private static final List<String> SUPPORTED_RESOURCES;
     
     static {
-        Map<MCPUriPattern, ResourceHandler> registeredHandlers = createRegisteredHandlers(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
-        validateRegisteredHandlers(registeredHandlers);
-        REGISTERED_HANDLERS = Collections.unmodifiableMap(registeredHandlers);
+        REGISTERED_HANDLERS = createRegisteredHandlers();
+        validateRegisteredHandlers();
         SUPPORTED_RESOURCES = REGISTERED_HANDLERS.keySet().stream().map(MCPUriPattern::getPattern).toList();
     }
-    
-    static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers(final Collection<ResourceHandler> handlers) {
+
+    private static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers() {
+        Collection<ResourceHandler> handlers = ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class);
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, ResourceHandler> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (ResourceHandler each : handlers) {
@@ -57,16 +59,16 @@ public final class ResourceHandlerRegistry {
         return result;
     }
     
-    static void validateRegisteredHandlers(final Map<MCPUriPattern, ResourceHandler> registeredHandlers) {
-        Map<String, Class<?>> registeredPatterns = new HashMap<>(registeredHandlers.size(), 1F);
-        for (Entry<MCPUriPattern, ResourceHandler> entry : registeredHandlers.entrySet()) {
+    private static void validateRegisteredHandlers() {
+        Map<String, Class<?>> registeredPatterns = new HashMap<>(REGISTERED_HANDLERS.size(), 1F);
+        for (Entry<MCPUriPattern, ResourceHandler> entry : REGISTERED_HANDLERS.entrySet()) {
             String pattern = entry.getKey().getPattern();
             Class<?> previousPatternClass = registeredPatterns.putIfAbsent(pattern, entry.getValue().getClass());
             ShardingSpherePreconditions.checkState(null == previousPatternClass,
                     () -> new IllegalArgumentException(String.format("Duplicate resource URI pattern `%s` with `%s` and `%s`.",
                             pattern, previousPatternClass.getName(), entry.getValue().getClass().getName())));
         }
-        List<Entry<MCPUriPattern, ResourceHandler>> entries = new ArrayList<>(registeredHandlers.entrySet());
+        List<Entry<MCPUriPattern, ResourceHandler>> entries = new ArrayList<>(REGISTERED_HANDLERS.entrySet());
         for (int i = 0; i < entries.size(); i++) {
             Entry<MCPUriPattern, ResourceHandler> current = entries.get(i);
             for (int j = i + 1; j < entries.size(); j++) {
@@ -83,7 +85,7 @@ public final class ResourceHandlerRegistry {
      *
      * @return registered handlers
      */
-    public Map<MCPUriPattern, ResourceHandler> getRegisteredHandlers() {
+    public static Map<MCPUriPattern, ResourceHandler> getRegisteredHandlers() {
         return REGISTERED_HANDLERS;
     }
 
@@ -92,7 +94,7 @@ public final class ResourceHandlerRegistry {
      *
      * @return supported resources
      */
-    public List<String> getSupportedResources() {
+    public static List<String> getSupportedResources() {
         return SUPPORTED_RESOURCES;
     }
 }
