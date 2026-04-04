@@ -32,8 +32,4 @@ public final class ToolDispatchResult {
     private final List<MetadataObject> metadataObjects;
     
     private final String nextPageToken;
-    
-    static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken);
-    }
 }

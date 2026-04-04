@@ -160,7 +160,7 @@ public final class MetadataToolDispatcher {
         List<MetadataObject> columnResult = queryChildMetadataObjects(databaseMetadataSnapshots, toolRequest.getDatabase(),
                 MetadataObjectType.COLUMN, toolRequest.getSchema(), objectType.name(), toolRequest.getObjectName());
         result.addAll(columnResult);
-        return ToolDispatchResult.success(result, "");
+        return new ToolDispatchResult(result, "");
     }
     
     private List<MetadataObject> queryMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
@@ -195,11 +195,12 @@ public final class MetadataToolDispatcher {
         int actualPageSize = 0 < pageSize ? pageSize : 100;
         List<MetadataObject> filteredObjects = filterByQuery(metadataObjects, query);
         if (actualOffset > filteredObjects.size()) {
-            return ToolDispatchResult.success(Collections.emptyList(), "");
+            return new ToolDispatchResult(Collections.emptyList(), "");
         }
         int actualEndIndex = Math.min(actualOffset + actualPageSize, filteredObjects.size());
         String nextPageToken = actualEndIndex < filteredObjects.size() ? String.valueOf(actualEndIndex) : "";
-        return ToolDispatchResult.success(filteredObjects.subList(actualOffset, actualEndIndex), nextPageToken);
+        final List<MetadataObject> metadataObjects1 = filteredObjects.subList(actualOffset, actualEndIndex);
+        return new ToolDispatchResult(metadataObjects1, nextPageToken);
     }
     
     private List<MetadataObject> filterByQuery(final Collection<MetadataObject> metadataObjects, final String query) {
