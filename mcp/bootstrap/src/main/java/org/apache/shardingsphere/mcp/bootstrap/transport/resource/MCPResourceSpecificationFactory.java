@@ -36,9 +36,9 @@ public final class MCPResourceSpecificationFactory {
     
     private static final String JSON_CONTENT_TYPE = "application/json";
     
-    private final MCPResourceDispatcher resourceDispatcher;
+    private final MCPResourceDispatcher dispatcher;
     
-    private final MCPResourceController resourceController;
+    private final MCPResourceController controller;
     
     /**
      * Create MCP resource specification factory.
@@ -46,8 +46,8 @@ public final class MCPResourceSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        resourceDispatcher = new MCPResourceDispatcher();
-        resourceController = new MCPResourceController(runtimeContext);
+        dispatcher = new MCPResourceDispatcher();
+        controller = new MCPResourceController(runtimeContext);
     }
     
     /**
@@ -56,7 +56,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        return resourceDispatcher.getSupportedResources().stream()
+        return dispatcher.getSupportedResources().stream()
                 .filter(each -> !isTemplatedResource(each)).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
@@ -66,7 +66,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return resourceDispatcher.getSupportedResources().stream()
+        return dispatcher.getSupportedResources().stream()
                 .filter(this::isTemplatedResource)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
@@ -95,6 +95,6 @@ public final class MCPResourceSpecificationFactory {
     }
     
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
-        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(resourceController.handle(request.uri())))));
+        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(controller.handle(request.uri())))));
     }
 }

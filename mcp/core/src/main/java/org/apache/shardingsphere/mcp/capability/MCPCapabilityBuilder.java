@@ -36,7 +36,7 @@ public final class MCPCapabilityBuilder {
     
     private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
-    private final MCPResourceDispatcher resourceDispatcher = new MCPResourceDispatcher();
+    private final MCPResourceDispatcher dispatcher = new MCPResourceDispatcher();
     
     /**
      * Build the service-level capability.
@@ -44,7 +44,7 @@ public final class MCPCapabilityBuilder {
      * @return service-level capability
      */
     public ServiceCapability buildServiceCapability() {
-        return new ServiceCapability(resourceDispatcher.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
+        return new ServiceCapability(dispatcher.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_CLASSES);
     }
     
     /**
