@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.error.MCPError;
+import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPProtocolErrorConverter;
+import org.apache.shardingsphere.mcp.protocol.error.MCPProtocolErrorConverter;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLTimeoutException;

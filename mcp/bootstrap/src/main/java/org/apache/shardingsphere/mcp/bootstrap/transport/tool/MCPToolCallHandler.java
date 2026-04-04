@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPProtocolErrorConverter;
+import org.apache.shardingsphere.mcp.protocol.error.MCPProtocolErrorConverter;
 import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
 
 import java.util.Collections;

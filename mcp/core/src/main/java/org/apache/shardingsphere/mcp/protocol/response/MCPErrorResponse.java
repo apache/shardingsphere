@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.protocol.response;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.MCPError;
+import org.apache.shardingsphere.mcp.protocol.error.MCPError;
 
 import java.util.Locale;
 import java.util.Map;

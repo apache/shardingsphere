@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.protocol;
+package org.apache.shardingsphere.mcp.protocol.error;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

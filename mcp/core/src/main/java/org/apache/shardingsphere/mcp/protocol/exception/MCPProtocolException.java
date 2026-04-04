@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.protocol.exception;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
 
 /**
  * Base runtime exception for MCP protocol errors.
