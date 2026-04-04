@@ -99,7 +99,9 @@ public final class MCPSQLExecutionFacade {
                 default:
                     throw new StatementClassNotSupportedException();
             }
+            // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
             throw recordFailure(executionRequest, classificationResult.getStatementType(), ex);
         }
     }

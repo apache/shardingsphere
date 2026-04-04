@@ -48,7 +48,9 @@ public final class MCPResourceController {
     public MCPResponse handle(final String resourceUri) {
         try {
             return dispatch(resourceUri, runtimeContext).orElseThrow(UnsupportedResourceUriException::new);
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             return new MCPErrorResponse(MCPErrorConverter.convert(ex));
         }
     }

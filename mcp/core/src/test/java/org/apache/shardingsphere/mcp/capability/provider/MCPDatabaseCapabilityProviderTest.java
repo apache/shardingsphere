@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.capability.TransactionBoundaryBehavior;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -51,11 +50,11 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.get().isSupportsTransactionControl());
         assertTrue(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getSupportedTransactionStatements().size(), is(7));
-        assertThat(actual.get().getDefaultSchemaSemantics(), Matchers.is(SchemaSemantics.DATABASE_AS_SCHEMA));
+        assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertFalse(actual.get().isSupportsExplainAnalyze());
-        assertThat(actual.get().getExplainAnalyzeResultBehavior(), Matchers.is(ResultBehavior.UNSUPPORTED));
-        assertThat(actual.get().getExplainAnalyzeTransactionBehavior(), Matchers.is(TransactionBoundaryBehavior.UNSUPPORTED));
+        assertThat(actual.get().getExplainAnalyzeResultBehavior(), is(ResultBehavior.UNSUPPORTED));
+        assertThat(actual.get().getExplainAnalyzeTransactionBehavior(), is(TransactionBoundaryBehavior.UNSUPPORTED));
     }
     
     @Test

@@ -49,6 +49,7 @@ public final class MCPToolPayloadResolver {
      * @param toolName tool name
      * @param arguments normalized tool arguments
      * @return payload
+     * @throws UnsupportedToolException unsupported tool exception
      */
     public Map<String, Object> resolve(final String sessionId, final String toolName, final Map<String, Object> arguments) {
         if (toolCatalog.findToolDescriptor(toolName).isEmpty()) {
