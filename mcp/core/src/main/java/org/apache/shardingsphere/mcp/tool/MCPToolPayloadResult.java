@@ -72,6 +72,6 @@ public final class MCPToolPayloadResult {
      * @return successful or not
      */
     public boolean isSuccessful() {
-        return null != error;
+        return null == error;
     }   
 }

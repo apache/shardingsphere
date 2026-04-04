@@ -38,20 +38,27 @@ public final class ToolDispatchResult {
     
     private final String nextPageToken;
     
-    private final boolean successful;
-    
     private final MCPError error;
     
     static ToolDispatchResult success(final List<MetadataObject> metadataObjects, final String nextPageToken) {
-        return new ToolDispatchResult(metadataObjects, nextPageToken, true, null);
+        return new ToolDispatchResult(metadataObjects, nextPageToken, null);
     }
     
     static ToolDispatchResult error(final MCPErrorCode errorCode, final String message) {
-        return new ToolDispatchResult(Collections.emptyList(), "", false, new MCPError(errorCode, message));
+        return new ToolDispatchResult(Collections.emptyList(), "", new MCPError(errorCode, message));
     }
     
     static ToolDispatchResult fromMetadataResult(final MetadataQueryResult metadataResult) {
         return metadataResult.isSuccessful() ? success(metadataResult.getMetadataObjects(), "") : error(metadataResult.getError().getCode(), metadataResult.getError().getMessage());
+    }
+    
+    /**
+     * Whether to successful.
+     *
+     * @return successful or not
+     */
+    public boolean isSuccessful() {
+        return null == error;
     }
     
     /**
@@ -60,6 +67,6 @@ public final class ToolDispatchResult {
      * @return error
      */
     public MCPError getError() {
-        return successful ? new MCPError(MCPErrorCode.INVALID_REQUEST, "") : error;
+        return null == error ? new MCPError(MCPErrorCode.INVALID_REQUEST, "") : error;
     }
 }

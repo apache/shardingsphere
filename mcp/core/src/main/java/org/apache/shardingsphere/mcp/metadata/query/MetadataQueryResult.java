@@ -36,8 +36,6 @@ public final class MetadataQueryResult {
     
     private final List<MetadataObject> metadataObjects;
     
-    private final boolean successful;
-    
     private final MCPError error;
     
     /**
@@ -47,7 +45,7 @@ public final class MetadataQueryResult {
      * @return successful metadata query result
      */
     public static MetadataQueryResult success(final List<MetadataObject> metadataObjects) {
-        return new MetadataQueryResult(metadataObjects, true, null);
+        return new MetadataQueryResult(metadataObjects, null);
     }
     
     /**
@@ -58,7 +56,16 @@ public final class MetadataQueryResult {
      * @return failed metadata query result
      */
     public static MetadataQueryResult error(final MCPErrorCode errorCode, final String message) {
-        return new MetadataQueryResult(Collections.emptyList(), false, new MCPError(errorCode, message));
+        return new MetadataQueryResult(Collections.emptyList(), new MCPError(errorCode, message));
+    }
+    
+    /**
+     * Whether to successful.
+     *
+     * @return successful or not
+     */
+    public boolean isSuccessful() {
+        return null == error;
     }
     
     /**
@@ -67,6 +74,6 @@ public final class MetadataQueryResult {
      * @return error
      */
     public MCPError getError() {
-        return successful ? new MCPError(MCPErrorCode.INVALID_REQUEST, "") : error;
+        return null == error ? new MCPError(MCPErrorCode.INVALID_REQUEST, "") : error;
     }
 }

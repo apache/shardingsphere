@@ -55,8 +55,6 @@ public final class ExecuteQueryResponse implements MCPResponse {
     
     private final boolean truncated;
     
-    private final boolean successful;
-    
     @Getter(AccessLevel.NONE)
     private final MCPError error;
     
@@ -69,7 +67,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @return result-set response
      */
     public static ExecuteQueryResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, true, new MCPError(MCPErrorCode.INVALID_REQUEST, ""));
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, null);
     }
     
     /**
@@ -81,7 +79,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
-                statementType, "OK", "", false, true, new MCPError(MCPErrorCode.INVALID_REQUEST, ""));
+                statementType, "OK", "", false, null);
     }
     
     /**
@@ -93,7 +91,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                statementType, "OK", message, false, true, new MCPError(MCPErrorCode.INVALID_REQUEST, ""));
+                statementType, "OK", message, false, null);
     }
     
     /**
@@ -105,7 +103,16 @@ public final class ExecuteQueryResponse implements MCPResponse {
      */
     public static ExecuteQueryResponse error(final MCPErrorCode errorCode, final String message) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                "ERROR", "ERROR", message, false, false, new MCPError(errorCode, message));
+                "ERROR", "ERROR", message, false, new MCPError(errorCode, message));
+    }
+    
+    /**
+     * Whether to successful.
+     *
+     * @return successful or not
+     */
+    public boolean isSuccessful() {
+        return null == error;
     }
     
     /**
@@ -114,7 +121,7 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @return error
      */
     public Optional<MCPError> getError() {
-        return successful ? Optional.empty() : Optional.of(error);
+        return null == error ? Optional.empty() : Optional.of(error);
     }
     
     @Override

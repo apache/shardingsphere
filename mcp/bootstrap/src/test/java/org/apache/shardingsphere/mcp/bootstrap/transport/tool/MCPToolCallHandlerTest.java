@@ -64,7 +64,7 @@ class MCPToolCallHandlerTest {
         Map<String, Object> payload = Map.of("error_code", "INVALID_REQUEST", "message", "Unsupported tool.");
         when(exchange.sessionId()).thenReturn("session-1");
         when(toolPayloadResolver.resolve("session-1", "unsupported_tool", Map.of()))
-                .thenReturn(MCPToolPayloadResult.error(new MCPError(MCPErrorCode.INVALID_REQUEST, "Unsupported tool."), payload));
+                .thenReturn(MCPToolPayloadResult.error(payload, new MCPError(MCPErrorCode.INVALID_REQUEST, "Unsupported tool.")));
         McpSchema.CallToolResult actual = toolCallHandler.handle(exchange, new McpSchema.CallToolRequest("unsupported_tool", null));
         verify(toolPayloadResolver).resolve("session-1", "unsupported_tool", Map.of());
         assertTrue(actual.isError());
