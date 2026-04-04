@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 
 import java.util.Map;
 
@@ -51,11 +51,11 @@ public final class MCPToolPayloadResult {
     /**
      * Create an error result.
      *
-     * @param errorPayload error code
+     * @param error error
      * @param payload error payload
      * @return result
      */
-    public static MCPToolPayloadResult error(final MCPErrorPayload errorPayload, final Map<String, Object> payload) {
-        return new MCPToolPayloadResult(false, errorPayload.getCode().name(), errorPayload.getMessage(), payload);
+    public static MCPToolPayloadResult error(final MCPError error, final Map<String, Object> payload) {
+        return new MCPToolPayloadResult(false, error.getCode().name(), error.getMessage(), payload);
     }
 }

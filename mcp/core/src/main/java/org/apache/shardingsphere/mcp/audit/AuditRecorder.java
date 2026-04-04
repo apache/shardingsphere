@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.audit;
 
-import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -39,8 +39,7 @@ public final class AuditRecorder {
      * @param transactionMarker optional transaction marker
      * @return recorded audit entry
      */
-    public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success,
-                                            final String transactionMarker) {
+    public AuditRecord recordQueryExecution(final String sessionId, final String databaseName, final String sql, final boolean success, final String transactionMarker) {
         return record(sessionId, databaseName, sql, success, false, MCPErrorCode.INVALID_REQUEST, transactionMarker);
     }
     

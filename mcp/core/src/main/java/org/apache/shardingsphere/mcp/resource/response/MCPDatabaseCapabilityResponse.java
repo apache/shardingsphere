@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.resource.response;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -32,6 +33,25 @@ public final class MCPDatabaseCapabilityResponse implements MCPResourceResponse 
     
     @Override
     public Map<String, Object> toPayload() {
-        return databaseCapability.toPayload();
+        Map<String, Object> result = new LinkedHashMap<>(32, 1F);
+        result.put("database", databaseCapability.getDatabase());
+        result.put("databaseType", databaseCapability.getDatabaseType());
+        result.put("minSupportedVersion", databaseCapability.getMinSupportedVersion());
+        result.put("supportedObjectTypes", databaseCapability.getSupportedMetadataObjectTypes());
+        result.put("supportedStatementClasses", databaseCapability.getSupportedStatementClasses());
+        result.put("supportsTransactionControl", databaseCapability.isSupportsTransactionControl());
+        result.put("supportsSavepoint", databaseCapability.isSupportsSavepoint());
+        result.put("supportedTransactionStatements", databaseCapability.getSupportedTransactionStatements());
+        result.put("defaultAutocommit", databaseCapability.isDefaultAutocommit());
+        result.put("maxRowsDefault", databaseCapability.getMaxRowsDefault());
+        result.put("maxTimeoutMsDefault", databaseCapability.getMaxTimeoutMsDefault());
+        result.put("defaultSchemaSemantics", databaseCapability.getDefaultSchemaSemantics());
+        result.put("supportsCrossSchemaSql", databaseCapability.isSupportsCrossSchemaSql());
+        result.put("supportsExplainAnalyze", databaseCapability.isSupportsExplainAnalyze());
+        result.put("ddlTransactionBehavior", databaseCapability.getDdlTransactionBehavior());
+        result.put("dclTransactionBehavior", databaseCapability.getDclTransactionBehavior());
+        result.put("explainAnalyzeResultBehavior", databaseCapability.getExplainAnalyzeResultBehavior());
+        result.put("explainAnalyzeTransactionBehavior", databaseCapability.getExplainAnalyzeTransactionBehavior());
+        return result;
     }
 }

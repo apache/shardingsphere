@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
-import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

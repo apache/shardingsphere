@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

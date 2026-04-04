@@ -22,9 +22,12 @@ import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 
 import java.util.Map;
 import java.util.Optional;
@@ -64,10 +67,10 @@ public final class MCPToolPayloadResolver {
     private MCPToolPayloadResult resolveGetCapabilities(final Map<String, Object> arguments) {
         String database = toolCatalog.getCapabilityDatabase(arguments);
         if (database.isEmpty()) {
-            return MCPToolPayloadResult.success(runtimeContext.getCapabilityBuilder().buildServiceCapability().toPayload());
+            return MCPToolPayloadResult.success(new MCPServiceCapabilityResponse(runtimeContext.getCapabilityBuilder().buildServiceCapability()).toPayload());
         }
         Optional<DatabaseCapability> capability = runtimeContext.getCapabilityBuilder().buildDatabaseCapability(database);
-        return capability.map(optional -> MCPToolPayloadResult.success(optional.toPayload()))
+        return capability.map(optional -> MCPToolPayloadResult.success(new MCPDatabaseCapabilityResponse(optional).toPayload()))
                 .orElseGet(() -> error(MCPErrorCode.NOT_FOUND, "Database capability does not exist."));
     }
     
@@ -91,6 +94,6 @@ public final class MCPToolPayloadResolver {
     }
     
     private MCPToolPayloadResult error(final MCPErrorCode errorCode, final String message) {
-        return MCPToolPayloadResult.error(new MCPErrorPayload(errorCode, message), new MCPErrorPayload(errorCode, message).toPayload());
+        return MCPToolPayloadResult.error(new MCPError(errorCode, message), new MCPErrorResponse(errorCode, message).toPayload());
     }
 }

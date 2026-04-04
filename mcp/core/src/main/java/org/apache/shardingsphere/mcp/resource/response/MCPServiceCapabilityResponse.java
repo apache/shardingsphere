@@ -32,6 +32,8 @@ public final class MCPServiceCapabilityResponse implements MCPResourceResponse {
     
     @Override
     public Map<String, Object> toPayload() {
-        return serviceCapability.toPayload();
+        return Map.of("supportedResources", serviceCapability.getSupportedResources(), 
+                "supportedTools", serviceCapability.getSupportedTools(),
+                "supportedStatementClasses", serviceCapability.getSupportedStatementClasses());
     }
 }

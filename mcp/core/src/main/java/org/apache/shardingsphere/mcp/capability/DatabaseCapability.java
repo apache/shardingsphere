@@ -20,10 +20,7 @@ package org.apache.shardingsphere.mcp.capability;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.protocol.MCPPayload;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -31,7 +28,7 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseCapability implements MCPPayload {
+public final class DatabaseCapability {
     
     private final String database;
     
@@ -68,28 +65,4 @@ public final class DatabaseCapability implements MCPPayload {
     private final ResultBehavior explainAnalyzeResultBehavior;
     
     private final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior;
-    
-    @Override
-    public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(32, 1F);
-        result.put("database", database);
-        result.put("databaseType", databaseType);
-        result.put("minSupportedVersion", minSupportedVersion);
-        result.put("supportedObjectTypes", supportedMetadataObjectTypes);
-        result.put("supportedStatementClasses", supportedStatementClasses);
-        result.put("supportsTransactionControl", supportsTransactionControl);
-        result.put("supportsSavepoint", supportsSavepoint);
-        result.put("supportedTransactionStatements", supportedTransactionStatements);
-        result.put("defaultAutocommit", defaultAutocommit);
-        result.put("maxRowsDefault", maxRowsDefault);
-        result.put("maxTimeoutMsDefault", maxTimeoutMsDefault);
-        result.put("defaultSchemaSemantics", defaultSchemaSemantics);
-        result.put("supportsCrossSchemaSql", supportsCrossSchemaSql);
-        result.put("supportsExplainAnalyze", supportsExplainAnalyze);
-        result.put("ddlTransactionBehavior", ddlTransactionBehavior);
-        result.put("dclTransactionBehavior", dclTransactionBehavior);
-        result.put("explainAnalyzeResultBehavior", explainAnalyzeResultBehavior);
-        result.put("explainAnalyzeTransactionBehavior", explainAnalyzeTransactionBehavior);
-        return result;
-    }
 }

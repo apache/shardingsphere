@@ -20,7 +20,9 @@ package org.apache.shardingsphere.mcp.protocol;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorPayload.MCPErrorCode;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -34,9 +36,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ExecuteQueryResponse implements MCPPayload {
-    
-    private static final MCPErrorPayload ABSENT_ERROR_DETAIL = new MCPErrorPayload(MCPErrorCode.INVALID_REQUEST, "");
+public final class ExecuteQueryResponse implements MCPResourceResponse {
     
     private final ExecuteQueryResultKind resultKind;
     
@@ -57,7 +57,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
     private final boolean successful;
     
     @Getter(AccessLevel.NONE)
-    private final MCPErrorPayload error;
+    private final MCPError error;
     
     /**
      * Create a result-set response.
@@ -68,7 +68,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
      * @return result-set response
      */
     public static ExecuteQueryResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, true, ABSENT_ERROR_DETAIL);
+        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated, true, new MCPError(MCPErrorCode.INVALID_REQUEST, ""));
     }
     
     /**
@@ -80,7 +80,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
      */
     public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows,
-                statementType, "OK", "", false, true, ABSENT_ERROR_DETAIL);
+                statementType, "OK", "", false, true, new MCPError(MCPErrorCode.INVALID_REQUEST, ""));
     }
     
     /**
@@ -92,7 +92,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
      */
     public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                statementType, "OK", message, false, true, ABSENT_ERROR_DETAIL);
+                statementType, "OK", message, false, true, new MCPError(MCPErrorCode.INVALID_REQUEST, ""));
     }
     
     /**
@@ -103,9 +103,8 @@ public final class ExecuteQueryResponse implements MCPPayload {
      * @return error response
      */
     public static ExecuteQueryResponse error(final MCPErrorCode errorCode, final String message) {
-        MCPErrorPayload errorPayload = new MCPErrorPayload(errorCode, message);
         return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0,
-                "ERROR", "ERROR", errorPayload.getMessage(), false, false, errorPayload);
+                "ERROR", "ERROR", message, false, false, new MCPError(errorCode, message));
     }
     
     /**
@@ -113,7 +112,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
      *
      * @return error
      */
-    public Optional<MCPErrorPayload> getError() {
+    public Optional<MCPError> getError() {
         return successful ? Optional.empty() : Optional.of(error);
     }
     
@@ -136,7 +135,7 @@ public final class ExecuteQueryResponse implements MCPPayload {
             result.put("message", message);
         }
         result.put("truncated", truncated);
-        getError().ifPresent(error -> result.put("error", error.toPayload()));
+        getError().ifPresent(error -> result.put("error", new MCPErrorResponse(error.getCode(), error.getMessage()).toPayload()));
         return result;
     }
 }
