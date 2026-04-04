@@ -22,8 +22,9 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPProtocolErrorConverter;
 import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
-import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResult;
 
 import java.util.Collections;
 import java.util.Map;
@@ -36,8 +37,15 @@ final class MCPToolCallHandler {
     
     McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
-        MCPToolPayloadResult payloadResult = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
-        return CallToolResult.builder()
-                .structuredContent(payloadResult.getPayload()).addTextContent(JsonUtils.toJsonString(payloadResult.getPayload())).isError(!payloadResult.isSuccessful()).build();
+        Map<String, Object> payload;
+        boolean isFailed;
+        try {
+            payload = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
+            isFailed = false;
+        } catch (final MCPProtocolException | IllegalArgumentException | IllegalStateException | UnsupportedOperationException ex) {
+            payload = MCPProtocolErrorConverter.toPayload(ex);
+            isFailed = true;
+        }
+        return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isFailed).build();
     }
 }

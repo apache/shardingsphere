@@ -22,7 +22,6 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
-import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -45,7 +44,7 @@ class MCPToolCallHandlerTest {
         McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
         Map<String, Object> payload = Map.of("result_kind", "result_set");
         when(exchange.sessionId()).thenReturn("session-1");
-        when(toolPayloadResolver.resolve("session-1", "execute_query", Map.of("sql", "SELECT 1"))).thenReturn(MCPToolPayloadResult.success(payload));
+        when(toolPayloadResolver.resolve("session-1", "execute_query", Map.of("sql", "SELECT 1"))).thenReturn(payload);
         McpSchema.CallToolResult actual = toolCallHandler.handle(exchange, new McpSchema.CallToolRequest("execute_query", Map.of("sql", "SELECT 1")));
         verify(toolPayloadResolver).resolve("session-1", "execute_query", Map.of("sql", "SELECT 1"));
         assertFalse(actual.isError());
@@ -61,8 +60,7 @@ class MCPToolCallHandlerTest {
         McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
         Map<String, Object> payload = Map.of("error_code", "invalid_request", "message", "Unsupported tool.");
         when(exchange.sessionId()).thenReturn("session-1");
-        when(toolPayloadResolver.resolve("session-1", "unsupported_tool", Map.of()))
-                .thenReturn(MCPToolPayloadResult.error(payload));
+        when(toolPayloadResolver.resolve("session-1", "unsupported_tool", Map.of())).thenReturn(payload);
         McpSchema.CallToolResult actual = toolCallHandler.handle(exchange, new McpSchema.CallToolRequest("unsupported_tool", null));
         verify(toolPayloadResolver).resolve("session-1", "unsupported_tool", Map.of());
         assertTrue(actual.isError());

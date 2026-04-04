@@ -22,12 +22,12 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -36,7 +36,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -46,58 +45,51 @@ class MCPToolPayloadResolverTest {
     
     @Test
     void assertResolveWithUnsupportedTool() {
-        MCPToolPayloadResult actual = createResolver().resolve("session-1", "unsupported_tool", Map.of());
-        assertFalse(actual.isSuccessful());
-        assertThat(actual.getPayload().get("error_code"), is("invalid_request"));
-        assertThat(actual.getPayload().get("message"), is("Unsupported tool."));
+        Map<String, Object> actual = createResolver().resolve("session-1", "unsupported_tool", Map.of());
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("message"), is("Unsupported tool."));
     }
     
     @Test
     void assertResolveServiceCapabilities() {
-        MCPToolPayloadResult actual = createResolver().resolve("session-1", "get_capabilities", Map.of());
-        assertTrue(actual.isSuccessful());
-        assertTrue(((List<?>) actual.getPayload().get("supportedTools")).contains("execute_query"));
+        Map<String, Object> actual = createResolver().resolve("session-1", "get_capabilities", Map.of());
+        assertTrue(((List<?>) actual.get("supportedTools")).contains("execute_query"));
     }
     
     @Test
     void assertResolveDatabaseCapabilitiesWithUnknownDatabase() {
-        MCPToolPayloadResult actual = createResolver().resolve("session-1", "get_capabilities", Map.of("database", "missing_db"));
-        assertFalse(actual.isSuccessful());
-        assertThat(actual.getPayload().get("error_code"), is("not_found"));
-        assertThat(actual.getPayload().get("message"), is("Database capability does not exist."));
+        Map<String, Object> actual = createResolver().resolve("session-1", "get_capabilities", Map.of("database", "missing_db"));
+        assertThat(actual.get("error_code"), is("not_found"));
+        assertThat(actual.get("message"), is("Database capability does not exist."));
     }
     
     @Test
     void assertResolveExecuteQueryWithInvalidRequest() {
-        MCPToolPayloadResult actual = createResolver().resolve("session-1", "execute_query", Map.of("database", "logic_db"));
-        assertFalse(actual.isSuccessful());
-        assertThat(actual.getPayload().get("error_code"), is("invalid_request"));
-        assertThat(actual.getPayload().get("message"), is("Database and sql are required."));
+        Map<String, Object> actual = createResolver().resolve("session-1", "execute_query", Map.of("database", "logic_db"));
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("message"), is("Database and sql are required."));
     }
     
     @Test
     void assertResolveExecuteQuery() {
-        MCPToolPayloadResult actual = createResolver().resolve("session-1", "execute_query",
+        Map<String, Object> actual = createResolver().resolve("session-1", "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "max_rows", 1));
-        assertTrue(actual.isSuccessful());
-        assertThat(actual.getPayload().get("result_kind"), is("result_set"));
-        assertThat(((List<?>) actual.getPayload().get("rows")).size(), is(1));
-        assertTrue((Boolean) actual.getPayload().get("truncated"));
+        assertThat(actual.get("result_kind"), is("result_set"));
+        assertThat(((List<?>) actual.get("rows")).size(), is(1));
+        assertTrue((Boolean) actual.get("truncated"));
     }
     
     @Test
     void assertResolveMetadataTool() {
-        MCPToolPayloadResult actual = createResolver().resolve("session-1", "list_databases", Map.of());
-        assertTrue(actual.isSuccessful());
-        assertThat(((List<?>) actual.getPayload().get("items")).size(), is(2));
+        Map<String, Object> actual = createResolver().resolve("session-1", "list_databases", Map.of());
+        assertThat(((List<?>) actual.get("items")).size(), is(2));
     }
     
     @Test
     void assertResolveMetadataToolWithInvalidRequest() {
-        MCPToolPayloadResult actual = createResolver().resolve("session-1", "list_tables", Map.of("database", "logic_db"));
-        assertFalse(actual.isSuccessful());
-        assertThat(actual.getPayload().get("error_code"), is("invalid_request"));
-        assertThat(actual.getPayload().get("message"), is("Schema is required."));
+        Map<String, Object> actual = createResolver().resolve("session-1", "list_tables", Map.of("database", "logic_db"));
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("message"), is("Schema is required."));
     }
     
     private MCPToolPayloadResolver createResolver() {
