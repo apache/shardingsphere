@@ -38,7 +38,6 @@ public final class DatabaseSchemaTableColumnHandler extends AbstractMetadataReso
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
         String columnName = uriVariables.getVariable("column");
-        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.COLUMN, each -> schemaName.equals(each.getSchema())
-                && "TABLE".equals(each.getParentObjectType()) && tableName.equals(each.getParentObjectName()) && columnName.equals(each.getName()));
+        return queryChildMetadataObject(runtimeContext, databaseName, MetadataObjectType.COLUMN, schemaName, "TABLE", tableName, columnName);
     }
 }

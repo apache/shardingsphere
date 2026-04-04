@@ -38,7 +38,6 @@ public final class DatabaseSchemaTableIndexHandler extends AbstractMetadataResou
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
         String indexName = uriVariables.getVariable("index");
-        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.INDEX, each -> schemaName.equals(each.getSchema())
-                && "TABLE".equals(each.getParentObjectType()) && tableName.equals(each.getParentObjectName()) && indexName.equals(each.getName()));
+        return queryChildMetadataObject(runtimeContext, databaseName, MetadataObjectType.INDEX, schemaName, "TABLE", tableName, indexName);
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.tool;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataObjectQueryCondition;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryResult;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
@@ -48,7 +49,7 @@ public final class MetadataToolDispatcher {
     public ToolDispatchResult dispatch(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ToolRequest toolRequest) {
         switch (toolRequest.getToolName()) {
             case "list_databases":
-                return paginate(metadataQueryService.queryDatabases(databaseMetadataSnapshots, each -> true),
+                return paginate(metadataQueryService.queryDatabases(databaseMetadataSnapshots),
                         toolRequest.getQuery(), toolRequest.getPageSize(), toolRequest.getPageToken());
             case "list_schemas":
                 return paginate(validateAndListMetadata(databaseMetadataSnapshots, toolRequest, MetadataObjectType.SCHEMA, "", false),
@@ -90,10 +91,8 @@ public final class MetadataToolDispatcher {
         if (requireSchema && toolRequest.getSchema().isEmpty()) {
             return MetadataQueryResult.error(MCPErrorCode.INVALID_REQUEST, "Schema is required.");
         }
-        return metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, toolRequest.getDatabase(), objectType,
-                each -> (toolRequest.getSchema().isEmpty() || toolRequest.getSchema().equals(each.getSchema()))
-                        && (parentObjectType.isEmpty() || parentObjectType.equals(each.getParentObjectType()))
-                        && (toolRequest.getObjectName().isEmpty() || toolRequest.getObjectName().equals(each.getParentObjectName())));
+        return queryMetadataObjects(databaseMetadataSnapshots, toolRequest.getDatabase(), objectType,
+                MetadataObjectQueryCondition.custom(toolRequest.getSchema(), "", parentObjectType, toolRequest.getObjectName()));
     }
     
     private ToolDispatchResult searchMetadata(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final ToolRequest toolRequest) {
@@ -102,8 +101,8 @@ public final class MetadataToolDispatcher {
         }
         List<MetadataObject> result = new LinkedList<>();
         if (toolRequest.getDatabase().isEmpty()) {
-            MetadataQueryResult databaseResult = metadataQueryService.queryDatabases(databaseMetadataSnapshots, each -> true);
-            for (MetadataObject each : databaseResult.getMetadataObjects()) {
+            List<MetadataObject> metadataObjects = metadataQueryService.queryDatabases(databaseMetadataSnapshots);
+            for (MetadataObject each : metadataObjects) {
                 result.addAll(readSearchResults(databaseMetadataSnapshots, each.getDatabase(), toolRequest));
             }
         } else {
@@ -116,9 +115,8 @@ public final class MetadataToolDispatcher {
         List<MetadataObject> result = new LinkedList<>();
         for (MetadataObjectType each : getSearchObjectTypes(toolRequest.getObjectTypes())) {
             MetadataQueryResult metadataResult = MetadataObjectType.DATABASE == each
-                    ? metadataQueryService.queryDatabases(databaseMetadataSnapshots, unused -> true)
-                    : metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, databaseName, each,
-                            object -> toolRequest.getSchema().isEmpty() || toolRequest.getSchema().equals(object.getSchema()));
+                    ? MetadataQueryResult.success(metadataQueryService.queryDatabase(databaseMetadataSnapshots, databaseName).map(Collections::singletonList).orElse(Collections.emptyList()))
+                    : queryMetadataObjects(databaseMetadataSnapshots, databaseName, each, toolRequest.getSchema());
             if (!metadataResult.isSuccessful()) {
                 continue;
             }
@@ -151,20 +149,41 @@ public final class MetadataToolDispatcher {
         if (toolRequest.getDatabase().isEmpty() || toolRequest.getSchema().isEmpty() || toolRequest.getObjectName().isEmpty()) {
             return ToolDispatchResult.error(MCPErrorCode.INVALID_REQUEST, "Database, schema, and object name are required.");
         }
-        MetadataQueryResult objectResult = metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, toolRequest.getDatabase(), objectType,
-                each -> toolRequest.getSchema().equals(each.getSchema()) && toolRequest.getObjectName().equals(each.getName()));
+        MetadataQueryResult objectResult = queryMetadataObject(databaseMetadataSnapshots, toolRequest.getDatabase(), objectType,
+                toolRequest.getSchema(), toolRequest.getObjectName());
         if (!objectResult.isSuccessful()) {
             return ToolDispatchResult.fromMetadataResult(objectResult);
         }
         List<MetadataObject> result = new LinkedList<>(objectResult.getMetadataObjects());
-        MetadataQueryResult columnResult = metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, toolRequest.getDatabase(), MetadataObjectType.COLUMN,
-                each -> toolRequest.getSchema().equals(each.getSchema())
-                        && objectType.name().equals(each.getParentObjectType())
-                        && toolRequest.getObjectName().equals(each.getParentObjectName()));
+        MetadataQueryResult columnResult = queryChildMetadataObjects(databaseMetadataSnapshots, toolRequest.getDatabase(),
+                MetadataObjectType.COLUMN, toolRequest.getSchema(), objectType.name(), toolRequest.getObjectName());
         if (columnResult.isSuccessful()) {
             result.addAll(columnResult.getMetadataObjects());
         }
         return ToolDispatchResult.success(result, "");
+    }
+    
+    private MetadataQueryResult queryMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
+                                                     final MetadataObjectType objectType, final String schemaName) {
+        return queryMetadataObjects(databaseMetadataSnapshots, databaseName, objectType, MetadataObjectQueryCondition.schema(schemaName));
+    }
+    
+    private MetadataQueryResult queryMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
+                                                     final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
+        return metadataQueryService.queryMetadataObjects(databaseMetadataSnapshots, databaseName, objectType, queryCondition);
+    }
+    
+    private MetadataQueryResult queryMetadataObject(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
+                                                    final MetadataObjectType objectType, final String schemaName, final String objectName) {
+        return queryMetadataObjects(databaseMetadataSnapshots, databaseName, objectType,
+                MetadataObjectQueryCondition.schemaAndObject(schemaName, objectName));
+    }
+    
+    private MetadataQueryResult queryChildMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
+                                                          final MetadataObjectType objectType, final String schemaName,
+                                                          final String parentObjectType, final String parentObjectName) {
+        return queryMetadataObjects(databaseMetadataSnapshots, databaseName, objectType,
+                MetadataObjectQueryCondition.parent(schemaName, parentObjectType, parentObjectName));
     }
     
     private ToolDispatchResult paginate(final MetadataQueryResult metadataResult, final String query, final int pageSize, final String pageToken) {

@@ -36,6 +36,6 @@ public final class DatabaseSchemaViewsHandler extends AbstractMetadataResourceHa
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
-        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.VIEW, each -> schemaName.equals(each.getSchema()));
+        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.VIEW, schemaName);
     }
 }

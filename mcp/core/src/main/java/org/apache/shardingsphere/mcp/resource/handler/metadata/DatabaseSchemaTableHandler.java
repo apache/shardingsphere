@@ -37,7 +37,6 @@ public final class DatabaseSchemaTableHandler extends AbstractMetadataResourceHa
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
-        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.TABLE,
-                each -> schemaName.equals(each.getSchema()) && tableName.equals(each.getName()));
+        return queryMetadataObject(runtimeContext, databaseName, MetadataObjectType.TABLE, schemaName, tableName);
     }
 }

@@ -37,7 +37,6 @@ public final class DatabaseSchemaViewHandler extends AbstractMetadataResourceHan
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String viewName = uriVariables.getVariable("view");
-        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.VIEW,
-                each -> schemaName.equals(each.getSchema()) && viewName.equals(each.getName()));
+        return queryMetadataObject(runtimeContext, databaseName, MetadataObjectType.VIEW, schemaName, viewName);
     }
 }

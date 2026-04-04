@@ -27,11 +27,11 @@ import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Query normalized metadata snapshots.
@@ -42,17 +42,25 @@ public final class MetadataQueryService {
      * Query databases.
      *
      * @param databaseMetadataSnapshots database metadata snapshots
-     * @param predicate database filter
-     * @return metadata query result
+     * @return metadata objects
      */
-    public MetadataQueryResult queryDatabases(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final Predicate<String> predicate) {
-        List<MetadataObject> result = new LinkedList<>();
-        for (String each : databaseMetadataSnapshots.getDatabaseTypes().keySet()) {
-            if (predicate.test(each)) {
-                result.add(new MetadataObject(each, "", MetadataObjectType.DATABASE, each, "", ""));
-            }
-        }
-        return MetadataQueryResult.success(sortMetadataObjects(result));
+    public List<MetadataObject> queryDatabases(final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+        return sortMetadataObjects(databaseMetadataSnapshots.getDatabaseSnapshots().keySet().stream().map(this::createDatabaseMetadataObject).collect(Collectors.toList()));
+    }
+    
+    /**
+     * Query database.
+     *
+     * @param databaseMetadataSnapshots database metadata snapshots
+     * @param databaseName logical database name
+     * @return metadata object
+     */
+    public Optional<MetadataObject> queryDatabase(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
+        return databaseMetadataSnapshots.findSnapshot(databaseName).isPresent() ? Optional.of(createDatabaseMetadataObject(databaseName)) : Optional.empty();
+    }
+    
+    private MetadataObject createDatabaseMetadataObject(final String databaseName) {
+        return new MetadataObject(databaseName, "", MetadataObjectType.DATABASE, databaseName, "", "");
     }
     
     /**
@@ -61,11 +69,11 @@ public final class MetadataQueryService {
      * @param databaseMetadataSnapshots database metadata snapshots
      * @param databaseName logical database name
      * @param objectType metadata object type
-     * @param predicate metadata object filter
+     * @param queryCondition metadata object query condition
      * @return metadata query result
      */
     public MetadataQueryResult queryMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
-                                                    final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
+                                                    final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
         Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseMetadataSnapshots, databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
             return MetadataQueryResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
@@ -75,7 +83,7 @@ public final class MetadataQueryService {
         }
         List<MetadataObject> result = new LinkedList<>();
         for (MetadataObject each : databaseMetadataSnapshots.getMetadataObjects()) {
-            if (databaseName.equals(each.getDatabase()) && objectType == each.getObjectType() && predicate.test(each)) {
+            if (databaseName.equals(each.getDatabase()) && objectType == each.getObjectType() && queryCondition.matches(each)) {
                 result.add(each);
             }
         }
@@ -83,18 +91,39 @@ public final class MetadataQueryService {
     }
     
     private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
-        DatabaseMetadataSnapshot snapshot = databaseMetadataSnapshots.findSnapshot(databaseName).orElseThrow(() -> new IllegalStateException("Database does not exist."));
-        return DatabaseCapabilityCatalog.find(databaseName, snapshot.getDatabaseType(), snapshot.getDatabaseVersion())
-                .map(DatabaseCapability::getSupportedMetadataObjectTypes).orElseGet(Collections::emptySet);
+        Optional<DatabaseMetadataSnapshot> snapshot = databaseMetadataSnapshots.findSnapshot(databaseName);
+        if (snapshot.isEmpty()) {
+            throw new IllegalStateException("Database does not exist.");
+        }
+        DatabaseMetadataSnapshot databaseMetadataSnapshot = snapshot.get();
+        Optional<DatabaseCapability> databaseCapability =
+                DatabaseCapabilityCatalog.find(databaseName, databaseMetadataSnapshot.getDatabaseType(), databaseMetadataSnapshot.getDatabaseVersion());
+        return databaseCapability.isPresent() ? databaseCapability.get().getSupportedMetadataObjectTypes() : Collections.emptySet();
     }
     
     private List<MetadataObject> sortMetadataObjects(final Collection<MetadataObject> metadataObjects) {
         List<MetadataObject> result = new LinkedList<>(metadataObjects);
-        result.sort(Comparator.comparing(MetadataObject::getDatabase)
-                .thenComparing(MetadataObject::getSchema)
-                .thenComparing(each -> each.getObjectType().name())
-                .thenComparing(MetadataObject::getParentObjectName)
-                .thenComparing(MetadataObject::getName));
+        result.sort(this::compareMetadataObjects);
         return result;
+    }
+    
+    private int compareMetadataObjects(final MetadataObject left, final MetadataObject right) {
+        int compareResult = left.getDatabase().compareTo(right.getDatabase());
+        if (0 != compareResult) {
+            return compareResult;
+        }
+        compareResult = left.getSchema().compareTo(right.getSchema());
+        if (0 != compareResult) {
+            return compareResult;
+        }
+        compareResult = left.getObjectType().name().compareTo(right.getObjectType().name());
+        if (0 != compareResult) {
+            return compareResult;
+        }
+        compareResult = left.getParentObjectName().compareTo(right.getParentObjectName());
+        if (0 != compareResult) {
+            return compareResult;
+        }
+        return left.getName().compareTo(right.getName());
     }
 }

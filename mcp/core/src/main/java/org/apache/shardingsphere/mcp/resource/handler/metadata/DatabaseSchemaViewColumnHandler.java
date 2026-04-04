@@ -38,7 +38,6 @@ public final class DatabaseSchemaViewColumnHandler extends AbstractMetadataResou
         String schemaName = uriVariables.getVariable("schema");
         String viewName = uriVariables.getVariable("view");
         String columnName = uriVariables.getVariable("column");
-        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.COLUMN, each -> schemaName.equals(each.getSchema())
-                && "VIEW".equals(each.getParentObjectType()) && viewName.equals(each.getParentObjectName()) && columnName.equals(each.getName()));
+        return queryChildMetadataObject(runtimeContext, databaseName, MetadataObjectType.COLUMN, schemaName, "VIEW", viewName, columnName);
     }
 }

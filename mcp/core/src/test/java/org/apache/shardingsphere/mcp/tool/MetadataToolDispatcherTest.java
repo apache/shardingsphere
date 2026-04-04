@@ -85,6 +85,17 @@ class MetadataToolDispatcherTest {
     }
     
     @Test
+    void assertDispatchSearchDatabaseObjectsAcrossDatabases() {
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
+        ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(),
+                new ToolRequest("search_metadata", "", "", "", "", "", Set.of(MetadataObjectType.DATABASE), 10, ""));
+        assertTrue(actual.isSuccessful());
+        assertThat(actual.getMetadataObjects().size(), is(3));
+        assertThat(actual.getMetadataObjects().get(0).getName(), is("analytics_db"));
+        assertThat(actual.getMetadataObjects().get(2).getName(), is("warehouse"));
+    }
+    
+    @Test
     void assertDispatchSearchMetadataWithSchemaWithoutDatabase() {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher();
         ToolDispatchResult actual = dispatcher.dispatch(createDatabaseMetadataSnapshots(), new ToolRequest("search_metadata", "", "public", "", "", "order", Set.of(), 10, ""));
