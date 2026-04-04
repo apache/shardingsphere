@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.protocol;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPProtocolErrorConverter;
 import org.junit.jupiter.api.Test;
 
@@ -47,14 +48,14 @@ class MCPProtocolErrorConverterTest {
     
     @Test
     void assertToPayloadWithNotFoundException() {
-        Map<String, Object> actual = MCPProtocolErrorConverter.toPayload(new DatabaseCapabilityNotFoundException());
+        Map<String, Object> actual = new MCPErrorResponse(MCPProtocolErrorConverter.toError(new DatabaseCapabilityNotFoundException())).toPayload();
         assertThat(actual.get("error_code"), is("not_found"));
         assertThat(actual.get("message"), is("Database capability does not exist."));
     }
     
     @Test
     void assertToPayloadWithUnknownException() {
-        Map<String, Object> actual = MCPProtocolErrorConverter.toPayload(new RuntimeException());
+        Map<String, Object> actual = new MCPErrorResponse(MCPProtocolErrorConverter.toError(new RuntimeException())).toPayload();
         assertThat(actual.get("error_code"), is("unavailable"));
         assertThat(actual.get("message"), is("Service is temporarily unavailable."));
     }

@@ -27,7 +27,6 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -71,21 +70,11 @@ public final class MCPProtocolErrorConverter {
         return new MCPError(MCPErrorCode.UNAVAILABLE, toMessage(null == cause ? "" : cause.getMessage(), MCPErrorCode.UNAVAILABLE));
     }
     
-    /**
-     * Convert throwable to MCP error payload.
-     *
-     * @param cause throwable
-     * @return payload
-     */
-    public static Map<String, Object> toPayload(final Throwable cause) {
-        return new MCPErrorResponse(toError(cause)).toPayload();
-    }
-    
     private static String toMessage(final String message, final MCPErrorCode errorCode) {
         String actualMessage = Objects.toString(message, "").trim();
-        if (!actualMessage.isEmpty()) {
-            return actualMessage;
+        if (actualMessage.isEmpty()) {
+            return MCPErrorCode.UNAVAILABLE == errorCode ? "Service is temporarily unavailable." : "MCP operation failed.";
         }
-        return MCPErrorCode.UNAVAILABLE == errorCode ? "Service is temporarily unavailable." : "MCP operation failed.";
+        return actualMessage;
     }
 }
