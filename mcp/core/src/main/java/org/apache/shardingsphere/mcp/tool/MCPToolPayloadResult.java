@@ -32,9 +32,7 @@ public final class MCPToolPayloadResult {
     
     private final boolean successful;
     
-    private final String errorCode;
-    
-    private final String message;
+    private final MCPError error;
     
     private final Map<String, Object> payload;
     
@@ -45,7 +43,7 @@ public final class MCPToolPayloadResult {
      * @return result
      */
     public static MCPToolPayloadResult success(final Map<String, Object> payload) {
-        return new MCPToolPayloadResult(true, "", "", payload);
+        return new MCPToolPayloadResult(true, null, payload);
     }
     
     /**
@@ -56,6 +54,6 @@ public final class MCPToolPayloadResult {
      * @return result
      */
     public static MCPToolPayloadResult error(final MCPError error, final Map<String, Object> payload) {
-        return new MCPToolPayloadResult(false, error.getCode().name(), error.getMessage(), payload);
+        return new MCPToolPayloadResult(false, error, payload);
     }
 }

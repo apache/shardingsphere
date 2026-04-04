@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
@@ -48,7 +49,7 @@ class MCPToolPayloadResolverTest {
     void assertResolveWithUnsupportedTool() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "unsupported_tool", Map.of());
         assertFalse(actual.isSuccessful());
-        assertThat(actual.getErrorCode(), is("INVALID_REQUEST"));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Unsupported tool."));
     }
     
@@ -63,7 +64,7 @@ class MCPToolPayloadResolverTest {
     void assertResolveDatabaseCapabilitiesWithUnknownDatabase() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "get_capabilities", Map.of("database", "missing_db"));
         assertFalse(actual.isSuccessful());
-        assertThat(actual.getErrorCode(), is("NOT_FOUND"));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.NOT_FOUND));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Database capability does not exist."));
     }
     
@@ -71,7 +72,7 @@ class MCPToolPayloadResolverTest {
     void assertResolveExecuteQueryWithInvalidRequest() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "execute_query", Map.of("database", "logic_db"));
         assertFalse(actual.isSuccessful());
-        assertThat(actual.getErrorCode(), is("INVALID_REQUEST"));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Database and sql are required."));
     }
     
@@ -96,7 +97,7 @@ class MCPToolPayloadResolverTest {
     void assertResolveMetadataToolWithInvalidRequest() {
         MCPToolPayloadResult actual = createResolver().resolve("session-1", "list_tables", Map.of("database", "logic_db"));
         assertFalse(actual.isSuccessful());
-        assertThat(actual.getErrorCode(), is("INVALID_REQUEST"));
+        assertThat(actual.getError().getCode(), is(MCPErrorCode.INVALID_REQUEST));
         assertThat(((Map<?, ?>) actual.getPayload()).get("message"), is("Schema is required."));
     }
     

@@ -47,11 +47,8 @@ class MCPToolCallHandlerTest {
         McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
         Map<String, Object> payload = Map.of("result_kind", "result_set");
         when(exchange.sessionId()).thenReturn("session-1");
-        when(toolPayloadResolver.resolve("session-1", "execute_query", Map.of("sql", "SELECT 1")))
-                .thenReturn(MCPToolPayloadResult.success(payload));
-        
+        when(toolPayloadResolver.resolve("session-1", "execute_query", Map.of("sql", "SELECT 1"))).thenReturn(MCPToolPayloadResult.success(payload));
         McpSchema.CallToolResult actual = toolCallHandler.handle(exchange, new McpSchema.CallToolRequest("execute_query", Map.of("sql", "SELECT 1")));
-        
         verify(toolPayloadResolver).resolve("session-1", "execute_query", Map.of("sql", "SELECT 1"));
         assertFalse(actual.isError());
         assertThat(actual.structuredContent(), is(payload));
