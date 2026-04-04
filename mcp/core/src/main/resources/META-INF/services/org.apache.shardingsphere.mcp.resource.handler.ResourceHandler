@@ -16,9 +16,9 @@
 #
 
 org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler
+org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler
-org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemasHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTablesHandler
