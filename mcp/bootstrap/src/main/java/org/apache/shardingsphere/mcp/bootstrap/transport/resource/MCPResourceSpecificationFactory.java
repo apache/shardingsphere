@@ -24,7 +24,7 @@ import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.MCPResourceController;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
+import org.apache.shardingsphere.mcp.resource.ResourceDispatcher;
 
 import java.util.List;
 import java.util.stream.Collectors;

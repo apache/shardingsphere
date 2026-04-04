@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch;
+package org.apache.shardingsphere.mcp.resource.handler;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;

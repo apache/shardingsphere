@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.handler.type;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
+import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema views resource URI.
+ * Handler for database capabilities resource URI.
  */
-public final class DatabaseSchemaViewsHandler implements ResourceHandler {
+public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/views";
+        return "shardingsphere://databases/{database}/capabilities";
     }
     
     @Override
     public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        String databaseName = uriVariables.getVariable("database");
-        String schemaName = uriVariables.getVariable("schema");
-        return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.VIEW, each -> schemaName.equals(each.getSchema()));
+        return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(uriVariables.getVariable("database"))
+                .<MCPResourceResponse>map(MCPDatabaseCapabilityResponse::new)
+                .orElseGet(() -> new MCPErrorResponse(MCPErrorCode.NOT_FOUND, "Database capability does not exist."));
     }
 }

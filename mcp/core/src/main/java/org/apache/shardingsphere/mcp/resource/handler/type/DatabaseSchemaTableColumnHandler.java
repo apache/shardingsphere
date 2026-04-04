@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.handler.type;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.handler.MetadataHandlerUtils;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database resource URI.
+ * Handler for database schema table column resource URI.
  */
-public final class DatabaseHandler implements ResourceHandler {
+public final class DatabaseSchemaTableColumnHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}";
+        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}";
     }
     
     @Override
     public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getVariable("database");
-        return MetadataHandlerUtils.createDatabasesResult(runtimeContext, databaseName::equals);
+        String schemaName = uriVariables.getVariable("schema");
+        String tableName = uriVariables.getVariable("table");
+        String columnName = uriVariables.getVariable("column");
+        return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.COLUMN, each -> schemaName.equals(each.getSchema())
+                && "TABLE".equals(each.getParentObjectType()) && tableName.equals(each.getParentObjectName()) && columnName.equals(each.getName()));
     }
 }

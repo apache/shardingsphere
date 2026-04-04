@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
 
 import java.util.Map;
 

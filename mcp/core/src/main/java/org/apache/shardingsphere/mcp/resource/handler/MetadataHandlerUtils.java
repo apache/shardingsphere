@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.handler;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,16 +37,35 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * Metadata handler utils.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class MetadataHandlerUtils {
+public final class MetadataHandlerUtils {
     
-    static MCPResourceResponse createDatabasesResult(final MCPRuntimeContext runtimeContext, final Predicate<String> predicate) {
+    /**
+     * Create databases result.
+     * 
+     * @param runtimeContext runtime context
+     * @param predicate predicate
+     * @return databases result
+     */
+    public static MCPResourceResponse createDatabasesResult(final MCPRuntimeContext runtimeContext, final Predicate<String> predicate) {
         return createSortedMetadataResult(runtimeContext.getDatabaseMetadataSnapshots().getDatabaseTypes().keySet().stream()
                 .filter(predicate).map(each -> new MetadataObject(each, "", MetadataObjectType.DATABASE, each, "", "")).collect(Collectors.toList()));
     }
     
-    static MCPResourceResponse createMetadataResult(final MCPRuntimeContext runtimeContext, final String databaseName,
-                                                  final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
+    /**
+     * Create metadata result.
+     * 
+     * @param runtimeContext runtime context
+     * @param databaseName database name
+     * @param objectType object type
+     * @param predicate predicate
+     * @return metadata result
+     */
+    public static MCPResourceResponse createMetadataResult(final MCPRuntimeContext runtimeContext, final String databaseName,
+                                                           final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
         Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(runtimeContext, databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
             return new MCPErrorResponse(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");

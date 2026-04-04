@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch;
+package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResp
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

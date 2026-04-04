@@ -15,31 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.handler.type;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.handler.MetadataHandlerUtils;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema table index resource URI.
+ * Handler for database schema view columns resource URI.
  */
-public final class DatabaseSchemaTableIndexHandler implements ResourceHandler {
+public final class DatabaseSchemaViewColumnsHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}";
+        return "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns";
     }
     
     @Override
     public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
-        String tableName = uriVariables.getVariable("table");
-        String indexName = uriVariables.getVariable("index");
-        return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.INDEX, each -> schemaName.equals(each.getSchema())
-                && "TABLE".equals(each.getParentObjectType()) && tableName.equals(each.getParentObjectName()) && indexName.equals(each.getName()));
+        String viewName = uriVariables.getVariable("view");
+        return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.COLUMN,
+                each -> schemaName.equals(each.getSchema()) && "VIEW".equals(each.getParentObjectType()) && viewName.equals(each.getParentObjectName()));
     }
 }

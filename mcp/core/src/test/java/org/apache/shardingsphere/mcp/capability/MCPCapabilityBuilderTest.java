@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.capability;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceDispatcher;
+import org.apache.shardingsphere.mcp.resource.ResourceDispatcher;
 import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.junit.jupiter.api.Test;
 

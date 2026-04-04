@@ -15,30 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.handler.type;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
-import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database capabilities resource URI.
+ * Handler for service capabilities resource URI.
  */
-public final class DatabaseCapabilitiesHandler implements ResourceHandler {
+public final class ServiceCapabilitiesHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/capabilities";
+        return "shardingsphere://capabilities";
     }
     
     @Override
     public MCPResourceResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        return runtimeContext.getCapabilityBuilder().buildDatabaseCapability(uriVariables.getVariable("database"))
-                .<MCPResourceResponse>map(MCPDatabaseCapabilityResponse::new)
-                .orElseGet(() -> new MCPErrorResponse(MCPErrorCode.NOT_FOUND, "Database capability does not exist."));
+        return new MCPServiceCapabilityResponse(runtimeContext.getCapabilityBuilder().buildServiceCapability());
     }
 }

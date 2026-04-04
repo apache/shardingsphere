@@ -15,18 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.protocol.MCPPayloadBuilder;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableColumnHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableColumnsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableIndexHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTableIndexesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaTablesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewColumnHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewColumnsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemaViewsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabaseSchemasHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.DatabasesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.type.ServiceCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 import org.junit.jupiter.api.Test;

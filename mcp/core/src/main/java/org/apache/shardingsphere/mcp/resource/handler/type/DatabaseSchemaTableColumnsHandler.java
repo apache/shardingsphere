@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch.handler;
+package org.apache.shardingsphere.mcp.resource.handler.type;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.resource.handler.MetadataHandlerUtils;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
-import org.apache.shardingsphere.mcp.resource.dispatch.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema table indexes resource URI.
+ * Handler for database schema table columns resource URI.
  */
-public final class DatabaseSchemaTableIndexesHandler implements ResourceHandler {
+public final class DatabaseSchemaTableColumnsHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes";
+        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns";
     }
     
     @Override
@@ -38,7 +39,7 @@ public final class DatabaseSchemaTableIndexesHandler implements ResourceHandler 
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
-        return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.INDEX,
+        return MetadataHandlerUtils.createMetadataResult(runtimeContext, databaseName, MetadataObjectType.COLUMN,
                 each -> schemaName.equals(each.getSchema()) && "TABLE".equals(each.getParentObjectType()) && tableName.equals(each.getParentObjectName()));
     }
 }

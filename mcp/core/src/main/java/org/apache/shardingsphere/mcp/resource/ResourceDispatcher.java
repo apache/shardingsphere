@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.dispatch;
+package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.resource.response.MCPResourceResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
