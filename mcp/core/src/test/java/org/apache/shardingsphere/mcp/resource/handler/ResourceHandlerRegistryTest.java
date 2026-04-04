@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.resource.handler;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.MCPErrorCode;
 import org.apache.shardingsphere.mcp.resource.response.MCPErrorResponse;
@@ -36,14 +35,14 @@ class ResourceHandlerRegistryTest {
     
     @Test
     void assertGetHandlers() {
-        ResourceHandlerRegistry actual = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
+        ResourceHandlerRegistry actual = new ResourceHandlerRegistry();
         
         assertThat(actual.getRegisteredHandlers().size(), is(16));
     }
     
     @Test
     void assertGetSupportedResources() {
-        ResourceHandlerRegistry actual = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
+        ResourceHandlerRegistry actual = new ResourceHandlerRegistry();
         
         assertThat(actual.getSupportedResources().size(), is(16));
         assertThat(actual.getSupportedResources().get(0), is("shardingsphere://capabilities"));
@@ -52,21 +51,21 @@ class ResourceHandlerRegistryTest {
     
     @Test
     void assertCreateRegistryWithDuplicatePattern() {
-        assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
+        assertThrows(IllegalArgumentException.class, () -> ResourceHandlerRegistry.validateRegisteredHandlers(ResourceHandlerRegistry.createRegisteredHandlers(List.of(
                 new TestResourceHandler("shardingsphere://capabilities"),
-                new TestResourceHandler("shardingsphere://capabilities"))));
+                new TestResourceHandler("shardingsphere://capabilities")))));
     }
     
     @Test
     void assertCreateRegistryWithOverlapPattern() {
-        assertThrows(IllegalArgumentException.class, () -> new ResourceHandlerRegistry(List.of(
+        assertThrows(IllegalArgumentException.class, () -> ResourceHandlerRegistry.validateRegisteredHandlers(ResourceHandlerRegistry.createRegisteredHandlers(List.of(
                 new TestResourceHandler("shardingsphere://databases/{database}"),
-                new TestResourceHandler("shardingsphere://databases/default_db"))));
+                new TestResourceHandler("shardingsphere://databases/default_db")))));
     }
     
     @Test
     void assertCreateRegistryWithNoHandlers() {
-        assertThrows(IllegalStateException.class, () -> new ResourceHandlerRegistry(List.of()));
+        assertThrows(IllegalStateException.class, () -> ResourceHandlerRegistry.createRegisteredHandlers(List.of()));
     }
     
     @RequiredArgsConstructor

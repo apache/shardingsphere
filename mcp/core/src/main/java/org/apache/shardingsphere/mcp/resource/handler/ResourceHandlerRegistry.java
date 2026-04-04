@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.resource.handler;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 
 import java.util.ArrayList;
@@ -33,21 +33,20 @@ import java.util.Map.Entry;
 /**
  * Resource handler registry.
  */
-@Getter
 public final class ResourceHandlerRegistry {
     
-    private final Map<MCPUriPattern, ResourceHandler> registeredHandlers;
+    private static final Map<MCPUriPattern, ResourceHandler> REGISTERED_HANDLERS;
     
-    private final List<String> supportedResources;
+    private static final List<String> SUPPORTED_RESOURCES;
     
-    public ResourceHandlerRegistry(final Collection<ResourceHandler> handlers) {
-        Map<MCPUriPattern, ResourceHandler> result = createRegisteredHandlers(handlers);
-        validateRegisteredHandlers(result);
-        registeredHandlers = Collections.unmodifiableMap(result);
-        supportedResources = result.keySet().stream().map(MCPUriPattern::getPattern).toList();
+    static {
+        Map<MCPUriPattern, ResourceHandler> registeredHandlers = createRegisteredHandlers(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
+        validateRegisteredHandlers(registeredHandlers);
+        REGISTERED_HANDLERS = Collections.unmodifiableMap(registeredHandlers);
+        SUPPORTED_RESOURCES = REGISTERED_HANDLERS.keySet().stream().map(MCPUriPattern::getPattern).toList();
     }
     
-    private Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers(final Collection<ResourceHandler> handlers) {
+    static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers(final Collection<ResourceHandler> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, ResourceHandler> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (ResourceHandler each : handlers) {
@@ -58,7 +57,7 @@ public final class ResourceHandlerRegistry {
         return result;
     }
     
-    private void validateRegisteredHandlers(final Map<MCPUriPattern, ResourceHandler> registeredHandlers) {
+    static void validateRegisteredHandlers(final Map<MCPUriPattern, ResourceHandler> registeredHandlers) {
         Map<String, Class<?>> registeredPatterns = new HashMap<>(registeredHandlers.size(), 1F);
         for (Entry<MCPUriPattern, ResourceHandler> entry : registeredHandlers.entrySet()) {
             String pattern = entry.getKey().getPattern();
@@ -77,5 +76,23 @@ public final class ResourceHandlerRegistry {
                                 current.getKey().getPattern(), current.getValue().getClass().getName(), other.getValue().getClass().getName())));
             }
         }
+    }
+    
+    /**
+     * Get registered handlers.
+     *
+     * @return registered handlers
+     */
+    public Map<MCPUriPattern, ResourceHandler> getRegisteredHandlers() {
+        return REGISTERED_HANDLERS;
+    }
+
+    /**
+     * Get supported resources.
+     *
+     * @return supported resources
+     */
+    public List<String> getSupportedResources() {
+        return SUPPORTED_RESOURCES;
     }
 }

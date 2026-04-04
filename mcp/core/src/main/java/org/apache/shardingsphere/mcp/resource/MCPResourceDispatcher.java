@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
@@ -34,11 +33,7 @@ import java.util.Optional;
  */
 public final class MCPResourceDispatcher {
     
-    private final ResourceHandlerRegistry handlerRegistry;
-    
-    public MCPResourceDispatcher() {
-        handlerRegistry = new ResourceHandlerRegistry(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
-    }
+    private final ResourceHandlerRegistry handlerRegistry = new ResourceHandlerRegistry();
     
     /**
      * Get supported resource URI surfaces.
