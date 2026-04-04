@@ -53,9 +53,7 @@ public final class ToolDispatchResult {
     }
     
     static ToolDispatchResult fromMetadataResult(final MetadataQueryResult metadataResult) {
-        return metadataResult.isSuccessful()
-                ? success(metadataResult.getMetadataObjects(), "")
-                : error(metadataResult.getErrorCode().orElse(MCPErrorCode.INVALID_REQUEST), metadataResult.getMessage());
+        return metadataResult.isSuccessful() ? success(metadataResult.getMetadataObjects(), "") : error(metadataResult.getError().getCode(), metadataResult.getError().getMessage());
     }
     
     /**

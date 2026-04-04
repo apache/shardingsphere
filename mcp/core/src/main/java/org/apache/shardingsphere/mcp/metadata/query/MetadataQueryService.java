@@ -38,8 +38,6 @@ import java.util.function.Predicate;
  */
 public final class MetadataQueryService {
     
-    private static final String UNSUPPORTED_INDEX_RESOURCE_MESSAGE = "Index resources are not supported for the current database.";
-    
     /**
      * Query databases.
      *
@@ -70,7 +68,7 @@ public final class MetadataQueryService {
                                                     final MetadataObjectType objectType, final Predicate<MetadataObject> predicate) {
         Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseMetadataSnapshots, databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
-            return MetadataQueryResult.error(MCPErrorCode.UNSUPPORTED, UNSUPPORTED_INDEX_RESOURCE_MESSAGE);
+            return MetadataQueryResult.error(MCPErrorCode.UNSUPPORTED, "Index resources are not supported for the current database.");
         }
         if (!supportedMetadataObjectTypes.contains(objectType)) {
             return MetadataQueryResult.success(Collections.emptyList());

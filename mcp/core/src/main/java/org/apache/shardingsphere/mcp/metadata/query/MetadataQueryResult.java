@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.protocol.MCPError;
 import org.apache.shardingsphere.mcp.protocol.MCPError.MCPErrorCode;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Result for one metadata query.
@@ -38,9 +38,7 @@ public final class MetadataQueryResult {
     
     private final boolean successful;
     
-    private final MCPErrorCode errorCode;
-    
-    private final String message;
+    private final MCPError error;
     
     /**
      * Create a successful metadata query result.
@@ -49,7 +47,7 @@ public final class MetadataQueryResult {
      * @return successful metadata query result
      */
     public static MetadataQueryResult success(final List<MetadataObject> metadataObjects) {
-        return new MetadataQueryResult(metadataObjects, true, MCPErrorCode.INVALID_REQUEST, "");
+        return new MetadataQueryResult(metadataObjects, true, null);
     }
     
     /**
@@ -60,15 +58,15 @@ public final class MetadataQueryResult {
      * @return failed metadata query result
      */
     public static MetadataQueryResult error(final MCPErrorCode errorCode, final String message) {
-        return new MetadataQueryResult(Collections.emptyList(), false, errorCode, message);
+        return new MetadataQueryResult(Collections.emptyList(), false, new MCPError(errorCode, message));
     }
     
     /**
-     * Get the error code when one exists.
+     * Get error.
      *
-     * @return optional error code
+     * @return error
      */
-    public Optional<MCPErrorCode> getErrorCode() {
-        return successful ? Optional.empty() : Optional.of(errorCode);
+    public MCPError getError() {
+        return successful ? new MCPError(MCPErrorCode.INVALID_REQUEST, "") : error;
     }
 }
