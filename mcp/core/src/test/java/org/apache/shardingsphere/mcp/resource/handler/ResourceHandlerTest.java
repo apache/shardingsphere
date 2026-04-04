@@ -96,7 +96,7 @@ class ResourceHandlerTest {
         assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPErrorResponse.class));
         assertThat(actual.toPayload(payloadBuilder).get("error_code"), is("unsupported"));
     }
-
+    
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {
         return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
     }

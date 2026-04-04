@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource;
+package org.apache.shardingsphere.mcp.tool;
 
 import lombok.AccessLevel;
 import lombok.Getter;

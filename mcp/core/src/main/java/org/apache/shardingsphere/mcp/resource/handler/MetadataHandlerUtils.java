@@ -45,7 +45,7 @@ public final class MetadataHandlerUtils {
     
     /**
      * Create databases result.
-     * 
+     *
      * @param runtimeContext runtime context
      * @param predicate predicate
      * @return databases result
@@ -57,7 +57,7 @@ public final class MetadataHandlerUtils {
     
     /**
      * Create metadata result.
-     * 
+     *
      * @param runtimeContext runtime context
      * @param databaseName database name
      * @param objectType object type
