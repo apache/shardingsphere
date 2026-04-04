@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
@@ -35,23 +36,8 @@ final class MCPToolCallHandler {
     
     McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
-        MCPToolPayloadResult result = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
-        return result.isSuccessful() ? successToolResult(result.getPayload()) : errorToolResult(result);
-    }
-    
-    private McpSchema.CallToolResult successToolResult(final Map<String, Object> payload) {
-        return McpSchema.CallToolResult.builder()
-                .structuredContent(payload)
-                .addTextContent(JsonUtils.toJsonString(payload))
-                .isError(Boolean.FALSE)
-                .build();
-    }
-    
-    private McpSchema.CallToolResult errorToolResult(final MCPToolPayloadResult result) {
-        return McpSchema.CallToolResult.builder()
-                .structuredContent(result.getPayload())
-                .addTextContent(JsonUtils.toJsonString(result.getPayload()))
-                .isError(Boolean.TRUE)
-                .build();
+        MCPToolPayloadResult payloadResult = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
+        return CallToolResult.builder()
+                .structuredContent(payloadResult.getPayload()).addTextContent(JsonUtils.toJsonString(payloadResult.getPayload())).isError(!payloadResult.isSuccessful()).build();
     }
 }
