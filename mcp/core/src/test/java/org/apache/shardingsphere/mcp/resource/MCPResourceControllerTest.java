@@ -33,14 +33,14 @@ class MCPResourceControllerTest {
     
     @Test
     void assertHandleWithUnsupportedResourceUri() {
-        Map<String, Object> actual = createController().handle("unsupported://resource");
+        Map<String, Object> actual = createController().handle("unsupported://resource").toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("Unsupported resource URI."));
     }
     
     @Test
     void assertHandleServiceCapabilities() {
-        Map<String, Object> actual = createController().handle("shardingsphere://capabilities");
+        Map<String, Object> actual = createController().handle("shardingsphere://capabilities").toPayload();
         assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://databases/{database}/capabilities"));
         assertTrue(((List<?>) actual.get("supportedTools")).contains("get_capabilities"));
         assertTrue(((Set<?>) actual.get("supportedStatementClasses")).contains(StatementClass.QUERY));
@@ -48,7 +48,7 @@ class MCPResourceControllerTest {
     
     @Test
     void assertHandleDatabaseCapabilities() {
-        Map<String, Object> actual = createController().handle("shardingsphere://databases/logic_db/capabilities");
+        Map<String, Object> actual = createController().handle("shardingsphere://databases/logic_db/capabilities").toPayload();
         assertThat(actual.get("database"), is("logic_db"));
         assertThat(actual.get("databaseType"), is("MySQL"));
         assertTrue((Boolean) actual.get("supportsTransactionControl"));
@@ -56,21 +56,21 @@ class MCPResourceControllerTest {
     
     @Test
     void assertHandleWithUnknownDatabaseCapabilities() {
-        Map<String, Object> actual = createController().handle("shardingsphere://databases/missing_db/capabilities");
+        Map<String, Object> actual = createController().handle("shardingsphere://databases/missing_db/capabilities").toPayload();
         assertThat(actual.get("error_code"), is("not_found"));
         assertThat(actual.get("message"), is("Database capability does not exist."));
     }
     
     @Test
     void assertHandleMetadataItems() {
-        Map<String, Object> actual = createController().handle("shardingsphere://databases/logic_db/schemas/public/tables");
+        Map<String, Object> actual = createController().handle("shardingsphere://databases/logic_db/schemas/public/tables").toPayload();
         assertThat(((List<?>) actual.get("items")).size(), is(2));
         assertThat(((MetadataObject) ((List<?>) actual.get("items")).get(0)).getName(), is("order_items"));
     }
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        Map<String, Object> actual = createController().handle("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes");
+        Map<String, Object> actual = createController().handle("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes").toPayload();
         assertThat(actual.get("error_code"), is("unsupported"));
         assertThat(actual.get("message"), is("Index resources are not supported for the current database."));
     }

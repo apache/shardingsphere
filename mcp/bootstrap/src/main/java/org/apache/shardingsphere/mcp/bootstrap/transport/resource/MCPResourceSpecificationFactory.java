@@ -92,6 +92,6 @@ public final class MCPResourceSpecificationFactory {
     }
     
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
-        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(controller.handle(request.uri())))));
+        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(controller.handle(request.uri()).toPayload()))));
     }
 }

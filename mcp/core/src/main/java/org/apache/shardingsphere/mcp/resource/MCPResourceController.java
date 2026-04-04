@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -44,13 +43,13 @@ public final class MCPResourceController {
      * Handle resource URI.
      *
      * @param resourceUri resource URI
-     * @return payload
+     * @return MCP response
      */
-    public Map<String, Object> handle(final String resourceUri) {
+    public MCPResponse handle(final String resourceUri) {
         try {
-            return dispatch(resourceUri, runtimeContext).orElseThrow(UnsupportedResourceUriException::new).toPayload();
+            return dispatch(resourceUri, runtimeContext).orElseThrow(UnsupportedResourceUriException::new);
         } catch (final Exception ex) {
-            return new MCPErrorResponse(MCPErrorConverter.convert(ex)).toPayload();
+            return new MCPErrorResponse(MCPErrorConverter.convert(ex));
         }
     }
     
