@@ -33,7 +33,7 @@ public final class MCPServiceCapabilityResponse implements MCPResponse {
     
     @Override
     public Map<String, Object> toPayload() {
-        return Map.of("supportedResources", serviceCapability.getSupportedResources(), 
+        return Map.of("supportedResources", serviceCapability.getSupportedResources(),
                 "supportedTools", serviceCapability.getSupportedTools(),
                 "supportedStatementClasses", serviceCapability.getSupportedStatementClasses());
     }

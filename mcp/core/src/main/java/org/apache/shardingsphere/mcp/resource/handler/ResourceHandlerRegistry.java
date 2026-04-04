@@ -46,7 +46,7 @@ public final class ResourceHandlerRegistry {
         validateRegisteredHandlers();
         SUPPORTED_RESOURCES = REGISTERED_HANDLERS.keySet().stream().map(MCPUriPattern::getPattern).toList();
     }
-
+    
     private static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers() {
         Collection<ResourceHandler> handlers = ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class);
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
@@ -88,7 +88,7 @@ public final class ResourceHandlerRegistry {
     public static Map<MCPUriPattern, ResourceHandler> getRegisteredHandlers() {
         return REGISTERED_HANDLERS;
     }
-
+    
     /**
      * Get supported resources.
      *

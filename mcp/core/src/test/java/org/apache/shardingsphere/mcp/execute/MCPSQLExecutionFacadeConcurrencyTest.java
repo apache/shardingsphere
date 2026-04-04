@@ -158,7 +158,8 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()))));
         return new MCPSQLExecutionFacade(
-                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor, mock());
+                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor,
+                mock());
     }
     
     private ExecutionRequest createExecutionRequest(final String sessionId, final String sql) {
