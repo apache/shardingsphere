@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilderSupport;
+import org.apache.shardingsphere.mcp.capability.DatabaseVersionUtil;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
@@ -39,7 +39,7 @@ public final class MySQLDatabaseCapabilityOption implements DatabaseCapabilityOp
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return DatabaseCapabilityBuilderSupport.isVersionAtLeast(databaseVersion, 8, 0, 18);
+        return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
     }
     
     @Override
