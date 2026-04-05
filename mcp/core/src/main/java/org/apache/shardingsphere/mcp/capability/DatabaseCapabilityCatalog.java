@@ -21,9 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 
-import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * MCP database capability catalog.
@@ -40,14 +38,7 @@ public final class DatabaseCapabilityCatalog {
      * @return capability definition when present
      */
     public static Optional<DatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
-        return TypedSPILoader.findService(DatabaseCapabilityBuilder.class, normalizeDatabaseType(databaseType)).map(each -> each.build(databaseName, databaseVersion));
-    }
-    
-    static String normalizeDatabaseType(final String databaseType) {
-        return databaseType.trim().toUpperCase(Locale.ENGLISH);
-    }
-    
-    static Set<String> createSupportedTransactionStatements(final TransactionCapability transactionCapability) {
-        return DatabaseCapabilityBuilderSupport.createSupportedTransactionStatements(transactionCapability);
+        Optional<DatabaseCapabilityOption> databaseCapabilityOption = TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType.trim());
+        return databaseCapabilityOption.map(optional -> new DatabaseCapabilityBuilder().build(databaseName, databaseVersion, optional));
     }
 }

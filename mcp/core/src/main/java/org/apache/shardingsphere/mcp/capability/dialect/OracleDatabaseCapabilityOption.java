@@ -18,25 +18,31 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
- * Database capability builder for ClickHouse.
+ * Database capability option for Oracle.
  */
 @Getter
-public final class ClickHouseDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
+public final class OracleDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
-    private final String databaseType = "ClickHouse";
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
-    private final TransactionCapability transactionCapability = TransactionCapability.NONE;
+    private final boolean indexSupported = true;
     
-    private final boolean indexSupported = false;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean crossSchemaQuerySupported = false;
+    @Override
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return false;
+    }
     
-    private final boolean explainAnalyzeSupported = false;
+    @Override
+    public String getType() {
+        return "Oracle";
+    }
 }

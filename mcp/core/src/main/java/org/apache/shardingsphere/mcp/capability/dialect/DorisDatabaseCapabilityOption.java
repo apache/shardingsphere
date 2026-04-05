@@ -18,25 +18,31 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
- * Database capability builder for PostgreSQL.
+ * Database capability option for Doris.
  */
 @Getter
-public final class PostgreSQLDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
+public final class DorisDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
-    private final String databaseType = "PostgreSQL";
-    
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
     
     private final boolean indexSupported = true;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = true;
+    private final boolean crossSchemaQuerySupported = false;
     
-    private final boolean explainAnalyzeSupported = true;
+    @Override
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "Doris";
+    }
 }

@@ -18,25 +18,31 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
- * Database capability builder for Presto.
+ * Database capability option for SQLServer.
  */
 @Getter
-public final class PrestoDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
+public final class SQLServerDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
-    private final String databaseType = "Presto";
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
-    
-    private final boolean indexSupported = false;
+    private final boolean indexSupported = true;
     
     private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
     private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean explainAnalyzeSupported = true;
+    @Override
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "SQLServer";
+    }
 }

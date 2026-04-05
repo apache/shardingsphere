@@ -18,25 +18,31 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
- * Database capability builder for Doris.
+ * Database capability option for openGauss.
  */
 @Getter
-public final class DorisDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
+public final class OpenGaussDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
-    private final String databaseType = "Doris";
-    
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
     private final boolean indexSupported = true;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = false;
+    private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean explainAnalyzeSupported = true;
+    @Override
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
+    }
 }

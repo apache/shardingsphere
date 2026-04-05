@@ -23,7 +23,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -63,17 +62,6 @@ class DatabaseCapabilityRegistryTest {
         assertTrue(actual.isPresent(), caseName);
         assertThat(actual.get().isSupportsExplainAnalyze(), is(expected));
         assertThat(actual.get().getSupportedStatementClasses().contains(SupportedMCPStatement.EXPLAIN_ANALYZE), is(expected));
-    }
-    
-    @Test
-    void assertNormalizeDatabaseType() {
-        assertThat(DatabaseCapabilityCatalog.normalizeDatabaseType(" mysql "), is("MYSQL"));
-    }
-    
-    @Test
-    void assertCreateSupportedTransactionStatements() {
-        assertThat(DatabaseCapabilityCatalog.createSupportedTransactionStatements(TransactionCapability.LOCAL_WITH_SAVEPOINT),
-                is(Set.of("BEGIN", "START TRANSACTION", "COMMIT", "ROLLBACK", "SAVEPOINT", "ROLLBACK TO SAVEPOINT", "RELEASE SAVEPOINT")));
     }
     
     private static Stream<Arguments> versionAwareExplainAnalyzeCases() {

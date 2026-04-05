@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
- * Database capability builder for SQLServer.
+ * Database capability option for PostgreSQL.
  */
 @Getter
-public final class SQLServerDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
-    
-    private final String databaseType = "SQLServer";
+public final class PostgreSQLDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
@@ -38,5 +36,13 @@ public final class SQLServerDatabaseCapabilityBuilder implements DatabaseCapabil
     
     private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean explainAnalyzeSupported = false;
+    @Override
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

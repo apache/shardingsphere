@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
- * Database capability builder for Oracle.
+ * Database capability option for Firebird.
  */
 @Getter
-public final class OracleDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
-    
-    private final String databaseType = "Oracle";
+public final class FirebirdDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
@@ -38,5 +36,13 @@ public final class OracleDatabaseCapabilityBuilder implements DatabaseCapability
     
     private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean explainAnalyzeSupported = false;
+    @Override
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return false;
+    }
+    
+    @Override
+    public String getType() {
+        return "Firebird";
+    }
 }

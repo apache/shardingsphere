@@ -18,31 +18,31 @@
 package org.apache.shardingsphere.mcp.capability.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilderSupport;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
- * Database capability builder for MySQL.
+ * Database capability option for H2.
  */
 @Getter
-public final class MySQLDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
-    
-    private final String databaseType = "MySQL";
+public final class H2DatabaseCapabilityOption implements DatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
     private final boolean indexSupported = true;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = false;
-    
-    private final boolean explainAnalyzeSupported = false;
+    private final boolean crossSchemaQuerySupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return DatabaseCapabilityBuilderSupport.isVersionAtLeast(databaseVersion, 8, 0, 18);
+        return true;
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
 }
