@@ -54,7 +54,7 @@ public final class MetadataQueryService {
     /**
      * Query database.
      *
-     * @param databaseName logical database name
+     * @param databaseName database name
      * @return metadata object
      */
     public Optional<MetadataObject> queryDatabase(final String databaseName) {
@@ -68,11 +68,11 @@ public final class MetadataQueryService {
     /**
      * Query metadata objects for one logical database.
      *
-     * @param databaseName logical database name
+     * @param databaseName database name
      * @param objectType metadata object type
      * @param queryCondition metadata object query condition
      * @return metadata query result
-     * @throws MCPNotFoundException when the logical database does not exist
+     * @throws MCPNotFoundException when the database does not exist
      * @throws MCPUnsupportedException when the metadata object type is unsupported by the database
      */
     public List<MetadataObject> queryMetadataObjects(final String databaseName, final MetadataObjectType objectType, final MetadataQueryCondition queryCondition) {
