@@ -86,8 +86,7 @@ public final class MetadataQueryCondition {
      * @param objectName object name
      * @return parent and object condition
      */
-    public static MetadataQueryCondition parentAndObject(final String schemaName, final String parentObjectType,
-                                                         final String parentObjectName, final String objectName) {
+    public static MetadataQueryCondition parentAndObject(final String schemaName, final String parentObjectType, final String parentObjectName, final String objectName) {
         return new MetadataQueryCondition(schemaName, objectName, parentObjectType, parentObjectName);
     }
     
@@ -100,14 +99,18 @@ public final class MetadataQueryCondition {
      * @param parentObjectName parent object name
      * @return custom condition
      */
-    public static MetadataQueryCondition custom(final String schemaName, final String objectName,
-                                                final String parentObjectType, final String parentObjectName) {
+    public static MetadataQueryCondition custom(final String schemaName, final String objectName, final String parentObjectType, final String parentObjectName) {
         return new MetadataQueryCondition(schemaName, objectName, parentObjectType, parentObjectName);
     }
     
-    boolean matches(final MetadataObject metadataObject) {
-        return matchesSchema(metadataObject) && matchesObjectName(metadataObject)
-                && matchesParentObjectType(metadataObject) && matchesParentObjectName(metadataObject);
+    /**
+     * Whether matches.
+     * 
+     * @param metadataObject metadata object
+     * @return matches or not
+     */
+    public boolean matches(final MetadataObject metadataObject) {
+        return matchesSchema(metadataObject) && matchesObjectName(metadataObject) && matchesParentObjectType(metadataObject) && matchesParentObjectName(metadataObject);
     }
     
     private boolean matchesSchema(final MetadataObject metadataObject) {
