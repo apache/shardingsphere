@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mcp.metadata.query;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityCatalog;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
+import org.apache.shardingsphere.mcp.capability.provider.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
@@ -107,9 +105,7 @@ public final class MetadataQueryService {
     }
     
     private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
-        Optional<DatabaseMetadataSnapshot> snapshot = databaseMetadataSnapshots.findSnapshot(databaseName);
-        ShardingSpherePreconditions.checkState(snapshot.isPresent(), () -> new MCPNotFoundException("Database does not exist."));
-        Optional<DatabaseCapability> databaseCapability = DatabaseCapabilityCatalog.find(databaseName, snapshot.get().getDatabaseType(), snapshot.get().getDatabaseVersion());
+        Optional<DatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots).provide(databaseName);
         return databaseCapability.isPresent() ? databaseCapability.get().getSupportedMetadataObjectTypes() : Collections.emptySet();
     }
     
