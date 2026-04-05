@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.metadata.query.MetadataObjectQueryCondition;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryCondition;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
@@ -43,7 +43,7 @@ public final class ViewColumnHandler implements ResourceHandler {
         String schemaName = uriVariables.getVariable("schema");
         String viewName = uriVariables.getVariable("view");
         String columnName = uriVariables.getVariable("column");
-        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parentAndObject(schemaName, "VIEW", viewName, columnName);
+        MetadataQueryCondition queryCondition = MetadataQueryCondition.parentAndObject(schemaName, "VIEW", viewName, columnName);
         return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
     }
 }

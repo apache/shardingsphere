@@ -52,7 +52,7 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryMetadataObjectsBySchemaAndName() {
-        List<MetadataObject> actual = metadataQueryService.queryMetadataObjects("logic_db", MetadataObjectType.TABLE, MetadataObjectQueryCondition.schemaAndObject("public", "orders"));
+        List<MetadataObject> actual = metadataQueryService.queryMetadataObjects("logic_db", MetadataObjectType.TABLE, MetadataQueryCondition.schemaAndObject("public", "orders"));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getName(), is("orders"));
     }
@@ -60,7 +60,7 @@ class MetadataQueryServiceTest {
     @Test
     void assertQueryMetadataObjectsByParentAndName() {
         List<MetadataObject> actual = metadataQueryService.queryMetadataObjects(
-                "logic_db", MetadataObjectType.COLUMN, MetadataObjectQueryCondition.parentAndObject("public", "TABLE", "orders", "order_id"));
+                "logic_db", MetadataObjectType.COLUMN, MetadataQueryCondition.parentAndObject("public", "TABLE", "orders", "order_id"));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getName(), is("order_id"));
     }
@@ -68,7 +68,7 @@ class MetadataQueryServiceTest {
     @Test
     void assertQueryMetadataObjectsWithUnsupportedIndexType() {
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> metadataQueryService.queryMetadataObjects(
-                "warehouse", MetadataObjectType.INDEX, MetadataObjectQueryCondition.parent("warehouse", "TABLE", "facts")));
+                "warehouse", MetadataObjectType.INDEX, MetadataQueryCondition.parent("warehouse", "TABLE", "facts")));
         assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
     }
 }

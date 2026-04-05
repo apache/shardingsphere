@@ -75,7 +75,7 @@ public final class MetadataQueryService {
      * @throws MCPNotFoundException when the logical database does not exist
      * @throws MCPUnsupportedException when the metadata object type is unsupported by the database
      */
-    public List<MetadataObject> queryMetadataObjects(final String databaseName, final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
+    public List<MetadataObject> queryMetadataObjects(final String databaseName, final MetadataObjectType objectType, final MetadataQueryCondition queryCondition) {
         Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
             throw new MCPUnsupportedException("Index resources are not supported for the current database.");

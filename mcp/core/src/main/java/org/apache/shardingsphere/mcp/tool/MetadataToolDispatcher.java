@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.tool;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.metadata.query.MetadataObjectQueryCondition;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryCondition;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -98,7 +98,7 @@ public final class MetadataToolDispatcher {
         if (requireSchema && toolRequest.getSchema().isEmpty()) {
             throw new MCPInvalidRequestException("Schema is required.");
         }
-        return queryMetadataObjects(toolRequest.getDatabase(), objectType, MetadataObjectQueryCondition.custom(toolRequest.getSchema(), "", parentObjectType, toolRequest.getObjectName()));
+        return queryMetadataObjects(toolRequest.getDatabase(), objectType, MetadataQueryCondition.custom(toolRequest.getSchema(), "", parentObjectType, toolRequest.getObjectName()));
     }
     
     private ToolDispatchResult searchMetadata(final ToolRequest toolRequest) {
@@ -163,20 +163,20 @@ public final class MetadataToolDispatcher {
     }
     
     private List<MetadataObject> queryMetadataObjects(final String databaseName, final MetadataObjectType objectType, final String schemaName) {
-        return queryMetadataObjects(databaseName, objectType, MetadataObjectQueryCondition.schema(schemaName));
+        return queryMetadataObjects(databaseName, objectType, MetadataQueryCondition.schema(schemaName));
     }
     
-    private List<MetadataObject> queryMetadataObjects(final String databaseName, final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
+    private List<MetadataObject> queryMetadataObjects(final String databaseName, final MetadataObjectType objectType, final MetadataQueryCondition queryCondition) {
         return metadataQueryService.queryMetadataObjects(databaseName, objectType, queryCondition);
     }
     
     private List<MetadataObject> queryMetadataObject(final String databaseName, final MetadataObjectType objectType, final String schemaName, final String objectName) {
-        return queryMetadataObjects(databaseName, objectType, MetadataObjectQueryCondition.schemaAndObject(schemaName, objectName));
+        return queryMetadataObjects(databaseName, objectType, MetadataQueryCondition.schemaAndObject(schemaName, objectName));
     }
     
     private List<MetadataObject> queryChildMetadataObjects(final String databaseName, 
                                                            final MetadataObjectType objectType, final String schemaName, final String parentObjectType, final String parentObjectName) {
-        return queryMetadataObjects(databaseName, objectType, MetadataObjectQueryCondition.parent(schemaName, parentObjectType, parentObjectName));
+        return queryMetadataObjects(databaseName, objectType, MetadataQueryCondition.parent(schemaName, parentObjectType, parentObjectName));
     }
     
     private ToolDispatchResult paginate(final Collection<MetadataObject> metadataObjects, final String query, final int pageSize, final String pageToken) {

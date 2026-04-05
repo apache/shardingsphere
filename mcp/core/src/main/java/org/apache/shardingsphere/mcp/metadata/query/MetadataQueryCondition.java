@@ -22,10 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 
 /**
- * Metadata object query condition.
+ * Metadata query condition.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MetadataObjectQueryCondition {
+public final class MetadataQueryCondition {
     
     private final String schemaName;
     
@@ -40,8 +40,8 @@ public final class MetadataObjectQueryCondition {
      *
      * @return empty condition
      */
-    public static MetadataObjectQueryCondition empty() {
-        return new MetadataObjectQueryCondition("", "", "", "");
+    public static MetadataQueryCondition empty() {
+        return new MetadataQueryCondition("", "", "", "");
     }
     
     /**
@@ -50,8 +50,8 @@ public final class MetadataObjectQueryCondition {
      * @param schemaName schema name
      * @return schema condition
      */
-    public static MetadataObjectQueryCondition schema(final String schemaName) {
-        return new MetadataObjectQueryCondition(schemaName, "", "", "");
+    public static MetadataQueryCondition schema(final String schemaName) {
+        return new MetadataQueryCondition(schemaName, "", "", "");
     }
     
     /**
@@ -61,8 +61,8 @@ public final class MetadataObjectQueryCondition {
      * @param objectName object name
      * @return schema and object condition
      */
-    public static MetadataObjectQueryCondition schemaAndObject(final String schemaName, final String objectName) {
-        return new MetadataObjectQueryCondition(schemaName, objectName, "", "");
+    public static MetadataQueryCondition schemaAndObject(final String schemaName, final String objectName) {
+        return new MetadataQueryCondition(schemaName, objectName, "", "");
     }
     
     /**
@@ -73,8 +73,8 @@ public final class MetadataObjectQueryCondition {
      * @param parentObjectName parent object name
      * @return parent condition
      */
-    public static MetadataObjectQueryCondition parent(final String schemaName, final String parentObjectType, final String parentObjectName) {
-        return new MetadataObjectQueryCondition(schemaName, "", parentObjectType, parentObjectName);
+    public static MetadataQueryCondition parent(final String schemaName, final String parentObjectType, final String parentObjectName) {
+        return new MetadataQueryCondition(schemaName, "", parentObjectType, parentObjectName);
     }
     
     /**
@@ -86,9 +86,9 @@ public final class MetadataObjectQueryCondition {
      * @param objectName object name
      * @return parent and object condition
      */
-    public static MetadataObjectQueryCondition parentAndObject(final String schemaName, final String parentObjectType,
-                                                               final String parentObjectName, final String objectName) {
-        return new MetadataObjectQueryCondition(schemaName, objectName, parentObjectType, parentObjectName);
+    public static MetadataQueryCondition parentAndObject(final String schemaName, final String parentObjectType,
+                                                         final String parentObjectName, final String objectName) {
+        return new MetadataQueryCondition(schemaName, objectName, parentObjectType, parentObjectName);
     }
     
     /**
@@ -100,9 +100,9 @@ public final class MetadataObjectQueryCondition {
      * @param parentObjectName parent object name
      * @return custom condition
      */
-    public static MetadataObjectQueryCondition custom(final String schemaName, final String objectName,
-                                                      final String parentObjectType, final String parentObjectName) {
-        return new MetadataObjectQueryCondition(schemaName, objectName, parentObjectType, parentObjectName);
+    public static MetadataQueryCondition custom(final String schemaName, final String objectName,
+                                                final String parentObjectType, final String parentObjectName) {
+        return new MetadataQueryCondition(schemaName, objectName, parentObjectType, parentObjectName);
     }
     
     boolean matches(final MetadataObject metadataObject) {
