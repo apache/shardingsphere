@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.metadata.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,17 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Dispatch result for one metadata tool request.
+ * Database metadata.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ToolDispatchResult {
+public final class DatabaseMetadata {
     
-    private final List<?> metadataItems;
+    private final String database;
     
-    private final String nextPageToken;
+    private final String databaseType;
+    
+    private final String databaseVersion;
+    
+    private final List<SchemaMetadata> schemas;
 }

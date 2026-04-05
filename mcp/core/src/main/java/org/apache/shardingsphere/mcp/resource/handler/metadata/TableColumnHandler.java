@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryCondition;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
+
+import java.util.Collections;
 
 /**
  * Handler for table column resource URI.
@@ -43,7 +43,6 @@ public final class TableColumnHandler implements ResourceHandler {
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
         String columnName = uriVariables.getVariable("column");
-        MetadataQueryCondition queryCondition = MetadataQueryCondition.parentAndObject(schemaName, "TABLE", tableName, columnName);
-        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
+        return new MCPMetadataResponse(metadataQueryService.queryTableColumn(databaseName, schemaName, tableName, columnName).map(Collections::singletonList).orElse(Collections.emptyList()));
     }
 }

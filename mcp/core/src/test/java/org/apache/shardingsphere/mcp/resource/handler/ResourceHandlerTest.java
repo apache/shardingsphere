@@ -18,28 +18,33 @@
 package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
+import org.apache.shardingsphere.mcp.metadata.model.ColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.IndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.SchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.TableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.ViewMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemaHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnsHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.TableHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.TablesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnsHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
@@ -47,6 +52,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -82,8 +88,7 @@ class ResourceHandlerTest {
             return;
         }
         assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMetadataResponse.class));
-        assertThat(getMetadataObjects(actualPayload).stream().map(MetadataObject::getName).toList(),
-                is(handlerCase.getExpectedObjectNames()));
+        assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));
     }
     
     @Test
@@ -98,9 +103,39 @@ class ResourceHandlerTest {
         return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
     }
     
+    private List<String> extractMetadataNames(final Map<String, Object> payload) {
+        List<String> result = new LinkedList<>();
+        for (Object each : getMetadataItems(payload)) {
+            if (each instanceof DatabaseMetadata) {
+                result.add(((DatabaseMetadata) each).getDatabase());
+                continue;
+            }
+            if (each instanceof SchemaMetadata) {
+                result.add(((SchemaMetadata) each).getSchema());
+                continue;
+            }
+            if (each instanceof TableMetadata) {
+                result.add(((TableMetadata) each).getTable());
+                continue;
+            }
+            if (each instanceof ViewMetadata) {
+                result.add(((ViewMetadata) each).getView());
+                continue;
+            }
+            if (each instanceof ColumnMetadata) {
+                result.add(((ColumnMetadata) each).getColumn());
+                continue;
+            }
+            if (each instanceof IndexMetadata) {
+                result.add(((IndexMetadata) each).getIndex());
+            }
+        }
+        return result;
+    }
+    
     @SuppressWarnings("unchecked")
-    private List<MetadataObject> getMetadataObjects(final Map<String, Object> payload) {
-        return (List<MetadataObject>) payload.get("items");
+    private List<Object> getMetadataItems(final Map<String, Object> payload) {
+        return (List<Object>) payload.get("items");
     }
     
     private static Stream<HandlerCase> handlerCases() {

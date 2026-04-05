@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryCondition;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
@@ -41,7 +39,6 @@ public final class ViewsHandler implements ResourceHandler {
         MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
-        final MetadataQueryCondition queryCondition = MetadataQueryCondition.schema(schemaName);
-        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.VIEW, queryCondition));
+        return new MCPMetadataResponse(metadataQueryService.queryViews(databaseName, schemaName));
     }
 }

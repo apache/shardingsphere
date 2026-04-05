@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.metadata.model.TableMetadata;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -65,7 +65,7 @@ class MCPResourceControllerTest {
     void assertHandleMetadataItems() {
         Map<String, Object> actual = new MCPResourceController(ResourceTestDataFactory.createRuntimeContext()).handle("shardingsphere://databases/logic_db/schemas/public/tables").toPayload();
         assertThat(((List<?>) actual.get("items")).size(), is(2));
-        assertThat(((MetadataObject) ((List<?>) actual.get("items")).get(0)).getName(), is("order_items"));
+        assertThat(((TableMetadata) ((List<?>) actual.get("items")).get(0)).getTable(), is("order_items"));
     }
     
     @Test

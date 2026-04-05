@@ -84,6 +84,6 @@ public final class MCPToolPayloadResolver {
     
     private Map<String, Object> resolveMetadataTool(final String toolName, final Map<String, Object> arguments) {
         ToolDispatchResult result = new MetadataToolDispatcher(runtimeContext.getDatabaseMetadataSnapshots()).dispatch(toolCatalog.createMetadataToolRequest(toolName, arguments));
-        return new MCPMetadataResponse(result.getMetadataObjects(), result.getNextPageToken()).toPayload();
+        return new MCPMetadataResponse(result.getMetadataItems(), result.getNextPageToken()).toPayload();
     }
 }

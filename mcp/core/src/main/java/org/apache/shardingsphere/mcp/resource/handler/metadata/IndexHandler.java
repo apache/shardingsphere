@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryCondition;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
+
+import java.util.Collections;
 
 /**
  * Handler for index resource URI.
@@ -43,7 +43,6 @@ public final class IndexHandler implements ResourceHandler {
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
         String indexName = uriVariables.getVariable("index");
-        MetadataQueryCondition queryCondition = MetadataQueryCondition.parentAndObject(schemaName, "TABLE", tableName, indexName);
-        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.INDEX, queryCondition));
+        return new MCPMetadataResponse(metadataQueryService.queryIndex(databaseName, schemaName, tableName, indexName).map(Collections::singletonList).orElse(Collections.emptyList()));
     }
 }
