@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.dialect;
+package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
  * Database capability option for Hive.

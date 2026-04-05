@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.dialect;
+package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for PostgreSQL.
+ * Database capability option for Firebird.
  */
 @Getter
-public final class PostgreSQLDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class FirebirdDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
@@ -38,11 +38,11 @@ public final class PostgreSQLDatabaseCapabilityOption implements DatabaseCapabil
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return true;
+        return false;
     }
     
     @Override
     public String getType() {
-        return "PostgreSQL";
+        return "Firebird";
     }
 }

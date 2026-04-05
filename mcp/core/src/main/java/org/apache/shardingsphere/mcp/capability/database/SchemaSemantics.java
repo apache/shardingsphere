@@ -15,24 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-import java.util.Set;
+package org.apache.shardingsphere.mcp.capability.database;
 
 /**
- * Service capability.
+ * Default schema semantics exposed by database-level capability.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ServiceCapability {
+public enum SchemaSemantics {
     
-    private final List<String> supportedResources;
-    
-    private final List<String> supportedTools;
-    
-    private final Set<SupportedMCPStatement> supportedStatementClasses;
+    NATIVE_SCHEMA, DATABASE_AS_SCHEMA
 }

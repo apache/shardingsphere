@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.dialect;
+package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Doris.
+ * Database capability option for Presto.
  */
 @Getter
-public final class DorisDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class PrestoDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
     
-    private final boolean indexSupported = true;
+    private final boolean indexSupported = false;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = false;
+    private final boolean crossSchemaQuerySupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
@@ -43,6 +43,6 @@ public final class DorisDatabaseCapabilityOption implements DatabaseCapabilityOp
     
     @Override
     public String getType() {
-        return "Doris";
+        return "Presto";
     }
 }

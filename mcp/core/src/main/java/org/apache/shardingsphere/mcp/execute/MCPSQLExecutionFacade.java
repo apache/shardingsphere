@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.provider.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;

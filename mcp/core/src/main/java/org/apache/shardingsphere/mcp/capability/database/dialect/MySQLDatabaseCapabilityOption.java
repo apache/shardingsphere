@@ -15,34 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.dialect;
+package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseVersionUtil;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Oracle.
+ * Database capability option for MySQL.
  */
 @Getter
-public final class OracleDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class MySQLDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
     private final boolean indexSupported = true;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = true;
+    private final boolean crossSchemaQuerySupported = false;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return false;
+        return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
     }
     
     @Override
     public String getType() {
-        return "Oracle";
+        return "MySQL";
     }
 }

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability;
+package org.apache.shardingsphere.mcp.capability.database;
 
 /**
- * Transaction capability levels exposed by the capability matrix.
+ * Result behavior labels exposed by capability.
  */
-public enum TransactionCapability {
+public enum ResultBehavior {
     
-    NONE, LOCAL, LOCAL_WITH_SAVEPOINT
+    RESULT_SET, STATEMENT_ACK, UNSUPPORTED
 }

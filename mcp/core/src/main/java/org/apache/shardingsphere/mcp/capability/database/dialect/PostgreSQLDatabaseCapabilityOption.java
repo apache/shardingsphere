@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.dialect;
+package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for MariaDB.
+ * Database capability option for PostgreSQL.
  */
 @Getter
-public final class MariaDBDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class PostgreSQLDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
     private final boolean indexSupported = true;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = false;
+    private final boolean crossSchemaQuerySupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return false;
+        return true;
     }
     
     @Override
     public String getType() {
-        return "MariaDB";
+        return "PostgreSQL";
     }
 }

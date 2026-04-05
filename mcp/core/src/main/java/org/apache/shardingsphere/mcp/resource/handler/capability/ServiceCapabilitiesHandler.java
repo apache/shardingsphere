@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.capability.provider.MCPServiceCapabilityProvider;
+import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;

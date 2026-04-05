@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability;
+package org.apache.shardingsphere.mcp.capability.database;
 
 /**
- * Default schema semantics exposed by database-level capability.
+ * Transaction boundary behavior labels exposed by capability.
  */
-public enum SchemaSemantics {
+public enum TransactionBoundaryBehavior {
     
-    NATIVE_SCHEMA, DATABASE_AS_SCHEMA
+    UNIFORM, NATIVE, UNSUPPORTED
 }

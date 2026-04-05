@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.dialect;
+package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for H2.
+ * Database capability option for ClickHouse.
  */
 @Getter
-public final class H2DatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class ClickHouseDatabaseCapabilityOption implements DatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    private final TransactionCapability transactionCapability = TransactionCapability.NONE;
     
-    private final boolean indexSupported = true;
+    private final boolean indexSupported = false;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = true;
+    private final boolean crossSchemaQuerySupported = false;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return true;
+        return false;
     }
     
     @Override
     public String getType() {
-        return "H2";
+        return "ClickHouse";
     }
 }

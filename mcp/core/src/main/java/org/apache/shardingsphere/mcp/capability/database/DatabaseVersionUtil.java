@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability;
+package org.apache.shardingsphere.mcp.capability.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,16 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.provider;
+package org.apache.shardingsphere.mcp.capability.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.ResultBehavior;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.capability.TransactionBoundaryBehavior;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;

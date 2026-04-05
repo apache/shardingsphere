@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.dialect;
+package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
-import org.apache.shardingsphere.mcp.capability.TransactionCapability;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
+import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Presto.
+ * Database capability option for H2.
  */
 @Getter
-public final class PrestoDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class H2DatabaseCapabilityOption implements DatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
-    private final boolean indexSupported = false;
+    private final boolean indexSupported = true;
     
     private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
@@ -43,6 +43,6 @@ public final class PrestoDatabaseCapabilityOption implements DatabaseCapabilityO
     
     @Override
     public String getType() {
-        return "Presto";
+        return "H2";
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.response;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.ServiceCapability;
+import org.apache.shardingsphere.mcp.capability.service.ServiceCapability;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
 import java.util.Map;

@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.capability.provider;
+package org.apache.shardingsphere.mcp.capability.service;
 
-import org.apache.shardingsphere.mcp.capability.ServiceCapability;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 
+import java.util.List;
 import java.util.Set;
 
 /**
- * MCP service capability provider.
+ * Service capability.
  */
-public final class MCPServiceCapabilityProvider {
+@RequiredArgsConstructor
+@Getter
+public final class ServiceCapability {
     
-    private static final Set<SupportedMCPStatement> SUPPORTED_STATEMENT_TYPES = Set.of(SupportedMCPStatement.values());
+    private final List<String> supportedResources;
     
-    private static final ServiceCapability SERVICE_CAPABILITY = new ServiceCapability(
-            ResourceHandlerRegistry.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_TYPES);
+    private final List<String> supportedTools;
     
-    /**
-     * Provide the service-level capability.
-     *
-     * @return service-level capability
-     */
-    public static ServiceCapability provide() {
-        return SERVICE_CAPABILITY;
-    }
+    private final Set<SupportedMCPStatement> supportedStatementClasses;
 }
