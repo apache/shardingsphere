@@ -3,7 +3,7 @@
 **Input**: Design documents from `/Users/zhangliang/IdeaProjects/shardingsphere/specs/012-shardingsphere-mcp-llm-e2e-ci-20260405/`  
 **Prerequisites**: plan.md (required), spec.md (required for user stories), research.md, data-model.md, quickstart.md, contracts/llm-e2e-acceptance-contract.md
 
-**Tests**: Include dedicated helper tests, one model-driven smoke test, and one workflow-level acceptance path.
+**Tests**: Include dedicated helper tests, H2 + MySQL model-driven smoke tests, and one workflow-level acceptance path.
 
 **Organization**: Tasks are grouped by user story so the model-driven smoke path,
 the deterministic assertion layer, and the CI workflow can be reviewed independently.
@@ -34,11 +34,12 @@ the deterministic assertion layer, and the CI workflow can be reviewed independe
 **CRITICAL**: No model smoke test should land before the scenario, model profile,
 artifact bundle, and trace model exist.
 
-- [ ] T007 Add scenario/profile loading in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLME2EConfiguration.java`
-- [ ] T008 [P] Add the artifact model in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLME2EArtifactBundle.java`
-- [ ] T009 [P] Add the final-answer model in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLMStructuredAnswer.java`
-- [ ] T010 [P] Add tool-trace modeling in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/MCPToolTraceRecord.java`
-- [ ] T011 [P] Add dedicated configuration tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLME2EConfigurationTest.java`
+- [X] T007 Add scenario/profile loading in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLME2EConfiguration.java`
+- [X] T008 [P] Add the artifact model in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLME2EArtifactBundle.java`
+- [X] T009 [P] Add the final-answer model in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMStructuredAnswer.java`
+- [X] T010 [P] Add tool-trace modeling in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/MCPToolTraceRecord.java`
+- [X] T011 [P] Add dedicated configuration tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLME2EConfigurationTest.java`
+- [X] T011A [P] Add MySQL runtime support in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/MySQLRuntimeTestSupport.java`
 
 **Checkpoint**: The repo has shared scenario, profile, trace, and artifact models that are independent of the actual model provider.
 
@@ -46,27 +47,29 @@ artifact bundle, and trace model exist.
 
 ## Phase 3: User Story 1 - GitHub Actions 上的真实模型 smoke 能通过 MCP 访问数据库 (Priority: P1)
 
-**Goal**: Add one real model-driven smoke scenario that proves MCP discovery and read-only query execution against the packaged demo runtime.
+**Goal**: Add H2 + MySQL real model-driven smoke scenarios that prove MCP discovery and read-only query execution against real JDBC-backed runtimes.
 
-**Independent Test**: `ProductionLLMSmokeE2ETest` runs against a local model service and packaged MCP distribution,
-and passes only when the model actually uses discovery plus `execute_query`.
+**Independent Test**: `ProductionLLMH2SmokeE2ETest` and `ProductionLLMMySQLSmokeE2ETest` run against a local Ollama service and real JDBC-backed runtimes,
+and passes only when the model actually uses discovery plus `execute_query` for both H2 and MySQL.
 
 ### Tests for User Story 1
 
-- [ ] T012 [P] [US1] Add model-client helper tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLMChatModelClientTest.java`
-- [ ] T013 [P] [US1] Add conversation-runner tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLMMCPConversationRunnerTest.java`
-- [ ] T014 [P] [US1] Add the real model-driven smoke in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/ProductionLLMSmokeE2ETest.java`
+- [X] T012 [P] [US1] Add model-client helper tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMChatModelClientTest.java`
+- [X] T013 [P] [US1] Add conversation-runner tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMMCPConversationRunnerTest.java`
+- [X] T014 [P] [US1] Add the real model-driven H2 + MySQL smoke in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionLLMH2SmokeE2ETest.java`
+  and `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionLLMMySQLSmokeE2ETest.java`
 
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Add the model-service client in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLMChatModelClient.java`
-- [ ] T016 [P] [US1] Add the MCP conversation loop in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLMMCPConversationRunner.java`
-- [ ] T017 [P] [US1] Add shared packaged-runtime startup support in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/AbstractLLMMCPE2ETest.java`
-- [ ] T018 [P] [US1] Add the canonical smoke prompts in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/resources/llm/minimal-smoke-system-prompt.md`
+- [X] T015 [US1] Add the model-service client in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMChatModelClient.java`
+- [X] T016 [P] [US1] Add the MCP conversation loop in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMMCPConversationRunner.java`
+- [X] T017 [P] [US1] Add shared production-runtime startup support in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/AbstractLLMMCPE2ETest.java`
+- [X] T018 [P] [US1] Add the canonical smoke prompts in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/resources/llm/minimal-smoke-system-prompt.md`
   and `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/resources/llm/minimal-smoke-user-prompt.md`
-- [ ] T019 [P] [US1] Add the expected structured answer fixture in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/resources/llm/expected/minimal-smoke-response.json`
+- [X] T019 [P] [US1] Encode the expected structured answer and smoke tool sequence in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/AbstractLLMMCPE2ETest.java`
+  and `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMStructuredAnswer.java`
 
-**Checkpoint**: The repo can run one real-model smoke scenario proving discovery and read-only query over MCP.
+**Checkpoint**: The repo can run H2 + MySQL real-model smoke scenarios proving discovery and read-only query over MCP.
 
 ---
 
@@ -78,17 +81,18 @@ and passes only when the model actually uses discovery plus `execute_query`.
 
 ### Tests for User Story 2
 
-- [ ] T020 [P] [US2] Add artifact-bundle tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLME2EArtifactBundleTest.java`
-- [ ] T021 [P] [US2] Add final-answer assertion tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLMStructuredAnswerTest.java`
-- [ ] T022 [P] [US2] Extend `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/ProductionLLMSmokeE2ETest.java`
-  with failure classification assertions
+- [X] T020 [P] [US2] Add artifact-writing tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLME2EArtifactWriterTest.java`
+- [X] T021 [P] [US2] Add final-answer assertion tests in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMStructuredAnswerTest.java`
+- [X] T022 [P] [US2] Exercise failure classification through `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMMCPConversationRunnerTest.java`
+  and the production smoke tests
 
 ### Implementation for User Story 2
 
-- [ ] T023 [US2] Add assertion-report writing in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLME2EAssertionReport.java`
-- [ ] T024 [P] [US2] Add artifact writing and isolated run-directory handling in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLME2EArtifactWriter.java`
-- [ ] T025 [P] [US2] Add SQL safety and required-tool validation in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/LLMMCPConversationRunner.java`
-- [ ] T026 [P] [US2] Ensure MCP runtime logs are captured and attached from `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/AbstractLLMMCPE2ETest.java`
+- [X] T023 [US2] Add assertion-report modeling in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLME2EAssertionReport.java`
+- [X] T024 [P] [US2] Add artifact writing and isolated run-directory handling in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLME2EArtifactWriter.java`
+- [X] T025 [P] [US2] Add SQL safety and required-tool validation in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMMCPConversationRunner.java`
+- [X] T026 [P] [US2] Ensure MCP interaction logs are attached from `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLMMCPConversationRunner.java`
+  and `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/AbstractLLMMCPE2ETest.java`
 
 **Checkpoint**: Every LLM-driven failure yields a classified assertion result and a complete artifact bundle.
 
@@ -96,20 +100,20 @@ and passes only when the model actually uses discovery plus `execute_query`.
 
 ## Phase 5: User Story 3 - 资源受控且本地可复现 (Priority: P2)
 
-**Goal**: Add an independent workflow plus local docs so the LLM smoke lane can run without destabilizing the main CI.
+**Goal**: Add an independent workflow plus local docs so the H2 + MySQL LLM smoke lane can run without destabilizing the main CI.
 
-**Independent Test**: The dedicated workflow starts the local model service, warms it up, runs the smoke test, and uploads artifacts; the README quickstart reproduces the same contract locally.
+**Independent Test**: The dedicated workflow starts Ollama, pulls `qwen3:1.7b`, runs the H2 + MySQL smoke tests, and uploads artifacts; the README quickstart reproduces the same contract locally.
 
 ### Tests for User Story 3
 
-- [ ] T027 [P] [US3] Add workflow acceptance assertions by extending `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/ProductionLLMSmokeE2ETest.java`
-  to honor workflow-provided environment variables
+- [X] T027 [P] [US3] Honor workflow-provided environment variables through `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/LLME2EConfiguration.java`
+  and the production smoke tests
 
 ### Implementation for User Story 3
 
-- [ ] T028 [US3] Add the independent GitHub Actions workflow in `/Users/zhangliang/IdeaProjects/shardingsphere/.github/workflows/mcp-llm-e2e.yml`
-- [ ] T029 [P] [US3] Update operator notes in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README.md`
-- [ ] T030 [P] [US3] Update Chinese operator notes in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README_ZH.md`
+- [X] T028 [US3] Add the independent GitHub Actions workflow in `/Users/zhangliang/IdeaProjects/shardingsphere/.github/workflows/mcp-llm-e2e.yml`
+- [X] T029 [P] [US3] Update operator notes in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README.md`
+- [X] T030 [P] [US3] Update Chinese operator notes in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/README_ZH.md`
 
 **Checkpoint**: The LLM smoke lane has its own workflow, local quickstart, and operator-facing reproduction notes.
 
@@ -119,10 +123,10 @@ and passes only when the model actually uses discovery plus `execute_query`.
 
 **Purpose**: Final consistency, style, and acceptance verification.
 
-- [ ] T031 [P] Run targeted helper verification in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/pom.xml`
-- [ ] T032 [P] Run the real model-driven smoke in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/pom.xml`
-- [ ] T033 [P] Run scoped style checks in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/pom.xml`
-- [ ] T034 [P] Reconcile final implementation notes in `/Users/zhangliang/IdeaProjects/shardingsphere/specs/012-shardingsphere-mcp-llm-e2e-ci-20260405/spec.md`
+- [X] T031 [P] Run targeted helper verification in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/pom.xml`
+- [X] T032 [P] Run the real model-driven smoke in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/pom.xml`
+- [X] T033 [P] Run scoped style checks in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/pom.xml`
+- [X] T034 [P] Reconcile final implementation notes in `/Users/zhangliang/IdeaProjects/shardingsphere/specs/012-shardingsphere-mcp-llm-e2e-ci-20260405/spec.md`
 
 ## Dependencies & Execution Order
 
@@ -148,7 +152,7 @@ and passes only when the model actually uses discovery plus `execute_query`.
 
 1. Land scenario/profile/artifact models.
 2. Land the repository-owned model client and conversation runner.
-3. Pass one real-model smoke test against the packaged demo runtime.
+3. Pass the real-model smoke tests against the file-backed H2 runtime and the MySQL Docker runtime.
 4. Add artifact writing and workflow orchestration.
 
 ### Incremental Delivery

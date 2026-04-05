@@ -246,6 +246,26 @@ docker run --rm -p 18088:18088 \
 
 ## 开发参考
 
+- `test/e2e/mcp` 现在也包含一条真实模型驱动的 MCP smoke：
+  - 默认模型栈：`Ollama + qwen3:1.7b`
+  - runtime 覆盖：file-backed H2 runtime，加上一条 Testcontainers 拉起的 MySQL runtime
+  - runtime 形态：测试会在进程内拉起 production bootstrap HTTP runtime
+  - 最终判定：结构化 JSON 和 MCP tool trace
+- 本地复现这条 LLM smoke：
+
+```bash
+docker run -d --rm --name ollama-mcp-llm-e2e -p 11434:11434 ollama/ollama:latest
+docker exec ollama-mcp-llm-e2e ollama pull qwen3:1.7b
+MCP_LLM_E2E_ENABLED=true \
+MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
+MCP_LLM_MODEL=qwen3:1.7b \
+./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true \
+  -Dtest=ProductionLLMH2SmokeE2ETest,ProductionLLMMySQLSmokeE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+- LLM smoke 的 artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。
+- 对应的 GitHub Actions 入口是 `.github/workflows/mcp-llm-e2e.yml`，第一轮按 `workflow_dispatch` 和 nightly schedule 交付，不进 PR gate。
 - `mcp/core`：capability、metadata、session、audit、execute-query 契约、runtime service 聚合，以及 JDBC runtime 配置模型、metadata 发现、`DatabaseRuntime` 装配与 JDBC-backed runtime context factory
 - `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP / STDIO transport、顶层配置加载与生命周期管理
 - `distribution/mcp`：独立打包、启动脚本、配置、Dockerfile

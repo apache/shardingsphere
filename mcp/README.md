@@ -246,6 +246,26 @@ Notes:
 
 ## Development Pointers
 
+- `test/e2e/mcp` also includes a real-model smoke lane for MCP:
+  - default stack: `Ollama + qwen3:1.7b`
+  - runtime coverage: file-backed H2 runtime plus a Testcontainers MySQL runtime
+  - runtime shape: the tests launch the production bootstrap runtime in-process over HTTP
+  - final assertion: structured JSON plus MCP tool trace
+- Local reproduction for the LLM smoke lane:
+
+```bash
+docker run -d --rm --name ollama-mcp-llm-e2e -p 11434:11434 ollama/ollama:latest
+docker exec ollama-mcp-llm-e2e ollama pull qwen3:1.7b
+MCP_LLM_E2E_ENABLED=true \
+MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
+MCP_LLM_MODEL=qwen3:1.7b \
+./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true \
+  -Dtest=ProductionLLMH2SmokeE2ETest,ProductionLLMMySQLSmokeE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+- The LLM smoke artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
+- The dedicated GitHub Actions entry point is `.github/workflows/mcp-llm-e2e.yml`, delivered as `workflow_dispatch` plus nightly schedule instead of a PR gate.
 - `mcp/core`: capability, metadata, session, audit, execute-query contracts, shared runtime service assembly, JDBC runtime configuration, metadata discovery, `DatabaseRuntime` assembly, and the JDBC-backed runtime context factory
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP / STDIO transport, top-level config loading, and lifecycle management
 - `distribution/mcp`: standalone packaging, scripts, config, Dockerfile

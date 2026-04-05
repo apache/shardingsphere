@@ -14,17 +14,19 @@
   - 完全不加模型 E2E，只继续保留 deterministic smoke:
     rejected，因为这正是当前用户指出的能力缺口。
 
-## Decision 2: 第一阶段验收数据库固定使用打包 demo H2 runtime
+## Decision 2: 第一阶段验收数据库固定为 H2 + MySQL 双场景
 
-- **Decision**: 第一阶段 smoke contract 固定绑定发行包自带的 H2 demo runtime，
-  目标表固定为 `orders.public.orders`，只验证只读查询。
+- **Decision**: 第一阶段 smoke contract 同时覆盖：
+  - `H2RuntimeTestSupport` 初始化的 file-backed H2 runtime
+  - 自动拉起并播种的 MySQL Docker runtime
+  两条路径都只验证只读查询。
 - **Rationale**:
-  - 这条路径已经是仓库自带的、真实 JDBC-backed runtime。
-  - 它不依赖外部数据库资源或额外 secret，适合 GitHub-hosted runner。
-  - 与 demo 种子数据绑定后，最终 JSON 可以稳定断言 `total_orders = 2`。
+  - H2 路径仍然是仓库内真实 JDBC-backed runtime，只是更轻量、更适合 CI。
+  - MySQL 路径更接近客户实际数据库环境，用户已经明确要求第一轮就覆盖。
+  - 两条路径都可绑定同一份种子数据，使最终 JSON 稳定断言 `total_orders = 2`。
 - **Alternatives considered**:
-  - 第一阶段直接编排 MySQL/PostgreSQL 容器:
-    rejected，因为成本更高，资源也更重，不利于最小 smoke 先落地。
+  - 只做 H2，把 MySQL 延后:
+    rejected，因为用户已经明确要求 H2 与 MySQL 两条都跑。
   - 继续使用内存 `MetadataCatalog` / `DatabaseRuntime` fixture:
     rejected，因为不能满足“真实数据库访问”的目标。
 
@@ -42,9 +44,10 @@
   - 手工硬编码 `tools/call` 顺序来模拟模型:
     rejected，因为这不是真正的模型驱动 E2E。
 
-## Decision 4: 模型接入采用本地 HTTP chat profile，而不是把 provider 写死在测试逻辑里
+## Decision 4: 模型接入保留抽象，但默认固定为 Ollama + qwen3:1.7b
 
 - **Decision**: runner 通过配置接入本地模型服务，
+  但默认交付栈固定为 `Ollama + qwen3:1.7b`，
   代码只依赖“本地 HTTP chat endpoint + tool-calling-compatible response”这一抽象。
 - **Rationale**:
   - 这样 workflow 可以按资源预算选择最小模型 profile，
@@ -70,9 +73,10 @@
   - 只检查 trace，不检查最终答案:
     rejected，因为不能证明模型是否正确整合了工具结果。
 
-## Decision 6: 第一轮 workflow 以 schedule / manual 为主，不直接做强制 PR gate
+## Decision 6: 第一轮 workflow 固定为 workflow_dispatch + nightly，不进入 PR gate
 
-- **Decision**: 新增独立 workflow，先支持 `workflow_dispatch` 和 `schedule`。
+- **Decision**: 新增独立 workflow，固定支持 `workflow_dispatch` 和 `schedule`，
+  且第一轮不进入 PR gate。
 - **Rationale**:
   - 真实模型 lane 的稳定性需要先在夜间和手动触发中观察。
   - 这样可以先积累 flake 情况和 artifact，再决定是否升级 gate。

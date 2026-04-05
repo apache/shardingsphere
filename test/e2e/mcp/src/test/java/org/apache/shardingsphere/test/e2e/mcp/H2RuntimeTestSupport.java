@@ -110,4 +110,22 @@ public final class H2RuntimeTestSupport {
             return resultSet.getString(1);
         }
     }
+    
+    /**
+     * Query one single integer value.
+     *
+     * @param jdbcUrl JDBC URL
+     * @param sql SQL
+     * @return queried value
+     * @throws SQLException SQL exception
+     */
+    public static int querySingleInt(final String jdbcUrl, final String sql) throws SQLException {
+        try (
+                Connection connection = DriverManager.getConnection(jdbcUrl);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql)) {
+            resultSet.next();
+            return resultSet.getInt(1);
+        }
+    }
 }

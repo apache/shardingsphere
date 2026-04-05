@@ -72,7 +72,7 @@ jobs:
             exit 1
           fi
           test -f "${DISTRIBUTION_HOME}/conf/mcp-stdio.yaml"
-          python - <<'PY'
+          python3 - <<'PY'
           import json
           from pathlib import Path
           server = json.loads(Path("mcp/server.json").read_text())
@@ -82,7 +82,8 @@ jobs:
           assert package["transport"]["type"] == "stdio"
           assert package["environmentVariables"][0]["name"] == "SHARDINGSPHERE_MCP_TRANSPORT"
           PY
-          grep -q 'io.modelcontextprotocol.server.name="io.github.apache/shardingsphere-mcp"' distribution/mcp/Dockerfile
+          grep -q '^ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp$' distribution/mcp/Dockerfile
+          grep -q 'io.modelcontextprotocol.server.name="${MCP_SERVER_NAME}"' distribution/mcp/Dockerfile
       - name: Run JDK 17 Subchain Distribution Smoke
         shell: bash
         run: |

@@ -135,6 +135,10 @@ abstract class AbstractProductionRuntimeE2ETest {
         return tempDir;
     }
     
+    protected final URI getEndpointUri() {
+        return createEndpointUri();
+    }
+    
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
