@@ -27,21 +27,19 @@ import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema table resource URI.
+ * Handler for schemas resource URI.
  */
-public final class DatabaseSchemaTableHandler implements ResourceHandler {
+public final class SchemasHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}";
+        return "shardingsphere://databases/{database}/schemas";
     }
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getVariable("database");
-        String schemaName = uriVariables.getVariable("schema");
-        String tableName = uriVariables.getVariable("table");
-        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.schemaAndObject(schemaName, tableName);
-        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.TABLE, queryCondition));
+        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.empty();
+        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.SCHEMA, queryCondition));
     }
 }

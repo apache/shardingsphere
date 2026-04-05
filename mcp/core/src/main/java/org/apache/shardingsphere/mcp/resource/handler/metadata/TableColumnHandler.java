@@ -27,9 +27,9 @@ import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema table column resource URI.
+ * Handler for table column resource URI.
  */
-public final class DatabaseSchemaTableColumnHandler implements ResourceHandler {
+public final class TableColumnHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {

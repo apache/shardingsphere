@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema view columns resource URI.
+ * Handler for view resource URI.
  */
-public final class DatabaseSchemaViewColumnsHandler implements ResourceHandler {
+public final class ViewHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns";
+        return "shardingsphere://databases/{database}/schemas/{schema}/views/{view}";
     }
     
     @Override
@@ -41,7 +41,8 @@ public final class DatabaseSchemaViewColumnsHandler implements ResourceHandler {
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String viewName = uriVariables.getVariable("view");
-        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "VIEW", viewName);
-        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
+        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.schemaAndObject(schemaName, viewName);
+        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.VIEW, queryCondition));
     }
 }

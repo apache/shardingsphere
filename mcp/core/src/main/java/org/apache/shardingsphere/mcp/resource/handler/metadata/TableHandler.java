@@ -27,13 +27,13 @@ import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema table indexes resource URI.
+ * Handler for table resource URI.
  */
-public final class DatabaseSchemaTableIndexesHandler implements ResourceHandler {
+public final class TableHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes";
+        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}";
     }
     
     @Override
@@ -41,7 +41,7 @@ public final class DatabaseSchemaTableIndexesHandler implements ResourceHandler 
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
-        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "TABLE", tableName);
-        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.INDEX, queryCondition));
+        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.schemaAndObject(schemaName, tableName);
+        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.TABLE, queryCondition));
     }
 }

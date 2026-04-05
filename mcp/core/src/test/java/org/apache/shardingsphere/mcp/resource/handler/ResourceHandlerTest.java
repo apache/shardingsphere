@@ -24,18 +24,18 @@ import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableColumnHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableColumnsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableIndexHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTableIndexesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaTablesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewColumnHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewColumnsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemaViewsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseSchemasHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemaHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.TableHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.TablesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
@@ -88,7 +88,7 @@ class ResourceHandlerTest {
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new DatabaseSchemaTableIndexesHandler().handle(runtimeContext,
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new IndexesHandler().handle(runtimeContext,
                 match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
         assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
@@ -113,34 +113,34 @@ class ResourceHandlerTest {
                         "shardingsphere://databases/logic_db", HandlerResultType.METADATA, "", List.of("logic_db")),
                 new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities",
                         "shardingsphere://databases/logic_db/capabilities", HandlerResultType.DATABASE_CAPABILITY, "logic_db", List.of()),
-                new HandlerCase("database schemas", new DatabaseSchemasHandler(), "shardingsphere://databases/{database}/schemas",
+                new HandlerCase("database schemas", new SchemasHandler(), "shardingsphere://databases/{database}/schemas",
                         "shardingsphere://databases/logic_db/schemas", HandlerResultType.METADATA, "", List.of("public")),
-                new HandlerCase("database schema", new DatabaseSchemaHandler(), "shardingsphere://databases/{database}/schemas/{schema}",
+                new HandlerCase("database schema", new SchemaHandler(), "shardingsphere://databases/{database}/schemas/{schema}",
                         "shardingsphere://databases/logic_db/schemas/public", HandlerResultType.METADATA, "", List.of("public")),
-                new HandlerCase("database schema tables", new DatabaseSchemaTablesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables",
+                new HandlerCase("database schema tables", new TablesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables",
                         "shardingsphere://databases/logic_db/schemas/public/tables", HandlerResultType.METADATA, "", List.of("order_items", "orders")),
-                new HandlerCase("database schema views", new DatabaseSchemaViewsHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views",
+                new HandlerCase("database schema views", new ViewsHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views",
                         "shardingsphere://databases/logic_db/schemas/public/views", HandlerResultType.METADATA, "", List.of("orders_view")),
-                new HandlerCase("database schema table", new DatabaseSchemaTableHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
+                new HandlerCase("database schema table", new TableHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders", HandlerResultType.METADATA, "", List.of("orders")),
-                new HandlerCase("database schema table columns", new DatabaseSchemaTableColumnsHandler(),
+                new HandlerCase("database schema table columns", new TableColumnsHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema table column", new DatabaseSchemaTableColumnHandler(),
+                new HandlerCase("database schema table column", new TableColumnHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema view", new DatabaseSchemaViewHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
+                new HandlerCase("database schema view", new ViewHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view", HandlerResultType.METADATA, "", List.of("orders_view")),
-                new HandlerCase("database schema view columns", new DatabaseSchemaViewColumnsHandler(),
+                new HandlerCase("database schema view columns", new ViewColumnsHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema view column", new DatabaseSchemaViewColumnHandler(),
+                new HandlerCase("database schema view column", new ViewColumnHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema table indexes", new DatabaseSchemaTableIndexesHandler(),
+                new HandlerCase("database schema table indexes", new IndexesHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes", HandlerResultType.METADATA, "", List.of("order_idx")),
-                new HandlerCase("database schema table index", new DatabaseSchemaTableIndexHandler(),
+                new HandlerCase("database schema table index", new IndexHandler(),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")));
     }

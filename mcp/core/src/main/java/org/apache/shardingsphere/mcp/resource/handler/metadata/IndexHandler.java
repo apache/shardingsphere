@@ -27,20 +27,23 @@ import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
- * Handler for database schema views resource URI.
+ * Handler for index resource URI.
  */
-public final class DatabaseSchemaViewsHandler implements ResourceHandler {
+public final class IndexHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/views";
+        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}";
     }
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
-        final MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.schema(schemaName);
-        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.VIEW, queryCondition));
+        String tableName = uriVariables.getVariable("table");
+        String indexName = uriVariables.getVariable("index");
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
+        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parentAndObject(schemaName, "TABLE", tableName, indexName);
+        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.INDEX, queryCondition));
     }
 }
