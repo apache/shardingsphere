@@ -39,6 +39,7 @@ public final class DatabaseCapabilityCatalog {
      */
     public static Optional<DatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
         Optional<DatabaseCapabilityOption> databaseCapabilityOption = TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType.trim());
-        return databaseCapabilityOption.map(optional -> new DatabaseCapabilityBuilder().build(databaseName, databaseVersion, optional));
+        return databaseCapabilityOption.map(optional -> DatabaseCapabilityBuilderSupport.createDefaultCapability(databaseName, optional.getType(), optional.getTransactionCapability(), optional.isIndexSupported(), optional.getDefaultSchemaSemantics(),
+                optional.isCrossSchemaQuerySupported(), optional.isExplainAnalyzeSupported(databaseVersion)));
     }
 }
