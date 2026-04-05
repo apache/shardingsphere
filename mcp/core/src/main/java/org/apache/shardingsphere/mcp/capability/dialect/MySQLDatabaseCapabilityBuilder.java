@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilderSupport;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
@@ -24,14 +26,23 @@ import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 /**
  * Database capability builder for MySQL.
  */
-public final class MySQLDatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class MySQLDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public MySQLDatabaseCapabilityBuilder() {
-        super("MySQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true, SchemaSemantics.DATABASE_AS_SCHEMA, false, false);
-    }
+    private final String databaseType = "MySQL";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    
+    private final boolean indexSupported = true;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = false;
+    
+    private final boolean explainAnalyzeSupported = false;
     
     @Override
-    protected boolean isExplainAnalyzeSupported(final String databaseVersion) {
+    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return DatabaseCapabilityBuilderSupport.isVersionAtLeast(databaseVersion, 8, 0, 18);
     }
 }

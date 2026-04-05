@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
  * Database capability builder for Oracle.
  */
-public final class OracleDatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class OracleDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public OracleDatabaseCapabilityBuilder() {
-        super("Oracle", TransactionCapability.LOCAL_WITH_SAVEPOINT, true, SchemaSemantics.NATIVE_SCHEMA, true, false);
-    }
+    private final String databaseType = "Oracle";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    
+    private final boolean indexSupported = true;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = true;
+    
+    private final boolean explainAnalyzeSupported = false;
 }

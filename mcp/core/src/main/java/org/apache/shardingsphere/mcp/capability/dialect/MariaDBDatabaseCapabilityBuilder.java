@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
  * Database capability builder for MariaDB.
  */
-public final class MariaDBDatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class MariaDBDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public MariaDBDatabaseCapabilityBuilder() {
-        super("MariaDB", TransactionCapability.LOCAL_WITH_SAVEPOINT, true, SchemaSemantics.DATABASE_AS_SCHEMA, false, false);
-    }
+    private final String databaseType = "MariaDB";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    
+    private final boolean indexSupported = true;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = false;
+    
+    private final boolean explainAnalyzeSupported = false;
 }

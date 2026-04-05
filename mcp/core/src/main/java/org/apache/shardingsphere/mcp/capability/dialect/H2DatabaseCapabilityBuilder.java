@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
  * Database capability builder for H2.
  */
-public final class H2DatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class H2DatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public H2DatabaseCapabilityBuilder() {
-        super("H2", TransactionCapability.LOCAL_WITH_SAVEPOINT, true, SchemaSemantics.NATIVE_SCHEMA, true, true);
-    }
+    private final String databaseType = "H2";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    
+    private final boolean indexSupported = true;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = true;
+    
+    private final boolean explainAnalyzeSupported = true;
 }

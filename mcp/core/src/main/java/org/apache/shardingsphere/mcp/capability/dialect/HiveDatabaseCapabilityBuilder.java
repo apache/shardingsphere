@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
  * Database capability builder for Hive.
  */
-public final class HiveDatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class HiveDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public HiveDatabaseCapabilityBuilder() {
-        super("Hive", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, false, false);
-    }
+    private final String databaseType = "Hive";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.NONE;
+    
+    private final boolean indexSupported = false;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = false;
+    
+    private final boolean explainAnalyzeSupported = false;
 }

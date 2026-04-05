@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
  * Database capability builder for SQLServer.
  */
-public final class SQLServerDatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class SQLServerDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public SQLServerDatabaseCapabilityBuilder() {
-        super("SQLServer", TransactionCapability.LOCAL_WITH_SAVEPOINT, true, SchemaSemantics.NATIVE_SCHEMA, true, false);
-    }
+    private final String databaseType = "SQLServer";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    
+    private final boolean indexSupported = true;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = true;
+    
+    private final boolean explainAnalyzeSupported = false;
 }

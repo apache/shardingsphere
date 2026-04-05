@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
  * Database capability builder for PostgreSQL.
  */
-public final class PostgreSQLDatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class PostgreSQLDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public PostgreSQLDatabaseCapabilityBuilder() {
-        super("PostgreSQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true, SchemaSemantics.NATIVE_SCHEMA, true, true);
-    }
+    private final String databaseType = "PostgreSQL";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    
+    private final boolean indexSupported = true;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = true;
+    
+    private final boolean explainAnalyzeSupported = true;
 }

@@ -27,14 +27,72 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 public interface DatabaseCapabilityBuilder extends TypedSPI {
     
     /**
+     * Get database type.
+     *
+     * @return database type
+     */
+    String getDatabaseType();
+    
+    /**
+     * Get transaction capability.
+     *
+     * @return transaction capability
+     */
+    TransactionCapability getTransactionCapability();
+    
+    /**
+     * Judge whether index metadata is supported.
+     *
+     * @return whether index metadata is supported
+     */
+    boolean isIndexSupported();
+    
+    /**
+     * Get default schema semantics.
+     *
+     * @return default schema semantics
+     */
+    SchemaSemantics getDefaultSchemaSemantics();
+    
+    /**
+     * Judge whether cross-schema query is supported.
+     *
+     * @return whether cross-schema query is supported
+     */
+    boolean isCrossSchemaQuerySupported();
+    
+    /**
+     * Judge whether explain analyze is supported.
+     *
+     * @return whether explain analyze is supported
+     */
+    boolean isExplainAnalyzeSupported();
+    
+    /**
+     * Judge whether explain analyze is supported for database version.
+     *
+     * @param databaseVersion database version
+     * @return whether explain analyze is supported
+     */
+    default boolean isExplainAnalyzeSupported(final String databaseVersion) {
+        return isExplainAnalyzeSupported();
+    }
+    
+    /**
      * Build database capability.
      *
      * @param databaseName logical database name
      * @param databaseVersion database version
      * @return database capability
      */
-    DatabaseCapability build(String databaseName, String databaseVersion);
+    default DatabaseCapability build(final String databaseName, final String databaseVersion) {
+        return DatabaseCapabilityBuilderSupport.createDefaultCapability(
+                databaseName, getDatabaseType(), getTransactionCapability(), isIndexSupported(), getDefaultSchemaSemantics(),
+                isCrossSchemaQuerySupported(), isExplainAnalyzeSupported(databaseVersion));
+    }
     
     @Override
-    String getType();
+    default String getType() {
+        return getDatabaseType();
+    }
 }

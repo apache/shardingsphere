@@ -17,15 +17,26 @@
 
 package org.apache.shardingsphere.mcp.capability.dialect;
 
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.capability.DatabaseCapabilityBuilder;
 import org.apache.shardingsphere.mcp.capability.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.TransactionCapability;
 
 /**
  * Database capability builder for Doris.
  */
-public final class DorisDatabaseCapabilityBuilder extends AbstractDatabaseCapabilityBuilder {
+@Getter
+public final class DorisDatabaseCapabilityBuilder implements DatabaseCapabilityBuilder {
     
-    public DorisDatabaseCapabilityBuilder() {
-        super("Doris", TransactionCapability.LOCAL, true, SchemaSemantics.DATABASE_AS_SCHEMA, false, true);
-    }
+    private final String databaseType = "Doris";
+    
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
+    
+    private final boolean indexSupported = true;
+    
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    
+    private final boolean crossSchemaQuerySupported = false;
+    
+    private final boolean explainAnalyzeSupported = true;
 }
