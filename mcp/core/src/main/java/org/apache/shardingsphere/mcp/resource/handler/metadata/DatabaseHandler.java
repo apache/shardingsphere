@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
@@ -26,7 +25,6 @@ import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Handler for database resource URI.
@@ -41,7 +39,7 @@ public final class DatabaseHandler implements ResourceHandler {
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getVariable("database");
-        Optional<MetadataObject> metadataObject = new MetadataQueryService().queryDatabase(runtimeContext.getDatabaseMetadataSnapshots(), databaseName);
-        return new MCPMetadataResponse(metadataObject.map(Collections::singletonList).orElse(Collections.emptyList()));
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
+        return new MCPMetadataResponse(metadataQueryService.queryDatabase(databaseName).map(Collections::singletonList).orElse(Collections.emptyList()));
     }
 }

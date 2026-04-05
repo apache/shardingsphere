@@ -41,7 +41,7 @@ public final class DatabaseSchemaTableIndexesHandler implements ResourceHandler 
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
-        final MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "TABLE", tableName);
-        return new MCPMetadataResponse(new MetadataQueryService().queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, MetadataObjectType.INDEX, queryCondition));
+        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "TABLE", tableName);
+        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.INDEX, queryCondition));
     }
 }

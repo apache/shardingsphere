@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.metadata.query;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
@@ -36,26 +37,27 @@ import java.util.stream.Collectors;
 /**
  * Query normalized metadata snapshots.
  */
+@RequiredArgsConstructor
 public final class MetadataQueryService {
+    
+    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
     
     /**
      * Query databases.
      *
-     * @param databaseMetadataSnapshots database metadata snapshots
      * @return metadata objects
      */
-    public List<MetadataObject> queryDatabases(final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+    public List<MetadataObject> queryDatabases() {
         return sortMetadataObjects(databaseMetadataSnapshots.getDatabaseSnapshots().keySet().stream().map(this::createDatabaseMetadataObject).collect(Collectors.toList()));
     }
     
     /**
      * Query database.
      *
-     * @param databaseMetadataSnapshots database metadata snapshots
      * @param databaseName logical database name
      * @return metadata object
      */
-    public Optional<MetadataObject> queryDatabase(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
+    public Optional<MetadataObject> queryDatabase(final String databaseName) {
         return databaseMetadataSnapshots.findSnapshot(databaseName).isPresent() ? Optional.of(createDatabaseMetadataObject(databaseName)) : Optional.empty();
     }
     
@@ -66,7 +68,6 @@ public final class MetadataQueryService {
     /**
      * Query metadata objects for one logical database.
      *
-     * @param databaseMetadataSnapshots database metadata snapshots
      * @param databaseName logical database name
      * @param objectType metadata object type
      * @param queryCondition metadata object query condition
@@ -74,9 +75,8 @@ public final class MetadataQueryService {
      * @throws MCPNotFoundException when the logical database does not exist
      * @throws MCPUnsupportedException when the metadata object type is unsupported by the database
      */
-    public List<MetadataObject> queryMetadataObjects(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName,
-                                                     final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
-        Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseMetadataSnapshots, databaseName);
+    public List<MetadataObject> queryMetadataObjects(final String databaseName, final MetadataObjectType objectType, final MetadataObjectQueryCondition queryCondition) {
+        Set<MetadataObjectType> supportedMetadataObjectTypes = getSupportedMetadataObjectTypes(databaseName);
         if (MetadataObjectType.INDEX == objectType && !supportedMetadataObjectTypes.contains(MetadataObjectType.INDEX)) {
             throw new MCPUnsupportedException("Index resources are not supported for the current database.");
         }
@@ -95,16 +95,15 @@ public final class MetadataQueryService {
     /**
      * Judge whether the metadata object type is supported for the database.
      *
-     * @param databaseMetadataSnapshots database metadata snapshots
      * @param databaseName database name
      * @param objectType metadata object type
      * @return whether supported or not
      */
-    public boolean isSupportedMetadataObjectType(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName, final MetadataObjectType objectType) {
-        return getSupportedMetadataObjectTypes(databaseMetadataSnapshots, databaseName).contains(objectType);
+    public boolean isSupportedMetadataObjectType(final String databaseName, final MetadataObjectType objectType) {
+        return getSupportedMetadataObjectTypes(databaseName).contains(objectType);
     }
     
-    private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
+    private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final String databaseName) {
         Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots).provide(databaseName);
         return databaseCapability.isPresent() ? databaseCapability.get().getSupportedMetadataObjectTypes() : Collections.emptySet();
     }

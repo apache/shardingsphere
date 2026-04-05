@@ -41,7 +41,7 @@ public final class DatabaseSchemaViewColumnsHandler implements ResourceHandler {
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String viewName = uriVariables.getVariable("view");
-        final MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "VIEW", viewName);
-        return new MCPMetadataResponse(new MetadataQueryService().queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, MetadataObjectType.COLUMN, queryCondition));
+        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "VIEW", viewName);
+        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
     }
 }

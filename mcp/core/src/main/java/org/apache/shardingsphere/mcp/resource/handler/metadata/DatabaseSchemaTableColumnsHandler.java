@@ -41,7 +41,8 @@ public final class DatabaseSchemaTableColumnsHandler implements ResourceHandler 
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
-        final MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "TABLE", tableName);
-        return new MCPMetadataResponse(new MetadataQueryService().queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, MetadataObjectType.COLUMN, queryCondition));
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
+        MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "TABLE", tableName);
+        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
     }
 }

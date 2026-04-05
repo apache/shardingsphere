@@ -36,6 +36,6 @@ public final class DatabasesHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        return new MCPMetadataResponse(new MetadataQueryService().queryDatabases(runtimeContext.getDatabaseMetadataSnapshots()));
+        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryDatabases());
     }
 }
