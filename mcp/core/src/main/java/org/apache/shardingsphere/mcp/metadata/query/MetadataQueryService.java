@@ -20,15 +20,15 @@ package org.apache.shardingsphere.mcp.metadata.query;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.metadata.model.ColumnMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.IndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.metadata.model.SchemaMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.TableMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.ViewMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 
 import java.util.Collection;
@@ -53,12 +53,12 @@ public final class MetadataQueryService {
      *
      * @return database metadata
      */
-    public List<DatabaseMetadata> queryDatabases() {
-        List<DatabaseMetadata> result = new LinkedList<>();
+    public List<MCPDatabaseMetadata> queryDatabases() {
+        List<MCPDatabaseMetadata> result = new LinkedList<>();
         for (Entry<String, DatabaseMetadataSnapshot> entry : databaseMetadataSnapshots.getDatabaseSnapshots().entrySet()) {
             result.add(createDatabaseSummary(entry.getKey(), entry.getValue()));
         }
-        result.sort(Comparator.comparing(DatabaseMetadata::getDatabase));
+        result.sort(Comparator.comparing(MCPDatabaseMetadata::getDatabase));
         return result;
     }
     
@@ -68,7 +68,7 @@ public final class MetadataQueryService {
      * @param databaseName database name
      * @return database metadata
      */
-    public Optional<DatabaseMetadata> queryDatabase(final String databaseName) {
+    public Optional<MCPDatabaseMetadata> queryDatabase(final String databaseName) {
         return databaseMetadataSnapshots.findSnapshot(databaseName).map(optional -> createDatabaseDetail(databaseName, optional));
     }
     
@@ -78,7 +78,7 @@ public final class MetadataQueryService {
      * @param databaseName database name
      * @return schema metadata
      */
-    public List<SchemaMetadata> querySchemas(final String databaseName) {
+    public List<MCPSchemaMetadata> querySchemas(final String databaseName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
             return Collections.emptyList();
         }
@@ -92,7 +92,7 @@ public final class MetadataQueryService {
      * @param schemaName schema name
      * @return schema metadata
      */
-    public Optional<SchemaMetadata> querySchema(final String databaseName, final String schemaName) {
+    public Optional<MCPSchemaMetadata> querySchema(final String databaseName, final String schemaName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
             return Optional.empty();
         }
@@ -106,7 +106,7 @@ public final class MetadataQueryService {
      * @param schemaName schema name
      * @return table metadata
      */
-    public List<TableMetadata> queryTables(final String databaseName, final String schemaName) {
+    public List<MCPTableMetadata> queryTables(final String databaseName, final String schemaName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.TABLE)) {
             return Collections.emptyList();
         }
@@ -121,7 +121,7 @@ public final class MetadataQueryService {
      * @param tableName table name
      * @return table metadata
      */
-    public Optional<TableMetadata> queryTable(final String databaseName, final String schemaName, final String tableName) {
+    public Optional<MCPTableMetadata> queryTable(final String databaseName, final String schemaName, final String tableName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.TABLE)) {
             return Optional.empty();
         }
@@ -135,7 +135,7 @@ public final class MetadataQueryService {
      * @param schemaName schema name
      * @return view metadata
      */
-    public List<ViewMetadata> queryViews(final String databaseName, final String schemaName) {
+    public List<MCPViewMetadata> queryViews(final String databaseName, final String schemaName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.VIEW)) {
             return Collections.emptyList();
         }
@@ -150,7 +150,7 @@ public final class MetadataQueryService {
      * @param viewName view name
      * @return view metadata
      */
-    public Optional<ViewMetadata> queryView(final String databaseName, final String schemaName, final String viewName) {
+    public Optional<MCPViewMetadata> queryView(final String databaseName, final String schemaName, final String viewName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.VIEW)) {
             return Optional.empty();
         }
@@ -165,7 +165,7 @@ public final class MetadataQueryService {
      * @param tableName table name
      * @return column metadata
      */
-    public List<ColumnMetadata> queryTableColumns(final String databaseName, final String schemaName, final String tableName) {
+    public List<MCPColumnMetadata> queryTableColumns(final String databaseName, final String schemaName, final String tableName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
             return Collections.emptyList();
         }
@@ -181,7 +181,7 @@ public final class MetadataQueryService {
      * @param columnName column name
      * @return column metadata
      */
-    public Optional<ColumnMetadata> queryTableColumn(final String databaseName, final String schemaName, final String tableName, final String columnName) {
+    public Optional<MCPColumnMetadata> queryTableColumn(final String databaseName, final String schemaName, final String tableName, final String columnName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
             return Optional.empty();
         }
@@ -196,7 +196,7 @@ public final class MetadataQueryService {
      * @param viewName view name
      * @return column metadata
      */
-    public List<ColumnMetadata> queryViewColumns(final String databaseName, final String schemaName, final String viewName) {
+    public List<MCPColumnMetadata> queryViewColumns(final String databaseName, final String schemaName, final String viewName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
             return Collections.emptyList();
         }
@@ -212,7 +212,7 @@ public final class MetadataQueryService {
      * @param columnName column name
      * @return column metadata
      */
-    public Optional<ColumnMetadata> queryViewColumn(final String databaseName, final String schemaName, final String viewName, final String columnName) {
+    public Optional<MCPColumnMetadata> queryViewColumn(final String databaseName, final String schemaName, final String viewName, final String columnName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
             return Optional.empty();
         }
@@ -227,7 +227,7 @@ public final class MetadataQueryService {
      * @param tableName table name
      * @return index metadata
      */
-    public List<IndexMetadata> queryIndexes(final String databaseName, final String schemaName, final String tableName) {
+    public List<MCPIndexMetadata> queryIndexes(final String databaseName, final String schemaName, final String tableName) {
         assertIndexSupported(databaseName);
         return findTable(databaseName, schemaName, tableName).map(optional -> sortIndexes(optional.getIndexes())).orElse(Collections.emptyList());
     }
@@ -241,7 +241,7 @@ public final class MetadataQueryService {
      * @param indexName index name
      * @return index metadata
      */
-    public Optional<IndexMetadata> queryIndex(final String databaseName, final String schemaName, final String tableName, final String indexName) {
+    public Optional<MCPIndexMetadata> queryIndex(final String databaseName, final String schemaName, final String tableName, final String indexName) {
         assertIndexSupported(databaseName);
         return findIndex(queryIndexes(databaseName, schemaName, tableName), indexName);
     }
@@ -257,12 +257,12 @@ public final class MetadataQueryService {
         return getSupportedMetadataObjectTypes(databaseName).contains(objectType);
     }
     
-    private Optional<SchemaMetadata> findSchema(final String databaseName, final String schemaName) {
+    private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
         Optional<DatabaseMetadataSnapshot> databaseSnapshot = databaseMetadataSnapshots.findSnapshot(databaseName);
         if (databaseSnapshot.isEmpty()) {
             return Optional.empty();
         }
-        for (SchemaMetadata each : databaseSnapshot.get().getSchemas()) {
+        for (MCPSchemaMetadata each : databaseSnapshot.get().getSchemas()) {
             if (schemaName.equals(each.getSchema())) {
                 return Optional.of(each);
             }
@@ -270,12 +270,12 @@ public final class MetadataQueryService {
         return Optional.empty();
     }
     
-    private Optional<TableMetadata> findTable(final String databaseName, final String schemaName, final String tableName) {
-        Optional<SchemaMetadata> schemaMetadata = findSchema(databaseName, schemaName);
+    private Optional<MCPTableMetadata> findTable(final String databaseName, final String schemaName, final String tableName) {
+        Optional<MCPSchemaMetadata> schemaMetadata = findSchema(databaseName, schemaName);
         if (schemaMetadata.isEmpty()) {
             return Optional.empty();
         }
-        for (TableMetadata each : schemaMetadata.get().getTables()) {
+        for (MCPTableMetadata each : schemaMetadata.get().getTables()) {
             if (tableName.equals(each.getTable())) {
                 return Optional.of(each);
             }
@@ -283,12 +283,12 @@ public final class MetadataQueryService {
         return Optional.empty();
     }
     
-    private Optional<ViewMetadata> findView(final String databaseName, final String schemaName, final String viewName) {
-        Optional<SchemaMetadata> schemaMetadata = findSchema(databaseName, schemaName);
+    private Optional<MCPViewMetadata> findView(final String databaseName, final String schemaName, final String viewName) {
+        Optional<MCPSchemaMetadata> schemaMetadata = findSchema(databaseName, schemaName);
         if (schemaMetadata.isEmpty()) {
             return Optional.empty();
         }
-        for (ViewMetadata each : schemaMetadata.get().getViews()) {
+        for (MCPViewMetadata each : schemaMetadata.get().getViews()) {
             if (viewName.equals(each.getView())) {
                 return Optional.of(each);
             }
@@ -296,8 +296,8 @@ public final class MetadataQueryService {
         return Optional.empty();
     }
     
-    private Optional<ColumnMetadata> findColumn(final Collection<ColumnMetadata> columns, final String columnName) {
-        for (ColumnMetadata each : columns) {
+    private Optional<MCPColumnMetadata> findColumn(final Collection<MCPColumnMetadata> columns, final String columnName) {
+        for (MCPColumnMetadata each : columns) {
             if (columnName.equals(each.getColumn())) {
                 return Optional.of(each);
             }
@@ -305,8 +305,8 @@ public final class MetadataQueryService {
         return Optional.empty();
     }
     
-    private Optional<IndexMetadata> findIndex(final Collection<IndexMetadata> indexes, final String indexName) {
-        for (IndexMetadata each : indexes) {
+    private Optional<MCPIndexMetadata> findIndex(final Collection<MCPIndexMetadata> indexes, final String indexName) {
+        for (MCPIndexMetadata each : indexes) {
             if (indexName.equals(each.getIndex())) {
                 return Optional.of(each);
             }
@@ -314,72 +314,72 @@ public final class MetadataQueryService {
         return Optional.empty();
     }
     
-    private DatabaseMetadata createDatabaseSummary(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
-        return new DatabaseMetadata(databaseName, databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), Collections.emptyList());
+    private MCPDatabaseMetadata createDatabaseSummary(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
+        return new MCPDatabaseMetadata(databaseName, databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), Collections.emptyList());
     }
     
-    private DatabaseMetadata createDatabaseDetail(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
-        return new DatabaseMetadata(databaseName, databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), createSchemaDetails(databaseSnapshot.getSchemas()));
+    private MCPDatabaseMetadata createDatabaseDetail(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
+        return new MCPDatabaseMetadata(databaseName, databaseSnapshot.getDatabaseType(), databaseSnapshot.getDatabaseVersion(), createSchemaDetails(databaseSnapshot.getSchemas()));
     }
     
-    private List<SchemaMetadata> createSchemaSummaries(final Collection<SchemaMetadata> schemas) {
-        List<SchemaMetadata> result = new LinkedList<>();
-        for (SchemaMetadata each : schemas) {
-            result.add(new SchemaMetadata(each.getDatabase(), each.getSchema(), Collections.emptyList(), Collections.emptyList()));
+    private List<MCPSchemaMetadata> createSchemaSummaries(final Collection<MCPSchemaMetadata> schemas) {
+        List<MCPSchemaMetadata> result = new LinkedList<>();
+        for (MCPSchemaMetadata each : schemas) {
+            result.add(new MCPSchemaMetadata(each.getDatabase(), each.getSchema(), Collections.emptyList(), Collections.emptyList()));
         }
-        result.sort((left, right) -> left.getSchema().compareTo(right.getSchema()));
+        result.sort(Comparator.comparing(MCPSchemaMetadata::getSchema));
         return result;
     }
     
-    private List<SchemaMetadata> createSchemaDetails(final Collection<SchemaMetadata> schemas) {
-        List<SchemaMetadata> result = new LinkedList<>();
-        for (SchemaMetadata each : schemas) {
+    private List<MCPSchemaMetadata> createSchemaDetails(final Collection<MCPSchemaMetadata> schemas) {
+        List<MCPSchemaMetadata> result = new LinkedList<>();
+        for (MCPSchemaMetadata each : schemas) {
             result.add(createSchemaDetail(each));
         }
-        result.sort((left, right) -> left.getSchema().compareTo(right.getSchema()));
+        result.sort(Comparator.comparing(MCPSchemaMetadata::getSchema));
         return result;
     }
     
-    private SchemaMetadata createSchemaDetail(final SchemaMetadata schemaMetadata) {
-        return new SchemaMetadata(schemaMetadata.getDatabase(), schemaMetadata.getSchema(), createTableSummaries(schemaMetadata.getTables()), createViewSummaries(schemaMetadata.getViews()));
+    private MCPSchemaMetadata createSchemaDetail(final MCPSchemaMetadata schemaMetadata) {
+        return new MCPSchemaMetadata(schemaMetadata.getDatabase(), schemaMetadata.getSchema(), createTableSummaries(schemaMetadata.getTables()), createViewSummaries(schemaMetadata.getViews()));
     }
     
-    private List<TableMetadata> createTableSummaries(final Collection<TableMetadata> tables) {
-        List<TableMetadata> result = new LinkedList<>();
-        for (TableMetadata each : tables) {
-            result.add(new TableMetadata(each.getDatabase(), each.getSchema(), each.getTable(), Collections.emptyList(), Collections.emptyList()));
+    private List<MCPTableMetadata> createTableSummaries(final Collection<MCPTableMetadata> tables) {
+        List<MCPTableMetadata> result = new LinkedList<>();
+        for (MCPTableMetadata each : tables) {
+            result.add(new MCPTableMetadata(each.getDatabase(), each.getSchema(), each.getTable(), Collections.emptyList(), Collections.emptyList()));
         }
-        result.sort((left, right) -> left.getTable().compareTo(right.getTable()));
+        result.sort(Comparator.comparing(MCPTableMetadata::getTable));
         return result;
     }
     
-    private TableMetadata createTableDetail(final TableMetadata tableMetadata) {
-        return new TableMetadata(tableMetadata.getDatabase(), tableMetadata.getSchema(), tableMetadata.getTable(),
+    private MCPTableMetadata createTableDetail(final MCPTableMetadata tableMetadata) {
+        return new MCPTableMetadata(tableMetadata.getDatabase(), tableMetadata.getSchema(), tableMetadata.getTable(),
                 sortColumns(tableMetadata.getColumns()), sortIndexes(tableMetadata.getIndexes()));
     }
     
-    private List<ViewMetadata> createViewSummaries(final Collection<ViewMetadata> views) {
-        List<ViewMetadata> result = new LinkedList<>();
-        for (ViewMetadata each : views) {
-            result.add(new ViewMetadata(each.getDatabase(), each.getSchema(), each.getView(), Collections.emptyList()));
+    private List<MCPViewMetadata> createViewSummaries(final Collection<MCPViewMetadata> views) {
+        List<MCPViewMetadata> result = new LinkedList<>();
+        for (MCPViewMetadata each : views) {
+            result.add(new MCPViewMetadata(each.getDatabase(), each.getSchema(), each.getView(), Collections.emptyList()));
         }
-        result.sort((left, right) -> left.getView().compareTo(right.getView()));
+        result.sort(Comparator.comparing(MCPViewMetadata::getView));
         return result;
     }
     
-    private ViewMetadata createViewDetail(final ViewMetadata viewMetadata) {
-        return new ViewMetadata(viewMetadata.getDatabase(), viewMetadata.getSchema(), viewMetadata.getView(), sortColumns(viewMetadata.getColumns()));
+    private MCPViewMetadata createViewDetail(final MCPViewMetadata viewMetadata) {
+        return new MCPViewMetadata(viewMetadata.getDatabase(), viewMetadata.getSchema(), viewMetadata.getView(), sortColumns(viewMetadata.getColumns()));
     }
     
-    private List<ColumnMetadata> sortColumns(final Collection<ColumnMetadata> columns) {
-        List<ColumnMetadata> result = new LinkedList<>(columns);
-        result.sort((left, right) -> left.getColumn().compareTo(right.getColumn()));
+    private List<MCPColumnMetadata> sortColumns(final Collection<MCPColumnMetadata> columns) {
+        List<MCPColumnMetadata> result = new LinkedList<>(columns);
+        result.sort(Comparator.comparing(MCPColumnMetadata::getColumn));
         return result;
     }
     
-    private List<IndexMetadata> sortIndexes(final Collection<IndexMetadata> indexes) {
-        List<IndexMetadata> result = new LinkedList<>(indexes);
-        result.sort((left, right) -> left.getIndex().compareTo(right.getIndex()));
+    private List<MCPIndexMetadata> sortIndexes(final Collection<MCPIndexMetadata> indexes) {
+        List<MCPIndexMetadata> result = new LinkedList<>(indexes);
+        result.sort(Comparator.comparing(MCPIndexMetadata::getIndex));
         return result;
     }
     

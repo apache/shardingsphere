@@ -35,7 +35,7 @@ public final class DatabaseMetadataSnapshot {
     
     private final List<MetadataObject> metadataObjects;
     
-    private final List<SchemaMetadata> schemas;
+    private final List<MCPSchemaMetadata> schemas;
     
     public DatabaseMetadataSnapshot(final String databaseType, final String databaseVersion, final Collection<MetadataObject> metadataObjects) {
         this.databaseType = databaseType;

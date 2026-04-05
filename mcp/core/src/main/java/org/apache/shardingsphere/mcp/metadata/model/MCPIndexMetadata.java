@@ -21,11 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Column metadata.
+ * MCP index metadata.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ColumnMetadata {
+public final class MCPIndexMetadata {
     
     private final String database;
     
@@ -33,7 +33,5 @@ public final class ColumnMetadata {
     
     private final String table;
     
-    private final String view;
-    
-    private final String column;
+    private final String index;
 }

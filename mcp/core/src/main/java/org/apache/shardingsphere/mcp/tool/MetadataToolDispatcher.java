@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.metadata.model.ColumnMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.IndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.metadata.model.SchemaMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.TableMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.ViewMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -85,24 +85,24 @@ public final class MetadataToolDispatcher {
         }
     }
     
-    private List<SchemaMetadata> querySchemas(final ToolRequest toolRequest) {
+    private List<MCPSchemaMetadata> querySchemas(final ToolRequest toolRequest) {
         if (toolRequest.getDatabase().isEmpty()) {
             throw new MCPInvalidRequestException("Database is required.");
         }
         return metadataQueryService.querySchemas(toolRequest.getDatabase());
     }
     
-    private List<TableMetadata> queryTables(final ToolRequest toolRequest) {
+    private List<MCPTableMetadata> queryTables(final ToolRequest toolRequest) {
         validateDatabaseAndSchema(toolRequest);
         return metadataQueryService.queryTables(toolRequest.getDatabase(), toolRequest.getSchema());
     }
     
-    private List<ViewMetadata> queryViews(final ToolRequest toolRequest) {
+    private List<MCPViewMetadata> queryViews(final ToolRequest toolRequest) {
         validateDatabaseAndSchema(toolRequest);
         return metadataQueryService.queryViews(toolRequest.getDatabase(), toolRequest.getSchema());
     }
     
-    private List<ColumnMetadata> queryColumns(final ToolRequest toolRequest) {
+    private List<MCPColumnMetadata> queryColumns(final ToolRequest toolRequest) {
         validateDatabaseAndSchema(toolRequest);
         if (toolRequest.getObjectName().isEmpty() || toolRequest.getParentObjectType().isEmpty()) {
             throw new MCPInvalidRequestException("Parent object type and object name are required.");
@@ -116,7 +116,7 @@ public final class MetadataToolDispatcher {
         throw new MCPInvalidRequestException("Parent object type must be table or view.");
     }
     
-    private List<IndexMetadata> queryIndexes(final ToolRequest toolRequest) {
+    private List<MCPIndexMetadata> queryIndexes(final ToolRequest toolRequest) {
         validateDatabaseAndSchema(toolRequest);
         if (toolRequest.getObjectName().isEmpty()) {
             throw new MCPInvalidRequestException("Table name is required.");
@@ -130,7 +130,7 @@ public final class MetadataToolDispatcher {
         }
         List<MetadataSearchHit> result = new LinkedList<>();
         if (toolRequest.getDatabase().isEmpty()) {
-            for (DatabaseMetadata each : metadataQueryService.queryDatabases()) {
+            for (MCPDatabaseMetadata each : metadataQueryService.queryDatabases()) {
                 result.addAll(readSearchResults(each.getDatabase(), toolRequest));
             }
         } else {
@@ -162,17 +162,17 @@ public final class MetadataToolDispatcher {
                     metadataQueryService.querySchema(databaseName, schemaName).ifPresent(optional -> result.add(createSearchHit(optional)));
                     break;
                 }
-                for (SchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
+                for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
                     result.add(createSearchHit(each));
                 }
                 break;
             case TABLE:
-                for (TableMetadata each : queryTablesForSearch(databaseName, schemaName)) {
+                for (MCPTableMetadata each : queryTablesForSearch(databaseName, schemaName)) {
                     result.add(createSearchHit(each));
                 }
                 break;
             case VIEW:
-                for (ViewMetadata each : queryViewsForSearch(databaseName, schemaName)) {
+                for (MCPViewMetadata each : queryViewsForSearch(databaseName, schemaName)) {
                     result.add(createSearchHit(each));
                 }
                 break;
@@ -188,25 +188,25 @@ public final class MetadataToolDispatcher {
         return result;
     }
     
-    private List<TableMetadata> queryTablesForSearch(final String databaseName, final String schemaName) {
-        List<TableMetadata> result = new LinkedList<>();
+    private List<MCPTableMetadata> queryTablesForSearch(final String databaseName, final String schemaName) {
+        List<MCPTableMetadata> result = new LinkedList<>();
         if (!schemaName.isEmpty()) {
             result.addAll(metadataQueryService.queryTables(databaseName, schemaName));
             return result;
         }
-        for (SchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
+        for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
             result.addAll(metadataQueryService.queryTables(databaseName, each.getSchema()));
         }
         return result;
     }
     
-    private List<ViewMetadata> queryViewsForSearch(final String databaseName, final String schemaName) {
-        List<ViewMetadata> result = new LinkedList<>();
+    private List<MCPViewMetadata> queryViewsForSearch(final String databaseName, final String schemaName) {
+        List<MCPViewMetadata> result = new LinkedList<>();
         if (!schemaName.isEmpty()) {
             result.addAll(metadataQueryService.queryViews(databaseName, schemaName));
             return result;
         }
-        for (SchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
+        for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
             result.addAll(metadataQueryService.queryViews(databaseName, each.getSchema()));
         }
         return result;
@@ -214,13 +214,13 @@ public final class MetadataToolDispatcher {
     
     private List<MetadataSearchHit> queryColumnSearchHits(final String databaseName, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
-        for (TableMetadata each : queryTablesForSearch(databaseName, schemaName)) {
-            for (ColumnMetadata column : metadataQueryService.queryTableColumns(databaseName, each.getSchema(), each.getTable())) {
+        for (MCPTableMetadata each : queryTablesForSearch(databaseName, schemaName)) {
+            for (MCPColumnMetadata column : metadataQueryService.queryTableColumns(databaseName, each.getSchema(), each.getTable())) {
                 result.add(createSearchHit(column));
             }
         }
-        for (ViewMetadata each : queryViewsForSearch(databaseName, schemaName)) {
-            for (ColumnMetadata column : metadataQueryService.queryViewColumns(databaseName, each.getSchema(), each.getView())) {
+        for (MCPViewMetadata each : queryViewsForSearch(databaseName, schemaName)) {
+            for (MCPColumnMetadata column : metadataQueryService.queryViewColumns(databaseName, each.getSchema(), each.getView())) {
                 result.add(createSearchHit(column));
             }
         }
@@ -232,8 +232,8 @@ public final class MetadataToolDispatcher {
         if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX)) {
             return result;
         }
-        for (TableMetadata each : queryTablesForSearch(databaseName, schemaName)) {
-            for (IndexMetadata index : metadataQueryService.queryIndexes(databaseName, each.getSchema(), each.getTable())) {
+        for (MCPTableMetadata each : queryTablesForSearch(databaseName, schemaName)) {
+            for (MCPIndexMetadata index : metadataQueryService.queryIndexes(databaseName, each.getSchema(), each.getTable())) {
                 result.add(createSearchHit(index));
             }
         }
@@ -256,13 +256,13 @@ public final class MetadataToolDispatcher {
     
     private ToolDispatchResult describeTable(final ToolRequest toolRequest) {
         validateDescribeRequest(toolRequest);
-        Optional<TableMetadata> tableMetadata = metadataQueryService.queryTable(toolRequest.getDatabase(), toolRequest.getSchema(), toolRequest.getObjectName());
+        Optional<MCPTableMetadata> tableMetadata = metadataQueryService.queryTable(toolRequest.getDatabase(), toolRequest.getSchema(), toolRequest.getObjectName());
         return new ToolDispatchResult(tableMetadata.map(List::of).orElse(Collections.emptyList()), "");
     }
     
     private ToolDispatchResult describeView(final ToolRequest toolRequest) {
         validateDescribeRequest(toolRequest);
-        Optional<ViewMetadata> viewMetadata = metadataQueryService.queryView(toolRequest.getDatabase(), toolRequest.getSchema(), toolRequest.getObjectName());
+        Optional<MCPViewMetadata> viewMetadata = metadataQueryService.queryView(toolRequest.getDatabase(), toolRequest.getSchema(), toolRequest.getObjectName());
         return new ToolDispatchResult(viewMetadata.map(List::of).orElse(Collections.emptyList()), "");
     }
     
@@ -281,27 +281,27 @@ public final class MetadataToolDispatcher {
         }
     }
     
-    private MetadataSearchHit createSearchHit(final DatabaseMetadata databaseMetadata) {
+    private MetadataSearchHit createSearchHit(final MCPDatabaseMetadata databaseMetadata) {
         return new MetadataSearchHit(databaseMetadata.getDatabase(), "", "database", "", "", databaseMetadata.getDatabase());
     }
     
-    private MetadataSearchHit createSearchHit(final SchemaMetadata schemaMetadata) {
+    private MetadataSearchHit createSearchHit(final MCPSchemaMetadata schemaMetadata) {
         return new MetadataSearchHit(schemaMetadata.getDatabase(), schemaMetadata.getSchema(), "schema", "", "", schemaMetadata.getSchema());
     }
     
-    private MetadataSearchHit createSearchHit(final TableMetadata tableMetadata) {
+    private MetadataSearchHit createSearchHit(final MCPTableMetadata tableMetadata) {
         return new MetadataSearchHit(tableMetadata.getDatabase(), tableMetadata.getSchema(), "table", tableMetadata.getTable(), "", tableMetadata.getTable());
     }
     
-    private MetadataSearchHit createSearchHit(final ViewMetadata viewMetadata) {
+    private MetadataSearchHit createSearchHit(final MCPViewMetadata viewMetadata) {
         return new MetadataSearchHit(viewMetadata.getDatabase(), viewMetadata.getSchema(), "view", "", viewMetadata.getView(), viewMetadata.getView());
     }
     
-    private MetadataSearchHit createSearchHit(final ColumnMetadata columnMetadata) {
+    private MetadataSearchHit createSearchHit(final MCPColumnMetadata columnMetadata) {
         return new MetadataSearchHit(columnMetadata.getDatabase(), columnMetadata.getSchema(), "column", columnMetadata.getTable(), columnMetadata.getView(), columnMetadata.getColumn());
     }
     
-    private MetadataSearchHit createSearchHit(final IndexMetadata indexMetadata) {
+    private MetadataSearchHit createSearchHit(final MCPIndexMetadata indexMetadata) {
         return new MetadataSearchHit(indexMetadata.getDatabase(), indexMetadata.getSchema(), "index", indexMetadata.getTable(), "", indexMetadata.getIndex());
     }
     
@@ -337,28 +337,28 @@ public final class MetadataToolDispatcher {
             return true;
         }
         String actualQuery = query.toLowerCase(Locale.ENGLISH);
-        if (metadataItem instanceof DatabaseMetadata) {
-            DatabaseMetadata actual = (DatabaseMetadata) metadataItem;
+        if (metadataItem instanceof MCPDatabaseMetadata) {
+            MCPDatabaseMetadata actual = (MCPDatabaseMetadata) metadataItem;
             return matchesValue(actualQuery, actual.getDatabase());
         }
-        if (metadataItem instanceof SchemaMetadata) {
-            SchemaMetadata actual = (SchemaMetadata) metadataItem;
+        if (metadataItem instanceof MCPSchemaMetadata) {
+            MCPSchemaMetadata actual = (MCPSchemaMetadata) metadataItem;
             return matchesValue(actualQuery, actual.getSchema());
         }
-        if (metadataItem instanceof TableMetadata) {
-            TableMetadata actual = (TableMetadata) metadataItem;
+        if (metadataItem instanceof MCPTableMetadata) {
+            MCPTableMetadata actual = (MCPTableMetadata) metadataItem;
             return matchesValue(actualQuery, actual.getTable());
         }
-        if (metadataItem instanceof ViewMetadata) {
-            ViewMetadata actual = (ViewMetadata) metadataItem;
+        if (metadataItem instanceof MCPViewMetadata) {
+            MCPViewMetadata actual = (MCPViewMetadata) metadataItem;
             return matchesValue(actualQuery, actual.getView());
         }
-        if (metadataItem instanceof ColumnMetadata) {
-            ColumnMetadata actual = (ColumnMetadata) metadataItem;
+        if (metadataItem instanceof MCPColumnMetadata) {
+            MCPColumnMetadata actual = (MCPColumnMetadata) metadataItem;
             return matchesValue(actualQuery, actual.getColumn(), actual.getTable(), actual.getView());
         }
-        if (metadataItem instanceof IndexMetadata) {
-            IndexMetadata actual = (IndexMetadata) metadataItem;
+        if (metadataItem instanceof MCPIndexMetadata) {
+            MCPIndexMetadata actual = (MCPIndexMetadata) metadataItem;
             return matchesValue(actualQuery, actual.getIndex(), actual.getTable());
         }
         if (metadataItem instanceof MetadataSearchHit) {

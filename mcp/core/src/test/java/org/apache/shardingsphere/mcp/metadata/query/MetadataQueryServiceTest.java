@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.metadata.query;
 
-import org.apache.shardingsphere.mcp.metadata.model.ColumnMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.TableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryDatabases() {
-        List<DatabaseMetadata> actual = metadataQueryService.queryDatabases();
+        List<MCPDatabaseMetadata> actual = metadataQueryService.queryDatabases();
         assertThat(actual.size(), is(2));
         assertThat(actual.get(0).getDatabase(), is("logic_db"));
         assertThat(actual.get(1).getDatabase(), is("warehouse"));
@@ -46,7 +46,7 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryDatabase() {
-        Optional<DatabaseMetadata> actual = metadataQueryService.queryDatabase("logic_db");
+        Optional<MCPDatabaseMetadata> actual = metadataQueryService.queryDatabase("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabase(), is("logic_db"));
         assertThat(actual.get().getSchemas().get(0).getSchema(), is("public"));
@@ -54,14 +54,14 @@ class MetadataQueryServiceTest {
     
     @Test
     void assertQueryTablesBySchema() {
-        List<TableMetadata> actual = metadataQueryService.queryTables("logic_db", "public");
+        List<MCPTableMetadata> actual = metadataQueryService.queryTables("logic_db", "public");
         assertThat(actual.size(), is(2));
         assertThat(actual.get(1).getTable(), is("orders"));
     }
     
     @Test
     void assertQueryTableColumn() {
-        Optional<ColumnMetadata> actual = metadataQueryService.queryTableColumn("logic_db", "public", "orders", "order_id");
+        Optional<MCPColumnMetadata> actual = metadataQueryService.queryTableColumn("logic_db", "public", "orders", "order_id");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getColumn(), is("order_id"));
         assertThat(actual.get().getTable(), is("orders"));

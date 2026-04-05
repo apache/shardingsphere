@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.metadata.model.TableMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.ViewMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
@@ -53,8 +53,8 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("list_databases", "", "", "", "", "", Set.of(), 10, ""));
         assertThat(actual.getMetadataItems().size(), is(3));
-        assertThat(((DatabaseMetadata) actual.getMetadataItems().get(0)).getDatabase(), is("analytics_db"));
-        assertThat(((DatabaseMetadata) actual.getMetadataItems().get(2)).getDatabase(), is("warehouse"));
+        assertThat(((MCPDatabaseMetadata) actual.getMetadataItems().get(0)).getDatabase(), is("analytics_db"));
+        assertThat(((MCPDatabaseMetadata) actual.getMetadataItems().get(2)).getDatabase(), is("warehouse"));
     }
     
     @Test
@@ -62,7 +62,7 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("list_tables", "logic_db", "public", "", "", "order", Set.of(), 1, ""));
         assertThat(actual.getMetadataItems().size(), is(1));
-        assertThat(((TableMetadata) actual.getMetadataItems().get(0)).getTable(), is("order_items"));
+        assertThat(((MCPTableMetadata) actual.getMetadataItems().get(0)).getTable(), is("order_items"));
         assertThat(actual.getNextPageToken(), is("1"));
     }
     
@@ -110,8 +110,8 @@ class MetadataToolDispatcherTest {
         MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("describe_view", "logic_db", "public", "active_orders", "", "", Set.of(), 10, ""));
         assertThat(actual.getMetadataItems().size(), is(1));
-        assertThat(((ViewMetadata) actual.getMetadataItems().get(0)).getView(), is("active_orders"));
-        assertThat(((ViewMetadata) actual.getMetadataItems().get(0)).getColumns().size(), is(0));
+        assertThat(((MCPViewMetadata) actual.getMetadataItems().get(0)).getView(), is("active_orders"));
+        assertThat(((MCPViewMetadata) actual.getMetadataItems().get(0)).getColumns().size(), is(0));
     }
     
     @Test

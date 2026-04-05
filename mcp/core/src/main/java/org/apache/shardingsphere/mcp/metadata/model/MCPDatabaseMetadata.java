@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * Database metadata.
+ * MCP database metadata.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseMetadata {
+public final class MCPDatabaseMetadata {
     
     private final String database;
     
@@ -35,5 +35,5 @@ public final class DatabaseMetadata {
     
     private final String databaseVersion;
     
-    private final List<SchemaMetadata> schemas;
+    private final List<MCPSchemaMetadata> schemas;
 }

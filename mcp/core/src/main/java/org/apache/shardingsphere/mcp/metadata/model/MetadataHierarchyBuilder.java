@@ -30,7 +30,7 @@ final class MetadataHierarchyBuilder {
     private MetadataHierarchyBuilder() {
     }
     
-    static List<SchemaMetadata> buildSchemas(final Collection<MetadataObject> metadataObjects) {
+    static List<MCPSchemaMetadata> buildSchemas(final Collection<MetadataObject> metadataObjects) {
         Map<String, SchemaAccumulator> schemaAccumulators = new LinkedHashMap<>(metadataObjects.size(), 1F);
         for (MetadataObject each : metadataObjects) {
             if (MetadataObjectType.DATABASE == each.getObjectType()) {
@@ -56,7 +56,7 @@ final class MetadataHierarchyBuilder {
                     break;
             }
         }
-        List<SchemaMetadata> result = new LinkedList<>();
+        List<MCPSchemaMetadata> result = new LinkedList<>();
         for (SchemaAccumulator each : schemaAccumulators.values()) {
             result.add(each.build());
         }
@@ -118,16 +118,16 @@ final class MetadataHierarchyBuilder {
             getTableAccumulator(metadataObject.getParentObjectName()).addIndex(metadataObject.getName());
         }
         
-        private SchemaMetadata build() {
-            List<TableMetadata> tables = new LinkedList<>();
+        private MCPSchemaMetadata build() {
+            List<MCPTableMetadata> tables = new LinkedList<>();
             for (TableAccumulator each : tableAccumulators.values()) {
                 tables.add(each.build());
             }
-            List<ViewMetadata> views = new LinkedList<>();
+            List<MCPViewMetadata> views = new LinkedList<>();
             for (ViewAccumulator each : viewAccumulators.values()) {
                 views.add(each.build());
             }
-            return new SchemaMetadata(database, schema, tables, views);
+            return new MCPSchemaMetadata(database, schema, tables, views);
         }
     }
     
@@ -139,9 +139,9 @@ final class MetadataHierarchyBuilder {
         
         private final String table;
         
-        private final Map<String, ColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
+        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
         
-        private final Map<String, IndexMetadata> indexes = new LinkedHashMap<>(16, 1F);
+        private final Map<String, MCPIndexMetadata> indexes = new LinkedHashMap<>(16, 1F);
         
         private TableAccumulator(final String database, final String schema, final String table) {
             this.database = database;
@@ -150,15 +150,15 @@ final class MetadataHierarchyBuilder {
         }
         
         private void addColumn(final String column) {
-            columns.putIfAbsent(column, new ColumnMetadata(database, schema, table, "", column));
+            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, table, "", column));
         }
         
         private void addIndex(final String index) {
-            indexes.putIfAbsent(index, new IndexMetadata(database, schema, table, index));
+            indexes.putIfAbsent(index, new MCPIndexMetadata(database, schema, table, index));
         }
         
-        private TableMetadata build() {
-            return new TableMetadata(database, schema, table, new LinkedList<>(columns.values()), new LinkedList<>(indexes.values()));
+        private MCPTableMetadata build() {
+            return new MCPTableMetadata(database, schema, table, new LinkedList<>(columns.values()), new LinkedList<>(indexes.values()));
         }
     }
     
@@ -170,7 +170,7 @@ final class MetadataHierarchyBuilder {
         
         private final String view;
         
-        private final Map<String, ColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
+        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
         
         private ViewAccumulator(final String database, final String schema, final String view) {
             this.database = database;
@@ -179,11 +179,11 @@ final class MetadataHierarchyBuilder {
         }
         
         private void addColumn(final String column) {
-            columns.putIfAbsent(column, new ColumnMetadata(database, schema, "", view, column));
+            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, "", view, column));
         }
         
-        private ViewMetadata build() {
-            return new ViewMetadata(database, schema, view, new LinkedList<>(columns.values()));
+        private MCPViewMetadata build() {
+            return new MCPViewMetadata(database, schema, view, new LinkedList<>(columns.values()));
         }
     }
 }

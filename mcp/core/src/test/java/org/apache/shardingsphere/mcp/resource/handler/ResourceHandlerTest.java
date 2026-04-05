@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.ColumnMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.IndexMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.SchemaMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.TableMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.ViewMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
@@ -106,28 +106,28 @@ class ResourceHandlerTest {
     private List<String> extractMetadataNames(final Map<String, Object> payload) {
         List<String> result = new LinkedList<>();
         for (Object each : getMetadataItems(payload)) {
-            if (each instanceof DatabaseMetadata) {
-                result.add(((DatabaseMetadata) each).getDatabase());
+            if (each instanceof MCPDatabaseMetadata) {
+                result.add(((MCPDatabaseMetadata) each).getDatabase());
                 continue;
             }
-            if (each instanceof SchemaMetadata) {
-                result.add(((SchemaMetadata) each).getSchema());
+            if (each instanceof MCPSchemaMetadata) {
+                result.add(((MCPSchemaMetadata) each).getSchema());
                 continue;
             }
-            if (each instanceof TableMetadata) {
-                result.add(((TableMetadata) each).getTable());
+            if (each instanceof MCPTableMetadata) {
+                result.add(((MCPTableMetadata) each).getTable());
                 continue;
             }
-            if (each instanceof ViewMetadata) {
-                result.add(((ViewMetadata) each).getView());
+            if (each instanceof MCPViewMetadata) {
+                result.add(((MCPViewMetadata) each).getView());
                 continue;
             }
-            if (each instanceof ColumnMetadata) {
-                result.add(((ColumnMetadata) each).getColumn());
+            if (each instanceof MCPColumnMetadata) {
+                result.add(((MCPColumnMetadata) each).getColumn());
                 continue;
             }
-            if (each instanceof IndexMetadata) {
-                result.add(((IndexMetadata) each).getIndex());
+            if (each instanceof MCPIndexMetadata) {
+                result.add(((MCPIndexMetadata) each).getIndex());
             }
         }
         return result;

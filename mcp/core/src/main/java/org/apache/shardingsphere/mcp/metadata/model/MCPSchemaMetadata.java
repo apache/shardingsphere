@@ -23,17 +23,17 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 /**
- * View metadata.
+ * MCP schema metadata.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ViewMetadata {
+public final class MCPSchemaMetadata {
     
     private final String database;
     
     private final String schema;
     
-    private final String view;
+    private final List<MCPTableMetadata> tables;
     
-    private final List<ColumnMetadata> columns;
+    private final List<MCPViewMetadata> views;
 }
