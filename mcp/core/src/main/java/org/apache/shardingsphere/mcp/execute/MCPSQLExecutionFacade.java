@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError;
@@ -66,7 +66,7 @@ public final class MCPSQLExecutionFacade {
     }
     
     private ExecuteQueryResponse executeInternal(final ExecutionRequest executionRequest) {
-        Optional<DatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
+        Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
         if (databaseCapability.isEmpty()) {
             throw recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException());
         }

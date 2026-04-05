@@ -30,7 +30,7 @@ public final class MCPServiceCapabilityProvider {
     
     private static final Set<SupportedMCPStatement> SUPPORTED_STATEMENT_TYPES = Set.of(SupportedMCPStatement.values());
     
-    private static final ServiceCapability SERVICE_CAPABILITY = new ServiceCapability(
+    private static final MCPServiceCapability SERVICE_CAPABILITY = new MCPServiceCapability(
             ResourceHandlerRegistry.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_TYPES);
     
     /**
@@ -38,7 +38,7 @@ public final class MCPServiceCapabilityProvider {
      *
      * @return service-level capability
      */
-    public static ServiceCapability provide() {
+    public static MCPServiceCapability provide() {
         return SERVICE_CAPABILITY;
     }
 }

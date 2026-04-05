@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.response;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
 import java.util.LinkedHashMap;
@@ -30,7 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MCPDatabaseCapabilityResponse implements MCPResponse {
     
-    private final DatabaseCapability databaseCapability;
+    private final MCPDatabaseCapability databaseCapability;
     
     @Override
     public Map<String, Object> toPayload() {

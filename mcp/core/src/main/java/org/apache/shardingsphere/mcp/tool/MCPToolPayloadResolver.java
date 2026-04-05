@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
@@ -70,7 +70,7 @@ public final class MCPToolPayloadResolver {
         if (database.isEmpty()) {
             return new MCPServiceCapabilityResponse(MCPServiceCapabilityProvider.provide()).toPayload();
         }
-        Optional<DatabaseCapability> capability = runtimeContext.getDatabaseCapabilityProvider().provide(database);
+        Optional<MCPDatabaseCapability> capability = runtimeContext.getDatabaseCapabilityProvider().provide(database);
         return capability.map(optional -> new MCPDatabaseCapabilityResponse(optional).toPayload()).orElseThrow(DatabaseCapabilityNotFoundException::new);
     }
     

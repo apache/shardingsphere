@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
@@ -41,7 +41,7 @@ class SupportedDatabaseContractMatrixE2ETest {
                                 final boolean expectedSavepoint, final boolean expectedIndexSupport) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot(databaseType, "", Collections.emptyList()))));
-        DatabaseCapability actual = databaseCapabilityProvider.provide("logic_db").get();
+        MCPDatabaseCapability actual = databaseCapabilityProvider.provide("logic_db").get();
         assertThat(actual.isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.isSupportsSavepoint(), is(expectedSavepoint));
         assertThat(actual.getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX), is(expectedIndexSupport));

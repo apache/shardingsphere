@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Service capability.
+ * MCP service capability.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ServiceCapability {
+public final class MCPServiceCapability {
     
     private final List<String> supportedResources;
     

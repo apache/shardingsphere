@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.metadata.query;
 
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
@@ -105,7 +105,7 @@ public final class MetadataQueryService {
     }
     
     private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final String databaseName) {
-        Optional<DatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots).provide(databaseName);
+        Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots).provide(databaseName);
         return databaseCapability.isPresent() ? databaseCapability.get().getSupportedMetadataObjectTypes() : Collections.emptySet();
     }
     

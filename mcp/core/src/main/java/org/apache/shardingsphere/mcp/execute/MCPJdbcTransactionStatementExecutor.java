@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
@@ -50,7 +50,7 @@ public final class MCPJdbcTransactionStatementExecutor {
      * @throws MCPTransactionStateException when the transaction state does not allow the operation
      * @throws MCPUnsupportedException when the database does not support the requested transaction feature
      */
-    public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
+    public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         try {
             ShardingSpherePreconditions.checkState(sessionManager.hasSession(sessionId), MCPSessionNotExistedException::new);
@@ -79,7 +79,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         }
     }
     
-    private ExecuteQueryResponse executeBeginTransaction(final String sessionId, final String databaseName, final DatabaseCapability databaseCapability, final String statementType) {
+    private ExecuteQueryResponse executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final String statementType) {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
@@ -87,7 +87,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
     }
     
-    private ExecuteQueryResponse executeCommit(final String sessionId, final DatabaseCapability databaseCapability) {
+    private ExecuteQueryResponse executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
@@ -95,7 +95,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
     }
     
-    private ExecuteQueryResponse executeRollback(final String sessionId, final DatabaseCapability databaseCapability) {
+    private ExecuteQueryResponse executeRollback(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
@@ -103,7 +103,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
     }
     
-    private ExecuteQueryResponse executeSavepoint(final String sessionId, final DatabaseCapability databaseCapability, final String savepointName) {
+    private ExecuteQueryResponse executeSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
@@ -111,7 +111,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
     }
     
-    private ExecuteQueryResponse executeRollbackSavepoint(final String sessionId, final DatabaseCapability databaseCapability, final String savepointName) {
+    private ExecuteQueryResponse executeRollbackSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
@@ -119,7 +119,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
-    private ExecuteQueryResponse executeReleaseSavepoint(final String sessionId, final DatabaseCapability databaseCapability, final String savepointName) {
+    private ExecuteQueryResponse executeReleaseSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }

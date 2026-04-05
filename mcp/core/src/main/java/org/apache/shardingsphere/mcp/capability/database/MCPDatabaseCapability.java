@@ -25,11 +25,11 @@ import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import java.util.Set;
 
 /**
- * Database-level capability payload.
+ * MCP database capability.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseCapability {
+public final class MCPDatabaseCapability {
     
     private final String database;
     

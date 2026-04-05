@@ -42,19 +42,19 @@ public final class MCPDatabaseCapabilityProvider {
      * @param databaseName logical database name
      * @return database-level capability when the database type is supported
      */
-    public Optional<DatabaseCapability> provide(final String databaseName) {
+    public Optional<MCPDatabaseCapability> provide(final String databaseName) {
         return databaseMetadataSnapshots.findDatabaseType(databaseName).flatMap(optional -> find(databaseName, optional, getDatabaseVersion(databaseName)));
     }
     
-    private Optional<DatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
+    private Optional<MCPDatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
         Optional<DatabaseCapabilityOption> databaseCapabilityOption = TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType);
         return databaseCapabilityOption.map(optional -> createDefaultCapability(databaseName, databaseType, databaseVersion, optional));
     }
     
-    private DatabaseCapability createDefaultCapability(final String databaseName, final String databaseType, final String databaseVersion, final DatabaseCapabilityOption option) {
+    private MCPDatabaseCapability createDefaultCapability(final String databaseName, final String databaseType, final String databaseVersion, final DatabaseCapabilityOption option) {
         boolean supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
         TransactionCapability transactionCapability = option.getTransactionCapability();
-        return new DatabaseCapability(databaseName, databaseType, "BASELINE", createSupportedMetadataObjectTypes(option.isIndexSupported()),
+        return new MCPDatabaseCapability(databaseName, databaseType, "BASELINE", createSupportedMetadataObjectTypes(option.isIndexSupported()),
                 createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze), TransactionCapability.NONE != transactionCapability,
                 TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability, createSupportedTransactionStatements(transactionCapability),
                 true, 1000, 30000, option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze,

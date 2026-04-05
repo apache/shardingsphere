@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.response;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.service.ServiceCapability;
+import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
 import java.util.Map;
@@ -29,7 +29,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MCPServiceCapabilityResponse implements MCPResponse {
     
-    private final ServiceCapability serviceCapability;
+    private final MCPServiceCapability serviceCapability;
     
     @Override
     public Map<String, Object> toPayload() {

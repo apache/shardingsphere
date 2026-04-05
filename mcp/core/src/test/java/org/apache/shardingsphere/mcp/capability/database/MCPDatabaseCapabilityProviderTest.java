@@ -36,7 +36,7 @@ class MCPDatabaseCapabilityProviderTest {
     
     @Test
     void assertProvide() {
-        Optional<DatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("logic_db");
+        Optional<MCPDatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabase(), is("logic_db"));
         assertThat(actual.get().getDatabaseType(), is("MySQL"));
@@ -55,7 +55,7 @@ class MCPDatabaseCapabilityProviderTest {
     
     @Test
     void assertProvideWithoutIndex() {
-        Optional<DatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("warehouse");
+        Optional<MCPDatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("warehouse");
         assertTrue(actual.isPresent());
         assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
         assertFalse(actual.get().isSupportsTransactionControl());
@@ -67,7 +67,7 @@ class MCPDatabaseCapabilityProviderTest {
     @Test
     void assertProvideWithRuntimeOverlay() {
         DatabaseMetadataSnapshots snapshots = new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList())));
-        Optional<DatabaseCapability> actual = new MCPDatabaseCapabilityProvider(snapshots).provide("logic_db");
+        Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(snapshots).provide("logic_db");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
         assertFalse(actual.get().isSupportsCrossSchemaSql());

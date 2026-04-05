@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
@@ -136,7 +136,7 @@ class MCPJdbcTransactionStatementExecutorTest {
                 "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
     }
     
-    private DatabaseCapability createCapability(final String databaseName) {
+    private MCPDatabaseCapability createCapability(final String databaseName) {
         return createDatabaseCapabilityBuilder().provide(databaseName).orElseThrow(IllegalStateException::new);
     }
     
