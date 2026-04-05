@@ -19,13 +19,17 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataObjectQueryCondition;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
  * Handler for database schemas resource URI.
  */
-public final class DatabaseSchemasHandler extends AbstractMetadataResourceHandler {
+public final class DatabaseSchemasHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
@@ -35,6 +39,7 @@ public final class DatabaseSchemasHandler extends AbstractMetadataResourceHandle
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
         String databaseName = uriVariables.getVariable("database");
-        return queryMetadataObjects(runtimeContext, databaseName, MetadataObjectType.SCHEMA);
+        final MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.empty();
+        return new MCPMetadataResponse(new MetadataQueryService().queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, MetadataObjectType.SCHEMA, queryCondition));
     }
 }

@@ -20,13 +20,14 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
  * Handler for databases resource URI.
  */
-public final class DatabasesHandler extends AbstractMetadataResourceHandler {
+public final class DatabasesHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {

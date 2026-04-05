@@ -19,13 +19,17 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataObjectQueryCondition;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
  * Handler for database schema table column resource URI.
  */
-public final class DatabaseSchemaTableColumnHandler extends AbstractMetadataResourceHandler {
+public final class DatabaseSchemaTableColumnHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
@@ -38,6 +42,7 @@ public final class DatabaseSchemaTableColumnHandler extends AbstractMetadataReso
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
         String columnName = uriVariables.getVariable("column");
-        return queryChildMetadataObject(runtimeContext, databaseName, MetadataObjectType.COLUMN, schemaName, "TABLE", tableName, columnName);
+        final MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parentAndObject(schemaName, "TABLE", tableName, columnName);
+        return new MCPMetadataResponse(new MetadataQueryService().queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, MetadataObjectType.COLUMN, queryCondition));
     }
 }

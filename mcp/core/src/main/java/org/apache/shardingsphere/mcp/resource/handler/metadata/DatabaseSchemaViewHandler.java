@@ -19,13 +19,17 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataObjectQueryCondition;
+import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
 /**
  * Handler for database schema view resource URI.
  */
-public final class DatabaseSchemaViewHandler extends AbstractMetadataResourceHandler {
+public final class DatabaseSchemaViewHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
@@ -37,6 +41,7 @@ public final class DatabaseSchemaViewHandler extends AbstractMetadataResourceHan
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String viewName = uriVariables.getVariable("view");
-        return queryMetadataObject(runtimeContext, databaseName, MetadataObjectType.VIEW, schemaName, viewName);
+        final MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.schemaAndObject(schemaName, viewName);
+        return new MCPMetadataResponse(new MetadataQueryService().queryMetadataObjects(runtimeContext.getDatabaseMetadataSnapshots(), databaseName, MetadataObjectType.VIEW, queryCondition));
     }
 }

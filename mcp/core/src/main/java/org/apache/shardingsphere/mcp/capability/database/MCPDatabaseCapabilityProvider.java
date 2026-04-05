@@ -39,8 +39,8 @@ public final class MCPDatabaseCapabilityProvider {
     /**
      * Provide the database-level capability.
      *
-     * @param databaseName logical database name
-     * @return database-level capability when the database type is supported
+     * @param databaseName database name
+     * @return database-level capability
      */
     public Optional<MCPDatabaseCapability> provide(final String databaseName) {
         return databaseMetadataSnapshots.findDatabaseType(databaseName).flatMap(optional -> find(databaseName, optional, getDatabaseVersion(databaseName)));

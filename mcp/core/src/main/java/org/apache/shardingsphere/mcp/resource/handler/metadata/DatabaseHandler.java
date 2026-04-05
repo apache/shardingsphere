@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
 
@@ -30,7 +31,7 @@ import java.util.Optional;
 /**
  * Handler for database resource URI.
  */
-public final class DatabaseHandler extends AbstractMetadataResourceHandler {
+public final class DatabaseHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
