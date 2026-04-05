@@ -38,8 +38,9 @@ public final class SchemasHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
         String databaseName = uriVariables.getVariable("database");
         MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.empty();
-        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.SCHEMA, queryCondition));
+        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.SCHEMA, queryCondition));
     }
 }

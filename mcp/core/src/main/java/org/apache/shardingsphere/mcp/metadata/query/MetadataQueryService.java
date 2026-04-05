@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Query normalized metadata snapshots.
+ * Metadata query service.
  */
 @RequiredArgsConstructor
 public final class MetadataQueryService {

@@ -38,11 +38,11 @@ public final class ViewColumnHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String viewName = uriVariables.getVariable("view");
         String columnName = uriVariables.getVariable("column");
-        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
         MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parentAndObject(schemaName, "VIEW", viewName, columnName);
         return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
     }

@@ -38,10 +38,11 @@ public final class IndexesHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
         MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parent(schemaName, "TABLE", tableName);
-        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.INDEX, queryCondition));
+        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.INDEX, queryCondition));
     }
 }

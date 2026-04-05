@@ -38,11 +38,12 @@ public final class TableColumnHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
+        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots());
         String databaseName = uriVariables.getVariable("database");
         String schemaName = uriVariables.getVariable("schema");
         String tableName = uriVariables.getVariable("table");
         String columnName = uriVariables.getVariable("column");
         MetadataObjectQueryCondition queryCondition = MetadataObjectQueryCondition.parentAndObject(schemaName, "TABLE", tableName, columnName);
-        return new MCPMetadataResponse(new MetadataQueryService(runtimeContext.getDatabaseMetadataSnapshots()).queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
+        return new MCPMetadataResponse(metadataQueryService.queryMetadataObjects(databaseName, MetadataObjectType.COLUMN, queryCondition));
     }
 }
