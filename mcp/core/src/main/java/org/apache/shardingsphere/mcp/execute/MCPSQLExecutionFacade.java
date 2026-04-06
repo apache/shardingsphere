@@ -83,9 +83,8 @@ public final class MCPSQLExecutionFacade {
         } catch (final UnsupportedOperationException | IllegalArgumentException ex) {
             throw recordFailure(executionRequest, "QUERY", ex);
         }
-        if (!databaseCapability.get().getSupportedStatementClasses().contains(classificationResult.getStatementClass())) {
-            throw recordFailure(executionRequest, classificationResult.getStatementType(), new StatementClassNotSupportedException());
-        }
+        ShardingSpherePreconditions.checkContains(databaseCapability.get().getSupportedStatementClasses(), classificationResult.getStatementClass(),
+                () -> recordFailure(executionRequest, classificationResult.getStatementType(), new StatementClassNotSupportedException()));
         try {
             switch (classificationResult.getStatementClass()) {
                 case TRANSACTION_CONTROL:
@@ -99,9 +98,7 @@ public final class MCPSQLExecutionFacade {
                 case DCL:
                     return recordSuccess(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult), classificationResult.getStatementType());
                 case EXPLAIN_ANALYZE:
-                    if (!databaseCapability.get().isSupportsExplainAnalyze()) {
-                        throw new MCPUnsupportedException("EXPLAIN ANALYZE is not supported.");
-                    }
+                    ShardingSpherePreconditions.checkState(databaseCapability.get().isSupportsExplainAnalyze(), () -> new MCPUnsupportedException("EXPLAIN ANALYZE is not supported."));
                     return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
                 default:
                     throw new StatementClassNotSupportedException();
