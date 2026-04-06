@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchExecutor;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
@@ -37,12 +39,12 @@ public final class SearchMetadataToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolDescriptor.create("search_metadata",
             MCPToolInputDefinition.create(
-                    MCPToolHandlerSupport.optionalStringField("database", "Optional logical database name."),
-                    MCPToolHandlerSupport.optionalStringField("schema", "Optional schema name."),
-                    MCPToolHandlerSupport.requiredStringField("query", "Search query."),
-                    MCPToolHandlerSupport.optionalStringArrayField("object_types", "Optional object-type filter."),
-                    MCPToolHandlerSupport.optionalIntegerField("page_size", "Requested page size."),
-                    MCPToolHandlerSupport.optionalStringField("page_token", "Opaque pagination token.")));
+                    MCPToolFieldDefinition.optional("database", MCPToolValueDefinition.string("Optional logical database name.")),
+                    MCPToolFieldDefinition.optional("schema", MCPToolValueDefinition.string("Optional schema name.")),
+                    MCPToolFieldDefinition.required("query", MCPToolValueDefinition.string("Search query.")),
+                    MCPToolFieldDefinition.optional("object_types", MCPToolValueDefinition.array("Optional object-type filter.", MCPToolValueDefinition.string("Array element value."))),
+                    MCPToolFieldDefinition.optional("page_size", MCPToolValueDefinition.integer("Requested page size.")), 
+                    MCPToolFieldDefinition.optional("page_token", MCPToolValueDefinition.string("Opaque pagination token."))));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

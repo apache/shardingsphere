@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execution;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
+import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
@@ -35,11 +38,11 @@ public final class ExecuteQueryToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolDescriptor.create("execute_query",
             MCPToolInputDefinition.create(
-                    MCPToolHandlerSupport.requiredStringField("database", "Logical database name."),
-                    MCPToolHandlerSupport.optionalStringField("schema", "Optional schema name."),
-                    MCPToolHandlerSupport.requiredStringField("sql", "Single SQL statement."),
-                    MCPToolHandlerSupport.optionalIntegerField("max_rows", "Optional maximum row count."),
-                    MCPToolHandlerSupport.optionalIntegerField("timeout_ms", "Optional timeout in milliseconds.")));
+                    MCPToolFieldDefinition.required("database", MCPToolValueDefinition.string("Logical database name.")),
+                    MCPToolFieldDefinition.optional("schema", MCPToolValueDefinition.string("Optional schema name.")),
+                    MCPToolFieldDefinition.required("sql", MCPToolValueDefinition.string("Single SQL statement.")),
+                    MCPToolFieldDefinition.optional("max_rows", MCPToolValueDefinition.integer("Optional maximum row count.")),
+                    MCPToolFieldDefinition.optional("timeout_ms", MCPToolValueDefinition.integer("Optional timeout in milliseconds."))));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
@@ -49,9 +52,8 @@ public final class ExecuteQueryToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
         ExecutionRequest executionRequest = MCPToolHandlerSupport.createExecutionRequest(sessionId, arguments);
-        if (executionRequest.getDatabase().isEmpty() || executionRequest.getSql().isEmpty()) {
-            throw new MCPInvalidRequestException("Database and sql are required.");
-        }
+        ShardingSpherePreconditions.checkState(!executionRequest.getDatabase().isEmpty() && !executionRequest.getSql().isEmpty(),
+                () -> new MCPInvalidRequestException("Database and sql are required."));
         return runtimeContext.getSqlExecutionFacade().execute(executionRequest);
     }
 }

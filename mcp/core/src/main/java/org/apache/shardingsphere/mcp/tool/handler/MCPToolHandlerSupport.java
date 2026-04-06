@@ -21,8 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,50 +35,6 @@ import java.util.Set;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolHandlerSupport {
-    
-    /**
-     * Create required string field definition.
-     *
-     * @param name field name
-     * @param description field description
-     * @return field definition
-     */
-    public static MCPToolFieldDefinition requiredStringField(final String name, final String description) {
-        return MCPToolFieldDefinition.required(name, MCPToolValueDefinition.string(description));
-    }
-    
-    /**
-     * Create optional string field definition.
-     *
-     * @param name field name
-     * @param description field description
-     * @return field definition
-     */
-    public static MCPToolFieldDefinition optionalStringField(final String name, final String description) {
-        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.string(description));
-    }
-    
-    /**
-     * Create optional integer field definition.
-     *
-     * @param name field name
-     * @param description field description
-     * @return field definition
-     */
-    public static MCPToolFieldDefinition optionalIntegerField(final String name, final String description) {
-        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.integer(description));
-    }
-    
-    /**
-     * Create optional string array field definition.
-     *
-     * @param name field name
-     * @param description field description
-     * @return field definition
-     */
-    public static MCPToolFieldDefinition optionalStringArrayField(final String name, final String description) {
-        return MCPToolFieldDefinition.optional(name, MCPToolValueDefinition.array(description, MCPToolValueDefinition.string("Array element value.")));
-    }
     
     /**
      * Get object types.
