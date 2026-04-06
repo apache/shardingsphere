@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
@@ -38,7 +39,14 @@ import java.util.Map;
 public final class SearchMetadataToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata", 
-            Arrays.asList(new MCPToolFieldDefinition("database", MCPToolValueDefinition.string("Optional logical database name."), false), new MCPToolFieldDefinition("schema", MCPToolValueDefinition.string("Optional schema name."), false), new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true), new MCPToolFieldDefinition("object_types", MCPToolValueDefinition.array("Optional object-type filter.", MCPToolValueDefinition.string("Array element value.")), false), new MCPToolFieldDefinition("page_size", MCPToolValueDefinition.integer("Requested page size."), false), new MCPToolFieldDefinition("page_token", MCPToolValueDefinition.string("Opaque pagination token."), false)));
+            Arrays.asList(new MCPToolFieldDefinition("database", 
+                    new MCPToolValueDefinition(Type.STRING, "Optional logical database name.", null), false),
+                    new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
+                    new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
+                    new MCPToolFieldDefinition("object_types", new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter.",
+                            new MCPToolValueDefinition(Type.STRING, "Array element value.", null)), false),
+                    new MCPToolFieldDefinition("page_size", new MCPToolValueDefinition(Type.INTEGER, "Requested page size.", null), false),
+                    new MCPToolFieldDefinition("page_token", new MCPToolValueDefinition(Type.STRING, "Opaque pagination token.", null), false)));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

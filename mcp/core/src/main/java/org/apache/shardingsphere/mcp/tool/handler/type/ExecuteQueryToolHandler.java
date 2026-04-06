@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
@@ -37,7 +38,12 @@ import java.util.Map;
 public final class ExecuteQueryToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query",
-            Arrays.asList(new MCPToolFieldDefinition("database", MCPToolValueDefinition.string("Logical database name."), true), new MCPToolFieldDefinition("schema", MCPToolValueDefinition.string("Optional schema name."), false), new MCPToolFieldDefinition("sql", MCPToolValueDefinition.string("Single SQL statement."), true), new MCPToolFieldDefinition("max_rows", MCPToolValueDefinition.integer("Optional maximum row count."), false), new MCPToolFieldDefinition("timeout_ms", MCPToolValueDefinition.integer("Optional timeout in milliseconds."), false)));
+            Arrays.asList(new MCPToolFieldDefinition("database",
+                    new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), true),
+                    new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
+                    new MCPToolFieldDefinition("sql", new MCPToolValueDefinition(Type.STRING, "Single SQL statement.", null), true),
+                    new MCPToolFieldDefinition("max_rows", new MCPToolValueDefinition(Type.INTEGER, "Optional maximum row count.", null), false), 
+                    new MCPToolFieldDefinition("timeout_ms", new MCPToolValueDefinition(Type.INTEGER, "Optional timeout in milliseconds.", null), false)));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

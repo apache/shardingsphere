@@ -34,37 +34,6 @@ public final class MCPToolValueDefinition {
     private final MCPToolValueDefinition itemDefinition;
     
     /**
-     * Create string tool input value definition.
-     *
-     * @param description description
-     * @return string tool input value definition
-     */
-    public static MCPToolValueDefinition string(final String description) {
-        return new MCPToolValueDefinition(Type.STRING, description, null);
-    }
-    
-    /**
-     * Create integer tool input value definition.
-     *
-     * @param description description
-     * @return integer tool input value definition
-     */
-    public static MCPToolValueDefinition integer(final String description) {
-        return new MCPToolValueDefinition(Type.INTEGER, description, null);
-    }
-    
-    /**
-     * Create array tool input value definition.
-     *
-     * @param description description
-     * @param itemDefinition item definition
-     * @return array tool input value definition
-     */
-    public static MCPToolValueDefinition array(final String description, final MCPToolValueDefinition itemDefinition) {
-        return new MCPToolValueDefinition(Type.ARRAY, description, itemDefinition);
-    }
-    
-    /**
      * Tool input value type.
      */
     public enum Type {
