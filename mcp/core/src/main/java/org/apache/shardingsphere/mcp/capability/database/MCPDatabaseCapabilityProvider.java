@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.capability.database;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
 import java.util.LinkedHashSet;
@@ -110,6 +110,6 @@ public final class MCPDatabaseCapabilityProvider {
     }
     
     private String getDatabaseVersion(final String databaseName) {
-        return databaseMetadataSnapshots.findSnapshot(databaseName).map(DatabaseMetadataSnapshot::getDatabaseVersion).orElse("");
+        return databaseMetadataSnapshots.findDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseVersion).orElse("");
     }
 }

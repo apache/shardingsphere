@@ -18,29 +18,14 @@
 package org.apache.shardingsphere.mcp.metadata.model;
 
 import lombok.Getter;
-
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Database metadata snapshot.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DatabaseMetadataSnapshot {
     
-    private final String databaseType;
-    
-    private final String databaseVersion;
-    
-    private final List<MetadataObject> metadataObjects;
-    
-    private final List<MCPSchemaMetadata> schemas;
-    
-    public DatabaseMetadataSnapshot(final String databaseType, final String databaseVersion, final Collection<MetadataObject> metadataObjects) {
-        this.databaseType = databaseType;
-        this.databaseVersion = databaseVersion;
-        this.metadataObjects = new LinkedList<>(metadataObjects);
-        schemas = MetadataHierarchyBuilder.buildSchemas(metadataObjects);
-    }
+    private final MCPDatabaseMetadata databaseMetadata;
 }

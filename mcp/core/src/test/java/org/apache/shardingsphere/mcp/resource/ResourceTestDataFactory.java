@@ -22,8 +22,12 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,18 +59,18 @@ public final class ResourceTestDataFactory {
      */
     public static DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> result = new LinkedHashMap<>(2, 1F);
-        result.put("logic_db", new DatabaseMetadataSnapshot("MySQL", "", List.of(
-                new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.VIEW, "orders_view", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "order_id", "TABLE", "orders"),
-                new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "item_id", "TABLE", "order_items"),
-                new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "order_id", "VIEW", "orders_view"),
-                new MetadataObject("logic_db", "public", MetadataObjectType.INDEX, "order_idx", "TABLE", "orders"))));
-        result.put("warehouse", new DatabaseMetadataSnapshot("Hive", "", List.of(
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""))));
+        result.put("logic_db", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+                new MCPSchemaMetadata("logic_db", "public", List.of(
+                        new MCPTableMetadata("logic_db", "public", "orders",
+                                List.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id")),
+                                List.of(new MCPIndexMetadata("logic_db", "public", "orders", "order_idx"))),
+                        new MCPTableMetadata("logic_db", "public", "order_items",
+                                List.of(new MCPColumnMetadata("logic_db", "public", "order_items", "", "item_id")), List.of())),
+                        List.of(new MCPViewMetadata("logic_db", "public", "orders_view",
+                                List.of(new MCPColumnMetadata("logic_db", "public", "", "orders_view", "order_id")))))))));
+        result.put("warehouse", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+                new MCPSchemaMetadata("warehouse", "warehouse", List.of(
+                        new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(), List.of())), List.of())))));
         return new DatabaseMetadataSnapshots(result);
     }
 }

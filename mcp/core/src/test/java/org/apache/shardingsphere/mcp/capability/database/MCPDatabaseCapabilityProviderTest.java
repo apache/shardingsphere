@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.capability.database;
 
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 
@@ -66,7 +67,8 @@ class MCPDatabaseCapabilityProviderTest {
     
     @Test
     void assertProvideWithRuntimeOverlay() {
-        DatabaseMetadataSnapshots snapshots = new DatabaseMetadataSnapshots(Map.of("logic_db", new DatabaseMetadataSnapshot("MySQL", "8.0.32", Collections.emptyList())));
+        DatabaseMetadataSnapshots snapshots = new DatabaseMetadataSnapshots(Map.of("logic_db",
+                new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("logic_db", "MySQL", "8.0.32", Collections.emptyList()))));
         Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(snapshots).provide("logic_db");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
@@ -76,7 +78,7 @@ class MCPDatabaseCapabilityProviderTest {
     
     private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
         return new MCPDatabaseCapabilityProvider(new DatabaseMetadataSnapshots(Map.of(
-                "logic_db", new DatabaseMetadataSnapshot("MySQL", "", Collections.emptyList()),
-                "warehouse", new DatabaseMetadataSnapshot("Hive", "", Collections.emptyList()))));
+                "logic_db", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList())),
+                "warehouse", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("warehouse", "Hive", "", Collections.emptyList())))));
     }
 }

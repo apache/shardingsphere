@@ -19,11 +19,7 @@ package org.apache.shardingsphere.mcp.metadata.model;
 
 import lombok.Getter;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -34,18 +30,8 @@ public final class DatabaseMetadataSnapshots {
     
     private final Map<String, DatabaseMetadataSnapshot> databaseSnapshots;
     
-    private final Map<String, String> databaseTypes;
-    
-    private final List<MetadataObject> metadataObjects;
-    
     public DatabaseMetadataSnapshots(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
         this.databaseSnapshots = databaseSnapshots;
-        databaseTypes = new LinkedHashMap<>(databaseSnapshots.size(), 1F);
-        metadataObjects = new LinkedList<>();
-        for (Entry<String, DatabaseMetadataSnapshot> entry : databaseSnapshots.entrySet()) {
-            databaseTypes.put(entry.getKey(), entry.getValue().getDatabaseType());
-            metadataObjects.addAll(entry.getValue().getMetadataObjects());
-        }
     }
     
     /**
@@ -55,7 +41,17 @@ public final class DatabaseMetadataSnapshots {
      * @return found database type
      */
     public Optional<String> findDatabaseType(final String databaseName) {
-        return Optional.ofNullable(databaseTypes.get(databaseName));
+        return findDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseType);
+    }
+    
+    /**
+     * Find database metadata.
+     *
+     * @param databaseName database name
+     * @return found database metadata
+     */
+    public Optional<MCPDatabaseMetadata> findDatabaseMetadata(final String databaseName) {
+        return findSnapshot(databaseName).map(DatabaseMetadataSnapshot::getDatabaseMetadata);
     }
     
     /**
@@ -76,10 +72,5 @@ public final class DatabaseMetadataSnapshots {
      */
     public void replaceSnapshot(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
         databaseSnapshots.put(databaseName, databaseSnapshot);
-        databaseTypes.put(databaseName, databaseSnapshot.getDatabaseType());
-        metadataObjects.clear();
-        for (Entry<String, DatabaseMetadataSnapshot> entry : databaseSnapshots.entrySet()) {
-            metadataObjects.addAll(entry.getValue().getMetadataObjects());
-        }
     }
 }

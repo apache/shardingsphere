@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.metadata.jdbc;
 
-import lombok.Getter;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -67,13 +70,13 @@ public final class MCPJdbcMetadataLoader {
     
     private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final DatabaseMetaData databaseMetaData) throws SQLException {
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-        MetadataObjectAccumulator accumulator = loadTables(databaseName, databaseMetaData);
-        accumulator.merge(loadViews(databaseName, databaseMetaData));
-        return new DatabaseMetadataSnapshot(databaseType, databaseVersion, accumulator.getMetadataObjects());
+        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseType, databaseVersion);
+        loadTables(accumulator, databaseMetaData);
+        loadViews(accumulator, databaseMetaData);
+        return new DatabaseMetadataSnapshot(accumulator.build());
     }
     
-    private MetadataObjectAccumulator loadTables(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
-        MetadataObjectAccumulator result = new MetadataObjectAccumulator();
+    private void loadTables(final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String schemaName = Objects.toString(tables.getString("TABLE_SCHEM"), "").trim();
@@ -84,17 +87,18 @@ public final class MCPJdbcMetadataLoader {
                 if (tableName.isEmpty()) {
                     continue;
                 }
-                result.registerSchema(databaseName, schemaName);
-                result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.TABLE, tableName, "", ""));
-                result.merge(loadColumns(databaseName, databaseMetaData, schemaName, tableName, "TABLE"));
-                result.merge(loadIndexes(databaseName, databaseMetaData, schemaName, tableName));
+                TableMetadataAccumulator tableMetadata = accumulator.getSchemaAccumulator(schemaName).getTableAccumulator(tableName);
+                for (String each : loadColumns(databaseMetaData, schemaName, tableName)) {
+                    tableMetadata.addColumn(each);
+                }
+                for (String each : loadIndexes(databaseMetaData, schemaName, tableName)) {
+                    tableMetadata.addIndex(each);
+                }
             }
         }
-        return result;
     }
     
-    private MetadataObjectAccumulator loadViews(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
-        MetadataObjectAccumulator result = new MetadataObjectAccumulator();
+    private void loadViews(final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
                 String schemaName = Objects.toString(views.getString("TABLE_SCHEM"), "").trim();
@@ -105,40 +109,39 @@ public final class MCPJdbcMetadataLoader {
                 if (viewName.isEmpty()) {
                     continue;
                 }
-                result.registerSchema(databaseName, schemaName);
-                result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.VIEW, viewName, "", ""));
-                result.merge(loadColumns(databaseName, databaseMetaData, schemaName, viewName, "VIEW"));
+                ViewMetadataAccumulator viewMetadata = accumulator.getSchemaAccumulator(schemaName).getViewAccumulator(viewName);
+                for (String each : loadColumns(databaseMetaData, schemaName, viewName)) {
+                    viewMetadata.addColumn(each);
+                }
             }
         }
-        return result;
     }
     
     private boolean isSystemSchema(final String schemaName) {
         return SYSTEM_SCHEMAS.contains(schemaName.toUpperCase(Locale.ENGLISH));
     }
     
-    private MetadataObjectAccumulator loadColumns(final String databaseName, final DatabaseMetaData databaseMetaData,
-                                                  final String schemaName, final String objectName, final String parentObjectType) throws SQLException {
-        MetadataObjectAccumulator result = new MetadataObjectAccumulator();
+    private List<String> loadColumns(final DatabaseMetaData databaseMetaData, final String schemaName, final String objectName) throws SQLException {
+        List<String> result = new LinkedList<>();
         try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schemaName), objectName, "%")) {
             while (columns.next()) {
                 String columnName = Objects.toString(columns.getString("COLUMN_NAME"), "").trim();
                 if (!columnName.isEmpty()) {
-                    result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.COLUMN, columnName, parentObjectType, objectName));
+                    result.add(columnName);
                 }
             }
         }
         return result;
     }
     
-    private MetadataObjectAccumulator loadIndexes(final String databaseName, final DatabaseMetaData databaseMetaData, final String schemaName, final String tableName) throws SQLException {
-        MetadataObjectAccumulator result = new MetadataObjectAccumulator();
-        Set<String> indexNames = new LinkedHashSet<>();
+    private List<String> loadIndexes(final DatabaseMetaData databaseMetaData, final String schemaName, final String tableName) throws SQLException {
+        List<String> result = new LinkedList<>();
+        Set<String> loadedIndexNames = new LinkedHashSet<>();
         try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schemaName), tableName, false, false)) {
             while (indexes.next()) {
                 String indexName = Objects.toString(indexes.getString("INDEX_NAME"), "").trim();
-                if (!indexName.isEmpty() && indexNames.add(indexName)) {
-                    result.addMetadataObject(new MetadataObject(databaseName, schemaName, MetadataObjectType.INDEX, indexName, "TABLE", tableName));
+                if (!indexName.isEmpty() && loadedIndexNames.add(indexName)) {
+                    result.add(indexName);
                 }
             }
         }
@@ -150,30 +153,139 @@ public final class MCPJdbcMetadataLoader {
         return result.isEmpty() ? null : result;
     }
     
-    @Getter
-    private static final class MetadataObjectAccumulator {
+    private static final class DatabaseMetadataAccumulator {
         
-        private final List<MetadataObject> metadataObjects = new LinkedList<>();
+        private final String database;
         
-        private final Set<String> foundSchemas = new LinkedHashSet<>();
+        private final String databaseType;
         
-        private void registerSchema(final String databaseName, final String schemaName) {
-            if (schemaName.isEmpty() || !foundSchemas.add(schemaName)) {
-                return;
-            }
-            metadataObjects.add(new MetadataObject(databaseName, schemaName, MetadataObjectType.SCHEMA, schemaName, "", ""));
+        private final String databaseVersion;
+        
+        private final Map<String, SchemaMetadataAccumulator> schemaAccumulators = new LinkedHashMap<>(16, 1F);
+        
+        private DatabaseMetadataAccumulator(final String database, final String databaseType, final String databaseVersion) {
+            this.database = database;
+            this.databaseType = databaseType;
+            this.databaseVersion = databaseVersion;
         }
         
-        private void addMetadataObject(final MetadataObject metadataObject) {
-            metadataObjects.add(metadataObject);
+        private SchemaMetadataAccumulator getSchemaAccumulator(final String schema) {
+            SchemaMetadataAccumulator result = schemaAccumulators.get(schema);
+            if (null == result) {
+                result = new SchemaMetadataAccumulator(database, schema);
+                schemaAccumulators.put(schema, result);
+            }
+            return result;
         }
         
-        private void merge(final MetadataObjectAccumulator accumulator) {
-            for (MetadataObject each : accumulator.getMetadataObjects()) {
-                if (MetadataObjectType.SCHEMA != each.getObjectType() || foundSchemas.add(each.getSchema())) {
-                    metadataObjects.add(each);
-                }
+        private MCPDatabaseMetadata build() {
+            List<MCPSchemaMetadata> schemas = new LinkedList<>();
+            for (SchemaMetadataAccumulator each : schemaAccumulators.values()) {
+                schemas.add(each.build());
             }
+            return new MCPDatabaseMetadata(database, databaseType, databaseVersion, schemas);
+        }
+    }
+    
+    private static final class SchemaMetadataAccumulator {
+        
+        private final String database;
+        
+        private final String schema;
+        
+        private final Map<String, TableMetadataAccumulator> tableAccumulators = new LinkedHashMap<>(16, 1F);
+        
+        private final Map<String, ViewMetadataAccumulator> viewAccumulators = new LinkedHashMap<>(16, 1F);
+        
+        private SchemaMetadataAccumulator(final String database, final String schema) {
+            this.database = database;
+            this.schema = schema;
+        }
+        
+        private TableMetadataAccumulator getTableAccumulator(final String table) {
+            TableMetadataAccumulator result = tableAccumulators.get(table);
+            if (null == result) {
+                result = new TableMetadataAccumulator(database, schema, table);
+                tableAccumulators.put(table, result);
+            }
+            return result;
+        }
+        
+        private ViewMetadataAccumulator getViewAccumulator(final String view) {
+            ViewMetadataAccumulator result = viewAccumulators.get(view);
+            if (null == result) {
+                result = new ViewMetadataAccumulator(database, schema, view);
+                viewAccumulators.put(view, result);
+            }
+            return result;
+        }
+        
+        private MCPSchemaMetadata build() {
+            List<MCPTableMetadata> tables = new LinkedList<>();
+            for (TableMetadataAccumulator each : tableAccumulators.values()) {
+                tables.add(each.build());
+            }
+            List<MCPViewMetadata> views = new LinkedList<>();
+            for (ViewMetadataAccumulator each : viewAccumulators.values()) {
+                views.add(each.build());
+            }
+            return new MCPSchemaMetadata(database, schema, tables, views);
+        }
+    }
+    
+    private static final class TableMetadataAccumulator {
+        
+        private final String database;
+        
+        private final String schema;
+        
+        private final String table;
+        
+        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
+        
+        private final Map<String, MCPIndexMetadata> indexes = new LinkedHashMap<>(16, 1F);
+        
+        private TableMetadataAccumulator(final String database, final String schema, final String table) {
+            this.database = database;
+            this.schema = schema;
+            this.table = table;
+        }
+        
+        private void addColumn(final String column) {
+            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, table, "", column));
+        }
+        
+        private void addIndex(final String index) {
+            indexes.putIfAbsent(index, new MCPIndexMetadata(database, schema, table, index));
+        }
+        
+        private MCPTableMetadata build() {
+            return new MCPTableMetadata(database, schema, table, new LinkedList<>(columns.values()), new LinkedList<>(indexes.values()));
+        }
+    }
+    
+    private static final class ViewMetadataAccumulator {
+        
+        private final String database;
+        
+        private final String schema;
+        
+        private final String view;
+        
+        private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
+        
+        private ViewMetadataAccumulator(final String database, final String schema, final String view) {
+            this.database = database;
+            this.schema = schema;
+            this.view = view;
+        }
+        
+        private void addColumn(final String column) {
+            columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, "", view, column));
+        }
+        
+        private MCPViewMetadata build() {
+            return new MCPViewMetadata(database, schema, view, new LinkedList<>(columns.values()));
         }
     }
 }

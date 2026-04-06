@@ -19,8 +19,13 @@ package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,7 +42,6 @@ import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,18 +69,18 @@ class MCPJdbcMetadataLoaderTest {
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
-        assertThat(actual.getDatabaseTypes().get("logic_db"), is("H2"));
-        assertFalse(actual.findSnapshot("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
+        assertThat(actual.findDatabaseType("logic_db").orElseThrow(), is("H2"));
+        assertFalse(actual.findDatabaseMetadata("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("loadMetadataObjectArguments")
-    void assertLoadWithMetadataObject(final String name, final MetadataObjectType objectType, final String objectName) throws SQLException {
+    @MethodSource("loadTypedMetadataArguments")
+    void assertLoadWithTypedMetadata(final String name, final MetadataObjectType objectType, final String objectName) throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-" + objectName);
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), objectType, objectName));
+        assertTrue(containsMetadata(actual.findDatabaseMetadata("logic_db").orElseThrow(), objectType, objectName));
     }
     
     @Test
@@ -89,7 +93,7 @@ class MCPJdbcMetadataLoaderTest {
         Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
                 "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
         DatabaseMetadataSnapshots actual = metadataLoader.load(connectionConfigs);
-        assertThat(actual.getDatabaseTypes().size(), is(2));
+        assertThat(actual.getDatabaseSnapshots().size(), is(2));
         assertTrue(actual.findSnapshot("analytics_db").isPresent());
     }
     
@@ -100,10 +104,12 @@ class MCPJdbcMetadataLoaderTest {
         DriverManager.registerDriver(mockDriver);
         try {
             DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
-            assertFalse(actual.getMetadataObjects().stream().anyMatch(each -> MetadataObjectType.SCHEMA == each.getObjectType()));
-            assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
-            assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.COLUMN, "order_id"));
-            assertThat(actual.findSnapshot("logic_db").orElseThrow().getDatabaseVersion(), is(""));
+            MCPDatabaseMetadata databaseMetadata = actual.findDatabaseMetadata("logic_db").orElseThrow();
+            assertThat(databaseMetadata.getSchemas().size(), is(1));
+            assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is(""));
+            assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.TABLE, "orders"));
+            assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.COLUMN, "order_id"));
+            assertThat(databaseMetadata.getDatabaseVersion(), is(""));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }
@@ -115,17 +121,17 @@ class MCPJdbcMetadataLoaderTest {
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         DatabaseMetadataSnapshots actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
-        long actualSchemaCount = actual.getMetadataObjects().stream().filter(each -> MetadataObjectType.SCHEMA == each.getObjectType()).count();
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.TABLE, "orders"));
-        assertTrue(containsMetadataObject(actual.getMetadataObjects(), MetadataObjectType.VIEW, "active_orders"));
-        assertThat(actualSchemaCount, is(1L));
+        MCPDatabaseMetadata databaseMetadata = actual.findDatabaseMetadata("logic_db").orElseThrow();
+        assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.TABLE, "orders"));
+        assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.VIEW, "active_orders"));
+        assertThat(databaseMetadata.getSchemas().size(), is(1));
     }
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
     
-    private static Stream<Arguments> loadMetadataObjectArguments() {
+    private static Stream<Arguments> loadTypedMetadataArguments() {
         return Stream.of(
                 Arguments.of("table orders", MetadataObjectType.TABLE, "orders"),
                 Arguments.of("table order_items", MetadataObjectType.TABLE, "order_items"),
@@ -160,8 +166,38 @@ class MCPJdbcMetadataLoaderTest {
         return result;
     }
     
-    private boolean containsMetadataObject(final List<MetadataObject> metadataObjects, final MetadataObjectType objectType, final String objectName) {
-        return metadataObjects.stream().anyMatch(each -> objectType == each.getObjectType() && objectName.equals(each.getName()));
+    private boolean containsMetadata(final MCPDatabaseMetadata databaseMetadata, final MetadataObjectType objectType, final String objectName) {
+        for (MCPSchemaMetadata each : databaseMetadata.getSchemas()) {
+            if (MetadataObjectType.SCHEMA == objectType && objectName.equals(each.getSchema())) {
+                return true;
+            }
+            for (MCPTableMetadata table : each.getTables()) {
+                if (MetadataObjectType.TABLE == objectType && objectName.equals(table.getTable())) {
+                    return true;
+                }
+                for (MCPColumnMetadata column : table.getColumns()) {
+                    if (MetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
+                        return true;
+                    }
+                }
+                for (MCPIndexMetadata index : table.getIndexes()) {
+                    if (MetadataObjectType.INDEX == objectType && objectName.equals(index.getIndex())) {
+                        return true;
+                    }
+                }
+            }
+            for (MCPViewMetadata view : each.getViews()) {
+                if (MetadataObjectType.VIEW == objectType && objectName.equals(view.getView())) {
+                    return true;
+                }
+                for (MCPColumnMetadata column : view.getColumns()) {
+                    if (MetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     private static final class MockDriver implements Driver {

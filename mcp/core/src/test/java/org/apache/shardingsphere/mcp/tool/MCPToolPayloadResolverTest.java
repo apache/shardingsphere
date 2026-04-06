@@ -24,8 +24,9 @@ import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -103,11 +104,11 @@ class MCPToolPayloadResolverTest {
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
         Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", "", List.of(
-                new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", "", List.of(
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""))));
+        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+                new MCPSchemaMetadata("logic_db", "public", List.of(
+                        new MCPTableMetadata("logic_db", "public", "orders", List.of(), List.of())), List.of())))));
+        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+                new MCPSchemaMetadata("warehouse", "warehouse", List.of(), List.of())))));
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     

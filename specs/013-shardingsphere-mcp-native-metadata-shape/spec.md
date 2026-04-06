@@ -1,4 +1,4 @@
-# Feature Specification: ShardingSphere MCP Native Metadata Shape Without MetadataObject Flattening
+# Feature Specification: ShardingSphere MCP Direct Typed Metadata Model Without MetadataObject
 
 **Feature Branch**: `[no-branch-switch-requested]`  
 **Created**: 2026-04-05  
@@ -8,179 +8,185 @@
 
 ## Scope Statement
 
-本 follow-up 只处理 `mcp/core` metadata 主链路与紧邻测试中的模型和展现方式：
+本 follow-up 继续只处理 `mcp/core` metadata 主链路与紧邻测试中的模型和展现方式：
 
-- `MetadataObject` 不再作为 metadata snapshot、query 和 response 的源模型
-- runtime metadata 改为保留数据库原生层级：database -> schema -> table/view -> column/index
-- metadata resource 与 metadata tool 改为输出贴近数据库原貌的 typed payload，而不是统一扁平对象
-- 保持现有 resource URI 与 metadata tool name 不变
-- capability 与 `execute_query` surface 不在本轮调整范围内
+- `MetadataObject` 从 metadata loader、snapshot、query、resource、tool 主链路中彻底移除
+- runtime metadata 直接使用具体对象：
+  `MCPDatabaseMetadata -> MCPSchemaMetadata -> MCPTableMetadata / MCPViewMetadata -> MCPColumnMetadata / MCPIndexMetadata`
+- `DatabaseMetadataSnapshot` 直接持有完整 `MCPDatabaseMetadata`，不再拆成平铺字段或镜像字段
+- `MCPJdbcMetadataLoader` 直接构建 typed metadata tree，不再先 flatten 再 rebuild
+- metadata resource 与 metadata tool 直接返回具体对象，而不是 generic item
+- 保持现有 resource URI、metadata tool name、capability surface 与 `execute_query` surface 不变
 - 本轮只允许修改 metadata 相关生产代码、测试代码和 Speckit 文档，不允许夹带无关小修小改
 
-本特性的核心不是给 `MetadataObject` 换个名字，
-而是把 “数据库天然结构” 重新拉回 metadata 设计的中心。
+本特性的核心不只是让 payload 更漂亮，
+而是把 “具体对象就是源模型” 作为 metadata 设计原则固定下来。
 
 ## Problem Statement
 
-当前 metadata 链路的根问题不是字段不够，而是源模型方向错了。
+当前问题已经从 “为什么返回 `MetadataObject`” 进一步收敛为：
+
+为什么 runtime source of truth 还没有直接使用具体 metadata 对象。
 
 已知现状包括：
 
-- `MCPJdbcMetadataLoader` 从 JDBC `DatabaseMetaData` 读取到的是 database / schema / table / view /
-  column / index 的天然层级
-- 这些结果一进入 runtime snapshot 就被压平成 `MetadataObject`
-- `DatabaseMetadataSnapshot` 与 `DatabaseMetadataSnapshots` 持有的是 `MetadataObject` 集合与全局平铺列表
-- `MetadataQueryService` 通过 `objectType + schema + parentObjectType + parentObjectName`
-  在平铺列表上过滤，而不是沿真实层级导航
-- `MCPMetadataResponse`、metadata resources、metadata tools 最终对外暴露的也是同一类 generic item
+- JDBC `DatabaseMetaData` 天然提供的是 database / schema / table / view / column / index 的层级结构
+- 这些结构先被压成 `MetadataObject`
+- 然后再由额外步骤重新拼回 `MCPSchemaMetadata`、`MCPTableMetadata`、`MCPViewMetadata` 等 typed objects
+- `DatabaseMetadataSnapshot` 还同时保留了平铺字段与层级字段
+- `DatabaseMetadataSnapshots` 还维护了全局 `metadataObjects` 聚合列表
 
 这会带来五个直接问题：
 
-1. database 结构被丢失，只能靠 `parentObjectType` / `parentObjectName` 事后补关系  
-2. table、view、column、index 的对象边界被抹平，只剩一套 generic 字段  
-3. `describe_table` / `describe_view` 这类 detail 结果需要从多条平面记录重新拼装  
-4. query 路径围绕“过滤一堆对象”设计，而不是围绕“读取某个真实元数据节点”设计  
-5. 以后如果要保留更贴近数据库原貌的字段，只能继续给 generic 对象打补丁
+1. 具体对象已经存在，但 source of truth 仍然不是具体对象  
+2. loader 做了一次 flatten，snapshot/query 又做了一次 rebuild，路径绕远了  
+3. `MetadataObject` 即使不再是主返回模型，仍然拖着兼容缓存、聚合列表和测试夹具一起存在  
+4. 以后要扩展 table/view/column/index 的真实字段时，还会被 flat 中间层阻挡  
+5. 设计上仍然没有兑现 “数据库里什么样，metadata 就是什么样”
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Resource 返回数据库原貌结构 (Priority: P1)
+### User Story 1 - Runtime snapshot 直接持有完整 MCPDatabaseMetadata (Priority: P1)
 
-作为 MCP metadata 使用者，我希望 resource 读取到的就是数据库对象本来的结构，
-这样我看到 schema、table、view、column、index 时，不需要再去理解一个人为设计的统一平面模型。
+作为 MCP 维护者，我希望 runtime snapshot 的事实源就是完整 `MCPDatabaseMetadata`，
+这样 metadata 主链路里不再存在 flat 中间模型。
 
-**Why this priority**: 这是用户明确提出的第一目标；如果 resource 结果仍然是 `MetadataObject`，
-这轮设计就没有真正解决问题。
+**Why this priority**: 如果 snapshot 还保留 `MetadataObject`，
+那 resource/tool 的直接返回只是表面改善，内部设计仍然绕了一圈。
 
-**Independent Test**: resource handler 与 controller dedicated tests 可以独立验证 list/detail resource
- 返回 typed metadata payload，而不是 `MetadataObject` 列表。
+**Independent Test**: `MCPJdbcMetadataLoaderTest` 与 `DatabaseMetadataSnapshotsTest`
+可以独立验证 snapshot 直接持有 `MCPDatabaseMetadata`，
+且不存在 `MetadataObject` 聚合依赖。
 
 **Acceptance Scenarios**:
 
-1. **Given** 请求 `shardingsphere://databases/logic_db/schemas/public/tables/orders`，
-   **When** 读取 resource，**Then** 返回必须是 table-shaped payload，包含 table 自身信息和其直接子节点，
-   而不是一条 table 记录再加若干 sibling `MetadataObject`。
-2. **Given** 请求 `shardingsphere://databases/logic_db/schemas/public/tables/orders/columns`，
-   **When** 读取 resource，**Then** 返回必须是 column objects 列表，column 与 table 的关系由层级语义表达，
-   而不是 `parentObjectType=TABLE` / `parentObjectName=orders`。
-3. **Given** 当前数据库类型不支持 index resource，
-   **When** 请求 `/indexes` 或 `/indexes/{index}`，**Then** 仍然返回当前 `unsupported` 语义，
-   不能因为模型重做而漂移。
+1. **Given** JDBC loader 读取到一个 logical database 的 metadata，
+   **When** 构建 snapshot，**Then** snapshot 必须直接持有完整 `MCPDatabaseMetadata`，
+   而不是保存 `databaseType + version + List<MetadataObject> + rebuilt schemas`。
+2. **Given** runtime catalog 中存在多个 logical databases，
+   **When** 聚合 snapshots，**Then** 系统必须围绕 `MCPDatabaseMetadata` 导航，
+   而不是维护全局 `metadataObjects` 列表。
+3. **Given** refresh 某个 database，
+   **When** snapshot 被替换，**Then** 替换的对象必须是完整 typed metadata tree，
+   而不是一批平面记录。
 
 ---
 
-### User Story 2 - Metadata tool 返回 typed metadata，而不是 generic item (Priority: P1)
+### User Story 2 - Loader 直接产出具体 metadata 对象 (Priority: P1)
 
-作为 MCP tool 使用者，我希望 metadata tool 的结果与所请求的对象类型一致，
-而不是无论 `list_tables`、`list_columns`、`describe_table` 都走同一个 `MetadataObject` 通道。
+作为 MCP 维护者，我希望 loader 直接构建 `MCPDatabaseMetadata`、`MCPSchemaMetadata`、
+`MCPTableMetadata`、`MCPViewMetadata`、`MCPColumnMetadata`、`MCPIndexMetadata`，
+这样系统不再需要 `MetadataObject` 和 rebuild helper。
 
-**Why this priority**: `MetadataObject` 不只影响 resource，
-也已经成为 metadata tool 的统一输出模型；只改一半会留下同样的抽象问题。
+**Why this priority**: 真正删掉 `MetadataObject` 的关键不在 response，而在 loader。
 
-**Independent Test**: `MetadataToolDispatcherTest` 与 `MCPToolPayloadResolverTest`
- 可独立验证 list / describe / search 三类 metadata tool 的输出形状。
+**Independent Test**: `MCPJdbcMetadataLoaderTest` 可以独立验证 schema/table/view/column/index
+的 ownership 层级与去重语义。
+
+**Acceptance Scenarios**:
+
+1. **Given** JDBC metadata 中包含 table 与其 columns/indexes，
+   **When** loader 执行，**Then** 必须直接把 columns/indexes 放进所属 `MCPTableMetadata`，
+   不能先形成平面 `MetadataObject` 再重建。
+2. **Given** JDBC metadata 中包含 view 与其 columns，
+   **When** loader 执行，**Then** 必须直接把 columns 放进所属 `MCPViewMetadata`。
+3. **Given** schema 为空、默认 schema 或数据库无 schema 概念，
+   **When** loader 执行，**Then** 必须保留真实语义，不能为了适配 flat 模型补造关系字段。
+
+---
+
+### User Story 3 - Resource 与 tool 直接返回具体对象 (Priority: P1)
+
+作为 MCP metadata 使用者，我希望 list/detail/search 结果直接对应具体对象，
+这样看到的模型和 runtime source of truth 一致。
+
+**Why this priority**: 只有当 source model 和 output model 都是具体对象，
+“数据库里什么样，展现就是什么样” 才算真正落地。
+
+**Independent Test**: `ResourceHandlerTest`、`MCPResourceControllerTest`、
+`MetadataToolDispatcherTest` 和 `MCPToolPayloadResolverTest`
+可独立验证 typed payload。
 
 **Acceptance Scenarios**:
 
 1. **Given** 调用 `describe_table(database, schema, table)`，
-   **When** tool dispatch 完成，**Then** 返回必须是一个 table detail object，
-   并直接包含 columns 与 indexes，而不是 “table object + column objects” 的平铺拼接。
-2. **Given** 调用 `list_columns(database, schema, object_type, object_name)`，
-   **When** tool dispatch 完成，**Then** 返回必须是 column objects 列表，
-   不再暴露 `parentObjectType` / `parentObjectName`。
-3. **Given** 调用 `search_metadata(...)` 搜索多种 object type，
-   **When** tool dispatch 完成，**Then** 可以返回 purpose-built 的 search summary objects，
-   但该 summary 只能是搜索结果投影，不能反过来变成 runtime metadata 的源模型。
-
----
-
-### User Story 3 - Runtime snapshot 和 query 回到真实层级 (Priority: P1)
-
-作为 MCP 维护者，我希望 loader、snapshot 与 query service 围绕真实 metadata 层级工作，
-这样后续扩展字段、做 detail 查询或处理数据库差异时，都不需要先 flatten 再 reconstruct。
-
-**Why this priority**: 只改 response 但保留 flat source model，
-会让过度抽象继续留在系统内部，问题只是被藏起来而没有被解决。
-
-**Independent Test**: `MCPJdbcMetadataLoaderTest` 与 `MetadataQueryServiceTest`
- 可独立验证 native hierarchy 建模和按路径导航查询。
-
-**Acceptance Scenarios**:
-
-1. **Given** JDBC metadata loader 读取到 schema、table、view、column、index，
-   **When** 构建 runtime snapshot，**Then** snapshot 必须保留明确的 ownership 层级，
-   而不是立刻变成 `List<MetadataObject>`。
-2. **Given** 查询某个 schema 下的 tables，
-   **When** metadata query 执行，**Then** 系统必须沿 database -> schema -> tables 导航，
-   而不是在全局平铺列表上做 object type 过滤。
-3. **Given** 某个数据库没有显式 schema 或 schema 为空，
-   **When** snapshot 与 query 执行，**Then** 系统必须保留该数据库的真实语义，
-   不能为了适配 generic 模型而补造虚假的 parent 结构。
+   **When** tool dispatch 完成，**Then** 返回必须是一个 `MCPTableMetadata` detail object，
+   并直接包含 columns 与 indexes。
+2. **Given** 读取 table/view/column/index 相关 resource，
+   **When** 返回 payload，**Then** `items` 中必须是对应的具体 metadata objects，
+   而不是 `MetadataObject`。
+3. **Given** 调用 `search_metadata(...)`，
+   **When** 聚合多种 object type，**Then** 允许返回 `MetadataSearchHit` 这类搜索投影，
+   但该投影不能回退成 runtime source model。
 
 ### Edge Cases
 
-- `search_metadata` 跨 object type 搜索时需要异构结果摘要，但这个摘要不能反客为主变成 canonical model。
-- `describe_table` 需要同时覆盖 table 自身、columns 与 indexes；`describe_view` 需要覆盖 view 与 columns。
-- schema 为空、默认 schema 或数据库无 schema 概念时，必须反映真实数据库语义。
+- schema 为空、默认 schema 或数据库无 schema 概念时，typed model 必须保留真实语义。
 - index 继续是 capability-gated optional object；不支持时仍返回 `unsupported`。
-- list / search 的分页能力需要保留，但分页 envelope 不应再强绑定 `MetadataObject`。
-- 本轮不是为了暴露每个数据库 vendor 的所有底层字段；重点是先把结构和对象边界拉正。
+- loader 仍需维持当前 schema 去重、index 去重与 object ownership 语义。
+- list / search 的分页 envelope 可以保留，但 envelope 中的 item 不能再依赖 `MetadataObject`。
+- `MetadataObjectType` 可以保留给 capability / search / tool object-type 参数使用，但它不再绑定 `MetadataObject` 这个类。
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: 系统 MUST 以数据库原生 metadata 层级作为 runtime source of truth，
-  `MetadataObject` MUST NOT 继续充当 metadata snapshot、query 与 response 的 canonical model。
-- **FR-002**: `MCPJdbcMetadataLoader` MUST 直接构建 typed metadata hierarchy，
-  至少覆盖 database、schema、table、view、column、index 六类对象。
-- **FR-003**: `DatabaseMetadataSnapshot` 与 `DatabaseMetadataSnapshots` MUST 持有 native hierarchy，
-  MUST NOT 继续以全局 `Collection<MetadataObject>` 或等价平铺列表作为主要存储形态。
-- **FR-004**: table / view / column / index 的归属关系 MUST 通过对象层级表达，
-  而不是依赖 `parentObjectType` 与 `parentObjectName` 字段补充。
-- **FR-005**: metadata query service MUST 通过层级导航完成 database、schema、table、view、
-  column、index 的 list / detail 查询；基于全局平铺列表的主路径过滤 SHOULD 被移除。
-- **FR-006**: metadata resource 的返回值 MUST 改为贴近所请求对象类型的 typed payload。
+- **FR-001**: `MetadataObject` MUST 从 `mcp/core` metadata 主链路中彻底移除，
+  包括 loader、snapshot、query、resource、tool 和对应测试夹具。
+- **FR-002**: `DatabaseMetadataSnapshot` MUST 直接持有一个完整 `MCPDatabaseMetadata` 实例，
+  MUST NOT 再分别持有 `databaseType`、`databaseVersion`、`List<MetadataObject>` 和 rebuilt schemas。
+- **FR-003**: `DatabaseMetadataSnapshots` MUST 以 logical database -> typed snapshot 的方式组织 runtime catalog，
+  MUST NOT 再维护全局 `List<MetadataObject>` 聚合缓存。
+- **FR-004**: `MCPJdbcMetadataLoader` MUST 直接构建 `MCPDatabaseMetadata`、
+  `MCPSchemaMetadata`、`MCPTableMetadata`、`MCPViewMetadata`、`MCPColumnMetadata`、`MCPIndexMetadata`，
+  MUST NOT 先构建 flat intermediate records。
+- **FR-005**: `MetadataHierarchyBuilder` SHOULD 被删除；
+  如果临时保留，MUST 只服务 typed metadata 构建，MUST NOT 再依赖 `MetadataObject`。
+- **FR-006**: `MetadataQueryService` MUST 以具体 metadata 对象为 source of truth，
+  通过 typed hierarchy 导航完成 list / detail 查询。
+- **FR-007**: metadata resource 的返回值 MUST 改为贴近所请求对象类型的 typed payload；
   list resource 可以保留 `items` envelope，但 `items` 内容 MUST 不再是 `MetadataObject`。
-- **FR-007**: metadata tool 的 list 系列结果 MUST 返回 typed metadata objects；
-  `describe_table` MUST 返回 table detail object，
-  `describe_view` MUST 返回 view detail object。
-- **FR-008**: `describe_table` 的 detail payload MUST 直接包含 columns 与 indexes；
+- **FR-008**: metadata tool 的 list 系列结果 MUST 返回 typed metadata objects；
+  `describe_table` MUST 返回 `MCPTableMetadata`，
+  `describe_view` MUST 返回 `MCPViewMetadata`。
+- **FR-009**: `describe_table` 的 detail payload MUST 直接包含 columns 与 indexes；
   `describe_view` 的 detail payload MUST 直接包含 columns。
-- **FR-009**: `search_metadata` MUST 使用 dedicated search summary model 或等价结果投影，
-  该模型只服务搜索结果展现，MUST NOT 反过来成为 runtime snapshot 的 canonical storage model。
-- **FR-010**: 现有 metadata resource URI 与 metadata tool name MUST 保持不变。
-- **FR-011**: capability surface 与 `execute_query` payload MUST 保持不变。
-- **FR-012**: index unsupported 语义 MUST 保持不变；不支持 index 的数据库仍返回 `unsupported`。
-- **FR-013**: schema 为空或数据库无 schema 概念时，
-  系统 MUST 反映真实数据库语义，MUST NOT 为了统一抽象而制造虚假的 schema / parent 结构。
-- **FR-014**: 系统 SHOULD 允许 typed metadata nodes 保留数据库特有的扩展字段，
-  而不是要求所有差异都回填进一套 universal flat field set。
-- **FR-015**: 本轮 MUST 更新当前假设 `items -> MetadataObject` 的测试、契约和集成验证。
-- **FR-016**: `MetadataObject` SHOULD 被移除，
-  或降级为不进入 metadata source-of-truth / query / response 主路径的兼容适配层。
-- **FR-017**: 本轮实现 MUST 只修改 metadata 相关生产代码、测试代码和本规格文档，
+- **FR-010**: `search_metadata` MUST 使用 dedicated search summary model 或等价结果投影，
+  且该投影 MUST NOT 成为 runtime canonical storage model。
+- **FR-011**: 现有 metadata resource URI 与 metadata tool name MUST 保持不变。
+- **FR-012**: capability surface 与 `execute_query` payload MUST 保持不变。
+- **FR-013**: index unsupported 语义 MUST 保持不变；不支持 index 的数据库仍返回 `unsupported`。
+- **FR-014**: schema 为空或数据库无 schema 概念时，
+  系统 MUST 反映真实数据库语义，MUST NOT 为了统一抽象制造虚假的 parent 结构。
+- **FR-015**: `MetadataObjectType` MAY 保留为 object category enum，
+  供 capability、tool 参数与 search filter 使用，但 MUST 与 `MetadataObject` 解耦。
+- **FR-016**: typed metadata 节点 SHOULD 允许后续保留数据库特有扩展字段，
+  而不是要求所有差异回填进一套 universal flat fields。
+- **FR-017**: 本轮 MUST 更新所有假设 `items -> MetadataObject`、`snapshot -> metadataObjects`
+  的测试、契约与集成验证。
+- **FR-018**: 本轮实现 MUST 只修改 metadata 相关生产代码、测试代码和本规格文档，
   不得夹带无关命名调整、循环改写、格式性重构或其他小修小改。
-- **FR-018**: 本特性 MUST 提供 dedicated tests，
-  覆盖 loader hierarchy、query navigation、resource payload、tool payload、
-  search summary 与 unsupported index 回归。
+- **FR-019**: 本特性 MUST 提供 dedicated tests，
+  覆盖 direct loader build、typed snapshot storage、query navigation、resource payload、
+  tool payload、search summary 与 unsupported index 回归。
 
 ### Key Entities *(include if feature involves data)*
 
-- **RuntimeMetadataCatalog**: runtime 持有的 metadata 总入口，组织多 logical databases 的 native metadata trees。
-- **DatabaseMetadata**: 一个 logical database 的顶层元数据节点，包含 database 基本信息与其 schema 集合。
-- **SchemaMetadata**: schema 节点，拥有 tables 与 views。
-- **TableMetadata**: table 节点，拥有 columns 与 indexes。
-- **ViewMetadata**: view 节点，拥有 columns。
-- **ColumnMetadata**: column 节点，表达 column 自身属性，不通过 parent 字段补关系。
-- **IndexMetadata**: index 节点，表达 index 自身属性及其归属 table。
+- **MCPDatabaseMetadata**: logical database 的完整 metadata 根节点，包含 database 名称、type、version 与 schemas。
+- **MCPSchemaMetadata**: schema 节点，拥有 tables 与 views。
+- **MCPTableMetadata**: table 节点，拥有 columns 与 indexes。
+- **MCPViewMetadata**: view 节点，拥有 columns。
+- **MCPColumnMetadata**: column 节点，表达 column 自身及其所属 table/view。
+- **MCPIndexMetadata**: index 节点，表达 index 自身及其所属 table。
+- **DatabaseMetadataSnapshot**: refresh / catalog 管理用容器，直接持有一个完整 `MCPDatabaseMetadata`。
 - **MetadataSearchHit**: 搜索专用摘要对象，用于跨 object type 聚合结果，不作为 canonical storage model。
+- **MetadataObjectType**: object category enum，用于 capability、search 与 tool 参数，不再绑定 flat object。
 
 ### Assumptions
 
 - 本轮允许 metadata payload shape 调整；这是一个显式契约变化，不被视为纯内部重构。
 - 为了减少 transport churn，list / search 结果可以继续沿用 `items` 和 `next_page_token` envelope。
-- 本轮优先解决“结构与对象边界”问题，不要求一次性暴露所有 JDBC vendor-specific metadata 列。
+- 本轮优先解决 “源模型就是具体对象” 的问题，不要求一次性暴露所有 JDBC vendor-specific metadata 列。
 - capability、session、SQL execute 和非 metadata transport 入口不在本轮范围内。
 
 ## Non-Goals
@@ -195,11 +201,11 @@
 
 ### Measurable Outcomes
 
-- **SC-001**: metadata read/query/response 主路径中的 `MetadataObject` 生产代码使用次数降为 `0`，
-  或只保留在明确标注的兼容适配层中。
-- **SC-002**: runtime snapshot 的 source of truth 变为 database -> schema -> table/view -> column/index
-  的 native hierarchy。
+- **SC-001**: `rg -n "\\bMetadataObject\\b" mcp/core mcp/bootstrap` 的生产代码匹配数降为 `0`。
+- **SC-002**: runtime snapshot 的 source of truth 变为 `MCPDatabaseMetadata` typed tree，
+  不再存在 `metadataObjects` 聚合缓存。
 - **SC-003**: metadata resource 与 metadata tool 返回的 item/detail payload
   100% 不再以 `MetadataObject` 作为对外结果模型。
 - **SC-004**: `describe_table` 与 `describe_view` 不再通过拼装多条平铺对象构造 detail 结果。
-- **SC-005**: index unsupported 语义、resource URI 与 metadata tool name 保持零漂移。
+- **SC-005**: loader 不再执行 `MetadataObject -> hierarchy` 的二次重建流程。
+- **SC-006**: index unsupported 语义、resource URI 与 metadata tool name 保持零漂移。
