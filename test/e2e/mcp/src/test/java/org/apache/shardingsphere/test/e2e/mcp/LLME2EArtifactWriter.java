@@ -33,7 +33,7 @@ final class LLME2EArtifactWriter {
         Files.writeString(artifactDirectory.resolve("system-prompt.md"), artifactBundle.systemPrompt());
         Files.writeString(artifactDirectory.resolve("user-prompt.md"), artifactBundle.userPrompt());
         Files.writeString(artifactDirectory.resolve("raw-model-output.txt"), String.join(System.lineSeparator() + System.lineSeparator(), artifactBundle.rawModelOutputs()));
-        Files.writeString(artifactDirectory.resolve("tool-trace.json"), JsonUtils.toJsonString(artifactBundle.toolTrace()));
+        Files.writeString(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(artifactBundle.interactionTrace()));
         Files.writeString(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(artifactBundle.assertionReport()));
         Files.writeString(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), artifactBundle.mcpRuntimeLogLines()));
         if (null != artifactBundle.finalAnswerJson() && !artifactBundle.finalAnswerJson().isEmpty()) {

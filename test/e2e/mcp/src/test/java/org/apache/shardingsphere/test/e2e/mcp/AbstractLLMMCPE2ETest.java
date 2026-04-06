@@ -42,13 +42,13 @@ abstract class AbstractLLMMCPE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private final LLME2EArtifactWriter artifactWriter = new LLME2EArtifactWriter();
     
-    protected final void assertLLMSmoke(final Supplier<LLME2EScenario> scenarioSupplier) throws IOException, InterruptedException {
+    protected final void assertLLMSmoke(final Supplier<LLME2EScenario> scenarioSupplier) throws IOException {
         Assumptions.assumeTrue(isLLMSmokeEnabled(),
                 "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM MCP smoke tests.");
         launchProductionRuntime();
         LLME2EScenario scenario = scenarioSupplier.get();
         LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.maxTurns(),
-                new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()), new MCPHttpToolClient(getEndpointUri(), createHttpClient())).run(scenario);
+                new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()), new MCPHttpInteractionClient(getEndpointUri(), createHttpClient())).run(scenario);
         Path artifactDirectory = llmConfiguration.createArtifactDirectory(scenario.scenarioId());
         artifactWriter.write(artifactDirectory, artifactBundle);
         LLME2EAssertionReport assertionReport = artifactBundle.assertionReport();

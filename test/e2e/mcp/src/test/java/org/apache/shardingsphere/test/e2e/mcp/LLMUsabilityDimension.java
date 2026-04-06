@@ -17,24 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
-import java.util.Map;
-
-final class MCPToolResponse {
+enum LLMUsabilityDimension {
     
-    private final Map<String, Object> structuredContent;
+    RESOURCE,
     
-    private final String rawResponse;
+    TOOL,
     
-    MCPToolResponse(final Map<String, Object> structuredContent, final String rawResponse) {
-        this.structuredContent = Map.copyOf(structuredContent);
-        this.rawResponse = rawResponse;
-    }
+    QUERY,
     
-    Map<String, Object> structuredContent() {
-        return structuredContent;
-    }
-    
-    String rawResponse() {
-        return rawResponse;
-    }
+    RECOVERY
 }

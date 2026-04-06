@@ -31,6 +31,20 @@ class LLMStructuredAnswerTest {
     void assertFromJson() {
         LLMStructuredAnswer actual = LLMStructuredAnswer.fromJson("{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\","
                 + "\"query\":\"SELECT   COUNT(*)\\nAS total_orders FROM orders\",\"totalOrders\":\"2\","
+                + "\"interactionSequence\":[\"list_tables\",\"describe_table\",\"execute_query\"]}");
+        
+        assertThat(actual.database(), is("logic_db"));
+        assertThat(actual.schema(), is("public"));
+        assertThat(actual.table(), is("orders"));
+        assertThat(actual.totalOrders(), is(2));
+        assertThat(actual.getNormalizedQuery(), is("SELECT COUNT(*) AS total_orders FROM orders"));
+        assertThat(actual.interactionSequence(), is(List.of("list_tables", "describe_table", "execute_query")));
+    }
+    
+    @Test
+    void assertFromJsonWithLegacyToolSequence() {
+        LLMStructuredAnswer actual = LLMStructuredAnswer.fromJson("{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\","
+                + "\"query\":\"SELECT   COUNT(*)\\nAS total_orders FROM orders\",\"totalOrders\":\"2\","
                 + "\"toolSequence\":[\"list_tables\",\"describe_table\",\"execute_query\"]}");
         
         assertThat(actual.database(), is("logic_db"));
@@ -38,7 +52,7 @@ class LLMStructuredAnswerTest {
         assertThat(actual.table(), is("orders"));
         assertThat(actual.totalOrders(), is(2));
         assertThat(actual.getNormalizedQuery(), is("SELECT COUNT(*) AS total_orders FROM orders"));
-        assertThat(actual.toolSequence(), is(List.of("list_tables", "describe_table", "execute_query")));
+        assertThat(actual.interactionSequence(), is(List.of("list_tables", "describe_table", "execute_query")));
     }
     
     @Test

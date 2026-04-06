@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp;
+package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
-import java.io.IOException;
+import org.apache.shardingsphere.mcp.tool.ToolRequest;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+
 import java.util.Map;
 
-interface MCPToolClient extends AutoCloseable {
+/**
+ * Metadata tool handler.
+ */
+public interface MetadataToolHandler extends ToolHandler {
     
-    void open() throws IOException, InterruptedException;
-    
-    MCPToolResponse call(String toolName, Map<String, Object> arguments) throws IOException, InterruptedException;
-    
-    @Override
-    void close() throws IOException, InterruptedException;
+    /**
+     * Create metadata tool request.
+     *
+     * @param arguments raw tool arguments
+     * @return metadata tool request
+     */
+    ToolRequest createToolRequest(Map<String, Object> arguments);
 }

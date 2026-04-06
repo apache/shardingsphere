@@ -22,29 +22,19 @@ import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
+import org.apache.shardingsphere.mcp.tool.MCPToolController;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 final class MCPToolCallHandler {
     
-    private final MCPToolPayloadResolver toolPayloadResolver;
+    private final MCPToolController toolController;
     
     McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
-        Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Collections.emptyMap());
-        Map<String, Object> payload;
-        try {
-            payload = toolPayloadResolver.resolve(exchange.sessionId(), request.name(), arguments);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            payload = new MCPErrorResponse(MCPErrorConverter.convert(ex)).toPayload();
-        }
+        Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
+        Map<String, Object> payload = toolController.handle(exchange.sessionId(), request.name(), arguments).toPayload();
         return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(isError(payload)).build();
     }
     

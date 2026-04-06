@@ -24,31 +24,30 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class LLME2EArtifactWriterTest {
+class LLMUsabilityReportWriterTest {
     
     @TempDir
     private Path tempDir;
     
     @Test
-    void assertWrite() throws IOException {
-        final LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-a", "system prompt", "user prompt", "{\"database\":\"logic_db\"}",
-                List.of("{\"content\":\"a\"}"), List.of(new MCPInteractionTraceRecord(1, "list_tables", Map.of("database", "logic_db"), Map.of("items", List.of()))),
-                List.of("tool=list_tables"), LLME2EAssertionReport.success("ok"));
+    void assertWriteScorecardAndComparison() throws IOException {
+        LLMUsabilityScorecard scorecard = new LLMUsabilityScorecard("suite-a", "run-a", 1.0D, 1.0D, 0.0D, 2.0D,
+                1.0D, 0.0D, 1.0D, 1.0D, List.of(), List.of(
+                        new LLMUsabilityScenarioResult("scenario-a", LLMUsabilityDimension.QUERY, "h2", true, "", "ok", true, 0, 2, true, true, 1.0D, false, false, List.of())));
+        LLMUsabilityComparisonResult comparisonResult = new LLMUsabilityComparisonResult("baseline", "candidate", false, List.of(), List.of("task_success_rate"), List.of(), "within_budget");
         
-        new LLME2EArtifactWriter().write(tempDir, artifactBundle);
+        LLMUsabilityReportWriter actual = new LLMUsabilityReportWriter();
+        actual.writeScorecard(tempDir, scorecard);
+        actual.writeComparison(tempDir, comparisonResult);
         
-        assertTrue(Files.isRegularFile(tempDir.resolve("system-prompt.md")));
-        assertTrue(Files.isRegularFile(tempDir.resolve("user-prompt.md")));
-        assertTrue(Files.isRegularFile(tempDir.resolve("interaction-trace.json")));
-        assertTrue(Files.isRegularFile(tempDir.resolve("assertion-report.json")));
-        assertTrue(Files.isRegularFile(tempDir.resolve("mcp-runtime.log")));
-        assertTrue(Files.isRegularFile(tempDir.resolve("final-answer.json")));
-        assertThat(Files.readString(tempDir.resolve("final-answer.json")), containsString("\"logic_db\""));
+        assertTrue(Files.isRegularFile(tempDir.resolve("scorecard.json")));
+        assertTrue(Files.isRegularFile(tempDir.resolve("summary.md")));
+        assertTrue(Files.isRegularFile(tempDir.resolve("comparison.json")));
+        assertThat(Files.readString(tempDir.resolve("summary.md")), containsString("LLM Usability Scorecard"));
     }
 }

@@ -15,32 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.tool.handler;
 
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 
 import java.util.Map;
 
 /**
- * Resolve one MCP tool call into a transport-neutral payload.
+ * Handler for one MCP tool.
  */
-public final class MCPToolPayloadResolver {
-    
-    private final MCPToolController toolController;
-    
-    public MCPToolPayloadResolver(final MCPRuntimeContext runtimeContext) {
-        toolController = new MCPToolController(runtimeContext);
-    }
+@SingletonSPI
+public interface ToolHandler extends ShardingSphereSPI {
     
     /**
-     * Resolve one tool call.
+     * Get tool descriptor.
+     *
+     * @return tool descriptor
+     */
+    MCPToolDescriptor getToolDescriptor();
+    
+    /**
+     * Handle one tool call.
      *
      * @param sessionId session identifier
-     * @param toolName tool name
+     * @param runtimeContext runtime context
      * @param arguments normalized tool arguments
-     * @return payload
+     * @return tool response
      */
-    public Map<String, Object> resolve(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        return toolController.dispatch(sessionId, toolName, arguments).toPayload();
-    }
+    MCPResponse handle(String sessionId, MCPRuntimeContext runtimeContext, Map<String, Object> arguments);
 }

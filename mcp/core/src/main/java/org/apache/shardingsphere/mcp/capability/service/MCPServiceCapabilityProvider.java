@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.capability.service;
 
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.Set;
 
@@ -31,7 +31,7 @@ public final class MCPServiceCapabilityProvider {
     private static final Set<SupportedMCPStatement> SUPPORTED_STATEMENT_TYPES = Set.of(SupportedMCPStatement.values());
     
     private static final MCPServiceCapability SERVICE_CAPABILITY = new MCPServiceCapability(
-            ResourceHandlerRegistry.getSupportedResources(), new MCPToolCatalog().getSupportedTools(), SUPPORTED_STATEMENT_TYPES);
+            ResourceHandlerRegistry.getSupportedResources(), ToolHandlerRegistry.getSupportedTools(), SUPPORTED_STATEMENT_TYPES);
     
     /**
      * Provide the service-level capability.

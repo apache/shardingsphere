@@ -26,12 +26,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * HTTP MCP tool client.
  */
-final class MCPHttpToolClient implements MCPToolClient {
+final class MCPHttpInteractionClient implements MCPInteractionClient {
     
     private static final String PROTOCOL_VERSION = "2025-11-25";
     
@@ -43,7 +44,7 @@ final class MCPHttpToolClient implements MCPToolClient {
     
     private String actualProtocolVersion;
     
-    MCPHttpToolClient(final URI endpointUri, final HttpClient httpClient) {
+    MCPHttpInteractionClient(final URI endpointUri, final HttpClient httpClient) {
         this.endpointUri = endpointUri;
         this.httpClient = httpClient;
     }
@@ -68,20 +69,24 @@ final class MCPHttpToolClient implements MCPToolClient {
     }
     
     @Override
-    public MCPToolResponse call(final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
+    public MCPInteractionResponse call(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         ensureOpened();
-        HttpRequest request = createJsonRequestBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
-                        "jsonrpc", "2.0",
-                        "id", toolName + "-1",
-                        "method", "tools/call",
-                        "params", Map.of("name", toolName, "arguments", arguments)))))
-                .build();
-        final HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (200 != response.statusCode()) {
-            throw new IllegalStateException("MCP tool call failed with status " + response.statusCode() + ".");
-        }
-        return new MCPToolResponse(getStructuredContent(response.body()), response.body());
+        HttpResponse<String> response = sendPostRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
+        return new MCPInteractionResponse(getStructuredContent(response.body()), response.body());
+    }
+    
+    @Override
+    public MCPInteractionResponse listResources() throws IOException, InterruptedException {
+        ensureOpened();
+        HttpResponse<String> response = sendPostRequest("resources-list-1", "resources/list", Map.of());
+        return new MCPInteractionResponse(getJsonRpcResult(response.body()), response.body());
+    }
+    
+    @Override
+    public MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException {
+        ensureOpened();
+        HttpResponse<String> response = sendPostRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));
+        return new MCPInteractionResponse(getFirstResourcePayload(response.body()), response.body());
     }
     
     @Override
@@ -106,6 +111,21 @@ final class MCPHttpToolClient implements MCPToolClient {
                 .header("MCP-Protocol-Version", actualProtocolVersion);
     }
     
+    private HttpResponse<String> sendPostRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
+        HttpRequest request = createJsonRequestBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", requestId,
+                        "method", method,
+                        "params", params))))
+                .build();
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        if (200 != response.statusCode()) {
+            throw new IllegalStateException("MCP request failed with status " + response.statusCode() + ".");
+        }
+        return response;
+    }
+    
     private Map<String, Object> createInitializeRequestParams() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("protocolVersion", PROTOCOL_VERSION);
@@ -121,10 +141,24 @@ final class MCPHttpToolClient implements MCPToolClient {
     }
     
     private Map<String, Object> getStructuredContent(final String responseBody) {
-        final Map<String, Object> payload = JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
+        Map<String, Object> payload = JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
         });
-        final Map<String, Object> result = castToMap(payload.get("result"));
+        Map<String, Object> result = castToMap(payload.get("result"));
         return result.containsKey("structuredContent") ? castToMap(result.get("structuredContent")) : Map.of();
+    }
+    
+    private Map<String, Object> getJsonRpcResult(final String responseBody) {
+        Map<String, Object> payload = JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
+        });
+        return castToMap(payload.get("result"));
+    }
+    
+    private Map<String, Object> getFirstResourcePayload(final String responseBody) {
+        Map<String, Object> result = getJsonRpcResult(responseBody);
+        Object contents = result.get("contents");
+        Map<String, Object> firstContent = castToList(contents).get(0);
+        return JsonUtils.fromJsonString(String.valueOf(firstContent.get("text")), new TypeReference<>() {
+        });
     }
     
     private String normalizeJsonBody(final String responseBody) {
@@ -149,6 +183,11 @@ final class MCPHttpToolClient implements MCPToolClient {
     }
     
     private Map<String, Object> castToMap(final Object value) {
+        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
+        });
+    }
+    
+    private List<Map<String, Object>> castToList(final Object value) {
         return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
         });
     }

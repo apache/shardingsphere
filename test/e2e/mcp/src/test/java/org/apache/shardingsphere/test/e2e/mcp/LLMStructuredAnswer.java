@@ -40,34 +40,28 @@ final class LLMStructuredAnswer {
     
     private final int totalOrders;
     
-    private final List<String> toolSequence;
+    private final List<String> interactionSequence;
     
     LLMStructuredAnswer(final String database, final String schema, final String table, final String query,
-                        final int totalOrders, final List<String> toolSequence) {
+                        final int totalOrders, final List<String> interactionSequence) {
         this.database = database;
         this.schema = schema;
         this.table = table;
         this.query = query;
         this.totalOrders = totalOrders;
-        this.toolSequence = List.copyOf(toolSequence);
+        this.interactionSequence = List.copyOf(interactionSequence);
     }
     
     static LLMStructuredAnswer fromJson(final String json) {
         final Map<String, Object> payload = readPayload(json);
-        final List<String> toolSequence = new LinkedList<>();
-        final Object rawToolSequence = payload.get("toolSequence");
-        if (rawToolSequence instanceof Iterable) {
-            for (Object each : (Iterable<?>) rawToolSequence) {
-                toolSequence.add(Objects.toString(each, ""));
-            }
-        }
+        List<String> interactionSequence = createInteractionSequence(payload);
         return new LLMStructuredAnswer(
                 Objects.toString(payload.get("database"), "").trim(),
                 Objects.toString(payload.get("schema"), "").trim(),
                 Objects.toString(payload.get("table"), "").trim(),
                 Objects.toString(payload.get("query"), "").trim(),
                 parseTotalOrders(payload.get("totalOrders")),
-                toolSequence);
+                interactionSequence);
     }
     
     String database() {
@@ -90,8 +84,8 @@ final class LLMStructuredAnswer {
         return totalOrders;
     }
     
-    List<String> toolSequence() {
-        return toolSequence;
+    List<String> interactionSequence() {
+        return interactionSequence;
     }
     
     String getNormalizedQuery() {
@@ -120,5 +114,16 @@ final class LLMStructuredAnswer {
         } catch (final NumberFormatException ex) {
             throw new IllegalArgumentException("Invalid totalOrders value.", ex);
         }
+    }
+    
+    private static List<String> createInteractionSequence(final Map<String, Object> payload) {
+        List<String> result = new LinkedList<>();
+        Object rawInteractionSequence = payload.containsKey("interactionSequence") ? payload.get("interactionSequence") : payload.get("toolSequence");
+        if (rawInteractionSequence instanceof Iterable) {
+            for (Object each : (Iterable<?>) rawInteractionSequence) {
+                result.add(Objects.toString(each, ""));
+            }
+        }
+        return result;
     }
 }

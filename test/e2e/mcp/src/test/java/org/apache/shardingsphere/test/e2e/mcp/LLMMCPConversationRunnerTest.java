@@ -50,24 +50,24 @@ class LLMMCPConversationRunnerTest {
                                 "{\"tool_calls\":3}"),
                         new LLMChatCompletion("{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\","
                                 + "\"query\":\"SELECT COUNT(*) AS total_orders FROM orders\",\"totalOrders\":2,"
-                                + "\"toolSequence\":[\"list_tables\",\"describe_table\",\"execute_query\"]}", List.of(), "{\"final\":true}")),
-                new StubMCPToolClient(Map.of(
-                        "list_tables", new MCPToolResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
-                        "describe_table", new MCPToolResponse(Map.of("items", List.of(Map.of("name", "order_id"))), "{}"),
-                        "execute_query", new MCPToolResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}"))));
+                                + "\"interactionSequence\":[\"list_tables\",\"describe_table\",\"execute_query\"]}", List.of(), "{\"final\":true}")),
+                new StubMCPInteractionClient(Map.of(
+                        "list_tables", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
+                        "describe_table", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "order_id"))), "{}"),
+                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}"))));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
         
         assertTrue(result.assertionReport().success());
-        assertThat(result.toolTrace().size(), is(3));
-        assertThat(result.toolTrace().get(2).toolName(), is("execute_query"));
+        assertThat(result.interactionTrace().size(), is(3));
+        assertThat(result.interactionTrace().get(2).targetName(), is("execute_query"));
     }
     
     @Test
     void assertUnexpectedToolRequested() {
         LLMMCPConversationRunner actual = new LLMMCPConversationRunner(2,
                 new StubLLMChatClient(new LLMChatCompletion("", List.of(new LLMToolCall("call-1", "drop_table", "{}")), "{}")),
-                new StubMCPToolClient(Map.of()));
+                new StubMCPInteractionClient(Map.of()));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
         
@@ -80,7 +80,7 @@ class LLMMCPConversationRunnerTest {
         LLMMCPConversationRunner actual = new LLMMCPConversationRunner(2,
                 new StubLLMChatClient(new LLMChatCompletion("", List.of(
                         new LLMToolCall("call-1", "execute_query", "{\"database\":\"logic_db\",\"schema\":\"public\",\"sql\":\"UPDATE orders SET status='DONE'\"}")), "{}")),
-                new StubMCPToolClient(Map.of()));
+                new StubMCPInteractionClient(Map.of()));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
         
@@ -93,7 +93,7 @@ class LLMMCPConversationRunnerTest {
         LLMMCPConversationRunner actual = new LLMMCPConversationRunner(2,
                 new StubLLMChatClient(new LLMChatCompletion("", List.of(
                         new LLMToolCall("call-1", "list_tables", "{not-json}")), "{}")),
-                new StubMCPToolClient(Map.of()));
+                new StubMCPInteractionClient(Map.of()));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
         
@@ -112,16 +112,73 @@ class LLMMCPConversationRunnerTest {
                                 "{}"),
                         new LLMChatCompletion("not-json", List.of(), "{}"),
                         new LLMChatCompletion("still-not-json", List.of(), "{}")),
-                new StubMCPToolClient(Map.of(
-                        "list_tables", new MCPToolResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
-                        "describe_table", new MCPToolResponse(Map.of("items", List.of(Map.of("name", "order_id"))), "{}"),
-                        "execute_query", new MCPToolResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}"))));
+                new StubMCPInteractionClient(Map.of(
+                        "list_tables", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
+                        "describe_table", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "order_id"))), "{}"),
+                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}"))));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
         
         assertFalse(result.assertionReport().success());
         assertThat(result.assertionReport().failureType() + ":" + result.assertionReport().message(),
                 is("invalid_final_json:Model did not return a valid final JSON payload."));
+    }
+    
+    @Test
+    void assertRunWithResourceBridge() {
+        LLME2EScenario resourceScenario = new LLME2EScenario("scenario-resource", "system", "user",
+                new LLMStructuredAnswer("logic_db", "public", "orders", "SELECT COUNT(*) AS total_orders FROM orders", 2,
+                        List.of("mcp_read_resource", "execute_query")),
+                List.of("mcp_read_resource", "execute_query"),
+                List.of("mcp_read_resource", "execute_query"));
+        LLMMCPConversationRunner actual = new LLMMCPConversationRunner(3,
+                new StubLLMChatClient(
+                        new LLMChatCompletion("", List.of(
+                                new LLMToolCall("call-1", "mcp_read_resource", "{\"uri\":\"shardingsphere://capabilities\"}"),
+                                new LLMToolCall("call-2", "execute_query", "{\"database\":\"logic_db\",\"schema\":\"public\",\"sql\":\"SELECT COUNT(*) AS total_orders FROM orders\"}")),
+                                "{\"tool_calls\":2}"),
+                        new LLMChatCompletion("{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\","
+                                + "\"query\":\"SELECT COUNT(*) AS total_orders FROM orders\",\"totalOrders\":2,"
+                                + "\"interactionSequence\":[\"mcp_read_resource\",\"execute_query\"]}", List.of(), "{\"final\":true}")),
+                new StubMCPInteractionClient(Map.of(
+                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}")),
+                        Map.of("shardingsphere://capabilities", new MCPInteractionResponse(Map.of("supportedTools", List.of("execute_query")), "{}"))));
+        
+        LLME2EArtifactBundle result = actual.run(resourceScenario);
+        
+        assertTrue(result.assertionReport().success());
+        assertThat(result.interactionTrace().size(), is(2));
+        assertThat(result.interactionTrace().get(0).actionKind(), is("resource_read"));
+        assertThat(result.interactionTrace().get(0).arguments().get("uri"), is("shardingsphere://capabilities"));
+    }
+    
+    @Test
+    void assertRunWithResourceListBridge() {
+        LLME2EScenario resourceScenario = new LLME2EScenario("scenario-resource-list", "system", "user",
+                new LLMStructuredAnswer("logic_db", "public", "orders", "SELECT COUNT(*) AS total_orders FROM orders", 2,
+                        List.of("mcp_list_resources", "execute_query")),
+                List.of("mcp_list_resources", "execute_query"),
+                List.of("mcp_list_resources", "execute_query"));
+        LLMMCPConversationRunner actual = new LLMMCPConversationRunner(3,
+                new StubLLMChatClient(
+                        new LLMChatCompletion("", List.of(
+                                new LLMToolCall("call-1", "mcp_list_resources", "{}"),
+                                new LLMToolCall("call-2", "execute_query", "{\"database\":\"logic_db\",\"schema\":\"public\",\"sql\":\"SELECT COUNT(*) AS total_orders FROM orders\"}")),
+                                "{\"tool_calls\":2}"),
+                        new LLMChatCompletion("{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\","
+                                + "\"query\":\"SELECT COUNT(*) AS total_orders FROM orders\",\"totalOrders\":2,"
+                                + "\"interactionSequence\":[\"mcp_list_resources\",\"execute_query\"]}", List.of(), "{\"final\":true}")),
+                new StubMCPInteractionClient(Map.of(
+                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}")),
+                        Map.of(),
+                        new MCPInteractionResponse(Map.of("resources", List.of(Map.of("uri", "shardingsphere://capabilities"))), "{}")));
+        
+        LLME2EArtifactBundle result = actual.run(resourceScenario);
+        
+        assertTrue(result.assertionReport().success());
+        assertThat(result.interactionTrace().size(), is(2));
+        assertThat(result.interactionTrace().get(0).actionKind(), is("resource_list"));
+        assertThat(result.interactionTrace().get(0).targetName(), is("mcp_list_resources"));
     }
     
     private static final class StubLLMChatClient implements LLMChatClient {
@@ -143,12 +200,27 @@ class LLMMCPConversationRunnerTest {
         }
     }
     
-    private static final class StubMCPToolClient implements MCPToolClient {
+    private static final class StubMCPInteractionClient implements MCPInteractionClient {
         
-        private final Map<String, MCPToolResponse> responses;
+        private final Map<String, MCPInteractionResponse> responses;
         
-        private StubMCPToolClient(final Map<String, MCPToolResponse> responses) {
+        private final Map<String, MCPInteractionResponse> resourceResponses;
+        
+        private final MCPInteractionResponse resourceListResponse;
+        
+        private StubMCPInteractionClient(final Map<String, MCPInteractionResponse> responses) {
+            this(responses, Map.of(), new MCPInteractionResponse(Map.of("resources", List.of()), "{}"));
+        }
+        
+        private StubMCPInteractionClient(final Map<String, MCPInteractionResponse> responses, final Map<String, MCPInteractionResponse> resourceResponses) {
+            this(responses, resourceResponses, new MCPInteractionResponse(Map.of("resources", List.of()), "{}"));
+        }
+        
+        private StubMCPInteractionClient(final Map<String, MCPInteractionResponse> responses, final Map<String, MCPInteractionResponse> resourceResponses,
+                                         final MCPInteractionResponse resourceListResponse) {
             this.responses = new LinkedHashMap<>(responses);
+            this.resourceResponses = new LinkedHashMap<>(resourceResponses);
+            this.resourceListResponse = resourceListResponse;
         }
         
         @Override
@@ -156,11 +228,24 @@ class LLMMCPConversationRunnerTest {
         }
         
         @Override
-        public MCPToolResponse call(final String toolName, final Map<String, Object> arguments) throws IOException {
+        public MCPInteractionResponse call(final String toolName, final Map<String, Object> arguments) throws IOException {
             if (!responses.containsKey(toolName)) {
                 throw new IOException("Unsupported tool in stub: " + toolName);
             }
             return responses.get(toolName);
+        }
+        
+        @Override
+        public MCPInteractionResponse readResource(final String resourceUri) throws IOException {
+            if (!resourceResponses.containsKey(resourceUri)) {
+                throw new IOException("Unsupported resource in stub: " + resourceUri);
+            }
+            return resourceResponses.get(resourceUri);
+        }
+        
+        @Override
+        public MCPInteractionResponse listResources() {
+            return resourceListResponse;
         }
         
         @Override

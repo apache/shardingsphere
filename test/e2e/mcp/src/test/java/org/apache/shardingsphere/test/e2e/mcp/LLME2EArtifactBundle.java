@@ -31,7 +31,7 @@ final class LLME2EArtifactBundle {
     
     private final List<String> rawModelOutputs;
     
-    private final List<MCPToolTraceRecord> toolTrace;
+    private final List<MCPInteractionTraceRecord> interactionTrace;
     
     private final List<String> mcpRuntimeLogLines;
     
@@ -39,14 +39,14 @@ final class LLME2EArtifactBundle {
     
     LLME2EArtifactBundle(final String scenarioId, final String systemPrompt, final String userPrompt,
                          final String finalAnswerJson, final List<String> rawModelOutputs,
-                         final List<MCPToolTraceRecord> toolTrace, final List<String> mcpRuntimeLogLines,
+                         final List<MCPInteractionTraceRecord> interactionTrace, final List<String> mcpRuntimeLogLines,
                          final LLME2EAssertionReport assertionReport) {
         this.scenarioId = scenarioId;
         this.systemPrompt = systemPrompt;
         this.userPrompt = userPrompt;
         this.finalAnswerJson = finalAnswerJson;
         this.rawModelOutputs = List.copyOf(rawModelOutputs);
-        this.toolTrace = List.copyOf(toolTrace);
+        this.interactionTrace = List.copyOf(interactionTrace);
         this.mcpRuntimeLogLines = List.copyOf(mcpRuntimeLogLines);
         this.assertionReport = assertionReport;
     }
@@ -71,8 +71,8 @@ final class LLME2EArtifactBundle {
         return rawModelOutputs;
     }
     
-    List<MCPToolTraceRecord> toolTrace() {
-        return toolTrace;
+    List<MCPInteractionTraceRecord> interactionTrace() {
+        return interactionTrace;
     }
     
     List<String> mcpRuntimeLogLines() {

@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
-
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+package org.apache.shardingsphere.test.e2e.mcp;
 
 import java.util.Map;
 
-/**
- * Resolve one MCP tool call into a transport-neutral payload.
- */
-public final class MCPToolPayloadResolver {
+final class MCPInteractionResponse {
     
-    private final MCPToolController toolController;
+    private final Map<String, Object> structuredContent;
     
-    public MCPToolPayloadResolver(final MCPRuntimeContext runtimeContext) {
-        toolController = new MCPToolController(runtimeContext);
+    private final String rawResponse;
+    
+    MCPInteractionResponse(final Map<String, Object> structuredContent, final String rawResponse) {
+        this.structuredContent = Map.copyOf(structuredContent);
+        this.rawResponse = rawResponse;
     }
     
-    /**
-     * Resolve one tool call.
-     *
-     * @param sessionId session identifier
-     * @param toolName tool name
-     * @param arguments normalized tool arguments
-     * @return payload
-     */
-    public Map<String, Object> resolve(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        return toolController.dispatch(sessionId, toolName, arguments).toPayload();
+    Map<String, Object> structuredContent() {
+        return structuredContent;
+    }
+    
+    String rawResponse() {
+        return rawResponse;
     }
 }

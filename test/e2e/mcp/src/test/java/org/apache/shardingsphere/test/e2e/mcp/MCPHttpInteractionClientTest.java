@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-class MCPHttpToolClientTest {
+class MCPHttpInteractionClientTest {
     
     private HttpServer httpServer;
     
@@ -49,28 +49,34 @@ class MCPHttpToolClientTest {
     @Test
     void assertOpenCallAndClose() throws IOException, InterruptedException {
         final AtomicReference<String> toolSessionId = new AtomicReference<>("");
+        final AtomicReference<String> resourceSessionId = new AtomicReference<>("");
         final AtomicReference<String> deleteSessionId = new AtomicReference<>("");
         httpServer = HttpServer.create(new InetSocketAddress(0), 0);
-        httpServer.createContext("/gateway", exchange -> handleGatewayRequest(exchange, toolSessionId, deleteSessionId));
+        httpServer.createContext("/gateway", exchange -> handleGatewayRequest(exchange, toolSessionId, resourceSessionId, deleteSessionId));
         httpServer.start();
         
         final URI endpointUri = URI.create("http://127.0.0.1:" + httpServer.getAddress().getPort() + "/gateway");
-        final MCPHttpToolClient actual = new MCPHttpToolClient(endpointUri, HttpClient.newHttpClient());
+        final MCPHttpInteractionClient actual = new MCPHttpInteractionClient(endpointUri, HttpClient.newHttpClient());
         actual.open();
-        final MCPToolResponse response = actual.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1"));
+        final MCPInteractionResponse response = actual.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1"));
+        final MCPInteractionResponse listResponse = actual.listResources();
+        final MCPInteractionResponse resourceResponse = actual.readResource("shardingsphere://capabilities");
         actual.close();
         
         assertThat(String.valueOf(response.structuredContent().get("result_kind")), is("result_set"));
+        assertThat(String.valueOf(listResponse.structuredContent().get("resources")), containsString("shardingsphere://capabilities"));
+        assertThat(String.valueOf(resourceResponse.structuredContent().get("supportedTools")), containsString("execute_query"));
         assertThat(response.rawResponse(), containsString("structuredContent"));
         assertThat(toolSessionId.get(), is("session-1"));
+        assertThat(resourceSessionId.get(), is("session-1"));
         assertThat(deleteSessionId.get(), is("session-1"));
     }
     
-    private void handleGatewayRequest(final HttpExchange exchange, final AtomicReference<String> toolSessionId,
+    private void handleGatewayRequest(final HttpExchange exchange, final AtomicReference<String> toolSessionId, final AtomicReference<String> resourceSessionId,
                                       final AtomicReference<String> deleteSessionId) throws IOException {
         switch (exchange.getRequestMethod()) {
             case "POST":
-                handlePost(exchange, toolSessionId);
+                handlePost(exchange, toolSessionId, resourceSessionId);
                 break;
             case "DELETE":
                 deleteSessionId.set(exchange.getRequestHeaders().getFirst("MCP-Session-Id"));
@@ -82,12 +88,24 @@ class MCPHttpToolClientTest {
         }
     }
     
-    private void handlePost(final HttpExchange exchange, final AtomicReference<String> toolSessionId) throws IOException {
+    private void handlePost(final HttpExchange exchange, final AtomicReference<String> toolSessionId,
+                            final AtomicReference<String> resourceSessionId) throws IOException {
         final String body = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
         if (body.contains("\"method\":\"initialize\"")) {
             exchange.getResponseHeaders().add("MCP-Session-Id", "session-1");
             exchange.getResponseHeaders().add("MCP-Protocol-Version", "2025-11-25");
             writeResponse(exchange, 200, "{\"jsonrpc\":\"2.0\",\"id\":\"llm-init-1\",\"result\":{\"serverInfo\":{\"name\":\"mcp\"}}}");
+            return;
+        }
+        if (body.contains("\"method\":\"resources/list\"")) {
+            resourceSessionId.set(exchange.getRequestHeaders().getFirst("MCP-Session-Id"));
+            writeResponse(exchange, 200, "{\"jsonrpc\":\"2.0\",\"id\":\"resources-list-1\",\"result\":{\"resources\":[{\"uri\":\"shardingsphere://capabilities\"}]}}");
+            return;
+        }
+        if (body.contains("\"method\":\"resources/read\"")) {
+            resourceSessionId.set(exchange.getRequestHeaders().getFirst("MCP-Session-Id"));
+            writeResponse(exchange, 200, "{\"jsonrpc\":\"2.0\",\"id\":\"resources-read-1\",\"result\":{\"contents\":[{\"uri\":\"shardingsphere://capabilities\","
+                    + "\"mimeType\":\"application/json\",\"text\":\"{\\\"supportedTools\\\":[\\\"execute_query\\\"]}\"}]}}");
             return;
         }
         toolSessionId.set(exchange.getRequestHeaders().getFirst("MCP-Session-Id"));

@@ -17,39 +17,23 @@
 
 package org.apache.shardingsphere.test.e2e.mcp;
 
+import java.io.IOException;
 import java.util.Map;
 
-final class MCPToolTraceRecord {
+interface MCPInteractionClient extends AutoCloseable {
     
-    private final int sequence;
+    void open() throws IOException, InterruptedException;
     
-    private final String toolName;
+    MCPInteractionResponse call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
     
-    private final Map<String, Object> arguments;
-    
-    private final Map<String, Object> structuredContent;
-    
-    MCPToolTraceRecord(final int sequence, final String toolName, final Map<String, Object> arguments,
-                       final Map<String, Object> structuredContent) {
-        this.sequence = sequence;
-        this.toolName = toolName;
-        this.arguments = Map.copyOf(arguments);
-        this.structuredContent = Map.copyOf(structuredContent);
+    default MCPInteractionResponse listResources() throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("resources/list is not supported.");
     }
     
-    int sequence() {
-        return sequence;
+    default MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("resources/read is not supported.");
     }
     
-    String toolName() {
-        return toolName;
-    }
-    
-    Map<String, Object> arguments() {
-        return arguments;
-    }
-    
-    Map<String, Object> structuredContent() {
-        return structuredContent;
-    }
+    @Override
+    void close() throws IOException, InterruptedException;
 }

@@ -21,9 +21,9 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
+import org.apache.shardingsphere.mcp.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.MCPToolPayloadResolver;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
  */
 public final class MCPToolSpecificationFactory {
     
-    private final MCPToolCatalog toolCatalog;
+    private final List<MCPToolDescriptor> toolDescriptors;
     
     private final MCPToolCallHandler toolCallHandler;
     
@@ -44,8 +44,8 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        toolCatalog = new MCPToolCatalog();
-        toolCallHandler = new MCPToolCallHandler(new MCPToolPayloadResolver(runtimeContext));
+        toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
+        toolCallHandler = new MCPToolCallHandler(new MCPToolController(runtimeContext));
         mcpToolJsonSchemaAdapter = new MCPToolJsonSchemaAdapter();
     }
     
@@ -55,7 +55,7 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        return toolCatalog.getToolDescriptors().stream().map(each -> new Builder().tool(createTool(each)).callHandler(toolCallHandler::handle).build()).toList();
+        return toolDescriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(toolCallHandler::handle).build()).toList();
     }
     
     private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
