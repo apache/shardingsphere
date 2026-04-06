@@ -20,7 +20,10 @@ package org.apache.shardingsphere.mcp.metadata.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * MCP database metadata.
@@ -36,4 +39,23 @@ public final class MCPDatabaseMetadata {
     private final String databaseVersion;
     
     private final List<MCPSchemaMetadata> schemas;
+    
+    /**
+     * Create summary.
+     * 
+     * @return database metadata summary
+     */
+    public MCPDatabaseMetadata createSummary() {
+        return new MCPDatabaseMetadata(database, databaseType, databaseVersion, Collections.emptyList());
+    }
+    
+    /**
+     * Create detail.
+     * 
+     * @return database metadata detail
+     */
+    public MCPDatabaseMetadata createDetail() {
+        return new MCPDatabaseMetadata(database, databaseType, databaseVersion,
+                schemas.stream().map(MCPSchemaMetadata::createDetail).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).collect(Collectors.toList()));
+    }
 }

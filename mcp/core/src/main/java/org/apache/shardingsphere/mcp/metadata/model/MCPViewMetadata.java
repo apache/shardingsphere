@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.metadata.model;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,4 +37,13 @@ public final class MCPViewMetadata {
     private final String view;
     
     private final List<MCPColumnMetadata> columns;
+    
+    /**
+     * Create summary.
+     *
+     * @return view metadata summary
+     */
+    public MCPViewMetadata createSummary() {
+        return new MCPViewMetadata(database, schema, view, Collections.emptyList());
+    }
 }

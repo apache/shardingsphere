@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Metadata query service.
@@ -52,16 +53,8 @@ public final class MetadataQueryService {
      * @return database metadata
      */
     public List<MCPDatabaseMetadata> queryDatabases() {
-        List<MCPDatabaseMetadata> result = new LinkedList<>();
-        for (MCPDatabaseMetadata each : metadataCatalog.getDatabaseMetadataMap().values()) {
-            result.add(createDatabaseSummary(each));
-        }
-        result.sort(Comparator.comparing(MCPDatabaseMetadata::getDatabase));
-        return result;
-    }
-    
-    private MCPDatabaseMetadata createDatabaseSummary(final MCPDatabaseMetadata databaseMetadata) {
-        return new MCPDatabaseMetadata(databaseMetadata.getDatabase(), databaseMetadata.getDatabaseType(), databaseMetadata.getDatabaseVersion(), Collections.emptyList());
+        return metadataCatalog.getDatabaseMetadataMap().values().stream()
+                .map(MCPDatabaseMetadata::createSummary).sorted(Comparator.comparing(MCPDatabaseMetadata::getDatabase)).collect(Collectors.toList());
     }
     
     /**
@@ -71,7 +64,7 @@ public final class MetadataQueryService {
      * @return database metadata
      */
     public Optional<MCPDatabaseMetadata> queryDatabase(final String databaseName) {
-        return metadataCatalog.findMetadata(databaseName).map(this::createDatabaseDetail);
+        return metadataCatalog.findMetadata(databaseName).map(MCPDatabaseMetadata::createDetail);
     }
     
     /**
@@ -84,7 +77,8 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
             return Collections.emptyList();
         }
-        return metadataCatalog.findMetadata(databaseName).map(optional -> createSchemaSummaries(optional.getSchemas())).orElse(Collections.emptyList());
+        return metadataCatalog.findMetadata(databaseName).map(optional -> optional.getSchemas().stream()
+                .map(MCPSchemaMetadata::createSummary).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).collect(Collectors.toList())).orElse(Collections.emptyList());
     }
     
     /**
@@ -98,7 +92,7 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
             return Optional.empty();
         }
-        return findSchema(databaseName, schemaName).map(this::createSchemaDetail);
+        return findSchema(databaseName, schemaName).map(MCPSchemaMetadata::createDetail);
     }
     
     /**
@@ -112,7 +106,7 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.TABLE)) {
             return Collections.emptyList();
         }
-        return findSchema(databaseName, schemaName).map(optional -> createTableSummaries(optional.getTables())).orElse(Collections.emptyList());
+        return findSchema(databaseName, schemaName).map(optional -> optional.getTables().stream().map(MCPTableMetadata::createSummary).sorted(Comparator.comparing(MCPTableMetadata::getTable)).collect(Collectors.toList())).orElse(Collections.emptyList());
     }
     
     /**
@@ -141,7 +135,7 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.VIEW)) {
             return Collections.emptyList();
         }
-        return findSchema(databaseName, schemaName).map(optional -> createViewSummaries(optional.getViews())).orElse(Collections.emptyList());
+        return findSchema(databaseName, schemaName).map(optional -> optional.getViews().stream().map(MCPViewMetadata::createSummary).sorted(Comparator.comparing(MCPViewMetadata::getView)).collect(Collectors.toList())).orElse(Collections.emptyList());
     }
     
     /**
@@ -230,7 +224,7 @@ public final class MetadataQueryService {
      * @return index metadata
      */
     public List<MCPIndexMetadata> queryIndexes(final String databaseName, final String schemaName, final String tableName) {
-        assertIndexSupported(databaseName);
+        checkIndexSupported(databaseName);
         return findTable(databaseName, schemaName, tableName).map(optional -> sortIndexes(optional.getIndexes())).orElse(Collections.emptyList());
     }
     
@@ -244,7 +238,7 @@ public final class MetadataQueryService {
      * @return index metadata
      */
     public Optional<MCPIndexMetadata> queryIndex(final String databaseName, final String schemaName, final String tableName, final String indexName) {
-        assertIndexSupported(databaseName);
+        checkIndexSupported(databaseName);
         return findIndex(queryIndexes(databaseName, schemaName, tableName), indexName);
     }
     
@@ -316,54 +310,9 @@ public final class MetadataQueryService {
         return Optional.empty();
     }
     
-    private MCPDatabaseMetadata createDatabaseDetail(final MCPDatabaseMetadata databaseMetadata) {
-        return new MCPDatabaseMetadata(databaseMetadata.getDatabase(), databaseMetadata.getDatabaseType(),
-                databaseMetadata.getDatabaseVersion(), createSchemaDetails(databaseMetadata.getSchemas()));
-    }
-    
-    private List<MCPSchemaMetadata> createSchemaSummaries(final Collection<MCPSchemaMetadata> schemas) {
-        List<MCPSchemaMetadata> result = new LinkedList<>();
-        for (MCPSchemaMetadata each : schemas) {
-            result.add(new MCPSchemaMetadata(each.getDatabase(), each.getSchema(), Collections.emptyList(), Collections.emptyList()));
-        }
-        result.sort(Comparator.comparing(MCPSchemaMetadata::getSchema));
-        return result;
-    }
-    
-    private List<MCPSchemaMetadata> createSchemaDetails(final Collection<MCPSchemaMetadata> schemas) {
-        List<MCPSchemaMetadata> result = new LinkedList<>();
-        for (MCPSchemaMetadata each : schemas) {
-            result.add(createSchemaDetail(each));
-        }
-        result.sort(Comparator.comparing(MCPSchemaMetadata::getSchema));
-        return result;
-    }
-    
-    private MCPSchemaMetadata createSchemaDetail(final MCPSchemaMetadata schemaMetadata) {
-        return new MCPSchemaMetadata(schemaMetadata.getDatabase(), schemaMetadata.getSchema(), createTableSummaries(schemaMetadata.getTables()), createViewSummaries(schemaMetadata.getViews()));
-    }
-    
-    private List<MCPTableMetadata> createTableSummaries(final Collection<MCPTableMetadata> tables) {
-        List<MCPTableMetadata> result = new LinkedList<>();
-        for (MCPTableMetadata each : tables) {
-            result.add(new MCPTableMetadata(each.getDatabase(), each.getSchema(), each.getTable(), Collections.emptyList(), Collections.emptyList()));
-        }
-        result.sort(Comparator.comparing(MCPTableMetadata::getTable));
-        return result;
-    }
-    
     private MCPTableMetadata createTableDetail(final MCPTableMetadata tableMetadata) {
         return new MCPTableMetadata(tableMetadata.getDatabase(), tableMetadata.getSchema(), tableMetadata.getTable(),
                 sortColumns(tableMetadata.getColumns()), sortIndexes(tableMetadata.getIndexes()));
-    }
-    
-    private List<MCPViewMetadata> createViewSummaries(final Collection<MCPViewMetadata> views) {
-        List<MCPViewMetadata> result = new LinkedList<>();
-        for (MCPViewMetadata each : views) {
-            result.add(new MCPViewMetadata(each.getDatabase(), each.getSchema(), each.getView(), Collections.emptyList()));
-        }
-        result.sort(Comparator.comparing(MCPViewMetadata::getView));
-        return result;
     }
     
     private MCPViewMetadata createViewDetail(final MCPViewMetadata viewMetadata) {
@@ -382,7 +331,7 @@ public final class MetadataQueryService {
         return result;
     }
     
-    private void assertIndexSupported(final String databaseName) {
+    private void checkIndexSupported(final String databaseName) {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX)) {
             throw new MCPUnsupportedException("Index resources are not supported for the current database.");
         }
