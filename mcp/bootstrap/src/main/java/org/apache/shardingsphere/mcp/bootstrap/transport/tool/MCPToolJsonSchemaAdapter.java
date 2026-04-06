@@ -39,7 +39,7 @@ final class MCPToolJsonSchemaAdapter {
                 required.add(each.getName());
             }
         }
-        return new McpSchema.JsonSchema("object", properties, required, inputDefinition.isAdditionalPropertiesAllowed(), Collections.emptyMap(), Collections.emptyMap());
+        return new McpSchema.JsonSchema("object", properties, required, true, Collections.emptyMap(), Collections.emptyMap());
     }
     
     private Map<String, Object> createValueSchema(final MCPToolValueDefinition valueDefinition) {

@@ -18,52 +18,16 @@
 package org.apache.shardingsphere.mcp.tool.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  * MCP tool input root-object definition.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolInputDefinition {
     
     private final List<MCPToolFieldDefinition> fields;
-    
-    private final boolean additionalPropertiesAllowed;
-    
-    private MCPToolInputDefinition(final List<MCPToolFieldDefinition> fields, final boolean additionalPropertiesAllowed) {
-        this.fields = List.copyOf(fields);
-        this.additionalPropertiesAllowed = additionalPropertiesAllowed;
-    }
-    
-    /**
-     * Create empty tool input definition.
-     *
-     * @return empty tool input definition
-     */
-    public static MCPToolInputDefinition empty() {
-        return new MCPToolInputDefinition(Collections.emptyList(), true);
-    }
-    
-    /**
-     * Create tool input definition.
-     *
-     * @param fields ordered tool input fields
-     * @return tool input definition
-     */
-    public static MCPToolInputDefinition create(final MCPToolFieldDefinition... fields) {
-        return new MCPToolInputDefinition(List.of(fields), true);
-    }
-    
-    /**
-     * Create tool input definition.
-     *
-     * @param additionalPropertiesAllowed whether additional properties are allowed
-     * @param fields ordered tool input fields
-     * @return tool input definition
-     */
-    public static MCPToolInputDefinition create(final boolean additionalPropertiesAllowed, final List<MCPToolFieldDefinition> fields) {
-        return new MCPToolInputDefinition(fields, additionalPropertiesAllowed);
-    }
 }

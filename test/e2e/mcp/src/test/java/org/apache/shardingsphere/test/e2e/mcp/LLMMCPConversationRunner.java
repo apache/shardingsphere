@@ -357,7 +357,7 @@ final class LLMMCPConversationRunner {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("type", "object");
         result.put("properties", properties);
-        result.put("additionalProperties", inputDefinition.isAdditionalPropertiesAllowed());
+        result.put("additionalProperties", true);
         if (!required.isEmpty()) {
             result.put("required", required);
         }
