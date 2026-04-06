@@ -35,8 +35,6 @@ public final class MCPJdbcTransactionStatementExecutor {
     
     private final MCPSessionManager sessionManager;
     
-    private final MCPJdbcTransactionResourceManager transactionResourceManager;
-    
     /**
      * Execute one transaction-control or savepoint command with resolved database capability.
      *
@@ -83,7 +81,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
-        transactionResourceManager.beginTransaction(sessionId, databaseName);
+        sessionManager.getTransactionResourceManager().beginTransaction(sessionId, databaseName);
         return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
     }
     
@@ -91,7 +89,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
-        transactionResourceManager.commitTransaction(sessionId);
+        sessionManager.getTransactionResourceManager().commitTransaction(sessionId);
         return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
     }
     
@@ -99,7 +97,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
-        transactionResourceManager.rollbackTransaction(sessionId);
+        sessionManager.getTransactionResourceManager().rollbackTransaction(sessionId);
         return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
     }
     
@@ -107,7 +105,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
-        transactionResourceManager.createSavepoint(sessionId, savepointName);
+        sessionManager.getTransactionResourceManager().createSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
     }
     
@@ -115,7 +113,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
-        transactionResourceManager.rollbackToSavepoint(sessionId, savepointName);
+        sessionManager.getTransactionResourceManager().rollbackToSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
@@ -123,7 +121,7 @@ public final class MCPJdbcTransactionStatementExecutor {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
-        transactionResourceManager.releaseSavepoint(sessionId, savepointName);
+        sessionManager.getTransactionResourceManager().releaseSavepoint(sessionId, savepointName);
         return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
     }
 }

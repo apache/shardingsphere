@@ -54,8 +54,6 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     
     @Test
     void assertExecuteSerializesSameSessionTransactionCommand() throws InterruptedException {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
-        sessionManager.createSession("session-1");
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         verifyNoInteractions(statementExecutor);
         CountDownLatch firstInvocationStarted = new CountDownLatch(1);
@@ -66,7 +64,9 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         doAnswer(createBlockingBeginAnswer(firstInvocationStarted, releaseFirstInvocation, currentExecutions, maxExecutions, invocationCount))
                 .when(transactionResourceManager).beginTransaction(any(), any());
-        MCPSQLExecutionFacade facade = createFacade(sessionManager, statementExecutor, transactionResourceManager);
+        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, statementExecutor);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
             Future<ExecuteQueryResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "BEGIN")));
@@ -103,7 +103,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         when(statementExecutor.execute(any(ExecutionRequest.class), any(ClassificationResult.class)))
                 .thenAnswer(createBlockingQueryAnswer(firstInvocationStarted, releaseFirstInvocation, currentExecutions, maxExecutions, invocationCount));
-        MCPSQLExecutionFacade facade = createFacade(sessionManager, statementExecutor, mock(MCPJdbcTransactionResourceManager.class));
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, statementExecutor);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
             Future<ExecuteQueryResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "SELECT * FROM orders")));
@@ -138,7 +138,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         when(statementExecutor.execute(any(ExecutionRequest.class), any(ClassificationResult.class)))
                 .thenAnswer(createConcurrentQueryAnswer(concurrentEntries, releaseQueries, currentExecutions, maxExecutions));
-        MCPSQLExecutionFacade facade = createFacade(sessionManager, statementExecutor, mock(MCPJdbcTransactionResourceManager.class));
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, statementExecutor);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
             Future<ExecuteQueryResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "SELECT * FROM orders")));
@@ -153,12 +153,11 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         }
     }
     
-    private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final MCPJdbcStatementExecutor statementExecutor,
-                                               final MCPJdbcTransactionResourceManager transactionResourceManager) {
+    private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final MCPJdbcStatementExecutor statementExecutor) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
         return new MCPSQLExecutionFacade(databaseCapabilityProvider,
-                new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor, mock());
+                new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
     }
     
     private ExecutionRequest createExecutionRequest(final String sessionId, final String sql) {

@@ -96,7 +96,7 @@ class MCPSQLExecutionFacadeTest {
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(
-                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, mock()), statementExecutor, mock());
+                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> facade.execute(createExecutionRequest("SELECT * FROM orders", 10)));
         assertThat(actual.getMessage(), is("Session does not exist."));
         verifyNoInteractions(statementExecutor);
@@ -106,15 +106,13 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteWithUnknownCapability() {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
         final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock();
-        final MCPJdbcMetadataRefresher metadataRefreshCoordinator = mock();
         if (!sessionManager.hasSession("session-1")) {
             sessionManager.createSession("session-1");
         }
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "Unknown", "", Collections.emptyList()))));
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
         DatabaseCapabilityNotFoundException actual = assertThrows(DatabaseCapabilityNotFoundException.class, () -> facade.execute(createExecutionRequest("SELECT * FROM orders", 10)));
         assertThat(actual.getMessage(), is("Database capability does not exist."));
         verifyNoInteractions(statementExecutor);
@@ -124,15 +122,13 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteQueryWithTruncation() {
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(1, true));
         final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock();
-        final MCPJdbcMetadataRefresher metadataRefreshCoordinator = mock();
         if (!sessionManager.hasSession("session-1")) {
             sessionManager.createSession("session-1");
         }
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
@@ -144,15 +140,13 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteUpdate() {
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.updateCount("UPDATE", 3));
         final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock();
-        final MCPJdbcMetadataRefresher metadataRefreshCoordinator = mock();
         if (!sessionManager.hasSession("session-1")) {
             sessionManager.createSession("session-1");
         }
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(3));
@@ -164,18 +158,15 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionManager sessionManager = new MCPSessionManager(mock());
         sessionManager.createSession("session-1");
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        final MCPJdbcMetadataRefresher metadataRefreshCoordinator = mock();
         if (!sessionManager.hasSession("session-1")) {
             sessionManager.createSession("session-1");
         }
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
         assertThat(actual.getMessage(), is("Transaction started."));
-        verify(transactionResourceManager).beginTransaction("session-1", "logic_db");
     }
     
     @Test
@@ -205,16 +196,14 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
         MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock();
-        final MCPJdbcMetadataRefresher metadataRefreshCoordinator = mock();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         if (!sessionManager.hasSession("session-1")) {
             sessionManager.createSession("session-1");
         }
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10)));
         assertThat(actual.getMessage(), is("Statement class is not supported."));
@@ -224,16 +213,14 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteExplainAnalyzeWithSupportedCapability() {
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(2, false));
-        final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock();
-        final MCPJdbcMetadataRefresher metadataRefreshCoordinator = mock();
+        MCPSessionManager sessionManager = new MCPSessionManager(mock());
         if (!sessionManager.hasSession("session-1")) {
             sessionManager.createSession("session-1");
         }
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "H2", "", Collections.emptyList()))));
         MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager, jdbcTransactionResourceManager), statementExecutor, metadataRefreshCoordinator);
+                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
@@ -248,7 +235,7 @@ class MCPSQLExecutionFacadeTest {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList()))));
         return new MCPSQLExecutionFacade(
-                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager, mock()), statementExecutor, metadataRefresher);
+                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, metadataRefresher);
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {

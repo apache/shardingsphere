@@ -55,7 +55,7 @@ public final class MCPSQLExecutionFacade {
     public MCPSQLExecutionFacade(final MCPRuntimeContext runtimeContext) {
         databaseCapabilityProvider = runtimeContext.getDatabaseCapabilityProvider();
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager());
-        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(runtimeContext.getSessionManager(), runtimeContext.getSessionManager().getTransactionResourceManager());
+        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(runtimeContext.getSessionManager());
         statementExecutor = new MCPJdbcStatementExecutor(
                 runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getSessionManager().getTransactionResourceManager());
         jdbcMetadataRefresher = new MCPJdbcMetadataRefresher(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getMetadataCatalog());
