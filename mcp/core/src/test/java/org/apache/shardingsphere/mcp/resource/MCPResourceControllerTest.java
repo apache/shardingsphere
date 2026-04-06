@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +29,6 @@ import java.util.Set;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class MCPResourceControllerTest {
     
@@ -80,6 +78,6 @@ class MCPResourceControllerTest {
     }
     
     private MCPResourceController createController() {
-        return new MCPResourceController(new MCPRuntimeContextTestFactory().create(ResourceTestDataFactory.createDatabaseMetadataCatalog(), mock(MCPJdbcStatementExecutor.class)));
+        return new MCPResourceController(new MCPRuntimeContextTestFactory().create(ResourceTestDataFactory.createDatabaseMetadataCatalog()));
     }
 }

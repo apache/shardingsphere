@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
-import static org.mockito.Mockito.mock;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * MCP runtime context factory for tests.
@@ -37,16 +36,24 @@ public final class MCPRuntimeContextTestFactory {
      * Create MCP runtime context for tests.
      *
      * @param metadataCatalog database metadata catalog
-     * @param statementExecutor JDBC statement executor
      * @return MCP runtime context
      */
-    public MCPRuntimeContext create(final MCPDatabaseMetadataCatalog metadataCatalog, final MCPJdbcStatementExecutor statementExecutor) {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
+    public MCPRuntimeContext create(final MCPDatabaseMetadataCatalog metadataCatalog) {
+        return create(metadataCatalog, Collections.emptyMap());
+    }
+    
+    /**
+     * Create MCP runtime context for tests with runtime databases.
+     *
+     * @param metadataCatalog database metadata catalog
+     * @param runtimeDatabases runtime database configurations
+     * @return MCP runtime context
+     */
+    public MCPRuntimeContext create(final MCPDatabaseMetadataCatalog metadataCatalog, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(metadataCatalog);
-        MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, mock());
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog, databaseCapabilityProvider, sqlExecutionFacade);
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog, databaseCapabilityProvider);
     }
 }

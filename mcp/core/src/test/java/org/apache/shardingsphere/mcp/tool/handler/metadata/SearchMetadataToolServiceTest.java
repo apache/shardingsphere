@@ -82,10 +82,16 @@ class SearchMetadataToolServiceTest {
     }
     
     @Test
-    void assertExecuteSearchWithMissingQuery() {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "", Set.of(), 10, "")));
-        assertThat(actual.getMessage(), is("Query is required."));
+    void assertExecuteSearchWithEmptyQuery() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "", Set.of(), 10, ""));
+        Set<String> actualNames = new LinkedHashSet<>();
+        for (MetadataSearchHit each : actual.getItems()) {
+            actualNames.add(each.getName());
+        }
+        assertThat(actual.getItems().size(), is(8));
+        assertThat(actual.getNextPageToken(), is(""));
+        assertTrue(actualNames.contains("logic_db"));
+        assertTrue(actualNames.contains("idx_orders_status"));
     }
     
     @Test

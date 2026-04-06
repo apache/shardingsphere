@@ -19,22 +19,21 @@ package org.apache.shardingsphere.mcp.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
-import org.apache.shardingsphere.mcp.execute.ClassificationResult;
-import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Path;
+import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,13 +41,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ToolHandlerTest {
     
-    private final MCPRuntimeContext runtimeContext = createRuntimeContext();
+    @TempDir
+    private Path tempDir;
     
     @Test
     void assertGetSearchMetadataToolDescriptor() {
@@ -58,8 +56,8 @@ class ToolHandlerTest {
     }
     
     @Test
-    void assertHandleSearchMetadata() {
-        MCPResponse actual = new SearchMetadataToolHandler().handle(runtimeContext, "session-1", Map.of("query", "order", "object_types", List.of(MetadataObjectType.INDEX.name())));
+    void assertHandleSearchMetadata() throws SQLException {
+        MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1", Map.of("query", "order", "object_types", List.of(MetadataObjectType.INDEX.name())));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actual, isA(MCPMetadataResponse.class));
         assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
@@ -67,10 +65,17 @@ class ToolHandlerTest {
     }
     
     @Test
-    void assertHandleSearchMetadataWithMissingQuery() {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new SearchMetadataToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db")));
-        assertThat(actual.getMessage(), is("Query is required."));
+    void assertHandleSearchMetadataWithEmptyQuery() throws SQLException {
+        MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1", Map.of("database", "logic_db"));
+        Map<String, Object> actualPayload = actual.toPayload();
+        List<String> actualNames = new LinkedList<>();
+        for (Object each : (List<?>) actualPayload.get("items")) {
+            actualNames.add(((MetadataSearchHit) each).getName());
+        }
+        assertThat(actual, isA(MCPMetadataResponse.class));
+        assertThat(actualNames.size(), is(9));
+        assertTrue(actualNames.contains("logic_db"));
+        assertTrue(actualNames.contains("order_idx"));
     }
     
     @Test
@@ -81,29 +86,25 @@ class ToolHandlerTest {
     }
     
     @Test
-    void assertHandleExecuteQuery() {
-        Map<String, Object> actual = new ExecuteSQLToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
+    void assertHandleExecuteQuery() throws SQLException {
+        Map<String, Object> actual = new ExecuteSQLToolHandler().handle(createRuntimeContext(), "session-1", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
         assertThat(actual.get("result_kind"), is("result_set"));
         assertThat(((List<?>) actual.get("rows")).size(), is(1));
     }
     
     @Test
-    void assertHandleWithInvalidExecuteQueryRequest() {
-        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new ExecuteSQLToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db")));
-        assertThat(actual.getMessage(), is("Database and sql are required."));
+    void assertHandleExecuteQueryWithMissingSql() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> new ExecuteSQLToolHandler().handle(createRuntimeContext(), "session-1", Map.of("database", "logic_db")));
+        assertThat(actual.getMessage(), is("sql cannot be empty."));
     }
     
-    private MCPRuntimeContext createRuntimeContext() {
-        MCPRuntimeContext result = new MCPRuntimeContextTestFactory().create(ResourceTestDataFactory.createDatabaseMetadataCatalog(), createStatementExecutor());
+    private MCPRuntimeContext createRuntimeContext() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "tool-handler");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPRuntimeContext result = new MCPRuntimeContextTestFactory().create(
+                ResourceTestDataFactory.createDatabaseMetadataCatalog(), H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl));
         result.getSessionManager().createSession("session-1");
-        return result;
-    }
-    
-    private MCPJdbcStatementExecutor createStatementExecutor() {
-        MCPJdbcStatementExecutor result = mock(MCPJdbcStatementExecutor.class);
-        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class))).thenReturn(ExecuteQueryResponse.resultSet(
-                List.of(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false)), List.of(List.of(1)), false));
         return result;
     }
 }
