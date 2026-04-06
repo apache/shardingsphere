@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
-import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
+import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
 
@@ -58,12 +58,13 @@ public final class SearchMetadataToolHandler implements ToolHandler {
     }
     
     private MetadataSearchRequest createRequest(final Map<String, Object> arguments) {
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         return new MetadataSearchRequest(
-                MCPToolHandlerSupport.getStringArgument(arguments, "database"),
-                MCPToolHandlerSupport.getStringArgument(arguments, "schema"),
-                MCPToolHandlerSupport.getStringArgument(arguments, "query"),
-                MCPToolHandlerSupport.getObjectTypes(arguments),
-                MCPToolHandlerSupport.getIntegerArgument(arguments, "page_size", 100),
-                MCPToolHandlerSupport.getStringArgument(arguments, "page_token"));
+                toolArguments.getStringArgument("database"),
+                toolArguments.getStringArgument("schema"),
+                toolArguments.getStringArgument("query"),
+                toolArguments.getObjectTypes(),
+                toolArguments.getIntegerArgument("page_size", 100),
+                toolArguments.getStringArgument("page_token"));
     }
 }

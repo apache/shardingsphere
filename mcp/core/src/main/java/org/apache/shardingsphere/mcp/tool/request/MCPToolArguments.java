@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.handler;
+package org.apache.shardingsphere.mcp.tool.request;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
@@ -31,23 +30,24 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Tool handler support.
+ * MCP tool arguments.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPToolHandlerSupport {
+@RequiredArgsConstructor
+public final class MCPToolArguments {
+    
+    private final Map<String, Object> arguments;
     
     /**
      * Get object types.
      *
-     * @param arguments raw tool arguments
      * @return object types
      */
-    public static Set<MetadataObjectType> getObjectTypes(final Map<String, Object> arguments) {
+    public Set<MetadataObjectType> getObjectTypes() {
         Object rawValue = arguments.get("object_types");
         if (!(rawValue instanceof Collection)) {
             return Collections.emptySet();
         }
-        Set<MetadataObjectType> result = new LinkedHashSet<>();
+        Set<MetadataObjectType> result = new LinkedHashSet<>(((Collection<?>) rawValue).size(), 1F);
         for (Object each : (Collection<?>) rawValue) {
             if (null == each) {
                 continue;
@@ -64,34 +64,32 @@ public final class MCPToolHandlerSupport {
      * Create execute-query request.
      *
      * @param sessionId session identifier
-     * @param arguments raw tool arguments
      * @return normalized execute-query request
      */
-    public static ExecutionRequest createExecutionRequest(final String sessionId, final Map<String, Object> arguments) {
-        return new ExecutionRequest(sessionId, Objects.toString(arguments.get("database"), "").trim(), Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("sql"), "").trim(),
-                getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0));
+    public ExecutionRequest createExecutionRequest(final String sessionId) {
+        return new ExecutionRequest(sessionId, Objects.toString(arguments.get("database"), "").trim(),
+                Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("sql"), "").trim(),
+                getIntegerArgument("max_rows", 0), getIntegerArgument("timeout_ms", 0));
     }
     
     /**
      * Get string argument.
      *
-     * @param arguments raw tool arguments
      * @param name argument name
      * @return argument value
      */
-    public static String getStringArgument(final Map<String, Object> arguments, final String name) {
+    public String getStringArgument(final String name) {
         return Objects.toString(arguments.get(name), "").trim();
     }
     
     /**
      * Get integer argument.
      *
-     * @param arguments raw tool arguments
      * @param name argument name
      * @param defaultValue default value
      * @return argument value
      */
-    public static int getIntegerArgument(final Map<String, Object> arguments, final String name, final int defaultValue) {
+    public int getIntegerArgument(final String name, final int defaultValue) {
         Object result = arguments.get(name);
         if (null == result) {
             return defaultValue;

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
+import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Map;
@@ -51,7 +51,7 @@ public final class ExecuteQueryToolHandler implements ToolHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
-        ExecutionRequest executionRequest = MCPToolHandlerSupport.createExecutionRequest(sessionId, arguments);
+        ExecutionRequest executionRequest = new MCPToolArguments(arguments).createExecutionRequest(sessionId);
         ShardingSpherePreconditions.checkState(!executionRequest.getDatabase().isEmpty() && !executionRequest.getSql().isEmpty(),
                 () -> new MCPInvalidRequestException("Database and sql are required."));
         return runtimeContext.getSqlExecutionFacade().execute(executionRequest);
