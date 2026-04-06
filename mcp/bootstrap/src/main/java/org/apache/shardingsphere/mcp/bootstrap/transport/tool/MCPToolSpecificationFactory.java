@@ -19,13 +19,18 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
+import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * MCP tool specification factory.
@@ -34,9 +39,9 @@ public final class MCPToolSpecificationFactory {
     
     private final List<MCPToolDescriptor> toolDescriptors;
     
-    private final MCPToolCallHandler toolCallHandler;
-    
     private final MCPToolJsonSchemaAdapter mcpToolJsonSchemaAdapter;
+    
+    private final MCPToolController toolController;
     
     /**
      * Create MCP tool specification factory.
@@ -45,8 +50,8 @@ public final class MCPToolSpecificationFactory {
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
-        toolCallHandler = new MCPToolCallHandler(new MCPToolController(runtimeContext));
         mcpToolJsonSchemaAdapter = new MCPToolJsonSchemaAdapter();
+        toolController = new MCPToolController(runtimeContext);
     }
     
     /**
@@ -55,7 +60,7 @@ public final class MCPToolSpecificationFactory {
      * @return tool specifications
      */
     public List<SyncToolSpecification> createToolSpecifications() {
-        return toolDescriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(toolCallHandler::handle).build()).toList();
+        return toolDescriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(this::handle).build()).toList();
     }
     
     private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
@@ -65,5 +70,11 @@ public final class MCPToolSpecificationFactory {
                 .description(toolDescriptor.getDescription())
                 .inputSchema(mcpToolJsonSchemaAdapter.createInputSchema(toolDescriptor.getInputDefinition()))
                 .build();
+    }
+    
+    private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
+        Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
+        Map<String, Object> payload = toolController.handle(exchange.sessionId(), request.name(), arguments).toPayload();
+        return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(payload.containsKey("error_code")).build();
     }
 }
