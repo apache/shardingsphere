@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.mcp.tool.descriptor;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * MCP tool field definition.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolFieldDefinition {
     
@@ -33,26 +32,4 @@ public final class MCPToolFieldDefinition {
     private final MCPToolValueDefinition valueDefinition;
     
     private final boolean required;
-    
-    /**
-     * Create required tool input field definition.
-     *
-     * @param name field name
-     * @param valueDefinition field value definition
-     * @return required tool input field definition
-     */
-    public static MCPToolFieldDefinition required(final String name, final MCPToolValueDefinition valueDefinition) {
-        return new MCPToolFieldDefinition(name, valueDefinition, true);
-    }
-    
-    /**
-     * Create optional tool input field definition.
-     *
-     * @param name field name
-     * @param valueDefinition field value definition
-     * @return optional tool input field definition
-     */
-    public static MCPToolFieldDefinition optional(final String name, final MCPToolValueDefinition valueDefinition) {
-        return new MCPToolFieldDefinition(name, valueDefinition, false);
-    }
 }

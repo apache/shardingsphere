@@ -38,13 +38,7 @@ import java.util.Map;
 public final class SearchMetadataToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata", 
-            Arrays.asList(
-                    MCPToolFieldDefinition.optional("database", MCPToolValueDefinition.string("Optional logical database name.")),
-                    MCPToolFieldDefinition.optional("schema", MCPToolValueDefinition.string("Optional schema name.")),
-                    MCPToolFieldDefinition.required("query", MCPToolValueDefinition.string("Search query.")),
-                    MCPToolFieldDefinition.optional("object_types", MCPToolValueDefinition.array("Optional object-type filter.", MCPToolValueDefinition.string("Array element value."))),
-                    MCPToolFieldDefinition.optional("page_size", MCPToolValueDefinition.integer("Requested page size.")),
-                    MCPToolFieldDefinition.optional("page_token", MCPToolValueDefinition.string("Opaque pagination token."))));
+            Arrays.asList(new MCPToolFieldDefinition("database", MCPToolValueDefinition.string("Optional logical database name."), false), new MCPToolFieldDefinition("schema", MCPToolValueDefinition.string("Optional schema name."), false), new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true), new MCPToolFieldDefinition("object_types", MCPToolValueDefinition.array("Optional object-type filter.", MCPToolValueDefinition.string("Array element value.")), false), new MCPToolFieldDefinition("page_size", MCPToolValueDefinition.integer("Requested page size."), false), new MCPToolFieldDefinition("page_token", MCPToolValueDefinition.string("Opaque pagination token."), false)));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

@@ -37,12 +37,7 @@ import java.util.Map;
 public final class ExecuteQueryToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query",
-            Arrays.asList(
-                    MCPToolFieldDefinition.required("database", MCPToolValueDefinition.string("Logical database name.")),
-                    MCPToolFieldDefinition.optional("schema", MCPToolValueDefinition.string("Optional schema name.")),
-                    MCPToolFieldDefinition.required("sql", MCPToolValueDefinition.string("Single SQL statement.")),
-                    MCPToolFieldDefinition.optional("max_rows", MCPToolValueDefinition.integer("Optional maximum row count.")),
-                    MCPToolFieldDefinition.optional("timeout_ms", MCPToolValueDefinition.integer("Optional timeout in milliseconds."))));
+            Arrays.asList(new MCPToolFieldDefinition("database", MCPToolValueDefinition.string("Logical database name."), true), new MCPToolFieldDefinition("schema", MCPToolValueDefinition.string("Optional schema name."), false), new MCPToolFieldDefinition("sql", MCPToolValueDefinition.string("Single SQL statement."), true), new MCPToolFieldDefinition("max_rows", MCPToolValueDefinition.integer("Optional maximum row count."), false), new MCPToolFieldDefinition("timeout_ms", MCPToolValueDefinition.integer("Optional timeout in milliseconds."), false)));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
