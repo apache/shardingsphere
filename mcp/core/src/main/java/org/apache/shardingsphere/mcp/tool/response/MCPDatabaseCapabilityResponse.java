@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.response;
+package org.apache.shardingsphere.mcp.tool.response;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.response.MCPResponsePayloadFactory;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * Response for metadata resources.
+ * Response for tool database capability requests.
  */
 @RequiredArgsConstructor
-public final class MCPMetadataResponse implements MCPResponse {
+public final class MCPDatabaseCapabilityResponse implements MCPResponse {
     
-    private final List<?> metadataItems;
-    
-    private final String nextPageToken;
-    
-    public MCPMetadataResponse(final List<?> metadataItems) {
-        this(metadataItems, "");
-    }
+    private final MCPDatabaseCapability databaseCapability;
     
     @Override
     public Map<String, Object> toPayload() {
-        return MCPResponsePayloadFactory.createMetadataPayload(metadataItems, nextPageToken);
+        return MCPResponsePayloadFactory.createDatabaseCapabilityPayload(databaseCapability);
     }
 }

@@ -22,13 +22,13 @@ import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapabilityProv
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolDispatchKind;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.tool.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.tool.response.MCPServiceCapabilityResponse;
 
 import java.util.Map;
 import java.util.Optional;

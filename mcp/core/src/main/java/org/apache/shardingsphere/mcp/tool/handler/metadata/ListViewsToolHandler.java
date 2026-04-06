@@ -19,13 +19,13 @@ package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolDispatchKind;
 import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
 import org.apache.shardingsphere.mcp.tool.ToolRequest;
 import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
+import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
 
 import java.util.Map;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.response;
+package org.apache.shardingsphere.mcp.tool.response;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Response for metadata resources.
+ * Response for tool metadata requests.
  */
 @RequiredArgsConstructor
 public final class MCPMetadataResponse implements MCPResponse {
