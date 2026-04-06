@@ -21,6 +21,9 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * MCP tool descriptor.
  */
@@ -40,12 +43,14 @@ public final class MCPToolDescriptor {
      * Create MCP tool descriptor.
      *
      * @param name tool name
-     * @param title tool title
-     * @param description tool description
      * @param inputDefinition tool input definition
      * @return MCP tool descriptor
      */
-    public static MCPToolDescriptor create(final String name, final String title, final String description, final MCPToolInputDefinition inputDefinition) {
-        return new MCPToolDescriptor(name, title, description, inputDefinition);
+    public static MCPToolDescriptor create(final String name, final MCPToolInputDefinition inputDefinition) {
+        return new MCPToolDescriptor(name, createTitle(name), "ShardingSphere MCP tool: " + name, inputDefinition);
+    }
+    
+    private static String createTitle(final String name) {
+        return Arrays.stream(name.split("_")).filter(each -> !each.isEmpty()).map(each -> Character.toUpperCase(each.charAt(0)) + each.substring(1)).collect(Collectors.joining(" "));
     }
 }

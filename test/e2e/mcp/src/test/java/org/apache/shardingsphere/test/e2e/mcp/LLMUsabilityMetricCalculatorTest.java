@@ -60,7 +60,8 @@ class LLMUsabilityMetricCalculatorTest {
                 List.of("mcp_read_resource"), List.of("shardingsphere://capabilities"), true, false);
         LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("resource-first", "system", "user", "{\"database\":\"logic_db\"}",
                 List.of("{}"), List.of(
-                        new MCPInteractionTraceRecord(1, "tool_call", "list_tables", Map.of("database", "logic_db"), Map.of("items", List.of()), true, 1L),
+                        new MCPInteractionTraceRecord(1, "tool_call", "search_metadata",
+                                Map.of("database", "logic_db", "query", "orders"), Map.of("items", List.of()), true, 1L),
                         new MCPInteractionTraceRecord(2, "tool_call", "execute_query", Map.of("sql", "SELECT COUNT(*) AS total_orders FROM orders"),
                                 Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), true, 3L)),
                 List.of(), LLME2EAssertionReport.success("ok"));

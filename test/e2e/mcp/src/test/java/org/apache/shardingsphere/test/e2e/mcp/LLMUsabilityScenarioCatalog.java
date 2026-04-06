@@ -39,41 +39,41 @@ final class LLMUsabilityScenarioCatalog {
         result.add(createScenario("resource-capabilities-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 new LLME2EScenario("resource-capabilities-" + runtimeKind, SYSTEM_PROMPT,
                         "First call " + RESOURCE_READ_BRIDGE_NAME + " with uri `shardingsphere://capabilities`. "
-                                + "Then discover and verify the count in " + databaseName + "." + schemaName + "." + tableName
-                                + " using the SQL `" + query + "`.",
+                                + "Then use search_metadata to locate `" + tableName + "` in " + databaseName + "." + schemaName
+                                + " and verify the count using the SQL `" + query + "`.",
                         new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
-                        List.of(RESOURCE_READ_BRIDGE_NAME, "list_tables", "describe_table", "execute_query"),
-                        List.of(RESOURCE_READ_BRIDGE_NAME, "execute_query")),
+                        List.of(RESOURCE_READ_BRIDGE_NAME, "search_metadata", "execute_query"),
+                        List.of(RESOURCE_READ_BRIDGE_NAME, "search_metadata", "execute_query")),
                 List.of(RESOURCE_READ_BRIDGE_NAME), List.of("shardingsphere://capabilities"), true, false));
         result.add(createScenario("resource-table-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 new LLME2EScenario("resource-table-" + runtimeKind, SYSTEM_PROMPT,
                         "First call " + RESOURCE_READ_BRIDGE_NAME + " with uri `" + tableResourceUri + "`. "
                                 + "Then verify the count in " + databaseName + "." + schemaName + "." + tableName + " using `" + query + "`.",
                         new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
-                        List.of(RESOURCE_READ_BRIDGE_NAME, "describe_table", "execute_query"),
+                        List.of(RESOURCE_READ_BRIDGE_NAME, "execute_query"),
                         List.of(RESOURCE_READ_BRIDGE_NAME, "execute_query")),
                 List.of(RESOURCE_READ_BRIDGE_NAME), List.of(tableResourceUri), true, false));
         result.add(createScenario("tool-list-tables-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
                 new LLME2EScenario("tool-list-tables-" + runtimeKind, SYSTEM_PROMPT,
-                        "Use list_tables first for " + databaseName + "." + schemaName + ", then describe the orders table and verify `" + query + "`.",
+                        "Use search_metadata first for " + databaseName + "." + schemaName + " to locate `" + tableName + "`, then verify `" + query + "`.",
                         new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
-                        List.of("list_tables", "describe_table", "execute_query"),
-                        List.of("list_tables", "describe_table", "execute_query")),
-                List.of("list_tables"), List.of(), false, false));
+                        List.of("search_metadata", "execute_query"),
+                        List.of("search_metadata", "execute_query")),
+                List.of("search_metadata"), List.of(), false, false));
         result.add(createScenario("tool-search-metadata-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
                 new LLME2EScenario("tool-search-metadata-" + runtimeKind, SYSTEM_PROMPT,
                         "Use search_metadata first to locate the orders table in " + databaseName + "." + schemaName
-                                + ", then describe it and verify `" + query + "`.",
+                                + ", then read `" + tableResourceUri + "` and verify `" + query + "`.",
                         new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
-                        List.of("search_metadata", "describe_table", "execute_query"),
-                        List.of("search_metadata", "execute_query")),
+                        List.of("search_metadata", RESOURCE_READ_BRIDGE_NAME, "execute_query"),
+                        List.of("search_metadata", RESOURCE_READ_BRIDGE_NAME, "execute_query")),
                 List.of("search_metadata"), List.of(), false, false));
         result.add(createScenario("recovery-missing-database-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
                 new LLME2EScenario("recovery-missing-database-" + runtimeKind, SYSTEM_PROMPT,
                         "First call search_metadata with only schema `" + schemaName + "` and query `" + tableName + "`. "
                                 + "After the server rejects it, recover with the correct database and finish by verifying `" + query + "`.",
                         new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
-                        List.of("search_metadata", "describe_table", "execute_query"),
+                        List.of("search_metadata", "execute_query"),
                         List.of("search_metadata", "execute_query")),
                 List.of("search_metadata"), List.of(), false, true));
         result.add(createScenario("recovery-bad-resource-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,

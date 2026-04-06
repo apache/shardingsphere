@@ -57,15 +57,13 @@ class ProductionRefreshVisibilityE2ETest extends AbstractProductionRuntimeE2ETes
         String firstSessionId = initializeSession(httpClient);
         HttpResponse<String> executeResponse = sendToolCallRequest(httpClient, firstSessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
-        HttpResponse<String> sameSessionMetadata = sendToolCallRequest(httpClient, firstSessionId, "list_tables",
-                Map.of("database", "logic_db", "schema", "public"));
+        HttpResponse<String> sameSessionMetadata = sendResourceReadRequest(httpClient, firstSessionId, "shardingsphere://databases/logic_db/schemas/public/tables");
         String secondSessionId = initializeSession(httpClient);
-        HttpResponse<String> secondSessionMetadata = sendToolCallRequest(httpClient, secondSessionId, "list_tables",
-                Map.of("database", "logic_db", "schema", "public"));
+        HttpResponse<String> secondSessionMetadata = sendResourceReadRequest(httpClient, secondSessionId, "shardingsphere://databases/logic_db/schemas/public/tables");
         assertThat(executeResponse.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(executeResponse.body()).get("result_kind")), is("statement_ack"));
-        List<Map<String, Object>> firstSessionItems = getPayloadItems(getStructuredContent(sameSessionMetadata.body()));
-        List<Map<String, Object>> secondSessionItems = getPayloadItems(getStructuredContent(secondSessionMetadata.body()));
+        List<Map<String, Object>> firstSessionItems = getPayloadItems(getResourcePayload(sameSessionMetadata.body()));
+        List<Map<String, Object>> secondSessionItems = getPayloadItems(getResourcePayload(secondSessionMetadata.body()));
         assertTrue(firstSessionItems.toString().contains("orders_archive"));
         assertTrue(secondSessionItems.toString().contains("orders_archive"));
     }

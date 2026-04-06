@@ -66,10 +66,10 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "list_databases", Map.of());
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases");
         
         assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
+        List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
         assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems("logic_db", "analytics_db"));
     }
     
@@ -96,13 +96,13 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         
         sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
-        HttpResponse<String> firstDatabaseTables = sendToolCallRequest(httpClient, sessionId, "list_tables",
-                Map.of("database", "logic_db", "schema", "public"));
-        HttpResponse<String> secondDatabaseTables = sendToolCallRequest(httpClient, sessionId, "list_tables",
-                Map.of("database", "analytics_db", "schema", "public"));
+        HttpResponse<String> firstDatabaseTables = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/schemas/public/tables");
+        HttpResponse<String> secondDatabaseTables = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/analytics_db/schemas/public/tables");
+        List<String> firstDatabaseTableNames = getPayloadItems(getResourcePayload(firstDatabaseTables.body())).stream().map(each -> String.valueOf(each.get("table"))).toList();
+        List<String> secondDatabaseTableNames = getPayloadItems(getResourcePayload(secondDatabaseTables.body())).stream().map(each -> String.valueOf(each.get("table"))).toList();
         
-        assertTrue(firstDatabaseTables.body().contains("orders_archive"));
-        assertFalse(secondDatabaseTables.body().contains("orders_archive"));
-        assertTrue(secondDatabaseTables.body().contains("orders"));
+        assertTrue(firstDatabaseTableNames.contains("orders_archive"));
+        assertFalse(secondDatabaseTableNames.contains("orders_archive"));
+        assertTrue(secondDatabaseTableNames.contains("orders"));
     }
 }

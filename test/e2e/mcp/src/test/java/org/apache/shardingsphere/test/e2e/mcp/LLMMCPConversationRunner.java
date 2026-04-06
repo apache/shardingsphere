@@ -21,11 +21,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -54,8 +54,6 @@ final class LLMMCPConversationRunner {
     private final LLMChatClient llmChatClient;
     
     private final MCPInteractionClient mcpInteractionClient;
-    
-    private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
     
     LLMMCPConversationRunner(final int maxTurns, final LLMChatClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
         this.maxTurns = maxTurns;
@@ -183,9 +181,16 @@ final class LLMMCPConversationRunner {
     private boolean hasRequiredInteractionCoverage(final Collection<String> requiredActionNames, final Collection<MCPInteractionTraceRecord> interactionTrace) {
         Set<String> result = new LinkedHashSet<>();
         for (MCPInteractionTraceRecord each : interactionTrace) {
+            if (!isSuccessfulInteraction(each)) {
+                continue;
+            }
             result.add(each.targetName());
         }
         return result.containsAll(requiredActionNames);
+    }
+    
+    private boolean isSuccessfulInteraction(final MCPInteractionTraceRecord interactionTraceRecord) {
+        return interactionTraceRecord.valid() && !interactionTraceRecord.structuredContent().containsKey("error_code");
     }
     
     private boolean isReadOnlyQuery(final Map<String, Object> arguments) {
@@ -293,13 +298,22 @@ final class LLMMCPConversationRunner {
                                 "additionalProperties", false))));
                 continue;
             }
-            MCPToolDescriptor toolDescriptor = toolCatalog.findToolDescriptor(each).orElseThrow(() -> new IllegalArgumentException("Unsupported tool descriptor: " + each));
+            MCPToolDescriptor toolDescriptor = getToolDescriptor(each);
             result.add(Map.of("type", "function", "function", Map.of(
                     "name", toolDescriptor.getName(),
                     "description", toolDescriptor.getDescription(),
                     "parameters", createParameterSchema(toolDescriptor.getInputDefinition()))));
         }
         return result;
+    }
+    
+    private MCPToolDescriptor getToolDescriptor(final String toolName) {
+        for (MCPToolDescriptor each : ToolHandlerRegistry.getSupportedToolDescriptors()) {
+            if (toolName.equals(each.getName())) {
+                return each;
+            }
+        }
+        throw new IllegalArgumentException("Unsupported tool descriptor: " + toolName);
     }
     
     private MCPInteractionResponse executeAction(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {

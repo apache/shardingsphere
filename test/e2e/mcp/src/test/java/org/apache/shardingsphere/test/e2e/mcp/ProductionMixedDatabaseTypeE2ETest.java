@@ -58,13 +58,13 @@ class ProductionMixedDatabaseTypeE2ETest extends AbstractProductionRuntimeE2ETes
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        HttpResponse<String> firstResponse = sendToolCallRequest(httpClient, sessionId, "get_capabilities", Map.of("database", "logic_db"));
-        HttpResponse<String> secondResponse = sendToolCallRequest(httpClient, sessionId, "get_capabilities", Map.of("database", "analytics_db"));
+        HttpResponse<String> firstResponse = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/capabilities");
+        HttpResponse<String> secondResponse = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/analytics_db/capabilities");
         
         assertThat(firstResponse.statusCode(), is(200));
         assertThat(secondResponse.statusCode(), is(200));
-        assertThat(String.valueOf(getStructuredContent(firstResponse.body()).get("databaseType")), is("MySQL"));
-        assertThat(String.valueOf(getStructuredContent(secondResponse.body()).get("databaseType")), is("PostgreSQL"));
+        assertThat(String.valueOf(getResourcePayload(firstResponse.body()).get("databaseType")), is("MySQL"));
+        assertThat(String.valueOf(getResourcePayload(secondResponse.body()).get("databaseType")), is("PostgreSQL"));
     }
     
     private void initializeDatabase(final String jdbcUrl) {

@@ -75,16 +75,16 @@ class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest {
     }
     
     @Test
-    void assertMetadataToolsRejectUnsupportedIndex() throws IOException, InterruptedException {
+    void assertMetadataResourcesRejectUnsupportedIndex() throws IOException, InterruptedException {
         launchRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "list_indexes",
-                Map.of("database", "warehouse", "schema", "warehouse", "table", "facts"));
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId,
+                "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes");
         
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getFirstResourcePayload(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("unsupported"));
     }
 }

@@ -35,26 +35,27 @@ class LLMMCPConversationRunnerTest {
     
     private static final LLME2EScenario SCENARIO = new LLME2EScenario("scenario-a", "system", "user",
             new LLMStructuredAnswer("logic_db", "public", "orders", "SELECT COUNT(*) AS total_orders FROM orders", 2,
-                    List.of("list_tables", "describe_table", "execute_query")),
-            List.of("list_tables", "describe_table", "execute_query"),
-            List.of("list_tables", "describe_table", "execute_query"));
+                    List.of("search_metadata", "mcp_read_resource", "execute_query")),
+            List.of("search_metadata", "mcp_read_resource", "execute_query"),
+            List.of("search_metadata", "mcp_read_resource", "execute_query"));
     
     @Test
     void assertRun() {
         LLMMCPConversationRunner actual = new LLMMCPConversationRunner(4,
                 new StubLLMChatClient(
                         new LLMChatCompletion("", List.of(
-                                new LLMToolCall("call-1", "list_tables", "{\"database\":\"logic_db\",\"schema\":\"public\"}"),
-                                new LLMToolCall("call-2", "describe_table", "{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\"}"),
+                                new LLMToolCall("call-1", "search_metadata", "{\"database\":\"logic_db\",\"schema\":\"public\",\"query\":\"orders\",\"object_types\":[\"TABLE\"]}"),
+                                new LLMToolCall("call-2", "mcp_read_resource", "{\"uri\":\"shardingsphere://databases/logic_db/schemas/public/tables/orders\"}"),
                                 new LLMToolCall("call-3", "execute_query", "{\"database\":\"logic_db\",\"schema\":\"public\",\"sql\":\"SELECT COUNT(*) AS total_orders FROM orders\"}")),
                                 "{\"tool_calls\":3}"),
                         new LLMChatCompletion("{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\","
                                 + "\"query\":\"SELECT COUNT(*) AS total_orders FROM orders\",\"totalOrders\":2,"
-                                + "\"interactionSequence\":[\"list_tables\",\"describe_table\",\"execute_query\"]}", List.of(), "{\"final\":true}")),
+                                + "\"interactionSequence\":[\"search_metadata\",\"mcp_read_resource\",\"execute_query\"]}", List.of(), "{\"final\":true}")),
                 new StubMCPInteractionClient(Map.of(
-                        "list_tables", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
-                        "describe_table", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "order_id"))), "{}"),
-                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}"))));
+                        "search_metadata", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
+                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}")),
+                        Map.of("shardingsphere://databases/logic_db/schemas/public/tables/orders",
+                                new MCPInteractionResponse(Map.of("table", "orders", "columns", List.of(Map.of("column", "order_id"))), "{}"))));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
         
@@ -92,7 +93,7 @@ class LLMMCPConversationRunnerTest {
     void assertInvalidToolArguments() {
         LLMMCPConversationRunner actual = new LLMMCPConversationRunner(2,
                 new StubLLMChatClient(new LLMChatCompletion("", List.of(
-                        new LLMToolCall("call-1", "list_tables", "{not-json}")), "{}")),
+                        new LLMToolCall("call-1", "search_metadata", "{not-json}")), "{}")),
                 new StubMCPInteractionClient(Map.of()));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
@@ -106,22 +107,49 @@ class LLMMCPConversationRunnerTest {
         LLMMCPConversationRunner actual = new LLMMCPConversationRunner(4,
                 new StubLLMChatClient(
                         new LLMChatCompletion("", List.of(
-                                new LLMToolCall("call-1", "list_tables", "{\"database\":\"logic_db\",\"schema\":\"public\"}"),
-                                new LLMToolCall("call-2", "describe_table", "{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\"}"),
+                                new LLMToolCall("call-1", "search_metadata", "{\"database\":\"logic_db\",\"schema\":\"public\",\"query\":\"orders\",\"object_types\":[\"TABLE\"]}"),
+                                new LLMToolCall("call-2", "mcp_read_resource", "{\"uri\":\"shardingsphere://databases/logic_db/schemas/public/tables/orders\"}"),
                                 new LLMToolCall("call-3", "execute_query", "{\"database\":\"logic_db\",\"schema\":\"public\",\"sql\":\"SELECT COUNT(*) AS total_orders FROM orders\"}")),
                                 "{}"),
                         new LLMChatCompletion("not-json", List.of(), "{}"),
                         new LLMChatCompletion("still-not-json", List.of(), "{}")),
                 new StubMCPInteractionClient(Map.of(
-                        "list_tables", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
-                        "describe_table", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "order_id"))), "{}"),
-                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}"))));
+                        "search_metadata", new MCPInteractionResponse(Map.of("items", List.of(Map.of("name", "orders"))), "{}"),
+                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}")),
+                        Map.of("shardingsphere://databases/logic_db/schemas/public/tables/orders",
+                                new MCPInteractionResponse(Map.of("table", "orders", "columns", List.of(Map.of("column", "order_id"))), "{}"))));
         
         LLME2EArtifactBundle result = actual.run(SCENARIO);
         
         assertFalse(result.assertionReport().success());
         assertThat(result.assertionReport().failureType() + ":" + result.assertionReport().message(),
                 is("invalid_final_json:Model did not return a valid final JSON payload."));
+    }
+    
+    @Test
+    void assertMissingRequiredToolCoverageWhenRequiredToolReturnsError() {
+        LLME2EScenario coverageScenario = new LLME2EScenario("scenario-coverage", "system", "user",
+                new LLMStructuredAnswer("logic_db", "public", "orders", "SELECT COUNT(*) AS total_orders FROM orders", 2,
+                        List.of("search_metadata", "execute_query")),
+                List.of("search_metadata", "execute_query"),
+                List.of("search_metadata", "execute_query"));
+        LLMMCPConversationRunner actual = new LLMMCPConversationRunner(2,
+                new StubLLMChatClient(
+                        new LLMChatCompletion("", List.of(
+                                new LLMToolCall("call-1", "search_metadata", "{\"database\":\"logic_db\",\"schema\":\"public\",\"query\":\"orders\",\"object_types\":[\"TABLE\"]}"),
+                                new LLMToolCall("call-2", "execute_query", "{\"database\":\"logic_db\",\"schema\":\"public\",\"sql\":\"SELECT COUNT(*) AS total_orders FROM orders\"}")),
+                                "{}"),
+                        new LLMChatCompletion("{\"database\":\"logic_db\",\"schema\":\"public\",\"table\":\"orders\","
+                                + "\"query\":\"SELECT COUNT(*) AS total_orders FROM orders\",\"totalOrders\":2,"
+                                + "\"interactionSequence\":[\"search_metadata\",\"execute_query\"]}", List.of(), "{}")),
+                new StubMCPInteractionClient(Map.of(
+                        "search_metadata", new MCPInteractionResponse(Map.of("error_code", "not_found"), "{}"),
+                        "execute_query", new MCPInteractionResponse(Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), "{}"))));
+        
+        LLME2EArtifactBundle result = actual.run(coverageScenario);
+        
+        assertFalse(result.assertionReport().success());
+        assertThat(result.assertionReport().failureType(), is("missing_required_tool_coverage"));
     }
     
     @Test

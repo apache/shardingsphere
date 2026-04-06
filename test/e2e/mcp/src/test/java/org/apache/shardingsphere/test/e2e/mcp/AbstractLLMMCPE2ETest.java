@@ -36,7 +36,7 @@ abstract class AbstractLLMMCPE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private static final String USER_PROMPT_RESOURCE = "llm/minimal-smoke-user-prompt.md";
     
-    private static final List<String> SMOKE_TOOL_SEQUENCE = List.of("list_tables", "describe_table", "execute_query");
+    private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("search_metadata", "mcp_read_resource", "execute_query");
     
     private final LLME2EConfiguration llmConfiguration = LLME2EConfiguration.load();
     
@@ -59,12 +59,13 @@ abstract class AbstractLLMMCPE2ETest extends AbstractProductionRuntimeE2ETest {
     protected final LLME2EScenario createMinimalSmokeScenario(final String scenarioId, final String databaseName,
                                                               final String schemaName, final String tableName,
                                                               final String query, final int totalOrders) {
+        String tableResourceUri = String.format(Locale.ENGLISH, "shardingsphere://databases/%s/schemas/%s/tables/%s", databaseName, schemaName, tableName);
         String systemPrompt = loadResource(SYSTEM_PROMPT_RESOURCE);
         String userPrompt = String.format(Locale.ENGLISH, loadResource(USER_PROMPT_RESOURCE),
-                databaseName, databaseName, schemaName, databaseName, schemaName, tableName, databaseName, schemaName, query,
+                databaseName, databaseName, schemaName, tableName, tableResourceUri, databaseName, schemaName, query,
                 databaseName, schemaName, tableName, query, totalOrders);
-        LLMStructuredAnswer expectedAnswer = new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, SMOKE_TOOL_SEQUENCE);
-        return new LLME2EScenario(scenarioId, systemPrompt, userPrompt, expectedAnswer, SMOKE_TOOL_SEQUENCE, SMOKE_TOOL_SEQUENCE);
+        LLMStructuredAnswer expectedAnswer = new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, SMOKE_INTERACTION_SEQUENCE);
+        return new LLME2EScenario(scenarioId, systemPrompt, userPrompt, expectedAnswer, SMOKE_INTERACTION_SEQUENCE, SMOKE_INTERACTION_SEQUENCE);
     }
     
     protected final boolean isLLMSmokeEnabled() {

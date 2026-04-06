@@ -21,16 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -41,28 +37,6 @@ import java.util.Set;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPToolHandlerSupport {
-    
-    /**
-     * Create tool descriptor.
-     *
-     * @param name tool name
-     * @param inputDefinition input definition
-     * @return tool descriptor
-     */
-    public static MCPToolDescriptor createDescriptor(final String name, final MCPToolInputDefinition inputDefinition) {
-        return MCPToolDescriptor.create(name, createTitle(name), "ShardingSphere MCP tool: " + name, inputDefinition);
-    }
-    
-    private static String createTitle(final String toolName) {
-        String[] segments = toolName.split("_");
-        List<String> words = new ArrayList<>(segments.length);
-        for (String each : segments) {
-            if (!each.isEmpty()) {
-                words.add(Character.toUpperCase(each.charAt(0)) + each.substring(1));
-            }
-        }
-        return String.join(" ", words);
-    }
     
     /**
      * Create required string field definition.

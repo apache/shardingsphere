@@ -143,20 +143,41 @@ final class MCPHttpInteractionClient implements MCPInteractionClient {
     private Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> payload = JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
         });
-        Map<String, Object> result = castToMap(payload.get("result"));
-        return result.containsKey("structuredContent") ? castToMap(result.get("structuredContent")) : Map.of();
+        Map<String, Object> result = payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
+        if (result.containsKey("structuredContent")) {
+            return castToMap(result.get("structuredContent"));
+        }
+        if (payload.containsKey("error")) {
+            Map<String, Object> error = castToMap(payload.get("error"));
+            return Map.of(
+                    "error_code", "json_rpc_error",
+                    "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
+        }
+        return Map.of();
     }
     
     private Map<String, Object> getJsonRpcResult(final String responseBody) {
         Map<String, Object> payload = JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
         });
-        return castToMap(payload.get("result"));
+        return payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
     }
     
     private Map<String, Object> getFirstResourcePayload(final String responseBody) {
         Map<String, Object> result = getJsonRpcResult(responseBody);
         Object contents = result.get("contents");
-        Map<String, Object> firstContent = castToList(contents).get(0);
+        List<Map<String, Object>> parsedContents = castToList(contents);
+        if (null == parsedContents || parsedContents.isEmpty()) {
+            Map<String, Object> payload = JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
+            });
+            if (payload.containsKey("error")) {
+                Map<String, Object> error = castToMap(payload.get("error"));
+                return Map.of(
+                        "error_code", "json_rpc_error",
+                        "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
+            }
+            return Map.of();
+        }
+        Map<String, Object> firstContent = parsedContents.get(0);
         return JsonUtils.fromJsonString(String.valueOf(firstContent.get("text")), new TypeReference<>() {
         });
     }

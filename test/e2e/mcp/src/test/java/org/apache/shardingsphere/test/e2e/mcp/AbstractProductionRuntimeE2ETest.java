@@ -96,6 +96,18 @@ abstract class AbstractProductionRuntimeE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
+    protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId,
+                                                                 final String resourceUri) throws IOException, InterruptedException {
+        HttpRequest request = createJsonRequestBuilder(sessionId)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "resource-1",
+                        "method", "resources/read",
+                        "params", Map.of("uri", resourceUri)))))
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+    
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
@@ -111,12 +123,39 @@ abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private Map<String, Object> getJsonRpcResult(final String responseBody) {
-        return castToMap(parseJsonBody(responseBody).get("result"));
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        return payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
+    }
+    
+    private Map<String, Object> getJsonRpcError(final String responseBody) {
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        if (!payload.containsKey("error")) {
+            return Map.of();
+        }
+        Map<String, Object> error = castToMap(payload.get("error"));
+        return Map.of(
+                "error_code", "json_rpc_error",
+                "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
     }
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> result = getJsonRpcResult(responseBody);
-        return result.containsKey("structuredContent") ? castToMap(result.get("structuredContent")) : Map.of();
+        if (result.containsKey("structuredContent")) {
+            return castToMap(result.get("structuredContent"));
+        }
+        List<Map<String, Object>> content = castToList(result.get("content"));
+        if (null != content && !content.isEmpty()) {
+            return parseJsonBody(String.valueOf(content.get(0).get("text")));
+        }
+        return getJsonRpcError(responseBody);
+    }
+    
+    protected final Map<String, Object> getResourcePayload(final String responseBody) {
+        List<Map<String, Object>> contents = castToList(getJsonRpcResult(responseBody).get("contents"));
+        if (null == contents || contents.isEmpty()) {
+            return getJsonRpcError(responseBody);
+        }
+        return parseJsonBody(String.valueOf(contents.get(0).get("text")));
     }
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {

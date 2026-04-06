@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public final class ExecuteQueryToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolHandlerSupport.createDescriptor("execute_query",
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolDescriptor.create("execute_query",
             MCPToolInputDefinition.create(
                     MCPToolHandlerSupport.requiredStringField("database", "Logical database name."),
                     MCPToolHandlerSupport.optionalStringField("schema", "Optional schema name."),

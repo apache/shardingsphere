@@ -139,7 +139,19 @@ abstract class AbstractMCPE2ETest {
     }
     
     protected final Map<String, Object> getJsonRpcResult(final String responseBody) {
-        return castToMap(parseJsonBody(responseBody).get("result"));
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        return payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
+    }
+    
+    private Map<String, Object> getJsonRpcError(final String responseBody) {
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        if (!payload.containsKey("error")) {
+            return Map.of();
+        }
+        Map<String, Object> error = castToMap(payload.get("error"));
+        return Map.of(
+                "error_code", "json_rpc_error",
+                "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
     }
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
@@ -148,16 +160,17 @@ abstract class AbstractMCPE2ETest {
             return castToMap(result.get("structuredContent"));
         }
         List<Map<String, Object>> content = getResultContents(responseBody);
-        return content.isEmpty() ? Map.of() : parseJsonBody(String.valueOf(content.get(0).get("text")));
+        return content.isEmpty() ? getJsonRpcError(responseBody) : parseJsonBody(String.valueOf(content.get(0).get("text")));
     }
     
     protected final List<Map<String, Object>> getResultContents(final String responseBody) {
-        return castToList(getJsonRpcResult(responseBody).get("content"));
+        List<Map<String, Object>> result = castToList(getJsonRpcResult(responseBody).get("content"));
+        return null == result ? List.of() : result;
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
         List<Map<String, Object>> contents = castToList(getJsonRpcResult(responseBody).get("contents"));
-        return parseJsonBody(String.valueOf(contents.get(0).get("text")));
+        return null == contents || contents.isEmpty() ? getJsonRpcError(responseBody) : parseJsonBody(String.valueOf(contents.get(0).get("text")));
     }
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {

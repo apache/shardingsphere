@@ -55,9 +55,9 @@ class ProductionMetadataDiscoveryE2ETest extends AbstractProductionRuntimeE2ETes
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "list_databases", Map.of());
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases");
         assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
+        List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
         assertThat(items.size(), is(1));
         assertThat(String.valueOf(items.get(0).get("database")), is("logic_db"));
     }
@@ -67,11 +67,11 @@ class ProductionMetadataDiscoveryE2ETest extends AbstractProductionRuntimeE2ETes
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "describe_table",
-                Map.of("database", "logic_db", "schema", "public", "table", "orders"));
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/schemas/public/tables/orders");
         assertThat(actual.statusCode(), is(200));
-        assertTrue(getPayloadItems(getStructuredContent(actual.body())).toString().contains("order_id"));
-        assertTrue(getPayloadItems(getStructuredContent(actual.body())).toString().contains("status"));
+        List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
+        assertTrue(items.toString().contains("order_id"));
+        assertTrue(items.toString().contains("status"));
     }
     
     @Test
@@ -79,9 +79,9 @@ class ProductionMetadataDiscoveryE2ETest extends AbstractProductionRuntimeE2ETes
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "get_capabilities", Map.of("database", "logic_db"));
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/capabilities");
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> payload = getResourcePayload(actual.body());
         assertThat(String.valueOf(payload.get("database")), is("logic_db"));
         assertThat(String.valueOf(payload.get("databaseType")), is("H2"));
         assertTrue(String.valueOf(payload.get("supportedObjectTypes")).contains("VIEW"));
