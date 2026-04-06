@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
-import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 
 /**
  * Handler for service capabilities resource URI.

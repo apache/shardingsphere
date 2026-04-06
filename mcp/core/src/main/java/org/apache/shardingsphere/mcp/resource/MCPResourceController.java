@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
-import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
+import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 
 import java.util.Map.Entry;
 import java.util.Optional;

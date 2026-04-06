@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 
 /**
  * Handler for one MCP resource URI pattern.

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.uri;
+package org.apache.shardingsphere.mcp.resource.uri;
 
 import org.junit.jupiter.api.Test;
 
