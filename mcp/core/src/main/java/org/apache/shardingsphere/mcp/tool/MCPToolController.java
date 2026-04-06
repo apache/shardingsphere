@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * MCP tool controller.
@@ -45,7 +46,7 @@ public final class MCPToolController {
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
         try {
-            return dispatch(sessionId, toolName, arguments);
+            return dispatch(sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -53,7 +54,7 @@ public final class MCPToolController {
         }
     }
     
-    MCPResponse dispatch(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        return ToolHandlerRegistry.findRegisteredHandler(toolName).orElseThrow(UnsupportedToolException::new).handle(sessionId, runtimeContext, arguments);
+    Optional<MCPResponse> dispatch(final String sessionId, final String toolName, final Map<String, Object> arguments) {
+        return ToolHandlerRegistry.findRegisteredHandler(toolName).map(optional -> optional.handle(runtimeContext, sessionId, arguments));
     }
 }

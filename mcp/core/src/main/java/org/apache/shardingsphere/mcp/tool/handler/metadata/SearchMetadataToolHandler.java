@@ -50,7 +50,7 @@ public final class SearchMetadataToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final String sessionId, final MCPRuntimeContext runtimeContext, final Map<String, Object> arguments) {
+    public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
         MetadataSearchResult result = new MetadataSearchExecutor(runtimeContext.getMetadataCatalog()).execute(createRequest(arguments));
         return new MCPMetadataResponse(result.getItems(), result.getNextPageToken());
     }

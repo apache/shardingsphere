@@ -41,10 +41,10 @@ public interface ToolHandler extends ShardingSphereSPI {
     /**
      * Handle one tool call.
      *
-     * @param sessionId session identifier
      * @param runtimeContext runtime context
+     * @param sessionId session identifier
      * @param arguments normalized tool arguments
      * @return tool response
      */
-    MCPResponse handle(String sessionId, MCPRuntimeContext runtimeContext, Map<String, Object> arguments);
+    MCPResponse handle(MCPRuntimeContext runtimeContext, String sessionId, Map<String, Object> arguments);
 }

@@ -59,7 +59,7 @@ class ToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadata() {
-        MCPResponse actual = new SearchMetadataToolHandler().handle("session-1", runtimeContext, Map.of("query", "order", "object_types", List.of(MetadataObjectType.INDEX.name())));
+        MCPResponse actual = new SearchMetadataToolHandler().handle(runtimeContext, "session-1", Map.of("query", "order", "object_types", List.of(MetadataObjectType.INDEX.name())));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actual, isA(MCPMetadataResponse.class));
         assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
@@ -69,7 +69,7 @@ class ToolHandlerTest {
     @Test
     void assertHandleSearchMetadataWithMissingQuery() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new SearchMetadataToolHandler().handle("session-1", runtimeContext, Map.of("database", "logic_db")));
+                () -> new SearchMetadataToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db")));
         assertThat(actual.getMessage(), is("Query is required."));
     }
     
@@ -82,7 +82,7 @@ class ToolHandlerTest {
     
     @Test
     void assertHandleExecuteQuery() {
-        Map<String, Object> actual = new ExecuteQueryToolHandler().handle("session-1", runtimeContext, Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
+        Map<String, Object> actual = new ExecuteQueryToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
         assertThat(actual.get("result_kind"), is("result_set"));
         assertThat(((List<?>) actual.get("rows")).size(), is(1));
     }
@@ -90,7 +90,7 @@ class ToolHandlerTest {
     @Test
     void assertHandleWithInvalidExecuteQueryRequest() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new ExecuteQueryToolHandler().handle("session-1", runtimeContext, Map.of("database", "logic_db")));
+                () -> new ExecuteQueryToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db")));
         assertThat(actual.getMessage(), is("Database and sql are required."));
     }
     

@@ -47,7 +47,7 @@ public final class ExecuteQueryToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final String sessionId, final MCPRuntimeContext runtimeContext, final Map<String, Object> arguments) {
+    public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
         ExecutionRequest executionRequest = MCPToolHandlerSupport.createExecutionRequest(sessionId, arguments);
         if (executionRequest.getDatabase().isEmpty() || executionRequest.getSql().isEmpty()) {
             throw new MCPInvalidRequestException("Database and sql are required.");
