@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public final class MCPJdbcTransactionResourceManager {
     
+    @Getter
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
     private final Map<String, TransactionResourceContext> transactionResources = new ConcurrentHashMap<>();
