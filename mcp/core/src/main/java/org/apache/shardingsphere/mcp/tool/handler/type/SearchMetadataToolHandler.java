@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.handler.metadata;
+package org.apache.shardingsphere.mcp.tool.handler.type;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;

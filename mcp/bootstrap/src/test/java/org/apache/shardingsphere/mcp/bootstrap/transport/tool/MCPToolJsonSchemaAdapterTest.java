@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.tool.handler.execution.ExecuteQueryToolHandler;
-import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.type.ExecuteQueryToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.type.SearchMetadataToolHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

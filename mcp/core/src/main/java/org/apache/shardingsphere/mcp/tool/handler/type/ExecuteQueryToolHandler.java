@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.handler.execution;
+package org.apache.shardingsphere.mcp.tool.handler.type;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;

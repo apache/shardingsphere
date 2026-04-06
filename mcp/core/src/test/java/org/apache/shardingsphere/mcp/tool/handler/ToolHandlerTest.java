@@ -30,8 +30,8 @@ import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.tool.handler.execution.ExecuteQueryToolHandler;
-import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.type.ExecuteQueryToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.type.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
 import org.junit.jupiter.api.Test;
 

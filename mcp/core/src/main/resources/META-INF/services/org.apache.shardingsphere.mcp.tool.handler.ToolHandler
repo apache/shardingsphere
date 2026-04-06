@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler
-org.apache.shardingsphere.mcp.tool.handler.execution.ExecuteQueryToolHandler
+org.apache.shardingsphere.mcp.tool.handler.type.SearchMetadataToolHandler
+org.apache.shardingsphere.mcp.tool.handler.type.ExecuteQueryToolHandler
