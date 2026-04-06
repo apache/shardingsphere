@@ -69,7 +69,7 @@ class MCPJdbcMetadataLoaderTest {
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
-        assertThat(actual.findDatabaseType("logic_db").orElseThrow(), is("H2"));
+        assertThat(actual.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("H2"));
         assertFalse(actual.findMetadata("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
     }
     

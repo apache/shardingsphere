@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -43,7 +44,7 @@ class MCPRuntimeContextBuilderTest {
         MCPRuntimeContext actual = builder.build(H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl));
         assertNotNull(actual.getSessionManager());
         assertNotNull(actual.getSessionExecutionCoordinator());
-        assertThat(actual.getMetadataCatalog().findDatabaseType("logic_db").orElseThrow(), is("H2"));
+        assertThat(actual.getMetadataCatalog().findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("H2"));
     }
     
     @Test

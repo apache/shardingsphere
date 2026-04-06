@@ -33,7 +33,7 @@ class MCPDatabaseMetadataCatalogTest {
         MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
         metadataCatalog.replaceMetadata("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(
                 new MCPTableMetadata("logic_db", "public", "orders_archive", List.of(), List.of())), List.of()))));
-        assertThat(metadataCatalog.findDatabaseType("logic_db").orElseThrow(), is("MySQL"));
+        assertThat(metadataCatalog.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("MySQL"));
         assertThat(metadataCatalog.findMetadata("logic_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("orders_archive"));
         assertThat(metadataCatalog.findMetadata("analytics_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("metrics"));
     }

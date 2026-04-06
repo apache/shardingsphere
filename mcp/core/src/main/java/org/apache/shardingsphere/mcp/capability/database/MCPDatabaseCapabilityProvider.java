@@ -43,7 +43,7 @@ public final class MCPDatabaseCapabilityProvider {
      * @return database-level capability
      */
     public Optional<MCPDatabaseCapability> provide(final String databaseName) {
-        return metadataCatalog.findDatabaseType(databaseName).flatMap(optional -> find(databaseName, optional, getDatabaseVersion(databaseName)));
+        return metadataCatalog.findMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseType).flatMap(optional -> find(databaseName, optional, getDatabaseVersion(databaseName)));
     }
     
     private Optional<MCPDatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
@@ -49,7 +50,7 @@ class MCPJdbcMetadataRefresherTest {
         MCPJdbcMetadataRefresher metadataRefresher = new MCPJdbcMetadataRefresher(runtimeDatabases, metadataCatalog);
         H2RuntimeTestSupport.executeStatements(jdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
         metadataRefresher.refresh("logic_db");
-        assertTrue(metadataCatalog.findDatabaseType("logic_db").isPresent());
+        assertTrue(metadataCatalog.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).isPresent());
         assertTrue(containsTable(metadataCatalog.findMetadata("logic_db").orElseThrow().getSchemas(), "orders_archive"));
     }
     

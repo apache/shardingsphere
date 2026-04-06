@@ -60,6 +60,10 @@ public final class MetadataQueryService {
         return result;
     }
     
+    private MCPDatabaseMetadata createDatabaseSummary(final MCPDatabaseMetadata databaseMetadata) {
+        return new MCPDatabaseMetadata(databaseMetadata.getDatabase(), databaseMetadata.getDatabaseType(), databaseMetadata.getDatabaseVersion(), Collections.emptyList());
+    }
+    
     /**
      * Query database.
      *
@@ -310,10 +314,6 @@ public final class MetadataQueryService {
             }
         }
         return Optional.empty();
-    }
-    
-    private MCPDatabaseMetadata createDatabaseSummary(final MCPDatabaseMetadata databaseMetadata) {
-        return new MCPDatabaseMetadata(databaseMetadata.getDatabase(), databaseMetadata.getDatabaseType(), databaseMetadata.getDatabaseVersion(), Collections.emptyList());
     }
     
     private MCPDatabaseMetadata createDatabaseDetail(final MCPDatabaseMetadata databaseMetadata) {

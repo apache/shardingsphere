@@ -18,28 +18,21 @@
 package org.apache.shardingsphere.mcp.metadata.model;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * MCP database metadata catalog.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPDatabaseMetadataCatalog {
     
     private final Map<String, MCPDatabaseMetadata> databaseMetadataMap;
     
-    /**
-     * Find database type.
-     *
-     * @param databaseName database name
-     * @return found database type
-     */
-    public Optional<String> findDatabaseType(final String databaseName) {
-        return findMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseType);
+    public MCPDatabaseMetadataCatalog(final Map<String, MCPDatabaseMetadata> databaseMetadataMap) {
+        this.databaseMetadataMap = new ConcurrentHashMap<>(databaseMetadataMap);
     }
     
     /**
