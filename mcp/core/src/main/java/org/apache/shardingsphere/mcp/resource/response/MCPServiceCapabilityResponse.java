@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.resource.response;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.response.MCPResponsePayloadFactory;
 
 import java.util.Map;
 
@@ -34,6 +33,8 @@ public final class MCPServiceCapabilityResponse implements MCPResponse {
     
     @Override
     public Map<String, Object> toPayload() {
-        return MCPResponsePayloadFactory.createServiceCapabilityPayload(serviceCapability);
+        return Map.of("supportedResources", serviceCapability.getSupportedResources(),
+                "supportedTools", serviceCapability.getSupportedTools(),
+                "supportedStatementClasses", serviceCapability.getSupportedStatementClasses());
     }
 }
