@@ -68,8 +68,8 @@ public final class MCPToolHandlerSupport {
      * @return normalized execute-query request
      */
     public static ExecutionRequest createExecutionRequest(final String sessionId, final Map<String, Object> arguments) {
-        return new ExecutionRequest(sessionId, stringArgument(arguments, "database"), stringArgument(arguments, "schema"), stringArgument(arguments, "sql"),
-                integerArgument(arguments, "max_rows", 0), integerArgument(arguments, "timeout_ms", 0));
+        return new ExecutionRequest(sessionId, Objects.toString(arguments.get("database"), "").trim(), Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("sql"), "").trim(),
+                getIntegerArgument(arguments, "max_rows", 0), getIntegerArgument(arguments, "timeout_ms", 0));
     }
     
     /**
@@ -80,7 +80,7 @@ public final class MCPToolHandlerSupport {
      * @return argument value
      */
     public static String getStringArgument(final Map<String, Object> arguments, final String name) {
-        return stringArgument(arguments, name);
+        return Objects.toString(arguments.get(name), "").trim();
     }
     
     /**
@@ -92,14 +92,6 @@ public final class MCPToolHandlerSupport {
      * @return argument value
      */
     public static int getIntegerArgument(final Map<String, Object> arguments, final String name, final int defaultValue) {
-        return integerArgument(arguments, name, defaultValue);
-    }
-    
-    private static String stringArgument(final Map<String, Object> arguments, final String name) {
-        return Objects.toString(arguments.get(name), "").trim();
-    }
-    
-    private static int integerArgument(final Map<String, Object> arguments, final String name, final int defaultValue) {
         Object result = arguments.get(name);
         if (null == result) {
             return defaultValue;
