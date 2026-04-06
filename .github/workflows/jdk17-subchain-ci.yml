@@ -89,7 +89,7 @@ jobs:
         run: |
           set -euo pipefail
           INIT_BODY='{"jsonrpc":"2.0","id":"ci-init","method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"ci-smoke","version":"1.0.0"}}}'
-          TOOL_BODY='{"jsonrpc":"2.0","id":"ci-tool","method":"tools/call","params":{"name":"get_capabilities","arguments":{}}}'
+          RESOURCE_BODY='{"jsonrpc":"2.0","id":"ci-resource","method":"resources/read","params":{"uri":"shardingsphere://capabilities"}}'
           DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
           if [[ -z "${DISTRIBUTION_HOME}" ]]; then
             echo "Packaged MCP distribution was not found." 1>&2
@@ -121,16 +121,16 @@ jobs:
           test -n "${SESSION_ID}"
           test "${PROTOCOL_VERSION}" = "2025-11-25"
           test "${INIT_STATUS}" = "200"
-          TOOL_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-tool.body" -w '%{http_code}' \
+          RESOURCE_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-resource.body" -w '%{http_code}' \
             -H 'X-Trusted-Identity: ci_user' \
             -H 'Content-Type: application/json' \
             -H 'Accept: application/json, text/event-stream' \
             -H "MCP-Session-Id: ${SESSION_ID}" \
             -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-            --data "${TOOL_BODY}" \
+            --data "${RESOURCE_BODY}" \
             -X POST http://127.0.0.1:18088/mcp)
-          test "${TOOL_STATUS}" = "200"
-          grep -q 'supportedTools' "${RUNNER_TEMP}/mcp-tool.body"
+          test "${RESOURCE_STATUS}" = "200"
+          grep -q 'supportedTools' "${RUNNER_TEMP}/mcp-resource.body"
           DELETE_STATUS=$(curl -sS -o "${RUNNER_TEMP}/mcp-delete.body" -w '%{http_code}' \
             -H 'X-Trusted-Identity: ci_user' \
             -H "MCP-Session-Id: ${SESSION_ID}" \
