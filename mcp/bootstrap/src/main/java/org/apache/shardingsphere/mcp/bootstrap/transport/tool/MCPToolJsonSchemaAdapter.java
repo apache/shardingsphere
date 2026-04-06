@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 
 import java.util.ArrayList;
@@ -30,10 +29,10 @@ import java.util.Map;
 
 final class MCPToolJsonSchemaAdapter {
     
-    McpSchema.JsonSchema createInputSchema(final MCPToolInputDefinition inputDefinition) {
-        Map<String, Object> properties = new LinkedHashMap<>(inputDefinition.getFields().size(), 1F);
-        List<String> required = new ArrayList<>(inputDefinition.getFields().size());
-        for (MCPToolFieldDefinition each : inputDefinition.getFields()) {
+    McpSchema.JsonSchema createInputSchema(final List<MCPToolFieldDefinition> fields) {
+        Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
+        List<String> required = new ArrayList<>(fields.size());
+        for (MCPToolFieldDefinition each : fields) {
             properties.put(each.getName(), createValueSchema(each.getValueDefinition()));
             if (each.isRequired()) {
                 required.add(each.getName());

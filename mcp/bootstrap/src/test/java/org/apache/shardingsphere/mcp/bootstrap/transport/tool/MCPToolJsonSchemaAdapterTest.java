@@ -34,7 +34,7 @@ class MCPToolJsonSchemaAdapterTest {
     
     @Test
     void assertCreateInputSchemaWithRequiredField() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getInputDefinition());
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getFields());
         assertThat(actual.type(), is("object"));
         assertThat(actual.required().size(), is(2));
         assertThat(actual.required().get(0), is("database"));
@@ -44,7 +44,7 @@ class MCPToolJsonSchemaAdapterTest {
     
     @Test
     void assertCreateInputSchemaWithOptionalField() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getInputDefinition());
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getFields());
         Map<String, Object> actualTimeout = castToMap(actual.properties().get("timeout_ms"));
         
         assertThat(actual.properties().size(), is(5));
@@ -54,9 +54,8 @@ class MCPToolJsonSchemaAdapterTest {
     
     @Test
     void assertCreateInputSchemaWithArrayField() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new SearchMetadataToolHandler().getToolDescriptor().getInputDefinition());
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new SearchMetadataToolHandler().getToolDescriptor().getFields());
         Map<String, Object> actualObjectTypes = castToMap(actual.properties().get("object_types"));
-        
         assertThat(actual.required().size(), is(1));
         assertThat(actual.required().get(0), is("query"));
         assertThat(String.valueOf(actualObjectTypes.get("type")), is("array"));

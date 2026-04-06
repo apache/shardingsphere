@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -32,7 +33,7 @@ public final class MCPToolDescriptor {
     
     private final String name;
     
-    private final MCPToolInputDefinition inputDefinition;
+    private final List<MCPToolFieldDefinition> fields;
     
     /**
      * Get title.

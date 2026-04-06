@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * MCP tool input value definition.
+ * MCP tool value definition.
  */
 @RequiredArgsConstructor
 @Getter

@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
@@ -39,13 +38,13 @@ import java.util.Map;
 public final class SearchMetadataToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata", 
-            new MCPToolInputDefinition(Arrays.asList(
+            Arrays.asList(
                     MCPToolFieldDefinition.optional("database", MCPToolValueDefinition.string("Optional logical database name.")),
                     MCPToolFieldDefinition.optional("schema", MCPToolValueDefinition.string("Optional schema name.")),
                     MCPToolFieldDefinition.required("query", MCPToolValueDefinition.string("Search query.")),
                     MCPToolFieldDefinition.optional("object_types", MCPToolValueDefinition.array("Optional object-type filter.", MCPToolValueDefinition.string("Array element value."))),
                     MCPToolFieldDefinition.optional("page_size", MCPToolValueDefinition.integer("Requested page size.")),
-                    MCPToolFieldDefinition.optional("page_token", MCPToolValueDefinition.string("Opaque pagination token.")))));
+                    MCPToolFieldDefinition.optional("page_token", MCPToolValueDefinition.string("Opaque pagination token."))));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

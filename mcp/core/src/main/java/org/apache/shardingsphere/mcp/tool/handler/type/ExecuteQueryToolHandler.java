@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestExcepti
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
@@ -38,12 +37,12 @@ import java.util.Map;
 public final class ExecuteQueryToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query",
-            new MCPToolInputDefinition(Arrays.asList(
+            Arrays.asList(
                     MCPToolFieldDefinition.required("database", MCPToolValueDefinition.string("Logical database name.")),
                     MCPToolFieldDefinition.optional("schema", MCPToolValueDefinition.string("Optional schema name.")),
                     MCPToolFieldDefinition.required("sql", MCPToolValueDefinition.string("Single SQL statement.")),
                     MCPToolFieldDefinition.optional("max_rows", MCPToolValueDefinition.integer("Optional maximum row count.")),
-                    MCPToolFieldDefinition.optional("timeout_ms", MCPToolValueDefinition.integer("Optional timeout in milliseconds.")))));
+                    MCPToolFieldDefinition.optional("timeout_ms", MCPToolValueDefinition.integer("Optional timeout in milliseconds."))));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

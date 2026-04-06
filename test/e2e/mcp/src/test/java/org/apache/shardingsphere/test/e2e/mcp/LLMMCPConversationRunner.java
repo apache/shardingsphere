@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
@@ -302,7 +301,7 @@ final class LLMMCPConversationRunner {
             result.add(Map.of("type", "function", "function", Map.of(
                     "name", toolDescriptor.getName(),
                     "description", toolDescriptor.getDescription(),
-                    "parameters", createParameterSchema(toolDescriptor.getInputDefinition()))));
+                    "parameters", createParameterSchema(toolDescriptor.getFields()))));
         }
         return result;
     }
@@ -345,10 +344,10 @@ final class LLMMCPConversationRunner {
         return Map.of("type", "object", "properties", Map.of(), "additionalProperties", false);
     }
     
-    private Map<String, Object> createParameterSchema(final MCPToolInputDefinition inputDefinition) {
-        Map<String, Object> properties = new LinkedHashMap<>(inputDefinition.getFields().size(), 1F);
+    private Map<String, Object> createParameterSchema(final List<MCPToolFieldDefinition> fields) {
+        Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
         List<String> required = new LinkedList<>();
-        for (MCPToolFieldDefinition each : inputDefinition.getFields()) {
+        for (MCPToolFieldDefinition each : fields) {
             properties.put(each.getName(), createValueSchema(each.getValueDefinition()));
             if (each.isRequired()) {
                 required.add(each.getName());

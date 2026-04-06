@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * MCP tool input field definition.
+ * MCP tool field definition.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

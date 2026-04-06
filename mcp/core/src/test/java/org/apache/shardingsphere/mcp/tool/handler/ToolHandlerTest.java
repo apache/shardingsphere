@@ -54,7 +54,7 @@ class ToolHandlerTest {
     void assertGetSearchMetadataToolDescriptor() {
         MCPToolDescriptor actual = new SearchMetadataToolHandler().getToolDescriptor();
         assertThat(actual.getName(), is("search_metadata"));
-        assertThat(actual.getInputDefinition().getFields().size(), is(6));
+        assertThat(actual.getFields().size(), is(6));
     }
     
     @Test
@@ -77,7 +77,7 @@ class ToolHandlerTest {
     void assertGetExecuteQueryToolDescriptor() {
         MCPToolDescriptor actual = new ExecuteQueryToolHandler().getToolDescriptor();
         assertThat(actual.getName(), is("execute_query"));
-        assertThat(actual.getInputDefinition().getFields().size(), is(5));
+        assertThat(actual.getFields().size(), is(5));
     }
     
     @Test

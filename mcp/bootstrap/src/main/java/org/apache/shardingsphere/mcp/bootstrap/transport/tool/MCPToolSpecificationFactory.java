@@ -68,7 +68,7 @@ public final class MCPToolSpecificationFactory {
                 .name(toolDescriptor.getName())
                 .title(toolDescriptor.getTitle())
                 .description(toolDescriptor.getDescription())
-                .inputSchema(mcpToolJsonSchemaAdapter.createInputSchema(toolDescriptor.getInputDefinition()))
+                .inputSchema(mcpToolJsonSchemaAdapter.createInputSchema(toolDescriptor.getFields()))
                 .build();
     }
     
