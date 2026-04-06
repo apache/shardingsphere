@@ -49,12 +49,11 @@ public final class MCPRuntimeContextBuilder {
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
-        MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
-        MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
         MCPDatabaseMetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(metadataCatalog);
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(
-                databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor,
+        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionExecutionCoordinator,
+                new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager),
+                new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager),
                 new MCPJdbcMetadataRefresher(runtimeDatabases, metadataCatalog));
         return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog, databaseCapabilityProvider, sqlExecutionFacade);
     }
