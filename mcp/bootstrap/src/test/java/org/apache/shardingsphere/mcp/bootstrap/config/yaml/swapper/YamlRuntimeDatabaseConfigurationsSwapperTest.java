@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
-import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;

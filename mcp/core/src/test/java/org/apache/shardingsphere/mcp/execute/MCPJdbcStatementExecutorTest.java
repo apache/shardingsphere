@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;

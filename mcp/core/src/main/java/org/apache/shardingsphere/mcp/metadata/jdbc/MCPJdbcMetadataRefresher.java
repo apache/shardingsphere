@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
