@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.metadata.model;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,14 +26,11 @@ import java.util.Optional;
 /**
  * Database metadata snapshots.
  */
+@RequiredArgsConstructor
 @Getter
 public final class DatabaseMetadataSnapshots {
     
-    private final Map<String, DatabaseMetadataSnapshot> databaseSnapshots;
-    
-    public DatabaseMetadataSnapshots(final Map<String, DatabaseMetadataSnapshot> databaseSnapshots) {
-        this.databaseSnapshots = databaseSnapshots;
-    }
+    private final Map<String, MCPDatabaseMetadata> databaseMetadataMap;
     
     /**
      * Find database type.
@@ -51,26 +49,26 @@ public final class DatabaseMetadataSnapshots {
      * @return found database metadata
      */
     public Optional<MCPDatabaseMetadata> findDatabaseMetadata(final String databaseName) {
-        return findSnapshot(databaseName).map(DatabaseMetadataSnapshot::getDatabaseMetadata);
+        return findMetadata(databaseName);
     }
     
     /**
-     * Find database metadata snapshot.
+     * Find database metadata.
      *
      * @param databaseName database name
-     * @return found database metadata snapshot
+     * @return found database metadata
      */
-    public Optional<DatabaseMetadataSnapshot> findSnapshot(final String databaseName) {
-        return Optional.ofNullable(databaseSnapshots.get(databaseName));
+    public Optional<MCPDatabaseMetadata> findMetadata(final String databaseName) {
+        return Optional.ofNullable(databaseMetadataMap.get(databaseName));
     }
     
     /**
-     * Replace database metadata snapshot.
+     * Replace database metadata.
      *
      * @param databaseName database name
-     * @param databaseSnapshot database metadata snapshot
+     * @param databaseMetadata database metadata
      */
-    public void replaceSnapshot(final String databaseName, final DatabaseMetadataSnapshot databaseSnapshot) {
-        databaseSnapshots.put(databaseName, databaseSnapshot);
+    public void replaceMetadata(final String databaseName, final MCPDatabaseMetadata databaseMetadata) {
+        databaseMetadataMap.put(databaseName, databaseMetadata);
     }
 }

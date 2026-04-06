@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
@@ -103,12 +102,12 @@ class MCPToolPayloadResolverTest {
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+        Map<String, MCPDatabaseMetadata> databaseSnapshots = new LinkedHashMap<>();
+        databaseSnapshots.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
                 new MCPSchemaMetadata("logic_db", "public", List.of(
-                        new MCPTableMetadata("logic_db", "public", "orders", List.of(), List.of())), List.of())))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
-                new MCPSchemaMetadata("warehouse", "warehouse", List.of(), List.of())))));
+                        new MCPTableMetadata("logic_db", "public", "orders", List.of(), List.of())), List.of()))));
+        databaseSnapshots.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+                new MCPSchemaMetadata("warehouse", "warehouse", List.of(), List.of()))));
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     

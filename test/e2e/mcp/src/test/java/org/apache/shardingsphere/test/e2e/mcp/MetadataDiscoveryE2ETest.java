@@ -47,8 +47,8 @@ class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest {
         Map<String, Object> payload = getFirstResourcePayload(actual.body());
         List<Map<String, Object>> items = getPayloadItems(payload);
         assertThat(items.size(), is(2));
-        assertThat(String.valueOf(items.get(0).get("name")), is("order_items"));
-        assertThat(String.valueOf(items.get(1).get("name")), is("orders"));
+        assertThat(String.valueOf(items.get(0).get("table")), is("order_items"));
+        assertThat(String.valueOf(items.get(1).get("table")), is("orders"));
     }
     
     @Test

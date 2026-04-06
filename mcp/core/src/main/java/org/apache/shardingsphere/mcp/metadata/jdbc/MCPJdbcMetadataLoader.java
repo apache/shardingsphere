@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
@@ -56,24 +55,24 @@ public final class MCPJdbcMetadataLoader {
      * @throws IllegalStateException when runtime metadata cannot be loaded from one configured database
      */
     public DatabaseMetadataSnapshots load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
             try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                databaseSnapshots.put(databaseName, loadDatabaseSnapshot(databaseName, entry.getValue().getDatabaseType(), connection.getMetaData()));
+                databaseMetadataMap.put(databaseName, loadDatabaseSnapshot(databaseName, entry.getValue().getDatabaseType(), connection.getMetaData()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
         }
-        return new DatabaseMetadataSnapshots(databaseSnapshots);
+        return new DatabaseMetadataSnapshots(databaseMetadataMap);
     }
     
-    private DatabaseMetadataSnapshot loadDatabaseSnapshot(final String databaseName, final String databaseType, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private MCPDatabaseMetadata loadDatabaseSnapshot(final String databaseName, final String databaseType, final DatabaseMetaData databaseMetaData) throws SQLException {
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
         DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseType, databaseVersion);
         loadTables(accumulator, databaseMetaData);
         loadViews(accumulator, databaseMetaData);
-        return new DatabaseMetadataSnapshot(accumulator.build());
+        return accumulator.build();
     }
     
     private void loadTables(final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {

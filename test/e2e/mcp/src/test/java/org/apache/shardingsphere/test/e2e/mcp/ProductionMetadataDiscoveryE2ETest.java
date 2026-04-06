@@ -59,7 +59,7 @@ class ProductionMetadataDiscoveryE2ETest extends AbstractProductionRuntimeE2ETes
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
         assertThat(items.size(), is(1));
-        assertThat(String.valueOf(items.get(0).get("name")), is("logic_db"));
+        assertThat(String.valueOf(items.get(0).get("database")), is("logic_db"));
     }
     
     @Test

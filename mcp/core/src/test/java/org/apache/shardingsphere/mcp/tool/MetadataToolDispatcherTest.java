@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
@@ -157,25 +156,25 @@ class MetadataToolDispatcherTest {
     }
     
     private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+        Map<String, MCPDatabaseMetadata> databaseSnapshots = new LinkedHashMap<>();
+        databaseSnapshots.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
                 new MCPSchemaMetadata("logic_db", "public", List.of(
                         new MCPTableMetadata("logic_db", "public", "orders",
                                 List.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id"),
                                         new MCPColumnMetadata("logic_db", "public", "orders", "", "status")),
                                 List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
                         new MCPTableMetadata("logic_db", "public", "order_items", List.of(), List.of())),
-                        List.of(new MCPViewMetadata("logic_db", "public", "active_orders", List.of())))))));
-        databaseSnapshots.put("analytics_db", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
+                        List.of(new MCPViewMetadata("logic_db", "public", "active_orders", List.of()))))));
+        databaseSnapshots.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
                 new MCPSchemaMetadata("analytics_db", "public", List.of(
                         new MCPTableMetadata("analytics_db", "public", "metrics",
                                 List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
-                        List.of())))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot(new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+                        List.of()))));
+        databaseSnapshots.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(
                         new MCPTableMetadata("warehouse", "warehouse", "facts",
                                 List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
-                        List.of())))));
+                        List.of()))));
         return new DatabaseMetadataSnapshots(databaseSnapshots);
     }
     

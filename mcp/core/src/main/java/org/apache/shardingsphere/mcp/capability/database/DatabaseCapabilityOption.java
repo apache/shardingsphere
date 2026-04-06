@@ -60,7 +60,7 @@ public interface DatabaseCapabilityOption extends TypedSPI {
      * @param databaseVersion database version
      * @return whether explain analyze is supported
      */
-    boolean isExplainAnalyzeSupported(final String databaseVersion);
+    boolean isExplainAnalyzeSupported(String databaseVersion);
     
     @Override
     String getType();

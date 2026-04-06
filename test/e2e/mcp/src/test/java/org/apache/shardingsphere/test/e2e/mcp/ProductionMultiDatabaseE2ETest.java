@@ -70,7 +70,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
-        assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), hasItems("logic_db", "analytics_db"));
+        assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems("logic_db", "analytics_db"));
     }
     
     @Test

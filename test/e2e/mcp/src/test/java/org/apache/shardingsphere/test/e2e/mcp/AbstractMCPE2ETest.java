@@ -29,10 +29,13 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor
 import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshot;
 import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObject;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
@@ -166,26 +169,40 @@ abstract class AbstractMCPE2ETest {
     }
     
     protected final DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, DatabaseMetadataSnapshot> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new DatabaseMetadataSnapshot("MySQL", "", List.of(
-                new MetadataObject("logic_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "orders", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.TABLE, "order_items", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.VIEW, "active_orders", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "order_id", "TABLE", "orders"),
-                new MetadataObject("logic_db", "public", MetadataObjectType.COLUMN, "status", "TABLE", "orders"),
-                new MetadataObject("logic_db", "public", MetadataObjectType.INDEX, "idx_orders_status", "TABLE", "orders"),
-                new MetadataObject("logic_db", "public", MetadataObjectType.MATERIALIZED_VIEW, "mv_orders", "", ""),
-                new MetadataObject("logic_db", "public", MetadataObjectType.SEQUENCE, "order_seq", "", ""))));
-        databaseSnapshots.put("analytics_db", new DatabaseMetadataSnapshot("PostgreSQL", "", List.of(
-                new MetadataObject("analytics_db", "public", MetadataObjectType.SCHEMA, "public", "", ""),
-                new MetadataObject("analytics_db", "public", MetadataObjectType.TABLE, "metrics", "", ""),
-                new MetadataObject("analytics_db", "public", MetadataObjectType.COLUMN, "metric_id", "TABLE", "metrics"))));
-        databaseSnapshots.put("warehouse", new DatabaseMetadataSnapshot("Hive", "", List.of(
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.SCHEMA, "warehouse", "", ""),
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.TABLE, "facts", "", ""),
-                new MetadataObject("warehouse", "warehouse", MetadataObjectType.COLUMN, "fact_id", "TABLE", "facts"))));
-        return new DatabaseMetadataSnapshots(databaseSnapshots);
+        Map<String, MCPDatabaseMetadata> result = new LinkedHashMap<>(3, 1F);
+        result.put("logic_db", createLogicDatabaseMetadata());
+        result.put("analytics_db", createAnalyticsDatabaseMetadata());
+        result.put("warehouse", createWarehouseDatabaseMetadata());
+        return new DatabaseMetadataSnapshots(result);
+    }
+    
+    private MCPDatabaseMetadata createLogicDatabaseMetadata() {
+        return new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+                new MCPSchemaMetadata("logic_db", "public", List.of(
+                        new MCPTableMetadata("logic_db", "public", "orders", List.of(
+                                new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id"),
+                                new MCPColumnMetadata("logic_db", "public", "orders", "", "status")),
+                                List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
+                        new MCPTableMetadata("logic_db", "public", "order_items", List.of(
+                                new MCPColumnMetadata("logic_db", "public", "order_items", "", "order_id")), List.of())),
+                        List.of(new MCPViewMetadata("logic_db", "public", "active_orders",
+                                List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id")))))));
+    }
+    
+    private MCPDatabaseMetadata createAnalyticsDatabaseMetadata() {
+        return new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
+                new MCPSchemaMetadata("analytics_db", "public", List.of(
+                        new MCPTableMetadata("analytics_db", "public", "metrics", List.of(
+                                new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
+                        List.of())));
+    }
+    
+    private MCPDatabaseMetadata createWarehouseDatabaseMetadata() {
+        return new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+                new MCPSchemaMetadata("warehouse", "warehouse", List.of(
+                        new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(
+                                new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
+                        List.of())));
     }
     
     protected final Map<String, String> createRequestHeaders() {

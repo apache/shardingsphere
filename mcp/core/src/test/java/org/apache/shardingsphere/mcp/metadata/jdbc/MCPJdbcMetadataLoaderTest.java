@@ -93,8 +93,8 @@ class MCPJdbcMetadataLoaderTest {
         Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
                 "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
         DatabaseMetadataSnapshots actual = metadataLoader.load(connectionConfigs);
-        assertThat(actual.getDatabaseSnapshots().size(), is(2));
-        assertTrue(actual.findSnapshot("analytics_db").isPresent());
+        assertThat(actual.getDatabaseMetadataMap().size(), is(2));
+        assertTrue(actual.findMetadata("analytics_db").isPresent());
     }
     
     @Test
