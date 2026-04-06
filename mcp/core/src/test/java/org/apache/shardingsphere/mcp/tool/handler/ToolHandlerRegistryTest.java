@@ -26,11 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ToolHandlerRegistryTest {
     
     @Test
-    void assertGetHandlers() {
-        assertThat(ToolHandlerRegistry.getRegisteredHandlers().size(), is(2));
-    }
-    
-    @Test
     void assertGetSupportedTools() {
         assertThat(ToolHandlerRegistry.getSupportedTools().size(), is(2));
         assertTrue(ToolHandlerRegistry.getSupportedTools().contains("search_metadata"));

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,14 +38,14 @@ public final class ToolHandlerRegistry {
     
     private static final Map<String, ToolHandler> REGISTERED_HANDLERS;
     
-    private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS;
-    
     private static final List<String> SUPPORTED_TOOLS;
+    
+    private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS;
     
     static {
         REGISTERED_HANDLERS = createRegisteredHandlers();
+        SUPPORTED_TOOLS = new ArrayList<>(REGISTERED_HANDLERS.keySet());
         SUPPORTED_TOOL_DESCRIPTORS = REGISTERED_HANDLERS.values().stream().map(ToolHandler::getToolDescriptor).toList();
-        SUPPORTED_TOOLS = SUPPORTED_TOOL_DESCRIPTORS.stream().map(MCPToolDescriptor::getName).toList();
     }
     
     private static Map<String, ToolHandler> createRegisteredHandlers() {
@@ -53,34 +53,20 @@ public final class ToolHandlerRegistry {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No tool handlers are registered."));
         Map<String, ToolHandler> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (ToolHandler each : handlers) {
-            MCPToolDescriptor toolDescriptor = each.getToolDescriptor();
-            ShardingSpherePreconditions.checkState(null != toolDescriptor && !toolDescriptor.getName().isEmpty(),
-                    () -> new IllegalArgumentException(String.format("Tool descriptor is required for `%s`.", each.getClass().getName())));
-            ToolHandler previousHandler = result.putIfAbsent(toolDescriptor.getName(), each);
-            ShardingSpherePreconditions.checkState(null == previousHandler,
-                    () -> new IllegalArgumentException(String.format("Duplicate tool name `%s` with `%s` and `%s`.",
-                            toolDescriptor.getName(), previousHandler.getClass().getName(), each.getClass().getName())));
+            ToolHandler previousHandler = result.putIfAbsent(each.getToolDescriptor().getName(), each);
+            ShardingSpherePreconditions.checkState(null == previousHandler, () -> new IllegalArgumentException(
+                    String.format("Duplicate tool name `%s` with `%s` and `%s`.", each.getToolDescriptor().getName(), previousHandler.getClass().getName(), each.getClass().getName())));
         }
-        return Collections.unmodifiableMap(result);
+        return result;
     }
     
     /**
-     * Find registered handler.
+     * Get supported tools.
      *
-     * @param toolName tool name
-     * @return registered handler
+     * @return supported tools
      */
-    public static Optional<ToolHandler> findRegisteredHandler(final String toolName) {
-        return Optional.ofNullable(REGISTERED_HANDLERS.get(toolName));
-    }
-    
-    /**
-     * Get registered handlers.
-     *
-     * @return registered handlers
-     */
-    public static Map<String, ToolHandler> getRegisteredHandlers() {
-        return REGISTERED_HANDLERS;
+    public static List<String> getSupportedTools() {
+        return SUPPORTED_TOOLS;
     }
     
     /**
@@ -93,11 +79,12 @@ public final class ToolHandlerRegistry {
     }
     
     /**
-     * Get supported tools.
+     * Find registered handler.
      *
-     * @return supported tools
+     * @param toolName tool name
+     * @return registered handler
      */
-    public static List<String> getSupportedTools() {
-        return SUPPORTED_TOOLS;
+    public static Optional<ToolHandler> findRegisteredHandler(final String toolName) {
+        return Optional.ofNullable(REGISTERED_HANDLERS.get(toolName));
     }
 }
