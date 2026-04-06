@@ -39,8 +39,8 @@ import java.util.Map;
 public final class SearchMetadataToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata", 
-            Arrays.asList(new MCPToolFieldDefinition("database", 
-                    new MCPToolValueDefinition(Type.STRING, "Optional logical database name.", null), false),
+            Arrays.asList(
+                    new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Optional logical database name.", null), false),
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
                     new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
                     new MCPToolFieldDefinition("object_types", new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter.",
