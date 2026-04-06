@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
@@ -37,7 +36,6 @@ import java.util.Optional;
 /**
  * MCP SQL execution facade.
  */
-@RequiredArgsConstructor
 public final class MCPSQLExecutionFacade {
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;

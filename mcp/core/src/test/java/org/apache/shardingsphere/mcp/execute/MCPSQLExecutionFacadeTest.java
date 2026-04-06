@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
@@ -35,9 +35,17 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,7 +53,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -91,168 +104,226 @@ class MCPSQLExecutionFacadeTest {
     
     @Test
     void assertExecuteWithMissingSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
-        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(
-                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> facade.execute(createExecutionRequest("SELECT * FROM orders", 10)));
         assertThat(actual.getMessage(), is("Session does not exist."));
-        verifyNoInteractions(statementExecutor);
+        verifyNoInteractions(runtimeDatabaseConfig);
     }
     
     @Test
     void assertExecuteWithUnknownCapability() {
-        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        if (!sessionManager.hasSession("session-1")) {
-            sessionManager.createSession("session-1");
-        }
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "Unknown", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
-        DatabaseCapabilityNotFoundException actual = assertThrows(DatabaseCapabilityNotFoundException.class, () -> facade.execute(createExecutionRequest("SELECT * FROM orders", 10)));
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("Unknown"));
+        DatabaseCapabilityNotFoundException actual = assertThrows(DatabaseCapabilityNotFoundException.class,
+                () -> facade.execute(createExecutionRequest("SELECT * FROM orders", 10)));
         assertThat(actual.getMessage(), is("Database capability does not exist."));
-        verifyNoInteractions(statementExecutor);
+        verifyNoInteractions(runtimeDatabaseConfig);
     }
     
     @Test
-    void assertExecuteQueryWithTruncation() {
-        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(1, true));
-        final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        if (!sessionManager.hasSession("session-1")) {
-            sessionManager.createSession("session-1");
-        }
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
+    void assertExecuteQueryWithTruncation() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createQueryConnection(createResultSet(
+                List.of(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INTEGER", false),
+                        new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true)),
+                List.of(List.of(1, "NEW"), List.of(2, "DONE")))));
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
-        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
     
     @Test
-    void assertExecuteUpdate() {
-        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.updateCount("UPDATE", 3));
-        final MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        if (!sessionManager.hasSession("session-1")) {
-            sessionManager.createSession("session-1");
-        }
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
+    void assertExecuteUpdate() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createUpdateConnection(3));
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(3));
-        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
     
     @Test
     void assertExecuteTransactionCommand() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        MCPJdbcTransactionResourceManager transactionResourceManager = createTransactionResourceManager(runtimeDatabaseConfig);
+        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         sessionManager.createSession("session-1");
-        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        if (!sessionManager.hasSession("session-1")) {
-            sessionManager.createSession("session-1");
-        }
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
         assertThat(actual.getMessage(), is("Transaction started."));
+        verify(transactionResourceManager).beginTransaction("session-1", "logic_db");
+        verifyNoInteractions(runtimeDatabaseConfig);
     }
     
     @Test
-    void assertExecuteDdl() {
-        MCPJdbcMetadataRefresher metadataRefresher = mock(MCPJdbcMetadataRefresher.class);
-        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.statementAck("CREATE", "Statement executed."));
-        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(mock()), statementExecutor, metadataRefresher);
+    void assertExecuteDdl() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(
+                createStatementAckConnection(), createMetadataConnection("public", "orders_archive", List.of("order_id", "status")));
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
+        MCPDatabaseMetadata actualMetadata = metadataCatalog.findMetadata("logic_db").orElseThrow();
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
-        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
-        verify(metadataRefresher).refresh("logic_db");
+        assertThat(actualMetadata.getSchemas().size(), is(1));
+        assertThat(actualMetadata.getSchemas().get(0).getSchema(), is("public"));
+        assertThat(actualMetadata.getSchemas().get(0).getTables().get(0).getTable(), is("orders_archive"));
+        verify(runtimeDatabaseConfig, times(2)).openConnection("logic_db");
     }
     
     @Test
-    void assertExecuteDcl() {
-        MCPJdbcMetadataRefresher metadataRefresher = mock(MCPJdbcMetadataRefresher.class);
-        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(ExecuteQueryResponse.statementAck("GRANT", "Statement executed."));
-        MCPSQLExecutionFacade facade = createFacade("MySQL", new MCPSessionManager(mock()), statementExecutor, metadataRefresher);
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO app_user", 10));
+    void assertExecuteDcl() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(
+                createStatementAckConnection(), createMetadataConnection("public", "orders", List.of("order_id", "status")));
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
+        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO PUBLIC", 10));
+        MCPDatabaseMetadata actualMetadata = metadataCatalog.findMetadata("logic_db").orElseThrow();
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
-        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
-        verify(metadataRefresher).refresh("logic_db");
+        assertThat(actualMetadata.getSchemas().size(), is(1));
+        assertThat(actualMetadata.getSchemas().get(0).getSchema(), is("public"));
+        assertThat(actualMetadata.getSchemas().get(0).getTables().get(0).getTable(), is("orders"));
+        verify(runtimeDatabaseConfig, times(2)).openConnection("logic_db");
     }
     
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
-        MCPJdbcStatementExecutor statementExecutor = mock(MCPJdbcStatementExecutor.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        if (!sessionManager.hasSession("session-1")) {
-            sessionManager.createSession("session-1");
-        }
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("MySQL"));
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10)));
         assertThat(actual.getMessage(), is("Statement class is not supported."));
-        verifyNoInteractions(statementExecutor);
+        verifyNoInteractions(runtimeDatabaseConfig);
     }
     
     @Test
-    void assertExecuteExplainAnalyzeWithSupportedCapability() {
-        MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(createResultSetResponse(2, false));
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
-        if (!sessionManager.hasSession("session-1")) {
-            sessionManager.createSession("session-1");
-        }
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "H2", "", Collections.emptyList()))));
-        MCPSQLExecutionFacade facade = new MCPSQLExecutionFacade(databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager),
-                new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, mock());
+    void assertExecuteExplainAnalyzeWithSupportedCapability() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createQueryConnection(createResultSet(
+                List.of(new ExecuteQueryColumnDefinition("plan", "VARCHAR", "VARCHAR", true)), List.of(List.of("plan")))));
+        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
-        assertThat(actual.getRows().size(), is(2));
-        verify(statementExecutor).execute(any(ExecutionRequest.class), any(ClassificationResult.class));
+        assertThat(actual.getRows().size(), is(1));
+        verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
     
-    private MCPSQLExecutionFacade createFacade(final String databaseType, final MCPSessionManager sessionManager,
-                                               final MCPJdbcStatementExecutor statementExecutor, final MCPJdbcMetadataRefresher metadataRefresher) {
-        if (!sessionManager.hasSession("session-1")) {
-            sessionManager.createSession("session-1");
-        }
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList()))));
-        return new MCPSQLExecutionFacade(
-                databaseCapabilityProvider, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcTransactionStatementExecutor(sessionManager), statementExecutor, metadataRefresher);
+    private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final MCPDatabaseMetadataCatalog metadataCatalog) {
+        return new MCPSQLExecutionFacade(new MCPRuntimeContext(sessionManager, new MCPSessionExecutionCoordinator(sessionManager), metadataCatalog));
+    }
+    
+    private MCPDatabaseMetadataCatalog createMetadataCatalog(final String databaseType) {
+        return new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList())));
+    }
+    
+    private MCPJdbcTransactionResourceManager createTransactionResourceManager(final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
+        MCPJdbcTransactionResourceManager result = mock(MCPJdbcTransactionResourceManager.class);
+        when(result.getRuntimeDatabases()).thenReturn(Map.of("logic_db", runtimeDatabaseConfig));
+        when(result.findTransactionConnection("session-1", "logic_db")).thenReturn(Optional.empty());
+        return result;
     }
     
     private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
         return new ExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000);
     }
     
-    private MCPJdbcStatementExecutor createStatementExecutor(final ExecuteQueryResponse response) {
-        MCPJdbcStatementExecutor result = mock(MCPJdbcStatementExecutor.class);
-        when(result.execute(any(ExecutionRequest.class), any(ClassificationResult.class))).thenReturn(response);
+    private RuntimeDatabaseConfiguration mockRuntimeDatabaseConfiguration(final Connection... connections) throws SQLException {
+        RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
+        if (1 == connections.length) {
+            when(result.openConnection("logic_db")).thenReturn(connections[0]);
+        } else {
+            Connection[] remainingConnections = new Connection[connections.length - 1];
+            System.arraycopy(connections, 1, remainingConnections, 0, remainingConnections.length);
+            when(result.openConnection("logic_db")).thenReturn(connections[0], remainingConnections);
+        }
         return result;
     }
     
-    private ExecuteQueryResponse createResultSetResponse(final int rowCount, final boolean truncated) {
-        List<ExecuteQueryColumnDefinition> columns = List.of(
-                new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INT", false),
-                new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true));
-        List<List<Object>> rows = 1 == rowCount ? List.of(List.of(1, "NEW")) : List.of(List.of(1, "NEW"), List.of(2, "DONE"));
-        return ExecuteQueryResponse.resultSet(columns, rows, truncated);
+    private Connection createQueryConnection(final ResultSet resultSet) throws SQLException {
+        return createStatementConnection(true, 0, resultSet);
+    }
+    
+    private Connection createUpdateConnection(final int updateCount) throws SQLException {
+        return createStatementConnection(false, updateCount, null);
+    }
+    
+    private Connection createStatementAckConnection() throws SQLException {
+        return createStatementConnection(false, 0, null);
+    }
+    
+    private Connection createStatementConnection(final boolean hasResultSet, final int updateCount, final ResultSet resultSet) throws SQLException {
+        Connection result = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        when(result.createStatement()).thenReturn(statement);
+        when(statement.execute(anyString())).thenReturn(hasResultSet);
+        if (hasResultSet) {
+            when(statement.getResultSet()).thenReturn(resultSet);
+        } else {
+            when(statement.getUpdateCount()).thenReturn(updateCount);
+        }
+        return result;
+    }
+    
+    private Connection createMetadataConnection(final String schemaName, final String tableName, final List<String> columnNames) throws SQLException {
+        Connection result = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        ResultSet columnResultSet = createStringResultSet(columnNames.stream().map(each -> Map.of("COLUMN_NAME", each)).toList());
+        ResultSet indexResultSet = createStringResultSet(Collections.emptyList());
+        when(result.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getDatabaseProductVersion()).thenReturn("2.2.224");
+        when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), anyString(), any(String[].class))).thenAnswer(invocation -> {
+            String[] types = invocation.getArgument(3, String[].class);
+            if (1 == types.length && "TABLE".equals(types[0])) {
+                return createStringResultSet(List.of(Map.of("TABLE_SCHEM", schemaName, "TABLE_NAME", tableName)));
+            }
+            return createStringResultSet(Collections.emptyList());
+        });
+        when(databaseMetaData.getColumns(nullable(String.class), nullable(String.class), eq(tableName), anyString())).thenReturn(columnResultSet);
+        when(databaseMetaData.getIndexInfo(nullable(String.class), nullable(String.class), eq(tableName), eq(false), eq(false))).thenReturn(indexResultSet);
+        return result;
+    }
+    
+    private ResultSet createResultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        AtomicInteger rowIndex = new AtomicInteger(-1);
+        when(result.getMetaData()).thenReturn(resultSetMetaData);
+        when(result.next()).thenAnswer(invocation -> rowIndex.incrementAndGet() < rows.size());
+        when(result.getObject(anyInt())).thenAnswer(invocation -> rows.get(rowIndex.get()).get(invocation.getArgument(0, Integer.class) - 1));
+        when(resultSetMetaData.getColumnCount()).thenReturn(columns.size());
+        for (int index = 0; index < columns.size(); index++) {
+            ExecuteQueryColumnDefinition column = columns.get(index);
+            int columnIndex = index + 1;
+            when(resultSetMetaData.getColumnLabel(columnIndex)).thenReturn(column.getColumnName());
+            when(resultSetMetaData.getColumnTypeName(columnIndex)).thenReturn(column.getNativeType());
+            when(resultSetMetaData.isNullable(columnIndex)).thenReturn(column.isNullable() ? ResultSetMetaData.columnNullable : ResultSetMetaData.columnNoNulls);
+        }
+        return result;
+    }
+    
+    private ResultSet createStringResultSet(final List<Map<String, String>> rows) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        AtomicInteger rowIndex = new AtomicInteger(-1);
+        when(result.next()).thenAnswer(invocation -> rowIndex.incrementAndGet() < rows.size());
+        when(result.getString(anyString())).thenAnswer(invocation -> rows.get(rowIndex.get()).get(invocation.getArgument(0, String.class)));
+        return result;
     }
 }
