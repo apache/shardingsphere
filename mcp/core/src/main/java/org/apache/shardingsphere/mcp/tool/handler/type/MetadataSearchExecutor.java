@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.tool.handler.type;
 
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
@@ -28,13 +28,18 @@ import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Search executor for metadata discovery.
@@ -276,26 +281,14 @@ public final class MetadataSearchExecutor {
     }
     
     private List<MetadataSearchHit> filterByQuery(final List<MetadataSearchHit> metadataItems, final String query) {
-        List<MetadataSearchHit> result = new LinkedList<>();
-        for (MetadataSearchHit each : metadataItems) {
-            if (matchesQuery(each, query)) {
-                result.add(each);
-            }
-        }
-        return result;
+        return metadataItems.stream().filter(each -> matchesQuery(each, query)).collect(Collectors.toList());
     }
     
     private boolean matchesQuery(final MetadataSearchHit searchHit, final String query) {
-        String actualQuery = query.toLowerCase(Locale.ENGLISH);
-        return matchesValue(actualQuery, searchHit.getName(), searchHit.getTable(), searchHit.getView());
+        return matchesValue(query.toLowerCase(Locale.ENGLISH), searchHit.getName(), searchHit.getTable(), searchHit.getView());
     }
     
     private boolean matchesValue(final String query, final String... values) {
-        for (String each : values) {
-            if (null != each && !each.isEmpty() && each.toLowerCase(Locale.ENGLISH).contains(query)) {
-                return true;
-            }
-        }
-        return false;
+        return Arrays.stream(values).anyMatch(each -> null != each && !each.isEmpty() && each.toLowerCase(Locale.ENGLISH).contains(query));
     }
 }
