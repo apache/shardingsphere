@@ -256,6 +256,26 @@ public final class MetadataQueryService {
         return findIndex(queryIndexes(databaseName, schemaName, tableName), indexName);
     }
     
+    private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
+        return metadataCatalog.findMetadata(databaseName).flatMap(optional -> optional.getSchemas().stream().filter(each -> schemaName.equals(each.getSchema())).findFirst());
+    }
+    
+    private Optional<MCPTableMetadata> findTable(final String databaseName, final String schemaName, final String tableName) {
+        return findSchema(databaseName, schemaName).flatMap(optional -> optional.getTables().stream().filter(each -> tableName.equals(each.getTable())).findFirst());
+    }
+    
+    private Optional<MCPViewMetadata> findView(final String databaseName, final String schemaName, final String viewName) {
+        return findSchema(databaseName, schemaName).flatMap(optional -> optional.getViews().stream().filter(each -> viewName.equals(each.getView())).findFirst());
+    }
+    
+    private Optional<MCPColumnMetadata> findColumn(final Collection<MCPColumnMetadata> columns, final String columnName) {
+        return columns.stream().filter(each -> columnName.equals(each.getColumn())).findFirst();
+    }
+    
+    private Optional<MCPIndexMetadata> findIndex(final Collection<MCPIndexMetadata> indexes, final String indexName) {
+        return indexes.stream().filter(each -> indexName.equals(each.getIndex())).findFirst();
+    }
+    
     /**
      * Judge whether the metadata object type is supported for the database.
      *
@@ -266,62 +286,5 @@ public final class MetadataQueryService {
     public boolean isSupportedMetadataObjectType(final String databaseName, final MetadataObjectType objectType) {
         Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(metadataCatalog).provide(databaseName);
         return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(objectType);
-    }
-    
-    private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
-        Optional<MCPDatabaseMetadata> databaseMetadata = metadataCatalog.findMetadata(databaseName);
-        if (databaseMetadata.isEmpty()) {
-            return Optional.empty();
-        }
-        for (MCPSchemaMetadata each : databaseMetadata.get().getSchemas()) {
-            if (schemaName.equals(each.getSchema())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<MCPTableMetadata> findTable(final String databaseName, final String schemaName, final String tableName) {
-        Optional<MCPSchemaMetadata> schemaMetadata = findSchema(databaseName, schemaName);
-        if (schemaMetadata.isEmpty()) {
-            return Optional.empty();
-        }
-        for (MCPTableMetadata each : schemaMetadata.get().getTables()) {
-            if (tableName.equals(each.getTable())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<MCPViewMetadata> findView(final String databaseName, final String schemaName, final String viewName) {
-        Optional<MCPSchemaMetadata> schemaMetadata = findSchema(databaseName, schemaName);
-        if (schemaMetadata.isEmpty()) {
-            return Optional.empty();
-        }
-        for (MCPViewMetadata each : schemaMetadata.get().getViews()) {
-            if (viewName.equals(each.getView())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<MCPColumnMetadata> findColumn(final Collection<MCPColumnMetadata> columns, final String columnName) {
-        for (MCPColumnMetadata each : columns) {
-            if (columnName.equals(each.getColumn())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<MCPIndexMetadata> findIndex(final Collection<MCPIndexMetadata> indexes, final String indexName) {
-        for (MCPIndexMetadata each : indexes) {
-            if (indexName.equals(each.getIndex())) {
-                return Optional.of(each);
-            }
-        }
-        return Optional.empty();
     }
 }
