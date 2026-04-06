@@ -18,11 +18,16 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.Map;
@@ -55,6 +60,19 @@ public final class MCPToolController {
     }
     
     Optional<MCPResponse> dispatch(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        return ToolHandlerRegistry.findRegisteredHandler(toolName).map(optional -> optional.handle(runtimeContext, sessionId, arguments));
+        Optional<ToolHandler> toolHandler = ToolHandlerRegistry.findRegisteredHandler(toolName);
+        if (toolHandler.isEmpty()) {
+            return Optional.empty();
+        }
+        checkRequiredArguments(arguments, toolHandler.get().getToolDescriptor());
+        return Optional.of(toolHandler.get().handle(runtimeContext, sessionId, arguments));
+    }
+    
+    private void checkRequiredArguments(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor) {
+        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
+            if (each.isRequired()) {
+                ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> new MCPInvalidRequestException(String.format("%s is required.", each.getName())));
+            }
+        }
     }
 }

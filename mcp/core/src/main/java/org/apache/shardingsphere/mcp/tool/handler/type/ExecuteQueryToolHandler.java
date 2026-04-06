@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.type;
 
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
@@ -52,9 +50,9 @@ public final class ExecuteQueryToolHandler implements ToolHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
-        ExecutionRequest executionRequest = new MCPToolArguments(arguments).createExecutionRequest(sessionId);
-        ShardingSpherePreconditions.checkState(!executionRequest.getDatabase().isEmpty() && !executionRequest.getSql().isEmpty(),
-                () -> new MCPInvalidRequestException("Database and sql are required."));
-        return runtimeContext.getSqlExecutionFacade().execute(executionRequest);
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
+        return runtimeContext.getSqlExecutionFacade().execute(new ExecutionRequest(sessionId,
+                toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),
+                toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0)));
     }
 }

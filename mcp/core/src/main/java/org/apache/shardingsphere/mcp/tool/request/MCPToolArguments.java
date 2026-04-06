@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.tool.request;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
 import java.util.Collection;
@@ -58,17 +57,6 @@ public final class MCPToolArguments {
             }
         }
         return result;
-    }
-    
-    /**
-     * Create execute-query request.
-     *
-     * @param sessionId session identifier
-     * @return normalized execute-query request
-     */
-    public ExecutionRequest createExecutionRequest(final String sessionId) {
-        return new ExecutionRequest(sessionId,
-                getStringArgument("database"), getStringArgument("schema"), getStringArgument("sql"), getIntegerArgument("max_rows", 0), getIntegerArgument("timeout_ms", 0));
     }
     
     /**
