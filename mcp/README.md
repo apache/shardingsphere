@@ -105,13 +105,27 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"list_tables","arguments":{"database":"orders","schema":"public"}}}'
+  --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases/orders/schemas/public/tables"}}'
 ```
 
 Expected result:
 
 - The response content type is `text/event-stream`.
 - The JSON payload appears on the `data:` line and includes `orders`, `order_items`, and `active_orders`.
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"search_metadata","arguments":{"database":"orders","query":"order","object_types":["table","view"]}}}'
+```
+
+Expected result:
+
+- The response content type is `text/event-stream`.
+- The JSON payload appears on the `data:` line and includes matching names such as `orders`, `order_items`, or `active_orders`.
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \

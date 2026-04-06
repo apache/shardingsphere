@@ -15,14 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mcp.tool.handler.metadata.ListDatabasesToolHandler
-org.apache.shardingsphere.mcp.tool.handler.metadata.ListSchemasToolHandler
-org.apache.shardingsphere.mcp.tool.handler.metadata.ListTablesToolHandler
-org.apache.shardingsphere.mcp.tool.handler.metadata.ListViewsToolHandler
-org.apache.shardingsphere.mcp.tool.handler.metadata.ListColumnsToolHandler
-org.apache.shardingsphere.mcp.tool.handler.metadata.ListIndexesToolHandler
 org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler
-org.apache.shardingsphere.mcp.tool.handler.metadata.DescribeTableToolHandler
-org.apache.shardingsphere.mcp.tool.handler.metadata.DescribeViewToolHandler
-org.apache.shardingsphere.mcp.tool.handler.capability.GetCapabilitiesToolHandler
 org.apache.shardingsphere.mcp.tool.handler.execution.ExecuteQueryToolHandler

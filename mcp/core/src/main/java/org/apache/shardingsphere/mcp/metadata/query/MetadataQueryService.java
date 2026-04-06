@@ -106,7 +106,10 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.TABLE)) {
             return Collections.emptyList();
         }
-        return findSchema(databaseName, schemaName).map(optional -> optional.getTables().stream().map(MCPTableMetadata::createSummary).sorted(Comparator.comparing(MCPTableMetadata::getTable)).collect(Collectors.toList())).orElse(Collections.emptyList());
+        return findSchema(databaseName, schemaName).map(optional -> optional.getTables().stream()
+                .map(MCPTableMetadata::createSummary)
+                .sorted(Comparator.comparing(MCPTableMetadata::getTable))
+                .collect(Collectors.toList())).orElse(Collections.emptyList());
     }
     
     /**
@@ -135,7 +138,10 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.VIEW)) {
             return Collections.emptyList();
         }
-        return findSchema(databaseName, schemaName).map(optional -> optional.getViews().stream().map(MCPViewMetadata::createSummary).sorted(Comparator.comparing(MCPViewMetadata::getView)).collect(Collectors.toList())).orElse(Collections.emptyList());
+        return findSchema(databaseName, schemaName).map(optional -> optional.getViews().stream()
+                .map(MCPViewMetadata::createSummary)
+                .sorted(Comparator.comparing(MCPViewMetadata::getView))
+                .collect(Collectors.toList())).orElse(Collections.emptyList());
     }
     
     /**

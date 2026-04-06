@@ -22,11 +22,9 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.MCPToolDispatchKind;
 import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.ToolRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,12 +46,11 @@ public final class MCPToolHandlerSupport {
      * Create tool descriptor.
      *
      * @param name tool name
-     * @param dispatchKind dispatch kind
      * @param inputDefinition input definition
      * @return tool descriptor
      */
-    public static MCPToolDescriptor createDescriptor(final String name, final MCPToolDispatchKind dispatchKind, final MCPToolInputDefinition inputDefinition) {
-        return MCPToolDescriptor.create(name, createTitle(name), "ShardingSphere MCP tool: " + name, dispatchKind, inputDefinition);
+    public static MCPToolDescriptor createDescriptor(final String name, final MCPToolInputDefinition inputDefinition) {
+        return MCPToolDescriptor.create(name, createTitle(name), "ShardingSphere MCP tool: " + name, inputDefinition);
     }
     
     private static String createTitle(final String toolName) {
@@ -65,22 +62,6 @@ public final class MCPToolHandlerSupport {
             }
         }
         return String.join(" ", words);
-    }
-    
-    /**
-     * Create paged metadata input definition.
-     *
-     * @param databaseDescription database field description
-     * @param schemaDescription schema field description
-     * @return tool input definition
-     */
-    public static MCPToolInputDefinition createPagedMetadataInputDefinition(final String databaseDescription, final String schemaDescription) {
-        return MCPToolInputDefinition.create(
-                requiredStringField("database", databaseDescription),
-                requiredStringField("schema", schemaDescription),
-                optionalStringField("search", "Optional fuzzy filter."),
-                optionalIntegerField("page_size", "Requested page size."),
-                optionalStringField("page_token", "Opaque pagination token."));
     }
     
     /**
@@ -128,42 +109,6 @@ public final class MCPToolHandlerSupport {
     }
     
     /**
-     * Create paged metadata tool request.
-     *
-     * @param toolName tool name
-     * @param arguments raw tool arguments
-     * @return metadata tool request
-     */
-    public static ToolRequest createPagedMetadataToolRequest(final String toolName, final Map<String, Object> arguments) {
-        return createToolRequest(toolName, arguments, stringArgument(arguments, "database"), stringArgument(arguments, "schema"),
-                "", "", Collections.emptySet(), integerArgument(arguments, "page_size", 100), stringArgument(arguments, "page_token"));
-    }
-    
-    /**
-     * Create tool request.
-     *
-     * @param toolName tool name
-     * @param arguments raw tool arguments
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param objectName object name
-     * @param parentObjectType parent object type
-     * @param objectTypes object types
-     * @param pageSize page size
-     * @param pageToken page token
-     * @return tool request
-     */
-    public static ToolRequest createToolRequest(final String toolName, final Map<String, Object> arguments, final String databaseName,
-                                                final String schemaName, final String objectName, final String parentObjectType,
-                                                final Set<MetadataObjectType> objectTypes, final int pageSize, final String pageToken) {
-        String query = stringArgument(arguments, "query");
-        if (query.isEmpty()) {
-            query = stringArgument(arguments, "search");
-        }
-        return new ToolRequest(toolName, databaseName, schemaName, objectName, parentObjectType, query, objectTypes, pageSize, pageToken);
-    }
-    
-    /**
      * Get object types.
      *
      * @param arguments raw tool arguments
@@ -185,16 +130,6 @@ public final class MCPToolHandlerSupport {
             }
         }
         return result;
-    }
-    
-    /**
-     * Resolve the database argument used by capability tools.
-     *
-     * @param arguments raw tool arguments
-     * @return normalized database argument
-     */
-    public static String getCapabilityDatabase(final Map<String, Object> arguments) {
-        return stringArgument(arguments, "database");
     }
     
     /**

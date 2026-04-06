@@ -48,28 +48,37 @@ class StdioTransportIntegrationTest {
             Map<String, Object> actualToolsResult = client.request("tool-list-1", "tools/list", Map.of());
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> actualTools = (List<Map<String, Object>>) actualToolsResult.get("tools");
-            Map<String, Object> actualListDatabasesTool = actualTools.stream()
-                    .filter(each -> "list_databases".equals(each.get("name")))
+            Map<String, Object> actualSearchMetadataTool = actualTools.stream()
+                    .filter(each -> "search_metadata".equals(each.get("name")))
                     .findFirst()
                     .orElseThrow();
-            Map<String, Object> actualListDatabasesInputSchema = castToMap(actualListDatabasesTool.get("inputSchema"));
+            Map<String, Object> actualSearchMetadataInputSchema = castToMap(actualSearchMetadataTool.get("inputSchema"));
             assertThat(actualInitializeResult.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
-            assertTrue(actualTools.stream().anyMatch(each -> "list_databases".equals(each.get("name"))));
-            assertTrue(castToMap(actualListDatabasesInputSchema.get("properties")).isEmpty());
-            Map<String, Object> actualGetCapabilitiesTool = actualTools.stream()
-                    .filter(each -> "get_capabilities".equals(each.get("name")))
+            assertTrue(actualTools.stream().anyMatch(each -> "search_metadata".equals(each.get("name"))));
+            Map<String, Object> actualSearchMetadataProperties = castToMap(actualSearchMetadataInputSchema.get("properties"));
+            assertTrue(actualSearchMetadataProperties.containsKey("query"));
+            Map<String, Object> actualExecuteQueryTool = actualTools.stream()
+                    .filter(each -> "execute_query".equals(each.get("name")))
                     .findFirst()
                     .orElseThrow();
-            Map<String, Object> actualGetCapabilitiesInputSchema = castToMap(actualGetCapabilitiesTool.get("inputSchema"));
-            Map<String, Object> actualGetCapabilitiesProperties = castToMap(actualGetCapabilitiesInputSchema.get("properties"));
-            assertTrue(actualGetCapabilitiesProperties.containsKey("database"));
-            assertThat(String.valueOf(castToMap(actualGetCapabilitiesProperties.get("database")).get("type")), is("string"));
-            Map<String, Object> actualCallToolResult = client.request("tool-call-1", "tools/call", Map.of("name", "list_databases", "arguments", Map.of()));
+            Map<String, Object> actualExecuteQueryInputSchema = castToMap(actualExecuteQueryTool.get("inputSchema"));
+            Map<String, Object> actualExecuteQueryProperties = castToMap(actualExecuteQueryInputSchema.get("properties"));
+            assertTrue(actualExecuteQueryProperties.containsKey("sql"));
+            assertThat(String.valueOf(castToMap(actualExecuteQueryProperties.get("sql")).get("type")), is("string"));
+            Map<String, Object> actualCallToolResult = client.request("tool-call-1", "tools/call",
+                    Map.of("name", "search_metadata", "arguments", Map.of("database", "logic_db", "query", "order", "object_types", List.of("table"))));
             @SuppressWarnings("unchecked")
             Map<String, Object> actualStructuredContent = (Map<String, Object>) actualCallToolResult.get("structuredContent");
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> actualItems = (List<Map<String, Object>>) actualStructuredContent.get("items");
-            assertThat(actualItems.size(), is(1));
+            assertThat(actualItems.size(), is(2));
+            assertThat(String.valueOf(actualItems.get(0).get("name")), is("order_items"));
+            assertThat(String.valueOf(actualItems.get(1).get("name")), is("orders"));
+            Map<String, Object> actualReadResourceResult = client.request("resource-read-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"));
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> actualContents = (List<Map<String, Object>>) actualReadResourceResult.get("contents");
+            assertThat(actualContents.size(), is(1));
+            assertTrue(String.valueOf(actualContents.get(0).get("text")).contains("supportedTools"));
         }
     }
     

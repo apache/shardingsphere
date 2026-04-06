@@ -105,13 +105,27 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"list_tables","arguments":{"database":"orders","schema":"public"}}}'
+  --data '{"jsonrpc":"2.0","id":"resource-1","method":"resources/read","params":{"uri":"shardingsphere://databases/orders/schemas/public/tables"}}'
 ```
 
 预期结果：
 
 - 响应类型是 `text/event-stream`。
 - JSON 负载位于 `data:` 行，其中会包含 `orders`、`order_items`、`active_orders`。
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"tool-1","method":"tools/call","params":{"name":"search_metadata","arguments":{"database":"orders","query":"order","object_types":["table","view"]}}}'
+```
+
+预期结果：
+
+- 响应类型是 `text/event-stream`。
+- JSON 负载位于 `data:` 行，其中会包含命中的 `orders`、`order_items` 或 `active_orders`。
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \

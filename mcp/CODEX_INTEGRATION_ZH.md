@@ -209,27 +209,22 @@ url = "http://127.0.0.1:18088/mcp"
 
 ## 7. Codex 里怎么用
 
-ShardingSphere MCP 当前暴露的核心工具包括：
+ShardingSphere MCP 当前暴露的核心 tool 和 resource 包括：
 
-- `list_databases`
-- `list_schemas`
-- `list_tables`
-- `list_views`
-- `list_columns`
-- `list_indexes`
-- `search_metadata`
-- `describe_table`
-- `describe_view`
-- `get_capabilities`
-- `execute_query`
+- tool: `search_metadata`
+- tool: `execute_query`
+- resource: `shardingsphere://capabilities`
+- resource: `shardingsphere://databases`
+- resource template: `shardingsphere://databases/{database}/schemas/{schema}/tables`
+- resource template: `shardingsphere://databases/{database}/schemas/{schema}/views`
 
 你可以直接在 Codex 里这样提问：
 
-- `列出 shardingsphere-mcp-local 里所有逻辑库`
-- `查看 local_db 的 public schema 下有哪些表`
-- `描述 local_db.public.t_order 的表结构`
+- `读取 shardingsphere-mcp-local 里的所有逻辑库资源`
+- `读取 local_db 的 public schema 下表资源`
+- `搜索 local_db 里名称包含 order 的表和视图`
 - `执行 SQL: SELECT * FROM t_order ORDER BY order_id DESC LIMIT 10`
-- `先检查 local_db 支持哪些能力，再帮我查最近 10 条订单`
+- `先读取 local_db 的 capability resource，再帮我查最近 10 条订单`
 
 如果你配置了多库，也可以明确指定逻辑库名，例如：
 
@@ -283,7 +278,7 @@ ${DIST_DIR}/ext-lib/
 3. 把目标数据库 driver 放到 `ext-lib/`
 4. 用 `codex mcp add ... -- "${DIST_DIR}/bin/start.sh" ...` 注册
 5. 重启 Codex 或新开会话
-6. 先用 `list_databases`、`describe_table` 验证元数据
-7. 再用 `execute_query` 验证查询
+6. 先读取 `shardingsphere://databases` 和目标 table/view resource 验证元数据
+7. 再用 `search_metadata` 和 `execute_query` 验证搜索与查询
 
 如果你只是想本地把它跑通，`stdio + 单库只读账号` 是最省事、最稳的组合。

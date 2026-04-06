@@ -19,13 +19,13 @@ package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchExecutor;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.MCPToolDispatchKind;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
-import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
-import org.apache.shardingsphere.mcp.tool.ToolRequest;
 import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
 
 import java.util.Map;
@@ -33,9 +33,9 @@ import java.util.Map;
 /**
  * Handler for search-metadata tool.
  */
-public final class SearchMetadataToolHandler implements MetadataToolHandler {
+public final class SearchMetadataToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolHandlerSupport.createDescriptor("search_metadata", MCPToolDispatchKind.METADATA,
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolHandlerSupport.createDescriptor("search_metadata",
             MCPToolInputDefinition.create(
                     MCPToolHandlerSupport.optionalStringField("database", "Optional logical database name."),
                     MCPToolHandlerSupport.optionalStringField("schema", "Optional schema name."),
@@ -51,16 +51,15 @@ public final class SearchMetadataToolHandler implements MetadataToolHandler {
     
     @Override
     public MCPResponse handle(final String sessionId, final MCPRuntimeContext runtimeContext, final Map<String, Object> arguments) {
-        ToolDispatchResult result = new MetadataToolDispatcher(runtimeContext.getMetadataCatalog()).dispatch(createToolRequest(arguments));
-        return new MCPMetadataResponse(result.getMetadataItems(), result.getNextPageToken());
+        MetadataSearchResult result = new MetadataSearchExecutor(runtimeContext.getMetadataCatalog()).execute(createRequest(arguments));
+        return new MCPMetadataResponse(result.getItems(), result.getNextPageToken());
     }
-
-    @Override
-    public ToolRequest createToolRequest(final Map<String, Object> arguments) {
-        return MCPToolHandlerSupport.createToolRequest("search_metadata", arguments,
+    
+    private MetadataSearchRequest createRequest(final Map<String, Object> arguments) {
+        return new MetadataSearchRequest(
                 MCPToolHandlerSupport.getStringArgument(arguments, "database"),
                 MCPToolHandlerSupport.getStringArgument(arguments, "schema"),
-                "", "",
+                MCPToolHandlerSupport.getStringArgument(arguments, "query"),
                 MCPToolHandlerSupport.getObjectTypes(arguments),
                 MCPToolHandlerSupport.getIntegerArgument(arguments, "page_size", 100),
                 MCPToolHandlerSupport.getStringArgument(arguments, "page_token"));

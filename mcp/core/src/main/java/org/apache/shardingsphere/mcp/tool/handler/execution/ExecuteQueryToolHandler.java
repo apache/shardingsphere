@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.MCPToolDispatchKind;
 import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
@@ -34,7 +33,7 @@ import java.util.Map;
  */
 public final class ExecuteQueryToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolHandlerSupport.createDescriptor("execute_query", MCPToolDispatchKind.EXECUTION,
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolHandlerSupport.createDescriptor("execute_query",
             MCPToolInputDefinition.create(
                     MCPToolHandlerSupport.requiredStringField("database", "Logical database name."),
                     MCPToolHandlerSupport.optionalStringField("schema", "Optional schema name."),

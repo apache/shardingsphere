@@ -28,6 +28,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,12 +66,11 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
                         "jsonrpc", "2.0",
                         "id", "tool-1",
                         "method", "tools/call",
-                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                        "params", Map.of("name", "search_metadata", "arguments", Map.of("database", "logic_db", "query", "order", "object_types", List.of("table")))))))
                 .build();
         HttpResponse<String> toolCallResponse = httpClient.send(toolCallRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(toolCallResponse.statusCode(), is(200));
-        assertTrue(toolCallResponse.body().contains("supportedTools"));
-        assertTrue(toolCallResponse.body().contains("execute_query"));
+        assertTrue(toolCallResponse.body().contains("\"name\":\"orders\""));
         HttpRequest resourceReadRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
@@ -107,8 +107,8 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "tool-1",
-                        "method", "tools/call",
-                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                        "method", "resources/read",
+                        "params", Map.of("uri", "shardingsphere://capabilities")))))
                 .build();
         HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actualResponse.statusCode(), is(200));
@@ -165,8 +165,8 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "tool-1",
-                        "method", "tools/call",
-                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                        "method", "resources/read",
+                        "params", Map.of("uri", "shardingsphere://capabilities")))))
                 .build();
         HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actualResponse.statusCode(), is(200));
@@ -185,8 +185,8 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "tool-1",
-                        "method", "tools/call",
-                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                        "method", "resources/read",
+                        "params", Map.of("uri", "shardingsphere://capabilities")))))
                 .build();
         HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actualResponse.statusCode(), is(200));
@@ -206,8 +206,8 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "tool-1",
-                        "method", "tools/call",
-                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                        "method", "resources/read",
+                        "params", Map.of("uri", "shardingsphere://capabilities")))))
                 .build();
         HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actualResponse.statusCode(), is(200));
@@ -307,8 +307,8 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "tool-1",
-                        "method", "tools/call",
-                        "params", Map.of("name", "get_capabilities", "arguments", Map.of())))))
+                        "method", "resources/read",
+                        "params", Map.of("uri", "shardingsphere://capabilities")))))
                 .build();
         HttpResponse<String> actualResponse = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actualResponse.statusCode(), is(403));

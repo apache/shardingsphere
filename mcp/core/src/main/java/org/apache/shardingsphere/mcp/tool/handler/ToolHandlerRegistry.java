@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +61,7 @@ public final class ToolHandlerRegistry {
                     () -> new IllegalArgumentException(String.format("Duplicate tool name `%s` with `%s` and `%s`.",
                             toolDescriptor.getName(), previousHandler.getClass().getName(), each.getClass().getName())));
         }
-        return result;
+        return Collections.unmodifiableMap(result);
     }
     
     /**

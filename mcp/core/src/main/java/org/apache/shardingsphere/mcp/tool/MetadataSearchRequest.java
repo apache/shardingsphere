@@ -19,17 +19,26 @@ package org.apache.shardingsphere.mcp.tool;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
-import java.util.List;
+import java.util.Set;
 
 /**
- * Dispatch result for one metadata tool request.
+ * Search-metadata request.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ToolDispatchResult {
+public final class MetadataSearchRequest {
     
-    private final List<?> metadataItems;
+    private final String database;
     
-    private final String nextPageToken;
+    private final String schema;
+    
+    private final String query;
+    
+    private final Set<MetadataObjectType> objectTypes;
+    
+    private final int pageSize;
+    
+    private final String pageToken;
 }

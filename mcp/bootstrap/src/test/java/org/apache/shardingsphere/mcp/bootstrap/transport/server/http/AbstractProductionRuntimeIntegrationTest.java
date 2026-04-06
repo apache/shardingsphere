@@ -112,6 +112,21 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
+    protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId, final String resourceUri) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json, text/event-stream")
+                .header("MCP-Session-Id", sessionId)
+                .header("MCP-Protocol-Version", PROTOCOL_VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "resource-read-1",
+                        "method", "resources/read",
+                        "params", Map.of("uri", resourceUri)))))
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+    
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
@@ -128,6 +143,10 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
         return castToList(payload.get("items"));
+    }
+    
+    protected final Map<String, Object> getResourcePayload(final String responseBody) {
+        return parseJsonBody(String.valueOf(getResultContents(responseBody).get(0).get("text")));
     }
     
     protected final Map<String, Object> getJsonRpcResult(final String responseBody) {
@@ -164,6 +183,10 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     protected final Map<String, Object> castToMap(final Object value) {
         return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
         });
+    }
+    
+    private List<Map<String, Object>> getResultContents(final String responseBody) {
+        return castToList(getJsonRpcResult(responseBody).get("contents"));
     }
     
     private List<Map<String, Object>> castToList(final Object value) {

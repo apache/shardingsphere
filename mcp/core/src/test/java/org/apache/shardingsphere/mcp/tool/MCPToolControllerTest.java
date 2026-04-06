@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
+import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
@@ -32,7 +33,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,10 +47,10 @@ class MCPToolControllerTest {
     }
     
     @Test
-    void assertHandleServiceCapabilities() {
-        Map<String, Object> actual = createController().handle("session-1", "get_capabilities", Map.of()).toPayload();
-        assertTrue(((List<?>) actual.get("supportedTools")).contains("get_capabilities"));
-        assertTrue(((List<?>) actual.get("supportedTools")).contains("execute_query"));
+    void assertHandleSearchMetadata() {
+        Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("query", "order", "object_types", List.of("index"))).toPayload();
+        assertThat(((List<?>) actual.get("items")).size(), is(1));
+        assertThat(((MetadataSearchHit) ((List<?>) actual.get("items")).get(0)).getName(), is("order_idx"));
     }
     
     @Test
@@ -62,16 +62,16 @@ class MCPToolControllerTest {
     
     @Test
     void assertHandleWithInvalidRequest() {
-        Map<String, Object> actual = createController().handle("session-1", "list_tables", Map.of("database", "logic_db")).toPayload();
+        Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("schema", "public", "query", "orders")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
-        assertThat(actual.get("message"), is("Schema is required."));
+        assertThat(actual.get("message"), is("Schema cannot be provided without database."));
     }
     
     @Test
-    void assertHandleWithUnsupportedIndexTool() {
-        Map<String, Object> actual = createController().handle("session-1", "list_indexes", Map.of("database", "warehouse", "schema", "warehouse", "table", "facts")).toPayload();
-        assertThat(actual.get("error_code"), is("unsupported"));
-        assertThat(actual.get("message"), is("Index resources are not supported for the current database."));
+    void assertHandleWithMissingQuery() {
+        Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("database", "logic_db", "object_types", List.of(MetadataObjectType.TABLE.name()))).toPayload();
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("message"), is("Query is required."));
     }
     
     private MCPToolController createController() {

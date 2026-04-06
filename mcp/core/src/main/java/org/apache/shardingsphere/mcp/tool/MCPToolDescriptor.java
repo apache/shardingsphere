@@ -34,8 +34,6 @@ public final class MCPToolDescriptor {
     
     private final String description;
     
-    private final MCPToolDispatchKind dispatchKind;
-    
     private final MCPToolInputDefinition inputDefinition;
     
     /**
@@ -44,21 +42,10 @@ public final class MCPToolDescriptor {
      * @param name tool name
      * @param title tool title
      * @param description tool description
-     * @param dispatchKind tool dispatch kind
      * @param inputDefinition tool input definition
      * @return MCP tool descriptor
      */
-    public static MCPToolDescriptor create(final String name, final String title, final String description,
-                                           final MCPToolDispatchKind dispatchKind, final MCPToolInputDefinition inputDefinition) {
-        return new MCPToolDescriptor(name, title, description, dispatchKind, inputDefinition);
-    }
-    
-    /**
-     * Determine whether the tool dispatches through metadata discovery.
-     *
-     * @return {@code true} when the tool is a metadata tool
-     */
-    public boolean isMetadataTool() {
-        return MCPToolDispatchKind.METADATA == dispatchKind;
+    public static MCPToolDescriptor create(final String name, final String title, final String description, final MCPToolInputDefinition inputDefinition) {
+        return new MCPToolDescriptor(name, title, description, inputDefinition);
     }
 }

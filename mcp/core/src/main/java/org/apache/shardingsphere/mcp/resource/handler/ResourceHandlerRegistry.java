@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.uri.MCPUriPattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,7 +57,7 @@ public final class ResourceHandlerRegistry {
                     () -> new IllegalArgumentException(String.format("Resource URI pattern is required for `%s`.", each.getClass().getName())));
             result.put(new MCPUriPattern(each.getUriPattern()), each);
         }
-        return result;
+        return Collections.unmodifiableMap(result);
     }
     
     private static void validateRegisteredHandlers() {

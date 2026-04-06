@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerRegistryTest {
     
@@ -32,7 +33,7 @@ class ResourceHandlerRegistryTest {
     @Test
     void assertGetSupportedResources() {
         assertThat(ResourceHandlerRegistry.getSupportedResources().size(), is(16));
-        assertThat(ResourceHandlerRegistry.getSupportedResources().get(0), is("shardingsphere://capabilities"));
-        assertThat(ResourceHandlerRegistry.getSupportedResources().get(15), is("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+        assertTrue(ResourceHandlerRegistry.getSupportedResources().contains("shardingsphere://capabilities"));
+        assertTrue(ResourceHandlerRegistry.getSupportedResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }
 }

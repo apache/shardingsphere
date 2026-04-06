@@ -21,18 +21,19 @@ import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ToolHandlerRegistryTest {
     
     @Test
     void assertGetHandlers() {
-        assertThat(ToolHandlerRegistry.getRegisteredHandlers().size(), is(11));
+        assertThat(ToolHandlerRegistry.getRegisteredHandlers().size(), is(2));
     }
     
     @Test
     void assertGetSupportedTools() {
-        assertThat(ToolHandlerRegistry.getSupportedTools().size(), is(11));
-        assertThat(ToolHandlerRegistry.getSupportedTools().get(0), is("list_databases"));
-        assertThat(ToolHandlerRegistry.getSupportedTools().get(10), is("execute_query"));
+        assertThat(ToolHandlerRegistry.getSupportedTools().size(), is(2));
+        assertTrue(ToolHandlerRegistry.getSupportedTools().contains("search_metadata"));
+        assertTrue(ToolHandlerRegistry.getSupportedTools().contains("execute_query"));
     }
 }

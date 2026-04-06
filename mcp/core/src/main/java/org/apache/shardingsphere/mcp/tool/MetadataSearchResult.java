@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.handler.metadata;
+package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.tool.ToolRequest;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Map;
+import java.util.List;
 
 /**
- * Metadata tool handler.
+ * Search-metadata result.
  */
-public interface MetadataToolHandler extends ToolHandler {
+@RequiredArgsConstructor
+@Getter
+public final class MetadataSearchResult {
     
-    /**
-     * Create metadata tool request.
-     *
-     * @param arguments raw tool arguments
-     * @return metadata tool request
-     */
-    ToolRequest createToolRequest(Map<String, Object> arguments);
+    private final List<MetadataSearchHit> items;
+    
+    private final String nextPageToken;
 }

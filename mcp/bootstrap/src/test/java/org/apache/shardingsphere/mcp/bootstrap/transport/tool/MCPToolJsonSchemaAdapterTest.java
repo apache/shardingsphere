@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.tool.MCPToolCatalog;
+import org.apache.shardingsphere.mcp.tool.handler.execution.ExecuteQueryToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -31,32 +32,29 @@ class MCPToolJsonSchemaAdapterTest {
     
     private final MCPToolJsonSchemaAdapter toolInputSchemaFactory = new MCPToolJsonSchemaAdapter();
     
-    private final MCPToolCatalog toolCatalog = new MCPToolCatalog();
-    
     @Test
-    void assertCreateInputSchemaWithNoFields() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(toolCatalog.findToolDescriptor("list_databases").orElseThrow().getInputDefinition());
-        
+    void assertCreateInputSchemaWithRequiredField() {
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getInputDefinition());
         assertThat(actual.type(), is("object"));
-        assertTrue(actual.properties().isEmpty());
-        assertTrue(actual.required().isEmpty());
+        assertThat(actual.required().size(), is(2));
+        assertThat(actual.required().get(0), is("database"));
+        assertThat(String.valueOf(castToMap(actual.properties().get("database")).get("type")), is("string"));
         assertTrue(actual.additionalProperties());
     }
     
     @Test
     void assertCreateInputSchemaWithOptionalField() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(toolCatalog.findToolDescriptor("get_capabilities").orElseThrow().getInputDefinition());
-        Map<String, Object> actualDatabase = castToMap(actual.properties().get("database"));
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getInputDefinition());
+        Map<String, Object> actualTimeout = castToMap(actual.properties().get("timeout_ms"));
         
-        assertThat(actual.properties().size(), is(1));
-        assertTrue(actual.required().isEmpty());
-        assertThat(String.valueOf(actualDatabase.get("type")), is("string"));
-        assertThat(String.valueOf(actualDatabase.get("description")), is("Optional logical database name."));
+        assertThat(actual.properties().size(), is(5));
+        assertThat(String.valueOf(actualTimeout.get("type")), is("integer"));
+        assertThat(String.valueOf(actualTimeout.get("description")), is("Optional timeout in milliseconds."));
     }
     
     @Test
     void assertCreateInputSchemaWithArrayField() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(toolCatalog.findToolDescriptor("search_metadata").orElseThrow().getInputDefinition());
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new SearchMetadataToolHandler().getToolDescriptor().getInputDefinition());
         Map<String, Object> actualObjectTypes = castToMap(actual.properties().get("object_types"));
         
         assertThat(actual.required().size(), is(1));
