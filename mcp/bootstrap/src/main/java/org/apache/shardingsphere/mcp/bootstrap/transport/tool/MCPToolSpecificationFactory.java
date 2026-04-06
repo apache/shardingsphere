@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.ArrayList;
@@ -78,33 +77,12 @@ public final class MCPToolSpecificationFactory {
         Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
         List<String> required = new ArrayList<>(fields.size());
         for (MCPToolFieldDefinition each : fields) {
-            properties.put(each.getName(), createValueSchema(each.getValueDefinition()));
+            properties.put(each.getName(), each.getValueDefinition().toSchemaFragment());
             if (each.isRequired()) {
                 required.add(each.getName());
             }
         }
         return new McpSchema.JsonSchema("object", properties, required, true, Collections.emptyMap(), Collections.emptyMap());
-    }
-    
-    private Map<String, Object> createValueSchema(final MCPToolValueDefinition valueDefinition) {
-        switch (valueDefinition.getType()) {
-            case STRING:
-                return createScalarSchema("string", valueDefinition);
-            case INTEGER:
-                return createScalarSchema("integer", valueDefinition);
-            case ARRAY:
-                return createArraySchema(valueDefinition);
-            default:
-                throw new IllegalStateException(String.format("Unsupported MCP tool value type `%s`.", valueDefinition.getType()));
-        }
-    }
-    
-    private Map<String, Object> createScalarSchema(final String type, final MCPToolValueDefinition valueDefinition) {
-        return Map.of("type", type, "description", valueDefinition.getDescription());
-    }
-    
-    private Map<String, Object> createArraySchema(final MCPToolValueDefinition valueDefinition) {
-        return Map.of("type", "array", "description", valueDefinition.getDescription(), "items", createValueSchema(valueDefinition.getItemDefinition()));
     }
     
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {

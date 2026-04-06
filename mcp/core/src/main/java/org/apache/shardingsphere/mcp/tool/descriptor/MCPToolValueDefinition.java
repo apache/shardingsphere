@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mcp.tool.descriptor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+
 /**
  * MCP tool value definition.
  */
@@ -34,7 +36,33 @@ public final class MCPToolValueDefinition {
     private final MCPToolValueDefinition itemDefinition;
     
     /**
-     * Tool input value type.
+     * to schema fragment.
+     * 
+     * @return schema fragment
+     */
+    public Map<String, Object> toSchemaFragment() {
+        switch (type) {
+            case STRING:
+                return toScalarSchemaFragment("string");
+            case INTEGER:
+                return toScalarSchemaFragment("integer");
+            case ARRAY:
+                return toArraySchemaFragment();
+            default:
+                throw new IllegalStateException(String.format("Unsupported MCP tool value type `%s`.", type));
+        }
+    }
+    
+    private Map<String, Object> toScalarSchemaFragment(final String type) {
+        return Map.of("type", type, "description", description);
+    }
+    
+    private Map<String, Object> toArraySchemaFragment() {
+        return Map.of("type", "array", "description", description, "items", itemDefinition.toSchemaFragment());
+    }
+    
+    /**
+     * Tool value type.
      */
     public enum Type {
         
