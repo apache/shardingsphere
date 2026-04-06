@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -27,30 +26,29 @@ import java.util.stream.Collectors;
 /**
  * MCP tool descriptor.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolDescriptor {
     
     private final String name;
     
-    private final String title;
-    
-    private final String description;
-    
     private final MCPToolInputDefinition inputDefinition;
     
     /**
-     * Create MCP tool descriptor.
-     *
-     * @param name tool name
-     * @param inputDefinition tool input definition
-     * @return MCP tool descriptor
+     * Get title.
+     * 
+     * @return title
      */
-    public static MCPToolDescriptor create(final String name, final MCPToolInputDefinition inputDefinition) {
-        return new MCPToolDescriptor(name, createTitle(name), "ShardingSphere MCP tool: " + name, inputDefinition);
+    public String getTitle() {
+        return Arrays.stream(name.split("_")).filter(each -> !each.isEmpty()).map(each -> Character.toUpperCase(each.charAt(0)) + each.substring(1)).collect(Collectors.joining(" "));
     }
     
-    private static String createTitle(final String name) {
-        return Arrays.stream(name.split("_")).filter(each -> !each.isEmpty()).map(each -> Character.toUpperCase(each.charAt(0)) + each.substring(1)).collect(Collectors.joining(" "));
+    /**
+     * Get description.
+     *
+     * @return description
+     */
+    public String getDescription() {
+        return "ShardingSphere MCP tool: " + name;
     }
 }

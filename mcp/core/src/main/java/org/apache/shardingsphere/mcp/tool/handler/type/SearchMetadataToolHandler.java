@@ -37,7 +37,7 @@ import java.util.Map;
  */
 public final class SearchMetadataToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolDescriptor.create("search_metadata",
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata",
             MCPToolInputDefinition.create(
                     MCPToolFieldDefinition.optional("database", MCPToolValueDefinition.string("Optional logical database name.")),
                     MCPToolFieldDefinition.optional("schema", MCPToolValueDefinition.string("Optional schema name.")),
