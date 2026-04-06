@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
@@ -25,7 +25,9 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
-import org.apache.shardingsphere.mcp.tool.handler.type.MetadataSearchExecutor;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.junit.jupiter.api.Test;
@@ -42,11 +44,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MetadataSearchExecutorTest {
+class SearchMetadataToolServiceTest {
     
     @Test
     void assertExecuteSearchAcrossDatabases() {
-        MetadataSearchResult actual = new MetadataSearchExecutor(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("", "", "order",
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("", "", "order",
                 Set.of(MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.INDEX, MetadataObjectType.MATERIALIZED_VIEW, MetadataObjectType.SEQUENCE), 20, ""));
         Set<String> actualNames = new LinkedHashSet<>();
         for (MetadataSearchHit each : actual.getItems()) {
@@ -65,7 +67,7 @@ class MetadataSearchExecutorTest {
         Set<MetadataObjectType> objectTypes = new LinkedHashSet<>();
         objectTypes.add(MetadataObjectType.TABLE);
         objectTypes.add(MetadataObjectType.VIEW);
-        MetadataSearchResult actual = new MetadataSearchExecutor(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order",
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order",
                 objectTypes, 1, ""));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getName(), is("order_items"));
@@ -75,27 +77,27 @@ class MetadataSearchExecutorTest {
     @Test
     void assertExecuteSearchWithSchemaWithoutDatabase() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new MetadataSearchExecutor(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("", "public", "order", Set.of(), 10, "")));
+                () -> new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("", "public", "order", Set.of(), 10, "")));
         assertThat(actual.getMessage(), is("Schema cannot be provided without database."));
     }
     
     @Test
     void assertExecuteSearchWithMissingQuery() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new MetadataSearchExecutor(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "", Set.of(), 10, "")));
+                () -> new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "", Set.of(), 10, "")));
         assertThat(actual.getMessage(), is("Query is required."));
     }
     
     @Test
     void assertExecuteSearchWithInvalidPageToken() {
         InvalidPageTokenException actual = assertThrows(InvalidPageTokenException.class,
-                () -> new MetadataSearchExecutor(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "invalid")));
+                () -> new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "invalid")));
         assertThat(actual.getMessage(), is("Invalid page token."));
     }
     
     @Test
     void assertExecuteSearchWithPageOffsetBeyondResultSize() {
-        MetadataSearchResult actual = new MetadataSearchExecutor(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "99"));
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "99"));
         assertThat(actual.getItems().size(), is(0));
         assertThat(actual.getNextPageToken(), is(""));
     }

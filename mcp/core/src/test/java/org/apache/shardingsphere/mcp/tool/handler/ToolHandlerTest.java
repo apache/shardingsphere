@@ -30,8 +30,8 @@ import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.tool.handler.type.ExecuteQueryToolHandler;
-import org.apache.shardingsphere.mcp.tool.handler.type.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
 import org.junit.jupiter.api.Test;
 
@@ -75,14 +75,14 @@ class ToolHandlerTest {
     
     @Test
     void assertGetExecuteQueryToolDescriptor() {
-        MCPToolDescriptor actual = new ExecuteQueryToolHandler().getToolDescriptor();
+        MCPToolDescriptor actual = new ExecuteSQLToolHandler().getToolDescriptor();
         assertThat(actual.getName(), is("execute_query"));
         assertThat(actual.getFields().size(), is(5));
     }
     
     @Test
     void assertHandleExecuteQuery() {
-        Map<String, Object> actual = new ExecuteQueryToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
+        Map<String, Object> actual = new ExecuteSQLToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
         assertThat(actual.get("result_kind"), is("result_set"));
         assertThat(((List<?>) actual.get("rows")).size(), is(1));
     }
@@ -90,7 +90,7 @@ class ToolHandlerTest {
     @Test
     void assertHandleWithInvalidExecuteQueryRequest() {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
-                () -> new ExecuteQueryToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db")));
+                () -> new ExecuteSQLToolHandler().handle(runtimeContext, "session-1", Map.of("database", "logic_db")));
         assertThat(actual.getMessage(), is("Database and sql are required."));
     }
     

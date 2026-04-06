@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.handler.type;
+package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
@@ -42,13 +42,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Search executor for metadata discovery.
+ * Search metadata tool service.
  */
-public final class MetadataSearchExecutor {
+public final class SearchMetadataToolService {
     
     private final MetadataQueryService metadataQueryService;
     
-    public MetadataSearchExecutor(final MCPDatabaseMetadataCatalog metadataCatalog) {
+    public SearchMetadataToolService(final MCPDatabaseMetadataCatalog metadataCatalog) {
         metadataQueryService = new MetadataQueryService(metadataCatalog);
     }
     

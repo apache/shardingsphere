@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.tool.handler.type.ExecuteQueryToolHandler;
-import org.apache.shardingsphere.mcp.tool.handler.type.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -34,7 +34,7 @@ class MCPToolJsonSchemaAdapterTest {
     
     @Test
     void assertCreateInputSchemaWithRequiredField() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getFields());
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteSQLToolHandler().getToolDescriptor().getFields());
         assertThat(actual.type(), is("object"));
         assertThat(actual.required().size(), is(2));
         assertThat(actual.required().get(0), is("database"));
@@ -44,7 +44,7 @@ class MCPToolJsonSchemaAdapterTest {
     
     @Test
     void assertCreateInputSchemaWithOptionalField() {
-        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteQueryToolHandler().getToolDescriptor().getFields());
+        McpSchema.JsonSchema actual = toolInputSchemaFactory.createInputSchema(new ExecuteSQLToolHandler().getToolDescriptor().getFields());
         Map<String, Object> actualTimeout = castToMap(actual.properties().get("timeout_ms"));
         
         assertThat(actual.properties().size(), is(5));

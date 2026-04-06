@@ -15,33 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.handler.type;
+package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.tool.response.MCPMetadataResponse;
 
 import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Handler for execute-query tool.
+ * Handler for search-metadata tool.
  */
-public final class ExecuteQueryToolHandler implements ToolHandler {
+public final class SearchMetadataToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query",
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata", 
             Arrays.asList(
-                    new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), true),
+                    new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Optional logical database name.", null), false),
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
-                    new MCPToolFieldDefinition("sql", new MCPToolValueDefinition(Type.STRING, "Single SQL statement.", null), true),
-                    new MCPToolFieldDefinition("max_rows", new MCPToolValueDefinition(Type.INTEGER, "Optional maximum row count.", null), false), 
-                    new MCPToolFieldDefinition("timeout_ms", new MCPToolValueDefinition(Type.INTEGER, "Optional timeout in milliseconds.", null), false)));
+                    new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
+                    new MCPToolFieldDefinition("object_types", new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter.",
+                            new MCPToolValueDefinition(Type.STRING, "Array element value.", null)), false),
+                    new MCPToolFieldDefinition("page_size", new MCPToolValueDefinition(Type.INTEGER, "Requested page size.", null), false),
+                    new MCPToolFieldDefinition("page_token", new MCPToolValueDefinition(Type.STRING, "Opaque pagination token.", null), false)));
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
@@ -51,8 +55,10 @@ public final class ExecuteQueryToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return runtimeContext.getSqlExecutionFacade().execute(new ExecutionRequest(sessionId,
-                toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),
-                toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0)));
+        MetadataSearchRequest request = new MetadataSearchRequest(
+                toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
+                toolArguments.getObjectTypes(), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));
+        MetadataSearchResult searchResult = new SearchMetadataToolService(runtimeContext.getMetadataCatalog()).execute(request);
+        return new MCPMetadataResponse(searchResult.getItems(), searchResult.getNextPageToken());
     }
 }
