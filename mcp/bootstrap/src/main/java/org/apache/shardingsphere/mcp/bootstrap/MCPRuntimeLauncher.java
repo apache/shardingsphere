@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.mcp.bootstrap;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextBuilder;
+import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
+import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataLoader;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.io.IOException;
 
@@ -39,7 +42,9 @@ public final class MCPRuntimeLauncher {
      * @throws IOException when the active server startup fails
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContextBuilder().build(config.getDatabases());
+        ShardingSpherePreconditions.checkNotEmpty(config.getDatabases(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(
+                new MCPSessionManager(new MCPJdbcTransactionResourceManager(config.getDatabases())), new MCPJdbcMetadataLoader().load(config.getDatabases()));
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
