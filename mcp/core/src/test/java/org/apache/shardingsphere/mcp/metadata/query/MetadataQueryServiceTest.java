@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetadataQueryServiceTest {
     
-    private final MetadataQueryService metadataQueryService = new MetadataQueryService(ResourceTestDataFactory.createDatabaseMetadataSnapshots());
+    private final MetadataQueryService metadataQueryService = new MetadataQueryService(ResourceTestDataFactory.createDatabaseMetadataCatalog());
     
     @Test
     void assertQueryDatabases() {

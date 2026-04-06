@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.junit.jupiter.api.Test;
@@ -45,17 +45,17 @@ class MCPJdbcMetadataRefresherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-refresh-coordinator");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
-        DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        MCPJdbcMetadataRefresher metadataRefresher = new MCPJdbcMetadataRefresher(runtimeDatabases, databaseMetadataSnapshots);
+        MCPDatabaseMetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
+        MCPJdbcMetadataRefresher metadataRefresher = new MCPJdbcMetadataRefresher(runtimeDatabases, metadataCatalog);
         H2RuntimeTestSupport.executeStatements(jdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
         metadataRefresher.refresh("logic_db");
-        assertTrue(databaseMetadataSnapshots.findDatabaseType("logic_db").isPresent());
-        assertTrue(containsTable(databaseMetadataSnapshots.findDatabaseMetadata("logic_db").orElseThrow().getSchemas(), "orders_archive"));
+        assertTrue(metadataCatalog.findDatabaseType("logic_db").isPresent());
+        assertTrue(containsTable(metadataCatalog.findDatabaseMetadata("logic_db").orElseThrow().getSchemas(), "orders_archive"));
     }
     
     @Test
     void assertRefreshWithUnconfiguredDatabase() {
-        MCPJdbcMetadataRefresher metadataRefresher = new MCPJdbcMetadataRefresher(Map.of(), new DatabaseMetadataSnapshots(Map.of()));
+        MCPJdbcMetadataRefresher metadataRefresher = new MCPJdbcMetadataRefresher(Map.of(), new MCPDatabaseMetadataCatalog(Map.of()));
         assertThat(assertThrows(IllegalArgumentException.class, () -> metadataRefresher.refresh("logic_db")).getMessage(), is("Database `logic_db` is not configured."));
     }
     

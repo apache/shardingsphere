@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
@@ -51,7 +51,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListDatabases() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("list_databases", "", "", "", "", "", Set.of(), 10, ""));
         assertThat(actual.getMetadataItems().size(), is(3));
         assertThat(((MCPDatabaseMetadata) actual.getMetadataItems().get(0)).getDatabase(), is("analytics_db"));
@@ -60,7 +60,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListTablesWithPagination() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("list_tables", "logic_db", "public", "", "", "order", Set.of(), 1, ""));
         assertThat(actual.getMetadataItems().size(), is(1));
         assertThat(((MCPTableMetadata) actual.getMetadataItems().get(0)).getTable(), is("order_items"));
@@ -69,7 +69,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchSearchMetadataAcrossDatabases() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         Set<MetadataObjectType> objectTypes = new LinkedHashSet<>();
         objectTypes.add(MetadataObjectType.TABLE);
         objectTypes.add(MetadataObjectType.VIEW);
@@ -91,7 +91,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchSearchDatabaseObjectsAcrossDatabases() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("search_metadata", "", "", "", "", "", Set.of(MetadataObjectType.DATABASE), 10, ""));
         assertThat(actual.getMetadataItems().size(), is(3));
         assertThat(((MetadataSearchHit) actual.getMetadataItems().get(0)).getName(), is("analytics_db"));
@@ -100,7 +100,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchSearchMetadataWithSchemaWithoutDatabase() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> dispatcher.dispatch(new ToolRequest("search_metadata", "", "public", "", "", "order", Set.of(), 10, "")));
         assertThat(actual.getMessage(), is("Schema cannot be provided without database."));
@@ -108,7 +108,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchDescribeView() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("describe_view", "logic_db", "public", "active_orders", "", "", Set.of(), 10, ""));
         assertThat(actual.getMetadataItems().size(), is(1));
         assertThat(((MCPViewMetadata) actual.getMetadataItems().get(0)).getView(), is("active_orders"));
@@ -117,7 +117,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchListIndexesWithUnsupportedDatabaseType() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> dispatcher.dispatch(new ToolRequest("list_indexes", "warehouse", "warehouse", "facts", "", "", Set.of(), 10, "")));
         assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
@@ -125,7 +125,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithInvalidPageToken() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         InvalidPageTokenException actual = assertThrows(InvalidPageTokenException.class,
                 () -> dispatcher.dispatch(new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "invalid")));
         assertThat(actual.getMessage(), is("Invalid page token."));
@@ -133,7 +133,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithPageOffsetBeyondResultSize() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         ToolDispatchResult actual = dispatcher.dispatch(new ToolRequest("list_tables", "logic_db", "public", "", "", "", Set.of(), 10, "99"));
         assertThat(actual.getMetadataItems().size(), is(0));
         assertThat(actual.getNextPageToken(), is(""));
@@ -141,7 +141,7 @@ class MetadataToolDispatcherTest {
     
     @Test
     void assertDispatchWithUnsupportedTool() {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> dispatcher.dispatch(new ToolRequest("unsupported_tool", "", "", "", "", "", Set.of(), 10, "")));
         assertThat(actual.getMessage(), is("Unsupported metadata tool."));
@@ -150,14 +150,14 @@ class MetadataToolDispatcherTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertDispatchWithMissingRequiredFieldCases")
     void assertDispatchWithMissingRequiredField(final String name, final ToolRequest toolRequest, final String expectedMessage) {
-        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataSnapshots());
+        MetadataToolDispatcher dispatcher = new MetadataToolDispatcher(createDatabaseMetadataCatalog());
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> dispatcher.dispatch(toolRequest));
         assertThat(actual.getMessage(), is(expectedMessage));
     }
     
-    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, MCPDatabaseMetadata> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>();
+        databaseMetadataMap.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
                 new MCPSchemaMetadata("logic_db", "public", List.of(
                         new MCPTableMetadata("logic_db", "public", "orders",
                                 List.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id"),
@@ -165,17 +165,17 @@ class MetadataToolDispatcherTest {
                                 List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
                         new MCPTableMetadata("logic_db", "public", "order_items", List.of(), List.of())),
                         List.of(new MCPViewMetadata("logic_db", "public", "active_orders", List.of()))))));
-        databaseSnapshots.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
+        databaseMetadataMap.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
                 new MCPSchemaMetadata("analytics_db", "public", List.of(
                         new MCPTableMetadata("analytics_db", "public", "metrics",
                                 List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
                         List.of()))));
-        databaseSnapshots.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+        databaseMetadataMap.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(
                         new MCPTableMetadata("warehouse", "warehouse", "facts",
                                 List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
                         List.of()))));
-        return new DatabaseMetadataSnapshots(databaseSnapshots);
+        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
     
     static Stream<Arguments> assertDispatchWithMissingRequiredFieldCases() {

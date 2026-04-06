@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
@@ -96,19 +96,19 @@ class MCPToolPayloadResolverTest {
     }
     
     private MCPToolPayloadResolver createResolver() {
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContextTestFactory().create(createDatabaseMetadataSnapshots(), createStatementExecutor());
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContextTestFactory().create(createDatabaseMetadataCatalog(), createStatementExecutor());
         runtimeContext.getSessionManager().createSession("session-1");
         return new MCPToolPayloadResolver(runtimeContext);
     }
     
-    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, MCPDatabaseMetadata> databaseSnapshots = new LinkedHashMap<>();
-        databaseSnapshots.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>();
+        databaseMetadataMap.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
                 new MCPSchemaMetadata("logic_db", "public", List.of(
                         new MCPTableMetadata("logic_db", "public", "orders", List.of(), List.of())), List.of()))));
-        databaseSnapshots.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+        databaseMetadataMap.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(), List.of()))));
-        return new DatabaseMetadataSnapshots(databaseSnapshots);
+        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
     
     private MCPJdbcStatementExecutor createStatementExecutor() {

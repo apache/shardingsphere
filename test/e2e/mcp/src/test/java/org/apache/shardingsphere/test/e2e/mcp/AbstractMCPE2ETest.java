@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor
 import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
@@ -164,16 +164,12 @@ abstract class AbstractMCPE2ETest {
         return castToList(payload.get("items"));
     }
     
-    protected final Map<String, Object> getNestedPayload(final Map<String, Object> payload, final String key) {
-        return castToMap(payload.get(key));
-    }
-    
-    protected final DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, MCPDatabaseMetadata> result = new LinkedHashMap<>(3, 1F);
-        result.put("logic_db", createLogicDatabaseMetadata());
-        result.put("analytics_db", createAnalyticsDatabaseMetadata());
-        result.put("warehouse", createWarehouseDatabaseMetadata());
-        return new DatabaseMetadataSnapshots(result);
+    protected final MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
+        databaseMetadataMap.put("logic_db", createLogicDatabaseMetadata());
+        databaseMetadataMap.put("analytics_db", createAnalyticsDatabaseMetadata());
+        databaseMetadataMap.put("warehouse", createWarehouseDatabaseMetadata());
+        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
     
     private MCPDatabaseMetadata createLogicDatabaseMetadata() {
@@ -210,7 +206,7 @@ abstract class AbstractMCPE2ETest {
     }
     
     private void launchRuntimeInternal() {
-        DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
+        MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
         try {
             initializeRuntimeDatabases(runtimeDatabases);
@@ -218,7 +214,7 @@ abstract class AbstractMCPE2ETest {
             throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
         }
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                createRuntimeContext(runtimeDatabases, databaseMetadataSnapshots));
+                createRuntimeContext(runtimeDatabases, metadataCatalog));
         try {
             httpServer.start();
         } catch (final IOException ex) {
@@ -228,16 +224,16 @@ abstract class AbstractMCPE2ETest {
         this.httpServer = httpServer;
     }
     
-    private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
+    private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final MCPDatabaseMetadataCatalog metadataCatalog) {
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(databaseConfigs, transactionResourceManager);
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots);
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(metadataCatalog);
         MCPSQLExecutionFacade executionFacade = new MCPSQLExecutionFacade(
-                databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, new MCPJdbcMetadataRefresher(databaseConfigs, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, databaseCapabilityProvider, executionFacade);
+                databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, new MCPJdbcMetadataRefresher(databaseConfigs, metadataCatalog));
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog, databaseCapabilityProvider, executionFacade);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

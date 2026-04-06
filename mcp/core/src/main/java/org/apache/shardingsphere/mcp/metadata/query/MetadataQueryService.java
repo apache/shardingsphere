@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.metadata.query;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
@@ -44,7 +44,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class MetadataQueryService {
     
-    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
+    private final MCPDatabaseMetadataCatalog metadataCatalog;
     
     /**
      * Query databases.
@@ -53,7 +53,7 @@ public final class MetadataQueryService {
      */
     public List<MCPDatabaseMetadata> queryDatabases() {
         List<MCPDatabaseMetadata> result = new LinkedList<>();
-        for (MCPDatabaseMetadata each : databaseMetadataSnapshots.getDatabaseMetadataMap().values()) {
+        for (MCPDatabaseMetadata each : metadataCatalog.getDatabaseMetadataMap().values()) {
             result.add(createDatabaseSummary(each));
         }
         result.sort(Comparator.comparing(MCPDatabaseMetadata::getDatabase));
@@ -67,7 +67,7 @@ public final class MetadataQueryService {
      * @return database metadata
      */
     public Optional<MCPDatabaseMetadata> queryDatabase(final String databaseName) {
-        return databaseMetadataSnapshots.findDatabaseMetadata(databaseName).map(this::createDatabaseDetail);
+        return metadataCatalog.findDatabaseMetadata(databaseName).map(this::createDatabaseDetail);
     }
     
     /**
@@ -80,7 +80,7 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
             return Collections.emptyList();
         }
-        return databaseMetadataSnapshots.findDatabaseMetadata(databaseName).map(optional -> createSchemaSummaries(optional.getSchemas())).orElse(Collections.emptyList());
+        return metadataCatalog.findDatabaseMetadata(databaseName).map(optional -> createSchemaSummaries(optional.getSchemas())).orElse(Collections.emptyList());
     }
     
     /**
@@ -256,7 +256,7 @@ public final class MetadataQueryService {
     }
     
     private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
-        Optional<MCPDatabaseMetadata> databaseMetadata = databaseMetadataSnapshots.findDatabaseMetadata(databaseName);
+        Optional<MCPDatabaseMetadata> databaseMetadata = metadataCatalog.findDatabaseMetadata(databaseName);
         if (databaseMetadata.isEmpty()) {
             return Optional.empty();
         }
@@ -389,7 +389,7 @@ public final class MetadataQueryService {
     }
     
     private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final String databaseName) {
-        Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots).provide(databaseName);
+        Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(metadataCatalog).provide(databaseName);
         return databaseCapability.isPresent() ? databaseCapability.get().getSupportedMetadataObjectTypes() : Collections.emptySet();
     }
 }

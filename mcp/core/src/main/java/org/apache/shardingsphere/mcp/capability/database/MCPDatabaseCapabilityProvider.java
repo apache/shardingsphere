@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.capability.database;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 
@@ -34,7 +34,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class MCPDatabaseCapabilityProvider {
     
-    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
+    private final MCPDatabaseMetadataCatalog metadataCatalog;
     
     /**
      * Provide the database-level capability.
@@ -43,7 +43,7 @@ public final class MCPDatabaseCapabilityProvider {
      * @return database-level capability
      */
     public Optional<MCPDatabaseCapability> provide(final String databaseName) {
-        return databaseMetadataSnapshots.findDatabaseType(databaseName).flatMap(optional -> find(databaseName, optional, getDatabaseVersion(databaseName)));
+        return metadataCatalog.findDatabaseType(databaseName).flatMap(optional -> find(databaseName, optional, getDatabaseVersion(databaseName)));
     }
     
     private Optional<MCPDatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
@@ -110,6 +110,6 @@ public final class MCPDatabaseCapabilityProvider {
     }
     
     private String getDatabaseVersion(final String databaseName) {
-        return databaseMetadataSnapshots.findDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseVersion).orElse("");
+        return metadataCatalog.findDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseVersion).orElse("");
     }
 }

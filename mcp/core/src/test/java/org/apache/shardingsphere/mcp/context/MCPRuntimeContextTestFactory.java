@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
@@ -36,17 +36,17 @@ public final class MCPRuntimeContextTestFactory {
     /**
      * Create MCP runtime context for tests.
      *
-     * @param databaseMetadataSnapshots database metadata snapshots
+     * @param metadataCatalog database metadata catalog
      * @param statementExecutor JDBC statement executor
      * @return MCP runtime context
      */
-    public MCPRuntimeContext create(final DatabaseMetadataSnapshots databaseMetadataSnapshots, final MCPJdbcStatementExecutor statementExecutor) {
+    public MCPRuntimeContext create(final MCPDatabaseMetadataCatalog metadataCatalog, final MCPJdbcStatementExecutor statementExecutor) {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots);
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(metadataCatalog);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor, mock());
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, databaseCapabilityProvider, sqlExecutionFacade);
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog, databaseCapabilityProvider, sqlExecutionFacade);
     }
 }

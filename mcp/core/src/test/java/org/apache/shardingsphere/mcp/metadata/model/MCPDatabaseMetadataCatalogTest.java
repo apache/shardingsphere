@@ -26,27 +26,27 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class DatabaseMetadataSnapshotsTest {
+class MCPDatabaseMetadataCatalogTest {
     
     @Test
-    void assertReplaceSnapshot() {
-        DatabaseMetadataSnapshots databaseMetadataSnapshots = createDatabaseMetadataSnapshots();
-        databaseMetadataSnapshots.replaceMetadata("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(
+    void assertReplaceMetadata() {
+        MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
+        metadataCatalog.replaceMetadata("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(
                 new MCPTableMetadata("logic_db", "public", "orders_archive", List.of(), List.of())), List.of()))));
-        assertThat(databaseMetadataSnapshots.findDatabaseType("logic_db").orElseThrow(), is("MySQL"));
-        assertThat(databaseMetadataSnapshots.findDatabaseMetadata("logic_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("orders_archive"));
-        assertThat(databaseMetadataSnapshots.findDatabaseMetadata("analytics_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("metrics"));
+        assertThat(metadataCatalog.findDatabaseType("logic_db").orElseThrow(), is("MySQL"));
+        assertThat(metadataCatalog.findDatabaseMetadata("logic_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("orders_archive"));
+        assertThat(metadataCatalog.findDatabaseMetadata("analytics_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("metrics"));
     }
     
-    private DatabaseMetadataSnapshots createDatabaseMetadataSnapshots() {
-        Map<String, MCPDatabaseMetadata> result = new LinkedHashMap<>(3, 1F);
-        result.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "",
+    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
+        databaseMetadataMap.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "",
                 List.of(new MCPSchemaMetadata("logic_db", "public", List.of(new MCPTableMetadata("logic_db", "public", "orders", List.of(), List.of())), List.of()))));
-        result.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "",
+        databaseMetadataMap.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "",
                 List.of(new MCPSchemaMetadata("analytics_db", "public", List.of(
                         new MCPTableMetadata("analytics_db", "public", "metrics", List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())), List.of()))));
-        result.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+        databaseMetadataMap.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(), List.of())), List.of()))));
-        return new DatabaseMetadataSnapshots(result);
+        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
 }

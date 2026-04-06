@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Database metadata snapshots.
+ * MCP database metadata catalog.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseMetadataSnapshots {
+public final class MCPDatabaseMetadataCatalog {
     
     private final Map<String, MCPDatabaseMetadata> databaseMetadataMap;
     

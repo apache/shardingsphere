@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 
 import java.util.Map;
@@ -33,17 +33,17 @@ public final class MCPJdbcMetadataRefresher {
     
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
-    private final DatabaseMetadataSnapshots databaseMetadataSnapshots;
+    private final MCPDatabaseMetadataCatalog metadataCatalog;
     
     /**
-     * Refresh metadata snapshot for one logical database.
+     * Refresh metadata.
      *
-     * @param databaseName logical database name
+     * @param databaseName database name
      */
     public void refresh(final String databaseName) {
         MCPDatabaseMetadata metadata = new MCPJdbcMetadataLoader().load(Map.of(databaseName, getRequiredRuntimeDatabaseConfiguration(databaseName)))
                 .findMetadata(databaseName).orElseThrow(() -> new IllegalStateException(String.format("Failed to refresh metadata for database `%s`.", databaseName)));
-        databaseMetadataSnapshots.replaceMetadata(databaseName, metadata);
+        metadataCatalog.replaceMetadata(databaseName, metadata);
     }
     
     private RuntimeDatabaseConfiguration getRequiredRuntimeDatabaseConfiguration(final String databaseName) {

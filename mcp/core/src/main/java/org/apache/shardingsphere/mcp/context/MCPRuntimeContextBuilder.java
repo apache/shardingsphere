@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor
 import org.apache.shardingsphere.mcp.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
@@ -51,11 +51,11 @@ public final class MCPRuntimeContextBuilder {
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         MCPJdbcTransactionStatementExecutor transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager, transactionResourceManager);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(runtimeDatabases, transactionResourceManager);
-        DatabaseMetadataSnapshots databaseMetadataSnapshots = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(databaseMetadataSnapshots);
+        MCPDatabaseMetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
+        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(metadataCatalog);
         MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(
                 databaseCapabilityProvider, sessionExecutionCoordinator, transactionStatementExecutor, statementExecutor,
-                new MCPJdbcMetadataRefresher(runtimeDatabases, databaseMetadataSnapshots));
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, databaseMetadataSnapshots, databaseCapabilityProvider, sqlExecutionFacade);
+                new MCPJdbcMetadataRefresher(runtimeDatabases, metadataCatalog));
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog, databaseCapabilityProvider, sqlExecutionFacade);
     }
 }

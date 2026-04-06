@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataSearchHit;
@@ -41,14 +41,14 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Dispatch metadata discovery tools against metadata snapshots.
+ * Metadata tool dispatcher.
  */
 public final class MetadataToolDispatcher {
     
     private final MetadataQueryService metadataQueryService;
     
-    public MetadataToolDispatcher(final DatabaseMetadataSnapshots databaseMetadataSnapshots) {
-        metadataQueryService = new MetadataQueryService(databaseMetadataSnapshots);
+    public MetadataToolDispatcher(final MCPDatabaseMetadataCatalog metadataCatalog) {
+        metadataQueryService = new MetadataQueryService(metadataCatalog);
     }
     
     /**

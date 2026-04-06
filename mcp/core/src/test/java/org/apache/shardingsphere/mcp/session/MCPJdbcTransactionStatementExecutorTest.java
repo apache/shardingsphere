@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityPr
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
-import org.apache.shardingsphere.mcp.metadata.model.DatabaseMetadataSnapshots;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
@@ -131,7 +131,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     }
     
     private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
-        return new MCPDatabaseCapabilityProvider(new DatabaseMetadataSnapshots(Map.of(
+        return new MCPDatabaseCapabilityProvider(new MCPDatabaseMetadataCatalog(Map.of(
                 "logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()),
                 "warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", Collections.emptyList()))));
     }
