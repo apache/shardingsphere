@@ -17,15 +17,10 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
-import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
@@ -56,13 +51,8 @@ public final class ExecuteSQLToolHandler implements ToolHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
+        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(runtimeContext);
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(new MCPDatabaseCapabilityProvider(runtimeContext.getMetadataCatalog()),
-                new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager()),
-                new MCPJdbcTransactionStatementExecutor(runtimeContext.getSessionManager(), runtimeContext.getSessionManager().getTransactionResourceManager()),
-                new MCPJdbcStatementExecutor(
-                        runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getSessionManager().getTransactionResourceManager()),
-                new MCPJdbcMetadataRefresher(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getMetadataCatalog()));
         return sqlExecutionFacade.execute(new ExecutionRequest(sessionId,
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),
                 toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0)));

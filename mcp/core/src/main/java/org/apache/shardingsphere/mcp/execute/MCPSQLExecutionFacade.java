@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
@@ -50,6 +51,15 @@ public final class MCPSQLExecutionFacade {
     private final MCPJdbcMetadataRefresher jdbcMetadataRefresher;
     
     private final AuditRecorder auditRecorder = new AuditRecorder();
+    
+    public MCPSQLExecutionFacade(final MCPRuntimeContext runtimeContext) {
+        databaseCapabilityProvider = runtimeContext.getDatabaseCapabilityProvider();
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager());
+        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(runtimeContext.getSessionManager(), runtimeContext.getSessionManager().getTransactionResourceManager());
+        statementExecutor = new MCPJdbcStatementExecutor(
+                runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getSessionManager().getTransactionResourceManager());
+        jdbcMetadataRefresher = new MCPJdbcMetadataRefresher(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getMetadataCatalog());
+    }
     
     /**
      * Execute one MCP SQL request.
