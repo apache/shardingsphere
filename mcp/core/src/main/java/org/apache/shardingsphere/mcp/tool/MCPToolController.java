@@ -54,8 +54,6 @@ public final class MCPToolController {
     }
     
     MCPResponse dispatch(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        return ToolHandlerRegistry.findRegisteredHandler(toolName)
-                .orElseThrow(UnsupportedToolException::new)
-                .handle(sessionId, runtimeContext, arguments);
+        return ToolHandlerRegistry.findRegisteredHandler(toolName).orElseThrow(UnsupportedToolException::new).handle(sessionId, runtimeContext, arguments);
     }
 }
