@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.tool.MetadataToolDispatcher;
 import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MCPToolDispatchKind;
+import org.apache.shardingsphere.mcp.tool.ToolDispatchResult;
 import org.apache.shardingsphere.mcp.tool.ToolRequest;
 import org.apache.shardingsphere.mcp.tool.handler.MCPToolHandlerSupport;
 
@@ -27,7 +32,7 @@ import java.util.Map;
 /**
  * Handler for list-tables tool.
  */
-public final class ListTablesToolHandler extends AbstractMetadataToolHandler {
+public final class ListTablesToolHandler implements MetadataToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPToolHandlerSupport.createDescriptor("list_tables", MCPToolDispatchKind.METADATA,
             MCPToolHandlerSupport.createPagedMetadataInputDefinition("Logical database name.", "Schema name."));
@@ -37,6 +42,12 @@ public final class ListTablesToolHandler extends AbstractMetadataToolHandler {
         return TOOL_DESCRIPTOR;
     }
     
+    @Override
+    public MCPResponse handle(final String sessionId, final MCPRuntimeContext runtimeContext, final Map<String, Object> arguments) {
+        ToolDispatchResult result = new MetadataToolDispatcher(runtimeContext.getMetadataCatalog()).dispatch(createToolRequest(arguments));
+        return new MCPMetadataResponse(result.getMetadataItems(), result.getNextPageToken());
+    }
+
     @Override
     public ToolRequest createToolRequest(final Map<String, Object> arguments) {
         return MCPToolHandlerSupport.createPagedMetadataToolRequest("list_tables", arguments);
