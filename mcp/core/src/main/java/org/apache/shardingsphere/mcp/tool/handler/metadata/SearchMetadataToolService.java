@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
@@ -59,25 +60,11 @@ public final class SearchMetadataToolService {
      * @return search result
      */
     public MetadataSearchResult execute(final MetadataSearchRequest request) {
-        validate(request);
-        List<MetadataSearchHit> result = new LinkedList<>();
-        if (request.getDatabase().isEmpty()) {
-            for (MCPDatabaseMetadata each : metadataQueryService.queryDatabases()) {
-                result.addAll(readSearchResults(each.getDatabase(), request));
-            }
-        } else {
-            result.addAll(readSearchResults(request.getDatabase(), request));
-        }
-        return paginate(result, request.getQuery(), request.getPageSize(), request.getPageToken());
-    }
-    
-    private void validate(final MetadataSearchRequest request) {
-        if (request.getQuery().isEmpty()) {
-            throw new MCPInvalidRequestException("Query is required.");
-        }
-        if (!request.getSchema().isEmpty() && request.getDatabase().isEmpty()) {
-            throw new MCPInvalidRequestException("Schema cannot be provided without database.");
-        }
+        ShardingSpherePreconditions.checkState(request.getSchema().isEmpty() || !request.getDatabase().isEmpty(), () -> new MCPInvalidRequestException("Schema cannot be provided without database."));
+        List<MetadataSearchHit> metadataItems = request.getDatabase().isEmpty()
+                ? metadataQueryService.queryDatabases().stream().flatMap(each -> readSearchResults(each.getDatabase(), request).stream()).collect(Collectors.toList())
+                : readSearchResults(request.getDatabase(), request);
+        return paginate(metadataItems, request.getQuery(), request.getPageSize(), request.getPageToken());
     }
     
     private List<MetadataSearchHit> readSearchResults(final String databaseName, final MetadataSearchRequest request) {
