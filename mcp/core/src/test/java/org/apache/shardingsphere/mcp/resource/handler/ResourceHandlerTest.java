@@ -45,10 +45,10 @@ import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnsHandle
 import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewsHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.response.MCPMetadataResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
