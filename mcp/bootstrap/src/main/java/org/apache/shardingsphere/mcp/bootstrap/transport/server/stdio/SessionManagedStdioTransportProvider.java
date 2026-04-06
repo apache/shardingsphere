@@ -39,10 +39,10 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
     
-    SessionManagedStdioTransportProvider(final MCPSessionManager sessionManager, final MCPSessionExecutionCoordinator sessionExecutionCoordinator, final McpJsonMapper jsonMapper) {
+    SessionManagedStdioTransportProvider(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper) {
         super(jsonMapper);
         this.sessionManager = sessionManager;
-        this.sessionExecutionCoordinator = sessionExecutionCoordinator;
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
     }
     
     @Override

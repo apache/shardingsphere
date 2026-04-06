@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -173,8 +172,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager) {
-        return new MCPSQLExecutionFacade(new MCPRuntimeContext(sessionManager,
-                new MCPSessionExecutionCoordinator(sessionManager), createMetadataCatalog()));
+        return new MCPSQLExecutionFacade(new MCPRuntimeContext(sessionManager, createMetadataCatalog()));
     }
     
     private MCPDatabaseMetadataCatalog createMetadataCatalog() {

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.context;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
-import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.Collections;
@@ -51,6 +50,6 @@ public final class MCPRuntimeContextTestFactory {
     public MCPRuntimeContext create(final MCPDatabaseMetadataCatalog metadataCatalog, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
-        return new MCPRuntimeContext(sessionManager, new MCPSessionExecutionCoordinator(sessionManager), metadataCatalog);
+        return new MCPRuntimeContext(sessionManager, metadataCatalog);
     }
 }

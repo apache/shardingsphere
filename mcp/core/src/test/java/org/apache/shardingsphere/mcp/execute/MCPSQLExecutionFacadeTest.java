@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
-import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 import org.junit.jupiter.api.Test;
@@ -227,7 +226,7 @@ class MCPSQLExecutionFacadeTest {
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final MCPDatabaseMetadataCatalog metadataCatalog) {
-        return new MCPSQLExecutionFacade(new MCPRuntimeContext(sessionManager, new MCPSessionExecutionCoordinator(sessionManager), metadataCatalog));
+        return new MCPSQLExecutionFacade(new MCPRuntimeContext(sessionManager, metadataCatalog));
     }
     
     private MCPDatabaseMetadataCatalog createMetadataCatalog(final String databaseType) {

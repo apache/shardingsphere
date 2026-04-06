@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.context;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
-import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 /**
@@ -31,8 +30,6 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 public final class MCPRuntimeContext {
     
     private final MCPSessionManager sessionManager;
-    
-    private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
     
     private final MCPDatabaseMetadataCatalog metadataCatalog;
 }

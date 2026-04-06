@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -221,8 +220,7 @@ abstract class AbstractMCPE2ETest {
         } catch (final SQLException ex) {
             throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
         }
-        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH),
-                createRuntimeContext(runtimeDatabases, metadataCatalog));
+        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), createRuntimeContext(runtimeDatabases, metadataCatalog));
         try {
             httpServer.start();
         } catch (final IOException ex) {
@@ -235,8 +233,7 @@ abstract class AbstractMCPE2ETest {
     private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final MCPDatabaseMetadataCatalog metadataCatalog) {
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
-        MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog);
+        return new MCPRuntimeContext(sessionManager, metadataCatalog);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

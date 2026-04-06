@@ -76,11 +76,10 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final AtomicBoolean closed;
     
-    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final MCPSessionExecutionCoordinator sessionExecutionCoordinator,
-                             final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
+    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
         this.sessionManager = sessionManager;
-        this.sessionExecutionCoordinator = sessionExecutionCoordinator;
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         requestValidator = new StreamableHttpMCPRequestValidator(sessionManager);
         securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
         closed = new AtomicBoolean();
