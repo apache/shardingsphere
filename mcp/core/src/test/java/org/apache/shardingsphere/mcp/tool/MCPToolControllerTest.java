@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 

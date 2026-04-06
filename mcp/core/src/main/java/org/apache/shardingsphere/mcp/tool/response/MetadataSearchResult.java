@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool;
+package org.apache.shardingsphere.mcp.tool.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

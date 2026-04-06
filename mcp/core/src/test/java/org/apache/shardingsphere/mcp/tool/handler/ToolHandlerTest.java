@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.tool.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;

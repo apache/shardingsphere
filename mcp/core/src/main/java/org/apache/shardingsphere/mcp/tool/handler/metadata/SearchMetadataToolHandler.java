@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.MetadataSearchRequest;
-import org.apache.shardingsphere.mcp.tool.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
