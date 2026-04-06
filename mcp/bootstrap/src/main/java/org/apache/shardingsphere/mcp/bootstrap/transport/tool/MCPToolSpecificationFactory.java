@@ -26,8 +26,13 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,8 +44,6 @@ public final class MCPToolSpecificationFactory {
     
     private final List<MCPToolDescriptor> toolDescriptors;
     
-    private final MCPToolJsonSchemaAdapter mcpToolJsonSchemaAdapter;
-    
     private final MCPToolController toolController;
     
     /**
@@ -50,7 +53,6 @@ public final class MCPToolSpecificationFactory {
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
-        mcpToolJsonSchemaAdapter = new MCPToolJsonSchemaAdapter();
         toolController = new MCPToolController(runtimeContext);
     }
     
@@ -68,8 +70,41 @@ public final class MCPToolSpecificationFactory {
                 .name(toolDescriptor.getName())
                 .title(toolDescriptor.getTitle())
                 .description(toolDescriptor.getDescription())
-                .inputSchema(mcpToolJsonSchemaAdapter.createInputSchema(toolDescriptor.getFields()))
+                .inputSchema(createInputSchema(toolDescriptor.getFields()))
                 .build();
+    }
+    
+    private McpSchema.JsonSchema createInputSchema(final List<MCPToolFieldDefinition> fields) {
+        Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
+        List<String> required = new ArrayList<>(fields.size());
+        for (MCPToolFieldDefinition each : fields) {
+            properties.put(each.getName(), createValueSchema(each.getValueDefinition()));
+            if (each.isRequired()) {
+                required.add(each.getName());
+            }
+        }
+        return new McpSchema.JsonSchema("object", properties, required, true, Collections.emptyMap(), Collections.emptyMap());
+    }
+    
+    private Map<String, Object> createValueSchema(final MCPToolValueDefinition valueDefinition) {
+        switch (valueDefinition.getType()) {
+            case STRING:
+                return createScalarSchema("string", valueDefinition);
+            case INTEGER:
+                return createScalarSchema("integer", valueDefinition);
+            case ARRAY:
+                return createArraySchema(valueDefinition);
+            default:
+                throw new IllegalStateException(String.format("Unsupported MCP tool value type `%s`.", valueDefinition.getType()));
+        }
+    }
+    
+    private Map<String, Object> createScalarSchema(final String type, final MCPToolValueDefinition valueDefinition) {
+        return Map.of("type", type, "description", valueDefinition.getDescription());
+    }
+    
+    private Map<String, Object> createArraySchema(final MCPToolValueDefinition valueDefinition) {
+        return Map.of("type", "array", "description", valueDefinition.getDescription(), "items", createValueSchema(valueDefinition.getItemDefinition()));
     }
     
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
