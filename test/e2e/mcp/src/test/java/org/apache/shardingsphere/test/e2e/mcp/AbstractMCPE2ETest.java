@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
@@ -237,8 +236,7 @@ abstract class AbstractMCPE2ETest {
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
         MCPSessionExecutionCoordinator sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
-        MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(metadataCatalog);
-        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog, databaseCapabilityProvider);
+        return new MCPRuntimeContext(sessionManager, sessionExecutionCoordinator, metadataCatalog);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

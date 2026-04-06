@@ -18,11 +18,9 @@
 package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataLoader;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
@@ -44,7 +42,6 @@ public final class MCPRuntimeContextBuilder {
         ShardingSpherePreconditions.checkNotEmpty(runtimeDatabases, () -> new IllegalArgumentException("At least one runtime database must be configured."));
         MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
         MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
-        MCPDatabaseMetadataCatalog metadataCatalog = new MCPJdbcMetadataLoader().load(runtimeDatabases);
-        return new MCPRuntimeContext(sessionManager, new MCPSessionExecutionCoordinator(sessionManager), metadataCatalog, new MCPDatabaseCapabilityProvider(metadataCatalog));
+        return new MCPRuntimeContext(sessionManager, new MCPSessionExecutionCoordinator(sessionManager), new MCPJdbcMetadataLoader().load(runtimeDatabases));
     }
 }
