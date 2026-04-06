@@ -55,18 +55,11 @@ public final class SearchMetadataToolHandler implements ToolHandler {
     
     @Override
     public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
-        MetadataSearchResult result = new MetadataSearchExecutor(runtimeContext.getMetadataCatalog()).execute(createRequest(arguments));
-        return new MCPMetadataResponse(result.getItems(), result.getNextPageToken());
-    }
-    
-    private MetadataSearchRequest createRequest(final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MetadataSearchRequest(
-                toolArguments.getStringArgument("database"),
-                toolArguments.getStringArgument("schema"),
-                toolArguments.getStringArgument("query"),
-                toolArguments.getObjectTypes(),
-                toolArguments.getIntegerArgument("page_size", 100),
-                toolArguments.getStringArgument("page_token"));
+        MetadataSearchRequest request = new MetadataSearchRequest(
+                toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
+                toolArguments.getObjectTypes(), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));
+        MetadataSearchResult searchResult = new MetadataSearchExecutor(runtimeContext.getMetadataCatalog()).execute(request);
+        return new MCPMetadataResponse(searchResult.getItems(), searchResult.getNextPageToken());
     }
 }
