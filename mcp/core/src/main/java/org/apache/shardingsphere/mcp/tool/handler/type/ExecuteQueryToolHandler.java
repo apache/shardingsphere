@@ -38,8 +38,8 @@ import java.util.Map;
 public final class ExecuteQueryToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query",
-            Arrays.asList(new MCPToolFieldDefinition("database",
-                    new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), true),
+            Arrays.asList(
+                    new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), true),
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
                     new MCPToolFieldDefinition("sql", new MCPToolValueDefinition(Type.STRING, "Single SQL statement.", null), true),
                     new MCPToolFieldDefinition("max_rows", new MCPToolValueDefinition(Type.INTEGER, "Optional maximum row count.", null), false), 
