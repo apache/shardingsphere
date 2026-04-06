@@ -67,9 +67,8 @@ public final class MCPToolArguments {
      * @return normalized execute-query request
      */
     public ExecutionRequest createExecutionRequest(final String sessionId) {
-        return new ExecutionRequest(sessionId, Objects.toString(arguments.get("database"), "").trim(),
-                Objects.toString(arguments.get("schema"), "").trim(), Objects.toString(arguments.get("sql"), "").trim(),
-                getIntegerArgument("max_rows", 0), getIntegerArgument("timeout_ms", 0));
+        return new ExecutionRequest(sessionId,
+                getStringArgument("database"), getStringArgument("schema"), getStringArgument("sql"), getIntegerArgument("max_rows", 0), getIntegerArgument("timeout_ms", 0));
     }
     
     /**
