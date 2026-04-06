@@ -41,7 +41,7 @@ public final class ExecuteSQLToolHandler implements ToolHandler {
                     new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), true),
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
                     new MCPToolFieldDefinition("sql", new MCPToolValueDefinition(Type.STRING, "Single SQL statement.", null), true),
-                    new MCPToolFieldDefinition("max_rows", new MCPToolValueDefinition(Type.INTEGER, "Optional maximum row count.", null), false), 
+                    new MCPToolFieldDefinition("max_rows", new MCPToolValueDefinition(Type.INTEGER, "Optional maximum row count.", null), false),
                     new MCPToolFieldDefinition("timeout_ms", new MCPToolValueDefinition(Type.INTEGER, "Optional timeout in milliseconds.", null), false)));
     
     @Override

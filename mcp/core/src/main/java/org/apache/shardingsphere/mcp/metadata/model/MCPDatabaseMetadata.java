@@ -42,7 +42,7 @@ public final class MCPDatabaseMetadata {
     
     /**
      * Create summary.
-     * 
+     *
      * @return database metadata summary
      */
     public MCPDatabaseMetadata createSummary() {
@@ -51,7 +51,7 @@ public final class MCPDatabaseMetadata {
     
     /**
      * Create detail.
-     * 
+     *
      * @return database metadata detail
      */
     public MCPDatabaseMetadata createDetail() {

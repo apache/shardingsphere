@@ -44,7 +44,7 @@ public final class MCPTableMetadata {
     
     /**
      * Create summary.
-     * 
+     *
      * @return table metadata summary
      */
     public MCPTableMetadata createSummary() {

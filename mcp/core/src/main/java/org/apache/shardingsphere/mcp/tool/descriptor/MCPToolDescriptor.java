@@ -37,7 +37,7 @@ public final class MCPToolDescriptor {
     
     /**
      * Get title.
-     * 
+     *
      * @return title
      */
     public String getTitle() {
