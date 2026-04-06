@@ -50,7 +50,7 @@ class MCPJdbcMetadataRefresherTest {
         H2RuntimeTestSupport.executeStatements(jdbcUrl, "CREATE TABLE public.orders_archive (order_id INT PRIMARY KEY)");
         metadataRefresher.refresh("logic_db");
         assertTrue(metadataCatalog.findDatabaseType("logic_db").isPresent());
-        assertTrue(containsTable(metadataCatalog.findDatabaseMetadata("logic_db").orElseThrow().getSchemas(), "orders_archive"));
+        assertTrue(containsTable(metadataCatalog.findMetadata("logic_db").orElseThrow().getSchemas(), "orders_archive"));
     }
     
     @Test

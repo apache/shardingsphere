@@ -70,7 +70,7 @@ class MCPJdbcMetadataLoaderTest {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.findDatabaseType("logic_db").orElseThrow(), is("H2"));
-        assertFalse(actual.findDatabaseMetadata("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
+        assertFalse(actual.findMetadata("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -80,7 +80,7 @@ class MCPJdbcMetadataLoaderTest {
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
-        assertTrue(containsMetadata(actual.findDatabaseMetadata("logic_db").orElseThrow(), objectType, objectName));
+        assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), objectType, objectName));
     }
     
     @Test
@@ -104,7 +104,7 @@ class MCPJdbcMetadataLoaderTest {
         DriverManager.registerDriver(mockDriver);
         try {
             MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
-            MCPDatabaseMetadata databaseMetadata = actual.findDatabaseMetadata("logic_db").orElseThrow();
+            MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
             assertThat(databaseMetadata.getSchemas().size(), is(1));
             assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is(""));
             assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.TABLE, "orders"));
@@ -121,7 +121,7 @@ class MCPJdbcMetadataLoaderTest {
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
-        MCPDatabaseMetadata databaseMetadata = actual.findDatabaseMetadata("logic_db").orElseThrow();
+        MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.VIEW, "active_orders"));
         assertThat(databaseMetadata.getSchemas().size(), is(1));

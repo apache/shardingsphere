@@ -39,17 +39,7 @@ public final class MCPDatabaseMetadataCatalog {
      * @return found database type
      */
     public Optional<String> findDatabaseType(final String databaseName) {
-        return findDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseType);
-    }
-    
-    /**
-     * Find database metadata.
-     *
-     * @param databaseName database name
-     * @return found database metadata
-     */
-    public Optional<MCPDatabaseMetadata> findDatabaseMetadata(final String databaseName) {
-        return findMetadata(databaseName);
+        return findMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseType);
     }
     
     /**

@@ -67,7 +67,7 @@ public final class MetadataQueryService {
      * @return database metadata
      */
     public Optional<MCPDatabaseMetadata> queryDatabase(final String databaseName) {
-        return metadataCatalog.findDatabaseMetadata(databaseName).map(this::createDatabaseDetail);
+        return metadataCatalog.findMetadata(databaseName).map(this::createDatabaseDetail);
     }
     
     /**
@@ -80,7 +80,7 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
             return Collections.emptyList();
         }
-        return metadataCatalog.findDatabaseMetadata(databaseName).map(optional -> createSchemaSummaries(optional.getSchemas())).orElse(Collections.emptyList());
+        return metadataCatalog.findMetadata(databaseName).map(optional -> createSchemaSummaries(optional.getSchemas())).orElse(Collections.emptyList());
     }
     
     /**
@@ -256,7 +256,7 @@ public final class MetadataQueryService {
     }
     
     private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
-        Optional<MCPDatabaseMetadata> databaseMetadata = metadataCatalog.findDatabaseMetadata(databaseName);
+        Optional<MCPDatabaseMetadata> databaseMetadata = metadataCatalog.findMetadata(databaseName);
         if (databaseMetadata.isEmpty()) {
             return Optional.empty();
         }

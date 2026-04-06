@@ -110,6 +110,6 @@ public final class MCPDatabaseCapabilityProvider {
     }
     
     private String getDatabaseVersion(final String databaseName) {
-        return metadataCatalog.findDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseVersion).orElse("");
+        return metadataCatalog.findMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseVersion).orElse("");
     }
 }
