@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.execute;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
@@ -75,9 +76,7 @@ public final class MCPSQLExecutionFacade {
     
     private ExecuteQueryResponse executeInternal(final ExecutionRequest executionRequest) {
         Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
-        if (databaseCapability.isEmpty()) {
-            throw recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException());
-        }
+        ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
         ClassificationResult classificationResult;
         try {
             classificationResult = new StatementClassifier().classify(executionRequest.getSql());
