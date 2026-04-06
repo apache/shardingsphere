@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 
 import java.util.Arrays;
 import java.util.Map;

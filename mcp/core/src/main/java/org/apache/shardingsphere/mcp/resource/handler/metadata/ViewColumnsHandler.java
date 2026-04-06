@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
-import org.apache.shardingsphere.mcp.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 
 /**
  * Handler for view columns resource URI.

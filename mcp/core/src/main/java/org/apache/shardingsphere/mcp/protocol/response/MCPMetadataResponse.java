@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.response;
+package org.apache.shardingsphere.mcp.protocol.response;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
 import java.util.LinkedHashMap;
 import java.util.List;
