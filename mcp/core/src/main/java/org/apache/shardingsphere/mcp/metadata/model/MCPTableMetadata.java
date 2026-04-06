@@ -21,7 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * MCP table metadata.
@@ -47,5 +49,16 @@ public final class MCPTableMetadata {
      */
     public MCPTableMetadata createSummary() {
         return new MCPTableMetadata(database, schema, table, Collections.emptyList(), Collections.emptyList());
+    }
+    
+    /**
+     * Create detail.
+     *
+     * @return table metadata detail
+     */
+    public MCPTableMetadata createDetail() {
+        return new MCPTableMetadata(database, schema, table,
+                columns.stream().sorted(Comparator.comparing(MCPColumnMetadata::getColumn)).collect(Collectors.toList()),
+                indexes.stream().sorted(Comparator.comparing(MCPIndexMetadata::getIndex)).collect(Collectors.toList()));
     }
 }

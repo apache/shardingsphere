@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.metadata.query;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
@@ -36,7 +37,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -121,7 +121,7 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.TABLE)) {
             return Optional.empty();
         }
-        return findTable(databaseName, schemaName, tableName).map(this::createTableDetail);
+        return findTable(databaseName, schemaName, tableName).map(MCPTableMetadata::createDetail);
     }
     
     /**
@@ -150,7 +150,7 @@ public final class MetadataQueryService {
         if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.VIEW)) {
             return Optional.empty();
         }
-        return findView(databaseName, schemaName, viewName).map(this::createViewDetail);
+        return findView(databaseName, schemaName, viewName).map(MCPViewMetadata::createDetail);
     }
     
     /**
@@ -166,6 +166,12 @@ public final class MetadataQueryService {
             return Collections.emptyList();
         }
         return findTable(databaseName, schemaName, tableName).map(optional -> sortColumns(optional.getColumns())).orElse(Collections.emptyList());
+    }
+    
+    private List<MCPColumnMetadata> sortColumns(final Collection<MCPColumnMetadata> columns) {
+        List<MCPColumnMetadata> result = new LinkedList<>(columns);
+        result.sort(Comparator.comparing(MCPColumnMetadata::getColumn));
+        return result;
     }
     
     /**
@@ -224,8 +230,15 @@ public final class MetadataQueryService {
      * @return index metadata
      */
     public List<MCPIndexMetadata> queryIndexes(final String databaseName, final String schemaName, final String tableName) {
-        checkIndexSupported(databaseName);
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX),
+                () -> new MCPUnsupportedException("Index resources are not supported for the current database."));
         return findTable(databaseName, schemaName, tableName).map(optional -> sortIndexes(optional.getIndexes())).orElse(Collections.emptyList());
+    }
+    
+    private List<MCPIndexMetadata> sortIndexes(final Collection<MCPIndexMetadata> indexes) {
+        List<MCPIndexMetadata> result = new LinkedList<>(indexes);
+        result.sort(Comparator.comparing(MCPIndexMetadata::getIndex));
+        return result;
     }
     
     /**
@@ -238,7 +251,8 @@ public final class MetadataQueryService {
      * @return index metadata
      */
     public Optional<MCPIndexMetadata> queryIndex(final String databaseName, final String schemaName, final String tableName, final String indexName) {
-        checkIndexSupported(databaseName);
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX),
+                () -> new MCPUnsupportedException("Index resources are not supported for the current database."));
         return findIndex(queryIndexes(databaseName, schemaName, tableName), indexName);
     }
     
@@ -247,10 +261,11 @@ public final class MetadataQueryService {
      *
      * @param databaseName database name
      * @param objectType metadata object type
-     * @return whether supported or not
+     * @return supported or not
      */
     public boolean isSupportedMetadataObjectType(final String databaseName, final MetadataObjectType objectType) {
-        return getSupportedMetadataObjectTypes(databaseName).contains(objectType);
+        Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(metadataCatalog).provide(databaseName);
+        return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(objectType);
     }
     
     private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
@@ -308,37 +323,5 @@ public final class MetadataQueryService {
             }
         }
         return Optional.empty();
-    }
-    
-    private MCPTableMetadata createTableDetail(final MCPTableMetadata tableMetadata) {
-        return new MCPTableMetadata(tableMetadata.getDatabase(), tableMetadata.getSchema(), tableMetadata.getTable(),
-                sortColumns(tableMetadata.getColumns()), sortIndexes(tableMetadata.getIndexes()));
-    }
-    
-    private MCPViewMetadata createViewDetail(final MCPViewMetadata viewMetadata) {
-        return new MCPViewMetadata(viewMetadata.getDatabase(), viewMetadata.getSchema(), viewMetadata.getView(), sortColumns(viewMetadata.getColumns()));
-    }
-    
-    private List<MCPColumnMetadata> sortColumns(final Collection<MCPColumnMetadata> columns) {
-        List<MCPColumnMetadata> result = new LinkedList<>(columns);
-        result.sort(Comparator.comparing(MCPColumnMetadata::getColumn));
-        return result;
-    }
-    
-    private List<MCPIndexMetadata> sortIndexes(final Collection<MCPIndexMetadata> indexes) {
-        List<MCPIndexMetadata> result = new LinkedList<>(indexes);
-        result.sort(Comparator.comparing(MCPIndexMetadata::getIndex));
-        return result;
-    }
-    
-    private void checkIndexSupported(final String databaseName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX)) {
-            throw new MCPUnsupportedException("Index resources are not supported for the current database.");
-        }
-    }
-    
-    private Set<MetadataObjectType> getSupportedMetadataObjectTypes(final String databaseName) {
-        Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(metadataCatalog).provide(databaseName);
-        return databaseCapability.isPresent() ? databaseCapability.get().getSupportedMetadataObjectTypes() : Collections.emptySet();
     }
 }
