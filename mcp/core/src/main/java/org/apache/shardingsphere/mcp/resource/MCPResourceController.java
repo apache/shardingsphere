@@ -47,7 +47,7 @@ public final class MCPResourceController {
      */
     public MCPResponse handle(final String resourceUri) {
         try {
-            return dispatch(resourceUri, runtimeContext).orElseThrow(UnsupportedResourceUriException::new);
+            return dispatch(resourceUri).orElseThrow(UnsupportedResourceUriException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -55,7 +55,7 @@ public final class MCPResourceController {
         }
     }
     
-    private Optional<MCPResponse> dispatch(final String resourceUri, final MCPRuntimeContext runtimeContext) {
+    private Optional<MCPResponse> dispatch(final String resourceUri) {
         for (Entry<MCPUriPattern, ResourceHandler> each : ResourceHandlerRegistry.getRegisteredHandlers().entrySet()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
