@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcStatementExecutor;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
@@ -32,24 +31,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
-
-/**
- * Resource test data factory.
- */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceTestDataFactory {
-    
-    private ResourceTestDataFactory() {
-    }
-    
-    /**
-     * Create runtime context.
-     *
-     * @return runtime context
-     */
-    public static MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContextTestFactory().create(createDatabaseMetadataCatalog(), mock(MCPJdbcStatementExecutor.class));
-    }
     
     /**
      * Create database metadata catalog.
