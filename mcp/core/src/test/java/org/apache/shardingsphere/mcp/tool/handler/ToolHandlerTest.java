@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestExcepti
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.handler.type.ExecuteQueryToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.type.SearchMetadataToolHandler;

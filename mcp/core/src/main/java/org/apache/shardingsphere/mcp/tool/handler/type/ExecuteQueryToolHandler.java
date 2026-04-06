@@ -22,10 +22,10 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.execute.ExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolInputDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 

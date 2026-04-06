@@ -21,10 +21,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolInputDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.io.IOException;

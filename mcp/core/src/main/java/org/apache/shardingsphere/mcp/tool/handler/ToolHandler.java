@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Map;
 

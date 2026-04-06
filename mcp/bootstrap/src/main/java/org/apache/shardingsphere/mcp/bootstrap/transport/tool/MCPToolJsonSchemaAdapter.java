@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.tool.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolInputDefinition;
-import org.apache.shardingsphere.mcp.tool.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolInputDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 
 import java.util.ArrayList;
 import java.util.Collections;

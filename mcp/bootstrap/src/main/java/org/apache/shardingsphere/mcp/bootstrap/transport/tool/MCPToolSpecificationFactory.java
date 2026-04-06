@@ -25,7 +25,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.MCPToolController;
-import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.List;

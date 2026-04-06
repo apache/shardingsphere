@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.tool.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 
 import java.util.ArrayList;
 import java.util.Collection;
