@@ -28,10 +28,8 @@ import java.util.Set;
  */
 public final class MCPServiceCapabilityProvider {
     
-    private static final Set<SupportedMCPStatement> SUPPORTED_STATEMENT_TYPES = Set.of(SupportedMCPStatement.values());
-    
     private static final MCPServiceCapability SERVICE_CAPABILITY = new MCPServiceCapability(
-            ResourceHandlerRegistry.getSupportedResources(), ToolHandlerRegistry.getSupportedTools(), SUPPORTED_STATEMENT_TYPES);
+            ResourceHandlerRegistry.getSupportedResources(), ToolHandlerRegistry.getSupportedTools(), Set.of(SupportedMCPStatement.values()));
     
     /**
      * Provide the service-level capability.
