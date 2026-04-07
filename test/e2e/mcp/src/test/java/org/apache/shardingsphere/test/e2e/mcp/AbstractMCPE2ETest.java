@@ -114,8 +114,7 @@ abstract class AbstractMCPE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
-                                                           final String sessionId) throws IOException, InterruptedException {
+    protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> requestHeaders, final String sessionId) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", PROTOCOL_VERSION)
@@ -219,7 +218,8 @@ abstract class AbstractMCPE2ETest {
         } catch (final SQLException ex) {
             throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
         }
-        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
+        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(
+                new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
         try {
             httpServer.start();
         } catch (final IOException ex) {
