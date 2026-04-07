@@ -55,11 +55,7 @@ public final class MCPDatabaseCapabilityProvider {
         TransactionCapability transactionCapability = option.getTransactionCapability();
         return new MCPDatabaseCapability(databaseName, databaseType, createSupportedMetadataObjectTypes(option),
                 createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze), TransactionCapability.NONE != transactionCapability,
-                TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability, createSupportedTransactionStatements(transactionCapability),
-                true, 1000, 30000, option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze,
-                TransactionBoundaryBehavior.NATIVE, TransactionBoundaryBehavior.NATIVE,
-                supportsExplainAnalyze ? ResultBehavior.RESULT_SET : ResultBehavior.UNSUPPORTED,
-                supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE : TransactionBoundaryBehavior.UNSUPPORTED);
+                TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability, option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze);
     }
     
     private Set<MetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {
@@ -91,22 +87,6 @@ public final class MCPDatabaseCapabilityProvider {
         }
         if (supportsExplainAnalyze) {
             result.add(SupportedMCPStatement.EXPLAIN_ANALYZE);
-        }
-        return result;
-    }
-    
-    private Set<String> createSupportedTransactionStatements(final TransactionCapability transactionCapability) {
-        Set<String> result = new LinkedHashSet<>(16, 1F);
-        if (TransactionCapability.NONE != transactionCapability) {
-            result.add("BEGIN");
-            result.add("START TRANSACTION");
-            result.add("COMMIT");
-            result.add("ROLLBACK");
-        }
-        if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
-            result.add("SAVEPOINT");
-            result.add("ROLLBACK TO SAVEPOINT");
-            result.add("RELEASE SAVEPOINT");
         }
         return result;
     }

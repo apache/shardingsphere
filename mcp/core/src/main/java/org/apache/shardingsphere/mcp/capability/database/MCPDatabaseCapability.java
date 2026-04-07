@@ -43,25 +43,9 @@ public final class MCPDatabaseCapability {
     
     private final boolean supportsSavepoint;
     
-    private final Set<String> supportedTransactionStatements;
-    
-    private final boolean defaultAutocommit;
-    
-    private final int maxRowsDefault;
-    
-    private final int maxTimeoutMsDefault;
-    
     private final SchemaSemantics defaultSchemaSemantics;
     
     private final boolean supportsCrossSchemaSql;
     
     private final boolean supportsExplainAnalyze;
-    
-    private final TransactionBoundaryBehavior ddlTransactionBehavior;
-    
-    private final TransactionBoundaryBehavior dclTransactionBehavior;
-    
-    private final ResultBehavior explainAnalyzeResultBehavior;
-    
-    private final TransactionBoundaryBehavior explainAnalyzeTransactionBehavior;
 }

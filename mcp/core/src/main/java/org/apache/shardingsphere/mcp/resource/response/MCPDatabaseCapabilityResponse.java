@@ -41,17 +41,9 @@ public final class MCPDatabaseCapabilityResponse implements MCPResponse {
         result.put("supportedStatementClasses", databaseCapability.getSupportedStatementClasses());
         result.put("supportsTransactionControl", databaseCapability.isSupportsTransactionControl());
         result.put("supportsSavepoint", databaseCapability.isSupportsSavepoint());
-        result.put("supportedTransactionStatements", databaseCapability.getSupportedTransactionStatements());
-        result.put("defaultAutocommit", databaseCapability.isDefaultAutocommit());
-        result.put("maxRowsDefault", databaseCapability.getMaxRowsDefault());
-        result.put("maxTimeoutMsDefault", databaseCapability.getMaxTimeoutMsDefault());
         result.put("defaultSchemaSemantics", databaseCapability.getDefaultSchemaSemantics());
         result.put("supportsCrossSchemaSql", databaseCapability.isSupportsCrossSchemaSql());
         result.put("supportsExplainAnalyze", databaseCapability.isSupportsExplainAnalyze());
-        result.put("ddlTransactionBehavior", databaseCapability.getDdlTransactionBehavior());
-        result.put("dclTransactionBehavior", databaseCapability.getDclTransactionBehavior());
-        result.put("explainAnalyzeResultBehavior", databaseCapability.getExplainAnalyzeResultBehavior());
-        result.put("explainAnalyzeTransactionBehavior", databaseCapability.getExplainAnalyzeTransactionBehavior());
         return result;
     }
 }

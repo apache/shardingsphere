@@ -359,18 +359,11 @@ stateDiagram-v2
 ### 9.3 transaction matrix 字段
 - 至少包含：
   - `databaseType`
-  - `minSupportedVersion`
   - `supportsTransactionControl`
   - `supportsSavepoint`
-  - `defaultAutocommit`
-  - `supportedTransactionStatements`
   - `supportedObjectTypes`
   - `supportedStatementClasses`
   - `supportsExplainAnalyze`
-  - `ddlTransactionBehavior`
-  - `dclTransactionBehavior`
-  - `explainAnalyzeResultBehavior`
-  - `explainAnalyzeTransactionBehavior`
 
 ### 9.4 capability 组装顺序
 - 固定组装顺序：
