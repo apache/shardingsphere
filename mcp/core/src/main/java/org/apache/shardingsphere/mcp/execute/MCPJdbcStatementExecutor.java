@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -67,7 +68,7 @@ public final class MCPJdbcStatementExecutor {
      * @throws MCPQueryFailedException when query execution fails
      * @throws MCPUnavailableException when the runtime database configuration is unavailable
      */
-    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    public ExecuteQueryResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         Connection connection = null;
         boolean needCloseConnection = false;
         try {

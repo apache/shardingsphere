@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -180,8 +181,8 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         return new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "H2", "", Collections.emptyList())));
     }
     
-    private ExecutionRequest createExecutionRequest(final String sessionId, final String sql) {
-        return new ExecutionRequest(sessionId, "logic_db", "public", sql, 10, 1000);
+    private SQLExecutionRequest createExecutionRequest(final String sessionId, final String sql) {
+        return new SQLExecutionRequest(sessionId, "logic_db", "public", sql, 10, 1000);
     }
     
     private MCPSessionManager createSessionManager(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,

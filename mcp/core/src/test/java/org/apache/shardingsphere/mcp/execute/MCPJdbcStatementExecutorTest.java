@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
+import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -129,12 +130,12 @@ class MCPJdbcStatementExecutorTest {
         return new MCPJdbcTransactionResourceManager(runtimeDatabases);
     }
     
-    private ExecutionRequest createExecutionRequest(final String databaseName, final String sql) {
+    private SQLExecutionRequest createExecutionRequest(final String databaseName, final String sql) {
         return createExecutionRequest(databaseName, sql, 10);
     }
     
-    private ExecutionRequest createExecutionRequest(final String databaseName, final String sql, final int maxRows) {
-        return new ExecutionRequest("session-1", databaseName, "public", sql, maxRows, 1000);
+    private SQLExecutionRequest createExecutionRequest(final String databaseName, final String sql, final int maxRows) {
+        return new SQLExecutionRequest("session-1", databaseName, "public", sql, maxRows, 1000);
     }
     
     private String createJdbcUrl(final String databaseName) {

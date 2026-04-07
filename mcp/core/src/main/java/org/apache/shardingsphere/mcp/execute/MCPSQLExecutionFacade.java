@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupport
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
+import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
 import java.util.Optional;
 
@@ -66,7 +67,7 @@ public final class MCPSQLExecutionFacade {
      * @param executionRequest execution request
      * @return execution response
      */
-    public ExecuteQueryResponse execute(final ExecutionRequest executionRequest) {
+    public ExecuteQueryResponse execute(final SQLExecutionRequest executionRequest) {
         try {
             return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest));
         } catch (final MCPSessionNotExistedException ex) {
@@ -74,7 +75,7 @@ public final class MCPSQLExecutionFacade {
         }
     }
     
-    private ExecuteQueryResponse executeInternal(final ExecutionRequest executionRequest) {
+    private ExecuteQueryResponse executeInternal(final SQLExecutionRequest executionRequest) {
         Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
         ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
         ClassificationResult classificationResult;
@@ -110,18 +111,18 @@ public final class MCPSQLExecutionFacade {
         }
     }
     
-    private ExecuteQueryResponse executeAndRefreshMetadata(final ExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    private ExecuteQueryResponse executeAndRefreshMetadata(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         ExecuteQueryResponse result = statementExecutor.execute(executionRequest, classificationResult);
         jdbcMetadataRefresher.refresh(executionRequest.getDatabase());
         return result;
     }
     
-    private ExecuteQueryResponse recordSuccess(final ExecutionRequest executionRequest, final ExecuteQueryResponse response, final String transactionMarker) {
+    private ExecuteQueryResponse recordSuccess(final SQLExecutionRequest executionRequest, final ExecuteQueryResponse response, final String transactionMarker) {
         auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, transactionMarker);
         return response;
     }
     
-    private <T extends RuntimeException> T recordFailure(final ExecutionRequest executionRequest, final String transactionMarker, final T ex) {
+    private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String transactionMarker, final T ex) {
         MCPError error = MCPErrorConverter.convert(ex);
         auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, error.getCode(), transactionMarker);
         return ex;

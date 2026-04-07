@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.execute;
+package org.apache.shardingsphere.mcp.tool.request;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Execute-query request contract.
+ * SQL Execution request.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecutionRequest {
+public final class SQLExecutionRequest {
     
     private final String sessionId;
     

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
+import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -241,8 +242,8 @@ class MCPSQLExecutionFacadeTest {
         return result;
     }
     
-    private ExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
-        return new ExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000);
+    private SQLExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
+        return new SQLExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000);
     }
     
     private RuntimeDatabaseConfiguration mockRuntimeDatabaseConfiguration(final Connection... connections) throws SQLException {
