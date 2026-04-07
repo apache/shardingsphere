@@ -37,11 +37,13 @@ public final class FirebirdBatchCreateCommandPacket extends FirebirdCommandPacke
     
     private final ByteBuf batchParametersBuffer;
     
-    public FirebirdBatchCreateCommandPacket(final FirebirdPacketPayload payload) {
+    public FirebirdBatchCreateCommandPacket(final FirebirdPacketPayload payload, final int connectionId) {
         payload.skipReserved(4);
         statementHandle = payload.readInt4();
         batchBlr = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer());
         batchMessageLength = payload.readInt4Unsigned();
+        FirebirdBatchSendMessageCommandPacket.clearBatchMetadataCache(connectionId);
+        FirebirdBatchSendMessageCommandPacket.registerBatchColumnTypes(connectionId, batchBlr.getColumnTypes());
         batchParametersBuffer = payload.readBuffer();
     }
     

@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdBatchCompletionStateResponse;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -39,8 +41,10 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+        assert batchStatement != null;
         FirebirdServerPreparedStatement preparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(batchStatement.getStatementHandle());
         int[] updateCounts = new FirebirdBatchedStatementsExecutor(connectionSession, preparedStatement, batchStatement.getParameterValues()).executeBatch();
+        batchStatement.clearParameterValues();
         long updatedRecordsCount = 0L;
         for (int each : updateCounts) {
             if (each > 0) {
@@ -48,7 +52,7 @@ public final class FirebirdBatchExecuteCommandExecutor implements CommandExecuto
             }
         }
         return Collections.singleton(new FirebirdBatchCompletionStateResponse()
-                .setHandle(batchStatement.getStatementHandle())
+                .setHandle(packet.getStatementHandle())
                 .setRecordsCount(updatedRecordsCount)
                 .setUpdateCounts(updateCounts));
     }

@@ -59,7 +59,7 @@ public final class FirebirdStatementIdGenerator {
      * @return generated statement ID
      */
     public int nextStatementId(final int connectionId) {
-        return connectionRegistry.get(connectionId).incrementAndGet();
+        return getStatementCounter(connectionId).incrementAndGet();
     }
     
     /**
@@ -69,7 +69,7 @@ public final class FirebirdStatementIdGenerator {
      * @return statement ID
      */
     public int getStatementId(final int connectionId) {
-        return connectionRegistry.get(connectionId).get();
+        return getStatementCounter(connectionId).get();
     }
     
     /**
@@ -80,4 +80,13 @@ public final class FirebirdStatementIdGenerator {
     public void unregisterConnection(final int connectionId) {
         connectionRegistry.remove(connectionId);
     }
+    
+    private AtomicInteger getStatementCounter(final int connectionId) {
+        AtomicInteger result = connectionRegistry.get(connectionId);
+        if (null == result) {
+            throw new IllegalStateException("Connection [" + connectionId + "] is not registered.");
+        }
+        return result;
+    }
+    
 }

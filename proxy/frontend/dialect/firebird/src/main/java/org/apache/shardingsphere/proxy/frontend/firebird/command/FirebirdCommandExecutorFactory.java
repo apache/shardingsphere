@@ -23,7 +23,6 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.Fireb
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
@@ -125,7 +124,7 @@ public final class FirebirdCommandExecutorFactory {
             case BATCH_CREATE:
                 return new FirebirdCreateBatchCommandExecutor((FirebirdBatchCreateCommandPacket) commandPacket, connectionSession);
             case BATCH_MSG:
-                return new FirebirdSendBatchMessageCommandExecutor((FirebirdBatchSendMessageCommandPacket) commandPacket, connectionSession);
+                return new FirebirdSendBatchMessageCommandExecutor();
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandExecutor((FirebirdBatchExecuteCommandPacket) commandPacket, connectionSession);
             case BATCH_CANCEL:

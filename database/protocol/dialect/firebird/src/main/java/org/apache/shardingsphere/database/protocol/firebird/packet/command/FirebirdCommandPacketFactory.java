@@ -58,9 +58,11 @@ public final class FirebirdCommandPacketFactory {
      * @param commandPacketType command packet type for Firebird
      * @param payload packet payload for Firebird
      * @param protocolVersion protocol version of Firebird
+     * @param connectionId connection ID
      * @return created instance
      */
-    public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
+    public static FirebirdCommandPacket newInstance(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion,
+                                                    final int connectionId) {
         switch (commandPacketType) {
             case INFO_DATABASE:
                 return FirebirdDatabaseInfoPacketType.createPacket(payload);
@@ -102,9 +104,9 @@ public final class FirebirdCommandPacketFactory {
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementPacket(payload);
             case BATCH_CREATE:
-                return new FirebirdBatchCreateCommandPacket(payload);
+                return new FirebirdBatchCreateCommandPacket(payload, connectionId);
             case BATCH_MSG:
-                return new FirebirdBatchSendMessageCommandPacket(payload);
+                return new FirebirdBatchSendMessageCommandPacket();
             case BATCH_EXEC:
                 return new FirebirdBatchExecuteCommandPacket(payload);
             case BATCH_CANCEL:
@@ -120,14 +122,15 @@ public final class FirebirdCommandPacketFactory {
      * @param commandPacketType command packet type for Firebird
      * @param payload packet payload for Firebird
      * @param protocolVersion protocol version of Firebird
+     * @param connectionId connection ID
      * @return expected length of packet, or 0 if length is variable
      */
-    public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion) {
-        return getLength(commandPacketType, payload, protocolVersion);
+    public static int getExpectedLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload, final FirebirdProtocolVersion protocolVersion, final int connectionId) {
+        return getLength(commandPacketType, payload, protocolVersion, connectionId);
     }
     
     private static int getLength(final FirebirdCommandPacketType commandPacketType, final FirebirdPacketPayload payload,
-                                 final FirebirdProtocolVersion protocolVersion) throws IndexOutOfBoundsException {
+                                 final FirebirdProtocolVersion protocolVersion, final int connectionId) throws IndexOutOfBoundsException {
         switch (commandPacketType) {
             case INFO_DATABASE:
             case INFO_SQL:
@@ -169,7 +172,7 @@ public final class FirebirdCommandPacketFactory {
             case BATCH_CREATE:
                 return FirebirdBatchCreateCommandPacket.getLength(payload);
             case BATCH_MSG:
-                return FirebirdBatchSendMessageCommandPacket.getLength(payload);
+                return FirebirdBatchSendMessageCommandPacket.getLength(payload, connectionId);
             case BATCH_EXEC:
                 return FirebirdBatchExecuteCommandPacket.getLength();
             case BATCH_CANCEL:

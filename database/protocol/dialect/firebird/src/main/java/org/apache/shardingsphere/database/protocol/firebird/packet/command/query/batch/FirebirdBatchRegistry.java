@@ -15,12 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -49,7 +48,7 @@ public final class FirebirdBatchRegistry {
      * @param connectionId connection ID
      */
     public void registerConnection(final int connectionId) {
-        batchRegistry.put(connectionId, new LinkedHashMap<>());
+        batchRegistry.put(connectionId, new ConcurrentHashMap<>());
     }
     
     /**
@@ -58,9 +57,14 @@ public final class FirebirdBatchRegistry {
      * @param connectionId connection ID
      * @param statementId statement ID
      * @param batchStatement batch statement
+     * @throws IllegalStateException if connection is not registered
      */
     public void registerBatchStatement(final int connectionId, final int statementId, final FirebirdBatchStatement batchStatement) {
-        batchRegistry.get(connectionId).put(statementId, batchStatement);
+        Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
+        if (statements == null) {
+            throw new IllegalStateException("Connection [" + connectionId + "] is not registered.");
+        }
+        statements.put(statementId, batchStatement);
     }
     
     /**
@@ -68,10 +72,14 @@ public final class FirebirdBatchRegistry {
      *
      * @param connectionId connection ID
      * @param statementId statement ID
-     * @return batch statement
+     * @return batch statement or null if not found
      */
     public FirebirdBatchStatement getBatchStatement(final int connectionId, final int statementId) {
-        return batchRegistry.get(connectionId).get(statementId);
+        Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
+        if (statements == null) {
+            return null;
+        }
+        return statements.get(statementId);
     }
     
     /**
@@ -81,7 +89,10 @@ public final class FirebirdBatchRegistry {
      * @param statementId statement ID
      */
     public void unregisterBatchStatement(final int connectionId, final int statementId) {
-        batchRegistry.get(connectionId).remove(statementId);
+        Map<Integer, FirebirdBatchStatement> statements = batchRegistry.get(connectionId);
+        if (statements != null) {
+            statements.remove(statementId);
+        }
     }
     
     /**

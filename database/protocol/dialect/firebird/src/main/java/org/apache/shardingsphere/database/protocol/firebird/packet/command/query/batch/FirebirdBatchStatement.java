@@ -15,14 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -33,32 +30,20 @@ public final class FirebirdBatchStatement {
     
     private final int statementHandle;
     
-    @Setter
-    private long batchMessageCount;
+    private final List<List<Object>> parameterValues = new ArrayList<>();
     
-    private final long batchMessageLength;
-    
-    @Setter
-    private byte[] batchData;
-    
-    @Setter
-    private List<List<Object>> parameterValues = new ArrayList<>();
-    
-    private final FirebirdBlrRowMetadata batchBlr;
-    
-    public FirebirdBatchStatement(final int statementHandle, final long batchMessageLength, final FirebirdBlrRowMetadata batchBlr) {
+    public FirebirdBatchStatement(final int statementHandle) {
         this.statementHandle = statementHandle;
-        this.batchMessageLength = batchMessageLength;
-        this.batchBlr = batchBlr;
+    }
+    
+    void addParameterValues(final List<Object> values) {
+        parameterValues.add(values);
     }
     
     /**
-     * Get parameter values for batch entry.
-     *
-     * @param index batch entry index
-     * @return parameter values for entry
+     * Clear batched parameter values.
      */
-    public List<Object> getParameterValues(final int index) {
-        return index < parameterValues.size() ? parameterValues.get(index) : Collections.emptyList();
+    public void clearParameterValues() {
+        parameterValues.clear();
     }
 }
