@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.execute;
+package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -168,8 +168,7 @@ public final class MCPJdbcTransactionResourceManager {
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        Optional<TransactionResourceContext> transactionResource = findTransactionResourceContext(sessionId);
-        transactionResource.ifPresent(optional -> rollbackAndClose(sessionId, optional));
+        findTransactionResourceContext(sessionId).ifPresent(optional -> rollbackAndClose(sessionId, optional));
     }
     
     private Optional<TransactionResourceContext> findTransactionResourceContext(final String sessionId) {

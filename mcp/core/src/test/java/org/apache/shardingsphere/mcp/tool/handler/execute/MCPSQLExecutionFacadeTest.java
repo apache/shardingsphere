@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.execute;
+package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;

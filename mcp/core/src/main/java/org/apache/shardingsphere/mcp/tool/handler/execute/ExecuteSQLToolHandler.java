@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;

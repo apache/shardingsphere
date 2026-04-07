@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.execute;
+package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;

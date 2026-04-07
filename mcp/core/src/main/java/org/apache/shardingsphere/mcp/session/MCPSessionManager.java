@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.session;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
+import org.apache.shardingsphere.mcp.tool.handler.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 
 import java.util.LinkedHashSet;
