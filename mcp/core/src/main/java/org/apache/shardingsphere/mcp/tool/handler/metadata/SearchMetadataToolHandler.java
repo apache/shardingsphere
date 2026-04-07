@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
@@ -39,9 +39,9 @@ import java.util.Set;
  */
 public final class SearchMetadataToolHandler implements ToolHandler {
     
-    private static final Set<MetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
-            MetadataObjectType.DATABASE, MetadataObjectType.SCHEMA, MetadataObjectType.TABLE,
-            MetadataObjectType.VIEW, MetadataObjectType.COLUMN, MetadataObjectType.INDEX, MetadataObjectType.SEQUENCE);
+    private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
+            SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
+            SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata",
             Arrays.asList(

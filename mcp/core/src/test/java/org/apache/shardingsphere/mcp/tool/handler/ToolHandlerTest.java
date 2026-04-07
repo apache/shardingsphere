@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.tool.handler;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -58,7 +58,7 @@ class ToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadata() throws SQLException {
-        MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1", Map.of("query", "order", "object_types", List.of(MetadataObjectType.INDEX.name())));
+        MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1", Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name())));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actual, isA(MCPMetadataResponse.class));
         assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
@@ -68,7 +68,7 @@ class ToolHandlerTest {
     @Test
     void assertHandleSearchMetadataWithSequence() throws SQLException {
         MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1",
-                Map.of("database", "runtime_db", "query", "order", "object_types", List.of(MetadataObjectType.SEQUENCE.name())));
+                Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name())));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actual, isA(MCPMetadataResponse.class));
         assertThat(((List<?>) actualPayload.get("items")).size(), is(1));

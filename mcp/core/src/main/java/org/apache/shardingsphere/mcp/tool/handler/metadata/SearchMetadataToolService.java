@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -70,8 +70,8 @@ public final class SearchMetadataToolService {
     
     private List<MetadataSearchHit> readSearchResults(final String databaseName, final MetadataSearchRequest request) {
         List<MetadataSearchHit> result = new LinkedList<>();
-        for (MetadataObjectType each : getSearchObjectTypes(request.getObjectTypes())) {
-            if (MetadataObjectType.DATABASE == each) {
+        for (SupportedMCPMetadataObjectType each : getSearchObjectTypes(request.getObjectTypes())) {
+            if (SupportedMCPMetadataObjectType.DATABASE == each) {
                 metadataQueryService.queryDatabase(databaseName).ifPresent(optional -> result.add(createSearchHit(optional)));
                 continue;
             }
@@ -83,7 +83,7 @@ public final class SearchMetadataToolService {
         return result;
     }
     
-    private List<MetadataSearchHit> querySearchHits(final String databaseName, final MetadataObjectType objectType, final String schemaName) {
+    private List<MetadataSearchHit> querySearchHits(final String databaseName, final SupportedMCPMetadataObjectType objectType, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
         switch (objectType) {
             case SCHEMA:
@@ -155,7 +155,7 @@ public final class SearchMetadataToolService {
     }
     
     private List<MetadataSearchHit> queryIndexSearchHits(final String databaseName, final String schemaName) {
-        if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX)) {
+        if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.INDEX)) {
             return Collections.emptyList();
         }
         return queryTables(databaseName, schemaName).stream()
@@ -163,7 +163,7 @@ public final class SearchMetadataToolService {
     }
     
     private List<MetadataSearchHit> querySequenceSearchHits(final String databaseName, final String schemaName) {
-        if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, MetadataObjectType.SEQUENCE)) {
+        if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE)) {
             return Collections.emptyList();
         }
         if (!schemaName.isEmpty()) {
@@ -173,18 +173,18 @@ public final class SearchMetadataToolService {
                 .flatMap(each -> metadataQueryService.querySequences(databaseName, each.getSchema()).stream()).map(this::createSearchHit).collect(Collectors.toList());
     }
     
-    private Set<MetadataObjectType> getSearchObjectTypes(final Set<MetadataObjectType> objectTypes) {
+    private Set<SupportedMCPMetadataObjectType> getSearchObjectTypes(final Set<SupportedMCPMetadataObjectType> objectTypes) {
         if (!objectTypes.isEmpty()) {
             return objectTypes;
         }
-        Set<MetadataObjectType> result = new LinkedHashSet<>();
-        result.add(MetadataObjectType.DATABASE);
-        result.add(MetadataObjectType.SCHEMA);
-        result.add(MetadataObjectType.TABLE);
-        result.add(MetadataObjectType.VIEW);
-        result.add(MetadataObjectType.COLUMN);
-        result.add(MetadataObjectType.INDEX);
-        result.add(MetadataObjectType.SEQUENCE);
+        Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>();
+        result.add(SupportedMCPMetadataObjectType.DATABASE);
+        result.add(SupportedMCPMetadataObjectType.SCHEMA);
+        result.add(SupportedMCPMetadataObjectType.TABLE);
+        result.add(SupportedMCPMetadataObjectType.VIEW);
+        result.add(SupportedMCPMetadataObjectType.COLUMN);
+        result.add(SupportedMCPMetadataObjectType.INDEX);
+        result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         return result;
     }
     

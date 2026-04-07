@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool.request;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public final class MetadataSearchRequest {
     
     private final String query;
     
-    private final Set<MetadataObjectType> objectTypes;
+    private final Set<SupportedMCPMetadataObjectType> objectTypes;
     
     private final int pageSize;
     

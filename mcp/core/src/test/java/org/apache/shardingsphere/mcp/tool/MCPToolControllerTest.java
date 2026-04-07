@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
@@ -77,7 +77,7 @@ class MCPToolControllerTest {
     
     @Test
     void assertHandleWithMissingQuery() throws SQLException {
-        Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("database", "logic_db", "object_types", List.of(MetadataObjectType.TABLE.name()))).toPayload();
+        Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("database", "logic_db", "object_types", List.of(SupportedMCPMetadataObjectType.TABLE.name()))).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("query is required."));
     }

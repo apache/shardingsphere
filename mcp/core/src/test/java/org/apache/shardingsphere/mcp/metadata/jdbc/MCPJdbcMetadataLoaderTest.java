@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -78,7 +78,7 @@ class MCPJdbcMetadataLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadTypedMetadataArguments")
-    void assertLoadWithTypedMetadata(final String name, final MetadataObjectType objectType, final String objectName) throws SQLException {
+    void assertLoadWithTypedMetadata(final String name, final SupportedMCPMetadataObjectType objectType, final String objectName) throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-" + objectName);
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
@@ -110,8 +110,8 @@ class MCPJdbcMetadataLoaderTest {
             MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
             assertThat(databaseMetadata.getSchemas().size(), is(1));
             assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is(""));
-            assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.TABLE, "orders"));
-            assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.COLUMN, "order_id"));
+            assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
+            assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
             assertThat(databaseMetadata.getDatabaseVersion(), is(""));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
@@ -125,8 +125,8 @@ class MCPJdbcMetadataLoaderTest {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
         MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
-        assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.TABLE, "orders"));
-        assertTrue(containsMetadata(databaseMetadata, MetadataObjectType.VIEW, "active_orders"));
+        assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
+        assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
         assertThat(databaseMetadata.getSchemas().size(), is(1));
     }
     
@@ -151,7 +151,7 @@ class MCPJdbcMetadataLoaderTest {
         try {
             MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("PostgreSQL", "jdbc:mock:failed-sequence-query", "", "", "")));
             assertTrue(actual.findMetadata("logic_db").isPresent());
-            assertFalse(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), MetadataObjectType.SEQUENCE, "order_seq"));
+            assertFalse(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }
@@ -167,7 +167,7 @@ class MCPJdbcMetadataLoaderTest {
         DriverManager.registerDriver(mockDriver);
         try {
             MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", "")));
-            assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), MetadataObjectType.SEQUENCE, sequenceName));
+            assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), SupportedMCPMetadataObjectType.SEQUENCE, sequenceName));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }
@@ -179,12 +179,12 @@ class MCPJdbcMetadataLoaderTest {
     
     private static Stream<Arguments> loadTypedMetadataArguments() {
         return Stream.of(
-                Arguments.of("table orders", MetadataObjectType.TABLE, "orders"),
-                Arguments.of("table order_items", MetadataObjectType.TABLE, "order_items"),
-                Arguments.of("view active_orders", MetadataObjectType.VIEW, "active_orders"),
-                Arguments.of("column status", MetadataObjectType.COLUMN, "status"),
-                Arguments.of("index idx_orders_status", MetadataObjectType.INDEX, "idx_orders_status"),
-                Arguments.of("sequence order_seq", MetadataObjectType.SEQUENCE, "order_seq"));
+                Arguments.of("table orders", SupportedMCPMetadataObjectType.TABLE, "orders"),
+                Arguments.of("table order_items", SupportedMCPMetadataObjectType.TABLE, "order_items"),
+                Arguments.of("view active_orders", SupportedMCPMetadataObjectType.VIEW, "active_orders"),
+                Arguments.of("column status", SupportedMCPMetadataObjectType.COLUMN, "status"),
+                Arguments.of("index idx_orders_status", SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"),
+                Arguments.of("sequence order_seq", SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
     }
     
     private static Stream<Arguments> loadSequenceDialectArguments() {
@@ -276,38 +276,38 @@ class MCPJdbcMetadataLoaderTest {
         return result;
     }
     
-    private boolean containsMetadata(final MCPDatabaseMetadata databaseMetadata, final MetadataObjectType objectType, final String objectName) {
+    private boolean containsMetadata(final MCPDatabaseMetadata databaseMetadata, final SupportedMCPMetadataObjectType objectType, final String objectName) {
         for (MCPSchemaMetadata each : databaseMetadata.getSchemas()) {
-            if (MetadataObjectType.SCHEMA == objectType && objectName.equals(each.getSchema())) {
+            if (SupportedMCPMetadataObjectType.SCHEMA == objectType && objectName.equals(each.getSchema())) {
                 return true;
             }
             for (MCPTableMetadata table : each.getTables()) {
-                if (MetadataObjectType.TABLE == objectType && objectName.equals(table.getTable())) {
+                if (SupportedMCPMetadataObjectType.TABLE == objectType && objectName.equals(table.getTable())) {
                     return true;
                 }
                 for (MCPColumnMetadata column : table.getColumns()) {
-                    if (MetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
+                    if (SupportedMCPMetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
                         return true;
                     }
                 }
                 for (MCPIndexMetadata index : table.getIndexes()) {
-                    if (MetadataObjectType.INDEX == objectType && objectName.equals(index.getIndex())) {
+                    if (SupportedMCPMetadataObjectType.INDEX == objectType && objectName.equals(index.getIndex())) {
                         return true;
                     }
                 }
             }
             for (MCPViewMetadata view : each.getViews()) {
-                if (MetadataObjectType.VIEW == objectType && objectName.equals(view.getView())) {
+                if (SupportedMCPMetadataObjectType.VIEW == objectType && objectName.equals(view.getView())) {
                     return true;
                 }
                 for (MCPColumnMetadata column : view.getColumns()) {
-                    if (MetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
+                    if (SupportedMCPMetadataObjectType.COLUMN == objectType && objectName.equals(column.getColumn())) {
                         return true;
                     }
                 }
             }
             for (MCPSequenceMetadata sequence : each.getSequences()) {
-                if (MetadataObjectType.SEQUENCE == objectType && objectName.equals(sequence.getSequence())) {
+                if (SupportedMCPMetadataObjectType.SEQUENCE == objectType && objectName.equals(sequence.getSequence())) {
                     return true;
                 }
             }

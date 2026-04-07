@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.metadata.model;
+package org.apache.shardingsphere.mcp.capability;
 
 /**
- * Supported normalized and excluded metadata object types used by discovery.
+ * Supported MCP metadata object type.
  */
-public enum MetadataObjectType {
+public enum SupportedMCPMetadataObjectType {
     
     DATABASE, SCHEMA, TABLE, VIEW, COLUMN, INDEX, MATERIALIZED_VIEW, SEQUENCE, ROUTINE, TRIGGER, EVENT, SYNONYM, DATABASE_SPECIFIC
 }

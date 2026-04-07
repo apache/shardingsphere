@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool.request;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 
 import java.util.Collection;
@@ -44,7 +44,7 @@ public final class MCPToolArguments {
      * @return object types
      * @throws MCPInvalidRequestException object types is malformed or unsupported
      */
-    public Set<MetadataObjectType> getObjectTypes(final Set<MetadataObjectType> supportedObjectTypes) {
+    public Set<SupportedMCPMetadataObjectType> getObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
         Object rawValue = arguments.get("object_types");
         if (null == rawValue) {
             return Collections.emptySet();
@@ -56,20 +56,20 @@ public final class MCPToolArguments {
         if (objectTypes.isEmpty()) {
             return Collections.emptySet();
         }
-        Set<MetadataObjectType> result = new LinkedHashSet<>(objectTypes.size(), 1F);
+        Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(objectTypes.size(), 1F);
         for (Object each : objectTypes) {
             result.add(resolveObjectType(each, supportedObjectTypes));
         }
         return result;
     }
     
-    private MetadataObjectType resolveObjectType(final Object objectType, final Set<MetadataObjectType> supportedObjectTypes) {
+    private SupportedMCPMetadataObjectType resolveObjectType(final Object objectType, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
         String actualValue = Objects.toString(objectType, "").trim();
         if (actualValue.isEmpty()) {
             throw new MCPInvalidRequestException("object_types cannot contain blank values.");
         }
         try {
-            MetadataObjectType result = MetadataObjectType.valueOf(actualValue.toUpperCase(Locale.ENGLISH));
+            SupportedMCPMetadataObjectType result = SupportedMCPMetadataObjectType.valueOf(actualValue.toUpperCase(Locale.ENGLISH));
             if (supportedObjectTypes.contains(result)) {
                 return result;
             }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.capability.database;
 
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -45,7 +45,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getDatabase(), is("logic_db"));
         assertThat(actual.get().getDatabaseType(), is("MySQL"));
         assertThat(actual.get().getSupportedMetadataObjectTypes(),
-                is(EnumSet.of(MetadataObjectType.SCHEMA, MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.COLUMN, MetadataObjectType.INDEX)));
+                is(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX)));
         assertTrue(actual.get().isSupportsTransactionControl());
         assertTrue(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
@@ -57,8 +57,8 @@ class MCPDatabaseCapabilityProviderTest {
     void assertProvideWithoutIndex() {
         Optional<MCPDatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("warehouse");
         assertTrue(actual.isPresent());
-        assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
-        assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.SEQUENCE));
+        assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
+        assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE));
         assertFalse(actual.get().isSupportsTransactionControl());
         assertFalse(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
@@ -70,7 +70,7 @@ class MCPDatabaseCapabilityProviderTest {
         Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList())))).provide("logic_db");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
+        assertThat(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
     }
     
     @Test
@@ -78,7 +78,7 @@ class MCPDatabaseCapabilityProviderTest {
         MCPDatabaseMetadataCatalog metadataCatalog = new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "8.0.32", Collections.emptyList())));
         Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(metadataCatalog).provide("logic_db");
         assertTrue(actual.isPresent());
-        assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
+        assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertTrue(actual.get().isSupportsExplainAnalyze());
     }

@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 
 import java.util.LinkedHashSet;
 import java.util.Optional;
@@ -58,17 +58,17 @@ public final class MCPDatabaseCapabilityProvider {
                 TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability, option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze);
     }
     
-    private Set<MetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {
-        Set<MetadataObjectType> result = new LinkedHashSet<>(16, 1F);
-        result.add(MetadataObjectType.SCHEMA);
-        result.add(MetadataObjectType.TABLE);
-        result.add(MetadataObjectType.VIEW);
-        result.add(MetadataObjectType.COLUMN);
+    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {
+        Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
+        result.add(SupportedMCPMetadataObjectType.SCHEMA);
+        result.add(SupportedMCPMetadataObjectType.TABLE);
+        result.add(SupportedMCPMetadataObjectType.VIEW);
+        result.add(SupportedMCPMetadataObjectType.COLUMN);
         if (option.isIndexSupported()) {
-            result.add(MetadataObjectType.INDEX);
+            result.add(SupportedMCPMetadataObjectType.INDEX);
         }
         if (option.isSequenceSupported()) {
-            result.add(MetadataObjectType.SEQUENCE);
+            result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         }
         return result;
     }

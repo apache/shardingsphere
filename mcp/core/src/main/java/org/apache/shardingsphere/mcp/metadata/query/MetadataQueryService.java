@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 
 import java.util.Collection;
@@ -75,7 +75,7 @@ public final class MetadataQueryService {
      * @return schema metadata
      */
     public List<MCPSchemaMetadata> querySchemas(final String databaseName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SCHEMA)) {
             return Collections.emptyList();
         }
         return metadataCatalog.findMetadata(databaseName).map(optional -> optional.getSchemas().stream()
@@ -90,7 +90,7 @@ public final class MetadataQueryService {
      * @return schema metadata
      */
     public Optional<MCPSchemaMetadata> querySchema(final String databaseName, final String schemaName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.SCHEMA)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SCHEMA)) {
             return Optional.empty();
         }
         return findSchema(databaseName, schemaName).map(MCPSchemaMetadata::createDetail);
@@ -104,7 +104,7 @@ public final class MetadataQueryService {
      * @return table metadata
      */
     public List<MCPTableMetadata> queryTables(final String databaseName, final String schemaName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.TABLE)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.TABLE)) {
             return Collections.emptyList();
         }
         return findSchema(databaseName, schemaName).map(optional -> optional.getTables().stream()
@@ -122,7 +122,7 @@ public final class MetadataQueryService {
      * @return table metadata
      */
     public Optional<MCPTableMetadata> queryTable(final String databaseName, final String schemaName, final String tableName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.TABLE)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.TABLE)) {
             return Optional.empty();
         }
         return findTable(databaseName, schemaName, tableName).map(MCPTableMetadata::createDetail);
@@ -136,7 +136,7 @@ public final class MetadataQueryService {
      * @return view metadata
      */
     public List<MCPViewMetadata> queryViews(final String databaseName, final String schemaName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.VIEW)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.VIEW)) {
             return Collections.emptyList();
         }
         return findSchema(databaseName, schemaName).map(optional -> optional.getViews().stream()
@@ -154,7 +154,7 @@ public final class MetadataQueryService {
      * @return view metadata
      */
     public Optional<MCPViewMetadata> queryView(final String databaseName, final String schemaName, final String viewName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.VIEW)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.VIEW)) {
             return Optional.empty();
         }
         return findView(databaseName, schemaName, viewName).map(MCPViewMetadata::createDetail);
@@ -169,7 +169,7 @@ public final class MetadataQueryService {
      * @return column metadata
      */
     public List<MCPColumnMetadata> queryTableColumns(final String databaseName, final String schemaName, final String tableName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
             return Collections.emptyList();
         }
         return findTable(databaseName, schemaName, tableName).map(optional -> sortColumns(optional.getColumns())).orElse(Collections.emptyList());
@@ -191,7 +191,7 @@ public final class MetadataQueryService {
      * @return column metadata
      */
     public Optional<MCPColumnMetadata> queryTableColumn(final String databaseName, final String schemaName, final String tableName, final String columnName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
             return Optional.empty();
         }
         return findColumn(queryTableColumns(databaseName, schemaName, tableName), columnName);
@@ -206,7 +206,7 @@ public final class MetadataQueryService {
      * @return column metadata
      */
     public List<MCPColumnMetadata> queryViewColumns(final String databaseName, final String schemaName, final String viewName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
             return Collections.emptyList();
         }
         return findView(databaseName, schemaName, viewName).map(optional -> sortColumns(optional.getColumns())).orElse(Collections.emptyList());
@@ -222,7 +222,7 @@ public final class MetadataQueryService {
      * @return column metadata
      */
     public Optional<MCPColumnMetadata> queryViewColumn(final String databaseName, final String schemaName, final String viewName, final String columnName) {
-        if (!isSupportedMetadataObjectType(databaseName, MetadataObjectType.COLUMN)) {
+        if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.COLUMN)) {
             return Optional.empty();
         }
         return findColumn(queryViewColumns(databaseName, schemaName, viewName), columnName);
@@ -237,7 +237,7 @@ public final class MetadataQueryService {
      * @return index metadata
      */
     public List<MCPIndexMetadata> queryIndexes(final String databaseName, final String schemaName, final String tableName) {
-        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX),
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.INDEX),
                 () -> new MCPUnsupportedException("Index resources are not supported for the current database."));
         return findTable(databaseName, schemaName, tableName).map(optional -> sortIndexes(optional.getIndexes())).orElse(Collections.emptyList());
     }
@@ -258,7 +258,7 @@ public final class MetadataQueryService {
      * @return index metadata
      */
     public Optional<MCPIndexMetadata> queryIndex(final String databaseName, final String schemaName, final String tableName, final String indexName) {
-        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX),
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.INDEX),
                 () -> new MCPUnsupportedException("Index resources are not supported for the current database."));
         return findIndex(queryIndexes(databaseName, schemaName, tableName), indexName);
     }
@@ -271,7 +271,7 @@ public final class MetadataQueryService {
      * @return sequence metadata
      */
     public List<MCPSequenceMetadata> querySequences(final String databaseName, final String schemaName) {
-        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.SEQUENCE),
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE),
                 () -> new MCPUnsupportedException("Sequence resources are not supported for the current database."));
         return findSchema(databaseName, schemaName).map(optional -> sortSequences(optional.getSequences())).orElse(Collections.emptyList());
     }
@@ -291,7 +291,7 @@ public final class MetadataQueryService {
      * @return sequence metadata
      */
     public Optional<MCPSequenceMetadata> querySequence(final String databaseName, final String schemaName, final String sequenceName) {
-        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.SEQUENCE),
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE),
                 () -> new MCPUnsupportedException("Sequence resources are not supported for the current database."));
         return findSequence(querySequences(databaseName, schemaName), sequenceName).map(MCPSequenceMetadata::createDetail);
     }
@@ -327,7 +327,7 @@ public final class MetadataQueryService {
      * @param objectType metadata object type
      * @return supported or not
      */
-    public boolean isSupportedMetadataObjectType(final String databaseName, final MetadataObjectType objectType) {
+    public boolean isSupportedMetadataObjectType(final String databaseName, final SupportedMCPMetadataObjectType objectType) {
         Optional<MCPDatabaseCapability> databaseCapability = new MCPDatabaseCapabilityProvider(metadataCatalog).provide(databaseName);
         return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(objectType);
     }

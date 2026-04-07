@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchResult;
@@ -50,7 +50,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchAcrossDatabases() {
         MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("", "", "order",
-                Set.of(MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.INDEX), 20, ""));
+                Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.INDEX), 20, ""));
         Set<String> actualNames = new LinkedHashSet<>();
         for (MetadataSearchHit each : actual.getItems()) {
             actualNames.add(each.getName());
@@ -65,9 +65,9 @@ class SearchMetadataToolServiceTest {
     
     @Test
     void assertExecuteSearchWithPagination() {
-        Set<MetadataObjectType> objectTypes = new LinkedHashSet<>();
-        objectTypes.add(MetadataObjectType.TABLE);
-        objectTypes.add(MetadataObjectType.VIEW);
+        Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>();
+        objectTypes.add(SupportedMCPMetadataObjectType.TABLE);
+        objectTypes.add(SupportedMCPMetadataObjectType.VIEW);
         MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order",
                 objectTypes, 1, ""));
         assertThat(actual.getItems().size(), is(1));
@@ -98,7 +98,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchWithSequenceObjectType() {
         MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("runtime_db", "", "order",
-                Set.of(MetadataObjectType.SEQUENCE), 10, ""));
+                Set.of(SupportedMCPMetadataObjectType.SEQUENCE), 10, ""));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getName(), is("order_seq"));
     }

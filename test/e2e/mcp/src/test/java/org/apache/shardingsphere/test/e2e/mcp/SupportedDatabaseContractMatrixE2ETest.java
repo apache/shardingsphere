@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,8 +44,8 @@ class SupportedDatabaseContractMatrixE2ETest {
         MCPDatabaseCapability actual = databaseCapabilityProvider.provide("logic_db").get();
         assertThat(actual.isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.isSupportsSavepoint(), is(expectedSavepoint));
-        assertThat(actual.getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX), is(expectedIndexSupport));
-        assertThat(actual.getSupportedMetadataObjectTypes().contains(MetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
+        assertThat(actual.getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX), is(expectedIndexSupport));
+        assertThat(actual.getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
     }
     
     static Stream<Arguments> assertCapabilityMatrixCases() {
