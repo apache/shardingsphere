@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.mcp.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
@@ -102,8 +103,8 @@ class ToolHandlerTest {
     private MCPRuntimeContext createRuntimeContext() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "tool-handler");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        MCPRuntimeContext result = new MCPRuntimeContextTestFactory().create(
-                ResourceTestDataFactory.createDatabaseMetadataCatalog(), H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl));
+        final MCPDatabaseMetadataCatalog metadataCatalog = ResourceTestDataFactory.createDatabaseMetadataCatalog();
+        MCPRuntimeContext result = new MCPRuntimeContext(new MCPSessionManager(H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl)), metadataCatalog);
         result.getSessionManager().createSession("session-1");
         return result;
     }

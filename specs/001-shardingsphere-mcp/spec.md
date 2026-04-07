@@ -23,14 +23,13 @@
 **Acceptance Scenarios**:
 
 1. **Given** metadata catalog 中存在多个 logical database 与 schema，
-   **When** 调用 `list_databases`、`list_schemas`、`list_tables`、`list_views`、
-   `list_columns` 或 `search_metadata`，
+   **When** 调用 metadata resources 或 `search_metadata`，
    **Then** 系统返回统一对象语义、支持搜索与分页。
 2. **Given** 某个 database 的 capability 声明支持 `index`，
-   **When** 调用 `list_indexes` 或读取 index 相关 resource，
+   **When** 读取 index 相关 resource，
    **Then** 系统返回与父 table 关联的统一 index 信息。
 3. **Given** 某个 database 的 capability 未声明支持 `index`，
-   **When** 调用 index 相关 tool 或 resource，
+   **When** 调用 index 相关 resource，
    **Then** 系统返回 `unsupported`，而不是数据库专有行为。
 
 ---
@@ -117,14 +116,14 @@
 - **FR-003**: 系统 MUST 提供正式公共 resources，用于表达服务级 capability、
   databases、database capability、schemas、tables、views、columns 与可选 indexes。
 - **FR-004**: 系统 MUST 将 `index` 作为 database-level 可选公共对象，
-  且仅当目标 database capability 明确声明支持时才暴露其 resources 与 tools。
-- **FR-005**: 系统 MUST 为 V1 提供正式公共 tools：`list_databases`、
-  `list_schemas`、`list_tables`、`list_views`、`list_columns`、`list_indexes`、
-  `search_metadata`、`describe_table`、`describe_view`、`get_capabilities`
-  与 `execute_query`。
-- **FR-006**: 系统 MUST 让列表查询支持关键字搜索与分页，
-  并 MUST 返回下一页标识或等价机制，避免客户端通过完整枚举发现大型元数据集合。
+  且仅当目标 database capability 明确声明支持时才暴露其 resources。
+- **FR-005**: 系统 MUST 为 V1 提供正式公共 tools：`search_metadata` 与 `execute_query`。
+- **FR-006**: 系统 MUST 让 metadata resources 与 `search_metadata` 支持统一对象发现；
+  其中 `search_metadata` MUST 支持关键字搜索与分页，并 MUST 返回下一页标识或等价机制，
+  避免客户端通过完整枚举发现大型元数据集合。
 - **FR-007**: 系统 MUST 支持 `search_metadata` 按对象类型过滤；
+  允许值限定为 `database`、`schema`、`table`、`view`、`column`、`index`；
+  其他值 MUST 返回 `invalid_request`；
   当省略 `database` 时在当前 metadata catalog 中的全部 logical databases 范围内搜索；
   当指定 `schema` 但未指定 `database` 时 MUST 返回 `invalid_request`。
 - **FR-008**: 系统 MUST 让 `execute_query` 每次只接受一条 SQL 语句，
@@ -219,7 +218,7 @@
 ### Measurable Outcomes
 
 - **SC-001**: 100% 的 V1 正式支持数据库在验收中都满足统一对象模型、
-  统一公共 tools、统一结果模型与统一错误语义的最低能力基线。
+  统一公共 resources / tools、统一结果模型与统一错误语义的最低能力基线。
 - **SC-002**: 在验收演示中，调用方能够仅通过一个 ShardingSphere MCP 服务，
   使用同一套公共 resources 与 tools 完成至少两种正式支持数据库上的对象发现与 SQL 执行。
 - **SC-003**: 100% 的事务冲突、无效事务状态、不支持语句、多语句输入、

@@ -113,6 +113,12 @@ Expected result:
 - The response content type is `text/event-stream`.
 - The JSON payload appears on the `data:` line and includes `orders`, `order_items`, and `active_orders`.
 
+Notes:
+
+- Metadata list/detail/capability discovery is unified through `resources/read`.
+- The current public tools are limited to `search_metadata` and `execute_query`.
+- `search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, and `index` only.
+
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
@@ -213,8 +219,8 @@ Notes:
 
 Reference:
 
-- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportMCPServer.java`
-- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportIntegrationTest.java`
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioMCPServer.java`
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioTransportIntegrationTest.java`
 
 ## Runtime Notes
 
@@ -225,7 +231,8 @@ Reference:
 - Exactly one transport must be enabled for each runtime process.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and `transport.stdio.enabled: false`.
 - For local MCP client integration, keep `transport.http.enabled: false` and `transport.stdio.enabled: true`.
-- If you expose the HTTP endpoint outside localhost, place it behind a trusted network boundary, gateway, or reverse proxy.
+- The current V0 only supports loopback HTTP binding: `127.0.0.1`, `localhost`, or `::1`.
+- Non-loopback HTTP exposure is out of scope for this round and should wait for an explicit auth / access-policy follow-up.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.
 

@@ -34,12 +34,12 @@ class MCPSessionManagerTest {
     
     @Test
     void assertCreateSession() {
-        assertDoesNotThrow(() -> new MCPSessionManager(mock()).createSession("session-1"));
+        assertDoesNotThrow(() -> new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class)).createSession("session-1"));
     }
     
     @Test
     void assertCreateSessionWithDuplicateSessionId() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
+        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
         sessionManager.createSession("session-1");
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.createSession("session-1"));
         assertThat(actual.getMessage(), is("Session already exists."));
@@ -47,14 +47,14 @@ class MCPSessionManagerTest {
     
     @Test
     void assertHasSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
+        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
         sessionManager.createSession("session-1");
         assertTrue(sessionManager.hasSession("session-1"));
     }
     
     @Test
     void assertCloseSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
+        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
         sessionManager.createSession("session-1");
         assertTrue(sessionManager.hasSession("session-1"));
         sessionManager.closeSession("session-1");
@@ -95,5 +95,4 @@ class MCPSessionManagerTest {
         assertFalse(sessionManager.hasSession("session-1"));
         assertFalse(sessionManager.hasSession("session-2"));
     }
-    
 }

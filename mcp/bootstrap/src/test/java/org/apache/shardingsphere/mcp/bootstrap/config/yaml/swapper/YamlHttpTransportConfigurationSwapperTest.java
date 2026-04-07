@@ -58,6 +58,19 @@ class YamlHttpTransportConfigurationSwapperTest {
     }
     
     @Test
+    void assertSwapToObjectWithLocalhostBindHost() {
+        HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("localhost", 18088, "/mcp"));
+        assertThat(actual.getBindHost(), is("localhost"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithNonLoopbackBindHost() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> swapper.swapToObject(createYamlConfig("0.0.0.0", 18088, "/mcp")));
+        assertThat(actual.getMessage(), is("Property `transport.http.bindHost` must be loopback-only in V0. Use `127.0.0.1`, `localhost`, or `::1`."));
+    }
+    
+    @Test
     void assertSwapToObjectWithNegativePort() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig("127.0.0.1", -1, "/mcp")));

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateExcep
 import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -58,7 +59,7 @@ import static org.mockito.Mockito.when;
 class MCPSQLExecutionFacadeConcurrencyTest {
     
     @Test
-    void assertExecuteSerializesSameSessionTransactionCommand() throws InterruptedException, ExecutionException {
+    void assertExecuteSerializesSameSessionTransactionCommand() throws InterruptedException, ExecutionException, ReflectiveOperationException {
         CountDownLatch firstInvocationStarted = new CountDownLatch(1);
         CountDownLatch releaseFirstInvocation = new CountDownLatch(1);
         AtomicInteger currentExecutions = new AtomicInteger();
@@ -68,7 +69,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         when(transactionResourceManager.getRuntimeDatabases()).thenReturn(Collections.emptyMap());
         doAnswer(createBlockingBeginAnswer(firstInvocationStarted, releaseFirstInvocation, currentExecutions, maxExecutions, invocationCount))
                 .when(transactionResourceManager).beginTransaction(anyString(), anyString());
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionManager sessionManager = createSessionManager(Collections.emptyMap(), transactionResourceManager);
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -98,7 +99,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     @Test
-    void assertExecuteSerializesSameSessionQuery() throws InterruptedException, ExecutionException, SQLException {
+    void assertExecuteSerializesSameSessionQuery() throws InterruptedException, ExecutionException, SQLException, ReflectiveOperationException {
         CountDownLatch firstInvocationStarted = new CountDownLatch(1);
         CountDownLatch releaseFirstInvocation = new CountDownLatch(1);
         AtomicInteger currentExecutions = new AtomicInteger();
@@ -111,7 +112,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         when(transactionResourceManager.getRuntimeDatabases()).thenReturn(Map.of("logic_db", runtimeDatabaseConfig));
         when(transactionResourceManager.findTransactionConnection(anyString(), eq("logic_db"))).thenReturn(Optional.empty());
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionManager sessionManager = createSessionManager(Map.of("logic_db", runtimeDatabaseConfig), transactionResourceManager);
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
@@ -139,7 +140,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     @Test
-    void assertExecutePreservesDifferentSessionConcurrency() throws InterruptedException, ExecutionException, SQLException {
+    void assertExecutePreservesDifferentSessionConcurrency() throws InterruptedException, ExecutionException, SQLException, ReflectiveOperationException {
         CountDownLatch concurrentEntries = new CountDownLatch(2);
         CountDownLatch releaseQueries = new CountDownLatch(1);
         AtomicInteger currentExecutions = new AtomicInteger();
@@ -151,7 +152,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         when(transactionResourceManager.getRuntimeDatabases()).thenReturn(Map.of("logic_db", runtimeDatabaseConfig));
         when(transactionResourceManager.findTransactionConnection(anyString(), eq("logic_db"))).thenReturn(Optional.empty());
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionManager sessionManager = createSessionManager(Map.of("logic_db", runtimeDatabaseConfig), transactionResourceManager);
         sessionManager.createSession("session-1");
         sessionManager.createSession("session-2");
         MCPSQLExecutionFacade facade = createFacade(sessionManager);
@@ -181,6 +182,13 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     
     private ExecutionRequest createExecutionRequest(final String sessionId, final String sql) {
         return new ExecutionRequest(sessionId, "logic_db", "public", sql, 10, 1000);
+    }
+    
+    private MCPSessionManager createSessionManager(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
+                                                   final MCPJdbcTransactionResourceManager transactionResourceManager) throws ReflectiveOperationException {
+        MCPSessionManager result = new MCPSessionManager(runtimeDatabases);
+        Plugins.getMemberAccessor().set(MCPSessionManager.class.getDeclaredField("transactionResourceManager"), result, transactionResourceManager);
+        return result;
     }
     
     private Connection createBlockingQueryConnection(final CountDownLatch firstInvocationStarted, final CountDownLatch releaseFirstInvocation,

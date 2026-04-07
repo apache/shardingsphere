@@ -113,6 +113,12 @@ curl -sS http://127.0.0.1:18088/mcp \
 - 响应类型是 `text/event-stream`。
 - JSON 负载位于 `data:` 行，其中会包含 `orders`、`order_items`、`active_orders`。
 
+说明：
+
+- metadata 的 list / detail / capability discovery 统一走 `resources/read`。
+- 当前 public tools 只保留 `search_metadata` 和 `execute_query`。
+- `search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`。
+
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
   -H 'Content-Type: application/json' \
@@ -213,8 +219,8 @@ bin/start.sh conf/mcp-stdio.yaml
 
 参考：
 
-- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportMCPServer.java`
-- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/stdio/StdioTransportIntegrationTest.java`
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioMCPServer.java`
+- `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioTransportIntegrationTest.java`
 
 ## Runtime 说明
 
@@ -225,7 +231,8 @@ bin/start.sh conf/mcp-stdio.yaml
 - 每个 runtime 进程必须且只能启用一种 transport。
 - 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并把 `transport.stdio.enabled` 设为 `false`。
 - 如果要给本地 MCP client 走 stdio，保留 `transport.http.enabled: false`，并把 `transport.stdio.enabled` 设为 `true`。
-- 如果 HTTP 端点要暴露到 localhost 之外，建议放在受信网络、上游网关或反向代理之后。
+- 当前 V0 只支持 loopback HTTP 绑定：`127.0.0.1`、`localhost` 或 `::1`。
+- 非 loopback HTTP 暴露不在本轮支持范围内；如需对外接入，应等待后续显式 auth / access policy 方案。
 - 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。
 

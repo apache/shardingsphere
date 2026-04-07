@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -104,7 +105,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteWithMissingSession() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> facade.execute(createExecutionRequest("SELECT * FROM orders", 10)));
         assertThat(actual.getMessage(), is("Session does not exist."));
@@ -114,7 +115,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteWithUnknownCapability() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("Unknown"));
         DatabaseCapabilityNotFoundException actual = assertThrows(DatabaseCapabilityNotFoundException.class,
@@ -129,7 +130,7 @@ class MCPSQLExecutionFacadeTest {
                 List.of(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INTEGER", false),
                         new ExecuteQueryColumnDefinition("status", "VARCHAR", "VARCHAR", true)),
                 List.of(List.of(1, "NEW"), List.of(2, "DONE")))));
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
@@ -142,7 +143,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteUpdate() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createUpdateConnection(3));
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
@@ -152,10 +153,10 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
-    void assertExecuteTransactionCommand() {
+    void assertExecuteTransactionCommand() throws ReflectiveOperationException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         MCPJdbcTransactionResourceManager transactionResourceManager = createTransactionResourceManager(runtimeDatabaseConfig);
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionManager sessionManager = createSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig), transactionResourceManager);
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
@@ -168,7 +169,7 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteDdl() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(
                 createStatementAckConnection(), createMetadataConnection("public", "orders_archive", List.of("order_id", "status")));
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
@@ -186,7 +187,7 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteDcl() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(
                 createStatementAckConnection(), createMetadataConnection("public", "orders", List.of("order_id", "status")));
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
@@ -203,7 +204,7 @@ class MCPSQLExecutionFacadeTest {
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("MySQL"));
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
@@ -216,7 +217,7 @@ class MCPSQLExecutionFacadeTest {
     void assertExecuteExplainAnalyzeWithSupportedCapability() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createQueryConnection(createResultSet(
                 List.of(new ExecuteQueryColumnDefinition("plan", "VARCHAR", "VARCHAR", true)), List.of(List.of("plan")))));
-        MCPSessionManager sessionManager = new MCPSessionManager(createTransactionResourceManager(runtimeDatabaseConfig));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
@@ -253,6 +254,13 @@ class MCPSQLExecutionFacadeTest {
             System.arraycopy(connections, 1, remainingConnections, 0, remainingConnections.length);
             when(result.openConnection("logic_db")).thenReturn(connections[0], remainingConnections);
         }
+        return result;
+    }
+    
+    private MCPSessionManager createSessionManager(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
+                                                   final MCPJdbcTransactionResourceManager transactionResourceManager) throws ReflectiveOperationException {
+        MCPSessionManager result = new MCPSessionManager(runtimeDatabases);
+        Plugins.getMemberAccessor().set(MCPSessionManager.class.getDeclaredField("transactionResourceManager"), result, transactionResourceManager);
         return result;
     }
     

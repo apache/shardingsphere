@@ -27,10 +27,12 @@ import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -70,9 +72,18 @@ public final class MCPToolController {
     
     private void checkRequiredArguments(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor) {
         for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
-            if (each.isRequired()) {
-                ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> new MCPInvalidRequestException(String.format("%s is required.", each.getName())));
+            if (!each.isRequired()) {
+                continue;
+            }
+            ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> new MCPInvalidRequestException(String.format("%s is required.", each.getName())));
+            if (Type.STRING == each.getValueDefinition().getType()) {
+                checkRequiredTextArgument(arguments, each.getName());
             }
         }
+    }
+    
+    private void checkRequiredTextArgument(final Map<String, Object> arguments, final String argumentName) {
+        String actualValue = Objects.toString(arguments.get(argumentName), "").trim();
+        ShardingSpherePreconditions.checkState(!actualValue.isEmpty(), () -> new MCPInvalidRequestException(String.format("%s is required.", argumentName)));
     }
 }

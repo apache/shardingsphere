@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 
+import java.util.Locale;
+
 /**
  * YAML HTTP transport configuration swapper.
  */
@@ -40,8 +42,15 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
-        return new HttpTransportConfiguration(yamlConfig.isEnabled(), resolveRequiredText(yamlConfig.getBindHost(), "transport.http.bindHost"),
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), resolveBindHost(yamlConfig.getBindHost()),
                 resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
+    }
+    
+    private String resolveBindHost(final String bindHost) {
+        String result = resolveRequiredText(bindHost, "transport.http.bindHost");
+        ShardingSpherePreconditions.checkState(isLoopbackHost(result), () -> new IllegalArgumentException(
+                "Property `transport.http.bindHost` must be loopback-only in V0. Use `127.0.0.1`, `localhost`, or `::1`."));
+        return result;
     }
     
     private String resolveRequiredText(final String value, final String propertyName) {
@@ -60,5 +69,10 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         String result = resolveRequiredText(endpointPath, "transport.http.endpointPath");
         ShardingSpherePreconditions.checkState(result.startsWith("/"), () -> new IllegalArgumentException("Property `transport.http.endpointPath` must start with '/'."));
         return result;
+    }
+    
+    private boolean isLoopbackHost(final String bindHost) {
+        String actualBindHost = bindHost.trim().toLowerCase(Locale.ENGLISH);
+        return "127.0.0.1".equals(actualBindHost) || "localhost".equals(actualBindHost) || "::1".equals(actualBindHost);
     }
 }

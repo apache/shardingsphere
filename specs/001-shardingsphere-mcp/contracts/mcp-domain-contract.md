@@ -36,24 +36,16 @@ The V1 public resource set is fixed to the following paths:
 
 The V1 public tool set is fixed to:
 
-- `list_databases()`
-- `list_schemas(database)`
-- `list_tables(database, schema, search?, page_size?, page_token?)`
-- `list_views(database, schema, search?, page_size?, page_token?)`
-- `list_columns(database, schema, object_type, object_name, search?, page_size?, page_token?)`
-- `list_indexes(database, schema, table, search?, page_size?, page_token?)`
 - `search_metadata(database?, schema?, query, object_types?, page_size?, page_token?)`
-- `describe_table(database, schema, table)`
-- `describe_view(database, schema, view)`
-- `get_capabilities(database?)`
 - `execute_query(database, sql, max_rows?, timeout_ms?)`
 
 ### Tool rules
 
-- `object_type` is limited to `table` or `view`.
 - `execute_query` accepts one statement only.
 - `search_metadata` may search all loaded logical databases when `database` is omitted.
+- `search_metadata.object_types` accepts only `database`, `schema`, `table`, `view`, `column`, and `index`; other values return `invalid_request`.
 - If `schema` is provided without `database`, the request returns `invalid_request`.
+- Metadata list/detail/capability discovery is exposed through `resources/read` rather than dedicated metadata tools.
 - Tools honor capability boundaries and request validation before execution.
 
 ## Result Models

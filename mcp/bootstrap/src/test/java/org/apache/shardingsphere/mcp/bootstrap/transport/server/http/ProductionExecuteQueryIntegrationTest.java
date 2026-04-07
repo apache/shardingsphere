@@ -75,6 +75,19 @@ class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeInt
     }
     
     @Test
+    void assertExecuteSelectWithTruncation() throws SQLException, IOException, InterruptedException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 1));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
+        assertThat(String.valueOf(payload.get("truncated")), is("true"));
+    }
+    
+    @Test
     void assertExecuteTransactionCommit() throws SQLException, IOException, InterruptedException {
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();

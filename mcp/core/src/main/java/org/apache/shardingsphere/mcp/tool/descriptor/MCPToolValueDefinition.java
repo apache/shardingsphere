@@ -37,8 +37,9 @@ public final class MCPToolValueDefinition {
     
     /**
      * to schema fragment.
-     * 
+     *
      * @return schema fragment
+     * @throws IllegalStateException unsupported tool value type
      */
     public Map<String, Object> toSchemaFragment() {
         switch (type) {

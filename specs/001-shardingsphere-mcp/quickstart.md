@@ -46,14 +46,14 @@ apache-shardingsphere-mcp-<version>/
 
 Prepare `conf/mcp.yaml` with at least:
 
-- `server`
-  - bind host
-  - port
-  - endpoint path
 - `transport`
-  - HTTP enablement
-  - STDIO enablement
-  - protocol version
+  - `http.enabled`
+  - `http.bindHost`
+  - `http.port`
+  - `http.endpointPath`
+  - `stdio.enabled`
+- `runtimeDatabases`
+  - one or more logical database definitions
 
 ## 4. Start the service
 
@@ -95,16 +95,17 @@ The minimum in-process smoke suite should cover:
 
 1. Service-level capability retrieval
 2. Database-level capability retrieval
-3. `list_databases`
-4. `list_schemas`
-5. `list_tables` or `search_metadata`
-6. `describe_table`
-7. `execute_query(SELECT)`
-8. `execute_query(DML)`
-9. `BEGIN / COMMIT / ROLLBACK`
-10. Successful `SAVEPOINT`
-11. `SAVEPOINT unsupported`
-12. `DDL / DCL refresh visibility and audit capture`
+3. `shardingsphere://databases`
+4. `shardingsphere://databases/{database}/schemas`
+5. `shardingsphere://databases/{database}/schemas/{schema}/tables`
+6. `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}`
+7. `search_metadata`
+8. `execute_query(SELECT)`
+9. `execute_query(DML)`
+10. `BEGIN / COMMIT / ROLLBACK`
+11. Successful `SAVEPOINT`
+12. `SAVEPOINT unsupported`
+13. `DDL / DCL refresh visibility and audit capture`
 
 ## 7. Run E2E validation
 

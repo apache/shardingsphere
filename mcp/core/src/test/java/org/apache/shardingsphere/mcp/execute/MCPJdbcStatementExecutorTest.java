@@ -36,8 +36,8 @@ import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPJdbcStatementExecutorTest {
     
@@ -64,7 +64,7 @@ class MCPJdbcStatementExecutorTest {
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
-        assertFalse(actual.isTruncated());
+        assertTrue(actual.isTruncated());
     }
     
     @Test

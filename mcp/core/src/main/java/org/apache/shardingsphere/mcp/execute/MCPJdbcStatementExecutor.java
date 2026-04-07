@@ -85,7 +85,7 @@ public final class MCPJdbcStatementExecutor {
             applySchema(connection, executionRequest.getSchema());
             try (Statement statement = connection.createStatement()) {
                 if (0 < executionRequest.getMaxRows()) {
-                    statement.setMaxRows(executionRequest.getMaxRows());
+                    statement.setMaxRows(resolveStatementMaxRows(executionRequest.getMaxRows()));
                 }
                 if (0 < executionRequest.getTimeoutMs()) {
                     statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
@@ -147,6 +147,10 @@ public final class MCPJdbcStatementExecutor {
             rows.add(row);
         }
         return ExecuteQueryResponse.resultSet(columns, rows, truncated);
+    }
+    
+    private int resolveStatementMaxRows(final int maxRows) {
+        return Integer.MAX_VALUE == maxRows ? Integer.MAX_VALUE : maxRows + 1;
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {

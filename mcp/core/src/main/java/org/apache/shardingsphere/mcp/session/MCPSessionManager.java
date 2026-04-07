@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.session;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -32,13 +32,20 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * MCP session manager.
  */
-@RequiredArgsConstructor
 public final class MCPSessionManager {
     
     @Getter
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
     private final Map<String, SessionContext> sessions = new ConcurrentHashMap<>();
+    
+    public MCPSessionManager(final Map<String, RuntimeDatabaseConfiguration> databases) {
+        this(new MCPJdbcTransactionResourceManager(databases));
+    }
+    
+    MCPSessionManager(final MCPJdbcTransactionResourceManager transactionResourceManager) {
+        this.transactionResourceManager = transactionResourceManager;
+    }
     
     /**
      * Create a new session.

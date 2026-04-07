@@ -49,7 +49,7 @@ class SearchMetadataToolServiceTest {
     @Test
     void assertExecuteSearchAcrossDatabases() {
         MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("", "", "order",
-                Set.of(MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.INDEX, MetadataObjectType.MATERIALIZED_VIEW, MetadataObjectType.SEQUENCE), 20, ""));
+                Set.of(MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.INDEX), 20, ""));
         Set<String> actualNames = new LinkedHashSet<>();
         for (MetadataSearchHit each : actual.getItems()) {
             actualNames.add(each.getName());

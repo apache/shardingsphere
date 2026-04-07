@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool.request;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -39,24 +40,43 @@ public final class MCPToolArguments {
     /**
      * Get object types.
      *
+     * @param supportedObjectTypes supported object types
      * @return object types
+     * @throws MCPInvalidRequestException object types is malformed or unsupported
      */
-    public Set<MetadataObjectType> getObjectTypes() {
+    public Set<MetadataObjectType> getObjectTypes(final Set<MetadataObjectType> supportedObjectTypes) {
         Object rawValue = arguments.get("object_types");
-        if (!(rawValue instanceof Collection)) {
+        if (null == rawValue) {
             return Collections.emptySet();
         }
-        Set<MetadataObjectType> result = new LinkedHashSet<>(((Collection<?>) rawValue).size(), 1F);
-        for (Object each : (Collection<?>) rawValue) {
-            if (null == each) {
-                continue;
-            }
-            try {
-                result.add(MetadataObjectType.valueOf(each.toString().trim().toUpperCase(Locale.ENGLISH)));
-            } catch (final IllegalArgumentException ignored) {
-            }
+        if (!(rawValue instanceof Collection)) {
+            throw new MCPInvalidRequestException("object_types must be an array.");
+        }
+        Collection<?> objectTypes = (Collection<?>) rawValue;
+        if (objectTypes.isEmpty()) {
+            return Collections.emptySet();
+        }
+        Set<MetadataObjectType> result = new LinkedHashSet<>(objectTypes.size(), 1F);
+        for (Object each : objectTypes) {
+            result.add(resolveObjectType(each, supportedObjectTypes));
         }
         return result;
+    }
+    
+    private MetadataObjectType resolveObjectType(final Object objectType, final Set<MetadataObjectType> supportedObjectTypes) {
+        String actualValue = Objects.toString(objectType, "").trim();
+        if (actualValue.isEmpty()) {
+            throw new MCPInvalidRequestException("object_types cannot contain blank values.");
+        }
+        try {
+            MetadataObjectType result = MetadataObjectType.valueOf(actualValue.toUpperCase(Locale.ENGLISH));
+            if (supportedObjectTypes.contains(result)) {
+                return result;
+            }
+        } catch (final IllegalArgumentException ex) {
+            throw new MCPInvalidRequestException(String.format("Unsupported object_types value `%s`.", actualValue), ex);
+        }
+        throw new MCPInvalidRequestException(String.format("Unsupported object_types value `%s`.", actualValue));
     }
     
     /**

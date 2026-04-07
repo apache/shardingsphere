@@ -39,7 +39,7 @@ class MCPSessionExecutionCoordinatorTest {
     
     @Test
     void assertExecuteWithSessionLock() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock());
+        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
         sessionManager.createSession("session-1");
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         String actual = coordinator.executeWithSessionLock("session-1", () -> "done");
@@ -48,7 +48,7 @@ class MCPSessionExecutionCoordinatorTest {
     
     @Test
     void assertExecuteWithSessionLockAndMissingSession() {
-        MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(new MCPSessionManager(mock()));
+        MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class)));
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> coordinator.executeWithSessionLock("session-1", () -> "done"));
         assertThat(actual.getMessage(), is("Session does not exist."));
     }

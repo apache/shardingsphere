@@ -45,7 +45,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         String yamlContent = "transport:\n"
                 + "  http:\n"
                 + "    enabled: true\n"
-                + "    bindHost: 0.0.0.0\n"
+                + "    bindHost: 127.0.0.1\n"
                 + "    port: 9090\n"
                 + "    endpointPath: /gateway\n"
                 + "  stdio:\n"
@@ -58,7 +58,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
                 + "    password: secret\n"
                 + "    driverClassName: org.h2.Driver\n";
         MCPLaunchConfiguration actual = swapper.swapToObject(YamlEngine.unmarshal(yamlContent, YamlMCPLaunchConfiguration.class));
-        assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
         assertThat(actual.getHttpTransport().getPort(), is(9090));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getHttpTransport().isEnabled());

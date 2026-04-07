@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContextTestFactory;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
@@ -49,10 +49,12 @@ import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityRespo
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +67,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
     
-    private final MCPRuntimeContext runtimeContext = new MCPRuntimeContextTestFactory().create(ResourceTestDataFactory.createDatabaseMetadataCatalog());
+    private final MCPRuntimeContext runtimeContext;
+    
+    {
+        final MCPDatabaseMetadataCatalog metadataCatalog = ResourceTestDataFactory.createDatabaseMetadataCatalog();
+        runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), metadataCatalog);
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")

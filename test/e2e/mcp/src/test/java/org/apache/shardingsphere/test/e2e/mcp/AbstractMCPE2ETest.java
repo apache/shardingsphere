@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
@@ -220,7 +219,7 @@ abstract class AbstractMCPE2ETest {
         } catch (final SQLException ex) {
             throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
         }
-        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), createRuntimeContext(runtimeDatabases, metadataCatalog));
+        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", 0, ENDPOINT_PATH), new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
         try {
             httpServer.start();
         } catch (final IOException ex) {
@@ -228,12 +227,6 @@ abstract class AbstractMCPE2ETest {
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
         this.httpServer = httpServer;
-    }
-    
-    private MCPRuntimeContext createRuntimeContext(final Map<String, RuntimeDatabaseConfiguration> databaseConfigs, final MCPDatabaseMetadataCatalog metadataCatalog) {
-        MCPJdbcTransactionResourceManager transactionResourceManager = new MCPJdbcTransactionResourceManager(databaseConfigs);
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
-        return new MCPRuntimeContext(sessionManager, metadataCatalog);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

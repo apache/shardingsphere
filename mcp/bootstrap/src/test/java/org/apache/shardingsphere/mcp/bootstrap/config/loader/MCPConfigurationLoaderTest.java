@@ -45,7 +45,7 @@ class MCPConfigurationLoaderTest {
         Path configFile = createConfigFile("transport:\n"
                 + "  http:\n"
                 + "    enabled: true\n"
-                + "    bindHost: 0.0.0.0\n"
+                + "    bindHost: 127.0.0.1\n"
                 + "    port: 9090\n"
                 + "    endpointPath: /gateway\n"
                 + "  stdio:\n"
@@ -55,7 +55,7 @@ class MCPConfigurationLoaderTest {
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         assertTrue(actual.getHttpTransport().isEnabled());
         assertFalse(actual.getStdioTransport().isEnabled());
-        assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
+        assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
         assertThat(actual.getHttpTransport().getPort(), is(9090));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getDatabases().isEmpty());
@@ -181,6 +181,21 @@ class MCPConfigurationLoaderTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> MCPConfigurationLoader.load(configFile.toString()));
         assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
+    }
+    
+    @Test
+    void assertLoadWithNonLoopbackHttpBindHost() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: true\n"
+                + "    bindHost: 0.0.0.0\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: false\n"
+                + "runtimeDatabases: {}\n");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        assertThat(actual.getMessage(), is("Property `transport.http.bindHost` must be loopback-only in V0. Use `127.0.0.1`, `localhost`, or `::1`."));
     }
     
     @Test
