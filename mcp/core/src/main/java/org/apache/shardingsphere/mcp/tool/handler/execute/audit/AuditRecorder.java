@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.audit;
+package org.apache.shardingsphere.mcp.tool.handler.execute.audit;
 
 import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
 

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.audit.AuditRecorder;
+import org.apache.shardingsphere.mcp.tool.handler.execute.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;

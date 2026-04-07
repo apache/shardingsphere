@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.audit;
+package org.apache.shardingsphere.mcp.tool.handler.execute.audit;
 
 import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
 import org.junit.jupiter.api.Test;
@@ -29,9 +29,7 @@ class AuditRecorderTest {
     @Test
     void assertRecordQueryExecution() {
         AuditRecorder auditRecorder = new AuditRecorder();
-        
         AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", true, "QUERY");
-        
         assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
         assertTrue(actual.isSuccess());
         assertThat(actual.getDatabase(), is("logic_db"));
@@ -41,9 +39,7 @@ class AuditRecorderTest {
     @Test
     void assertRecordQueryExecutionWithErrorCode() {
         AuditRecorder auditRecorder = new AuditRecorder();
-        
         AuditRecord actual = auditRecorder.recordQueryExecution("session-1", "logic_db", "SELECT * FROM orders", false, MCPErrorCode.INVALID_REQUEST, "QUERY");
-        
         assertThat(actual.getOperationClass(), is(OperationClass.QUERY_EXECUTION));
         assertTrue(actual.getErrorCode().isPresent());
         assertThat(actual.getErrorCode().get(), is(MCPErrorCode.INVALID_REQUEST));
