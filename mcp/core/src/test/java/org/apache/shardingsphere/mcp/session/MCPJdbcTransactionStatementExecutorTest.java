@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.session;
 
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.execute.StatementClassifier;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -35,29 +35,37 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.Map;
+import java.sql.Connection;
+import java.sql.Savepoint;
+import java.sql.SQLException;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class MCPJdbcTransactionStatementExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")
-    void assertExecute(final String name, final String sql, final String expectedStatementType, final String expectedMessage) {
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
+    void assertExecute(final String name, final String sql, final String expectedStatementType, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        Savepoint savepoint = mock(Savepoint.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
+        prepareTransactionState(sql, sessionManager, connection, savepoint);
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify(sql));
         assertThat(actual.getStatementType(), is(expectedStatementType));
         assertThat(actual.getMessage(), is(expectedMessage));
-        assertDatabaseExecution(sql, jdbcTransactionResourceManager);
+        assertDatabaseExecution(sql, sessionManager, runtimeDatabaseConfig, connection, savepoint);
     }
     
     static Stream<Arguments> assertExecuteCases() {
@@ -72,62 +80,57 @@ class MCPJdbcTransactionStatementExecutorTest {
     
     @Test
     void assertExecuteWithUnsupportedSavepoint() {
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1")));
         assertThat(actual.getMessage(), is("Savepoint is not supported."));
-        verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
     @Test
-    void assertExecuteWithClassificationResult() {
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
+    void assertExecuteWithClassificationResult() throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
         assertThat(actual.getStatementType(), is("BEGIN"));
         assertThat(actual.getMessage(), is("Transaction started."));
-        verify(jdbcTransactionResourceManager).beginTransaction("session-1", "logic_db");
+        verify(runtimeDatabaseConfig).openConnection("logic_db");
+        verify(connection).setAutoCommit(false);
+        assertTrue(sessionManager.getTransactionResourceManager().findTransactionConnection("session-1", "logic_db").isPresent());
     }
     
     @Test
     void assertExecuteWithInvalidCommand() {
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1")));
         assertThat(actual.getMessage(), is("Statement is not a transaction command."));
-        verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
     @Test
     void assertExecuteWithMissingSession() {
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class,
                 () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN")));
         assertThat(actual.getMessage(), is("Session does not exist."));
-        verifyNoInteractions(jdbcTransactionResourceManager);
     }
     
     @Test
     void assertExecuteWithNoActiveTransaction() {
-        MCPJdbcTransactionResourceManager jdbcTransactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        doThrow(new IllegalStateException("Transaction is not active.")).when(jdbcTransactionResourceManager).commitTransaction("session-1");
-        MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
         MCPTransactionStateException actual = assertThrows(MCPTransactionStateException.class,
                 () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT")));
-        assertThat(actual.getMessage(), is("Transaction is not active."));
-        verify(jdbcTransactionResourceManager).commitTransaction("session-1");
+        assertThat(actual.getMessage(), is("No active transaction."));
     }
     
     private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
@@ -140,27 +143,49 @@ class MCPJdbcTransactionStatementExecutorTest {
         return createDatabaseCapabilityBuilder().provide(databaseName).orElseThrow(IllegalStateException::new);
     }
     
-    private void assertDatabaseExecution(final String sql, final MCPJdbcTransactionResourceManager jdbcTransactionResourceManager) {
+    private void prepareTransactionState(final String sql, final MCPSessionManager sessionManager, final Connection connection, final Savepoint savepoint) throws SQLException {
         if ("BEGIN".equals(sql)) {
-            verify(jdbcTransactionResourceManager).beginTransaction("session-1", "logic_db");
+            return;
+        }
+        sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
+        if (sql.startsWith("SAVEPOINT") || sql.startsWith("ROLLBACK TO SAVEPOINT") || sql.startsWith("RELEASE SAVEPOINT")) {
+            when(connection.setSavepoint("SP_1")).thenReturn(savepoint);
+        }
+        if (sql.startsWith("ROLLBACK TO SAVEPOINT") || sql.startsWith("RELEASE SAVEPOINT")) {
+            sessionManager.getTransactionResourceManager().createSavepoint("session-1", "sp_1");
+        }
+    }
+    
+    private void assertDatabaseExecution(final String sql, final MCPSessionManager sessionManager, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+                                         final Connection connection, final Savepoint savepoint) throws SQLException {
+        if ("BEGIN".equals(sql)) {
+            verify(runtimeDatabaseConfig).openConnection("logic_db");
+            verify(connection).setAutoCommit(false);
+            assertTrue(sessionManager.getTransactionResourceManager().findTransactionConnection("session-1", "logic_db").isPresent());
             return;
         }
         if ("COMMIT".equals(sql)) {
-            verify(jdbcTransactionResourceManager).commitTransaction("session-1");
+            verify(connection).commit();
+            verify(connection).setAutoCommit(true);
+            verify(connection).close();
+            assertFalse(sessionManager.getTransactionResourceManager().findTransactionConnection("session-1", "logic_db").isPresent());
             return;
         }
         if ("ROLLBACK".equals(sql)) {
-            verify(jdbcTransactionResourceManager).rollbackTransaction("session-1");
+            verify(connection).rollback();
+            verify(connection).setAutoCommit(true);
+            verify(connection).close();
+            assertFalse(sessionManager.getTransactionResourceManager().findTransactionConnection("session-1", "logic_db").isPresent());
             return;
         }
         if (sql.startsWith("SAVEPOINT")) {
-            verify(jdbcTransactionResourceManager).createSavepoint("session-1", "sp_1");
+            verify(connection).setSavepoint("SP_1");
             return;
         }
         if (sql.startsWith("ROLLBACK TO SAVEPOINT")) {
-            verify(jdbcTransactionResourceManager).rollbackToSavepoint("session-1", "sp_1");
+            verify(connection).rollback(savepoint);
             return;
         }
-        verify(jdbcTransactionResourceManager).releaseSavepoint("session-1", "sp_1");
+        verify(connection).releaseSavepoint(savepoint);
     }
 }

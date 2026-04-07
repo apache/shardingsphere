@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -29,17 +34,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MCPSessionManagerTest {
     
     @Test
     void assertCreateSession() {
-        assertDoesNotThrow(() -> new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class)).createSession("session-1"));
+        assertDoesNotThrow(() -> new MCPSessionManager(Collections.emptyMap()).createSession("session-1"));
     }
     
     @Test
     void assertCreateSessionWithDuplicateSessionId() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.createSession("session-1"));
         assertThat(actual.getMessage(), is("Session already exists."));
@@ -47,14 +53,14 @@ class MCPSessionManagerTest {
     
     @Test
     void assertHasSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         assertTrue(sessionManager.hasSession("session-1"));
     }
     
     @Test
     void assertCloseSession() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         assertTrue(sessionManager.hasSession("session-1"));
         sessionManager.closeSession("session-1");
@@ -62,36 +68,53 @@ class MCPSessionManagerTest {
     }
     
     @Test
-    void assertCloseSessionWithTransactionResourceManager() {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+    void assertCloseSessionWithTransactionResourceManager() throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
+        sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
         sessionManager.closeSession("session-1");
-        verify(transactionResourceManager).closeSession("session-1");
+        verify(connection).rollback();
+        verify(connection).setAutoCommit(true);
+        verify(connection).close();
         assertFalse(sessionManager.hasSession("session-1"));
     }
     
     @Test
-    void assertCloseSessionWithTransactionResourceManagerFailure() {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        doThrow(new IllegalStateException("cleanup failed")).when(transactionResourceManager).closeSession("session-1");
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+    void assertCloseSessionWithTransactionResourceManagerFailure() throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
+        sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
+        doThrow(new SQLException("cleanup failed")).when(connection).rollback();
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> sessionManager.closeSession("session-1"));
         assertThat(actual.getMessage(), is("cleanup failed"));
-        verify(transactionResourceManager).closeSession("session-1");
+        verify(connection).rollback();
         assertFalse(sessionManager.hasSession("session-1"));
     }
     
     @Test
-    void assertCloseAllSessions() {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+    void assertCloseAllSessions() throws SQLException {
+        Connection firstConnection = mock(Connection.class);
+        Connection secondConnection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(firstConnection, secondConnection);
+        MCPSessionManager sessionManager = new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         sessionManager.createSession("session-2");
+        sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
+        sessionManager.getTransactionResourceManager().beginTransaction("session-2", "logic_db");
         sessionManager.closeAllSessions();
-        verify(transactionResourceManager).closeSession("session-1");
-        verify(transactionResourceManager).closeSession("session-2");
+        verify(firstConnection).rollback();
+        verify(firstConnection).setAutoCommit(true);
+        verify(firstConnection).close();
+        verify(secondConnection).rollback();
+        verify(secondConnection).setAutoCommit(true);
+        verify(secondConnection).close();
         assertFalse(sessionManager.hasSession("session-1"));
         assertFalse(sessionManager.hasSession("session-2"));
     }

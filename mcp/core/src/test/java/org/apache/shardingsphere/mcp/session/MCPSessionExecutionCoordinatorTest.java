@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import org.apache.shardingsphere.mcp.execute.MCPJdbcTransactionResourceManager;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -32,14 +32,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 class MCPSessionExecutionCoordinatorTest {
     
     @Test
     void assertExecuteWithSessionLock() {
-        MCPSessionManager sessionManager = new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         String actual = coordinator.executeWithSessionLock("session-1", () -> "done");
@@ -48,15 +46,14 @@ class MCPSessionExecutionCoordinatorTest {
     
     @Test
     void assertExecuteWithSessionLockAndMissingSession() {
-        MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(new MCPSessionManager(mock(MCPJdbcTransactionResourceManager.class)));
+        MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(new MCPSessionManager(Collections.emptyMap()));
         MCPSessionNotExistedException actual = assertThrows(MCPSessionNotExistedException.class, () -> coordinator.executeWithSessionLock("session-1", () -> "done"));
         assertThat(actual.getMessage(), is("Session does not exist."));
     }
     
     @Test
     void assertCloseSessionWaitsForGuardedExecution() throws InterruptedException, ExecutionException {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         CountDownLatch executionStarted = new CountDownLatch(1);
@@ -81,7 +78,6 @@ class MCPSessionExecutionCoordinatorTest {
             releaseExecution.countDown();
             assertThat(executionFuture.get(), is("done"));
             closeFuture.get();
-            verify(transactionResourceManager).closeSession("session-1");
             assertFalse(sessionManager.hasSession("session-1"));
         } finally {
             executorService.shutdownNow();
@@ -90,14 +86,11 @@ class MCPSessionExecutionCoordinatorTest {
     
     @Test
     void assertCloseAllSessions() {
-        MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
-        MCPSessionManager sessionManager = new MCPSessionManager(transactionResourceManager);
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");
         sessionManager.createSession("session-2");
         MCPSessionExecutionCoordinator coordinator = new MCPSessionExecutionCoordinator(sessionManager);
         coordinator.closeAllSessions();
-        verify(transactionResourceManager).closeSession("session-1");
-        verify(transactionResourceManager).closeSession("session-2");
         assertFalse(sessionManager.hasSession("session-1"));
         assertFalse(sessionManager.hasSession("session-2"));
     }

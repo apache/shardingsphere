@@ -40,11 +40,7 @@ public final class MCPSessionManager {
     private final Map<String, SessionContext> sessions = new ConcurrentHashMap<>();
     
     public MCPSessionManager(final Map<String, RuntimeDatabaseConfiguration> databases) {
-        this(new MCPJdbcTransactionResourceManager(databases));
-    }
-    
-    MCPSessionManager(final MCPJdbcTransactionResourceManager transactionResourceManager) {
-        this.transactionResourceManager = transactionResourceManager;
+        transactionResourceManager = new MCPJdbcTransactionResourceManager(databases);
     }
     
     /**
