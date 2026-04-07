@@ -22,15 +22,11 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest {
     
@@ -52,26 +48,19 @@ class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest {
     }
     
     @Test
-    void assertMetadataToolsExcludeNonBaselineObjects() throws IOException, InterruptedException {
+    void assertMetadataToolsRejectUnsupportedObjectTypes() throws IOException, InterruptedException {
         launchRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        Set<String> actualNames = new LinkedHashSet<>();
         
         HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "search_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "order",
                         "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
         
         assertThat(actual.statusCode(), is(200));
-        for (Map<String, Object> each : getPayloadItems(getStructuredContent(actual.body()))) {
-            actualNames.add(String.valueOf(each.get("name")));
-        }
-        assertTrue(actualNames.contains("orders"));
-        assertTrue(actualNames.contains("order_items"));
-        assertTrue(actualNames.contains("active_orders"));
-        assertTrue(actualNames.contains("idx_orders_status"));
-        assertFalse(actualNames.contains("mv_orders"));
-        assertFalse(actualNames.contains("order_seq"));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
+        assertThat(String.valueOf(payload.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
     }
     
     @Test
