@@ -36,8 +36,8 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -47,6 +47,9 @@ import java.util.stream.Collectors;
  */
 @Setter
 public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecutor<ShowUnloadedSingleTablesStatement>, DistSQLExecutorDatabaseAware, DistSQLExecutorRuleAware<SingleRule> {
+    
+    private static final Comparator<DataNode> DATA_NODE_COMPARATOR = Comparator.comparing(DataNode::getTableName)
+            .thenComparing(DataNode::getDataSourceName).thenComparing(DataNode::getSchemaName, Comparator.nullsFirst(String::compareTo));
     
     private ShardingSphereDatabase database;
     
@@ -72,16 +75,11 @@ public final class ShowUnloadedSingleTablesExecutor implements DistSQLQueryExecu
                 tableNodes.removeIf(each -> entry.getValue().contains(each));
             }
         }
-        Collection<LocalDataQueryResultRow> result = new LinkedList<>();
-        actualDataNodes.values().stream().map(this::getRows).forEach(result::addAll);
-        return result;
-    }
-    
-    private Collection<LocalDataQueryResultRow> getRows(final Collection<DataNode> dataNodes) {
-        if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
-            return dataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName(), each.getSchemaName())).collect(Collectors.toList());
-        }
-        return dataNodes.stream().map(each -> new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName())).collect(Collectors.toList());
+        boolean isSchemaAvailable = new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable();
+        return actualDataNodes.values().stream().flatMap(Collection::stream).sorted(DATA_NODE_COMPARATOR)
+                .map(each -> isSchemaAvailable ? new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName(), each.getSchemaName())
+                        : new LocalDataQueryResultRow(each.getTableName(), each.getDataSourceName()))
+                .collect(Collectors.toList());
     }
     
     private Map<String, Collection<DataNode>> getActualDataNodes(final ShardingSphereDatabase database) {
