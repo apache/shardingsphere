@@ -41,7 +41,7 @@ public final class SearchMetadataToolHandler implements ToolHandler {
     
     private static final Set<MetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             MetadataObjectType.DATABASE, MetadataObjectType.SCHEMA, MetadataObjectType.TABLE,
-            MetadataObjectType.VIEW, MetadataObjectType.COLUMN, MetadataObjectType.INDEX);
+            MetadataObjectType.VIEW, MetadataObjectType.COLUMN, MetadataObjectType.INDEX, MetadataObjectType.SEQUENCE);
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata",
             Arrays.asList(
@@ -49,8 +49,8 @@ public final class SearchMetadataToolHandler implements ToolHandler {
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
                     new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
                     new MCPToolFieldDefinition("object_types",
-                            new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter. Allowed values: database, schema, table, view, column, index.",
-                                    new MCPToolValueDefinition(Type.STRING, "Allowed values: database, schema, table, view, column, index.", null)),
+                            new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter. Allowed values: database, schema, table, view, column, index, sequence.",
+                                    new MCPToolValueDefinition(Type.STRING, "Allowed values: database, schema, table, view, column, index, sequence.", null)),
                             false),
                     new MCPToolFieldDefinition("page_size", new MCPToolValueDefinition(Type.INTEGER, "Requested page size.", null), false),
                     new MCPToolFieldDefinition("page_token", new MCPToolValueDefinition(Type.STRING, "Opaque pagination token.", null), false)));

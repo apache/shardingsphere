@@ -36,6 +36,8 @@ public final class ClickHouseDatabaseCapabilityOption implements DatabaseCapabil
     
     private final boolean crossSchemaQuerySupported = false;
     
+    private final boolean isSequenceSupported = false;
+    
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return false;

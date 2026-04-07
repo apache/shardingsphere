@@ -36,6 +36,8 @@ public final class MariaDBDatabaseCapabilityOption implements DatabaseCapability
     
     private final boolean crossSchemaQuerySupported = false;
     
+    private final boolean isSequenceSupported = true;
+    
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return false;

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
@@ -95,6 +96,14 @@ class SearchMetadataToolServiceTest {
     }
     
     @Test
+    void assertExecuteSearchWithSequenceObjectType() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("runtime_db", "", "order",
+                Set.of(MetadataObjectType.SEQUENCE), 10, ""));
+        assertThat(actual.getItems().size(), is(1));
+        assertThat(actual.getItems().get(0).getName(), is("order_seq"));
+    }
+    
+    @Test
     void assertExecuteSearchWithInvalidPageToken() {
         InvalidPageTokenException actual = assertThrows(InvalidPageTokenException.class,
                 () -> new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order", Set.of(), 10, "invalid")));
@@ -128,6 +137,8 @@ class SearchMetadataToolServiceTest {
                         new MCPTableMetadata("warehouse", "warehouse", "facts",
                                 List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
                         List.of()))));
+        databaseMetadataMap.put("runtime_db", new MCPDatabaseMetadata("runtime_db", "H2", "", List.of(
+                new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
 }

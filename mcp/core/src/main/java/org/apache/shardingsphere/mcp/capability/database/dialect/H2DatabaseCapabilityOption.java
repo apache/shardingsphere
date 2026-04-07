@@ -36,6 +36,8 @@ public final class H2DatabaseCapabilityOption implements DatabaseCapabilityOptio
     
     private final boolean crossSchemaQuerySupported = true;
     
+    private final boolean isSequenceSupported = true;
+    
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;

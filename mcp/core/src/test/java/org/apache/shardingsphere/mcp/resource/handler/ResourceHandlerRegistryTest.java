@@ -27,13 +27,14 @@ class ResourceHandlerRegistryTest {
     
     @Test
     void assertGetHandlers() {
-        assertThat(ResourceHandlerRegistry.getRegisteredHandlers().size(), is(16));
+        assertThat(ResourceHandlerRegistry.getRegisteredHandlers().size(), is(18));
     }
     
     @Test
     void assertGetSupportedResources() {
-        assertThat(ResourceHandlerRegistry.getSupportedResources().size(), is(16));
+        assertThat(ResourceHandlerRegistry.getSupportedResources().size(), is(18));
         assertTrue(ResourceHandlerRegistry.getSupportedResources().contains("shardingsphere://capabilities"));
         assertTrue(ResourceHandlerRegistry.getSupportedResources().contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+        assertTrue(ResourceHandlerRegistry.getSupportedResources().contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
     }
 }

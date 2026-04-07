@@ -97,15 +97,16 @@ The minimum in-process smoke suite should cover:
 2. Database-level capability retrieval
 3. `shardingsphere://databases`
 4. `shardingsphere://databases/{database}/schemas`
-5. `shardingsphere://databases/{database}/schemas/{schema}/tables`
-6. `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}`
-7. `search_metadata`
-8. `execute_query(SELECT)`
-9. `execute_query(DML)`
-10. `BEGIN / COMMIT / ROLLBACK`
-11. Successful `SAVEPOINT`
-12. `SAVEPOINT unsupported`
-13. `DDL / DCL refresh visibility and audit capture`
+5. `shardingsphere://databases/{database}/schemas/{schema}/sequences`
+6. `shardingsphere://databases/{database}/schemas/{schema}/tables`
+7. `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}`
+8. `search_metadata`
+9. `execute_query(SELECT)`
+10. `execute_query(DML)`
+11. `BEGIN / COMMIT / ROLLBACK`
+12. Successful `SAVEPOINT`
+13. `SAVEPOINT unsupported`
+14. `DDL / DCL refresh visibility and audit capture`
 
 ## 7. Run E2E validation
 

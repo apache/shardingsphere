@@ -14,6 +14,8 @@ The V1 public resource set is fixed to the following paths:
 - `shardingsphere://databases/{database}/capabilities`
 - `shardingsphere://databases/{database}/schemas`
 - `shardingsphere://databases/{database}/schemas/{schema}`
+- `shardingsphere://databases/{database}/schemas/{schema}/sequences`
+- `shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}`
 - `shardingsphere://databases/{database}/schemas/{schema}/tables`
 - `shardingsphere://databases/{database}/schemas/{schema}/views`
 - `shardingsphere://databases/{database}/schemas/{schema}/tables/{table}`
@@ -31,6 +33,7 @@ The V1 public resource set is fixed to the following paths:
 - `shardingsphere://capabilities` returns the service-level capability surface.
 - `shardingsphere://databases/{database}/capabilities` returns the database-level capability view.
 - When `index` is not supported for a database, index resources return `unsupported`.
+- When `sequence` is not supported for a database, sequence resources return `unsupported`.
 
 ## Tools
 
@@ -43,7 +46,7 @@ The V1 public tool set is fixed to:
 
 - `execute_query` accepts one statement only.
 - `search_metadata` may search all loaded logical databases when `database` is omitted.
-- `search_metadata.object_types` accepts only `database`, `schema`, `table`, `view`, `column`, and `index`; other values return `invalid_request`.
+- `search_metadata.object_types` accepts only `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence`; other values return `invalid_request`.
 - If `schema` is provided without `database`, the request returns `invalid_request`.
 - Metadata list/detail/capability discovery is exposed through `resources/read` rather than dedicated metadata tools.
 - Tools honor capability boundaries and request validation before execution.

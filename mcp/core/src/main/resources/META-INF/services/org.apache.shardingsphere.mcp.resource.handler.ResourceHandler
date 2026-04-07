@@ -21,6 +21,8 @@ org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.SchemaHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.SequencesHandler
+org.apache.shardingsphere.mcp.resource.handler.metadata.SequenceHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.TablesHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.ViewsHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.TableHandler

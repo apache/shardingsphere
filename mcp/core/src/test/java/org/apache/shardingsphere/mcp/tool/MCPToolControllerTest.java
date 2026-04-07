@@ -55,6 +55,13 @@ class MCPToolControllerTest {
     }
     
     @Test
+    void assertHandleSearchMetadataWithSequence() throws SQLException {
+        Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("database", "runtime_db", "query", "order", "object_types", List.of("sequence"))).toPayload();
+        assertThat(((List<?>) actual.get("items")).size(), is(1));
+        assertThat(((MetadataSearchHit) ((List<?>) actual.get("items")).get(0)).getName(), is("order_seq"));
+    }
+    
+    @Test
     void assertHandleExecuteQuery() throws SQLException {
         Map<String, Object> actual = createController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
         assertThat(actual.get("result_kind"), is("result_set"));

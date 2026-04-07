@@ -62,6 +62,13 @@ public interface DatabaseCapabilityOption extends TypedSPI {
      */
     boolean isExplainAnalyzeSupported(String databaseVersion);
     
+    /**
+     * Judge whether sequence metadata is supported.
+     *
+     * @return whether sequence metadata is supported
+     */
+    boolean isSequenceSupported();
+    
     @Override
     String getType();
 }

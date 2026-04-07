@@ -21,11 +21,15 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MetadataObjectType;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -58,10 +62,20 @@ class MCPDatabaseCapabilityProviderTest {
         Optional<MCPDatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("warehouse");
         assertTrue(actual.isPresent());
         assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX));
+        assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.SEQUENCE));
         assertFalse(actual.get().isSupportsTransactionControl());
         assertFalse(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getSupportedTransactionStatements().size(), is(0));
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideSequenceMatrixArguments")
+    void assertProvideWithSequenceMatrix(final String name, final String databaseType, final boolean expectedSequenceSupport) {
+        Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(
+                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList())))).provide("logic_db");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getSupportedMetadataObjectTypes().contains(MetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
     }
     
     @Test
@@ -78,5 +92,21 @@ class MCPDatabaseCapabilityProviderTest {
         return new MCPDatabaseCapabilityProvider(new MCPDatabaseMetadataCatalog(Map.of(
                 "logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()),
                 "warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", Collections.emptyList()))));
+    }
+    
+    private static Stream<Arguments> provideSequenceMatrixArguments() {
+        return Stream.of(
+                Arguments.of("mysql", "MySQL", false),
+                Arguments.of("postgresql", "PostgreSQL", true),
+                Arguments.of("open gauss", "openGauss", true),
+                Arguments.of("sql server", "SQLServer", true),
+                Arguments.of("mariadb", "MariaDB", true),
+                Arguments.of("oracle", "Oracle", true),
+                Arguments.of("clickhouse", "ClickHouse", false),
+                Arguments.of("doris", "Doris", false),
+                Arguments.of("hive", "Hive", false),
+                Arguments.of("presto", "Presto", false),
+                Arguments.of("firebird", "Firebird", true),
+                Arguments.of("h2", "H2", true));
     }
 }

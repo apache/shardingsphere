@@ -38,28 +38,29 @@ class SupportedDatabaseContractMatrixE2ETest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCapabilityMatrixCases")
     void assertCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
-                                final boolean expectedSavepoint, final boolean expectedIndexSupport) {
+                                final boolean expectedSavepoint, final boolean expectedIndexSupport, final boolean expectedSequenceSupport) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList()))));
         MCPDatabaseCapability actual = databaseCapabilityProvider.provide("logic_db").get();
         assertThat(actual.isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.isSupportsSavepoint(), is(expectedSavepoint));
         assertThat(actual.getSupportedMetadataObjectTypes().contains(MetadataObjectType.INDEX), is(expectedIndexSupport));
+        assertThat(actual.getSupportedMetadataObjectTypes().contains(MetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
     }
     
     static Stream<Arguments> assertCapabilityMatrixCases() {
         return Stream.of(
-                Arguments.of("mysql", "MySQL", true, true, true),
-                Arguments.of("postgresql", "PostgreSQL", true, true, true),
-                Arguments.of("open gauss", "openGauss", true, true, true),
-                Arguments.of("sql server", "SQLServer", true, true, true),
-                Arguments.of("mariadb", "MariaDB", true, true, true),
-                Arguments.of("oracle", "Oracle", true, true, true),
-                Arguments.of("clickhouse", "ClickHouse", false, false, false),
-                Arguments.of("doris", "Doris", true, false, true),
-                Arguments.of("hive", "Hive", false, false, false),
-                Arguments.of("presto", "Presto", true, false, false),
-                Arguments.of("firebird", "Firebird", true, true, true),
-                Arguments.of("h2", "H2", true, true, true));
+                Arguments.of("mysql", "MySQL", true, true, true, false),
+                Arguments.of("postgresql", "PostgreSQL", true, true, true, true),
+                Arguments.of("open gauss", "openGauss", true, true, true, true),
+                Arguments.of("sql server", "SQLServer", true, true, true, true),
+                Arguments.of("mariadb", "MariaDB", true, true, true, true),
+                Arguments.of("oracle", "Oracle", true, true, true, true),
+                Arguments.of("clickhouse", "ClickHouse", false, false, false, false),
+                Arguments.of("doris", "Doris", true, false, true, false),
+                Arguments.of("hive", "Hive", false, false, false, false),
+                Arguments.of("presto", "Presto", true, false, false, false),
+                Arguments.of("firebird", "Firebird", true, true, true, true),
+                Arguments.of("h2", "H2", true, true, true, true));
     }
 }

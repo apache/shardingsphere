@@ -39,9 +39,10 @@ class MetadataQueryServiceTest {
     @Test
     void assertQueryDatabases() {
         List<MCPDatabaseMetadata> actual = metadataQueryService.queryDatabases();
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(3));
         assertThat(actual.get(0).getDatabase(), is("logic_db"));
-        assertThat(actual.get(1).getDatabase(), is("warehouse"));
+        assertThat(actual.get(1).getDatabase(), is("runtime_db"));
+        assertThat(actual.get(2).getDatabase(), is("warehouse"));
     }
     
     @Test

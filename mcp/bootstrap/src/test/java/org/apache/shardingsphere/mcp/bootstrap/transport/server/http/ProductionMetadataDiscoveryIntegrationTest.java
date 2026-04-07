@@ -81,6 +81,35 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     }
     
     @Test
+    void assertSearchMetadataWithSequence() throws SQLException, IOException, InterruptedException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
+                Map.of("database", "logic_db", "query", "order", "object_types", List.of("sequence")));
+        
+        assertThat(actual.statusCode(), is(200));
+        List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
+        assertThat(items.size(), is(1));
+        assertThat(String.valueOf(items.get(0).get("name")), is("order_seq"));
+    }
+    
+    @Test
+    void assertReadSequencesResource() throws SQLException, IOException, InterruptedException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/schemas/public/sequences");
+        
+        assertThat(actual.statusCode(), is(200));
+        List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
+        assertThat(items.size(), is(1));
+        assertThat(String.valueOf(items.get(0).get("sequence")), is("order_seq"));
+    }
+    
+    @Test
     void assertReadDatabaseCapabilitiesResource() throws SQLException, IOException, InterruptedException {
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
@@ -94,6 +123,7 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
         assertThat(String.valueOf(payload.get("databaseType")), is("H2"));
         assertTrue(String.valueOf(payload.get("supportedObjectTypes")).contains("VIEW"));
         assertTrue(String.valueOf(payload.get("supportedObjectTypes")).contains("INDEX"));
+        assertTrue(String.valueOf(payload.get("supportedObjectTypes")).contains("SEQUENCE"));
     }
     
     @Test

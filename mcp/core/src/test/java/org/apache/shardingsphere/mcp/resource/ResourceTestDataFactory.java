@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
@@ -40,7 +41,7 @@ public final class ResourceTestDataFactory {
      * @return database metadata catalog
      */
     public static MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
-        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(2, 1F);
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
         databaseMetadataMap.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
                 new MCPSchemaMetadata("logic_db", "public", List.of(
                         new MCPTableMetadata("logic_db", "public", "orders",
@@ -50,6 +51,8 @@ public final class ResourceTestDataFactory {
                                 List.of(new MCPColumnMetadata("logic_db", "public", "order_items", "", "item_id")), List.of())),
                         List.of(new MCPViewMetadata("logic_db", "public", "orders_view",
                                 List.of(new MCPColumnMetadata("logic_db", "public", "", "orders_view", "order_id"))))))));
+        databaseMetadataMap.put("runtime_db", new MCPDatabaseMetadata("runtime_db", "H2", "", List.of(
+                new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
         databaseMetadataMap.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(), List.of())), List.of()))));
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);

@@ -73,7 +73,8 @@ public final class H2RuntimeTestSupport {
                 "MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (2, 'DONE', 20)",
                 "MERGE INTO order_items (item_id, order_id, sku) KEY (item_id) VALUES (1, 1, 'sku-1')",
                 "CREATE VIEW IF NOT EXISTS active_orders AS SELECT order_id, status FROM orders WHERE status <> 'DONE'",
-                "CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)");
+                "CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)",
+                "CREATE SEQUENCE IF NOT EXISTS order_seq START WITH 1000");
     }
     
     /**

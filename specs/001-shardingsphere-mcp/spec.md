@@ -111,18 +111,20 @@
 ### Functional Requirements
 
 - **FR-001**: 系统 MUST 对外统一暴露 `database`、`schema`、`table`、`view`、
-  `column`、`index` 与 `capability` 的对象语义，适用于所有 V1 正式支持数据库。
+  `column`、`index`、可选 `sequence` 与 `capability` 的对象语义，适用于所有 V1 正式支持数据库。
 - **FR-002**: 系统 MUST 将每次 SQL 执行请求绑定到一个且仅一个 logical `database` 参数。
 - **FR-003**: 系统 MUST 提供正式公共 resources，用于表达服务级 capability、
-  databases、database capability、schemas、tables、views、columns 与可选 indexes。
+  databases、database capability、schemas、可选 sequences、tables、views、columns 与可选 indexes。
 - **FR-004**: 系统 MUST 将 `index` 作为 database-level 可选公共对象，
+  且仅当目标 database capability 明确声明支持时才暴露其 resources。
+- **FR-004A**: 系统 MUST 将 `sequence` 作为 database-level 可选公共对象，
   且仅当目标 database capability 明确声明支持时才暴露其 resources。
 - **FR-005**: 系统 MUST 为 V1 提供正式公共 tools：`search_metadata` 与 `execute_query`。
 - **FR-006**: 系统 MUST 让 metadata resources 与 `search_metadata` 支持统一对象发现；
   其中 `search_metadata` MUST 支持关键字搜索与分页，并 MUST 返回下一页标识或等价机制，
   避免客户端通过完整枚举发现大型元数据集合。
 - **FR-007**: 系统 MUST 支持 `search_metadata` 按对象类型过滤；
-  允许值限定为 `database`、`schema`、`table`、`view`、`column`、`index`；
+  允许值限定为 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`；
   其他值 MUST 返回 `invalid_request`；
   当省略 `database` 时在当前 metadata catalog 中的全部 logical databases 范围内搜索；
   当指定 `schema` 但未指定 `database` 时 MUST 返回 `invalid_request`。
@@ -178,7 +180,7 @@
   Firebird 与 H2，并使其满足统一契约的最低能力基线。
 - **FR-028**: 系统 MUST 使 database transaction capability matrix
   与实际 database-level capability 返回保持一致。
-- **FR-029**: 系统 MUST 不把 `materialized view`、`sequence`、
+- **FR-029**: 系统 MUST 不把 `materialized view`、
   `function / procedure`、`trigger`、`event`、`synonym` 与其他数据库专有对象
   纳入 V1 统一公共对象基线。
 - **FR-030**: 当前内置 runtime MUST 明确自身运行边界：
@@ -192,7 +194,7 @@
   它代表逻辑数据库标识，不等同于底层物理实例或原生 catalog。
 - **Schema Namespace**: 逻辑 database 下的命名空间；
   即使底层数据库没有独立 schema 概念，也必须以统一 schema 语义对外暴露。
-- **Metadata Object**: 包括 table、view、column 与可选 index；
+- **Metadata Object**: 包括 table、view、column 与可选 index / sequence；
   通过统一字段表达对象身份与父子关系。
 - **Capability Profile**: 服务级或 database 级能力声明，
   用于公开当前契约支持的对象类型、工具、语句类别与事务边界。

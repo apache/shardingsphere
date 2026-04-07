@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
@@ -110,6 +111,9 @@ public final class SearchMetadataToolService {
             case INDEX:
                 result.addAll(queryIndexSearchHits(databaseName, schemaName));
                 break;
+            case SEQUENCE:
+                result.addAll(querySequenceSearchHits(databaseName, schemaName));
+                break;
             default:
                 break;
         }
@@ -117,15 +121,10 @@ public final class SearchMetadataToolService {
     }
     
     private List<MCPTableMetadata> queryTables(final String databaseName, final String schemaName) {
-        List<MCPTableMetadata> result = new LinkedList<>();
         if (!schemaName.isEmpty()) {
-            result.addAll(metadataQueryService.queryTables(databaseName, schemaName));
-            return result;
+            return metadataQueryService.queryTables(databaseName, schemaName);
         }
-        for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
-            result.addAll(metadataQueryService.queryTables(databaseName, each.getSchema()));
-        }
-        return result;
+        return metadataQueryService.querySchemas(databaseName).stream().flatMap(each -> metadataQueryService.queryTables(databaseName, each.getSchema()).stream()).collect(Collectors.toList());
     }
     
     private List<MCPViewMetadata> queryViews(final String databaseName, final String schemaName) {
@@ -156,16 +155,22 @@ public final class SearchMetadataToolService {
     }
     
     private List<MetadataSearchHit> queryIndexSearchHits(final String databaseName, final String schemaName) {
-        List<MetadataSearchHit> result = new LinkedList<>();
         if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, MetadataObjectType.INDEX)) {
-            return result;
+            return Collections.emptyList();
         }
-        for (MCPTableMetadata each : queryTables(databaseName, schemaName)) {
-            for (MCPIndexMetadata index : metadataQueryService.queryIndexes(databaseName, each.getSchema(), each.getTable())) {
-                result.add(createSearchHit(index));
-            }
+        return queryTables(databaseName, schemaName).stream()
+                .flatMap(each -> metadataQueryService.queryIndexes(databaseName, each.getSchema(), each.getTable()).stream()).map(this::createSearchHit).collect(Collectors.toList());
+    }
+    
+    private List<MetadataSearchHit> querySequenceSearchHits(final String databaseName, final String schemaName) {
+        if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, MetadataObjectType.SEQUENCE)) {
+            return Collections.emptyList();
         }
-        return result;
+        if (!schemaName.isEmpty()) {
+            return metadataQueryService.querySequences(databaseName, schemaName).stream().map(this::createSearchHit).collect(Collectors.toList());
+        }
+        return metadataQueryService.querySchemas(databaseName).stream()
+                .flatMap(each -> metadataQueryService.querySequences(databaseName, each.getSchema()).stream()).map(this::createSearchHit).collect(Collectors.toList());
     }
     
     private Set<MetadataObjectType> getSearchObjectTypes(final Set<MetadataObjectType> objectTypes) {
@@ -179,6 +184,7 @@ public final class SearchMetadataToolService {
         result.add(MetadataObjectType.VIEW);
         result.add(MetadataObjectType.COLUMN);
         result.add(MetadataObjectType.INDEX);
+        result.add(MetadataObjectType.SEQUENCE);
         return result;
     }
     
@@ -204,6 +210,10 @@ public final class SearchMetadataToolService {
     
     private MetadataSearchHit createSearchHit(final MCPIndexMetadata indexMetadata) {
         return new MetadataSearchHit(indexMetadata.getDatabase(), indexMetadata.getSchema(), "index", indexMetadata.getTable(), "", indexMetadata.getIndex());
+    }
+    
+    private MetadataSearchHit createSearchHit(final MCPSequenceMetadata sequenceMetadata) {
+        return new MetadataSearchHit(sequenceMetadata.getDatabase(), sequenceMetadata.getSchema(), "sequence", "", "", sequenceMetadata.getSequence());
     }
     
     private MetadataSearchResult paginate(final List<MetadataSearchHit> metadataItems, final String query, final int pageSize, final String pageToken) {
@@ -262,6 +272,8 @@ public final class SearchMetadataToolService {
                 return 4;
             case "index":
                 return 5;
+            case "sequence":
+                return 6;
             default:
                 return Integer.MAX_VALUE;
         }

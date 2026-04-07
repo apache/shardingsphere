@@ -54,7 +54,7 @@ public final class MCPDatabaseCapabilityProvider {
     private MCPDatabaseCapability createDefaultCapability(final String databaseName, final String databaseType, final String databaseVersion, final DatabaseCapabilityOption option) {
         boolean supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
         TransactionCapability transactionCapability = option.getTransactionCapability();
-        return new MCPDatabaseCapability(databaseName, databaseType, "BASELINE", createSupportedMetadataObjectTypes(option.isIndexSupported()),
+        return new MCPDatabaseCapability(databaseName, databaseType, "BASELINE", createSupportedMetadataObjectTypes(option),
                 createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze), TransactionCapability.NONE != transactionCapability,
                 TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability, createSupportedTransactionStatements(transactionCapability),
                 true, 1000, 30000, option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze,
@@ -63,14 +63,17 @@ public final class MCPDatabaseCapabilityProvider {
                 supportsExplainAnalyze ? TransactionBoundaryBehavior.NATIVE : TransactionBoundaryBehavior.UNSUPPORTED);
     }
     
-    private Set<MetadataObjectType> createSupportedMetadataObjectTypes(final boolean indexSupported) {
+    private Set<MetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {
         Set<MetadataObjectType> result = new LinkedHashSet<>(16, 1F);
         result.add(MetadataObjectType.SCHEMA);
         result.add(MetadataObjectType.TABLE);
         result.add(MetadataObjectType.VIEW);
         result.add(MetadataObjectType.COLUMN);
-        if (indexSupported) {
+        if (option.isIndexSupported()) {
             result.add(MetadataObjectType.INDEX);
+        }
+        if (option.isSequenceSupported()) {
+            result.add(MetadataObjectType.SEQUENCE);
         }
         return result;
     }

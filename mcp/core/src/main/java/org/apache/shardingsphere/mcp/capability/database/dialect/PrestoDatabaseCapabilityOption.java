@@ -36,6 +36,8 @@ public final class PrestoDatabaseCapabilityOption implements DatabaseCapabilityO
     
     private final boolean crossSchemaQuerySupported = true;
     
+    private final boolean isSequenceSupported = false;
+    
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;

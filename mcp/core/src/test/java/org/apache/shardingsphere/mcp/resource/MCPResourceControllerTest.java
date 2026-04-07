@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.resource;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
@@ -74,10 +75,24 @@ class MCPResourceControllerTest {
     }
     
     @Test
+    void assertHandleSequenceMetadataItems() {
+        Map<String, Object> actual = createController().handle("shardingsphere://databases/runtime_db/schemas/public/sequences").toPayload();
+        assertThat(((List<?>) actual.get("items")).size(), is(1));
+        assertThat(((MCPSequenceMetadata) ((List<?>) actual.get("items")).get(0)).getSequence(), is("order_seq"));
+    }
+    
+    @Test
     void assertHandleWithUnsupportedIndexResource() {
         Map<String, Object> actual = createController().handle("shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes").toPayload();
         assertThat(actual.get("error_code"), is("unsupported"));
         assertThat(actual.get("message"), is("Index resources are not supported for the current database."));
+    }
+    
+    @Test
+    void assertHandleWithUnsupportedSequenceResource() {
+        Map<String, Object> actual = createController().handle("shardingsphere://databases/warehouse/schemas/warehouse/sequences").toPayload();
+        assertThat(actual.get("error_code"), is("unsupported"));
+        assertThat(actual.get("message"), is("Sequence resources are not supported for the current database."));
     }
     
     private MCPResourceController createController() {

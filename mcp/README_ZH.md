@@ -117,7 +117,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 - metadata 的 list / detail / capability discovery 统一走 `resources/read`。
 - 当前 public tools 只保留 `search_metadata` 和 `execute_query`。
-- `search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`。
+- `search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -166,6 +166,22 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 - 响应类型是 `text/event-stream`。
 - `data:` 行中会包含 `shardingsphere://capabilities` 对应的 resource 内容。
+
+### 读取 `shardingsphere://databases/orders/schemas/public/sequences`
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"resource-2","method":"resources/read","params":{"uri":"shardingsphere://databases/orders/schemas/public/sequences"}}'
+```
+
+预期结果：
+
+- 响应类型是 `text/event-stream`。
+- 当目标数据库声明支持 `SEQUENCE` 时，`data:` 行中会包含 `order_seq` 之类的 sequence metadata。
 
 ### 可选：打开 SSE 流
 

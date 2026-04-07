@@ -37,6 +37,8 @@ public final class MySQLDatabaseCapabilityOption implements DatabaseCapabilityOp
     
     private final boolean crossSchemaQuerySupported = false;
     
+    private final boolean isSequenceSupported = false;
+    
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);

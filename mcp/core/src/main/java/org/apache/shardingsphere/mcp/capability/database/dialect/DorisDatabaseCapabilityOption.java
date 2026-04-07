@@ -36,6 +36,8 @@ public final class DorisDatabaseCapabilityOption implements DatabaseCapabilityOp
     
     private final boolean crossSchemaQuerySupported = false;
     
+    private final boolean isSequenceSupported = false;
+    
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;

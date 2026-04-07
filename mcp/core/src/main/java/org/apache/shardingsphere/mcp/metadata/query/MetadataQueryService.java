@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
@@ -262,6 +263,39 @@ public final class MetadataQueryService {
         return findIndex(queryIndexes(databaseName, schemaName, tableName), indexName);
     }
     
+    /**
+     * Query sequences.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @return sequence metadata
+     */
+    public List<MCPSequenceMetadata> querySequences(final String databaseName, final String schemaName) {
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.SEQUENCE),
+                () -> new MCPUnsupportedException("Sequence resources are not supported for the current database."));
+        return findSchema(databaseName, schemaName).map(optional -> sortSequences(optional.getSequences())).orElse(Collections.emptyList());
+    }
+    
+    private List<MCPSequenceMetadata> sortSequences(final Collection<MCPSequenceMetadata> sequences) {
+        List<MCPSequenceMetadata> result = new LinkedList<>(sequences);
+        result.sort(Comparator.comparing(MCPSequenceMetadata::getSequence));
+        return result;
+    }
+    
+    /**
+     * Query sequence.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param sequenceName sequence name
+     * @return sequence metadata
+     */
+    public Optional<MCPSequenceMetadata> querySequence(final String databaseName, final String schemaName, final String sequenceName) {
+        ShardingSpherePreconditions.checkState(isSupportedMetadataObjectType(databaseName, MetadataObjectType.SEQUENCE),
+                () -> new MCPUnsupportedException("Sequence resources are not supported for the current database."));
+        return findSequence(querySequences(databaseName, schemaName), sequenceName).map(MCPSequenceMetadata::createDetail);
+    }
+    
     private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
         return metadataCatalog.findMetadata(databaseName).flatMap(optional -> optional.getSchemas().stream().filter(each -> schemaName.equals(each.getSchema())).findFirst());
     }
@@ -280,6 +314,10 @@ public final class MetadataQueryService {
     
     private Optional<MCPIndexMetadata> findIndex(final Collection<MCPIndexMetadata> indexes, final String indexName) {
         return indexes.stream().filter(each -> indexName.equals(each.getIndex())).findFirst();
+    }
+    
+    private Optional<MCPSequenceMetadata> findSequence(final Collection<MCPSequenceMetadata> sequences, final String sequenceName) {
+        return sequences.stream().filter(each -> sequenceName.equals(each.getSequence())).findFirst();
     }
     
     /**

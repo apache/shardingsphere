@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
@@ -34,6 +35,8 @@ import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.SequenceHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.SequencesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemaHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnHandler;
@@ -107,6 +110,14 @@ class ResourceHandlerTest {
         assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
     }
     
+    @Test
+    void assertHandleWithUnsupportedSequenceResource() {
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new SequencesHandler().handle(runtimeContext,
+                match("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                        "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
+        assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
+    }
+    
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {
         return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
     }
@@ -136,6 +147,10 @@ class ResourceHandlerTest {
             }
             if (each instanceof MCPIndexMetadata) {
                 result.add(((MCPIndexMetadata) each).getIndex());
+                continue;
+            }
+            if (each instanceof MCPSequenceMetadata) {
+                result.add(((MCPSequenceMetadata) each).getSequence());
             }
         }
         return result;
@@ -151,13 +166,17 @@ class ResourceHandlerTest {
                 new HandlerCase("service capabilities", new ServiceCapabilitiesHandler(), "shardingsphere://capabilities",
                         "shardingsphere://capabilities", HandlerResultType.SERVICE_CAPABILITY, "", List.of()),
                 new HandlerCase("databases", new DatabasesHandler(), "shardingsphere://databases",
-                        "shardingsphere://databases", HandlerResultType.METADATA, "", List.of("logic_db", "warehouse")),
+                        "shardingsphere://databases", HandlerResultType.METADATA, "", List.of("logic_db", "runtime_db", "warehouse")),
                 new HandlerCase("database", new DatabaseHandler(), "shardingsphere://databases/{database}",
                         "shardingsphere://databases/logic_db", HandlerResultType.METADATA, "", List.of("logic_db")),
                 new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities",
                         "shardingsphere://databases/logic_db/capabilities", HandlerResultType.DATABASE_CAPABILITY, "logic_db", List.of()),
                 new HandlerCase("database schemas", new SchemasHandler(), "shardingsphere://databases/{database}/schemas",
                         "shardingsphere://databases/logic_db/schemas", HandlerResultType.METADATA, "", List.of("public")),
+                new HandlerCase("database schema sequences", new SequencesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                        "shardingsphere://databases/runtime_db/schemas/public/sequences", HandlerResultType.METADATA, "", List.of("order_seq")),
+                new HandlerCase("database schema sequence", new SequenceHandler(), "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
+                        "shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq", HandlerResultType.METADATA, "", List.of("order_seq")),
                 new HandlerCase("database schema", new SchemaHandler(), "shardingsphere://databases/{database}/schemas/{schema}",
                         "shardingsphere://databases/logic_db/schemas/public", HandlerResultType.METADATA, "", List.of("public")),
                 new HandlerCase("database schema tables", new TablesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables",

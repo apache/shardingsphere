@@ -117,7 +117,7 @@ Notes:
 
 - Metadata list/detail/capability discovery is unified through `resources/read`.
 - The current public tools are limited to `search_metadata` and `execute_query`.
-- `search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, and `index` only.
+- `search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence` only.
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -166,6 +166,22 @@ Expected result:
 
 - The response content type is `text/event-stream`.
 - The `data:` line contains one resource payload for `shardingsphere://capabilities`.
+
+### Read `shardingsphere://databases/orders/schemas/public/sequences`
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"resource-2","method":"resources/read","params":{"uri":"shardingsphere://databases/orders/schemas/public/sequences"}}'
+```
+
+Expected result:
+
+- The response content type is `text/event-stream`.
+- The `data:` line contains sequence metadata such as `order_seq` when the database declares `SEQUENCE` support.
 
 ### Optional: open the SSE stream
 

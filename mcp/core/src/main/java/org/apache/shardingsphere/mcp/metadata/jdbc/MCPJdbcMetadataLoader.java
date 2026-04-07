@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
@@ -29,6 +30,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -46,6 +48,20 @@ public final class MCPJdbcMetadataLoader {
     
     private static final Set<String> SYSTEM_SCHEMAS = Set.of("INFORMATION_SCHEMA", "PG_CATALOG", "SYSTEM_LOBS");
     
+    private static final String INFORMATION_SCHEMA_SEQUENCE_QUERY =
+            "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
+    
+    private static final String SQL_SERVER_SEQUENCE_QUERY =
+            "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id";
+    
+    private static final String ORACLE_SEQUENCE_QUERY = "SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES";
+    
+    private static final String MARIADB_SEQUENCE_QUERY =
+            "SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'";
+    
+    private static final String FIREBIRD_SEQUENCE_QUERY =
+            "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
+    
     /**
      * Load database metadata catalog.
      *
@@ -58,7 +74,7 @@ public final class MCPJdbcMetadataLoader {
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
             try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                databaseMetadataMap.put(databaseName, loadDatabaseMetadata(databaseName, entry.getValue().getDatabaseType(), connection.getMetaData()));
+                databaseMetadataMap.put(databaseName, loadDatabaseMetadata(databaseName, entry.getValue().getDatabaseType(), connection, connection.getMetaData()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
@@ -66,11 +82,12 @@ public final class MCPJdbcMetadataLoader {
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
     
-    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final String databaseType, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
         DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseType, databaseVersion);
         loadTables(accumulator, databaseMetaData);
         loadViews(accumulator, databaseMetaData);
+        loadSequences(accumulator, databaseType, connection);
         return accumulator.build();
     }
     
@@ -112,6 +129,51 @@ public final class MCPJdbcMetadataLoader {
                     viewMetadata.addColumn(each);
                 }
             }
+        }
+    }
+    
+    private void loadSequences(final DatabaseMetadataAccumulator accumulator, final String databaseType, final Connection connection) {
+        String sequenceQuery = getSequenceQuery(databaseType);
+        if (null == sequenceQuery) {
+            return;
+        }
+        try (
+                Statement statement = connection.createStatement();
+                ResultSet sequences = statement.executeQuery(sequenceQuery)) {
+            while (sequences.next()) {
+                String schemaName = Objects.toString(sequences.getString("SEQUENCE_SCHEMA"), "").trim();
+                if (isSystemSchema(schemaName)) {
+                    continue;
+                }
+                String sequenceName = Objects.toString(sequences.getString("SEQUENCE_NAME"), "").trim();
+                if (!sequenceName.isEmpty()) {
+                    accumulator.getSchemaAccumulator(schemaName).addSequence(sequenceName);
+                }
+            }
+        } catch (final SQLException ignored) {
+        }
+    }
+    
+    private String getSequenceQuery(final String databaseType) {
+        if (null == databaseType || databaseType.isBlank()) {
+            return null;
+        }
+        switch (databaseType.toUpperCase(Locale.ENGLISH)) {
+            case "POSTGRESQL":
+            case "OPENGAUSS":
+                return INFORMATION_SCHEMA_SEQUENCE_QUERY;
+            case "SQLSERVER":
+                return SQL_SERVER_SEQUENCE_QUERY;
+            case "ORACLE":
+                return ORACLE_SEQUENCE_QUERY;
+            case "MARIADB":
+                return MARIADB_SEQUENCE_QUERY;
+            case "FIREBIRD":
+                return FIREBIRD_SEQUENCE_QUERY;
+            case "H2":
+                return "SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES";
+            default:
+                return null;
         }
     }
     
@@ -195,6 +257,8 @@ public final class MCPJdbcMetadataLoader {
         
         private final Map<String, ViewMetadataAccumulator> viewAccumulators = new LinkedHashMap<>(16, 1F);
         
+        private final Map<String, MCPSequenceMetadata> sequences = new LinkedHashMap<>(16, 1F);
+        
         private SchemaMetadataAccumulator(final String database, final String schema) {
             this.database = database;
             this.schema = schema;
@@ -218,6 +282,10 @@ public final class MCPJdbcMetadataLoader {
             return result;
         }
         
+        private void addSequence(final String sequence) {
+            sequences.putIfAbsent(sequence, new MCPSequenceMetadata(database, schema, sequence));
+        }
+        
         private MCPSchemaMetadata build() {
             List<MCPTableMetadata> tables = new LinkedList<>();
             for (TableMetadataAccumulator each : tableAccumulators.values()) {
@@ -227,7 +295,7 @@ public final class MCPJdbcMetadataLoader {
             for (ViewMetadataAccumulator each : viewAccumulators.values()) {
                 views.add(each.build());
             }
-            return new MCPSchemaMetadata(database, schema, tables, views);
+            return new MCPSchemaMetadata(database, schema, tables, views, new LinkedList<>(sequences.values()));
         }
     }
     

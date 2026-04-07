@@ -66,6 +66,16 @@ class ToolHandlerTest {
     }
     
     @Test
+    void assertHandleSearchMetadataWithSequence() throws SQLException {
+        MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1",
+                Map.of("database", "runtime_db", "query", "order", "object_types", List.of(MetadataObjectType.SEQUENCE.name())));
+        Map<String, Object> actualPayload = actual.toPayload();
+        assertThat(actual, isA(MCPMetadataResponse.class));
+        assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
+        assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_seq"));
+    }
+    
+    @Test
     void assertHandleSearchMetadataWithEmptyQuery() throws SQLException {
         MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1", Map.of("database", "logic_db"));
         Map<String, Object> actualPayload = actual.toPayload();

@@ -35,6 +35,7 @@ import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -131,8 +132,10 @@ class MCPRuntimeLauncherTest {
             }
             connectionCount++;
             DatabaseMetaData databaseMetaData = createDatabaseMetaData();
+            Statement statement = createStatement();
             return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
-                    (proxy, method, args) -> "getMetaData".equals(method.getName()) ? databaseMetaData : getDefaultValue(method.getReturnType()));
+                    (proxy, method, args) -> "getMetaData".equals(method.getName()) ? databaseMetaData
+                            : "createStatement".equals(method.getName()) ? statement : getDefaultValue(method.getReturnType()));
         }
         
         @Override
@@ -179,6 +182,11 @@ class MCPRuntimeLauncherTest {
         private ResultSet createEmptyResultSet() {
             return (ResultSet) Proxy.newProxyInstance(ResultSet.class.getClassLoader(), new Class[]{ResultSet.class},
                     (proxy, method, args) -> "next".equals(method.getName()) ? false : getDefaultValue(method.getReturnType()));
+        }
+        
+        private Statement createStatement() {
+            return (Statement) Proxy.newProxyInstance(Statement.class.getClassLoader(), new Class[]{Statement.class},
+                    (proxy, method, args) -> "executeQuery".equals(method.getName()) ? createEmptyResultSet() : getDefaultValue(method.getReturnType()));
         }
         
         private Object getDefaultValue(final Class<?> returnType) {
