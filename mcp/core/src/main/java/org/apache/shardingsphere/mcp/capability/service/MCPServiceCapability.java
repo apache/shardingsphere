@@ -35,5 +35,5 @@ public final class MCPServiceCapability {
     
     private final List<String> supportedTools;
     
-    private final Set<SupportedMCPStatement> supportedStatementClasses;
+    private final Set<SupportedMCPStatement> supportedStatements;
 }

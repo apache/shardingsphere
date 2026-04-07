@@ -35,6 +35,6 @@ public final class MCPServiceCapabilityResponse implements MCPResponse {
     public Map<String, Object> toPayload() {
         return Map.of("supportedResources", serviceCapability.getSupportedResources(),
                 "supportedTools", serviceCapability.getSupportedTools(),
-                "supportedStatementClasses", serviceCapability.getSupportedStatementClasses());
+                "supportedStatementClasses", serviceCapability.getSupportedStatements());
     }
 }
