@@ -15,50 +15,53 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement;
+package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch;
 
+import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacket;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdBlrRowMetadata;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 
-import java.util.List;
-
 /**
- * Firebird allocate statement packet.
+ * Firebird create batch command packet.
  */
 @Getter
-public final class FirebirdFetchStatementPacket extends FirebirdCommandPacket {
+public final class FirebirdBatchCreateCommandPacket extends FirebirdCommandPacket {
     
-    private final int statementId;
+    private final int statementHandle;
     
-    private final List<FirebirdBinaryColumnType> parameterTypes;
+    private final FirebirdBlrRowMetadata batchBlr;
     
-    private final int message;
+    private final long batchMessageLength;
     
-    private final int fetchSize;
+    private final ByteBuf batchParametersBuffer;
     
-    public FirebirdFetchStatementPacket(final FirebirdPacketPayload payload) {
+    public FirebirdBatchCreateCommandPacket(final FirebirdPacketPayload payload, final int connectionId) {
         payload.skipReserved(4);
-        statementId = payload.readInt4();
-        parameterTypes = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer()).getColumnTypes();
-        message = payload.readInt4();
-        fetchSize = payload.readInt4();
+        statementHandle = payload.readInt4();
+        batchBlr = FirebirdBlrRowMetadata.parseBLR(payload.readBuffer());
+        batchMessageLength = payload.readInt4Unsigned();
+        FirebirdBatchSendMessageCommandPacket.clearBatchMetadataCache(connectionId);
+        FirebirdBatchSendMessageCommandPacket.registerBatchColumnTypes(connectionId, batchBlr.getColumnTypes());
+        batchParametersBuffer = payload.readBuffer();
+    }
+    
+    @Override
+    protected void write(final FirebirdPacketPayload payload) {
     }
     
     /**
      * Get length of packet.
      *
      * @param payload Firebird packet payload
-     * @return Length of packet
+     * @return length of packet
      */
     public static int getLength(final FirebirdPacketPayload payload) {
         int length = 8;
         length += payload.getBufferLength(length);
-        return length + 8;
-    }
-    
-    @Override
-    protected void write(final FirebirdPacketPayload payload) {
+        length += 4;
+        length += payload.getBufferLength(length);
+        return length;
     }
 }

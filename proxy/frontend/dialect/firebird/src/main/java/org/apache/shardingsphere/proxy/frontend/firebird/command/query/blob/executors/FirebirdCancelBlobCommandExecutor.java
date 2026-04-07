@@ -35,11 +35,11 @@ import java.util.OptionalLong;
  */
 @RequiredArgsConstructor
 public final class FirebirdCancelBlobCommandExecutor implements CommandExecutor {
-    
+
     private final FirebirdCancelBlobCommandPacket packet;
-    
+
     private final ConnectionSession connectionSession;
-    
+
     @Override
     public Collection<DatabasePacket> execute() {
         int blobHandle = packet.getBlobHandle();

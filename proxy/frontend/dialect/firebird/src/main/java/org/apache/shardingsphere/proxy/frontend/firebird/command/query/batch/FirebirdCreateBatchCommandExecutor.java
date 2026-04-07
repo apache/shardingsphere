@@ -15,32 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Seek blob command executor for Firebird.
+ * Create Batch command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
-
-    private final FirebirdSeekBlobCommandPacket packet;
-
+public final class FirebirdCreateBatchCommandExecutor implements CommandExecutor {
+    
+    private final FirebirdBatchCreateCommandPacket packet;
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
-    public Collection<DatabasePacket> execute() {
-        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
+    public Collection<DatabasePacket> execute() throws SQLException {
+        int statementId = packet.getStatementHandle();
+        FirebirdBatchRegistry.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), statementId);
+        FirebirdBatchRegistry.getInstance().registerBatchStatement(connectionSession.getConnectionId(), statementId,
+                new FirebirdBatchStatement(packet.getStatementHandle()));
         return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
     }
 }

@@ -59,7 +59,17 @@ public final class FirebirdTransactionIdGenerator {
      * @return generated transaction ID
      */
     public int nextTransactionId(final int connectionId) {
-        return connectionRegistry.get(connectionId).incrementAndGet();
+        return getTransactionCounter(connectionId).incrementAndGet();
+    }
+    
+    /**
+     * Get current transaction ID for connection.
+     *
+     * @param connectionId connection ID
+     * @return transaction ID
+     */
+    public int getTransactionId(final int connectionId) {
+        return getTransactionCounter(connectionId).get();
     }
     
     /**
@@ -70,4 +80,13 @@ public final class FirebirdTransactionIdGenerator {
     public void unregisterConnection(final int connectionId) {
         connectionRegistry.remove(connectionId);
     }
+    
+    private AtomicInteger getTransactionCounter(final int connectionId) {
+        AtomicInteger result = connectionRegistry.get(connectionId);
+        if (null == result) {
+            throw new IllegalStateException("No transaction ID generator found for connectionId: " + connectionId);
+        }
+        return result;
+    }
+    
 }

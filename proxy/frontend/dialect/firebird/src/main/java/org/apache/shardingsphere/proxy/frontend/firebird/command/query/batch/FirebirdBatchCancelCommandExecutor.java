@@ -15,32 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors;
+package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Seek blob command executor for Firebird.
+ * Batch cancel command executor for Firebird.
  */
 @RequiredArgsConstructor
-public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
-
-    private final FirebirdSeekBlobCommandPacket packet;
-
+public final class FirebirdBatchCancelCommandExecutor implements CommandExecutor {
+    
+    private final FirebirdBatchCancelCommandPacket packet;
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
-    public Collection<DatabasePacket> execute() {
-        int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
-        return Collections.singleton(new FirebirdGenericResponsePacket().setHandle(statementId));
+    public Collection<DatabasePacket> execute() throws SQLException {
+        FirebirdBatchRegistry.getInstance().unregisterBatchStatement(connectionSession.getConnectionId(), packet.getStatementHandle());
+        return Collections.singleton(new FirebirdGenericResponsePacket());
     }
 }

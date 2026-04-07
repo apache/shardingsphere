@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.firebird.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.database.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
@@ -106,7 +107,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 return;
             }
             int readerIndex = buffer.readerIndex();
-            FirebirdCommandPacketType commandType = FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex));
+            FirebirdCommandPacketType commandType = (pendingPacketType != null) ? pendingPacketType : FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex));
             if (FirebirdCommandPacketType.VOID == commandType) {
                 buffer.skipBytes(MESSAGE_TYPE_LENGTH);
                 continue;
@@ -118,7 +119,19 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
                 return;
             }
             pendingPacketType = null;
-            out.add(buffer.readRetainedSlice(packetLength));
+            // TODO replace temporary implementation for prepending BATCH_MSG chunk.
+            if (commandType == FirebirdCommandPacketType.BATCH_MSG) {
+                CompositeByteBuf result = context.alloc().compositeBuffer(2);
+                try {
+                    result.addComponent(true, Unpooled.buffer(MESSAGE_TYPE_LENGTH).writeInt(FirebirdCommandPacketType.BATCH_MSG.getValue()));
+                    result.addComponent(true, buffer.readRetainedSlice(packetLength));
+                    out.add(result.readRetainedSlice(packetLength));
+                } finally {
+                    result.release();
+                }
+            } else {
+                out.add(buffer.readRetainedSlice(packetLength));
+            }
         }
     }
     
@@ -129,11 +142,15 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
             int expectedLength = FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
-                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get());
-            if (expectedLength <= 0) {
-                return readableBytes;
+                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get());
+            if (expectedLength < 0) {
+                if (FirebirdCommandPacketType.BATCH_MSG == commandType && -1 != expectedLength) {
+                    readerIndex = -expectedLength;
+                    buffer.readerIndex(readerIndex);
+                }
+                return -1;
             }
-            return readableBytes >= expectedLength ? expectedLength : -1;
+            return 0 == expectedLength ? readableBytes : (readableBytes >= expectedLength ? expectedLength : -1);
         } catch (final IndexOutOfBoundsException ex) {
             return -1;
         } finally {
