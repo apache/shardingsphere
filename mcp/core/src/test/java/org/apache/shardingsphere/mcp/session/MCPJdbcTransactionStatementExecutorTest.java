@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,7 +54,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify(sql));
+        SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify(sql));
         assertThat(actual.getStatementType(), is(expectedStatementType));
         assertThat(actual.getMessage(), is(expectedMessage));
         assertDatabaseExecution(sql, jdbcTransactionResourceManager);
@@ -88,7 +88,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         MCPSessionManager sessionManager = new MCPSessionManager(jdbcTransactionResourceManager);
         sessionManager.createSession("session-1");
         MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
-        ExecuteQueryResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
+        SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
         assertThat(actual.getStatementType(), is("BEGIN"));
         assertThat(actual.getMessage(), is("Transaction started."));
         verify(jdbcTransactionResourceManager).beginTransaction("session-1", "logic_db");

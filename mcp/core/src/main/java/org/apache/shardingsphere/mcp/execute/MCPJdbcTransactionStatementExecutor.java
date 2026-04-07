@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 
@@ -48,7 +48,7 @@ public final class MCPJdbcTransactionStatementExecutor {
      * @throws MCPTransactionStateException when the transaction state does not allow the operation
      * @throws MCPUnsupportedException when the database does not support the requested transaction feature
      */
-    public ExecuteQueryResponse execute(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
+    public SQLExecutionResponse execute(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final ClassificationResult classificationResult) {
         String statementType = classificationResult.getStatementType();
         try {
             ShardingSpherePreconditions.checkState(sessionManager.hasSession(sessionId), MCPSessionNotExistedException::new);
@@ -77,51 +77,51 @@ public final class MCPJdbcTransactionStatementExecutor {
         }
     }
     
-    private ExecuteQueryResponse executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final String statementType) {
+    private SQLExecutionResponse executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final String statementType) {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
         sessionManager.getTransactionResourceManager().beginTransaction(sessionId, databaseName);
-        return ExecuteQueryResponse.statementAck(statementType, "Transaction started.");
+        return SQLExecutionResponse.statementAck(statementType, "Transaction started.");
     }
     
-    private ExecuteQueryResponse executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
+    private SQLExecutionResponse executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
         sessionManager.getTransactionResourceManager().commitTransaction(sessionId);
-        return ExecuteQueryResponse.statementAck("COMMIT", "Transaction committed.");
+        return SQLExecutionResponse.statementAck("COMMIT", "Transaction committed.");
     }
     
-    private ExecuteQueryResponse executeRollback(final String sessionId, final MCPDatabaseCapability databaseCapability) {
+    private SQLExecutionResponse executeRollback(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         if (!databaseCapability.isSupportsTransactionControl()) {
             throw new MCPUnsupportedException("Transaction control is not supported.");
         }
         sessionManager.getTransactionResourceManager().rollbackTransaction(sessionId);
-        return ExecuteQueryResponse.statementAck("ROLLBACK", "Transaction rolled back.");
+        return SQLExecutionResponse.statementAck("ROLLBACK", "Transaction rolled back.");
     }
     
-    private ExecuteQueryResponse executeSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
+    private SQLExecutionResponse executeSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
         sessionManager.getTransactionResourceManager().createSavepoint(sessionId, savepointName);
-        return ExecuteQueryResponse.statementAck("SAVEPOINT", "Savepoint created.");
+        return SQLExecutionResponse.statementAck("SAVEPOINT", "Savepoint created.");
     }
     
-    private ExecuteQueryResponse executeRollbackSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
+    private SQLExecutionResponse executeRollbackSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
         sessionManager.getTransactionResourceManager().rollbackToSavepoint(sessionId, savepointName);
-        return ExecuteQueryResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
+        return SQLExecutionResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
-    private ExecuteQueryResponse executeReleaseSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
+    private SQLExecutionResponse executeReleaseSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         if (!databaseCapability.isSupportsSavepoint()) {
             throw new MCPUnsupportedException("Savepoint is not supported.");
         }
         sessionManager.getTransactionResourceManager().releaseSavepoint(sessionId, savepointName);
-        return ExecuteQueryResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
+        return SQLExecutionResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
     }
 }

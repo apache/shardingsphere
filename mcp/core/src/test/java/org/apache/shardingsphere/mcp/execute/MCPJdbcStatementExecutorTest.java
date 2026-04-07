@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.execute;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class MCPJdbcStatementExecutorTest {
         String jdbcUrl = createJdbcUrl("adapter-query");
         initializeDatabase(jdbcUrl);
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(Map.of("logic_db", jdbcUrl));
-        ExecuteQueryResponse actual = statementExecutor.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id"),
+        SQLExecutionResponse actual = statementExecutor.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id"),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(2));
@@ -61,7 +61,7 @@ class MCPJdbcStatementExecutorTest {
         String jdbcUrl = createJdbcUrl("adapter-query-truncation");
         initializeDatabase(jdbcUrl);
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(Map.of("logic_db", jdbcUrl));
-        ExecuteQueryResponse actual = statementExecutor.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id", 1),
+        SQLExecutionResponse actual = statementExecutor.execute(createExecutionRequest("logic_db", "SELECT status FROM orders ORDER BY order_id", 1),
                 new StatementClassifier().classify("SELECT status FROM orders ORDER BY order_id"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
@@ -73,7 +73,7 @@ class MCPJdbcStatementExecutorTest {
         String jdbcUrl = createJdbcUrl("adapter-update");
         initializeDatabase(jdbcUrl);
         MCPJdbcStatementExecutor statementExecutor = createStatementExecutor(Map.of("logic_db", jdbcUrl));
-        ExecuteQueryResponse actual = statementExecutor.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
+        SQLExecutionResponse actual = statementExecutor.execute(createExecutionRequest("logic_db", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"),
                 new StatementClassifier().classify("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(1));

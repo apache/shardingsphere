@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.protocol.response;
+package org.apache.shardingsphere.mcp.tool.response;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -30,11 +31,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * Execute query response.
+ * SQL execution response.
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ExecuteQueryResponse implements MCPResponse {
+public final class SQLExecutionResponse implements MCPResponse {
     
     private final ExecuteQueryResultKind resultKind;
     
@@ -60,8 +61,8 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @param truncated truncation flag
      * @return result-set response
      */
-    public static ExecuteQueryResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated);
+    public static SQLExecutionResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
+        return new SQLExecutionResponse(ExecuteQueryResultKind.RESULT_SET, columns, rows, 0, "QUERY", "OK", "", truncated);
     }
     
     /**
@@ -71,8 +72,8 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @param affectedRows affected row count
      * @return update-count response
      */
-    public static ExecuteQueryResponse updateCount(final String statementType, final int affectedRows) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows, statementType, "OK", "", false);
+    public static SQLExecutionResponse updateCount(final String statementType, final int affectedRows) {
+        return new SQLExecutionResponse(ExecuteQueryResultKind.UPDATE_COUNT, Collections.emptyList(), Collections.emptyList(), affectedRows, statementType, "OK", "", false);
     }
     
     /**
@@ -82,8 +83,8 @@ public final class ExecuteQueryResponse implements MCPResponse {
      * @param message acknowledgement message
      * @return acknowledgement response
      */
-    public static ExecuteQueryResponse statementAck(final String statementType, final String message) {
-        return new ExecuteQueryResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0, statementType, "OK", message, false);
+    public static SQLExecutionResponse statementAck(final String statementType, final String message) {
+        return new SQLExecutionResponse(ExecuteQueryResultKind.STATEMENT_ACK, Collections.emptyList(), Collections.emptyList(), 0, statementType, "OK", message, false);
     }
     
     @Override

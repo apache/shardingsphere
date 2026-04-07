@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
@@ -134,7 +134,7 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
@@ -147,7 +147,7 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
         assertThat(actual.getAffectedRows(), is(3));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
@@ -160,7 +160,7 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionManager sessionManager = createSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig), transactionResourceManager);
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("BEGIN", 10));
         assertThat(actual.getMessage(), is("Transaction started."));
         verify(transactionResourceManager).beginTransaction("session-1", "logic_db");
         verifyNoInteractions(runtimeDatabaseConfig);
@@ -174,7 +174,7 @@ class MCPSQLExecutionFacadeTest {
         sessionManager.createSession("session-1");
         MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
         MCPDatabaseMetadata actualMetadata = metadataCatalog.findMetadata("logic_db").orElseThrow();
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
@@ -192,7 +192,7 @@ class MCPSQLExecutionFacadeTest {
         sessionManager.createSession("session-1");
         MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO PUBLIC", 10));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("GRANT SELECT ON orders TO PUBLIC", 10));
         MCPDatabaseMetadata actualMetadata = metadataCatalog.findMetadata("logic_db").orElseThrow();
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
         assertThat(actual.getMessage(), is("Statement executed."));
@@ -221,7 +221,7 @@ class MCPSQLExecutionFacadeTest {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
         sessionManager.createSession("session-1");
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
-        ExecuteQueryResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
         assertThat(actual.getRows().size(), is(1));
         verify(runtimeDatabaseConfig).openConnection("logic_db");

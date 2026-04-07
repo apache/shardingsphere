@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupportedException;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
 import java.sql.Connection;
@@ -68,7 +68,7 @@ public final class MCPJdbcStatementExecutor {
      * @throws MCPQueryFailedException when query execution fails
      * @throws MCPUnavailableException when the runtime database configuration is unavailable
      */
-    public ExecuteQueryResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
         Connection connection = null;
         boolean needCloseConnection = false;
         try {
@@ -100,10 +100,10 @@ public final class MCPJdbcStatementExecutor {
                         }
                         return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows());
                     case DML:
-                        return ExecuteQueryResponse.updateCount(classificationResult.getStatementType(), statement.getUpdateCount());
+                        return SQLExecutionResponse.updateCount(classificationResult.getStatementType(), statement.getUpdateCount());
                     case DDL:
                     case DCL:
-                        return ExecuteQueryResponse.statementAck(classificationResult.getStatementType(), "Statement executed.");
+                        return SQLExecutionResponse.statementAck(classificationResult.getStatementType(), "Statement executed.");
                     default:
                         throw new StatementClassNotSupportedException();
                 }
@@ -126,7 +126,7 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private ExecuteQueryResponse createResultSetResponse(final ResultSet resultSet, final int maxRows) throws SQLException {
+    private SQLExecutionResponse createResultSetResponse(final ResultSet resultSet, final int maxRows) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
         for (int index = 1; index <= resultSetMetaData.getColumnCount(); index++) {
@@ -147,7 +147,7 @@ public final class MCPJdbcStatementExecutor {
             }
             rows.add(row);
         }
-        return ExecuteQueryResponse.resultSet(columns, rows, truncated);
+        return SQLExecutionResponse.resultSet(columns, rows, truncated);
     }
     
     private int resolveStatementMaxRows(final int maxRows) {

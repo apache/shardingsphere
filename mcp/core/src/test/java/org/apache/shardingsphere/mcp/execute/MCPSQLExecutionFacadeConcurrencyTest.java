@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
-import org.apache.shardingsphere.mcp.protocol.response.ExecuteQueryResponse;
+import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.junit.jupiter.api.Test;
@@ -75,11 +75,11 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPSQLExecutionFacade facade = createFacade(sessionManager);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
-            Future<ExecuteQueryResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "BEGIN")));
+            Future<SQLExecutionResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "BEGIN")));
             assertTrue(firstInvocationStarted.await(1, TimeUnit.SECONDS));
             assertFalse(firstFuture.isDone());
             CountDownLatch secondCompleted = new CountDownLatch(1);
-            Future<ExecuteQueryResponse> secondFuture = executorService.submit(() -> {
+            Future<SQLExecutionResponse> secondFuture = executorService.submit(() -> {
                 try {
                     return facade.execute(createExecutionRequest("session-1", "BEGIN"));
                 } finally {
@@ -118,11 +118,11 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPSQLExecutionFacade facade = createFacade(sessionManager);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
-            Future<ExecuteQueryResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "SELECT * FROM orders")));
+            Future<SQLExecutionResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "SELECT * FROM orders")));
             assertTrue(firstInvocationStarted.await(1, TimeUnit.SECONDS));
             assertFalse(firstFuture.isDone());
             CountDownLatch secondCompleted = new CountDownLatch(1);
-            Future<ExecuteQueryResponse> secondFuture = executorService.submit(() -> {
+            Future<SQLExecutionResponse> secondFuture = executorService.submit(() -> {
                 try {
                     return facade.execute(createExecutionRequest("session-1", "SELECT * FROM orders"));
                 } finally {
@@ -159,8 +159,8 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         MCPSQLExecutionFacade facade = createFacade(sessionManager);
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         try {
-            Future<ExecuteQueryResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "SELECT * FROM orders")));
-            Future<ExecuteQueryResponse> secondFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-2", "SELECT * FROM orders")));
+            Future<SQLExecutionResponse> firstFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-1", "SELECT * FROM orders")));
+            Future<SQLExecutionResponse> secondFuture = executorService.submit(() -> facade.execute(createExecutionRequest("session-2", "SELECT * FROM orders")));
             assertFalse(firstFuture.isDone());
             assertTrue(concurrentEntries.await(1, TimeUnit.SECONDS));
             assertFalse(secondFuture.isDone());
