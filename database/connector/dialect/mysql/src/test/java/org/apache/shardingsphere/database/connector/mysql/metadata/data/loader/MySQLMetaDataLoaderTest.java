@@ -82,6 +82,36 @@ class MySQLMetaDataLoaderTest {
         assertThat(actual.size(), is(1));
         assertTrue(actual.iterator().next().getTables().isEmpty());
     }
+
+    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
+    @Test
+    void assertLoadWithNullCatalog() throws SQLException{
+        DataSource dataSource = mockDataSource();
+        ResultSet tableMetaDataResultSet = mockTableMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(TABLE_METADATA_SQL_WITH_TABLE).executeQuery()).thenReturn(tableMetaDataResultSet);
+
+        ResultSet simpleIndexMetaDataResultSet = mockSimpleIndexMetaDataResultSet();
+        when(dataSource.getConnection().prepareStatement(INDEX_METADATA_SQL).executeQuery()).thenReturn(simpleIndexMetaDataResultSet);
+        when(dataSource.getConnection().prepareStatement(VIEW_METADATA_SQL).executeQuery()).thenReturn(mock(ResultSet.class));
+        when(dataSource.getConnection().prepareStatement(CONSTRAINT_METADATA_SQL).executeQuery()).thenReturn(mock(ResultSet.class));
+        Map<String, String> cachedDatabaseTables = GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables();
+        String previous = cachedDatabaseTables.put("tbl", "fallback_db");
+        try {
+            when(dataSource.getConnection().getCatalog()).thenReturn(null);
+            DataTypeRegistry.load(dataSource, "MySQL");
+            Collection<SchemaMetaData> actual = dialectMetaDataLoader.load(
+                    new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, null)
+            );
+            assertTableMetaData(actual, false, false);
+        } finally {
+            if (null == previous) {
+                cachedDatabaseTables.remove("tbl");
+            } else {
+                cachedDatabaseTables.put("tbl", previous);
+            }
+        }
+
+    }
     
     @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
     @ParameterizedTest(name = "{0}")
