@@ -35,8 +35,6 @@ public final class MCPDatabaseCapability {
     
     private final String databaseType;
     
-    private final String minSupportedVersion;
-    
     private final Set<MetadataObjectType> supportedMetadataObjectTypes;
     
     private final Set<SupportedMCPStatement> supportedStatementClasses;

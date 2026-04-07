@@ -37,7 +37,6 @@ public final class MCPDatabaseCapabilityResponse implements MCPResponse {
         Map<String, Object> result = new LinkedHashMap<>(32, 1F);
         result.put("database", databaseCapability.getDatabase());
         result.put("databaseType", databaseCapability.getDatabaseType());
-        result.put("minSupportedVersion", databaseCapability.getMinSupportedVersion());
         result.put("supportedObjectTypes", databaseCapability.getSupportedMetadataObjectTypes());
         result.put("supportedStatementClasses", databaseCapability.getSupportedStatementClasses());
         result.put("supportsTransactionControl", databaseCapability.isSupportsTransactionControl());

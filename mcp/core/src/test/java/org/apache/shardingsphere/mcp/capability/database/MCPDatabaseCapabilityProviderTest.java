@@ -44,7 +44,6 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabase(), is("logic_db"));
         assertThat(actual.get().getDatabaseType(), is("MySQL"));
-        assertThat(actual.get().getMinSupportedVersion(), is("BASELINE"));
         assertThat(actual.get().getSupportedMetadataObjectTypes(),
                 is(EnumSet.of(MetadataObjectType.SCHEMA, MetadataObjectType.TABLE, MetadataObjectType.VIEW, MetadataObjectType.COLUMN, MetadataObjectType.INDEX)));
         assertTrue(actual.get().isSupportsTransactionControl());

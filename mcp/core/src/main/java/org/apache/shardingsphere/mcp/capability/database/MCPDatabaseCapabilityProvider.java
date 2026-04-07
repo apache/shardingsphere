@@ -47,14 +47,13 @@ public final class MCPDatabaseCapabilityProvider {
     }
     
     private Optional<MCPDatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
-        Optional<DatabaseCapabilityOption> databaseCapabilityOption = TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType);
-        return databaseCapabilityOption.map(optional -> createDefaultCapability(databaseName, databaseType, databaseVersion, optional));
+        return TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType).map(optional -> createDefaultCapability(databaseName, databaseType, databaseVersion, optional));
     }
     
     private MCPDatabaseCapability createDefaultCapability(final String databaseName, final String databaseType, final String databaseVersion, final DatabaseCapabilityOption option) {
         boolean supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
         TransactionCapability transactionCapability = option.getTransactionCapability();
-        return new MCPDatabaseCapability(databaseName, databaseType, "BASELINE", createSupportedMetadataObjectTypes(option),
+        return new MCPDatabaseCapability(databaseName, databaseType, createSupportedMetadataObjectTypes(option),
                 createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze), TransactionCapability.NONE != transactionCapability,
                 TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability, createSupportedTransactionStatements(transactionCapability),
                 true, 1000, 30000, option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze,
