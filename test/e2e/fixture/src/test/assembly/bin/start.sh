@@ -31,7 +31,7 @@ EXT_LIB=${DEPLOY_DIR}/ext-lib
 
 CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
-JAVA_OPTS=" -Djava.awt.headless=true -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=3308"
+JAVA_OPTS=" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:3308"
 
 JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xss1m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+DisableExplicitGC -XX:LargePageSizeInBytes=128m "
 
