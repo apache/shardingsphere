@@ -216,6 +216,11 @@ public final class IdentifierIndex<T> {
         return new Snapshot<>(Collections.unmodifiableMap(new LinkedHashMap<>(exactValues)), Collections.unmodifiableMap(immutableNormalizedIdentifiers));
     }
     
+    @Override
+    public String toString() {
+        return snapshot.getExactValues().toString();
+    }
+    
     private static final class Snapshot<T> {
         
         private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap());
