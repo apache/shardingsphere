@@ -45,7 +45,8 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getDatabase(), is("logic_db"));
         assertThat(actual.get().getDatabaseType(), is("MySQL"));
         assertThat(actual.get().getSupportedMetadataObjectTypes(),
-                is(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX)));
+                is(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN,
+                        SupportedMCPMetadataObjectType.INDEX)));
         assertTrue(actual.get().isSupportsTransactionControl());
         assertTrue(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));

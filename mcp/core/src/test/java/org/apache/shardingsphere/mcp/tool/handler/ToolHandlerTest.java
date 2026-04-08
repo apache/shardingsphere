@@ -58,7 +58,8 @@ class ToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadata() throws SQLException {
-        MCPResponse actual = new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1", Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name())));
+        MCPResponse actual =
+                new SearchMetadataToolHandler().handle(createRuntimeContext(), "session-1", Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name())));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(actual, isA(MCPMetadataResponse.class));
         assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
