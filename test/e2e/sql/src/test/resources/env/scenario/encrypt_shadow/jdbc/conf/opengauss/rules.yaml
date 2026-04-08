@@ -20,6 +20,7 @@ databaseName: encrypt_shadow
 dataSources:
   db:
     url: jdbc:opengauss://opengauss.encrypt_shadow.host:5432/db?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -30,6 +31,7 @@ dataSources:
     minPoolSize: 2
   encrypt_shadow_db:
     url: jdbc:opengauss://opengauss.encrypt_shadow.host:5432/encrypt_shadow_db?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

@@ -20,6 +20,7 @@ databaseName: readwrite_splitting_and_shadow
 dataSources:
   write_db:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -30,6 +31,7 @@ dataSources:
     minPoolSize: 2
   write_db_shadow:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db_shadow?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -40,6 +42,7 @@ dataSources:
     minPoolSize: 2
   read_0:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_0?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -50,6 +53,7 @@ dataSources:
     minPoolSize: 2
   read_1:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_1?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
