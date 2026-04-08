@@ -20,6 +20,7 @@ databaseName: passthrough
 dataSources:
   passthrough:
     url: jdbc:postgresql://postgresql.passthrough.host:5432/passthrough?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

@@ -20,6 +20,7 @@ databaseName: mask
 dataSources:
   encrypt:
     url: jdbc:postgresql://postgresql.mask.host:5432/mask?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
