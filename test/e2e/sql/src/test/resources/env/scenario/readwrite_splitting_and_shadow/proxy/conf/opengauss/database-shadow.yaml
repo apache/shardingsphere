@@ -20,6 +20,7 @@ databaseName: readwrite_splitting_and_shadow
 dataSources:
   write_db:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   write_db_shadow:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/write_db_shadow
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -38,6 +40,7 @@ dataSources:
     minPoolSize: 2
   read_0:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_0
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -47,6 +50,7 @@ dataSources:
     minPoolSize: 2
   read_1:
     url: jdbc:opengauss://opengauss.readwrite_splitting_and_shadow.host:5432/read_1
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
