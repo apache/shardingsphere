@@ -25,6 +25,9 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdOpenBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdPutBlobSegmentCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdSeekBlobCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.info.FirebirdInfoPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdAllocateStatementPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.FirebirdFetchStatementPacket;
@@ -44,6 +47,10 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.exec
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdOpenBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdPutBlobSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdSeekBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdCreateBatchCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdSendBatchMessageCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdBlobInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
@@ -74,11 +81,6 @@ class FirebirdCommandExecutorFactoryTest {
     @Test
     void assertNewInstanceWithInfoDatabase() {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdDatabaseInfoExecutor.class));
-    }
-    
-    @Test
-    void assertNewInstanceWithInfoBlob() {
-        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_BLOB, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdBlobInfoExecutor.class));
     }
     
     @Test
@@ -181,7 +183,31 @@ class FirebirdCommandExecutorFactoryTest {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.ROLLBACK, mock(FirebirdRollbackTransactionPacket.class), connectionSession),
                 isA(FirebirdRollbackTransactionCommandExecutor.class));
     }
-    
+
+    @Test
+    void assertNewInstanceWithBatchCreate() {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.BATCH_CREATE, mock(FirebirdBatchCreateCommandPacket.class), connectionSession),
+                isA(FirebirdCreateBatchCommandExecutor.class));
+    }
+
+    @Test
+    void assertNewInstanceWithBatchMessage() {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.BATCH_MSG, mock(CommandPacket.class), connectionSession),
+                isA(FirebirdSendBatchMessageCommandExecutor.class));
+    }
+
+    @Test
+    void assertNewInstanceWithBatchExecute() {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.BATCH_EXEC, mock(FirebirdBatchExecuteCommandPacket.class), connectionSession),
+                isA(FirebirdBatchExecuteCommandExecutor.class));
+    }
+
+    @Test
+    void assertNewInstanceWithBatchCancel() {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.BATCH_CANCEL, mock(FirebirdBatchCancelCommandPacket.class), connectionSession),
+                isA(FirebirdBatchCancelCommandExecutor.class));
+    }
+
     @Test
     void assertNewInstanceWithFreeStatement() {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.FREE_STATEMENT, mock(FirebirdFreeStatementPacket.class), connectionSession),
