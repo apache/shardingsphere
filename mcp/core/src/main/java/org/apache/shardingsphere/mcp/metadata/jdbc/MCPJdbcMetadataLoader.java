@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.mcp.metadata.jdbc;
 
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 
@@ -330,6 +332,7 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     private static final class ViewMetadataAccumulator {
         
         private final String database;
@@ -339,12 +342,6 @@ public final class MCPJdbcMetadataLoader {
         private final String view;
         
         private final Map<String, MCPColumnMetadata> columns = new LinkedHashMap<>(16, 1F);
-        
-        private ViewMetadataAccumulator(final String database, final String schema, final String view) {
-            this.database = database;
-            this.schema = schema;
-            this.view = view;
-        }
         
         private void addColumn(final String column) {
             columns.putIfAbsent(column, new MCPColumnMetadata(database, schema, "", view, column));
