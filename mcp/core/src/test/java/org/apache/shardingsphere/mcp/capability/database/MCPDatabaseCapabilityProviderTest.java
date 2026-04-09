@@ -42,7 +42,7 @@ class MCPDatabaseCapabilityProviderTest {
     void assertProvide() {
         Optional<MCPDatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("logic_db");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getDatabase(), is("logic_db"));
+        assertThat(actual.get().getDatabaseName(), is("logic_db"));
         assertThat(actual.get().getDatabaseType(), is("MySQL"));
         assertThat(actual.get().getSupportedMetadataObjectTypes(),
                 is(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN,

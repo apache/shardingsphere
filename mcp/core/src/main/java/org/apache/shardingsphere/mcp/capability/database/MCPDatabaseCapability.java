@@ -19,9 +19,10 @@ package org.apache.shardingsphere.mcp.capability.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
@@ -31,7 +32,7 @@ import java.util.Set;
 @Getter
 public final class MCPDatabaseCapability {
     
-    private final String database;
+    private final String databaseName;
     
     private final String databaseType;
     
@@ -46,6 +47,50 @@ public final class MCPDatabaseCapability {
     private final boolean supportsCrossSchemaSql;
     
     private final boolean supportsExplainAnalyze;
+    
+    public MCPDatabaseCapability(final String databaseName, final String databaseVersion, final DatabaseCapabilityOption option) {
+        this.databaseName = databaseName;
+        databaseType = option.getType();
+        supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(option);
+        supportedStatementClasses = createSupportedStatementClasses(databaseVersion, option);
+        transactionCapability = option.getTransactionCapability();
+        defaultSchemaSemantics = option.getDefaultSchemaSemantics();
+        supportsCrossSchemaSql = option.isCrossSchemaQuerySupported();
+        supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
+    }
+    
+    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {
+        Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
+        result.add(SupportedMCPMetadataObjectType.SCHEMA);
+        result.add(SupportedMCPMetadataObjectType.TABLE);
+        result.add(SupportedMCPMetadataObjectType.VIEW);
+        result.add(SupportedMCPMetadataObjectType.COLUMN);
+        if (option.isIndexSupported()) {
+            result.add(SupportedMCPMetadataObjectType.INDEX);
+        }
+        if (option.isSequenceSupported()) {
+            result.add(SupportedMCPMetadataObjectType.SEQUENCE);
+        }
+        return result;
+    }
+    
+    private Set<SupportedMCPStatement> createSupportedStatementClasses(final String databaseVersion, final DatabaseCapabilityOption option) {
+        Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
+        result.add(SupportedMCPStatement.QUERY);
+        result.add(SupportedMCPStatement.DML);
+        result.add(SupportedMCPStatement.DDL);
+        result.add(SupportedMCPStatement.DCL);
+        if (TransactionCapability.NONE != option.getTransactionCapability()) {
+            result.add(SupportedMCPStatement.TRANSACTION_CONTROL);
+        }
+        if (TransactionCapability.LOCAL_WITH_SAVEPOINT == option.getTransactionCapability()) {
+            result.add(SupportedMCPStatement.SAVEPOINT);
+        }
+        if (option.isExplainAnalyzeSupported(databaseVersion)) {
+            result.add(SupportedMCPStatement.EXPLAIN_ANALYZE);
+        }
+        return result;
+    }
     
     /**
      * Judge whether transaction control is supported.

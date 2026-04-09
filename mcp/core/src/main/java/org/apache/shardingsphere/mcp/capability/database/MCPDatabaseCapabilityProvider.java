@@ -19,14 +19,10 @@ package org.apache.shardingsphere.mcp.capability.database;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 
-import java.util.LinkedHashSet;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * MCP database capability provider.
@@ -47,48 +43,7 @@ public final class MCPDatabaseCapabilityProvider {
     }
     
     private Optional<MCPDatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
-        return TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType).map(optional -> createDefaultCapability(databaseName, databaseType, databaseVersion, optional));
-    }
-    
-    private MCPDatabaseCapability createDefaultCapability(final String databaseName, final String databaseType, final String databaseVersion, final DatabaseCapabilityOption option) {
-        boolean supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
-        TransactionCapability transactionCapability = option.getTransactionCapability();
-        return new MCPDatabaseCapability(databaseName, databaseType, createSupportedMetadataObjectTypes(option),
-                createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze), transactionCapability,
-                option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze);
-    }
-    
-    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {
-        Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
-        result.add(SupportedMCPMetadataObjectType.SCHEMA);
-        result.add(SupportedMCPMetadataObjectType.TABLE);
-        result.add(SupportedMCPMetadataObjectType.VIEW);
-        result.add(SupportedMCPMetadataObjectType.COLUMN);
-        if (option.isIndexSupported()) {
-            result.add(SupportedMCPMetadataObjectType.INDEX);
-        }
-        if (option.isSequenceSupported()) {
-            result.add(SupportedMCPMetadataObjectType.SEQUENCE);
-        }
-        return result;
-    }
-    
-    private Set<SupportedMCPStatement> createSupportedStatementClasses(final TransactionCapability transactionCapability, final boolean supportsExplainAnalyze) {
-        Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
-        result.add(SupportedMCPStatement.QUERY);
-        result.add(SupportedMCPStatement.DML);
-        result.add(SupportedMCPStatement.DDL);
-        result.add(SupportedMCPStatement.DCL);
-        if (TransactionCapability.NONE != transactionCapability) {
-            result.add(SupportedMCPStatement.TRANSACTION_CONTROL);
-        }
-        if (TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability) {
-            result.add(SupportedMCPStatement.SAVEPOINT);
-        }
-        if (supportsExplainAnalyze) {
-            result.add(SupportedMCPStatement.EXPLAIN_ANALYZE);
-        }
-        return result;
+        return TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType).map(optional -> new MCPDatabaseCapability(databaseName, databaseVersion, optional));
     }
     
     private String getDatabaseVersion(final String databaseName) {

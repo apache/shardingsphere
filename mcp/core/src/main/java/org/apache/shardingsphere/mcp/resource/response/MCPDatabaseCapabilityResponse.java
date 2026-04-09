@@ -35,7 +35,7 @@ public final class MCPDatabaseCapabilityResponse implements MCPResponse {
     @Override
     public Map<String, Object> toPayload() {
         Map<String, Object> result = new LinkedHashMap<>(32, 1F);
-        result.put("database", databaseCapability.getDatabase());
+        result.put("database", databaseCapability.getDatabaseName());
         result.put("databaseType", databaseCapability.getDatabaseType());
         result.put("supportedObjectTypes", databaseCapability.getSupportedMetadataObjectTypes());
         result.put("supportedStatementClasses", databaseCapability.getSupportedStatementClasses());
