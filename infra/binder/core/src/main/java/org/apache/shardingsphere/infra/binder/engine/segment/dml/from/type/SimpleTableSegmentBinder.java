@@ -132,26 +132,7 @@ public final class SimpleTableSegmentBinder {
             return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
         }
         ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName());
-        if (dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().isPresent()) {
-            if (binderContext.getSqlStatement() instanceof CreateTableStatement || binderContext.getSqlStatement() instanceof CreateViewStatement
-                    || binderContext.getSqlStatement() instanceof CreateIndexStatement) {
-                return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
-            }
-            Optional<String> schemaName = findSchemaNameByTableName(database, segment.getTableName().getIdentifier());
-            if (schemaName.isPresent()) {
-                return schemaName.map(IdentifierValue::new);
-            }
-        }
         return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
-    }
-    
-    private static Optional<String> findSchemaNameByTableName(final ShardingSphereDatabase database, final IdentifierValue tableName) {
-        for (ShardingSphereSchema each : database.getAllSchemas()) {
-            if (each.containsTable(tableName)) {
-                return Optional.of(each.getName());
-            }
-        }
-        return Optional.empty();
     }
     
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final IdentifierValue tableName, final SimpleTableSegment segment) {
