@@ -121,6 +121,14 @@ class IdentifierIndexTest {
     }
     
     @Test
+    void assertFindPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        Optional<String> actualValue = index.find(new IdentifierValue("foo"));
+        assertThat(actualValue, is(Optional.of("value_2")));
+    }
+    
+    @Test
     void assertRemove() {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
         index.put("Foo", "value_1");

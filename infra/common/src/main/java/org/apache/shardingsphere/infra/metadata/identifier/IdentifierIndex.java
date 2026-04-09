@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
@@ -38,6 +39,7 @@ import java.util.Optional;
  *
  * @param <T> metadata object type
  */
+@Slf4j
 public final class IdentifierIndex<T> {
     
     private final DatabaseIdentifierContext databaseIdentifierContext;
@@ -164,16 +166,20 @@ public final class IdentifierIndex<T> {
             return Optional.empty();
         }
         return QuoteCharacter.NONE == identifierValue.getQuoteCharacter()
-                ? findByUnquotedNormalizedIdentifier(normalizedBucket, identifierValue.getValue())
+                ? findByUnquotedNormalizedIdentifier(currentSnapshot, normalizedBucket, identifierValue.getValue())
                 : findByQuotedNormalizedIdentifier(currentSnapshot, rule, normalizedBucket, identifierValue);
     }
     
-    private Optional<T> findByUnquotedNormalizedIdentifier(final NormalizedBucket<T> normalizedBucket, final String identifierValue) {
+    private Optional<T> findByUnquotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final NormalizedBucket<T> normalizedBucket, final String identifierValue) {
         if (!normalizedBucket.hasUnquotedIdentifier()) {
             return Optional.empty();
         }
         if (normalizedBucket.hasSingleUnquotedIdentifier()) {
             return Optional.ofNullable(normalizedBucket.getSingleUnquotedValue());
+        }
+        Optional<T> exactMatchedValue = findExactMatchedValue(currentSnapshot.getExactValues(), normalizedBucket.getUnquotedIdentifiers(), identifierValue);
+        if (exactMatchedValue.isPresent()) {
+            return exactMatchedValue;
         }
         throw new AmbiguousIdentifierException(identifierValue, normalizedBucket.getUnquotedIdentifiers());
     }
@@ -207,7 +213,19 @@ public final class IdentifierIndex<T> {
         if (null == ambiguousIdentifiers) {
             return Optional.ofNullable(currentSnapshot.getExactValues().get(matchedIdentifier));
         }
+        Optional<T> exactMatchedValue = findExactMatchedValue(currentSnapshot.getExactValues(), ambiguousIdentifiers, identifierValue.getValue());
+        if (exactMatchedValue.isPresent()) {
+            return exactMatchedValue;
+        }
         throw new AmbiguousIdentifierException(identifierValue.getValue(), ambiguousIdentifiers);
+    }
+    
+    private Optional<T> findExactMatchedValue(final Map<String, T> exactValues, final Collection<String> matchedIdentifiers, final String identifierValue) {
+        if (!matchedIdentifiers.contains(identifierValue)) {
+            return Optional.empty();
+        }
+        log.warn("Identifier '{}' matched multiple actual identifiers {}. Fallback to exact identifier '{}'.", identifierValue, matchedIdentifiers, identifierValue);
+        return Optional.ofNullable(exactValues.get(identifierValue));
     }
     
     private void addNormalizedIdentifier(final Map<String, Collection<String>> values, final IdentifierCaseRule rule, final String name) {
