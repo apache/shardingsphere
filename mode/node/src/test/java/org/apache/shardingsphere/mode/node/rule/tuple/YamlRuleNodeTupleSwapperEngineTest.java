@@ -33,7 +33,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class YamlRuleNodeTupleSwapperEngineTest {
@@ -47,7 +46,7 @@ class YamlRuleNodeTupleSwapperEngineTest {
     
     @Test
     void assertSwapToTuplesWithEmptyNodeYamlRuleConfiguration() {
-        assertFalse(new YamlRuleNodeTupleSwapperEngine().swapToTuples("foo_db", new YamlNodeRuleConfiguration()).isEmpty());
+        assertTrue(new YamlRuleNodeTupleSwapperEngine().swapToTuples("foo_db", new YamlNodeRuleConfiguration()).isEmpty());
     }
     
     @Test
