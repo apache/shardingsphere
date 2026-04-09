@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.lang.reflect.Proxy;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -46,6 +45,13 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class MCPRuntimeLauncherTest {
     
@@ -57,9 +63,8 @@ class MCPRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
-                new MCPLaunchConfiguration(createHttpTransportConfiguration(true), new StdioTransportConfiguration(false),
-                        H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
+        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(true), new StdioTransportConfiguration(false),
+                H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
         actual.stop();
     }
     
@@ -70,17 +75,16 @@ class MCPRuntimeLauncherTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
-                new MCPLaunchConfiguration(createHttpTransportConfiguration(true), new StdioTransportConfiguration(false),
-                        Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
+        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(true), new StdioTransportConfiguration(false),
+                Map.of("logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl)))));
         actual.stop();
     }
     
     @Test
     void assertLaunchWithoutRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(true), new StdioTransportConfiguration(false), Map.of())));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeLauncher.launch(
+                new MCPLaunchConfiguration(createHttpTransportConfiguration(true), new StdioTransportConfiguration(false), Map.of())));
         assertThat(actual.getMessage(), is("At least one runtime database must be configured."));
     }
     
@@ -89,9 +93,8 @@ class MCPRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-stdio");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeServer actual = assertDoesNotThrow(
-                () -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(false), new StdioTransportConfiguration(true),
-                        H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
+        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(createHttpTransportConfiguration(false), new StdioTransportConfiguration(true),
+                H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
         assertThat(actual, isA(StdioMCPServer.class));
         actual.stop();
     }
@@ -124,7 +127,13 @@ class MCPRuntimeLauncherTest {
         
         private static final String JDBC_URL = "jdbc:counting:h2";
         
+        private final Connection connection;
+        
         private int connectionCount;
+        
+        private CountingDriver() throws SQLException {
+            connection = createConnection();
+        }
         
         @Override
         public Connection connect(final String url, final Properties info) {
@@ -132,11 +141,7 @@ class MCPRuntimeLauncherTest {
                 return null;
             }
             connectionCount++;
-            DatabaseMetaData databaseMetaData = createDatabaseMetaData();
-            Statement statement = createStatement();
-            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
-                    (proxy, method, args) -> "getMetaData".equals(method.getName()) ? databaseMetaData
-                            : "createStatement".equals(method.getName()) ? statement : getDefaultValue(method.getReturnType()));
+            return connection;
         }
         
         @Override
@@ -173,52 +178,24 @@ class MCPRuntimeLauncherTest {
             return connectionCount;
         }
         
-        private DatabaseMetaData createDatabaseMetaData() {
+        private Connection createConnection() throws SQLException {
+            Connection result = mock(Connection.class);
+            DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+            Statement statement = mock(Statement.class);
             ResultSet emptyResultSet = createEmptyResultSet();
-            return (DatabaseMetaData) Proxy.newProxyInstance(DatabaseMetaData.class.getClassLoader(), new Class[]{DatabaseMetaData.class},
-                    (proxy, method, args) -> "getTables".equals(method.getName()) || "getColumns".equals(method.getName()) || "getIndexInfo".equals(method.getName())
-                            || "getSchemas".equals(method.getName()) ? emptyResultSet : getDefaultValue(method.getReturnType()));
+            when(result.getMetaData()).thenReturn(databaseMetaData);
+            when(result.createStatement()).thenReturn(statement);
+            when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenReturn(emptyResultSet);
+            when(databaseMetaData.getColumns(isNull(), nullable(String.class), anyString(), eq("%"))).thenReturn(emptyResultSet);
+            when(databaseMetaData.getIndexInfo(isNull(), nullable(String.class), anyString(), eq(false), eq(false))).thenReturn(emptyResultSet);
+            when(statement.executeQuery(anyString())).thenReturn(emptyResultSet);
+            return result;
         }
         
-        private ResultSet createEmptyResultSet() {
-            return (ResultSet) Proxy.newProxyInstance(ResultSet.class.getClassLoader(), new Class[]{ResultSet.class},
-                    (proxy, method, args) -> "next".equals(method.getName()) ? false : getDefaultValue(method.getReturnType()));
-        }
-        
-        private Statement createStatement() {
-            return (Statement) Proxy.newProxyInstance(Statement.class.getClassLoader(), new Class[]{Statement.class},
-                    (proxy, method, args) -> "executeQuery".equals(method.getName()) ? createEmptyResultSet() : getDefaultValue(method.getReturnType()));
-        }
-        
-        private Object getDefaultValue(final Class<?> returnType) {
-            if (Void.TYPE == returnType) {
-                return null;
-            }
-            if (!returnType.isPrimitive()) {
-                return null;
-            }
-            if (boolean.class == returnType) {
-                return false;
-            }
-            if (byte.class == returnType) {
-                return (byte) 0;
-            }
-            if (short.class == returnType) {
-                return (short) 0;
-            }
-            if (int.class == returnType) {
-                return 0;
-            }
-            if (long.class == returnType) {
-                return 0L;
-            }
-            if (float.class == returnType) {
-                return 0F;
-            }
-            if (double.class == returnType) {
-                return 0D;
-            }
-            return '\0';
+        private ResultSet createEmptyResultSet() throws SQLException {
+            ResultSet result = mock(ResultSet.class);
+            when(result.next()).thenReturn(false);
+            return result;
         }
     }
 }
