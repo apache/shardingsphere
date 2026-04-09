@@ -68,7 +68,6 @@ mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/database/dialect
 mcp/core/src/main/java/org/apache/shardingsphere/mcp/metadata/jdbc/MCPJdbcMetadataLoader.java
 mcp/core/src/test/java/org/apache/shardingsphere/mcp/capability/database/MCPDatabaseCapabilityProviderTest.java
 mcp/core/src/test/java/org/apache/shardingsphere/mcp/metadata/jdbc/MCPJdbcMetadataLoaderTest.java
-test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/SupportedDatabaseContractMatrixE2ETest.java
 specs/017-shardingsphere-mcp-sequence-dialect-matrix/*
 ```
 
@@ -99,11 +98,11 @@ specs/017-shardingsphere-mcp-sequence-dialect-matrix/*
 ## Branch Checklist
 
 1. `capability_matrix_declares_sequence_for_supported_dialects`
-   Planned verification: capability provider and contract matrix tests
+   Planned verification: capability provider tests
 2. `loader_reads_sequence_names_for_supported_dialects`
    Planned verification: mocked JDBC metadata loader tests per dialect
 3. `unsupported_dialects_stay_without_sequence`
-   Planned verification: contract matrix tests and existing unsupported behavior
+   Planned verification: capability provider tests and existing unsupported behavior
 
 ## Implementation Strategy
 
@@ -111,7 +110,7 @@ specs/017-shardingsphere-mcp-sequence-dialect-matrix/*
 2. 更新支持 sequence 的 dialect capability options。
 3. 扩展 `MCPJdbcMetadataLoader` 的 sequence 查询路由与 SQL。
 4. 在 `MCPJdbcMetadataLoaderTest` 中补各方言 mocked loading tests。
-5. 更新 capability matrix E2E 与 provider tests。
+5. 更新 capability matrix provider tests。
 6. 跑 scoped tests 和 style checks，最后回填 Speckit 状态。
 
 ## Validation Strategy
@@ -123,10 +122,10 @@ specs/017-shardingsphere-mcp-sequence-dialect-matrix/*
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 
-- **E2E capability matrix verification**
+- **Capability matrix verification**
 ```bash
-./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
-  -Dtest=SupportedDatabaseContractMatrixE2ETest test \
+./mvnw -pl mcp/core -am -DskipITs -Dspotless.skip=true \
+  -Dtest=MCPDatabaseCapabilityProviderTest test \
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 

@@ -140,7 +140,7 @@ runtime boundary, audit, and refresh paths are implemented, even though it enric
 - [X] T036 [P] Add distribution control scripts in `/Users/zhangliang/IdeaProjects/shardingsphere/distribution/mcp/src/main/bin/start.sh`
 - [X] T037 [P] Update operator-facing rollout notes in `/Users/zhangliang/IdeaProjects/shardingsphere/docs/mcp/ShardingSphere-MCP-Technical-Design.md`
 - [X] T038 Run the end-to-end quickstart validation against `/Users/zhangliang/IdeaProjects/shardingsphere/specs/001-shardingsphere-mcp/quickstart.md`
-- [X] T043 Add 12-database capability-matrix E2E coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/SupportedDatabaseContractMatrixE2ETest.java`
+- [X] T043 Add 12-database capability-matrix provider coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/test/java/org/apache/shardingsphere/mcp/capability/database/MCPDatabaseCapabilityProviderTest.java`
 - [X] T044 Run scoped Checkstyle, Spotless, and Maven verification for MCP modules against `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/pom.xml`
 
 ---

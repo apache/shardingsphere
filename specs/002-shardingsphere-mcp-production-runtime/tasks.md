@@ -49,7 +49,7 @@
 
 - [x] T009 [P] [US1] Add runtime metadata provider unit tests in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/runtime/ShardingSphereMetadataProviderTest.java`
 - [x] T010 [P] [US1] Add HTTP integration tests for real metadata-backed discovery in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/server/ProductionMetadataDiscoveryIntegrationTest.java`
-- [x] T011 [P] [US1] Add production-runtime metadata E2E verification in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionMetadataDiscoveryE2ETest.java`
+- [x] T011 [P] [US1] Add production-runtime metadata smoke E2E verification in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionRuntimeSmokeE2ETest.java`
 
 ### Implementation for User Story 1
 
@@ -72,7 +72,7 @@
 
 - [x] T016 [P] [US2] Add real execution adapter unit tests in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/test/java/org/apache/shardingsphere/mcp/execute/ShardingSphereExecutionAdapterTest.java`
 - [x] T017 [P] [US2] Add HTTP integration tests for metadata-backed execute-query in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/server/ProductionExecuteQueryIntegrationTest.java`
-- [x] T018 [P] [US2] Add production-runtime execution E2E verification in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionExecuteQueryE2ETest.java`
+- [x] T018 [P] [US2] Extend production-runtime smoke E2E verification for execution coverage in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionRuntimeSmokeE2ETest.java`
 
 ### Implementation for User Story 2
 
@@ -94,7 +94,7 @@
 ### Tests for User Story 3
 
 - [x] T023 [P] [US3] Add distribution startup validation tests in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/lifecycle/ProductionRuntimeLauncherTest.java`
-- [x] T024 [P] [US3] Add refresh-visibility E2E coverage for real runtime mode in `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionRefreshVisibilityE2ETest.java`
+- [x] T024 [P] [US3] Merge refresh-visibility E2E coverage into `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/ProductionMultiDatabaseE2ETest.java`
 
 ### Implementation for User Story 3
 

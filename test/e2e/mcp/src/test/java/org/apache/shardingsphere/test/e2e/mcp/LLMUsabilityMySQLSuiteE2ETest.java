@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
@@ -48,7 +47,7 @@ class LLMUsabilityMySQLSuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(isDockerAvailable(), "Docker is required for the MySQL-backed usability suite.");
+        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the MySQL-backed usability suite.");
         try {
             container = MySQLRuntimeTestSupport.createContainer();
             container.start();
@@ -66,16 +65,8 @@ class LLMUsabilityMySQLSuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     }
     
     @Test
-    void assertMinimalBaseline() throws IOException, InterruptedException {
+    void assertMinimalBaseline() throws IOException {
         assertAdvisoryUsabilitySuite("minimal-usability-mysql",
                 new LLMUsabilityScenarioCatalog().createMinimalBaseline("mysql", "logic_db", schemaName, "orders", COUNT_ORDERS_SQL, totalOrders));
-    }
-    
-    private boolean isDockerAvailable() {
-        try {
-            return DockerClientFactory.instance().isDockerAvailable();
-        } catch (final IllegalStateException ignored) {
-            return false;
-        }
     }
 }

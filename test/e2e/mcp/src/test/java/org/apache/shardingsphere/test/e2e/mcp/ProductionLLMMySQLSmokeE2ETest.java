@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
@@ -65,17 +64,9 @@ class ProductionLLMMySQLSmokeE2ETest extends AbstractLLMMCPE2ETest {
     }
     
     @Test
-    void assertSmoke() throws IOException, InterruptedException {
+    void assertSmoke() throws IOException {
         Assumptions.assumeTrue(isLLMSmokeEnabled(), "Enable the LLM MCP smoke tests explicitly.");
-        Assumptions.assumeTrue(isDockerAvailable(), "Docker is required for the MySQL-backed LLM MCP smoke test.");
+        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the MySQL-backed LLM MCP smoke test.");
         assertLLMSmoke(() -> createMinimalSmokeScenario("minimal-smoke-mysql", "logic_db", schemaName, "orders", COUNT_ORDERS_SQL, totalOrders));
-    }
-    
-    private boolean isDockerAvailable() {
-        try {
-            return DockerClientFactory.instance().isDockerAvailable();
-        } catch (final IllegalStateException ignored) {
-            return false;
-        }
     }
 }

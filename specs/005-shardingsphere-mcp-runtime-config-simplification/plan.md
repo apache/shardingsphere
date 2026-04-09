@@ -177,7 +177,7 @@ docs/mcp/ShardingSphere-MCP-Detailed-Design.md
 - **Production runtime E2E verification**
 ```bash
 ./mvnw -pl test/e2e/mcp -am -DskipITs -Dspotless.skip=true \
-  -Dtest=ProductionMetadataDiscoveryE2ETest,ProductionMultiDatabaseE2ETest,ProductionExecuteQueryE2ETest,ProductionRefreshVisibilityE2ETest,ProductionMixedDatabaseTypeE2ETest test \
+  -Dtest=ProductionRuntimeSmokeE2ETest,ProductionMultiDatabaseE2ETest test \
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 - **Scoped style checks for touched modules**

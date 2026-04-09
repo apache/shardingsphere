@@ -68,11 +68,15 @@ class MCPDatabaseCapabilityProviderTest {
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("provideSequenceMatrixArguments")
-    void assertProvideWithSequenceMatrix(final String name, final String databaseType, final boolean expectedSequenceSupport) {
+    @MethodSource("provideCapabilityMatrixArguments")
+    void assertProvideWithCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
+                                           final boolean expectedSavepoint, final boolean expectedIndexSupport, final boolean expectedSequenceSupport) {
         Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(
                 new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList())))).provide("logic_db");
         assertTrue(actual.isPresent());
+        assertThat(actual.get().isSupportsTransactionControl(), is(expectedTransactionControl));
+        assertThat(actual.get().isSupportsSavepoint(), is(expectedSavepoint));
+        assertThat(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX), is(expectedIndexSupport));
         assertThat(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
     }
     
@@ -92,19 +96,19 @@ class MCPDatabaseCapabilityProviderTest {
                 "warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", Collections.emptyList()))));
     }
     
-    private static Stream<Arguments> provideSequenceMatrixArguments() {
+    private static Stream<Arguments> provideCapabilityMatrixArguments() {
         return Stream.of(
-                Arguments.of("mysql", "MySQL", false),
-                Arguments.of("postgresql", "PostgreSQL", true),
-                Arguments.of("open gauss", "openGauss", true),
-                Arguments.of("sql server", "SQLServer", true),
-                Arguments.of("mariadb", "MariaDB", true),
-                Arguments.of("oracle", "Oracle", true),
-                Arguments.of("clickhouse", "ClickHouse", false),
-                Arguments.of("doris", "Doris", false),
-                Arguments.of("hive", "Hive", false),
-                Arguments.of("presto", "Presto", false),
-                Arguments.of("firebird", "Firebird", true),
-                Arguments.of("h2", "H2", true));
+                Arguments.of("mysql", "MySQL", true, true, true, false),
+                Arguments.of("postgresql", "PostgreSQL", true, true, true, true),
+                Arguments.of("open gauss", "openGauss", true, true, true, true),
+                Arguments.of("sql server", "SQLServer", true, true, true, true),
+                Arguments.of("mariadb", "MariaDB", true, true, true, true),
+                Arguments.of("oracle", "Oracle", true, true, true, true),
+                Arguments.of("clickhouse", "ClickHouse", false, false, false, false),
+                Arguments.of("doris", "Doris", true, false, true, false),
+                Arguments.of("hive", "Hive", false, false, false, false),
+                Arguments.of("presto", "Presto", true, false, false, false),
+                Arguments.of("firebird", "Firebird", true, true, true, true),
+                Arguments.of("h2", "H2", true, true, true, true));
     }
 }

@@ -26,7 +26,7 @@
 1. PostgreSQL / openGauss / SQLServer / Oracle / MariaDB / Firebird 等数据库本身支持 sequence，
    但当前 MCP capability 未声明
 2. 如果只补 capability 不补 metadata loader，又会产生新的 contract drift
-3. `SupportedDatabaseContractMatrixE2ETest` 无法反映真实 sequence 支持矩阵
+3. `MCPDatabaseCapabilityProviderTest` 需要反映真实 sequence 支持矩阵
 
 因此这轮必须把“是否声明”与“是否可发现”一起收口。
 
@@ -39,7 +39,7 @@
 
 **Why this priority**: capability 是 metadata surface 的边界说明；不真实会直接误导调用方。
 
-**Independent Test**: capability provider tests 与 contract matrix E2E tests
+**Independent Test**: capability provider tests
 可以独立验证每个 database type 的 `SEQUENCE` 声明。
 
 **Acceptance Scenarios**:
@@ -113,7 +113,7 @@ resource 和 `search_metadata` 至少能通过对应 metadata loader 读取 sequ
 
 ### Measurable Outcomes
 
-- **SC-001**: `SupportedDatabaseContractMatrixE2ETest` 反映新的 sequence support matrix 并通过。
+- **SC-001**: `MCPDatabaseCapabilityProviderTest` 反映新的 sequence support matrix 并通过。
 - **SC-002**: `MCPJdbcMetadataLoaderTest` 覆盖并通过 PostgreSQL、openGauss、SQLServer、Oracle、MariaDB、Firebird、H2 的 sequence loading 分支。
 - **SC-003**: 不支持 sequence 的数据库相关 unsupported tests 保持通过。
 

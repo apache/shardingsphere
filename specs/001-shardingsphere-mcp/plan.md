@@ -184,7 +184,7 @@ keeping Java 17 compilation and runtime dependencies localized to the MCP subcha
 - **E2E verification**
   `./mvnw -pl test/e2e/mcp -am test -Dsurefire.failIfNoSpecifiedTests=false`
 - **Supported database baseline verification**
-  `./mvnw -pl test/e2e/mcp -am -Dtest=SupportedDatabaseContractMatrixE2ETest test -Dsurefire.failIfNoSpecifiedTests=false`
+  `./mvnw -pl mcp/core -am -Dtest=MCPDatabaseCapabilityProviderTest test -Dsurefire.failIfNoSpecifiedTests=false`
 - **Quality gates for touched modules**
   `./mvnw -pl <touched-module> -am checkstyle:check -Pcheck`
   and

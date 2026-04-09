@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
@@ -64,6 +65,19 @@ public final class MySQLRuntimeTestSupport {
                 .withExposedPorts(3306)
                 .waitingFor(Wait.forLogMessage(".*ready for connections.*\\n", 2))
                 .withStartupTimeout(Duration.ofMinutes(2));
+    }
+    
+    /**
+     * Check whether Docker is available for Testcontainers-backed tests.
+     *
+     * @return whether Docker is available
+     */
+    public static boolean isDockerAvailable() {
+        try {
+            return DockerClientFactory.instance().isDockerAvailable();
+        } catch (final IllegalStateException ignored) {
+            return false;
+        }
     }
     
     /**

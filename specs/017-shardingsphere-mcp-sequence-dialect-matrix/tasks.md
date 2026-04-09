@@ -15,7 +15,6 @@
 
 - [x] T004 Update sequence-supporting dialects in `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/database/dialect/`
 - [x] T005 Update `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/core/src/test/java/org/apache/shardingsphere/mcp/capability/database/MCPDatabaseCapabilityProviderTest.java`
-  and `/Users/zhangliang/IdeaProjects/shardingsphere/test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/SupportedDatabaseContractMatrixE2ETest.java`
   for the new sequence support matrix
 
 ## Phase 3: Metadata Loader Matrix
