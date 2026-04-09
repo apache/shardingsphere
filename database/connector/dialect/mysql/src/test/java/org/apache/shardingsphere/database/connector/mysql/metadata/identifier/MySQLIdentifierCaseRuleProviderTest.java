@@ -33,10 +33,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Proxy;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -103,95 +105,11 @@ class MySQLIdentifierCaseRuleProviderTest {
     }
     
     private static DataSource mockDataSource(final boolean hasResultSetRow, final int lowerCaseTableNames) throws SQLException {
-        return (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(), new Class[]{DataSource.class},
-                (proxy, method, args) -> handleDataSourceMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames));
+        return new FixtureDataSource(hasResultSetRow, lowerCaseTableNames);
     }
     
     private static DataSource mockFailingDataSource() throws SQLException {
-        return (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(), new Class[]{DataSource.class},
-                (proxy, method, args) -> handleFailingDataSourceMethod(method.getName(), method.getReturnType()));
-    }
-    
-    private static Connection createConnection(final boolean hasResultSetRow, final int lowerCaseTableNames) {
-        return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
-                (proxy, method, args) -> handleConnectionMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames));
-    }
-    
-    private static PreparedStatement createPreparedStatement(final boolean hasResultSetRow, final int lowerCaseTableNames) {
-        return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[]{PreparedStatement.class},
-                (proxy, method, args) -> handlePreparedStatementMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames));
-    }
-    
-    private static ResultSet createResultSet(final boolean hasResultSetRow, final int lowerCaseTableNames) {
-        boolean[] nextInvoked = new boolean[1];
-        return (ResultSet) Proxy.newProxyInstance(ResultSet.class.getClassLoader(), new Class[]{ResultSet.class},
-                (proxy, method, args) -> handleResultSetMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames, nextInvoked));
-    }
-    
-    private static Object handleDataSourceMethod(final String methodName, final Class<?> returnType, final boolean hasResultSetRow,
-                                                 final int lowerCaseTableNames) {
-        switch (methodName) {
-            case "getConnection":
-                return createConnection(hasResultSetRow, lowerCaseTableNames);
-            case "unwrap":
-                return null;
-            case "isWrapperFor":
-                return false;
-            default:
-                return getDefaultValue(returnType);
-        }
-    }
-    
-    private static Object handleFailingDataSourceMethod(final String methodName, final Class<?> returnType) throws SQLException {
-        if ("getConnection".equals(methodName)) {
-            throw new SQLException("expected");
-        }
-        return "isWrapperFor".equals(methodName) ? false : getDefaultValue(returnType);
-    }
-    
-    private static Object handleConnectionMethod(final String methodName, final Class<?> returnType, final boolean hasResultSetRow, final int lowerCaseTableNames) {
-        switch (methodName) {
-            case "prepareStatement":
-                return createPreparedStatement(hasResultSetRow, lowerCaseTableNames);
-            case "close":
-                return null;
-            case "isWrapperFor":
-                return false;
-            default:
-                return getDefaultValue(returnType);
-        }
-    }
-    
-    private static Object handlePreparedStatementMethod(final String methodName, final Class<?> returnType,
-                                                        final boolean hasResultSetRow, final int lowerCaseTableNames) {
-        switch (methodName) {
-            case "executeQuery":
-                return createResultSet(hasResultSetRow, lowerCaseTableNames);
-            case "close":
-                return null;
-            case "isWrapperFor":
-                return false;
-            default:
-                return getDefaultValue(returnType);
-        }
-    }
-    
-    private static Object handleResultSetMethod(final String methodName, final Class<?> returnType, final boolean hasResultSetRow,
-                                                final int lowerCaseTableNames, final boolean[] nextInvoked) {
-        switch (methodName) {
-            case "next":
-                boolean result = hasResultSetRow && !nextInvoked[0];
-                nextInvoked[0] = true;
-                return result;
-            case "getInt":
-                return lowerCaseTableNames;
-            case "close":
-                return null;
-            case "isWrapperFor":
-                return false;
-            default:
-                return getDefaultValue(returnType);
-        }
+        return new FailingFixtureDataSource();
     }
     
     private static Object getDefaultValue(final Class<?> returnType) {
@@ -223,5 +141,124 @@ class MySQLIdentifierCaseRuleProviderTest {
             return '\0';
         }
         return null;
+    }
+    
+    private static final class FixtureDataSource implements DataSource {
+        
+        private final boolean hasResultSetRow;
+        
+        private final int lowerCaseTableNames;
+        
+        private FixtureDataSource(final boolean hasResultSetRow, final int lowerCaseTableNames) {
+            this.hasResultSetRow = hasResultSetRow;
+            this.lowerCaseTableNames = lowerCaseTableNames;
+        }
+        
+        @Override
+        public Connection getConnection() {
+            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
+                    (proxy, method, args) -> "prepareStatement".equals(method.getName()) ? createPreparedStatement() : getDefaultValue(method.getReturnType()));
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) {
+            return getConnection();
+        }
+        
+        private PreparedStatement createPreparedStatement() {
+            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[]{PreparedStatement.class},
+                    (proxy, method, args) -> "executeQuery".equals(method.getName()) ? createResultSet() : getDefaultValue(method.getReturnType()));
+        }
+        
+        private ResultSet createResultSet() {
+            boolean[] nextInvoked = new boolean[1];
+            return (ResultSet) Proxy.newProxyInstance(ResultSet.class.getClassLoader(), new Class[]{ResultSet.class}, (proxy, method, args) -> {
+                if ("next".equals(method.getName())) {
+                    boolean result = hasResultSetRow && !nextInvoked[0];
+                    nextInvoked[0] = true;
+                    return result;
+                }
+                return "getInt".equals(method.getName()) ? lowerCaseTableNames : getDefaultValue(method.getReturnType());
+            });
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) {
+            return null;
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+    }
+    
+    private static final class FailingFixtureDataSource implements DataSource {
+        
+        @Override
+        public Connection getConnection() throws SQLException {
+            throw new SQLException("expected");
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) throws SQLException {
+            throw new SQLException("expected");
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) {
+            return null;
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
     }
 }
