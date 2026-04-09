@@ -33,11 +33,11 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdSeekBlobCommandExecutor implements CommandExecutor {
-
+    
     private final FirebirdSeekBlobCommandPacket packet;
-
+    
     private final ConnectionSession connectionSession;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         int statementId = FirebirdStatementIdGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());

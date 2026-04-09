@@ -32,9 +32,9 @@ import java.util.Collections;
  */
 @RequiredArgsConstructor
 public final class FirebirdBlobInfoExecutor implements CommandExecutor {
-
+    
     private final FirebirdInfoPacket packet;
-
+    
     @Override
     public Collection<DatabasePacket> execute() {
         return Collections.singleton(new FirebirdGenericResponsePacket().setData(new FirebirdBlobInfoReturnPacket(packet.getInfoItems())));
