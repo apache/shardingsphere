@@ -63,8 +63,9 @@ class MCPRuntimeLauncherTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
-        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(false),
-                H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
+        MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
+                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 0, "/mcp"), new StdioTransportConfiguration(false),
+                        H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
         actual.stop();
     }
     

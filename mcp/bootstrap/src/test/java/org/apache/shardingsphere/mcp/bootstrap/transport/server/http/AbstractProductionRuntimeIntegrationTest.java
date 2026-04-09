@@ -74,6 +74,12 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         return HttpClient.newHttpClient();
     }
     
+    protected final RuntimeHttpSession launchRuntimeWithSession() throws SQLException, IOException, InterruptedException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        return new RuntimeHttpSession(httpClient, initializeSession(httpClient));
+    }
+    
     protected final void stopRuntime() {
         if (null != httpServer) {
             httpServer.stop();
@@ -89,7 +95,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
                         "jsonrpc", "2.0",
                         "id", "init-1",
                         "method", "initialize",
-                        "params", createInitializeRequestParams()))))
+                        "params", createInitializeRequestParams("production-runtime-integration")))))
                 .build();
         HttpResponse<String> actual = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
@@ -136,6 +142,19 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
+    protected final Map<String, Object> callToolAndGetStructuredContent(final RuntimeHttpSession session, final String toolName,
+                                                                        final Map<String, Object> arguments) throws IOException, InterruptedException {
+        HttpResponse<String> actual = sendToolCallRequest(session.httpClient(), session.sessionId(), toolName, arguments);
+        assertThat(actual.statusCode(), is(200));
+        return getStructuredContent(actual.body());
+    }
+    
+    protected final Map<String, Object> readResourceAndGetPayload(final RuntimeHttpSession session, final String resourceUri) throws IOException, InterruptedException {
+        HttpResponse<String> actual = sendResourceReadRequest(session.httpClient(), session.sessionId(), resourceUri);
+        assertThat(actual.statusCode(), is(200));
+        return getResourcePayload(actual.body());
+    }
+    
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> result = getJsonRpcResult(responseBody);
         return result.containsKey("structuredContent") ? castToMap(result.get("structuredContent")) : Map.of();
@@ -143,6 +162,11 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
         return castToList(payload.get("items"));
+    }
+    
+    protected final List<String> getStringList(final Map<String, Object> payload, final String fieldName) {
+        return JsonUtils.fromJsonString(JsonUtils.toJsonString(payload.get(fieldName)), new TypeReference<>() {
+        });
     }
     
     protected final Map<String, Object> getResourcePayload(final String responseBody) {
@@ -167,11 +191,11 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         throw new IllegalStateException("HTTP server must be enabled for HTTP integration tests.");
     }
     
-    private Map<String, Object> createInitializeRequestParams() {
+    protected final Map<String, Object> createInitializeRequestParams(final String clientName) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("protocolVersion", PROTOCOL_VERSION);
         result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", "production-runtime-integration", "version", "1.0.0"));
+        result.put("clientInfo", Map.of("name", clientName, "version", "1.0.0"));
         return result;
     }
     
@@ -222,5 +246,8 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     protected final Path getTempDir() {
         return tempDir;
+    }
+    
+    protected record RuntimeHttpSession(HttpClient httpClient, String sessionId) {
     }
 }

@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -51,91 +49,58 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     
     @Test
     void assertReadDatabasesResource() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases");
-        
-        assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        List<Map<String, Object>> items = getPayloadItems(readResourceAndGetPayload(session, "shardingsphere://databases"));
         assertThat(items.size(), is(1));
-        assertThat(String.valueOf(items.get(0).get("database")), is("logic_db"));
+        assertThat(items.get(0).get("database"), is("logic_db"));
     }
     
     @Test
     void assertSearchMetadata() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
-                Map.of("database", "logic_db", "query", "order", "object_types", List.of("table", "view")));
-        
-        assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        List<Map<String, Object>> items = getPayloadItems(callToolAndGetStructuredContent(session, "search_metadata",
+                Map.of("database", "logic_db", "query", "order", "object_types", List.of("table", "view"))));
         assertThat(items.size(), is(3));
-        assertThat(String.valueOf(items.get(0).get("name")), is("order_items"));
-        assertThat(String.valueOf(items.get(1).get("name")), is("orders"));
-        assertThat(String.valueOf(items.get(2).get("name")), is("active_orders"));
+        assertThat(items.get(0).get("name"), is("order_items"));
+        assertThat(items.get(1).get("name"), is("orders"));
+        assertThat(items.get(2).get("name"), is("active_orders"));
     }
     
     @Test
     void assertSearchMetadataWithSequence() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
-                Map.of("database", "logic_db", "query", "order", "object_types", List.of("sequence")));
-        
-        assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        List<Map<String, Object>> items = getPayloadItems(callToolAndGetStructuredContent(session, "search_metadata",
+                Map.of("database", "logic_db", "query", "order", "object_types", List.of("sequence"))));
         assertThat(items.size(), is(1));
-        assertThat(String.valueOf(items.get(0).get("name")), is("order_seq"));
+        assertThat(items.get(0).get("name"), is("order_seq"));
     }
     
     @Test
     void assertReadSequencesResource() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/schemas/public/sequences");
-        
-        assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        List<Map<String, Object>> items = getPayloadItems(readResourceAndGetPayload(session, "shardingsphere://databases/logic_db/schemas/public/sequences"));
         assertThat(items.size(), is(1));
-        assertThat(String.valueOf(items.get(0).get("sequence")), is("order_seq"));
+        assertThat(items.get(0).get("sequence"), is("order_seq"));
     }
     
     @Test
     void assertReadDatabaseCapabilitiesResource() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/capabilities");
-        
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getResourcePayload(actual.body());
-        assertThat(String.valueOf(payload.get("database")), is("logic_db"));
-        assertThat(String.valueOf(payload.get("databaseType")), is("H2"));
-        assertTrue(String.valueOf(payload.get("supportedObjectTypes")).contains("VIEW"));
-        assertTrue(String.valueOf(payload.get("supportedObjectTypes")).contains("INDEX"));
-        assertTrue(String.valueOf(payload.get("supportedObjectTypes")).contains("SEQUENCE"));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        Map<String, Object> payload = readResourceAndGetPayload(session, "shardingsphere://databases/logic_db/capabilities");
+        assertThat(payload.get("database"), is("logic_db"));
+        assertThat(payload.get("databaseType"), is("H2"));
+        List<String> supportedObjectTypes = getStringList(payload, "supportedObjectTypes");
+        assertTrue(supportedObjectTypes.contains("VIEW"));
+        assertTrue(supportedObjectTypes.contains("INDEX"));
+        assertTrue(supportedObjectTypes.contains("SEQUENCE"));
     }
     
     @Test
     void assertReadDatabaseCapabilitiesResourceWithoutExplicitDriverClassName() throws SQLException, IOException, InterruptedException {
         useDriverClassName = false;
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/capabilities");
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getResourcePayload(actual.body());
-        assertThat(String.valueOf(payload.get("database")), is("logic_db"));
-        assertThat(String.valueOf(payload.get("databaseType")), is("H2"));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        Map<String, Object> payload = readResourceAndGetPayload(session, "shardingsphere://databases/logic_db/capabilities");
+        assertThat(payload.get("database"), is("logic_db"));
+        assertThat(payload.get("databaseType"), is("H2"));
     }
 }

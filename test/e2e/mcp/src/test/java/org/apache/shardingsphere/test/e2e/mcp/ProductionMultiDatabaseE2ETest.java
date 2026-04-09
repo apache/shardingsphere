@@ -36,11 +36,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     
+    private static final String LOGIC_DATABASE_NAME = "logic_db";
+    
+    private static final String ANALYTICS_DATABASE_NAME = "analytics_db";
+    
+    private static final String H2_DRIVER_CLASS_NAME = "org.h2.Driver";
+    
     private String firstJdbcUrl;
     
     private String secondJdbcUrl;
     
-    private boolean mixedDatabaseTypes;
+    private String firstDatabaseType = "H2";
+    
+    private String secondDatabaseType = "H2";
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
@@ -57,8 +65,8 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
-        result.put("logic_db", new RuntimeDatabaseConfiguration(mixedDatabaseTypes ? "MySQL" : "H2", firstJdbcUrl, "", "", "org.h2.Driver"));
-        result.put("analytics_db", new RuntimeDatabaseConfiguration(mixedDatabaseTypes ? "PostgreSQL" : "H2", secondJdbcUrl, "", "", "org.h2.Driver"));
+        result.put(LOGIC_DATABASE_NAME, createRuntimeDatabaseConfiguration(firstDatabaseType, firstJdbcUrl));
+        result.put(ANALYTICS_DATABASE_NAME, createRuntimeDatabaseConfiguration(secondDatabaseType, secondJdbcUrl));
         return result;
     }
     
@@ -72,7 +80,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
-        assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems("logic_db", "analytics_db"));
+        assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems(LOGIC_DATABASE_NAME, ANALYTICS_DATABASE_NAME));
     }
     
     @Test
@@ -81,9 +89,9 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+        sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "BEGIN"));
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "analytics_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id"));
+                Map.of("database", ANALYTICS_DATABASE_NAME, "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id"));
         
         assertThat(actual.statusCode(), is(200));
         assertFalse(Boolean.parseBoolean(String.valueOf(getStructuredContent(actual.body()).get("ok"))));
@@ -97,14 +105,11 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         String firstSessionId = initializeSession(httpClient);
         
         sendToolCallRequest(httpClient, firstSessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
-        HttpResponse<String> firstSessionTables = sendResourceReadRequest(httpClient, firstSessionId, "shardingsphere://databases/logic_db/schemas/public/tables");
+                Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
+        List<String> firstSessionTableNames = readTableNames(httpClient, firstSessionId, LOGIC_DATABASE_NAME);
         String secondSessionId = initializeSession(httpClient);
-        HttpResponse<String> secondSessionTables = sendResourceReadRequest(httpClient, secondSessionId, "shardingsphere://databases/logic_db/schemas/public/tables");
-        HttpResponse<String> analyticsDatabaseTables = sendResourceReadRequest(httpClient, secondSessionId, "shardingsphere://databases/analytics_db/schemas/public/tables");
-        List<String> firstSessionTableNames = getPayloadItems(getResourcePayload(firstSessionTables.body())).stream().map(each -> String.valueOf(each.get("table"))).toList();
-        List<String> secondSessionTableNames = getPayloadItems(getResourcePayload(secondSessionTables.body())).stream().map(each -> String.valueOf(each.get("table"))).toList();
-        List<String> analyticsDatabaseTableNames = getPayloadItems(getResourcePayload(analyticsDatabaseTables.body())).stream().map(each -> String.valueOf(each.get("table"))).toList();
+        List<String> secondSessionTableNames = readTableNames(httpClient, secondSessionId, LOGIC_DATABASE_NAME);
+        List<String> analyticsDatabaseTableNames = readTableNames(httpClient, secondSessionId, ANALYTICS_DATABASE_NAME);
         
         assertTrue(firstSessionTableNames.contains("orders_archive"));
         assertTrue(secondSessionTableNames.contains("orders_archive"));
@@ -114,7 +119,8 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     
     @Test
     void assertGetCapabilitiesForMixedDatabaseTypes() throws IOException, InterruptedException {
-        mixedDatabaseTypes = true;
+        firstDatabaseType = "MySQL";
+        secondDatabaseType = "PostgreSQL";
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
@@ -126,5 +132,15 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
         assertThat(secondResponse.statusCode(), is(200));
         assertThat(String.valueOf(getResourcePayload(firstResponse.body()).get("databaseType")), is("MySQL"));
         assertThat(String.valueOf(getResourcePayload(secondResponse.body()).get("databaseType")), is("PostgreSQL"));
+    }
+    
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl) {
+        return new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", H2_DRIVER_CLASS_NAME);
+    }
+    
+    private List<String> readTableNames(final HttpClient httpClient, final String sessionId, final String databaseName) throws IOException, InterruptedException {
+        HttpResponse<String> response = sendResourceReadRequest(httpClient, sessionId,
+                String.format("shardingsphere://databases/%s/schemas/public/tables", databaseName));
+        return getPayloadItems(getResourcePayload(response.body())).stream().map(each -> String.valueOf(each.get("table"))).toList();
     }
 }

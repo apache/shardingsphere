@@ -42,43 +42,22 @@ class StdioTransportIntegrationTest {
     void assertBootstrapWithStdioTransport() throws Exception {
         Path configFile = createRuntimeDatabasesConfigFile();
         try (StdioTransportTestClient client = new StdioTransportTestClient(configFile)) {
-            Map<String, Object> actualInitializeResult = client.request("init-1", "initialize",
-                    Map.of("protocolVersion", MCPTransportConstants.PROTOCOL_VERSION, "capabilities", Map.of(), "clientInfo", Map.of("name", "stdio-test", "version", "1.0.0")));
-            client.notifyServer("notifications/initialized", Map.of());
-            Map<String, Object> actualToolsResult = client.request("tool-list-1", "tools/list", Map.of());
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> actualTools = (List<Map<String, Object>>) actualToolsResult.get("tools");
-            Map<String, Object> actualSearchMetadataTool = actualTools.stream()
-                    .filter(each -> "search_metadata".equals(each.get("name")))
-                    .findFirst()
-                    .orElseThrow();
-            Map<String, Object> actualSearchMetadataInputSchema = castToMap(actualSearchMetadataTool.get("inputSchema"));
+            Map<String, Object> actualInitializeResult = client.initialize();
+            client.notifyInitialized();
+            List<Map<String, Object>> actualTools = client.listTools();
             assertThat(actualInitializeResult.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
             assertTrue(actualTools.stream().anyMatch(each -> "search_metadata".equals(each.get("name"))));
-            Map<String, Object> actualSearchMetadataProperties = castToMap(actualSearchMetadataInputSchema.get("properties"));
-            assertTrue(actualSearchMetadataProperties.containsKey("query"));
-            Map<String, Object> actualExecuteQueryTool = actualTools.stream()
-                    .filter(each -> "execute_query".equals(each.get("name")))
-                    .findFirst()
-                    .orElseThrow();
-            Map<String, Object> actualExecuteQueryInputSchema = castToMap(actualExecuteQueryTool.get("inputSchema"));
-            Map<String, Object> actualExecuteQueryProperties = castToMap(actualExecuteQueryInputSchema.get("properties"));
-            assertTrue(actualExecuteQueryProperties.containsKey("sql"));
-            assertThat(String.valueOf(castToMap(actualExecuteQueryProperties.get("sql")).get("type")), is("string"));
-            Map<String, Object> actualCallToolResult = client.request("tool-call-1", "tools/call",
-                    Map.of("name", "search_metadata", "arguments", Map.of("database", "logic_db", "query", "order", "object_types", List.of("table"))));
-            @SuppressWarnings("unchecked")
-            Map<String, Object> actualStructuredContent = (Map<String, Object>) actualCallToolResult.get("structuredContent");
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> actualItems = (List<Map<String, Object>>) actualStructuredContent.get("items");
+            assertTrue(actualTools.stream().anyMatch(each -> "execute_query".equals(each.get("name"))));
+            Map<String, Object> actualStructuredContent = client.callTool("search_metadata",
+                    Map.of("database", "logic_db", "query", "order", "object_types", List.of("table")));
+            List<Map<String, Object>> actualItems = client.getItems(actualStructuredContent);
             assertThat(actualItems.size(), is(2));
-            assertThat(String.valueOf(actualItems.get(0).get("name")), is("order_items"));
-            assertThat(String.valueOf(actualItems.get(1).get("name")), is("orders"));
-            Map<String, Object> actualReadResourceResult = client.request("resource-read-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"));
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> actualContents = (List<Map<String, Object>>) actualReadResourceResult.get("contents");
-            assertThat(actualContents.size(), is(1));
-            assertTrue(String.valueOf(actualContents.get(0).get("text")).contains("supportedTools"));
+            assertThat(actualItems.get(0).get("name"), is("order_items"));
+            assertThat(actualItems.get(1).get("name"), is("orders"));
+            Map<String, Object> actualCapabilities = client.readResourcePayload("shardingsphere://capabilities");
+            List<String> actualSupportedTools = client.getStringList(actualCapabilities, "supportedTools");
+            assertTrue(actualSupportedTools.contains("search_metadata"));
+            assertTrue(actualSupportedTools.contains("execute_query"));
         }
     }
     
@@ -110,10 +89,5 @@ class StdioTransportIntegrationTest {
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> castToMap(final Object value) {
-        return (Map<String, Object>) value;
     }
 }

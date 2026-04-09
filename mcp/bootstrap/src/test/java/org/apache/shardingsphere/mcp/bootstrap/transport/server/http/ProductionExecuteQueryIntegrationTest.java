@@ -22,8 +22,6 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -33,6 +31,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeIntegrationTest {
     
@@ -53,81 +53,65 @@ class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeInt
     
     @Test
     void assertExecuteSelect() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
-        assertThat(String.valueOf(payload.get("truncated")), is("false"));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
+                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id", 10));
+        assertThat(payload.get("result_kind"), is("result_set"));
+        assertFalse((Boolean) payload.get("truncated"));
     }
     
     @Test
     void assertExecuteSelectWithoutExplicitDriverClassName() throws SQLException, IOException, InterruptedException {
         useDriverClassName = false;
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
-        assertThat(String.valueOf(payload.get("truncated")), is("false"));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
+                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id", 10));
+        assertThat(payload.get("result_kind"), is("result_set"));
+        assertFalse((Boolean) payload.get("truncated"));
     }
     
     @Test
     void assertExecuteSelectWithTruncation() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 1));
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getStructuredContent(actual.body());
-        assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
-        assertThat(String.valueOf(payload.get("truncated")), is("true"));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
+                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id", 1));
+        assertThat(payload.get("result_kind"), is("result_set"));
+        assertTrue((Boolean) payload.get("truncated"));
     }
     
     @Test
     void assertExecuteTransactionCommit() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-        sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
-        assertThat(actual.statusCode(), is(200));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
+        callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
+        callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("COMMIT"));
         assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
     }
     
     @Test
     void assertDeleteRollsBackPendingTransaction() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-        sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-        HttpResponse<String> actual = sendDeleteRequest(httpClient, sessionId);
-        assertThat(actual.statusCode(), is(200));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
+        callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+        assertThat(sendDeleteRequest(session.httpClient(), session.sessionId()).statusCode(), is(200));
         assertThat(querySingleString(jdbcUrl), is("NEW"));
     }
     
     @Test
     void assertStopRollsBackPendingTransaction() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-        sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+        RuntimeHttpSession session = launchRuntimeWithSession();
+        callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
+        callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         stopRuntime();
         assertThat(querySingleString(jdbcUrl), is("NEW"));
+    }
+    
+    private Map<String, Object> createExecuteQueryArguments(final String sql) {
+        return Map.of("database", "logic_db", "schema", "public", "sql", sql);
+    }
+    
+    private Map<String, Object> createExecuteQueryArguments(final String sql, final int maxRows) {
+        return Map.of("database", "logic_db", "schema", "public", "sql", sql, "max_rows", maxRows);
     }
     
     private String querySingleString(final String jdbcUrl) throws SQLException {

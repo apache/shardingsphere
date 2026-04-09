@@ -40,7 +40,7 @@ class MCPDatabaseCapabilityProviderTest {
     
     @Test
     void assertProvide() {
-        Optional<MCPDatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("logic_db");
+        Optional<MCPDatabaseCapability> actual = createCapabilityProvider().provide("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().getDatabaseName(), is("logic_db"));
         assertThat(actual.get().getDatabaseType(), is("MySQL"));
@@ -57,7 +57,7 @@ class MCPDatabaseCapabilityProviderTest {
     
     @Test
     void assertProvideWithoutIndex() {
-        Optional<MCPDatabaseCapability> actual = createDatabaseCapabilityBuilder().provide("warehouse");
+        Optional<MCPDatabaseCapability> actual = createCapabilityProvider().provide("warehouse");
         assertTrue(actual.isPresent());
         assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
         assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE));
@@ -71,8 +71,7 @@ class MCPDatabaseCapabilityProviderTest {
     @MethodSource("provideCapabilityMatrixArguments")
     void assertProvideWithCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
                                            final boolean expectedSavepoint, final boolean expectedIndexSupport, final boolean expectedSequenceSupport) {
-        Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(
-                new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", databaseType, "", Collections.emptyList())))).provide("logic_db");
+        Optional<MCPDatabaseCapability> actual = createCapabilityProvider(databaseType).provide("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.get().isSupportsSavepoint(), is(expectedSavepoint));
@@ -82,18 +81,26 @@ class MCPDatabaseCapabilityProviderTest {
     
     @Test
     void assertProvideWithRuntimeOverlay() {
-        MCPDatabaseMetadataCatalog metadataCatalog = new MCPDatabaseMetadataCatalog(Map.of("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "8.0.32", Collections.emptyList())));
-        Optional<MCPDatabaseCapability> actual = new MCPDatabaseCapabilityProvider(metadataCatalog).provide("logic_db");
+        Optional<MCPDatabaseCapability> actual = createCapabilityProvider("MySQL", "8.0.32").provide("logic_db");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertTrue(actual.get().isSupportsExplainAnalyze());
     }
     
-    private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
+    private MCPDatabaseCapabilityProvider createCapabilityProvider() {
         return new MCPDatabaseCapabilityProvider(new MCPDatabaseMetadataCatalog(Map.of(
                 "logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()),
                 "warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", Collections.emptyList()))));
+    }
+    
+    private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType) {
+        return createCapabilityProvider(databaseType, "");
+    }
+    
+    private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion) {
+        return new MCPDatabaseCapabilityProvider(new MCPDatabaseMetadataCatalog(Map.of(
+                "logic_db", new MCPDatabaseMetadata("logic_db", databaseType, databaseVersion, Collections.emptyList()))));
     }
     
     private static Stream<Arguments> provideCapabilityMatrixArguments() {

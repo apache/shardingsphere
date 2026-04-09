@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -60,6 +62,37 @@ final class StdioTransportTestClient implements AutoCloseable {
         stdErrorCollector = startStdErrorCollector(process, stdErrorMessages);
         writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
         reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
+    }
+    
+    Map<String, Object> initialize() throws IOException {
+        return request("init-1", "initialize",
+                Map.of("protocolVersion", MCPTransportConstants.PROTOCOL_VERSION, "capabilities", Map.of(), "clientInfo", Map.of("name", "stdio-test", "version", "1.0.0")));
+    }
+    
+    void notifyInitialized() throws IOException {
+        notifyServer("notifications/initialized", Map.of());
+    }
+    
+    List<Map<String, Object>> listTools() throws IOException {
+        return castToList(request("tool-list-1", "tools/list", Map.of()).get("tools"));
+    }
+    
+    Map<String, Object> callTool(final String toolName, final Map<String, Object> arguments) throws IOException {
+        return castToMap(request(toolName + "-1", "tools/call", Map.of("name", toolName, "arguments", arguments)).get("structuredContent"));
+    }
+    
+    Map<String, Object> readResourcePayload(final String resourceUri) throws IOException {
+        List<Map<String, Object>> actualContents = castToList(request("resource-read-1", "resources/read", Map.of("uri", resourceUri)).get("contents"));
+        return parseJsonText(actualContents.get(0).get("text"));
+    }
+    
+    List<Map<String, Object>> getItems(final Map<String, Object> payload) {
+        return castToList(payload.get("items"));
+    }
+    
+    List<String> getStringList(final Map<String, Object> payload, final String fieldName) {
+        return objectMapper.convertValue(payload.get(fieldName), new TypeReference<List<String>>() {
+        });
     }
     
     Map<String, Object> request(final String requestId, final String method, final Map<String, Object> params) throws IOException {
@@ -180,5 +213,20 @@ final class StdioTransportTestClient implements AutoCloseable {
         }
         process.destroyForcibly();
         process.waitFor(PROCESS_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+    
+    private Map<String, Object> castToMap(final Object value) {
+        return objectMapper.convertValue(value, new TypeReference<>() {
+        });
+    }
+    
+    private List<Map<String, Object>> castToList(final Object value) {
+        return objectMapper.convertValue(value, new TypeReference<>() {
+        });
+    }
+    
+    private Map<String, Object> parseJsonText(final Object value) throws IOException {
+        return objectMapper.readValue(String.valueOf(value), new TypeReference<>() {
+        });
     }
 }
