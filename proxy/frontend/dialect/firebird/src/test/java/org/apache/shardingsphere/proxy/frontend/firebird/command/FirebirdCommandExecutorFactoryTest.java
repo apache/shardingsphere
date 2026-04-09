@@ -51,6 +51,7 @@ import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.Fir
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdCreateBatchCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdSendBatchMessageCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdBlobInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.allocate.FirebirdAllocateStatementCommandExecutor;
@@ -80,6 +81,11 @@ class FirebirdCommandExecutorFactoryTest {
     @Test
     void assertNewInstanceWithInfoDatabase() {
         assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_DATABASE, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdDatabaseInfoExecutor.class));
+    }
+    
+    @Test
+    void assertNewInstanceWithInfoBlob() {
+        assertThat(FirebirdCommandExecutorFactory.newInstance(FirebirdCommandPacketType.INFO_BLOB, mock(FirebirdInfoPacket.class), connectionSession), isA(FirebirdBlobInfoExecutor.class));
     }
     
     @Test
