@@ -50,11 +50,13 @@ public final class StandardIdentifierCaseRule implements IdentifierCaseRule {
     
     @Override
     public boolean matches(final String storedName, final String actualIdentifier, final QuoteCharacter quoteCharacter) {
-        if (QuoteCharacter.NONE != quoteCharacter) {
-            return Objects.equals(storedName, actualIdentifier);
-        }
         if (null == storedName || null == actualIdentifier) {
             return Objects.equals(storedName, actualIdentifier);
+        }
+        if (QuoteCharacter.NONE != quoteCharacter) {
+            return LookupMode.EXACT == quotedLookupMode
+                    ? Objects.equals(storedName, actualIdentifier)
+                    : Objects.equals(normalize(storedName), normalize(actualIdentifier));
         }
         return unquotedStoredNamePredicate.test(storedName) && Objects.equals(normalize(storedName), normalize(actualIdentifier));
     }
