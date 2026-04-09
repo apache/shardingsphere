@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap;
+package org.apache.shardingsphere.mcp.bootstrap.fixture;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-/**
- * Bootstrap-local H2-backed runtime test support.
- */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class H2RuntimeTestSupport {
-    
-    private H2RuntimeTestSupport() {
-    }
     
     /**
      * Create one file-backed H2 JDBC URL in MySQL compatibility mode.
@@ -49,12 +45,12 @@ public final class H2RuntimeTestSupport {
     /**
      * Create runtime databases for the H2-backed runtime.
      *
-     * @param logicalDatabase logical database name
+     * @param databaseName database name
      * @param jdbcUrl JDBC URL
      * @return runtime databases
      */
-    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String logicalDatabase, final String jdbcUrl) {
-        return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
+    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String databaseName, final String jdbcUrl) {
+        return Map.of(databaseName, new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
     }
     
     /**
@@ -77,38 +73,13 @@ public final class H2RuntimeTestSupport {
                 "CREATE SEQUENCE IF NOT EXISTS order_seq START WITH 1000");
     }
     
-    /**
-     * Execute one or more SQL statements.
-     *
-     * @param jdbcUrl JDBC URL
-     * @param sqls SQL statements
-     * @throws SQLException SQL exception
-     */
-    public static void executeStatements(final String jdbcUrl, final String... sqls) throws SQLException {
+    private static void executeStatements(final String jdbcUrl, final String... sqls) throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection(jdbcUrl);
                 Statement statement = connection.createStatement()) {
             for (String each : sqls) {
                 statement.execute(each);
             }
-        }
-    }
-    
-    /**
-     * Query one single string value.
-     *
-     * @param jdbcUrl JDBC URL
-     * @param sql SQL
-     * @return queried value
-     * @throws SQLException SQL exception
-     */
-    public static String querySingleString(final String jdbcUrl, final String sql) throws SQLException {
-        try (
-                Connection connection = DriverManager.getConnection(jdbcUrl);
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(sql)) {
-            resultSet.next();
-            return resultSet.getString(1);
         }
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import org.apache.shardingsphere.mcp.bootstrap.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 

@@ -17,14 +17,18 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import org.apache.shardingsphere.mcp.bootstrap.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -98,7 +102,7 @@ class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeInt
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
         assertThat(actual.statusCode(), is(200));
-        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PROCESSING"));
+        assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
     }
     
     @Test
@@ -111,7 +115,7 @@ class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeInt
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         HttpResponse<String> actual = sendDeleteRequest(httpClient, sessionId);
         assertThat(actual.statusCode(), is(200));
-        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
+        assertThat(querySingleString(jdbcUrl), is("NEW"));
     }
     
     @Test
@@ -123,6 +127,16 @@ class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeInt
         sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         stopRuntime();
-        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
+        assertThat(querySingleString(jdbcUrl), is("NEW"));
+    }
+    
+    private String querySingleString(final String jdbcUrl) throws SQLException {
+        try (
+                Connection connection = DriverManager.getConnection(jdbcUrl);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT status FROM public.orders WHERE order_id = 1")) {
+            resultSet.next();
+            return resultSet.getString(1);
+        }
     }
 }
