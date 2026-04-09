@@ -96,10 +96,14 @@ class SimpleTableSegmentBinderTest {
         when(result.getDatabase(fooDatabase).getSchema(publicSchema)).thenReturn(schema);
         when(result.getDatabase(shardingDatabase).getSchema(testSchema)).thenReturn(schema);
         when(result.containsDatabase(fooDatabase)).thenReturn(true);
+        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("foo_db");
+        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("foo_db");
         when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
         when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
         when(result.containsDatabase(shardingDatabase)).thenReturn(true);
+        when(result.getDatabase("sharding_db").getDefaultSchemaName()).thenReturn("sharding_db");
+        when(result.getDatabase(shardingDatabase).getDefaultSchemaName()).thenReturn("sharding_db");
         when(result.getDatabase("sharding_db").containsSchema("sharding_db")).thenReturn(true);
         when(result.getDatabase(shardingDatabase).containsSchema(shardingDatabase)).thenReturn(true);
         when(result.getDatabase(shardingDatabase).getSchema(shardingDatabase).containsTable(tOrder)).thenReturn(true);

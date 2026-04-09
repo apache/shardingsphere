@@ -68,7 +68,9 @@ class PrepareStatementBinderTest {
         IdentifierValue databaseName = new IdentifierValue("foo_db_1");
         IdentifierValue tableName = new IdentifierValue("t_order");
         when(metaData.containsDatabase(eq(databaseName))).thenReturn(true);
+        when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
         when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
         when(schema.containsTable(eq(tableName))).thenReturn(true);
