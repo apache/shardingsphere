@@ -156,16 +156,13 @@ class PostgreSQLPreparedStatementParameterTypeResolverTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(database.getDefaultSchemaName()).thenReturn("public");
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
-        lenient().when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        lenient().when(schema.containsTable("foo_tbl")).thenReturn(true);
         when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
-        lenient().when(schema.getTable("foo_tbl")).thenReturn(table);
         when(schema.getTable(new IdentifierValue("foo_tbl"))).thenReturn(table);
         when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("postgres"))).thenReturn(database);

@@ -144,16 +144,13 @@ class PostgreSQLPreparedStatementMetadataFactoryTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        lenient().when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.getSchema("public")).thenReturn(schema);
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singletonList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
-        lenient().when(schema.containsTable("foo_tbl")).thenReturn(true);
         when(schema.containsTable(new IdentifierValue("foo_tbl"))).thenReturn(true);
-        lenient().when(schema.getTable("foo_tbl")).thenReturn(table);
         when(schema.getTable(new IdentifierValue("foo_tbl"))).thenReturn(table);
         when(result.getMetaDataContexts().getMetaData().getDatabase("postgres")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("postgres"))).thenReturn(database);
