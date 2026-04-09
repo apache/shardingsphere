@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.capability.database;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 
@@ -28,7 +27,6 @@ import java.util.Set;
 /**
  * MCP database capability.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPDatabaseCapability {
     
