@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Oracle.
+ * MCP database capability option for PostgreSQL.
  */
 @Getter
-public final class OracleDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class PostgreSQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
@@ -40,11 +40,11 @@ public final class OracleDatabaseCapabilityOption implements DatabaseCapabilityO
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return false;
+        return true;
     }
     
     @Override
     public String getType() {
-        return "Oracle";
+        return "PostgreSQL";
     }
 }

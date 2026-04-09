@@ -43,7 +43,7 @@ public final class MCPDatabaseCapabilityProvider {
     }
     
     private Optional<MCPDatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
-        return TypedSPILoader.findService(DatabaseCapabilityOption.class, databaseType).map(optional -> new MCPDatabaseCapability(databaseName, databaseVersion, optional));
+        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType).map(optional -> new MCPDatabaseCapability(databaseName, databaseVersion, optional));
     }
     
     private String getDatabaseVersion(final String databaseName) {

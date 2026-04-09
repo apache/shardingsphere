@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
 
 /**
- * Database capability option.
+ * MCP database capability option.
  */
 @SingletonSPI
-public interface DatabaseCapabilityOption extends TypedSPI {
+public interface MCPDatabaseCapabilityOption extends TypedSPI {
     
     /**
      * Get transaction capability.

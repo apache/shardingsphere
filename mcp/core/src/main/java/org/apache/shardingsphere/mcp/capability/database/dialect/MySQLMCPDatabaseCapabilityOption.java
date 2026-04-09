@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.DatabaseVersionUtil;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Hive.
+ * MCP database capability option for MySQL.
  */
 @Getter
-public final class HiveDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class MySQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.NONE;
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
-    private final boolean indexSupported = false;
+    private final boolean indexSupported = true;
     
     private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
     
@@ -40,11 +41,11 @@ public final class HiveDatabaseCapabilityOption implements DatabaseCapabilityOpt
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return false;
+        return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
     }
     
     @Override
     public String getType() {
-        return "Hive";
+        return "MySQL";
     }
 }

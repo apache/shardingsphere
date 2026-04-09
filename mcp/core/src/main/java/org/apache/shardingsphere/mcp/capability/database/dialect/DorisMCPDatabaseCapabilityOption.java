@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Doris.
+ * MCP database capability option for Doris.
  */
 @Getter
-public final class DorisDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class DorisMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
     

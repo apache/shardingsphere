@@ -18,34 +18,33 @@
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseVersionUtil;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for MySQL.
+ * MCP database capability option for openGauss.
  */
 @Getter
-public final class MySQLDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class OpenGaussMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
     private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
     private final boolean indexSupported = true;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = false;
+    private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean isSequenceSupported = false;
+    private final boolean isSequenceSupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
+        return true;
     }
     
     @Override
     public String getType() {
-        return "MySQL";
+        return "openGauss";
     }
 }

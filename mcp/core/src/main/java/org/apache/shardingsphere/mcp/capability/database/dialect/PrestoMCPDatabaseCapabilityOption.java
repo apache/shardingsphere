@@ -18,33 +18,33 @@
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Firebird.
+ * MCP database capability option for Presto.
  */
 @Getter
-public final class FirebirdDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class PrestoMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
     
-    private final boolean indexSupported = true;
+    private final boolean indexSupported = false;
     
     private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
     
     private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean isSequenceSupported = true;
+    private final boolean isSequenceSupported = false;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return false;
+        return true;
     }
     
     @Override
     public String getType() {
-        return "Firebird";
+        return "Presto";
     }
 }

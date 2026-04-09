@@ -18,33 +18,33 @@
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.DatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
 /**
- * Database capability option for Presto.
+ * MCP database capability option for MariaDB.
  */
 @Getter
-public final class PrestoDatabaseCapabilityOption implements DatabaseCapabilityOption {
+public final class MariaDBMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
+    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
     
-    private final boolean indexSupported = false;
+    private final boolean indexSupported = true;
     
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
     
-    private final boolean crossSchemaQuerySupported = true;
+    private final boolean crossSchemaQuerySupported = false;
     
-    private final boolean isSequenceSupported = false;
+    private final boolean isSequenceSupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return true;
+        return false;
     }
     
     @Override
     public String getType() {
-        return "Presto";
+        return "MariaDB";
     }
 }

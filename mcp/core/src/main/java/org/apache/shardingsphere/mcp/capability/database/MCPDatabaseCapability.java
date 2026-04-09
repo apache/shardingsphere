@@ -46,7 +46,7 @@ public final class MCPDatabaseCapability {
     
     private final boolean supportsExplainAnalyze;
     
-    public MCPDatabaseCapability(final String databaseName, final String databaseVersion, final DatabaseCapabilityOption option) {
+    public MCPDatabaseCapability(final String databaseName, final String databaseVersion, final MCPDatabaseCapabilityOption option) {
         this.databaseName = databaseName;
         databaseType = option.getType();
         supportedMetadataObjectTypes = createSupportedMetadataObjectTypes(option);
@@ -57,7 +57,7 @@ public final class MCPDatabaseCapability {
         supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
     }
     
-    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {
+    private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final MCPDatabaseCapabilityOption option) {
         Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPMetadataObjectType.SCHEMA);
         result.add(SupportedMCPMetadataObjectType.TABLE);
@@ -72,7 +72,7 @@ public final class MCPDatabaseCapability {
         return result;
     }
     
-    private Set<SupportedMCPStatement> createSupportedStatementClasses(final String databaseVersion, final DatabaseCapabilityOption option) {
+    private Set<SupportedMCPStatement> createSupportedStatementClasses(final String databaseVersion, final MCPDatabaseCapabilityOption option) {
         Set<SupportedMCPStatement> result = new LinkedHashSet<>(16, 1F);
         result.add(SupportedMCPStatement.QUERY);
         result.add(SupportedMCPStatement.DML);
