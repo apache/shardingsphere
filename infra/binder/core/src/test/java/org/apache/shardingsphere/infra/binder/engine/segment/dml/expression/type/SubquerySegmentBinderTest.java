@@ -115,6 +115,8 @@ class SubquerySegmentBinderTest {
         when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase)).thenReturn(schema);
         when(result.containsDatabase(fooDatabase)).thenReturn(true);
+        when(result.getDatabase("foo_db").getDefaultSchemaName()).thenReturn("foo_db");
+        when(result.getDatabase(fooDatabase).getDefaultSchemaName()).thenReturn("foo_db");
         when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
         when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
         when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);

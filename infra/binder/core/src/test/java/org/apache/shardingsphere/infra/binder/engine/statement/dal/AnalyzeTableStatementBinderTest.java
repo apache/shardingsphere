@@ -60,7 +60,9 @@ class AnalyzeTableStatementBinderTest {
     void assertBind() {
         IdentifierValue databaseName = new IdentifierValue("foo_db");
         when(metaData.containsDatabase(databaseName)).thenReturn(true);
+        when(metaData.getDatabase(databaseName.getValue())).thenReturn(database);
         when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(database.getDefaultSchemaName()).thenReturn(databaseName.getValue());
         when(database.containsSchema(eq(databaseName))).thenReturn(true);
         when(database.getSchema(eq(databaseName))).thenReturn(schema);
         AnalyzeTableStatement actual = getAnalyzeTableStatement();
