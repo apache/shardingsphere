@@ -84,7 +84,7 @@ public final class FirebirdTransactionIdGenerator {
     private AtomicInteger getTransactionCounter(final int connectionId) {
         AtomicInteger result = connectionRegistry.get(connectionId);
         if (null == result) {
-            throw new IllegalStateException("Connection [" + connectionId + "] is not registered.");
+            throw new IllegalStateException("No transaction ID generator found for connectionId: " + connectionId);
         }
         return result;
     }

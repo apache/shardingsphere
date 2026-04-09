@@ -84,7 +84,7 @@ public final class FirebirdStatementIdGenerator {
     private AtomicInteger getStatementCounter(final int connectionId) {
         AtomicInteger result = connectionRegistry.get(connectionId);
         if (null == result) {
-            throw new IllegalStateException("Connection [" + connectionId + "] is not registered.");
+            throw new IllegalStateException("No statement ID generator found for connectionId: " + connectionId);
         }
         return result;
     }

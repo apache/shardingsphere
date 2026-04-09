@@ -225,13 +225,13 @@ class FirebirdPacketCodecEngineTest {
     
     private MockedStatic<FirebirdCommandPacketFactory> mockExpectedLength(final int expectedLength) {
         MockedStatic<FirebirdCommandPacketFactory> result = mockStatic(FirebirdCommandPacketFactory.class);
-        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any())).thenReturn(expectedLength);
+        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any(), anyInt())).thenReturn(expectedLength);
         return result;
     }
     
     private MockedStatic<FirebirdCommandPacketFactory> mockExpectedLengthException() {
         MockedStatic<FirebirdCommandPacketFactory> result = mockStatic(FirebirdCommandPacketFactory.class);
-        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any())).thenThrow(IndexOutOfBoundsException.class);
+        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any(), anyInt())).thenThrow(IndexOutOfBoundsException.class);
         return result;
     }
     

@@ -36,7 +36,11 @@ public final class FirebirdBatchStatement {
         this.statementHandle = statementHandle;
     }
     
-    void addParameterValues(final List<Object> values) {
+    /**
+     * Add batched parameter values.
+     * @param values parameter values to add
+     */
+    public void addParameterValues(final List<Object> values) {
         parameterValues.add(values);
     }
     

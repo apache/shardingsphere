@@ -29,7 +29,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class FirebirdFetchStatementCacheTest {
     
@@ -81,9 +83,18 @@ class FirebirdFetchStatementCacheTest {
     }
     
     @Test
-    void assertUnregisterConnection() {
+    void assertUnregisterConnection() throws Exception {
+        ProxyBackendHandler handler = mock(ProxyBackendHandler.class);
         cache.registerConnection(1);
+        cache.registerStatement(1, 10, handler);
         cache.unregisterConnection(1);
+        verify(handler).close();
         assertFalse(statementRegistry.containsKey(1));
     }
+    
+    @Test
+    void assertGetFetchBackendHandlerWithoutRegisteredConnection() {
+        assertThrows(IllegalStateException.class, () -> cache.getFetchBackendHandler(1, 10));
+    }
+    
 }

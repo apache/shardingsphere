@@ -105,7 +105,7 @@ public final class FirebirdFetchStatementCache {
     private Map<Integer, ProxyBackendHandler> getRegisteredStatements(final int connectionId) {
         Map<Integer, ProxyBackendHandler> result = statementRegistry.get(connectionId);
         if (null == result) {
-            throw new IllegalStateException("Connection [" + connectionId + "] is not registered.");
+            throw new IllegalStateException("No fetch statement cache found for connectionId: " + connectionId);
         }
         return result;
     }

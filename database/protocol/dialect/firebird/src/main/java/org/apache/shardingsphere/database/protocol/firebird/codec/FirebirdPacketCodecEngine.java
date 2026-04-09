@@ -108,17 +108,18 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
             }
             int readerIndex = buffer.readerIndex();
             FirebirdCommandPacketType commandType = (pendingPacketType != null) ? pendingPacketType : FirebirdCommandPacketType.valueOf(buffer.getInt(readerIndex));
-            int packetLength = findPacketLength(context, buffer, commandType, charset);
             if (FirebirdCommandPacketType.VOID == commandType) {
                 buffer.skipBytes(MESSAGE_TYPE_LENGTH);
                 continue;
             }
+            int packetLength = findPacketLength(context, buffer, commandType, charset);
             if (packetLength < 0) {
                 pendingPacketType = commandType;
                 pendingMessages.add(buffer.readRetainedSlice(buffer.readableBytes()));
                 return;
             }
             pendingPacketType = null;
+            // TODO replace temporary implementation for prepending BATCH_MSG chunk.
             if (commandType == FirebirdCommandPacketType.BATCH_MSG) {
                 CompositeByteBuf result = context.alloc().compositeBuffer(2);
                 try {
@@ -141,7 +142,7 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         try {
             FirebirdPacketPayload payload = new FirebirdPacketPayload(slice, charset);
             int expectedLength = FirebirdCommandPacketFactory.getExpectedLength(commandType, payload,
-                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), getConnectionId(context));
+                    context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get(), context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get());
             if (expectedLength < 0) {
                 if (FirebirdCommandPacketType.BATCH_MSG == commandType && -1 != expectedLength) {
                     readerIndex = -expectedLength;
@@ -155,11 +156,6 @@ public final class FirebirdPacketCodecEngine implements DatabasePacketCodecEngin
         } finally {
             slice.release();
         }
-    }
-    
-    private int getConnectionId(final ChannelHandlerContext context) {
-        Integer connectionId = context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get();
-        return null == connectionId ? 0 : connectionId;
     }
     
     @Override

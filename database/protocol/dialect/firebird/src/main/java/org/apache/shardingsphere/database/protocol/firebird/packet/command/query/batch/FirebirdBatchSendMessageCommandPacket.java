@@ -40,9 +40,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommandPacket {
     
-    private static final int FIXED_PACKET_LENGTH = 12;
+    private static final int FIXED_BATCH_MSG_HEADER_LENGTH = 12;
     
-    private static final Map<Integer, BatchMessageLengthContext> BATCH_MESSAGE_LENGTH_CONTEXT_CACHE = new ConcurrentHashMap<>();
+    private static final Map<Integer, BatchMessageHeaderContext> BATCH_MSG_HEADER_CONTEXT_CACHE = new ConcurrentHashMap<>();
     
     public FirebirdBatchSendMessageCommandPacket() {
     }
@@ -52,11 +52,11 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
     }
     
     static void registerBatchColumnTypes(final int connectionId, final List<FirebirdBinaryColumnType> columnTypes) {
-        BATCH_MESSAGE_LENGTH_CONTEXT_CACHE.put(connectionId, new BatchMessageLengthContext(new ArrayList<>(columnTypes), 0, 0));
+        BATCH_MSG_HEADER_CONTEXT_CACHE.put(connectionId, new BatchMessageHeaderContext(new ArrayList<>(columnTypes), 0, 0));
     }
     
     static void clearBatchMetadataCache(final int connectionId) {
-        BATCH_MESSAGE_LENGTH_CONTEXT_CACHE.remove(connectionId);
+        BATCH_MSG_HEADER_CONTEXT_CACHE.remove(connectionId);
     }
     
     /**
@@ -69,23 +69,23 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
      */
     public static int getLength(final FirebirdPacketPayload payload, final int connectionId) {
         ByteBuf byteBuf = payload.getByteBuf();
-        if (byteBuf.readableBytes() < FIXED_PACKET_LENGTH) {
+        if (byteBuf.readableBytes() < FIXED_BATCH_MSG_HEADER_LENGTH) {
             return -1;
         }
-        BatchMessageLengthContext batchMessageLengthContext = BATCH_MESSAGE_LENGTH_CONTEXT_CACHE.get(connectionId);
-        if (null == batchMessageLengthContext) {
-            throw new FirebirdProtocolException("column types not specified");
+        BatchMessageHeaderContext batchMessageHeaderContext = BATCH_MSG_HEADER_CONTEXT_CACHE.get(connectionId);
+        if (null == batchMessageHeaderContext) {
+            throw new FirebirdProtocolException("Batch message header context not found for connectionId: " + connectionId);
         }
-        if (0 == batchMessageLengthContext.getStatementHandle() && 0 == batchMessageLengthContext.getBatchMessageCount()) {
+        if (0 == batchMessageHeaderContext.getStatementHandle() && 0 == batchMessageHeaderContext.getBatchMessageCount()) {
             payload.skipReserved(4);
-            batchMessageLengthContext.setStatementHandle(payload.readInt4());
-            batchMessageLengthContext.setBatchMessageCount(payload.readInt4Unsigned());
+            batchMessageHeaderContext.setStatementHandle(payload.readInt4());
+            batchMessageHeaderContext.setBatchMessageCount(payload.readInt4Unsigned());
         }
-        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, batchMessageLengthContext.getStatementHandle());
+        FirebirdBatchStatement batchStatement = FirebirdBatchRegistry.getInstance().getBatchStatement(connectionId, batchMessageHeaderContext.getStatementHandle());
         if (null == batchStatement) {
-            throw new FirebirdProtocolException("Batch statement does not exist for statement handle: " + batchMessageLengthContext.getStatementHandle());
+            throw new FirebirdProtocolException("Batch statement not found for connectionId: " + connectionId + ", statement handle: " + batchMessageHeaderContext.getStatementHandle());
         }
-        return parseBatchMessageLength(payload, batchMessageLengthContext.getColumnTypes(), batchMessageLengthContext.getBatchMessageCount(), batchStatement);
+        return parseBatchMessageLength(payload, batchMessageHeaderContext.getColumnTypes(), batchMessageHeaderContext.getBatchMessageCount(), batchStatement);
     }
     
     private static int parseBatchMessageLength(final FirebirdPacketPayload payload, final List<FirebirdBinaryColumnType> columnTypes, final long batchMessageCount,
@@ -160,7 +160,7 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
     }
     
     @Getter
-    public static final class BatchMessageLengthContext {
+    public static final class BatchMessageHeaderContext {
         
         private final List<FirebirdBinaryColumnType> columnTypes;
         
@@ -170,7 +170,7 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
         @Setter
         private long batchMessageCount;
         
-        private BatchMessageLengthContext(final List<FirebirdBinaryColumnType> columnTypes, final int statementHandle, final long batchMessageCount) {
+        private BatchMessageHeaderContext(final List<FirebirdBinaryColumnType> columnTypes, final int statementHandle, final long batchMessageCount) {
             this.columnTypes = columnTypes;
             this.statementHandle = statementHandle;
             this.batchMessageCount = batchMessageCount;

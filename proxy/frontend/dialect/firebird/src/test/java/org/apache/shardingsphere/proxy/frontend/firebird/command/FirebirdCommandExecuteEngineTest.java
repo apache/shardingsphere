@@ -147,7 +147,7 @@ class FirebirdCommandExecuteEngineTest {
         when(connectionSession.getConnectionId()).thenReturn(1);
         when(FirebirdConnectionProtocolVersion.getInstance()).thenReturn(connectionProtocolVersion);
         when(connectionProtocolVersion.getProtocolVersion(1)).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10);
-        when(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXECUTE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION10)).thenReturn(commandPacket);
+        when(FirebirdCommandPacketFactory.newInstance(FirebirdCommandPacketType.EXECUTE, payload, FirebirdProtocolVersion.PROTOCOL_VERSION10, 1)).thenReturn(commandPacket);
         assertThat(engine.getCommandPacket(payload, FirebirdCommandPacketType.EXECUTE, connectionSession), is(commandPacket));
     }
     
