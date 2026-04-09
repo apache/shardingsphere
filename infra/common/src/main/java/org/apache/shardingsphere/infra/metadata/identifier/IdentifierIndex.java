@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.identifier;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
@@ -38,7 +38,6 @@ import java.util.Optional;
  *
  * @param <T> metadata object type
  */
-@RequiredArgsConstructor
 public final class IdentifierIndex<T> {
     
     private final DatabaseIdentifierContext databaseIdentifierContext;
@@ -46,6 +45,11 @@ public final class IdentifierIndex<T> {
     private final IdentifierScope identifierScope;
     
     private volatile Snapshot<T> snapshot = Snapshot.empty();
+    
+    public IdentifierIndex(final DatabaseIdentifierContext databaseIdentifierContext, final IdentifierScope identifierScope) {
+        this.databaseIdentifierContext = databaseIdentifierContext;
+        this.identifierScope = identifierScope;
+    }
     
     /**
      * Rebuild identifier index by actual names.
@@ -60,7 +64,7 @@ public final class IdentifierIndex<T> {
             newExactValues.put(entry.getKey(), entry.getValue());
             addNormalizedIdentifier(newNormalizedIdentifiers, rule, entry.getKey());
         }
-        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, rule);
     }
     
     /**
@@ -90,14 +94,14 @@ public final class IdentifierIndex<T> {
     public synchronized void put(final String name, final T value) {
         Snapshot<T> currentSnapshot = snapshot;
         Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
-        Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifiers());
+        Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifierNames());
         IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
         if (newExactValues.containsKey(name)) {
             removeNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
         }
         newExactValues.put(name, value);
         addNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
-        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, rule);
     }
     
     /**
@@ -112,10 +116,11 @@ public final class IdentifierIndex<T> {
             return null;
         }
         Map<String, T> newExactValues = new LinkedHashMap<>(currentSnapshot.getExactValues());
-        Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifiers());
+        Map<String, Collection<String>> newNormalizedIdentifiers = copyNormalizedIdentifiers(currentSnapshot.getNormalizedIdentifierNames());
+        IdentifierCaseRule rule = databaseIdentifierContext.getRule(identifierScope);
         T result = newExactValues.remove(name);
-        removeNormalizedIdentifier(newNormalizedIdentifiers, databaseIdentifierContext.getRule(identifierScope), name);
-        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers);
+        removeNormalizedIdentifier(newNormalizedIdentifiers, rule, name);
+        snapshot = createSnapshot(newExactValues, newNormalizedIdentifiers, rule);
         return result;
     }
     
@@ -154,13 +159,35 @@ public final class IdentifierIndex<T> {
     }
     
     private Optional<T> findByNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule, final IdentifierValue identifierValue) {
-        Collection<String> candidateIdentifiers = currentSnapshot.getNormalizedIdentifiers().get(rule.normalize(identifierValue.getValue()));
-        if (null == candidateIdentifiers) {
+        NormalizedBucket<T> normalizedBucket = currentSnapshot.getNormalizedBuckets().get(rule.normalize(identifierValue.getValue()));
+        if (null == normalizedBucket) {
             return Optional.empty();
+        }
+        return QuoteCharacter.NONE == identifierValue.getQuoteCharacter()
+                ? findByUnquotedNormalizedIdentifier(normalizedBucket, identifierValue.getValue())
+                : findByQuotedNormalizedIdentifier(currentSnapshot, rule, normalizedBucket, identifierValue);
+    }
+    
+    private Optional<T> findByUnquotedNormalizedIdentifier(final NormalizedBucket<T> normalizedBucket, final String identifierValue) {
+        if (!normalizedBucket.hasUnquotedIdentifier()) {
+            return Optional.empty();
+        }
+        if (normalizedBucket.hasSingleUnquotedIdentifier()) {
+            return Optional.ofNullable(normalizedBucket.getSingleUnquotedValue());
+        }
+        throw new AmbiguousIdentifierException(identifierValue, normalizedBucket.getUnquotedIdentifiers());
+    }
+    
+    private Optional<T> findByQuotedNormalizedIdentifier(final Snapshot<T> currentSnapshot, final IdentifierCaseRule rule,
+                                                         final NormalizedBucket<T> normalizedBucket, final IdentifierValue identifierValue) {
+        if (normalizedBucket.hasSingleIdentifier()) {
+            return rule.matches(normalizedBucket.getSingleIdentifier(), identifierValue.getValue(), identifierValue.getQuoteCharacter())
+                    ? Optional.ofNullable(normalizedBucket.getSingleValue())
+                    : Optional.empty();
         }
         String matchedIdentifier = null;
         Collection<String> ambiguousIdentifiers = null;
-        for (String each : candidateIdentifiers) {
+        for (String each : normalizedBucket.getIdentifiers()) {
             if (!rule.matches(each, identifierValue.getValue(), identifierValue.getQuoteCharacter())) {
                 continue;
             }
@@ -208,12 +235,45 @@ public final class IdentifierIndex<T> {
         return result;
     }
     
-    private Snapshot<T> createSnapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifiers) {
+    private Snapshot<T> createSnapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifiers, final IdentifierCaseRule rule) {
         Map<String, Collection<String>> immutableNormalizedIdentifiers = new LinkedHashMap<>(normalizedIdentifiers.size(), 1F);
+        Map<String, NormalizedBucket<T>> normalizedBuckets = new LinkedHashMap<>(normalizedIdentifiers.size(), 1F);
         for (Entry<String, Collection<String>> entry : normalizedIdentifiers.entrySet()) {
-            immutableNormalizedIdentifiers.put(entry.getKey(), Collections.unmodifiableCollection(new LinkedList<>(entry.getValue())));
+            Collection<String> identifiers = Collections.unmodifiableCollection(new LinkedList<>(entry.getValue()));
+            immutableNormalizedIdentifiers.put(entry.getKey(), identifiers);
+            normalizedBuckets.put(entry.getKey(), createNormalizedBucket(exactValues, identifiers, rule));
         }
-        return new Snapshot<>(Collections.unmodifiableMap(new LinkedHashMap<>(exactValues)), Collections.unmodifiableMap(immutableNormalizedIdentifiers));
+        return new Snapshot<>(Collections.unmodifiableMap(new LinkedHashMap<>(exactValues)),
+                Collections.unmodifiableMap(immutableNormalizedIdentifiers), Collections.unmodifiableMap(normalizedBuckets));
+    }
+    
+    private NormalizedBucket<T> createNormalizedBucket(final Map<String, T> exactValues, final Collection<String> identifiers, final IdentifierCaseRule rule) {
+        String singleIdentifier = null;
+        T singleValue = null;
+        if (1 == identifiers.size()) {
+            singleIdentifier = identifiers.iterator().next();
+            singleValue = exactValues.get(singleIdentifier);
+        }
+        String singleUnquotedIdentifier = null;
+        T singleUnquotedValue = null;
+        Collection<String> unquotedIdentifiers = null;
+        for (String each : identifiers) {
+            if (!rule.matches(each, each, QuoteCharacter.NONE)) {
+                continue;
+            }
+            if (null == singleUnquotedIdentifier) {
+                singleUnquotedIdentifier = each;
+                singleUnquotedValue = exactValues.get(each);
+                continue;
+            }
+            if (null == unquotedIdentifiers) {
+                unquotedIdentifiers = new LinkedList<>();
+                unquotedIdentifiers.add(singleUnquotedIdentifier);
+            }
+            unquotedIdentifiers.add(each);
+        }
+        return new NormalizedBucket<>(singleIdentifier, singleValue, identifiers, singleUnquotedIdentifier,
+                singleUnquotedValue, null == unquotedIdentifiers ? null : Collections.unmodifiableCollection(unquotedIdentifiers));
     }
     
     @Override
@@ -223,15 +283,18 @@ public final class IdentifierIndex<T> {
     
     private static final class Snapshot<T> {
         
-        private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap());
+        private static final Snapshot<?> EMPTY = new Snapshot<>(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
         
         private final Map<String, T> exactValues;
         
-        private final Map<String, Collection<String>> normalizedIdentifiers;
+        private final Map<String, Collection<String>> normalizedIdentifierNames;
         
-        private Snapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifiers) {
+        private final Map<String, NormalizedBucket<T>> normalizedBuckets;
+        
+        private Snapshot(final Map<String, T> exactValues, final Map<String, Collection<String>> normalizedIdentifierNames, final Map<String, NormalizedBucket<T>> normalizedBuckets) {
             this.exactValues = exactValues;
-            this.normalizedIdentifiers = normalizedIdentifiers;
+            this.normalizedIdentifierNames = normalizedIdentifierNames;
+            this.normalizedBuckets = normalizedBuckets;
         }
         
         @SuppressWarnings("unchecked")
@@ -243,8 +306,69 @@ public final class IdentifierIndex<T> {
             return exactValues;
         }
         
-        private Map<String, Collection<String>> getNormalizedIdentifiers() {
-            return normalizedIdentifiers;
+        private Map<String, Collection<String>> getNormalizedIdentifierNames() {
+            return normalizedIdentifierNames;
+        }
+        
+        private Map<String, NormalizedBucket<T>> getNormalizedBuckets() {
+            return normalizedBuckets;
+        }
+    }
+    
+    private static final class NormalizedBucket<T> {
+        
+        private final String singleIdentifier;
+        
+        private final T singleValue;
+        
+        private final Collection<String> identifiers;
+        
+        private final String singleUnquotedIdentifier;
+        
+        private final T singleUnquotedValue;
+        
+        private final Collection<String> unquotedIdentifiers;
+        
+        private NormalizedBucket(final String singleIdentifier, final T singleValue, final Collection<String> identifiers,
+                                 final String singleUnquotedIdentifier, final T singleUnquotedValue, final Collection<String> unquotedIdentifiers) {
+            this.singleIdentifier = singleIdentifier;
+            this.singleValue = singleValue;
+            this.identifiers = identifiers;
+            this.singleUnquotedIdentifier = singleUnquotedIdentifier;
+            this.singleUnquotedValue = singleUnquotedValue;
+            this.unquotedIdentifiers = unquotedIdentifiers;
+        }
+        
+        private boolean hasSingleIdentifier() {
+            return null != singleIdentifier;
+        }
+        
+        private String getSingleIdentifier() {
+            return singleIdentifier;
+        }
+        
+        private T getSingleValue() {
+            return singleValue;
+        }
+        
+        private Collection<String> getIdentifiers() {
+            return identifiers;
+        }
+        
+        private boolean hasUnquotedIdentifier() {
+            return null != singleUnquotedIdentifier;
+        }
+        
+        private boolean hasSingleUnquotedIdentifier() {
+            return null == unquotedIdentifiers && null != singleUnquotedIdentifier;
+        }
+        
+        private T getSingleUnquotedValue() {
+            return singleUnquotedValue;
+        }
+        
+        private Collection<String> getUnquotedIdentifiers() {
+            return unquotedIdentifiers;
         }
     }
 }
