@@ -199,10 +199,15 @@ class OpenGaussComBatchBindExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(result.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("foo_ds", storageUnit));
         when(result.getRuleMetaData()).thenReturn(new RuleMetaData(Collections.emptyList()));
+        when(result.getDefaultSchemaName()).thenReturn("public");
+        when(result.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        lenient().when(result.containsSchema("public")).thenReturn(true);
         when(result.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(result.getSchema("public")).thenReturn(schema);
         when(result.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        lenient().when(schema.containsTable("bmsql")).thenReturn(true);
         when(schema.containsTable(new IdentifierValue("bmsql"))).thenReturn(true);
+        when(schema.getTable("bmsql").getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
         when(schema.getTable(new IdentifierValue("bmsql")).getAllColumns()).thenReturn(Collections.singleton(new ShardingSphereColumn("id", Types.VARCHAR, false, false, false, true, false, false)));
         return result;
     }

@@ -81,6 +81,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -192,13 +193,18 @@ class PostgreSQLComBindExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(databaseType);
         when(database.getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
+        lenient().when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         ShardingSphereTable table = new ShardingSphereTable("t_order", Arrays.asList(
                 new ShardingSphereColumn("id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("k", Types.INTEGER, true, false, false, true, false, false)), Collections.emptyList(), Collections.emptyList());
+        lenient().when(schema.containsTable("t_order")).thenReturn(true);
         when(schema.containsTable(new IdentifierValue("t_order"))).thenReturn(true);
+        lenient().when(schema.getTable("t_order")).thenReturn(table);
         when(schema.getTable(new IdentifierValue("t_order"))).thenReturn(table);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME)).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
