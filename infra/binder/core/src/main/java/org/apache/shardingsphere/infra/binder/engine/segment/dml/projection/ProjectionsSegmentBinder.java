@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type.AggregationProjectionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.projection.type.ColumnProjectionSegmentBinder;
@@ -136,11 +137,8 @@ public final class ProjectionsSegmentBinder {
     private static AggregationProjectionSegment bindAggregationProjection(final AggregationProjectionSegment aggregationSegment, final SQLStatementBinderContext binderContext,
                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        AggregationProjectionSegment result =
-                new AggregationProjectionSegment(aggregationSegment.getStartIndex(), aggregationSegment.getStopIndex(), aggregationSegment.getType(), aggregationSegment.getExpression(),
-                        aggregationSegment.getSeparator().orElse(null));
-        aggregationSegment.getParameters()
-                .forEach(each -> result.getParameters().add(ExpressionSegmentBinder.bind(each, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)));
+        AggregationProjectionSegment result = AggregationProjectionSegmentBinder.bind(
+                aggregationSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
         aggregationSegment.getAliasSegment().ifPresent(result::setAlias);
         return result;
     }

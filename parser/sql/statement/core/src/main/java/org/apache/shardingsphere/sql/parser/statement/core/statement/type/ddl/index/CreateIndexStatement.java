@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
@@ -35,7 +35,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,33 +42,46 @@ import java.util.stream.Collectors;
  * Create index statement.
  */
 @Getter
-@Setter
 public final class CreateIndexStatement extends DDLStatement {
     
-    private IndexSegment index;
+    private final IndexSegment index;
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private boolean ifNotExists;
+    private final boolean ifNotExists;
     
-    private Integer anonymousIndexStartIndex;
+    private final Integer anonymousIndexStartIndex;
     
-    private AlgorithmTypeSegment algorithmType;
+    private final AlgorithmTypeSegment algorithmType;
     
-    private LockTableSegment lockTable;
+    private final LockTableSegment lockTable;
     
-    private final Collection<ColumnSegment> columns = new LinkedList<>();
+    private final Collection<ColumnSegment> columns;
     
-    private String indexType;
+    private final String indexType;
     
-    private PropertiesSegment properties;
+    private final PropertiesSegment properties;
     
-    private String comment;
+    private final String comment;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public CreateIndexStatement(final DatabaseType databaseType) {
+    @Builder
+    private CreateIndexStatement(final DatabaseType databaseType, final IndexSegment index, final SimpleTableSegment table, final boolean ifNotExists,
+                                 final Integer anonymousIndexStartIndex, final AlgorithmTypeSegment algorithmType, final LockTableSegment lockTable,
+                                 final Collection<ColumnSegment> columns, final String indexType, final PropertiesSegment properties, final String comment) {
         super(databaseType);
+        this.index = index;
+        this.table = table;
+        this.ifNotExists = ifNotExists;
+        this.anonymousIndexStartIndex = anonymousIndexStartIndex;
+        this.algorithmType = algorithmType;
+        this.lockTable = lockTable;
+        this.columns = null == columns ? Collections.emptyList() : columns;
+        this.indexType = indexType;
+        this.properties = properties;
+        this.comment = comment;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new CreateIndexIndexSQLStatementAttribute());
     }
     
     /**
@@ -97,11 +109,6 @@ public final class CreateIndexStatement extends DDLStatement {
      */
     public Optional<LockTableSegment> getLockTable() {
         return Optional.ofNullable(lockTable);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new CreateIndexIndexSQLStatementAttribute());
     }
     
     private class CreateIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {

@@ -41,23 +41,19 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
     
     @Override
     public DeleteStatement bind(final DeleteStatement sqlStatement, final SQLStatementBinderContext binderContext) {
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, outerTableBinderContexts)).orElse(null);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        WithSegment boundWith = sqlStatement.getWith().map(optional -> WithSegmentBinder.bind(optional, binderContext, binderContext.getExternalTableBinderContexts())).orElse(null);
         TableSegment boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, LinkedHashMultimap.create());
-        WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+        WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
-                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, LinkedHashMultimap.create())).orElse(null);
+                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, outerTableBinderContexts)).orElse(null);
         return copy(sqlStatement, boundWith, boundTable, boundWhere, boundOrderBy);
     }
     
     private DeleteStatement copy(final DeleteStatement sqlStatement, final WithSegment boundWith, final TableSegment boundTable, final WhereSegment boundWhere, final OrderBySegment boundOrderBy) {
-        DeleteStatement result = new DeleteStatement(sqlStatement.getDatabaseType());
-        result.setWith(boundWith);
-        result.setTable(boundTable);
-        result.setWhere(boundWhere);
-        result.setOrderBy(boundOrderBy);
-        sqlStatement.getLimit().ifPresent(result::setLimit);
-        sqlStatement.getOutput().ifPresent(result::setOutput);
+        DeleteStatement result = DeleteStatement.builder().databaseType(sqlStatement.getDatabaseType()).with(boundWith).table(boundTable)
+                .where(boundWhere).orderBy(boundOrderBy).limit(sqlStatement.getLimit().orElse(null)).output(sqlStatement.getOutput().orElse(null)).build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

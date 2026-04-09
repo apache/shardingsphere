@@ -88,7 +88,6 @@ class BroadcastRouteEngineFactoryTest {
     void assertNewInstanceWithCursorContextAvailableAndIsAllBroadcastTables() {
         CursorHeldSQLStatementContext sqlStatementContext = mock(CursorHeldSQLStatementContext.class, RETURNS_DEEP_STUBS);
         CloseStatement closeStatement = new CloseStatement(databaseType, mock(), false);
-        closeStatement.buildAttributes();
         when(sqlStatementContext.getSqlStatement()).thenReturn(closeStatement);
         when(sqlStatementContext.getTablesContext()).thenReturn(createTablesContext());
         when(queryContext.getSqlStatementContext()).thenReturn(sqlStatementContext);

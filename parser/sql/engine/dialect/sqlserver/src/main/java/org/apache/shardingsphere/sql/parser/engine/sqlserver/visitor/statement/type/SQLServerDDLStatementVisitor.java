@@ -70,7 +70,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ModifyColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TableConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.TruncateTableContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQLServerStatementParser.ViewNameContext;
 import org.apache.shardingsphere.sql.parser.engine.sqlserver.visitor.statement.SQLServerStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.CreateDefinitionSegment;
@@ -124,6 +123,7 @@ import org.apache.shardingsphere.sql.parser.statement.sqlserver.ddl.service.SQLS
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * DDL statement visitor for SQLServer.
@@ -142,17 +142,22 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableClause(final CreateTableClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
         for (CreateDefinitionSegment each : createDefinitions.getValue()) {
             if (each instanceof ColumnDefinitionSegment) {
-                result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                columnDefinitions.add((ColumnDefinitionSegment) each);
             } else if (each instanceof ConstraintDefinitionSegment) {
-                result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                constraintDefinitions.add((ConstraintDefinitionSegment) each);
             }
         }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     private ASTNode generateCreateDefinitionSegment(final CreateTableDefinitionsContext ctx) {
@@ -314,25 +319,23 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.setContainsCascade(null != ctx.ifExists());
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        return result;
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue(), null != ctx.ifExists(), false);
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())), Collections.emptyList());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIndex((IndexSegment) visit(ctx.indexName()));
-        result.getColumns().addAll(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .index((IndexSegment) visit(ctx.indexName()))
+                .columns(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue())
+                .build();
     }
     
     @Override
@@ -347,11 +350,12 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
-        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .ifExists(null != ctx.ifExists())
+                .indexes(Collections.singleton((IndexSegment) visit(ctx.indexName())))
+                .simpleTable((SimpleTableSegment) visit(ctx.tableName()))
+                .build();
     }
     
     @Override
@@ -375,7 +379,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement(getDatabaseType());
+        return new CreateFunctionStatement(getDatabaseType(), null, null, Collections.emptyList());
     }
     
     @Override
@@ -484,12 +488,7 @@ public final class SQLServerDDLStatementVisitor extends SQLServerStatementVisito
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        for (ViewNameContext each : ctx.viewName()) {
-            result.getViews().add((SimpleTableSegment) visit(each));
-        }
-        return result;
+        return new DropViewStatement(getDatabaseType(), ctx.viewName().stream().map(each -> (SimpleTableSegment) visit(each)).collect(Collectors.toList()), null != ctx.ifExists());
     }
     
     @Override

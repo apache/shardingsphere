@@ -192,7 +192,7 @@ importStatement
     ;
 
 loadStatement
-    : loadDataStatement | loadXmlStatement
+    : dorisLoadDataStatement | loadXmlStatement | brokerLoadStatement
     ;
 
 createRoutineLoad
@@ -279,18 +279,39 @@ stopRoutineLoad
     : STOP ROUTINE LOAD FOR (owner DOT_)? jobName
     ;
 
-loadDataStatement
-    : LOAD DATA
-      (LOW_PRIORITY | CONCURRENT)? LOCAL? 
-      INFILE string_
-      (REPLACE | IGNORE)?
-      INTO TABLE tableName partitionNames?
-      (CHARACTER SET identifier)?
-      (COLUMNS selectFieldsInto+ )?
-      ( LINES selectLinesInto+ )?
-      ( IGNORE numberLiterals (LINES | ROWS) )?
+dorisLoadDataStatement
+    : LOAD DATA LOCAL? INFILE loadDataFileName=string_ INTO TABLE tableName
+      partitionNames?
+      loadDataColumnTerminator?
+      loadDataLineTerminator?
+      loadDataIgnoreLines?
       fieldOrVarSpec?
-      (setAssignmentsClause)?
+      loadDataSetClause?
+      loadDataProperties?
+    ;
+
+loadDataColumnTerminator
+    : COLUMNS TERMINATED BY string_
+    ;
+
+loadDataLineTerminator
+    : LINES TERMINATED BY string_
+    ;
+
+loadDataIgnoreLines
+    : IGNORE numberLiterals (LINES | ROWS)
+    ;
+
+loadDataSetClause
+    : SET LP_ assignment (COMMA_ assignment)* RP_
+    ;
+
+loadDataProperties
+    : PROPERTIES LP_ loadDataProperty (COMMA_ loadDataProperty)* RP_
+    ;
+
+loadDataProperty
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_ literals
     ;
 
 loadXmlStatement
@@ -304,6 +325,74 @@ loadXmlStatement
       ( IGNORE numberLiterals (LINES | ROWS) )?
       fieldOrVarSpec?
       (setAssignmentsClause)?
+    ;
+
+brokerLoadStatement
+    : LOAD LABEL (owner DOT_)? identifier
+      LP_ brokerLoadDataDesc (COMMA_ brokerLoadDataDesc)* RP_
+      brokerLoadWithClause
+      brokerLoadProperties?
+      (COMMENT string_)?
+    ;
+
+brokerLoadDataDesc
+    : (MERGE | APPEND | DELETE)?
+      DATA INFILE LP_ string_ (COMMA_ string_)* RP_
+      NEGATIVE?
+      INTO TABLE tableName
+      partitionNames?
+      brokerLoadColumnTerminator?
+      brokerLoadLineTerminator?
+      brokerLoadFormatClause?
+      brokerLoadCompressClause?
+      (LP_ brokerLoadColumnList RP_)?
+      (COLUMNS FROM PATH AS LP_ columnName (COMMA_ columnName)* RP_)?
+      (SET LP_ brokerLoadSetAssignment (COMMA_ brokerLoadSetAssignment)* RP_)?
+      (PRECEDING FILTER expr)?
+      (WHERE expr)?
+      (DELETE ON expr)?
+      (ORDER BY identifier)?
+      brokerLoadDataProperties?
+    ;
+
+brokerLoadColumnTerminator
+    : COLUMNS TERMINATED BY string_
+    ;
+
+brokerLoadLineTerminator
+    : LINES TERMINATED BY string_
+    ;
+
+brokerLoadFormatClause
+    : FORMAT AS string_
+    ;
+
+brokerLoadCompressClause
+    : COMPRESS_TYPE AS string_
+    ;
+
+brokerLoadColumnList
+    : columnName (COMMA_ columnName)*
+    ;
+
+brokerLoadSetAssignment
+    : columnName EQ_ expr
+    ;
+
+brokerLoadDataProperties
+    : PROPERTIES LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
+    ;
+
+brokerLoadWithClause
+    : WITH (S3 | HDFS | BROKER string_) LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
+    ;
+
+brokerLoadProperties
+    : PROPERTIES LP_ brokerLoadProperty (COMMA_ brokerLoadProperty)* RP_
+    ;
+
+brokerLoadProperty
+    : (identifier | SINGLE_QUOTED_TEXT | DOUBLE_QUOTED_TEXT) EQ_ literals
     ;
 
 tableStatement

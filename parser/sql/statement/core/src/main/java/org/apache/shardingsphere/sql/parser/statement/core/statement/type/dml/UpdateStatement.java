@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -39,37 +39,52 @@ import java.util.Optional;
  * Update statement.
  */
 @Getter
-@Setter
 public final class UpdateStatement extends DMLStatement {
     
-    private TableSegment table;
+    private final TableSegment table;
     
-    private SetAssignmentSegment setAssignment;
+    private final SetAssignmentSegment setAssignment;
     
-    private WhereSegment where;
+    private final WhereSegment where;
     
-    private OrderBySegment orderBy;
+    private final OrderBySegment orderBy;
     
-    private LimitSegment limit;
+    private final LimitSegment limit;
     
-    private TableSegment from;
+    private final TableSegment from;
     
-    private WhereSegment deleteWhere;
+    private final WhereSegment deleteWhere;
     
-    private WithSegment with;
+    private final WithSegment with;
     
-    private ReturningSegment returning;
+    private final ReturningSegment returning;
     
-    private WithTableHintSegment withTableHint;
+    private final WithTableHintSegment withTableHint;
     
-    private OptionHintSegment optionHint;
+    private final OptionHintSegment optionHint;
     
-    private OutputSegment output;
+    private final OutputSegment output;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public UpdateStatement(final DatabaseType databaseType) {
+    @Builder
+    private UpdateStatement(final DatabaseType databaseType, final TableSegment table, final SetAssignmentSegment setAssignment, final WhereSegment where,
+                            final OrderBySegment orderBy, final LimitSegment limit, final TableSegment from, final WhereSegment deleteWhere, final WithSegment with,
+                            final ReturningSegment returning, final WithTableHintSegment withTableHint, final OptionHintSegment optionHint, final OutputSegment output) {
         super(databaseType);
+        this.table = table;
+        this.setAssignment = setAssignment;
+        this.where = where;
+        this.orderBy = orderBy;
+        this.limit = limit;
+        this.from = from;
+        this.deleteWhere = deleteWhere;
+        this.with = with;
+        this.returning = returning;
+        this.withTableHint = withTableHint;
+        this.optionHint = optionHint;
+        this.output = output;
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
     
     /**
@@ -169,10 +184,5 @@ public final class UpdateStatement extends DMLStatement {
      */
     public Optional<WithTableHintSegment> getWithTableHint() {
         return Optional.ofNullable(withTableHint);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

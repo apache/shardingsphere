@@ -19,9 +19,11 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.bound.ExpectedColumnBoundInfo;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.orderby.item.ExpectedOrderByItem;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Expected index order by item.
@@ -32,4 +34,7 @@ public final class ExpectedIndexOrderByItem extends ExpectedOrderByItem {
     
     @XmlAttribute
     private int index;
+    
+    @XmlElement(name = "column-bound")
+    private ExpectedColumnBoundInfo columnBound;
 }

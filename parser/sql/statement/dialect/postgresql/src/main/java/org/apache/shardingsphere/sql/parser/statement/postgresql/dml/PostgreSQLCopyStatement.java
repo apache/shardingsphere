@@ -43,7 +43,7 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
     
     private final PrepareStatementQuerySegment prepareStatementQuery;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public PostgreSQLCopyStatement(final DatabaseType databaseType,
                                    final SimpleTableSegment table, final Collection<ColumnSegment> columns, final PrepareStatementQuerySegment prepareStatementQuery) {
@@ -51,6 +51,8 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
         this.table = table;
         this.columns = columns;
         this.prepareStatementQuery = prepareStatementQuery;
+        attributes = new SQLStatementAttributes(
+                new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)), new UnsupportedDistributeSQLStatementAttribute());
     }
     
     /**
@@ -69,11 +71,5 @@ public final class PostgreSQLCopyStatement extends DMLStatement {
      */
     public Optional<PrepareStatementQuerySegment> getPrepareStatementQuery() {
         return Optional.ofNullable(prepareStatementQuery);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(
-                new TableSQLStatementAttribute(null == table ? Collections.emptyList() : Collections.singletonList(table)), new UnsupportedDistributeSQLStatementAttribute());
     }
 }

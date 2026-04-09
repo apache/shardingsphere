@@ -126,28 +126,38 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement insertValuesStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(insertValuesStatement.getInsertColumns().orElse(null)).insertSelect(insertValuesStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertValuesStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertValuesStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertValuesStatement.getValueReference().orElse(null))
+                .returning(null == ctx.returningClause() ? insertValuesStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
+                .output(insertValuesStatement.getOutput().orElse(null)).with(insertValuesStatement.getWith().orElse(null))
+                .multiTableInsertType(insertValuesStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(insertValuesStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertValuesStatement.getMultiTableConditionalInto().orElse(null)).where(insertValuesStatement.getWhere().orElse(null))
+                .exec(insertValuesStatement.getExec().orElse(null)).withTableHint(insertValuesStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertValuesStatement.getRowSetFunction().orElse(null)).ignore(insertValuesStatement.isIgnore()).replace(insertValuesStatement.isReplace())
+                .values(new LinkedList<>(insertValuesStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertValuesStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertValuesStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertValuesStatement.getVariableNames());
+        result.getComments().addAll(insertValuesStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
-        }
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
+        InsertColumnsSegment insertColumns;
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
+            insertColumns = new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue());
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -165,17 +175,19 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.tableReferences()));
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((TableSegment) visit(ctx.tableReferences()))
+                .setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
+            result.returning((ReturningSegment) visit(ctx.returningClause()));
         }
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
@@ -216,16 +228,16 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.singleTableClause()));
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(getDatabaseType()).table((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
+            result.returning((ReturningSegment) visit(ctx.returningClause()));
         }
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
@@ -242,7 +254,7 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
         result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
         }
         return result;
     }
@@ -255,31 +267,31 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
         if (null != ctx.firstSkipClause()) {
-            result.setLimit((LimitSegment) visit(ctx.firstSkipClause()));
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.firstSkipClause()));
         }
         if (!ctx.selectSpecification().isEmpty()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
+            projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
         if (null != ctx.fromClause()) {
             TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            result.setFrom(tableSegment);
+            selectStatementBuilder.from(tableSegment);
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            selectStatementBuilder.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -562,18 +574,31 @@ public final class FirebirdDMLStatementVisitor extends FirebirdStatementVisitor 
     public ASTNode visitSubquery(final SubqueryContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.combineClause());
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result = createSelectStatementBuilder(result).with((WithSegment) visit(ctx.withClause())).build();
         }
         return result;
     }
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(getDatabaseType());
-        result.setTarget((TableSegment) visit(ctx.intoClause()));
-        result.setSource((TableSegment) visit(ctx.usingClause()));
-        // add mergeWhenNotMatched and mergeWhenMatched part
-        // add RETURNING part
-        return result;
+        return MergeStatement.builder()
+                .databaseType(getDatabaseType())
+                .target((TableSegment) visit(ctx.intoClause()))
+                .source((TableSegment) visit(ctx.usingClause()))
+                // add mergeWhenNotMatched and mergeWhenMatched part
+                // add RETURNING part
+                .build();
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
 }

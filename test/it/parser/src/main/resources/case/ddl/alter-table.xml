@@ -1117,11 +1117,6 @@
         <table name="t_order" start-index="12" stop-index="18" />
         <rename-table name="t_order1" start-index="30" stop-index="37" />
     </alter-table>
-
-    <alter-table sql-case-id="alter_table_rename_multi_tables">
-        <table name="t_order" start-index="12" stop-index="18" />
-        <rename-table name="t_order2" start-index="50" stop-index="57" />
-    </alter-table>
     
     <alter-table sql-case-id="alter_table_rename_column">
         <table name="t_order" start-index="12" stop-index="18" />
@@ -3251,7 +3246,23 @@
             <property key="colocate_with" value="t1" start-index="37" stop-index="58" />
         </set-properties>
     </alter-table>
-    
+
+    <alter-table sql-case-id="alter_table_drop_column_simple_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <drop-column name="col1" start-index="44" stop-index="47" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_drop_column_from_rollup_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <drop-column name="col1" start-index="44" stop-index="47">
+            <rollup-index name="rollup_1" start-index="54" stop-index="61" />
+        </drop-column>
+    </alter-table>
+
     <alter-table sql-case-id="alter_table_drop_column_with_properties_doris">
         <table name="my_table" start-index="12" stop-index="30">
             <owner name="example_db" start-index="12" stop-index="21" />
@@ -3380,5 +3391,330 @@
                 <property key="driver" value="MySQL" start-index="68" stop-index="85" />
             </properties>
         </modify-engine>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_order_by_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <order-by-columns start-index="32" stop-index="61">
+            <column name="k_2" start-index="42" stop-index="44" />
+            <column name="k_1" start-index="46" stop-index="48" />
+            <column name="v_3" start-index="50" stop-index="52" />
+            <column name="v_2" start-index="54" stop-index="56" />
+            <column name="v_1" start-index="58" stop-index="60" />
+        </order-by-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_order_by_with_rollup_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <order-by-columns start-index="32" stop-index="75">
+            <column name="k_2" start-index="42" stop-index="44" />
+            <column name="k_1" start-index="46" stop-index="48" />
+            <column name="v_3" start-index="50" stop-index="52" />
+            <column name="v_2" start-index="54" stop-index="56" />
+            <column name="v_1" start-index="58" stop-index="60" />
+            <from-index name="rollup_1" start-index="68" stop-index="75" />
+        </order-by-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_order_by_with_properties_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <order-by-columns start-index="32" stop-index="91">
+            <column name="k_2" start-index="42" stop-index="44" />
+            <column name="k_1" start-index="46" stop-index="48" />
+            <column name="v_3" start-index="50" stop-index="52" />
+            <column name="v_2" start-index="54" stop-index="56" />
+            <column name="v_1" start-index="58" stop-index="60" />
+            <properties start-index="63" stop-index="91">
+                <property key="timeout" value="100" start-index="74" stop-index="90" />
+            </properties>
+        </order-by-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_order_by_with_rollup_and_properties_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <order-by-columns start-index="32" stop-index="105">
+            <column name="k_2" start-index="42" stop-index="44" />
+            <column name="k_1" start-index="46" stop-index="48" />
+            <column name="v_3" start-index="50" stop-index="52" />
+            <column name="v_2" start-index="54" stop-index="56" />
+            <column name="v_1" start-index="58" stop-index="60" />
+            <from-index name="rollup_1" start-index="68" stop-index="75" />
+            <properties start-index="77" stop-index="105">
+                <property key="timeout" value="100" start-index="88" stop-index="104" />
+            </properties>
+        </order-by-columns>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_with_agg_type_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
+                <column name="new_col" />
+            </column-definition>
+            <column-position start-index="71" stop-index="83">
+                <column name="value_1" />
+            </column-position>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_with_agg_type_and_rollup_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
+                <column name="new_col" />
+            </column-definition>
+            <column-position start-index="71" stop-index="83">
+                <column name="value_1" />
+            </column-position>
+            <rollup-index name="rollup_1" start-index="88" stop-index="95" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_with_agg_type_rollup_and_properties_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
+                <column name="new_col" />
+            </column-definition>
+            <column-position start-index="71" stop-index="83">
+                <column name="value_1" />
+            </column-position>
+            <rollup-index name="rollup_1" start-index="88" stop-index="95" />
+            <properties start-index="97" stop-index="125">
+                <property key="timeout" value="100" start-index="108" stop-index="124" />
+            </properties>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_with_key_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" primary-key="true" start-index="43" stop-index="69">
+                <column name="new_col" />
+            </column-definition>
+            <column-position start-index="71" stop-index="83">
+                <column name="value_1" />
+            </column-position>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_with_agg_type_first_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
+                <column name="new_col" />
+            </column-definition>
+            <column-position start-index="71" stop-index="75" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_column_with_agg_type_first_and_rollup_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="43" stop-index="69">
+                <column name="new_col" />
+            </column-definition>
+            <column-position start-index="71" stop-index="75" />
+            <rollup-index name="rollup_1" start-index="80" stop-index="87" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_agg_type_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="71">
+                <column name="new_col1" />
+            </column-definition>
+            <column-definition type="INT" agg-type="SUM" start-index="74" stop-index="101">
+                <column name="new_col2" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_agg_type_and_rollup_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="71">
+                <column name="new_col1" />
+            </column-definition>
+            <column-definition type="INT" agg-type="SUM" start-index="74" stop-index="101">
+                <column name="new_col2" />
+            </column-definition>
+            <rollup-index name="rollup_1" start-index="107" stop-index="114" />
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_agg_type_and_properties_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="71">
+                <column name="new_col1" />
+            </column-definition>
+            <column-definition type="INT" agg-type="SUM" start-index="74" stop-index="101">
+                <column name="new_col2" />
+            </column-definition>
+            <properties start-index="104" stop-index="132">
+                <property key="timeout" value="100" start-index="115" stop-index="131" />
+            </properties>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_different_agg_types_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" agg-type="SUM" start-index="44" stop-index="65">
+                <column name="c1" />
+            </column-definition>
+            <column-definition type="INT" agg-type="MAX" start-index="68" stop-index="89">
+                <column name="c2" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_add_columns_with_key_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <add-column>
+            <column-definition type="INT" primary-key="true" start-index="44" stop-index="71">
+                <column name="new_col1" />
+            </column-definition>
+            <column-definition type="INT" start-index="74" stop-index="97">
+                <column name="new_col2" />
+            </column-definition>
+        </add-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_with_agg_type_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
+                <column name="val1" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_with_agg_type_after_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
+                <column name="val1" />
+            </column-definition>
+            <column-position start-index="85" stop-index="92">
+                <column name="k1" />
+            </column-position>
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_with_agg_type_first_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
+                <column name="val1" />
+            </column-definition>
+            <column-position start-index="85" stop-index="89" />
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_with_agg_type_from_rollup_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
+                <column name="val1" />
+            </column-definition>
+            <rollup-index name="rollup_1" start-index="90" stop-index="97" />
+        </modify-column>
+    </alter-table>
+
+    <alter-table sql-case-id="alter_table_modify_column_with_agg_type_rollup_and_properties_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" agg-type="REPLACE" start-index="46" stop-index="83">
+                <column name="val1" />
+            </column-definition>
+            <column-position start-index="85" stop-index="92">
+                <column name="k1" />
+            </column-position>
+            <rollup-index name="rollup_1" start-index="99" stop-index="106" />
+            <properties start-index="108" stop-index="136">
+                <property key="timeout" value="100" start-index="119" stop-index="135" />
+            </properties>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_key_after_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="BIGINT" primary-key="true" start-index="46" stop-index="72">
+                <column name="col1" />
+            </column-definition>
+            <column-position start-index="74" stop-index="83">
+                <column name="col2" />
+            </column-position>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_key_null_comment_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" primary-key="true" not-null="false" start-index="46" stop-index="84">
+                <column name="k3" />
+                <comment text="to 50" />
+            </column-definition>
+        </modify-column>
+    </alter-table>
+    
+    <alter-table sql-case-id="alter_table_modify_column_with_key_not_null_doris">
+        <table name="my_table" start-index="12" stop-index="30">
+            <owner name="example_db" start-index="12" stop-index="21" />
+        </table>
+        <modify-column>
+            <column-definition type="VARCHAR" primary-key="true" not-null="true" start-index="46" stop-index="91">
+                <column name="k3" />
+                <comment text="not null" />
+            </column-definition>
+        </modify-column>
     </alter-table>
 </sql-parser-test-cases>

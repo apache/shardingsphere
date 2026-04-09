@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.type;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.engine.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.statement.type.DALStatementVisitor;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser;
@@ -81,12 +83,15 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCre
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateEventContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateProcedureContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateRoutineLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateUserContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowCreateViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDatabasesContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEngineContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEnginesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowErrorsContext;
@@ -139,7 +144,13 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginP
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyKeyContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PluginPropertyValueContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCleanTrashContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CleanAllProfileContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PlanReplayerPlayContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisAlterSystemContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaStatusContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminSetReplicaVersionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AdminCopyTabletContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertiesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.PropertyContext;
@@ -149,6 +160,9 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowPro
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSyncJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataTypesContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowDataContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowTrashContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowEncryptKeysContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowFileContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.AlterSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DropSqlBlockRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowSqlBlockRuleContext;
@@ -158,8 +172,15 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.Qualifi
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RuleNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowBuildIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowAlterTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadWarningsContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowLoadWarningsWhereConditionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ShowStreamLoadContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupTableSpecContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBackupContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelLoadStatementContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelLoadWhereConditionContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.BackupTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
@@ -178,6 +199,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.ShowLikeS
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.JobNameSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.LoadNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RuleNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
@@ -209,9 +231,17 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Da
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.NullLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.OtherLiteralValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.TemporalLiteralValue;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCleanTrashStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanAllProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplayerPlayStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAlterSystemStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisBackupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelBackupStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCancelLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSwitchStatement;
@@ -220,14 +250,23 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDescFunctio
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropRepositoryStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisDropSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFunctionsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDatabaseStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowTableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowProcStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataTypesStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowTrashStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowEncryptKeysStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowFileStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowSqlBlockRuleStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowCreateRoutineLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowLoadWarningsStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisShowStreamLoadStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisSyncStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.RepositoryNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.ShowBuildIndexStatement;
@@ -712,9 +751,29 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     
     @Override
     public ASTNode visitShowDatabases(final ShowDatabasesContext ctx) {
-        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(getDatabaseType(), null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter()));
+        ShowFilterSegment filter = null == ctx.showFilter() ? null : (ShowFilterSegment) visit(ctx.showFilter());
+        String catalogName = null == ctx.catalogName() ? null : ((IdentifierValue) visit(ctx.catalogName())).getValue();
+        MySQLShowDatabasesStatement result = new MySQLShowDatabasesStatement(getDatabaseType(), filter, catalogName);
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitShowDatabase(final ShowDatabaseContext ctx) {
+        return new DorisShowDatabaseStatement(getDatabaseType(), parseIntegerToken(ctx.NUMBER_()));
+    }
+    
+    @Override
+    public ASTNode visitShowTable(final ShowTableContext ctx) {
+        return new DorisShowTableStatement(getDatabaseType(), parseIntegerToken(ctx.NUMBER_()));
+    }
+    
+    private long parseIntegerToken(final TerminalNode token) {
+        String text = token.getText();
+        if (!text.chars().allMatch(Character::isDigit)) {
+            throw new SQLParsingException(String.format("Expected integer ID, got: %s", text), text, token.getSymbol().getLine());
+        }
+        return Long.parseLong(text);
     }
     
     @Override
@@ -1201,6 +1260,25 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitAdminCleanTrash(final AdminCleanTrashContext ctx) {
+        DorisAdminCleanTrashStatement result = new DorisAdminCleanTrashStatement(getDatabaseType());
+        if (null != ctx.string_()) {
+            ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCleanAllProfile(final CleanAllProfileContext ctx) {
+        return new DorisCleanAllProfileStatement(getDatabaseType());
+    }
+    
+    @Override
+    public ASTNode visitPlanReplayerPlay(final PlanReplayerPlayContext ctx) {
+        return new DorisPlanReplayerPlayStatement(getDatabaseType(), SQLUtils.getExactlyValue(ctx.DOUBLE_QUOTED_TEXT().getText()));
+    }
+    
+    @Override
     public ASTNode visitDorisAlterSystem(final DorisAlterSystemContext ctx) {
         return visit(ctx.dorisAlterSystemAction());
     }
@@ -1220,6 +1298,30 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             return null != ctx.ADD() ? "ADD OBSERVER" : "DROP OBSERVER";
         }
         return "";
+    }
+    
+    @Override
+    public ASTNode visitAdminSetReplicaStatus(final AdminSetReplicaStatusContext ctx) {
+        DorisAdminSetReplicaStatusStatement result = new DorisAdminSetReplicaStatusStatement(getDatabaseType());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminSetReplicaVersion(final AdminSetReplicaVersionContext ctx) {
+        DorisAdminSetReplicaVersionStatement result = new DorisAdminSetReplicaVersionStatement(getDatabaseType());
+        result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitAdminCopyTablet(final AdminCopyTabletContext ctx) {
+        long tabletId = Long.parseLong(ctx.NUMBER_().getText());
+        DorisAdminCopyTabletStatement result = new DorisAdminCopyTabletStatement(getDatabaseType(), tabletId);
+        if (null != ctx.propertiesClause()) {
+            result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
     }
     
     @Override
@@ -1286,6 +1388,50 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             result.setJobName((JobNameSegment) visit(ctx.qualifiedJobName()));
         }
         result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowCreateLoad(final ShowCreateLoadContext ctx) {
+        DorisShowCreateLoadStatement result = new DorisShowCreateLoadStatement(getDatabaseType());
+        IdentifierValue identifierValue = (IdentifierValue) visit(ctx.identifier());
+        result.setLoadName(new LoadNameSegment(ctx.identifier().start.getStartIndex(), ctx.identifier().stop.getStopIndex(), identifierValue));
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowLoad(final ShowLoadContext ctx) {
+        DorisShowLoadStatement result = new DorisShowLoadStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowStreamLoad(final ShowStreamLoadContext ctx) {
+        DorisShowStreamLoadStatement result = new DorisShowStreamLoadStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.showWhereClause()) {
+            result.setWhere((WhereSegment) visit(ctx.showWhereClause()));
+        }
+        if (null != ctx.orderByClause()) {
+            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+        }
+        if (null != ctx.limitClause()) {
+            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+        }
         return result;
     }
     
@@ -1451,6 +1597,37 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
     }
     
     @Override
+    public ASTNode visitShowFile(final ShowFileContext ctx) {
+        DorisShowFileStatement result = new DorisShowFileStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase(((FromDatabaseSegment) visit(ctx.fromDatabase())).getDatabase());
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowTrash(final ShowTrashContext ctx) {
+        DorisShowTrashStatement result = new DorisShowTrashStatement(getDatabaseType());
+        if (null != ctx.string_()) {
+            ctx.string_().forEach(each -> result.getBackends().add(SQLUtils.getExactlyValue(each.getText())));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowEncryptKeys(final ShowEncryptKeysContext ctx) {
+        DorisShowEncryptKeysStatement result = new DorisShowEncryptKeysStatement(getDatabaseType());
+        if (null != ctx.fromDatabase()) {
+            result.setFromDatabase((FromDatabaseSegment) visit(ctx.fromDatabase()));
+        }
+        if (null != ctx.showLike()) {
+            result.setLikeSegment((ShowLikeSegment) visit(ctx.showLike()));
+        }
+        result.addParameterMarkers(getParameterMarkerSegments());
+        return result;
+    }
+    
+    @Override
     public ASTNode visitBackup(final BackupContext ctx) {
         DorisBackupStatement result = new DorisBackupStatement(getDatabaseType());
         result.setGlobal(null != ctx.GLOBAL());
@@ -1474,6 +1651,54 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
         }
         if (null != ctx.propertiesClause()) {
             result.setProperties(extractPropertiesSegment(ctx.propertiesClause()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelBackup(final CancelBackupContext ctx) {
+        DorisCancelBackupStatement result = new DorisCancelBackupStatement(getDatabaseType());
+        result.setGlobal(null != ctx.GLOBAL());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitShowLoadWarnings(final ShowLoadWarningsContext ctx) {
+        DorisShowLoadWarningsStatement result = new DorisShowLoadWarningsStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.showLoadWarningsWhereCondition()) {
+            ShowLoadWarningsWhereConditionContext condCtx = ctx.showLoadWarningsWhereCondition();
+            if (null != condCtx.LOAD_JOB_ID()) {
+                result.setConditionType("LOAD_JOB_ID");
+            } else {
+                result.setConditionType("LABEL");
+            }
+            result.setConditionValue(SQLUtils.getExactlyValue(condCtx.string_().getText()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitCancelLoadStatement(final CancelLoadStatementContext ctx) {
+        DorisCancelLoadStatement result = new DorisCancelLoadStatement(getDatabaseType());
+        if (null != ctx.databaseName()) {
+            result.setDatabase((DatabaseSegment) visit(ctx.databaseName()));
+        }
+        if (null != ctx.cancelLoadWhereCondition()) {
+            CancelLoadWhereConditionContext condCtx = ctx.cancelLoadWhereCondition();
+            if (null != condCtx.STATE()) {
+                result.setConditionType("STATE");
+            } else if (null != condCtx.LIKE()) {
+                result.setConditionType("LABEL_LIKE");
+            } else {
+                result.setConditionType("LABEL");
+            }
+            result.setConditionValue(SQLUtils.getExactlyValue(condCtx.string_().getText()));
         }
         return result;
     }

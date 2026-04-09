@@ -36,6 +36,7 @@ public final class ExpectedAlgorithm extends AbstractExpectedIdentifierSQLSegmen
     @XmlAttribute(name = "algorithm-name")
     private String name;
     
+    // TODO XML parsing doesn't work, try ExpectedProperties instead
     @XmlElement(name = "property")
     private final List<ExpectedProperty> properties = new LinkedList<>();
 }

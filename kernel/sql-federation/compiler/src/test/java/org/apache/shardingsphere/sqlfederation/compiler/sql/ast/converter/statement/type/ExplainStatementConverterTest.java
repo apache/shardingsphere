@@ -87,31 +87,29 @@ class ExplainStatementConverterTest {
     }
     
     private SelectStatement createSelectStatement() {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(createProjectionsSegment());
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_select"))));
-        return result;
+        return SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(createProjectionsSegment())
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_select"))))
+                .build();
     }
     
     private DeleteStatement createDeleteStatement() {
-        DeleteStatement result = new DeleteStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_delete"))));
-        return result;
+        return DeleteStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_delete")))).build();
     }
     
     private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new UpdateStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_update"))));
-        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(new ColumnAssignmentSegment(0, 0,
-                Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))), new ParameterMarkerExpressionSegment(0, 0, 0)))));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_update"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(new ColumnAssignmentSegment(0, 0,
+                        Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))), new ParameterMarkerExpressionSegment(0, 0, 0)))))
+                .build();
     }
     
     private InsertStatement createInsertStatement() {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert"))));
-        result.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert"))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))))).build();
     }
     
     private ProjectionsSegment createProjectionsSegment() {

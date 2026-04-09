@@ -130,6 +130,9 @@ public final class TablelessRouteEngineFactory {
         if (dialectDALStatementBroadcastRouteDecider.map(optional -> optional.isInstanceBroadcastRoute(sqlStatement)).orElse(false)) {
             return new TablelessInstanceBroadcastRouteEngine(database);
         }
+        if (dialectDALStatementBroadcastRouteDecider.map(optional -> optional.isDataSourceUnicastRoute(sqlStatement)).orElse(false)) {
+            return new TablelessDataSourceUnicastRouteEngine();
+        }
         throw new NoTablelessRouteInfoException();
     }
 }

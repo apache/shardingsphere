@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.statement.type.ral.queryable.show;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.QueryableRALStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -29,7 +28,6 @@ import java.util.Collection;
 /**
  * Show table meta data statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShowTableMetaDataStatement extends QueryableRALStatement {
     
@@ -37,10 +35,11 @@ public final class ShowTableMetaDataStatement extends QueryableRALStatement {
     
     private final FromDatabaseSegment fromDatabase;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    @Override
-    public void buildAttributes() {
+    public ShowTableMetaDataStatement(final Collection<String> tableNames, final FromDatabaseSegment fromDatabase) {
+        this.tableNames = tableNames;
+        this.fromDatabase = fromDatabase;
         attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

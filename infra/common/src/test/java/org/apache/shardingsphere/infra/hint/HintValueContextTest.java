@@ -18,12 +18,16 @@
 package org.apache.shardingsphere.infra.hint;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,67 +47,90 @@ class HintValueContextTest {
         assertThat(actual.get(), is("foo_ds"));
     }
     
-    @Test
-    void assertContainsHintShardingDatabaseValue() {
-        HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.getShardingDatabaseValues().put("TABLE.SHARDING_DATABASE_VALUE", "1");
-        assertTrue(hintValueContext.containsHintShardingDatabaseValue("table"));
-        assertTrue(hintValueContext.containsHintShardingDatabaseValue("TABLE"));
-        assertFalse(hintValueContext.containsHintShardingDatabaseValue("other"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("containsHintShardingDatabaseValueArguments")
+    void assertContainsHintShardingDatabaseValue(final String name, final HintValueContext hintValueContext, final String tableName, final boolean expectedContainsHintShardingDatabaseValue) {
+        assertThat(hintValueContext.containsHintShardingDatabaseValue(tableName), is(expectedContainsHintShardingDatabaseValue));
     }
     
-    @Test
-    void assertContainsHintShardingTableValue() {
-        HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.getShardingTableValues().put("TABLE.SHARDING_TABLE_VALUE", "1");
-        assertTrue(hintValueContext.containsHintShardingTableValue("table"));
-        assertTrue(hintValueContext.containsHintShardingTableValue("TABLE"));
-        assertFalse(hintValueContext.containsHintShardingTableValue("other"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("containsHintShardingTableValueArguments")
+    void assertContainsHintShardingTableValue(final String name, final HintValueContext hintValueContext, final String tableName, final boolean expectedContainsHintShardingTableValue) {
+        assertThat(hintValueContext.containsHintShardingTableValue(tableName), is(expectedContainsHintShardingTableValue));
     }
     
-    @Test
-    void assertContainsHintShardingValue() {
-        HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.getShardingDatabaseValues().put("TABLE.SHARDING_DATABASE_VALUE", "1");
-        assertTrue(hintValueContext.containsHintShardingValue("table"));
-        hintValueContext.getShardingDatabaseValues().clear();
-        hintValueContext.getShardingTableValues().put("OTHER_TABLE.SHARDING_TABLE_VALUE", "1");
-        assertFalse(hintValueContext.containsHintShardingValue("table"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("containsHintShardingValueArguments")
+    void assertContainsHintShardingValue(final String name, final HintValueContext hintValueContext, final String tableName, final boolean expectedContainsHintShardingValue) {
+        assertThat(hintValueContext.containsHintShardingValue(tableName), is(expectedContainsHintShardingValue));
     }
     
     @Test
     void assertGetHintShardingTableValueWithTableName() {
         HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.getShardingTableValues().put("TABLE.SHARDING_TABLE_VALUE", "1");
-        Collection<Comparable<?>> actual = hintValueContext.getHintShardingTableValue("table");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is("1"));
+        hintValueContext.getShardingTableValues().put("FOO_TABLE.SHARDING_TABLE_VALUE", "foo_value");
+        Collection<Comparable<?>> actualHintShardingTableValue = hintValueContext.getHintShardingTableValue("foo_table");
+        assertThat(actualHintShardingTableValue.size(), is(1));
+        assertThat(actualHintShardingTableValue.iterator().next(), is("foo_value"));
     }
     
     @Test
-    void assertSetHintShardingTableValueWithoutTableName() {
+    void assertGetHintShardingTableValueWithoutTableName() {
         HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.getShardingTableValues().put("SHARDING_TABLE_VALUE", "2");
-        Collection<Comparable<?>> actual = hintValueContext.getHintShardingTableValue("other_table");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is("2"));
+        hintValueContext.getShardingTableValues().put("SHARDING_TABLE_VALUE", "bar_value");
+        Collection<Comparable<?>> actualHintShardingTableValue = hintValueContext.getHintShardingTableValue("bar_table");
+        assertThat(actualHintShardingTableValue.size(), is(1));
+        assertThat(actualHintShardingTableValue.iterator().next(), is("bar_value"));
     }
     
     @Test
     void assertGetHintShardingDatabaseValueWithTableName() {
         HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.getShardingDatabaseValues().put("TABLE.SHARDING_DATABASE_VALUE", "1");
-        Collection<Comparable<?>> actual = hintValueContext.getHintShardingDatabaseValue("table");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is("1"));
+        hintValueContext.getShardingDatabaseValues().put("FOO_TABLE.SHARDING_DATABASE_VALUE", "foo_value");
+        Collection<Comparable<?>> actualHintShardingDatabaseValue = hintValueContext.getHintShardingDatabaseValue("foo_table");
+        assertThat(actualHintShardingDatabaseValue.size(), is(1));
+        assertThat(actualHintShardingDatabaseValue.iterator().next(), is("foo_value"));
     }
     
     @Test
     void assertGetHintShardingDatabaseValueWithoutTableName() {
         HintValueContext hintValueContext = new HintValueContext();
-        hintValueContext.getShardingDatabaseValues().put("SHARDING_DATABASE_VALUE", "2");
-        Collection<Comparable<?>> actual = hintValueContext.getHintShardingDatabaseValue("other_table");
-        assertThat(actual.size(), is(1));
-        assertThat(actual.iterator().next(), is("2"));
+        hintValueContext.getShardingDatabaseValues().put("SHARDING_DATABASE_VALUE", "bar_value");
+        Collection<Comparable<?>> actualHintShardingDatabaseValue = hintValueContext.getHintShardingDatabaseValue("bar_table");
+        assertThat(actualHintShardingDatabaseValue.size(), is(1));
+        assertThat(actualHintShardingDatabaseValue.iterator().next(), is("bar_value"));
+    }
+    
+    private static Stream<Arguments> containsHintShardingDatabaseValueArguments() {
+        return Stream.of(
+                Arguments.of("table_name_key", createHintValueContextWithShardingDatabaseValue("FOO_TABLE.SHARDING_DATABASE_VALUE"), "foo_table", true),
+                Arguments.of("global_key", createHintValueContextWithShardingDatabaseValue("SHARDING_DATABASE_VALUE"), "bar_table", true),
+                Arguments.of("missing_key", new HintValueContext(), "bar_table", false));
+    }
+    
+    private static Stream<Arguments> containsHintShardingTableValueArguments() {
+        return Stream.of(
+                Arguments.of("table_name_key", createHintValueContextWithShardingTableValue("FOO_TABLE.SHARDING_TABLE_VALUE"), "foo_table", true),
+                Arguments.of("global_key", createHintValueContextWithShardingTableValue("SHARDING_TABLE_VALUE"), "bar_table", true),
+                Arguments.of("missing_key", new HintValueContext(), "bar_table", false));
+    }
+    
+    private static Stream<Arguments> containsHintShardingValueArguments() {
+        return Stream.of(
+                Arguments.of("database_value", createHintValueContextWithShardingDatabaseValue("FOO_TABLE.SHARDING_DATABASE_VALUE"), "foo_table", true),
+                Arguments.of("table_value", createHintValueContextWithShardingTableValue("FOO_TABLE.SHARDING_TABLE_VALUE"), "foo_table", true),
+                Arguments.of("missing_value", new HintValueContext(), "bar_table", false));
+    }
+    
+    private static HintValueContext createHintValueContextWithShardingDatabaseValue(final String key) {
+        HintValueContext result = new HintValueContext();
+        result.getShardingDatabaseValues().put(key, "foo_value");
+        return result;
+    }
+    
+    private static HintValueContext createHintValueContextWithShardingTableValue(final String key) {
+        HintValueContext result = new HintValueContext();
+        result.getShardingTableValues().put(key, "foo_value");
+        return result;
     }
 }

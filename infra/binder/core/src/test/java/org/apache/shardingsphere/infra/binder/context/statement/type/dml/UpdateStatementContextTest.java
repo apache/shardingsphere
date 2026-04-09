@@ -81,10 +81,11 @@ class UpdateStatementContextTest {
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setLeft(table1);
         joinTableSegment.setRight(table2);
-        UpdateStatement result = new UpdateStatement(databaseType);
-        result.setWhere(whereSegment);
-        result.setTable(joinTableSegment);
-        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(joinTableSegment)
+                .where(whereSegment)
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()))
+                .build();
     }
 }

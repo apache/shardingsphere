@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mode.exclusive;
 
+import java.util.Optional;
+
 /**
  * Exclusive operator context.
  */
@@ -27,14 +29,7 @@ public interface ExclusiveOperatorContext {
      *
      * @param operationKey operation key
      * @param timeoutMillis timeout milliseconds
-     * @return is started or not
+     * @return exclusive lock handle
      */
-    boolean start(String operationKey, long timeoutMillis);
-    
-    /**
-     * Stop exclusive operation.
-     *
-     * @param operationKey operation key
-     */
-    void stop(String operationKey);
+    Optional<ExclusiveLockHandle> start(String operationKey, long timeoutMillis);
 }

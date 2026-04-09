@@ -21,6 +21,12 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.CommonStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisPlanReplayerPlayStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaVersionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSystemStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateRepositoryStatementTestCase;
@@ -30,19 +36,33 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterColocateGroupStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterStoragePolicyStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropFunctionStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisAlterJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisDropJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisResumeSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisPauseSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisStopSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateJobStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCancelTaskStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateStreamingJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.dialect.doris.DorisCreateSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDropSqlBlockRuleStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowLoadWarningsStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowStreamLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowCreateRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisStopRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDatabaseStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowProcStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataTypesStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowTrashStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowDataStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowEncryptKeysStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFileStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSyncJobStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowSqlBlockRuleStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowRoutineLoadTaskStatementTestCase;
@@ -50,6 +70,7 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisUnsetVariableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.catalog.AlterCatalogStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisAlterRoutineLoadStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisBrokerLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisCreateRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisPauseRoutineLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dml.dialect.doris.DorisResumeRoutineLoadStatementTestCase;
@@ -107,6 +128,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.s
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.mysql.table.MySQLRepairTableStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAlterResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisBackupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCancelBackupStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCancelLoadStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisSyncStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisDescFunctionStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisShowFunctionsStatementTestCase;
@@ -554,6 +577,15 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "resume-job")
     private final List<DorisResumeJobStatementTestCase> resumeJobTestCases = new LinkedList<>();
     
+    @XmlElement(name = "pause-job")
+    private final List<DorisPauseJobStatementTestCase> pauseJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-job")
+    private final List<DorisDropJobStatementTestCase> dropJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-job")
+    private final List<DorisAlterJobStatementTestCase> alterJobTestCases = new LinkedList<>();
+    
     @XmlElement(name = "resume-sync-job")
     private final List<DorisResumeSyncJobStatementTestCase> resumeSyncJobTestCases = new LinkedList<>();
     
@@ -563,14 +595,35 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "stop-sync-job")
     private final List<DorisStopSyncJobStatementTestCase> stopSyncJobTestCases = new LinkedList<>();
     
+    @XmlElement(name = "doris-show-load")
+    private final List<DorisShowLoadStatementTestCase> dorisShowLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-load-warnings")
+    private final List<DorisShowLoadWarningsStatementTestCase> dorisShowLoadWarningsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-stream-load")
+    private final List<DorisShowStreamLoadStatementTestCase> dorisShowStreamLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-create-load")
+    private final List<DorisShowCreateLoadStatementTestCase> dorisShowCreateLoadTestCases = new LinkedList<>();
+    
     @XmlElement(name = "show-sync-job")
     private final List<DorisShowSyncJobStatementTestCase> dorisShowSyncJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-file")
+    private final List<DorisShowFileStatementTestCase> dorisShowFileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-encryptkeys")
+    private final List<DorisShowEncryptKeysStatementTestCase> dorisShowEncryptKeysTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sync-job")
     private final List<DorisCreateSyncJobStatementTestCase> createSyncJobTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-job")
     private final List<DorisCreateJobStatementTestCase> createJobTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-streaming-job")
+    private final List<DorisCreateStreamingJobStatementTestCase> createStreamingJobTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-catalog")
     private final List<AlterCatalogStatementTestCase> alterCatalogTestCases = new LinkedList<>();
@@ -617,6 +670,12 @@ public final class RootSQLParserTestCases {
     @XmlElement(name = "doris-show-proc")
     private final List<DorisShowProcStatementTestCase> dorisShowProcTestCases = new LinkedList<>();
     
+    @XmlElement(name = "doris-show-database")
+    private final List<DorisShowDatabaseStatementTestCase> dorisShowDatabaseTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "doris-show-table")
+    private final List<DorisShowTableStatementTestCase> dorisShowTableTestCases = new LinkedList<>();
+    
     @XmlElement(name = "doris-show-data-types")
     private final List<DorisShowDataTypesStatementTestCase> dorisShowDataTypesTestCases = new LinkedList<>();
     
@@ -646,6 +705,9 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "show-routine-load")
     private final List<DorisShowRoutineLoadStatementTestCase> showRoutineLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "broker-load")
+    private final List<DorisBrokerLoadStatementTestCase> brokerLoadTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-routine-load")
     private final List<DorisCreateRoutineLoadStatementTestCase> createRoutineLoadTestCases = new LinkedList<>();
@@ -727,6 +789,27 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "doris-alter-system")
     private final List<DorisAlterSystemStatementTestCase> dorisAlterSystemTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-clean-trash")
+    private final List<DorisAdminCleanTrashStatementTestCase> adminCleanTrashTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "clean-all-profile")
+    private final List<DorisCleanAllProfileStatementTestCase> cleanAllProfileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "plan-replayer-play")
+    private final List<DorisPlanReplayerPlayStatementTestCase> planReplayerPlayTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-trash")
+    private final List<DorisShowTrashStatementTestCase> showTrashTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-set-replica-status")
+    private final List<DorisAdminSetReplicaStatusStatementTestCase> adminSetReplicaStatusTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-set-replica-version")
+    private final List<DorisAdminSetReplicaVersionStatementTestCase> adminSetReplicaVersionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "admin-copy-tablet")
+    private final List<DorisAdminCopyTabletStatementTestCase> adminCopyTabletTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sql-block-rule")
     private final List<DorisCreateSqlBlockRuleStatementTestCase> createSqlBlockRuleTestCases = new LinkedList<>();
@@ -1282,6 +1365,15 @@ public final class RootSQLParserTestCases {
     
     @XmlElement(name = "backup")
     private final List<DorisBackupStatementTestCase> backupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-backup")
+    private final List<DorisCancelBackupStatementTestCase> cancelBackupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-load")
+    private final List<DorisCancelLoadStatementTestCase> cancelLoadTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cancel-task")
+    private final List<DorisCancelTaskStatementTestCase> cancelTaskTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-shadow-algorithm")
     private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmTestCases = new LinkedList<>();

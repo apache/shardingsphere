@@ -79,14 +79,15 @@ public final class EncryptGroupByItemTokenGenerator implements CollectionSQLToke
             for (OrderByItem item : each.getItems()) {
                 if (item.getSegment() instanceof ColumnOrderByItemSegment) {
                     ColumnSegment columnSegment = ((ColumnOrderByItemSegment) item.getSegment()).getColumn();
-                    generateSQLToken(columnSegment, sqlStatementContext.getSqlStatement().getDatabaseType()).ifPresent(result::add);
+                    generateSQLToken(columnSegment, sqlStatementContext).ifPresent(result::add);
                 }
             }
         }
         return result;
     }
     
-    private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnSegment columnSegment, final DatabaseType databaseType) {
+    private Optional<SubstitutableColumnNameToken> generateSQLToken(final ColumnSegment columnSegment, final SelectStatementContext selectStatementContext) {
+        DatabaseType databaseType = selectStatementContext.getSqlStatement().getDatabaseType();
         Optional<EncryptTable> encryptTable = rule.findEncryptTable(columnSegment.getColumnBoundInfo().getOriginalTable().getValue());
         String columnName = columnSegment.getColumnBoundInfo().getOriginalColumn().getValue();
         if (!encryptTable.isPresent() || !encryptTable.get().isEncryptColumn(columnName)) {

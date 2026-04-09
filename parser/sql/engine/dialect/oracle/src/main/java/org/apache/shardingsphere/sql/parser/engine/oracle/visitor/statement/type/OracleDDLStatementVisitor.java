@@ -390,19 +390,24 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     @Override
@@ -730,9 +735,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.getTables().add((SimpleTableSegment) visit(ctx.tableName()));
-        return result;
+        return new DropTableStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())), false, false);
     }
     
     @Override
@@ -796,9 +799,7 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.getViews().add((SimpleTableSegment) visit(ctx.viewName()));
-        return result;
+        return new DropViewStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.viewName())), false);
     }
     
     @Override
@@ -823,22 +824,23 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())), Collections.emptyList());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
+        SimpleTableSegment table = null;
+        Collection<ColumnSegment> columns = Collections.emptyList();
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
-            result.setTable((SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
-            result.getColumns().addAll(((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue());
+            table = (SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName());
+            columns = ((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue();
         }
-        result.setIndex((IndexSegment) visit(ctx.indexName()));
+        IndexSegment index = (IndexSegment) visit(ctx.indexName());
         if (null != ctx.createIndexSpecification() && null != ctx.createIndexSpecification().UNIQUE()) {
-            result.getIndex().setUniqueKey(true);
+            index.setUniqueKey(true);
         }
-        return result;
+        return CreateIndexStatement.builder().databaseType(getDatabaseType()).table(table).columns(columns).index(index).build();
     }
     
     @Override
@@ -872,9 +874,10 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
-        result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
-        return result;
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .indexes(Collections.singleton((IndexSegment) visit(ctx.indexName())))
+                .build();
     }
     
     @Override
@@ -1075,10 +1078,8 @@ public final class OracleDDLStatementVisitor extends OracleStatementVisitor impl
         getSqlStatementsInPlsql().sort(Comparator.comparingInt(SQLStatementSegment::getStartIndex));
         getProcedureCallNames().sort(Comparator.comparingInt(ProcedureCallNameSegment::getStartIndex));
         getDynamicSqlStatementExpressions().sort(Comparator.comparingInt(ExpressionSegment::getStartIndex));
-        OracleCreateFunctionStatement result = new OracleCreateFunctionStatement(getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames());
-        result.setFunctionName(visitFunctionName(ctx.plsqlFunctionSource()));
-        result.getDynamicSqlStatementExpressions().addAll(getDynamicSqlStatementExpressions());
-        return result;
+        return new OracleCreateFunctionStatement(
+                getDatabaseType(), getSqlStatementsInPlsql(), getProcedureCallNames(), visitFunctionName(ctx.plsqlFunctionSource()), getDynamicSqlStatementExpressions());
     }
     
     private FunctionNameSegment visitFunctionName(final PlsqlFunctionSourceContext ctx) {

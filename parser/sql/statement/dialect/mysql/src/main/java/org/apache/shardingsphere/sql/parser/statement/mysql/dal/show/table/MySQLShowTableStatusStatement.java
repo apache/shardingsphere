@@ -40,12 +40,17 @@ public final class MySQLShowTableStatusStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowTableStatusStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
         super(databaseType);
         this.fromDatabase = fromDatabase;
         this.filter = filter;
+        attributes = new SQLStatementAttributes(
+                new DatabaseSelectRequiredSQLStatementAttribute(),
+                new FromDatabaseSQLStatementAttribute(fromDatabase),
+                new TablelessDataSourceBroadcastRouteSQLStatementAttribute(),
+                new AllowNotUseDatabaseSQLStatementAttribute(true, null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue()));
     }
     
     /**
@@ -64,12 +69,5 @@ public final class MySQLShowTableStatusStatement extends DALStatement {
      */
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        String databaseName = null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue();
-        attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new FromDatabaseSQLStatementAttribute(fromDatabase),
-                new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
     }
 }

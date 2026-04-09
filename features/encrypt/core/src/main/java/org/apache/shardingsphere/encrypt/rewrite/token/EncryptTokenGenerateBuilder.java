@@ -63,9 +63,9 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
     @Override
     public Collection<SQLTokenGenerator> getSQLTokenGenerators() {
         Collection<SQLTokenGenerator> result = new LinkedList<>();
-        ShardingSphereDatabase database = sqlRewriteContext.getDatabase();
         addSQLTokenGenerator(result, new EncryptSelectProjectionTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertSelectProjectionTokenGenerator(rule));
+        ShardingSphereDatabase database = sqlRewriteContext.getDatabase();
         addSQLTokenGenerator(result, new EncryptInsertAssignmentTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptUpdateAssignmentTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptPredicateColumnTokenGenerator(rule));

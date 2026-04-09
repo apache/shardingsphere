@@ -58,12 +58,14 @@ public final class WhereExtractor {
     }
     
     private static Collection<WhereSegment> extractJoinWhereSegments(final TableSegment tableSegment) {
-        if (!(tableSegment instanceof JoinTableSegment) || null == ((JoinTableSegment) tableSegment).getCondition()) {
+        if (!(tableSegment instanceof JoinTableSegment)) {
             return Collections.emptyList();
         }
         JoinTableSegment joinTableSegment = (JoinTableSegment) tableSegment;
         Collection<WhereSegment> result = new LinkedList<>();
-        result.add(generateWhereSegment(joinTableSegment));
+        if (null != joinTableSegment.getCondition()) {
+            result.add(generateWhereSegment(joinTableSegment));
+        }
         result.addAll(extractJoinWhereSegments(joinTableSegment.getLeft()));
         result.addAll(extractJoinWhereSegments(joinTableSegment.getRight()));
         return result;

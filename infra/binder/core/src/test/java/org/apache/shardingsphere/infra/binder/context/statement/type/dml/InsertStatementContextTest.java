@@ -85,7 +85,7 @@ class InsertStatementContextTest {
     private InsertStatementContext createInsertStatementContext(final InsertStatement insertStatement) {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getName()).thenReturn("foo_db");
-        when(schema.getVisibleColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        when(schema.getVisibleColumnNames(new IdentifierValue("tbl"))).thenReturn(Arrays.asList("id", "name", "status"));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.singleton(schema));
         return new InsertStatementContext(insertStatement, new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock()), "foo_db");
     }
@@ -136,15 +136,12 @@ class InsertStatementContextTest {
     
     @Test
     void assertInsertSelect() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         selectStatement.addParameterMarkers(Collections.singleton(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION)));
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
         SubquerySegment insertSelect = new SubquerySegment(0, 0, selectStatement, "");
-        insertStatement.setInsertSelect(insertSelect);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue("tbl"));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        insertStatement.setTable(new SimpleTableSegment(tableNameSegment));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).insertSelect(insertSelect).table(new SimpleTableSegment(tableNameSegment)).build();
         InsertStatementContext actual = createInsertStatementContext(insertStatement);
         actual.bindParameters(Collections.singletonList("param"));
         assertThat(actual.getInsertSelectContext().getSelectStatementContext().getSqlStatement().getParameterCount(), is(1));
@@ -157,7 +154,7 @@ class InsertStatementContextTest {
         ParameterMarkerExpressionSegment parameterMarkerExpressionSegment = new ParameterMarkerExpressionSegment(1, 0, 1);
         segments.add(parameterMarkerExpressionSegment);
         segments.add(parameterMarkerExpressionSegment);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         selectStatement.addParameterMarkers(segments);
         assertThat(selectStatement.getParameterCount(), is(1));
         assertThat(selectStatement.getParameterMarkers().size(), is(1));
@@ -213,22 +210,19 @@ class InsertStatementContextTest {
     
     @Test
     void assertContainsInsertColumns() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setInsertColumns(insertColumnsSegment);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        insertStatement.setTable(new SimpleTableSegment(tableNameSegment));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumnsSegment).table(new SimpleTableSegment(tableNameSegment)).build();
         InsertStatementContext insertStatementContext = createInsertStatementContext(insertStatement);
         assertTrue(insertStatementContext.containsInsertColumns());
     }
     
     @Test
     void assertNotContainsInsertColumns() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        insertStatement.setTable(new SimpleTableSegment(tableNameSegment));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(tableNameSegment)).build();
         InsertStatementContext insertStatementContext = createInsertStatementContext(insertStatement);
         assertFalse(insertStatementContext.containsInsertColumns());
     }
@@ -247,12 +241,12 @@ class InsertStatementContextTest {
     
     @Test
     void assertGetValueListCountWithValues() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 2))));
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        insertStatement.setTable(new SimpleTableSegment(tableNameSegment));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(tableNameSegment))
+                .values(Arrays.asList(new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 1))),
+                        new InsertValuesSegment(0, 0, Collections.singletonList(new LiteralExpressionSegment(0, 0, 2)))))
+                .build();
         InsertStatementContext insertStatementContext = createInsertStatementContext(insertStatement);
         assertThat(insertStatementContext.getValueListCount(), is(2));
     }
@@ -274,12 +268,10 @@ class InsertStatementContextTest {
     
     @Test
     void assertGetInsertColumnNamesForInsertColumns() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setInsertColumns(insertColumnsSegment);
         TableNameSegment tableNameSegment = new TableNameSegment(0, 0, new IdentifierValue(""));
         tableNameSegment.setTableBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_schema")));
-        insertStatement.setTable(new SimpleTableSegment(tableNameSegment));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumnsSegment).table(new SimpleTableSegment(tableNameSegment)).build();
         InsertStatementContext insertStatementContext = createInsertStatementContext(insertStatement);
         List<String> columnNames = insertStatementContext.getInsertColumnNames();
         assertThat(columnNames.size(), is(1));

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.sql92.sqlserver.metadata.database.option.SQLServerFunctionOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,7 @@ import java.sql.Connection;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -96,5 +98,10 @@ class SQLServerDatabaseMetaDataTest {
         assertTrue(actual.isPresent());
         assertTrue(actual.map(DialectAlterTableOption::isSupportMergeDropColumns).orElse(false));
         assertFalse(actual.map(DialectAlterTableOption::isContainsParenthesesOnMergeDropColumns).orElse(true));
+    }
+    
+    @Test
+    void assertGetFunctionOption() {
+        assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(SQLServerFunctionOption.class));
     }
 }

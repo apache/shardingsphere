@@ -165,7 +165,7 @@ class DatabaseMetaDataManagerTest {
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getAllSchemas()).thenReturn(Collections.singleton(toBeAlteredSchema));
         when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchema("foo_schema")).thenReturn(toBeAlteredSchema);
         databaseMetaDataManager.alterTable("foo_db", "bar_schema", mock());
-        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), never()).getSchema(any());
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), never()).getSchema(anyString());
     }
     
     @Test

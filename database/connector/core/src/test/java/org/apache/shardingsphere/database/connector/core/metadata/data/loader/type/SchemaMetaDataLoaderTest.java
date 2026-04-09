@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.data.loader.type;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.system.DialectSystemDatabase;
@@ -36,7 +35,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -80,7 +81,7 @@ class SchemaMetaDataLoaderTest {
                 when(connection.getMetaData().getTables("catalog", "public", null, TABLE_TYPES)).thenReturn(tableResultSet);
                 Map<String, Collection<String>> actual = new SchemaMetaDataLoader(databaseType)
                         .loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.singleton("excluded_tbl"));
-                Map<String, Collection<String>> expected = Collections.singletonMap("logic_db", new CaseInsensitiveSet<>(Collections.singleton("tbl")));
+                Map<String, Collection<String>> expected = Collections.singletonMap("logic_db", new LinkedHashSet<>(Collections.singleton("tbl")));
                 assertThat(actual, is(expected));
             }
         }
@@ -110,8 +111,37 @@ class SchemaMetaDataLoaderTest {
                 when(tableResultSet.getString("TABLE_NAME")).thenReturn("tbl_visible");
                 when(connection.getMetaData().getTables("catalog_2", "user_schema", null, TABLE_TYPES)).thenReturn(tableResultSet);
                 Map<String, Collection<String>> actual = new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db_2", dataSourceWithDefaultSchema, Collections.emptyList());
-                Map<String, Collection<String>> expected = Collections.singletonMap("user_schema", new CaseInsensitiveSet<>(Collections.singleton("tbl_visible")));
+                Map<String, Collection<String>> expected = Collections.singletonMap("user_schema", new LinkedHashSet<>(Collections.singleton("tbl_visible")));
                 assertThat(actual, is(expected));
+            }
+        }
+    }
+    
+    @Test
+    void assertLoadSchemaTableNamesPreservesCaseSensitiveTableNames() throws SQLException {
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("public"));
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
+        DialectSystemDatabase dialectSystemDatabase = mock(DialectSystemDatabase.class);
+        when(dialectSystemDatabase.getSystemSchemas()).thenReturn(Collections.emptySet());
+        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(DialectSystemDatabase.class, databaseType)).thenReturn(Optional.of(dialectSystemDatabase));
+            try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+                typedSPILoader.when(() -> TypedSPILoader.getService(DialectDatabaseMetaData.class, null)).thenReturn(dialectDatabaseMetaData);
+                Connection connection = dataSourceWithDefaultSchema.getConnection();
+                when(connection.getCatalog()).thenReturn("catalog_3");
+                ResultSet schemaResultSet = mock(ResultSet.class);
+                when(schemaResultSet.next()).thenReturn(true, false);
+                when(schemaResultSet.getString("TABLE_SCHEM")).thenReturn("public");
+                when(connection.getMetaData().getSchemas()).thenReturn(schemaResultSet);
+                ResultSet tableResultSet = mock(ResultSet.class);
+                when(tableResultSet.next()).thenReturn(true, true, false);
+                when(tableResultSet.getString("TABLE_NAME")).thenReturn("Test3", "test3");
+                when(connection.getMetaData().getTables("catalog_3", "public", null, TABLE_TYPES)).thenReturn(tableResultSet);
+                Map<String, Collection<String>> actual = new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db_3", dataSourceWithDefaultSchema, Collections.emptyList());
+                assertThat(actual.get("public"), is(new LinkedHashSet<>(Arrays.asList("Test3", "test3"))));
             }
         }
     }

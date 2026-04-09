@@ -52,11 +52,11 @@ public final class OrderBySegmentBinder {
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                       final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        Collection<OrderByItemSegment> boundGroupByItems = new LinkedList<>();
+        Collection<OrderByItemSegment> boundOrderByItems = new LinkedList<>();
         for (OrderByItemSegment each : segment.getOrderByItems()) {
-            boundGroupByItems.add(bind(binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
+            boundOrderByItems.add(bind(binderContext, currentTableBinderContexts, tableBinderContexts, outerTableBinderContexts, each));
         }
-        return new OrderBySegment(segment.getStartIndex(), segment.getStopIndex(), boundGroupByItems);
+        return new OrderBySegment(segment.getStartIndex(), segment.getStopIndex(), boundOrderByItems);
     }
     
     private static OrderByItemSegment bind(final SQLStatementBinderContext binderContext, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts,

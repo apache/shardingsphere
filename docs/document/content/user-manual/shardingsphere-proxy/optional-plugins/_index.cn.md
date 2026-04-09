@@ -3,11 +3,13 @@ title = "可选插件"
 weight = 6
 +++
 
-ShardingSphere 默认情况下仅包含核心 SPI 的实现，在 Git Source 存在一部分包含第三方依赖的 SPI
-实现的插件未包含在内。可在 https://central.sonatype.com/ 进行检索。
+ShardingSphere 默认情况下仅加载核心 SPI 的实现。
+二进制发布包会在 `opt-lib` 目录中随包提供一部分由 ShardingSphere 维护的可选插件，但这些插件不会默认加入 classpath。
+若要启用这些插件，需要先将对应的 JAR 复制到 `ext-lib`，再按插件文档补充第三方依赖。
+其他未随包提供的插件，可在 https://central.sonatype.com/ 进行检索。
 
 所有插件对应的 SPI 和 SPI 的已有实现类均可在 https://shardingsphere.apache.org/document/current/cn/dev-manual/ 检索。
-如果 ShardingSphere-Proxy 需要使用可选插件，需要在 Maven Central 下载包含其 SPI 实现的 JAR 和其依赖的 JAR。
+如果 ShardingSphere-Proxy 需要使用可选插件，需要按具体插件文档准备其 SPI 实现 JAR 和所依赖的第三方 JAR。
 
 下以 `groupId:artifactId` 的表现形式列出所有的可选插件。
 

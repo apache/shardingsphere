@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -54,13 +55,13 @@ public final class GeneratedKeyContextEngine {
      */
     public Optional<GeneratedKeyContext> createGenerateKeyContext(final Map<String, Integer> insertColumnNamesAndIndexes,
                                                                   final List<InsertValueContext> insertValueContexts, final List<Object> params) {
-        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
-        return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNamesAndIndexes, optional)
+        IdentifierValue tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier()).orElseGet(() -> new IdentifierValue(""));
+        return findGenerateKeyColumn(tableName).map(optional -> containsGenerateKey(insertColumnNamesAndIndexes, tableName, optional)
                 ? findGeneratedKey(insertColumnNamesAndIndexes, insertValueContexts, params, optional)
                 : new GeneratedKeyContext(optional, true));
     }
     
-    private Optional<String> findGenerateKeyColumn(final String tableName) {
+    private Optional<String> findGenerateKeyColumn(final IdentifierValue tableName) {
         if (!schema.containsTable(tableName)) {
             return Optional.empty();
         }
@@ -72,8 +73,7 @@ public final class GeneratedKeyContextEngine {
         return Optional.empty();
     }
     
-    private boolean containsGenerateKey(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
-        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+    private boolean containsGenerateKey(final Map<String, Integer> insertColumnNamesAndIndexes, final IdentifierValue tableName, final String generateKeyColumnName) {
         return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnNames(tableName).size() == getValueCountForPerGroup() : insertColumnNamesAndIndexes.containsKey(generateKeyColumnName);
     }
     
@@ -106,7 +106,7 @@ public final class GeneratedKeyContextEngine {
     }
     
     private int findGenerateKeyIndex(final Map<String, Integer> insertColumnNamesAndIndexes, final String generateKeyColumnName) {
-        String tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier().getValue()).orElse("");
+        IdentifierValue tableName = insertStatement.getTable().map(optional -> optional.getTableName().getIdentifier()).orElseGet(() -> new IdentifierValue(""));
         return insertColumnNamesAndIndexes.isEmpty() ? schema.getVisibleColumnAndIndexMap(tableName).get(generateKeyColumnName) : insertColumnNamesAndIndexes.get(generateKeyColumnName);
     }
     

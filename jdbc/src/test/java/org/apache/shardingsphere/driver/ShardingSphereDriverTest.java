@@ -33,6 +33,7 @@ import java.util.ServiceLoader;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -82,8 +83,7 @@ class ShardingSphereDriverTest {
                 statement.execute("DROP TABLE IF EXISTS t_order");
                 statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id INT)");
             }
-            // TODO Replace 1 to -1 after HASH_MOD algorithm improved
-            int value = 1;
+            int value = -1;
             try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_order (order_id, user_id) VALUES (?, ?)")) {
                 preparedStatement.setObject(1, value);
                 preparedStatement.setObject(2, 101);
@@ -147,6 +147,54 @@ class ShardingSphereDriverTest {
         try (ResultSet resultSet = statement.executeQuery("SELECT COUNT(1) FROM t_order_0")) {
             assertTrue(resultSet.next());
             assertThat(resultSet.getInt(1), is(1));
+        }
+    }
+    
+    @Test
+    void assertGetMaxRowsWhenSetMaxRowsForStatement() throws SQLException {
+        try (
+                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml");
+                Statement statement = connection.createStatement()) {
+            assertThat(connection, isA(ShardingSphereConnection.class));
+            statement.setMaxRows(100);
+            assertThat(statement.getMaxRows(), is(100));
+            statement.execute("DROP TABLE IF EXISTS t_max_rows_test");
+            statement.execute("CREATE TABLE t_max_rows_test (id INT PRIMARY KEY, name VARCHAR(50) NOT NULL)");
+            statement.execute("INSERT INTO t_max_rows_test (id, name) VALUES (1, 'test1')");
+            try (ResultSet resultSet = statement.executeQuery("SELECT id, name FROM t_max_rows_test")) {
+                assertThat(statement.getMaxRows(), is(100));
+                assertTrue(resultSet.next());
+                assertThat(resultSet.getInt(1), is(1));
+                assertThat(resultSet.getString(2), is("test1"));
+                assertFalse(resultSet.next());
+            }
+        }
+    }
+    
+    @Test
+    void assertGetMaxRowsWhenSetMaxRowsForPreparedStatement() throws SQLException {
+        try (
+                Connection connection = DriverManager.getConnection("jdbc:shardingsphere:classpath:config/driver/driver-fixture-h2-mysql.yaml");
+                Statement statement = connection.createStatement()) {
+            assertThat(connection, isA(ShardingSphereConnection.class));
+            statement.execute("DROP TABLE IF EXISTS t_max_rows_ps_test");
+            statement.execute("CREATE TABLE t_max_rows_ps_test (id INT PRIMARY KEY, name VARCHAR(50) NOT NULL)");
+            statement.execute("INSERT INTO t_max_rows_ps_test (id, name) VALUES (1, 'test1')");
+            try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT id, name FROM t_max_rows_ps_test")) {
+                preparedStatement.setMaxRows(100);
+                assertThat(preparedStatement.getMaxRows(), is(100));
+                assertGetMaxRowsAndResultsetWhenSetMaxRowsForPreparedStatement(preparedStatement);
+            }
+        }
+    }
+    
+    private void assertGetMaxRowsAndResultsetWhenSetMaxRowsForPreparedStatement(final PreparedStatement preparedStatement) throws SQLException {
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            assertThat(preparedStatement.getMaxRows(), is(100));
+            assertTrue(resultSet.next());
+            assertThat(resultSet.getInt(1), is(1));
+            assertThat(resultSet.getString(2), is("test1"));
+            assertFalse(resultSet.next());
         }
     }
 }

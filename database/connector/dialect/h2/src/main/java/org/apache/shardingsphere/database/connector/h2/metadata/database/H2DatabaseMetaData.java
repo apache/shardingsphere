@@ -21,7 +21,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
+import org.apache.shardingsphere.database.connector.h2.metadata.database.option.H2FunctionOption;
 
 import java.sql.Connection;
 import java.util.Collections;
@@ -49,6 +51,11 @@ public final class H2DatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectTransactionOption getTransactionOption() {
         return new DialectTransactionOption(false, false, false, false, true, Connection.TRANSACTION_READ_COMMITTED, false, false, Collections.singleton("org.h2.jdbcx.JdbcDataSource"));
+    }
+    
+    @Override
+    public DialectFunctionOption getFunctionOption() {
+        return new H2FunctionOption();
     }
     
     @Override

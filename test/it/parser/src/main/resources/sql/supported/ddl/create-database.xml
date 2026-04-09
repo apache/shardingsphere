@@ -156,4 +156,6 @@
     <sql-case id="create_remote_schema_with_location_managedlocation_properties" value="CREATE REMOTE SCHEMA lusiadas LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
     <sql-case id="create_remote_database_with_all_options" value="CREATE REMOTE DATABASE lusiadas COMMENT 'Remote test database' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
     <sql-case id="create_remote_schema_with_all_options" value="CREATE REMOTE SCHEMA lusiadas COMMENT 'Remote test schema' LOCATION '/lusiadas.db/external' MANAGEDLOCATION '/lusiadas.db/managed' WITH DBPROPERTIES ('creator'='Claire', 'create_date'='2025-07-09');" db-types="Hive" />
+    <sql-case id="create_database_doris_with_properties" value="CREATE DATABASE `db_test` PROPERTIES (&quot;storage_vault_name&quot; = &quot;hdfs_demo_vault&quot;)" db-types="Doris" />
+    <sql-case id="create_database_doris_if_not_exists_with_properties" value="CREATE DATABASE IF NOT EXISTS `db_test` PROPERTIES (&quot;storage_vault_name&quot; = &quot;hdfs_demo_vault&quot;)" db-types="Doris" />
 </sql-cases>

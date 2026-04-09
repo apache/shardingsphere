@@ -60,4 +60,104 @@
             <row-count value="1" start-index="62" stop-index="62" />
         </limit>
     </delete>
+    
+    <delete sql-case-id="delete_with_with_clause_and_in_subquery">
+        <with start-index="0" stop-index="90">
+            <common-table-expression name="target_users" start-index="5" stop-index="90">
+                <subquery-expression start-index="5" stop-index="90">
+                    <select>
+                        <projections start-index="29" stop-index="50">
+                            <column-projection name="merchant_id" start-index="29" stop-index="50" alias="user_id">
+                                <column-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                    <original-table name="t_merchant" />
+                                    <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                                    <table-source-type name="PHYSICAL_TABLE"/>
+                                </column-bound>
+                            </column-projection>
+                        </projections>
+                        <from>
+                            <simple-table name="t_merchant" start-index="57" stop-index="66">
+                                <table-bound>
+                                    <original-database name="foo_db_1" />
+                                    <original-schema name="foo_db_1" />
+                                </table-bound>
+                            </simple-table>
+                        </from>
+                        <where start-index="68" stop-index="89">
+                            <expr>
+                                <binary-operation-expression start-index="74" stop-index="89">
+                                    <left>
+                                        <column name="merchant_id" start-index="74" stop-index="84">
+                                            <column-bound>
+                                                <original-database name="foo_db_1" />
+                                                <original-schema name="foo_db_1" />
+                                                <original-table name="t_merchant" />
+                                                <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                                                <table-source-type name="PHYSICAL_TABLE"/>
+                                            </column-bound>
+                                        </column>
+                                    </left>
+                                    <operator>=</operator>
+                                    <right>
+                                        <literal-expression value="15" start-index="88" stop-index="89" />
+                                    </right>
+                                </binary-operation-expression>
+                            </expr>
+                        </where>
+                    </select>
+                </subquery-expression>
+            </common-table-expression>
+        </with>
+        <table name="t_user" start-index="104" stop-index="109">
+            <table-bound>
+                <original-database name="foo_db_1" />
+                <original-schema name="foo_db_1" />
+            </table-bound>
+        </table>
+        <where start-index="111" stop-index="161">
+            <expr>
+                <in-expression start-index="117" stop-index="161">
+                    <not>false</not>
+                    <left>
+                        <column name="user_id" start-index="117" stop-index="123">
+                            <column-bound>
+                                <original-database name="foo_db_1" />
+                                <original-schema name="foo_db_1" />
+                                <original-table name="t_user" />
+                                <original-column name="user_id" start-delimiter="`" end-delimiter="`" />
+                                <table-source-type name="PHYSICAL_TABLE"/>
+                            </column-bound>
+                        </column>
+                    </left>
+                    <right>
+                        <subquery start-index="128" stop-index="161">
+                            <select>
+                                <projections start-index="136" stop-index="142">
+                                    <column-projection name="user_id" start-index="136" stop-index="142">
+                                        <column-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                            <original-table name="t_merchant" />
+                                            <original-column name="merchant_id" start-delimiter="`" end-delimiter="`" />
+                                            <table-source-type name="TEMPORARY_TABLE"/>
+                                        </column-bound>
+                                    </column-projection>
+                                </projections>
+                                <from>
+                                    <simple-table name="target_users" start-index="149" stop-index="160">
+                                        <table-bound>
+                                            <original-database name="foo_db_1" />
+                                            <original-schema name="foo_db_1" />
+                                        </table-bound>
+                                    </simple-table>
+                                </from>
+                            </select>
+                        </subquery>
+                    </right>
+                </in-expression>
+            </expr>
+        </where>
+    </delete>
 </sql-parser-test-cases>

@@ -56,7 +56,7 @@ class EncryptWithClauseSupportedCheckerTest {
     @Test
     void assertCheckWithoutEncryptTable() {
         assertDoesNotThrow(() -> new EncryptWithClauseSupportedChecker()
-                .check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, mockSelectStatementContext("t_order")));
+                .check(EncryptGeneratorFixtureBuilder.createEncryptRule(), null, null, mockSelectStatementContext("t_order_plain")));
     }
     
     @Test

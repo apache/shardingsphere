@@ -191,7 +191,7 @@ class StatementAdapterTest {
     
     @Test
     void assertGetMaxRowsWitRoutedStatements() throws SQLException {
-        assertThat(mockShardingSphereStatement().getMaxRows(), is(-1));
+        assertThat(mockShardingSphereStatement().getMaxRows(), is(0));
     }
     
     @Test

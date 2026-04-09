@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.generic;
 
 import org.apache.shardingsphere.database.exception.mysql.vendor.MySQLVendorError;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.infra.exception.external.sql.sqlstate.XOpenSQLState;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +30,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -68,9 +70,15 @@ class MySQLErrPacketTest {
     }
     
     @Test
+    void assertNewErrPacketWithInvalidHeader() {
+        when(payload.readInt1()).thenReturn(0);
+        assertThat(assertThrows(IllegalArgumentException.class, () -> new MySQLErrPacket(payload)).getMessage(), is("Header of MySQL ERR packet must be `0xff`."));
+    }
+    
+    @Test
     void assertWrite() {
         new MySQLErrPacket(new SQLException(MySQLVendorError.ER_NO_DB_ERROR.getReason(),
-                MySQLVendorError.ER_NO_DB_ERROR.getSqlState().getValue(), MySQLVendorError.ER_NO_DB_ERROR.getVendorCode())).write(payload);
+                MySQLVendorError.ER_NO_DB_ERROR.getSqlState().getValue(), MySQLVendorError.ER_NO_DB_ERROR.getVendorCode())).write((PacketPayload) payload);
         verify(payload).writeInt1(MySQLErrPacket.HEADER);
         verify(payload).writeInt2(1046);
         verify(payload).writeStringFix("#");

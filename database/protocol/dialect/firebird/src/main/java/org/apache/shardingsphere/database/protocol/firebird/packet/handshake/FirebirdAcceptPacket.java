@@ -53,8 +53,7 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
         opCode = FirebirdCommandPacketType.ACCEPT;
         protocol = userProtocols.remove(0);
         for (FirebirdProtocol protocol : userProtocols) {
-            if (FirebirdArchType.isValid(protocol.getArch())
-                    && protocol.getWeight() >= this.protocol.getWeight()) {
+            if (FirebirdArchType.isValid(protocol.getArch()) && protocol.getWeight() >= this.protocol.getWeight()) {
                 this.protocol = protocol;
             }
         }
@@ -69,28 +68,19 @@ public final class FirebirdAcceptPacket extends FirebirdPacket {
      * @param authenticated authentication flag
      * @param keys additional keys
      */
-    public void setAcceptDataPacket(final byte[] salt,
-                                    final String publicKey,
-                                    final FirebirdAuthenticationMethod plugin,
-                                    final int authenticated,
-                                    final String keys) {
+    public void setAcceptDataPacket(final byte[] salt, final String publicKey, final FirebirdAuthenticationMethod plugin, final int authenticated, final String keys) {
         acceptDataPacket = new FirebirdAcceptDataPacket(salt, publicKey, plugin, authenticated, keys);
         opCode = FirebirdCommandPacketType.ACCEPT_DATA;
     }
     
     @Override
     protected void write(final FirebirdPacketPayload payload) {
-        // Operation code
         payload.writeInt4(opCode.getValue());
-        // Protocol version
         payload.writeInt4(protocol.getVersion().getCode());
-        // Architecture type
         payload.writeInt4(protocol.getArch().getCode());
-        // Minimum type
         int type = Math.min(protocol.getMaxType() & MASK, LAZY_SEND);
         int compress = protocol.getMaxType() & COMPRESS;
         payload.writeInt4(type | compress);
-        
         if (null != acceptDataPacket) {
             acceptDataPacket.write(payload);
         }

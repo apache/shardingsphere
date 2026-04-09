@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.metadata.manager.rule;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
@@ -59,7 +61,8 @@ public final class GlobalConfigurationManager {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().clear();
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().addAll(rules);
         metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()), metaDataPersistFacade);
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+                metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getProtocolType()), metaDataPersistFacade);
     }
     
     @SneakyThrows(Exception.class)
@@ -84,13 +87,25 @@ public final class GlobalConfigurationManager {
      */
     public synchronized void alterProperties(final Properties props) {
         boolean isProxyMetaDataCollectorCronChanged = isProxyMetaDataCollectorCronChanged(props);
-        metaDataContexts.update(new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
-                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props)), metaDataPersistFacade);
+        ConfigurationProperties newProps = new ConfigurationProperties(props);
+        ShardingSphereMetaData newMetaData = new ShardingSphereMetaData(metaDataContexts.getMetaData().getAllDatabases(),
+                metaDataContexts.getMetaData().getGlobalResourceMetaData(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+                newProps, metaDataContexts.getMetaData().getProtocolType());
+        if (isMetadataIdentifierCaseSensitivityChanged(newProps)) {
+            newMetaData.getAllDatabases().forEach(each -> each.refreshIdentifierContext(newProps));
+        }
+        metaDataContexts.update(newMetaData, metaDataPersistFacade);
         if (isProxyMetaDataCollectorCronChanged) {
             for (StatisticsCollectJobCronUpdateListener each : ShardingSphereServiceLoader.getServiceInstances(StatisticsCollectJobCronUpdateListener.class)) {
                 each.updated();
             }
         }
+    }
+    
+    private boolean isMetadataIdentifierCaseSensitivityChanged(final ConfigurationProperties newProps) {
+        MetadataIdentifierCaseSensitivity currentValue = metaDataContexts.getMetaData().getProps().getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
+        MetadataIdentifierCaseSensitivity newValue = newProps.getValue(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY);
+        return currentValue != newValue;
     }
     
     private boolean isProxyMetaDataCollectorCronChanged(final Properties props) {

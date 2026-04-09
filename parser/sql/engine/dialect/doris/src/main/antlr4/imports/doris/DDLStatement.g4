@@ -129,12 +129,12 @@ createTableOptionsSpaceSeparated
     ;
 
 alterListItem
-    : ADD COLUMN? (columnDefinition place? | LP_ tableElementList RP_)  # addColumn
+    : ADD COLUMN? (columnDefinition place? (TO identifier)? propertiesClause? | LP_ tableElementList RP_ (TO identifier)? propertiesClause?)  # addColumn
     | ADD tableConstraintDef  # addTableConstraint
     | ADD ROLLUP rollupItem (COMMA_ rollupItem)*  # addRollup
     | CHANGE COLUMN? columnInternalRef=identifier columnDefinition place?  # changeColumn
-    | MODIFY COLUMN? columnInternalRef=identifier (fieldDefinition place? | COMMENT string_)   # modifyColumn
-    | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier) propertiesClause?  # alterTableDrop
+    | MODIFY COLUMN? columnInternalRef=identifier (fieldDefinition place? (FROM fromRollup=identifier)? propertiesClause? | COMMENT string_)   # modifyColumn
+    | DROP (COLUMN? columnInternalRef=identifier (restrict | FROM fromRollup=identifier)? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier) propertiesClause?  # alterTableDrop
     | DROP ROLLUP rollupNameItem (COMMA_ rollupNameItem)*  # dropRollup
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys
@@ -150,7 +150,7 @@ alterListItem
     | REPLACE WITH TABLE tableName propertiesClause?  # replaceTable
     | CONVERT TO charset charsetName collateClause?  # alterConvert
     | FORCE  # alterTableForce
-    | ORDER BY alterOrderList  # alterTableOrder
+    | ORDER BY LP_ alterOrderList RP_ (FROM identifier)? propertiesClause?  # alterTableOrder
     ;
 
 alterOrderList
@@ -311,7 +311,7 @@ dorisIndexTypeClause
     ;
 
 createDatabase
-    : CREATE (DATABASE | SCHEMA) ifNotExists? databaseName createDatabaseSpecification_*
+    : CREATE (DATABASE | SCHEMA) ifNotExists? databaseName createDatabaseSpecification_* propertiesClause?
     ;
 
 alterDatabase
@@ -333,7 +333,7 @@ alterDatabaseSpecification_
     ;
 
 dropDatabase
-    : DROP (DATABASE | SCHEMA) ifExists? databaseName
+    : DROP (DATABASE | SCHEMA) ifExists? databaseName FORCE?
     ;
 
 alterCatalog
@@ -446,7 +446,7 @@ createEncryptKey
     ;
 
 dropEncryptKey
-    : DROP ENCRYPTKEY identifier
+    : DROP ENCRYPTKEY ifExists? encryptKeyName
     ;
 
 createView
@@ -601,7 +601,11 @@ columnDefinition
     ;
 
 fieldDefinition
-    : dataType (columnAttribute* | collateClause? generatedOption? AS LP_ expr RP_ storedAttribute=(VIRTUAL | STORED)? columnAttribute*)
+    : dataType dorisColumnAggType? (columnAttribute* | collateClause? generatedOption? AS LP_ expr RP_ storedAttribute=(VIRTUAL | STORED)? columnAttribute*)
+    ;
+
+dorisColumnAggType
+    : SUM | MIN | MAX | REPLACE | HLL_UNION | BITMAP_UNION | REPLACE_IF_NOT_NULL
     ;
 
 columnAttribute
@@ -999,6 +1003,16 @@ createJob
     : CREATE JOB jobName ON SCHEDULE jobScheduleExpression (COMMENT string_)? DO insert
     ;
 
+createStreamingJob
+    : CREATE JOB jobName ON STREAMING (PROPERTIES LP_ jobProps=properties RP_)? (COMMENT string_)?
+      (DO insert | FROM streamingSourceType LP_ sourceProps=properties RP_ TO DATABASE databaseName (PROPERTIES? LP_ targetProps=properties RP_)?)
+    ;
+
+streamingSourceType
+    : MYSQL
+    | POSTGRES
+    ;
+
 jobScheduleExpression
     : AT timestampValue
     | EVERY intervalValue (STARTS timestampValue)? (ENDS timestampValue)?
@@ -1006,6 +1020,22 @@ jobScheduleExpression
 
 resumeJob
     : RESUME JOB WHERE jobName EQ_ stringLiterals
+    ;
+
+pauseJob
+    : PAUSE JOB WHERE jobName EQ_ stringLiterals
+    ;
+
+dropJob
+    : DROP JOB WHERE jobName EQ_ stringLiterals
+    ;
+
+alterJob
+    : ALTER JOB jobName propertiesClause? (DO insert)?
+    ;
+
+cancelTask
+    : CANCEL TASK WHERE jobName EQ_ stringLiterals AND identifier EQ_ numberLiterals
     ;
 
 resumeSyncJob

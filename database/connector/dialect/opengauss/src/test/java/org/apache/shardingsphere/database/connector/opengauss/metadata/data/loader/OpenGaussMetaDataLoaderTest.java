@@ -27,7 +27,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.datat
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -36,6 +38,8 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -67,22 +71,24 @@ class OpenGaussMetaDataLoaderTest {
     
     private final DialectMetaDataLoader dialectMetaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
-    @Test
-    void assertLoadWithoutTables() throws SQLException {
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadArguments")
+    void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL,
+                    final Callable<ResultSet> tableMetaDataResultSetFactory, final Callable<ResultSet> advanceIndexMetaDataResultSetFactory) throws Exception {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
-        ResultSet tableResultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(tableResultSet);
+        ResultSet tableResultSet = tableMetaDataResultSetFactory.call();
+        when(dataSource.getConnection().prepareStatement(tableMetaDataSQL).executeQuery()).thenReturn(tableResultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
-        ResultSet advanceIndexResultSet = mockAdvanceIndexMetaDataResultSet();
+        ResultSet advanceIndexResultSet = advanceIndexMetaDataResultSetFactory.call();
         when(dataSource.getConnection().prepareStatement(ADVANCE_INDEX_META_DATA_SQL).executeQuery()).thenReturn(advanceIndexResultSet);
         DataTypeRegistry.load(dataSource, "openGauss");
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db")));
+        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")));
     }
     
     private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
@@ -90,24 +96,6 @@ class OpenGaussMetaDataLoaderTest {
         when(result.next()).thenReturn(true, false);
         when(result.getString("TABLE_SCHEM")).thenReturn("public");
         return result;
-    }
-    
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
-    @Test
-    void assertLoadWithTables() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
-        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
-        ResultSet tableResultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_TABLES).executeQuery()).thenReturn(tableResultSet);
-        ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
-        ResultSet advanceIndexResultSet = mockAdvanceIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(ADVANCE_INDEX_META_DATA_SQL).executeQuery()).thenReturn(advanceIndexResultSet);
-        DataTypeRegistry.load(dataSource, "openGauss");
-        assertTableMetaDataMap(dialectMetaDataLoader.load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db")));
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
@@ -126,20 +114,6 @@ class OpenGaussMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockTableMetaDataResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, false);
-        when(result.getString("table_name")).thenReturn("tbl");
-        when(result.getString("column_name")).thenReturn("id", "name");
-        when(result.getInt("ordinal_position")).thenReturn(1, 2);
-        when(result.getString("data_type")).thenReturn("integer", "character varying");
-        when(result.getString("udt_name")).thenReturn("int4", "varchar");
-        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", "");
-        when(result.getString("table_schema")).thenReturn("public", "public");
-        when(result.getString("is_nullable")).thenReturn("NO", "YES");
-        return result;
-    }
-    
     private ResultSet mockPrimaryKeyMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -149,7 +123,7 @@ class OpenGaussMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockIndexMetaDataResultSet() throws SQLException {
+    private static ResultSet mockIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("tablename")).thenReturn("tbl");
@@ -158,7 +132,7 @@ class OpenGaussMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockAdvanceIndexMetaDataResultSet() throws SQLException {
+    private static ResultSet mockAdvanceIndexMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
         when(result.getString("table_name")).thenReturn("tbl");
@@ -166,6 +140,17 @@ class OpenGaussMetaDataLoaderTest {
         when(result.getString("index_name")).thenReturn("id");
         when(result.getString("index_schema")).thenReturn("public");
         when(result.getBoolean("is_unique")).thenReturn(true);
+        return result;
+    }
+    
+    private static ResultSet mockAdvanceIndexMetaDataResultSetWithUnmatchedRows() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, true, false);
+        when(result.getString("table_name")).thenReturn("tbl", "tbl", "tbl");
+        when(result.getString("column_name")).thenReturn("id", "id", "id");
+        when(result.getString("index_name")).thenReturn("missing_index", "not_matched", "id");
+        when(result.getString("index_schema")).thenReturn("ignored_schema", "public", "public");
+        when(result.getBoolean("is_unique")).thenReturn(false, true, true);
         return result;
     }
     
@@ -198,5 +183,29 @@ class OpenGaussMetaDataLoaderTest {
         assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.getColumns(), is(expected.getColumns()));
         assertThat(actual.isUnique(), is(expected.isUnique()));
+    }
+    
+    private static Stream<Arguments> loadArguments() {
+        return Stream.of(
+                Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet),
+                Arguments.of("with tables", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(""), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSet),
+                Arguments.of("with unmatched advance index rows and null default", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES,
+                        (Callable<ResultSet>) () -> mockTableMetaDataResultSet(null), (Callable<ResultSet>) OpenGaussMetaDataLoaderTest::mockAdvanceIndexMetaDataResultSetWithUnmatchedRows));
+    }
+    
+    private static ResultSet mockTableMetaDataResultSet(final String nameColumnDefault) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, true, false);
+        when(result.getString("table_name")).thenReturn("tbl");
+        when(result.getString("column_name")).thenReturn("id", "name");
+        when(result.getInt("ordinal_position")).thenReturn(1, 2);
+        when(result.getString("data_type")).thenReturn("integer", "character varying");
+        when(result.getString("udt_name")).thenReturn("int4", "varchar");
+        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", nameColumnDefault);
+        when(result.getString("table_schema")).thenReturn("public", "public");
+        when(result.getString("is_nullable")).thenReturn("NO", "YES");
+        return result;
     }
 }

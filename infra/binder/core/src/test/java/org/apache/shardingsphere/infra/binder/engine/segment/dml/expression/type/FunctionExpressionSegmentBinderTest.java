@@ -23,9 +23,11 @@ import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.ExpressionSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.segment.dml.order.OrderBySegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.FunctionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
@@ -34,15 +36,17 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ExpressionSegmentBinder.class)
+@StaticMockSettings({ExpressionSegmentBinder.class, OrderBySegmentBinder.class})
 class FunctionExpressionSegmentBinderTest {
     
     @Test
@@ -66,7 +70,9 @@ class FunctionExpressionSegmentBinderTest {
         assertThat(parameters.next(), is(skippedParameter));
         assertThat(parameters.next(), is(boundParameter));
         assertThat(actual.getOwner(), is(ownerSegment));
-        assertThat(actual.getWindow().orElse(null), is(windowItemSegment));
+        assertTrue(actual.getWindow().isPresent());
+        assertThat(actual.getWindow().get().getStartIndex(), is(windowItemSegment.getStartIndex()));
+        assertThat(actual.getWindow().get().getStopIndex(), is(windowItemSegment.getStopIndex()));
     }
     
     @Test
@@ -87,5 +93,26 @@ class FunctionExpressionSegmentBinderTest {
         Iterator<ExpressionSegment> parameters = actual.getParameters().iterator();
         assertThat(parameters.next(), is(boundFirstParameter));
         assertThat(parameters.next(), is(boundSecondParameter));
+    }
+    
+    @Test
+    void assertBindWindowItem() {
+        FunctionSegment functionSegment = new FunctionSegment(7, 64, "ROW_NUMBER", "ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY order_id)");
+        WindowItemSegment windowItemSegment = new WindowItemSegment(20, 64);
+        ExpressionSegment partitionExpression = mock(ExpressionSegment.class);
+        windowItemSegment.setPartitionListSegments(Collections.singleton(partitionExpression));
+        OrderBySegment orderBySegment = mock(OrderBySegment.class);
+        windowItemSegment.setOrderBySegment(orderBySegment);
+        functionSegment.setWindow(windowItemSegment);
+        ExpressionSegment boundPartitionExpression = mock(ExpressionSegment.class);
+        OrderBySegment boundOrderBySegment = mock(OrderBySegment.class);
+        SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
+        Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
+        when(ExpressionSegmentBinder.bind(partitionExpression, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts)).thenReturn(boundPartitionExpression);
+        when(OrderBySegmentBinder.bind(orderBySegment, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).thenReturn(boundOrderBySegment);
+        FunctionSegment actual = FunctionExpressionSegmentBinder.bind(functionSegment, SegmentType.PROJECTION, binderContext, tableBinderContexts, outerTableBinderContexts);
+        assertThat(actual.getWindow().get().getPartitionListSegments().iterator().next(), is(boundPartitionExpression));
+        assertThat(actual.getWindow().get().getOrderBySegment(), is(boundOrderBySegment));
     }
 }

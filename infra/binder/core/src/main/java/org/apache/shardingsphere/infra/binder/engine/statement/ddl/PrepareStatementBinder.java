@@ -46,11 +46,13 @@ public final class PrepareStatementBinder implements SQLStatementBinder<PrepareS
     
     private PrepareStatement copy(final PrepareStatement sqlStatement, final SelectStatement boundSelect, final InsertStatement boundInsert,
                                   final UpdateStatement boundUpdate, final DeleteStatement boundDelete) {
-        PrepareStatement result = new PrepareStatement(sqlStatement.getDatabaseType());
-        result.setSelect(boundSelect);
-        result.setInsert(boundInsert);
-        result.setUpdate(boundUpdate);
-        result.setDelete(boundDelete);
+        PrepareStatement result = PrepareStatement.builder()
+                .databaseType(sqlStatement.getDatabaseType())
+                .select(boundSelect)
+                .insert(boundInsert)
+                .update(boundUpdate)
+                .delete(boundDelete)
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

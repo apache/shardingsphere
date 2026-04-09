@@ -20,6 +20,7 @@ databaseName: readwrite_splitting_and_shadow
 dataSources:
   write_db:
     url: jdbc:postgresql://postgresql.readwrite_splitting_and_shadow.host:5432/write_db?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -30,6 +31,7 @@ dataSources:
     minPoolSize: 2
   write_db_shadow:
     url: jdbc:postgresql://postgresql.readwrite_splitting_and_shadow.host:5432/write_db_shadow?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -40,6 +42,7 @@ dataSources:
     minPoolSize: 2
   read_0:
     url: jdbc:postgresql://postgresql.readwrite_splitting_and_shadow.host:5432/read_0?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -50,6 +53,7 @@ dataSources:
     minPoolSize: 2
   read_1:
     url: jdbc:postgresql://postgresql.readwrite_splitting_and_shadow.host:5432/read_1?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

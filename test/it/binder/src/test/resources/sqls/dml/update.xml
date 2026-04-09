@@ -18,4 +18,5 @@
 
 <sql-cases>
     <sql-case id="update_order_by" value="UPDATE t_order SET user_id = 1 WHERE order_id = 1 ORDER BY user_id LIMIT 1" db-types="MySQL"/>
+    <sql-case id="update_with_timestampadd_microsecond" value="UPDATE t_order SET creation_date = TIMESTAMPADD(MICROSECOND, ?, creation_date) WHERE order_id = ?" db-types="MySQL" case-types="PLACEHOLDER"/>
 </sql-cases>

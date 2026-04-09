@@ -42,13 +42,18 @@ public final class MySQLShowTablesStatement extends DALStatement {
     
     private final boolean containsFull;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowTablesStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter, final boolean containsFull) {
         super(databaseType);
         this.fromDatabase = fromDatabase;
         this.filter = filter;
         this.containsFull = containsFull;
+        attributes = new SQLStatementAttributes(
+                new DatabaseSelectRequiredSQLStatementAttribute(),
+                new FromDatabaseSQLStatementAttribute(fromDatabase),
+                new TablelessDataSourceBroadcastRouteSQLStatementAttribute(),
+                new AllowNotUseDatabaseSQLStatementAttribute(true, null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue()));
     }
     
     /**
@@ -67,12 +72,5 @@ public final class MySQLShowTablesStatement extends DALStatement {
      */
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        String databaseName = null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue();
-        attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new FromDatabaseSQLStatementAttribute(fromDatabase),
-                new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
     }
 }

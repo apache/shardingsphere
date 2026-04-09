@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.factory.MetaDataContextsFactory;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.ViewMetaDataPersistService;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -167,8 +169,12 @@ class StorageUnitManagerTest {
     }
     
     private StorageUnitManager createManager(final MetaDataContexts metaDataContexts, final ResourceSwitchManager resourceSwitchManager) {
-        MetaDataPersistFacade metaDataPersistFacade = mock(MetaDataPersistFacade.class, RETURNS_DEEP_STUBS);
-        lenient().when(metaDataPersistFacade.getDatabaseMetaDataFacade().getView().load(anyString(), anyString())).thenReturn(Collections.emptyList());
+        MetaDataPersistFacade metaDataPersistFacade = mock(MetaDataPersistFacade.class);
+        DatabaseMetaDataPersistFacade databaseMetaDataPersistFacade = mock(DatabaseMetaDataPersistFacade.class);
+        ViewMetaDataPersistService viewMetaDataPersistService = mock(ViewMetaDataPersistService.class);
+        lenient().when(metaDataPersistFacade.getDatabaseMetaDataFacade()).thenReturn(databaseMetaDataPersistFacade);
+        lenient().when(databaseMetaDataPersistFacade.getView()).thenReturn(viewMetaDataPersistService);
+        lenient().when(viewMetaDataPersistService.load(anyString(), anyString())).thenReturn(Collections.emptyList());
         return new StorageUnitManager(metaDataContexts, mock(ComputeNodeInstanceContext.class), resourceSwitchManager, metaDataPersistFacade);
     }
     

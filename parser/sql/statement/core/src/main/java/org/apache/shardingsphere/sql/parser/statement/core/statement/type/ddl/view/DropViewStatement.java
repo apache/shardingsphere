@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -26,27 +25,23 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Drop view statement.
  */
 @Getter
-@Setter
 public final class DropViewStatement extends DDLStatement {
     
-    private final Collection<SimpleTableSegment> views = new LinkedList<>();
+    private final Collection<SimpleTableSegment> views;
     
-    private boolean ifExists;
+    private final boolean ifExists;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public DropViewStatement(final DatabaseType databaseType) {
+    public DropViewStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> views, final boolean ifExists) {
         super(databaseType);
-    }
-    
-    @Override
-    public void buildAttributes() {
+        this.views = views;
+        this.ifExists = ifExists;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(views));
     }
 }

@@ -247,10 +247,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue());
-        return result;
+        return new DropViewStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.viewNames())).getValue(), null != ctx.ifExists());
     }
     
     @Override
@@ -271,26 +268,27 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIfNotExists(null != ctx.ifNotExists());
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
-        if (null != ctx.createLikeClause()) {
-            result.setLikeTable((SimpleTableSegment) visit(ctx.createLikeClause()));
-        }
-        if (null != ctx.createTableOptions()) {
-            result.setCreateTableOption((CreateTableOptionSegment) visit(ctx.createTableOptions()));
-        }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .likeTable(null == ctx.createLikeClause() ? null : (SimpleTableSegment) visit(ctx.createLikeClause()))
+                .createTableOption(null == ctx.createTableOptions() ? null : (CreateTableOptionSegment) visit(ctx.createTableOptions()))
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     @Override
@@ -692,54 +690,62 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        return result;
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue(), null != ctx.ifExists(), false);
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())));
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableName())), Collections.emptyList());
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
-        result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
-        result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
+        IndexSegment index = new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName);
         if (null != ctx.createIndexSpecification() && null != ctx.createIndexSpecification().UNIQUE()) {
-            result.getIndex().setUniqueKey(true);
+            index.setUniqueKey(true);
         }
+        AlgorithmTypeSegment algorithmType = null;
+        LockTableSegment lockTable = null;
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
-                result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
+                algorithmType = (AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption());
             }
             if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
-                result.setLockTable((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
+                lockTable = (LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption());
             }
         }
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .index(index)
+                .columns(((CollectionValue) visit(ctx.keyListWithExpression())).getValue())
+                .algorithmType(algorithmType)
+                .lockTable(lockTable)
+                .build();
     }
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
-        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableName()));
-        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
-        result.getIndexes().add(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
+        AlgorithmTypeSegment algorithmType = null;
+        LockTableSegment lockTable = null;
         if (null != ctx.algorithmOptionAndLockOption()) {
             if (null != ctx.algorithmOptionAndLockOption().alterAlgorithmOption()) {
-                result.setAlgorithmType((AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption()));
+                algorithmType = (AlgorithmTypeSegment) visit(ctx.algorithmOptionAndLockOption().alterAlgorithmOption());
             }
             if (null != ctx.algorithmOptionAndLockOption().alterLockOption()) {
-                result.setLockTable((LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption()));
+                lockTable = (LockTableSegment) visit(ctx.algorithmOptionAndLockOption().alterLockOption());
             }
         }
-        return result;
+        IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .indexes(Collections.singleton(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName)))
+                .simpleTable((SimpleTableSegment) visit(ctx.tableName()))
+                .algorithmType(algorithmType)
+                .lockTable(lockTable)
+                .build();
     }
     
     @Override
@@ -792,10 +798,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        CreateFunctionStatement result = new CreateFunctionStatement(getDatabaseType());
-        result.setFunctionName((FunctionNameSegment) visit(ctx.functionName()));
-        result.setRoutineBody((RoutineBodySegment) visit(ctx.routineBody()));
-        return result;
+        return new CreateFunctionStatement(getDatabaseType(), (FunctionNameSegment) visit(ctx.functionName()), (RoutineBodySegment) visit(ctx.routineBody()), Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")
@@ -1115,7 +1118,7 @@ public final class MySQLDDLStatementVisitor extends MySQLStatementVisitor implem
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        return new PrepareStatement(getDatabaseType());
+        return PrepareStatement.builder().databaseType(getDatabaseType()).build();
     }
     
     @Override

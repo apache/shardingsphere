@@ -17,16 +17,26 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator.projection;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
+import org.apache.shardingsphere.encrypt.enums.EncryptDerivedColumnSuffix;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
+import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
+import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.table.EncryptTable;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
+import org.apache.shardingsphere.infra.binder.context.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.context.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.SQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.SubstitutableColumnNameToken;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -41,13 +51,15 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.Iden
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -78,6 +90,15 @@ class EncryptProjectionTokenGeneratorTest {
         when(encryptTable1.getEncryptColumn("mobile")).thenReturn(encryptColumn);
         when(result.findEncryptTable("t_order").isPresent()).thenReturn(true);
         when(result.getEncryptTable("t_order").isEncryptColumn("order_id")).thenReturn(true);
+        return result;
+    }
+    
+    private EncryptRule mockEncryptRule(final EncryptColumn encryptColumn) {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(result.findEncryptTable("doctor")).thenReturn(Optional.of(encryptTable));
+        when(encryptTable.isEncryptColumn("mobile")).thenReturn(true);
+        when(encryptTable.getEncryptColumn("mobile")).thenReturn(encryptColumn);
         return result;
     }
     
@@ -142,5 +163,78 @@ class EncryptProjectionTokenGeneratorTest {
         when(sqlStatementContext.getProjectionsContext().getProjections()).thenReturn(Collections.singleton(new ColumnProjection("doctor", "mobile", null, databaseType)));
         Collection<SQLToken> actual = generator.generateSQLTokens(sqlStatementContext);
         assertThat(actual.size(), is(1));
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWhenInsertSelectUsesActualColumnsForPhysicalTable() {
+        EncryptProjectionTokenGenerator actualGenerator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule(createEncryptColumnWithDerivedColumns()));
+        SelectStatementContext sqlStatementContext = mockInsertSelectStatementContext(TableSourceType.PHYSICAL_TABLE, QuoteCharacter.QUOTE);
+        Collection<SQLToken> actual = actualGenerator.generateSQLTokens(sqlStatementContext);
+        assertThat(actual.size(), is(1));
+        SubstitutableColumnNameToken actualToken = (SubstitutableColumnNameToken) actual.iterator().next();
+        List<ColumnProjection> actualProjections = getColumnProjections(actualToken.getProjections());
+        QuoteCharacter quoteCharacter = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getQuoteCharacter();
+        assertThat(getProjectionNames(actualProjections), is(Arrays.asList("cipher_mobile", "assisted_mobile", "like_mobile")));
+        assertThat(getProjectionQuoteCharacters(actualProjections), is(Arrays.asList(quoteCharacter, quoteCharacter, quoteCharacter)));
+    }
+    
+    @Test
+    void assertGenerateSQLTokensWhenInsertSelectUsesDerivedColumnsForTemporaryTable() {
+        EncryptProjectionTokenGenerator actualGenerator = new EncryptProjectionTokenGenerator(Collections.emptyList(), databaseType, mockEncryptRule(createEncryptColumnWithDerivedColumns()));
+        SelectStatementContext sqlStatementContext = mockInsertSelectStatementContext(TableSourceType.TEMPORARY_TABLE, QuoteCharacter.BACK_QUOTE);
+        Collection<SQLToken> actual = actualGenerator.generateSQLTokens(sqlStatementContext);
+        assertThat(actual.size(), is(1));
+        SubstitutableColumnNameToken actualToken = (SubstitutableColumnNameToken) actual.iterator().next();
+        List<ColumnProjection> actualProjections = getColumnProjections(actualToken.getProjections());
+        assertThat(getProjectionNames(actualProjections), is(Arrays.asList(
+                EncryptDerivedColumnSuffix.CIPHER.getDerivedColumnName("mobile", databaseType),
+                EncryptDerivedColumnSuffix.ASSISTED_QUERY.getDerivedColumnName("mobile", databaseType),
+                EncryptDerivedColumnSuffix.LIKE_QUERY.getDerivedColumnName("mobile", databaseType))));
+        assertThat(getProjectionQuoteCharacters(actualProjections), is(Arrays.asList(QuoteCharacter.BACK_QUOTE, QuoteCharacter.BACK_QUOTE, QuoteCharacter.BACK_QUOTE)));
+    }
+    
+    private EncryptColumn createEncryptColumnWithDerivedColumns() {
+        EncryptColumn result = new EncryptColumn("mobile", new CipherColumnItem("cipher_mobile", mock(EncryptAlgorithm.class)));
+        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_mobile", mock(EncryptAlgorithm.class)));
+        result.setLikeQuery(new LikeQueryColumnItem("like_mobile", mock(EncryptAlgorithm.class)));
+        return result;
+    }
+    
+    private SelectStatementContext mockInsertSelectStatementContext(final TableSourceType tableSourceType, final QuoteCharacter quoteCharacter) {
+        ColumnSegment column = new ColumnSegment(0, 0, new IdentifierValue("mobile", quoteCharacter));
+        column.setColumnBoundInfo(new ColumnSegmentBoundInfo(new TableSegmentBoundInfo(new IdentifierValue("foo_db"), new IdentifierValue("foo_db")), new IdentifierValue("doctor"),
+                new IdentifierValue("mobile"), tableSourceType));
+        ProjectionsSegment projections = mock(ProjectionsSegment.class);
+        when(projections.getProjections()).thenReturn(Collections.singletonList(new ColumnProjectionSegment(column)));
+        SelectStatementContext result = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSubqueryType()).thenReturn(SubqueryType.INSERT_SELECT);
+        when(result.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        when(result.getSqlStatement().getProjections()).thenReturn(projections);
+        when(result.getSubqueryContexts()).thenReturn(Collections.emptyMap());
+        return result;
+    }
+    
+    private List<ColumnProjection> getColumnProjections(final Collection<Projection> projections) {
+        List<ColumnProjection> result = new ArrayList<>(projections.size());
+        for (Projection each : projections) {
+            result.add((ColumnProjection) each);
+        }
+        return result;
+    }
+    
+    private List<String> getProjectionNames(final List<ColumnProjection> projections) {
+        List<String> result = new ArrayList<>(projections.size());
+        for (ColumnProjection each : projections) {
+            result.add(each.getName().getValue());
+        }
+        return result;
+    }
+    
+    private List<QuoteCharacter> getProjectionQuoteCharacters(final List<ColumnProjection> projections) {
+        List<QuoteCharacter> result = new ArrayList<>(projections.size());
+        for (ColumnProjection each : projections) {
+            result.add(each.getName().getQuoteCharacter());
+        }
+        return result;
     }
 }

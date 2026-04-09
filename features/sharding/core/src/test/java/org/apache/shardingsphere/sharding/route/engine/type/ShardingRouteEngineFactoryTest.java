@@ -132,10 +132,8 @@ class ShardingRouteEngineFactoryTest {
     
     @Test
     void assertNewInstanceForDCLForSingleTable() {
-        GrantStatement sqlStatement = new GrantStatement(databaseType);
-        sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        sqlStatement.buildAttributes();
-        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
+        SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(
+                new GrantStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))))));
         QueryContext queryContext = new QueryContext(sqlStatementContext, "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, queryContext, shardingConditions, Collections.singletonList("tbl"), props);
         assertThat(actual, isA(ShardingTableBroadcastRouteEngine.class));
@@ -227,7 +225,6 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForCursorStatementWithShardingTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         CursorStatement cursorStatement = new CursorStatement(databaseType, null, null);
-        cursorStatement.buildAttributes();
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
@@ -245,7 +242,6 @@ class ShardingRouteEngineFactoryTest {
     void assertNewInstanceForCursorStatementWithSingleTable() {
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         CursorStatement cursorStatement = new CursorStatement(databaseType, null, null);
-        cursorStatement.buildAttributes();
         when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
         when(cursorStatementContext.getTablesContext().getSimpleTables()).thenReturn(tableSegments);

@@ -1204,40 +1204,47 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
+        WithSegment withSegment = null;
         if (null != ctx.selectWithClause() && null != ctx.selectWithClause().cteClauseSet()) {
             Collection<CommonTableExpressionSegment> commonTableExpressionSegments = getCommonTableExpressionSegmentsUsingCteClauseSet(ctx.selectWithClause().cteClauseSet());
-            WithSegment withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
-            result.setWith(withSegment);
+            withSegment = new WithSegment(ctx.selectWithClause().start.getStartIndex(), ctx.selectWithClause().stop.getStopIndex(), commonTableExpressionSegments);
         }
         if (null != ctx.duplicateSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
+            projections.setDistinctRow(isDistinct(ctx));
         }
+        TableSegment into = null;
         if (null != ctx.intoClause()) {
-            result.setInto((TableSegment) visit(ctx.intoClause()));
+            into = (TableSegment) visit(ctx.intoClause());
         }
+        TableSegment from = null;
         if (null != ctx.fromClause()) {
-            TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-            result.setFrom(tableSource);
+            from = (TableSegment) visit(ctx.fromClause().tableReferences());
         }
+        WithTableHintSegment withTableHint = null;
         if (null != ctx.withTableHint()) {
-            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
+            withTableHint = (WithTableHintSegment) visit(ctx.withTableHint());
         }
+        WhereSegment where = null;
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            where = (WhereSegment) visit(ctx.whereClause());
         }
+        GroupBySegment groupBy = null;
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            groupBy = (GroupBySegment) visit(ctx.groupByClause());
         }
+        HavingSegment having = null;
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            having = (HavingSegment) visit(ctx.havingClause());
         }
+        OrderBySegment orderBy = null;
+        LimitSegment limit = null;
         if (null != ctx.orderByClause()) {
-            result.setOrderBy(getOrderBySegment(ctx.orderByClause()));
-            result.setLimit(getLimitSegment(ctx.orderByClause()));
+            orderBy = getOrderBySegment(ctx.orderByClause());
+            limit = getLimitSegment(ctx.orderByClause());
         }
-        return result;
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).with(withSegment).into(into).from(from).withTableHint(withTableHint)
+                .where(where).groupBy(groupBy).having(having).orderBy(orderBy).limit(limit).build();
     }
     
     @SuppressWarnings("unchecked")
@@ -1358,7 +1365,7 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
                 items.add((OrderByItemSegment) visit(each));
             }
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP());
     }
     
     private Collection<OrderByItemSegment> generateOrderByItemsFromGroupByItem(final GroupByItemContext ctx) {
@@ -1437,30 +1444,56 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result;
+        InsertStatement insertStatement;
         if (null != ctx.insertDefaultValue()) {
-            result = (InsertStatement) visit(ctx.insertDefaultValue());
+            insertStatement = (InsertStatement) visit(ctx.insertDefaultValue());
         } else if (null != ctx.insertValuesClause()) {
-            result = (InsertStatement) visit(ctx.insertValuesClause());
+            insertStatement = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertExecClause()) {
-            result = (InsertStatement) visit(ctx.insertExecClause());
+            insertStatement = (InsertStatement) visit(ctx.insertExecClause());
         } else {
-            result = (InsertStatement) visit(ctx.insertSelectClause());
+            insertStatement = (InsertStatement) visit(ctx.insertSelectClause());
         }
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder()
+                .databaseType(insertStatement.getDatabaseType())
+                .table(insertStatement.getTable().orElse(null))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null))
+                .insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertStatement.getSetAssignment().orElse(null))
+                .onDuplicateKeyColumns(insertStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertStatement.getValueReference().orElse(null))
+                .returning(insertStatement.getReturning().orElse(null))
+                .output(insertStatement.getOutput().orElse(null))
+                .with(insertStatement.getWith().orElse(null))
+                .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null))
+                .multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null))
+                .where(insertStatement.getWhere().orElse(null))
+                .exec(insertStatement.getExec().orElse(null))
+                .withTableHint(insertStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertStatement.getRowSetFunction().orElse(null))
+                .ignore(insertStatement.isIgnore())
+                .replace(insertStatement.isReplace())
+                .values(insertStatement.getValues())
+                .derivedInsertColumns(insertStatement.getDerivedInsertColumns());
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result.with((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.withTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.tableName()) {
-            result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+            result.table((SimpleTableSegment) visit(ctx.tableName()));
         }
         if (null != ctx.rowSetFunction()) {
-            result.setRowSetFunction((FunctionSegment) visit(ctx.rowSetFunction()));
+            result.rowSetFunction((FunctionSegment) visit(ctx.rowSetFunction()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        InsertStatement actual = result.build();
+        actual.addParameterMarkers(insertStatement.getParameterMarkers());
+        actual.getVariableNames().addAll(insertStatement.getVariableNames());
+        actual.getComments().addAll(insertStatement.getComments());
+        actual.addParameterMarkers(getParameterMarkerSegments());
+        return actual;
     }
     
     @Override
@@ -1523,20 +1556,19 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertDefaultValue(final InsertDefaultValueContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(databaseType).insertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
-        return result;
+        return result.build();
     }
     
     @Override
     public ASTNode visitInsertExecClause(final InsertExecClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
-        result.setExec((ExecSegment) visit(ctx.exec()));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType)
+                .insertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()))
+                .exec((ExecSegment) visit(ctx.exec()))
+                .build();
     }
     
     @Override
@@ -1615,13 +1647,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(databaseType)
+                .insertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()))
+                .values(createInsertValuesSegments(ctx.assignmentValues()));
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
-        return result;
+        return result.build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -1634,13 +1666,13 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setInsertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()));
-        result.setInsertSelect(createInsertSelectSegment(ctx));
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(databaseType)
+                .insertColumns(createInsertColumns(ctx.columnNames(), ctx.start.getStartIndex()))
+                .insertSelect(createInsertSelectSegment(ctx));
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
-        return result;
+        return result.build();
     }
     
     @SuppressWarnings("unchecked")
@@ -1666,29 +1698,30 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType);
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result.with((WithSegment) visit(ctx.withClause()));
         }
-        result.setTable((TableSegment) visit(ctx.tableReferences()));
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        result.table((TableSegment) visit(ctx.tableReferences()));
+        result.setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.fromClause()) {
-            result.setFrom((TableSegment) visit(ctx.fromClause()));
+            result.from((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.withTableHint()) {
-            result.setWithTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
+            result.withTableHint((WithTableHintSegment) visit(ctx.withTableHint()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
+            result.optionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
@@ -1734,26 +1767,24 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType);
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result.with((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.multipleTablesClause()) {
-            result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
+            result.table((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
-            result.setTable((TableSegment) visit(ctx.singleTableClause()));
+            result.table((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
-        }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
@@ -2097,21 +2128,21 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTableAsSelectClause(final CreateTableAsSelectClauseContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
+        SimpleTableSegment table;
+        SelectStatement selectStatement;
+        List<ColumnSegment> columns = new LinkedList<>();
         if (null != ctx.createTableAsSelect()) {
-            result.setTable((SimpleTableSegment) visit(ctx.createTableAsSelect().tableName()));
-            result.setSelectStatement((SelectStatement) visit(ctx.createTableAsSelect().select()));
+            table = (SimpleTableSegment) visit(ctx.createTableAsSelect().tableName());
+            selectStatement = (SelectStatement) visit(ctx.createTableAsSelect().select());
             if (null != ctx.createTableAsSelect().columnNames()) {
                 CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(ctx.createTableAsSelect().columnNames());
-                for (ColumnSegment each : columnSegments.getValue()) {
-                    result.getColumns().add(each);
-                }
+                columns.addAll(columnSegments.getValue());
             }
         } else {
-            result.setTable((SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName()));
-            result.setSelectStatement((SelectStatement) visit(ctx.createRemoteTableAsSelect().select()));
+            table = (SimpleTableSegment) visit(ctx.createRemoteTableAsSelect().tableName());
+            selectStatement = (SelectStatement) visit(ctx.createRemoteTableAsSelect().select());
         }
-        return result;
+        return CreateTableStatement.builder().databaseType(databaseType).table(table).selectStatement(selectStatement).columns(columns).build();
     }
     
     @Override
@@ -2200,39 +2231,40 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(databaseType);
-        result.setTarget((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
+        MergeStatement.MergeStatementBuilder result = MergeStatement.builder().databaseType(databaseType).target((TableSegment) visit(ctx.mergeIntoClause().tableReferences()));
         if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
+            result.with((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.withMergeHint()) {
-            result.setWithTableHint((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
+            result.withTableHint((WithTableHintSegment) visit(ctx.withMergeHint().withTableHint()));
             if (null != ctx.withMergeHint().indexName()) {
                 Collection<IndexSegment> indexSegments = new LinkedList<>();
                 for (IndexNameContext each : ctx.withMergeHint().indexName()) {
                     indexSegments.add((IndexSegment) visit(each));
                 }
-                result.setIndexes(indexSegments);
+                result.indexes(indexSegments);
             }
         }
         if (null != ctx.mergeUsingClause()) {
-            result.setSource((TableSegment) visit(ctx.mergeUsingClause().tableReferences()));
+            result.source((TableSegment) visit(ctx.mergeUsingClause().tableReferences()));
             ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.mergeUsingClause().expr().start.getStartIndex(), ctx.mergeUsingClause().expr().stop.getStopIndex(),
                     (ExpressionSegment) visit(ctx.mergeUsingClause().expr()));
-            result.setExpression(onExpression);
+            result.expression(onExpression);
         }
         if (null != ctx.mergeWhenClause()) {
+            Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
             for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
-                result.getWhenAndThens().add((MergeWhenAndThenSegment) visit(each));
+                whenAndThens.add((MergeWhenAndThenSegment) visit(each));
             }
+            result.whenAndThens(whenAndThens);
         }
         if (null != ctx.outputClause()) {
-            result.setOutput((OutputSegment) visit(ctx.outputClause()));
+            result.output((OutputSegment) visit(ctx.outputClause()));
         }
         if (null != ctx.optionHint()) {
-            result.setOptionHint((OptionHintSegment) visit(ctx.optionHint()));
+            result.optionHint((OptionHintSegment) visit(ctx.optionHint()));
         }
-        return result;
+        return result.build();
     }
     
     @Override
@@ -2269,8 +2301,6 @@ public abstract class SQLServerStatementVisitor extends SQLServerStatementBaseVi
     
     @Override
     public ASTNode visitMergeUpdateClause(final MergeUpdateClauseContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
-        return result;
+        return UpdateStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
     }
 }

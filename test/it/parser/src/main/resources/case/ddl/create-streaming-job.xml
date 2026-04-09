@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-parser-test-cases>
+    <create-streaming-job sql-case-id="create_streaming_job_from_postgres" source-type="POSTGRES" target-database="target_test_db">
+        <job-name name="test_postgres_job" start-index="11" stop-index="27" />
+        <source-property key="jdbc_url" value="jdbc:postgresql://127.0.0.1:5432/postgres" start-index="57" stop-index="112" />
+        <source-property key="driver_url" value="postgresql-42.5.0.jar" start-index="115" stop-index="152" />
+        <source-property key="driver_class" value="org.postgresql.Driver" start-index="155" stop-index="194" />
+        <source-property key="user" value="postgres" start-index="197" stop-index="215" />
+        <source-property key="password" value="postgres" start-index="218" stop-index="240" />
+        <source-property key="database" value="postgres" start-index="243" stop-index="265" />
+        <source-property key="schema" value="public" start-index="268" stop-index="286" />
+        <source-property key="include_tables" value="test_tbls" start-index="289" stop-index="318" />
+        <source-property key="offset" value="latest" start-index="321" stop-index="339" />
+        <target-property key="table.create.properties.replication_num" value="1" start-index="370" stop-index="416" />
+    </create-streaming-job>
+
+    <create-streaming-job sql-case-id="create_streaming_job_from_mysql" source-type="MYSQL" target-database="target_test_db">
+        <job-name name="multi_table_sync" start-index="11" stop-index="26" />
+        <source-property key="jdbc_url" value="jdbc:mysql://127.0.0.1:3306" start-index="53" stop-index="94" />
+        <source-property key="driver_url" value="mysql-connector-j-8.0.31.jar" start-index="97" stop-index="141" />
+        <source-property key="driver_class" value="com.mysql.cj.jdbc.Driver" start-index="144" stop-index="186" />
+        <source-property key="user" value="root" start-index="189" stop-index="203" />
+        <source-property key="password" value="123456" start-index="206" stop-index="226" />
+        <source-property key="database" value="test" start-index="229" stop-index="247" />
+        <source-property key="include_tables" value="user_info,order_info" start-index="250" stop-index="290" />
+        <source-property key="offset" value="initial" start-index="293" stop-index="312" />
+        <target-property key="table.create.properties.replication_num" value="1" start-index="343" stop-index="389" />
+    </create-streaming-job>
+
+    <create-streaming-job sql-case-id="create_streaming_job_do_insert">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <insert-table name="tbl1" start-index="46" stop-index="53">
+            <owner name="db1" start-index="46" stop-index="48" />
+        </insert-table>
+        <insert-select-table name="tbl2" start-index="69" stop-index="76">
+            <owner name="db2" start-index="69" stop-index="71" />
+        </insert-select-table>
+    </create-streaming-job>
+
+    <create-streaming-job sql-case-id="create_streaming_job_with_comment" source-type="MYSQL" target-database="target_db">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <job-comment start-index="31" stop-index="53" value="streaming job" />
+        <source-property key="jdbc_url" value="jdbc:mysql://127.0.0.1:3306" start-index="67" stop-index="108" />
+        <source-property key="user" value="root" start-index="111" stop-index="125" />
+        <source-property key="password" value="123456" start-index="128" stop-index="148" />
+        <source-property key="database" value="test" start-index="151" stop-index="169" />
+        <source-property key="include_tables" value="t1" start-index="172" stop-index="194" />
+        <source-property key="offset" value="initial" start-index="197" stop-index="216" />
+    </create-streaming-job>
+
+    <create-streaming-job sql-case-id="create_streaming_job_with_job_properties" source-type="MYSQL" target-database="target_db">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <job-property key="max_interval" value="10s" start-index="43" stop-index="64" />
+        <source-property key="jdbc_url" value="jdbc:mysql://127.0.0.1:3306" start-index="79" stop-index="120" />
+        <source-property key="user" value="root" start-index="123" stop-index="137" />
+        <source-property key="password" value="123456" start-index="140" stop-index="160" />
+        <source-property key="database" value="test" start-index="163" stop-index="181" />
+        <source-property key="include_tables" value="t1" start-index="184" stop-index="206" />
+        <source-property key="offset" value="initial" start-index="209" stop-index="228" />
+    </create-streaming-job>
+
+    <create-streaming-job sql-case-id="create_streaming_job_with_quoted_target_db" source-type="MYSQL" target-database="target_db">
+        <job-name name="my_job" start-index="11" stop-index="16" />
+        <source-property key="jdbc_url" value="jdbc:mysql://127.0.0.1:3306" start-index="43" stop-index="84" />
+        <source-property key="user" value="root" start-index="87" stop-index="101" />
+        <source-property key="password" value="123456" start-index="104" stop-index="124" />
+        <source-property key="database" value="test" start-index="127" stop-index="145" />
+        <source-property key="include_tables" value="t1" start-index="148" stop-index="170" />
+        <source-property key="offset" value="initial" start-index="173" stop-index="192" />
+    </create-streaming-job>
+</sql-parser-test-cases>

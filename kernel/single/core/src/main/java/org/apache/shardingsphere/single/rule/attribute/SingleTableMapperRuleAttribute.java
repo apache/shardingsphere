@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.single.rule.attribute;
 
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 
 /**
  * Single table mapper rule attribute.
@@ -36,7 +36,7 @@ public final class SingleTableMapperRuleAttribute implements TableMapperRuleAttr
     }
     
     private Collection<String> createLogicalTableNames(final Collection<Collection<DataNode>> singleTableDataNodes) {
-        Collection<String> result = new CaseInsensitiveSet<>(singleTableDataNodes.size(), 1F);
+        Collection<String> result = new LinkedHashSet<>(singleTableDataNodes.size(), 1F);
         singleTableDataNodes.forEach(each -> result.add(each.iterator().next().getTableName()));
         return result;
     }

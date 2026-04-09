@@ -36,6 +36,7 @@ import org.mockito.MockedConstruction;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.TreeSet;
@@ -89,7 +90,7 @@ class SingleTableLoadUtilsTest {
         DataNode expectedDataNode1 = new DataNode("foo_ds", "foo_db", "foo_tbl");
         DataNode expectedDataNode2 = new DataNode("bar_ds", "foo_db", "bar_tbl");
         assertThat(SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, Arrays.asList("foo_ds.foo_tbl", "bar_ds.bar_tbl")),
-                is(new LinkedHashSet<>(Arrays.asList(expectedDataNode1, expectedDataNode2))));
+                is(new LinkedList<>(Arrays.asList(expectedDataNode1, expectedDataNode2))));
     }
     
     @Test

@@ -44,8 +44,4 @@ public final class CancelBuildIndexStatement extends DDLStatement {
         this.jobIds = jobIds;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

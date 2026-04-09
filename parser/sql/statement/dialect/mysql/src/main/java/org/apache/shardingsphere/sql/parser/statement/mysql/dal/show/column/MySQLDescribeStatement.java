@@ -38,9 +38,9 @@ public final class MySQLDescribeStatement extends DALStatement {
     
     private final ColumnSegment columnWildcard;
     
-    private SQLStatementAttributes attributes;
-    
     private final boolean showAll;
+    
+    private final SQLStatementAttributes attributes;
     
     public MySQLDescribeStatement(final DatabaseType databaseType, final SimpleTableSegment table, final ColumnSegment columnWildcard) {
         this(databaseType, table, columnWildcard, false);
@@ -51,6 +51,7 @@ public final class MySQLDescribeStatement extends DALStatement {
         this.table = table;
         this.columnWildcard = columnWildcard;
         this.showAll = showAll;
+        attributes = new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new TableSQLStatementAttribute(table));
     }
     
     /**
@@ -60,10 +61,5 @@ public final class MySQLDescribeStatement extends DALStatement {
      */
     public Optional<ColumnSegment> getColumnWildcard() {
         return Optional.ofNullable(columnWildcard);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new TableSQLStatementAttribute(table));
     }
 }

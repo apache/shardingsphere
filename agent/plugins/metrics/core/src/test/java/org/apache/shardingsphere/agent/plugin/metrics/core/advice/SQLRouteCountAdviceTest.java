@@ -71,14 +71,13 @@ class SQLRouteCountAdviceTest {
     
     private static Stream<Arguments> routeContexts() {
         return Stream.of(
-                Arguments.of("INSERT", createQueryContext(new InsertStatement(DATABASE_TYPE))),
-                Arguments.of("UPDATE", createQueryContext(new UpdateStatement(DATABASE_TYPE))),
-                Arguments.of("DELETE", createQueryContext(new DeleteStatement(DATABASE_TYPE))),
-                Arguments.of("SELECT", createQueryContext(new SelectStatement(DATABASE_TYPE))));
+                Arguments.of("INSERT", createQueryContext(InsertStatement.builder().databaseType(DATABASE_TYPE).build())),
+                Arguments.of("UPDATE", createQueryContext(UpdateStatement.builder().databaseType(DATABASE_TYPE).build())),
+                Arguments.of("DELETE", createQueryContext(DeleteStatement.builder().databaseType(DATABASE_TYPE).build())),
+                Arguments.of("SELECT", createQueryContext(SelectStatement.builder().databaseType(DATABASE_TYPE).build())));
     }
     
     private static QueryContext createQueryContext(final SQLStatement sqlStatement) {
-        sqlStatement.buildAttributes();
         return new QueryContext(new CommonSQLStatementContext(sqlStatement), "", Collections.emptyList(), new HintValueContext(), mockConnectionContext(), mock(ShardingSphereMetaData.class));
     }
     

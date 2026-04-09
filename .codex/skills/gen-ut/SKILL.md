@@ -37,6 +37,11 @@ Missing input handling:
 - `Related test classes`: existing `TargetClassName + Test` classes resolvable within the same module's test scope.
 - `Assertion differences`: distinguishable assertions in externally observable results or side effects.
 - `Necessity reason tag`: fixed-format tag for retention reasons, using `KEEP:<id>:<reason>`, recorded in the "Implementation and Optimization" section of the delivery report.
+- `Baseline quality summary`: one pre-edit diagnostic run that combines rule scanning, candidate summary, and coverage evidence for the current scope.
+- `Verification snapshot digest`: content hash over `<ResolvedTestFileSet>` used to decide whether a previous green verification result is still reusable.
+- `Gate reuse state`: persisted mapping from logical gate names (for example `target-test`, `coverage`, `rule-scan`) to the latest green digest for that gate.
+- `Latest green target-test digest`: compatibility alias for the `target-test` entry in `Gate reuse state`.
+- `Consolidated hard-gate scan`: one script execution that enforces `R8`, `R14`, and all file-content-based `R15` rules while still reporting results per rule.
 
 Module resolution order:
 1. If the user explicitly provides modules, use them first.
@@ -79,6 +84,8 @@ Module resolution order:
   - For parameterized tests, each `Arguments` row `MUST` represent one independent scenario and one branch/path mapping unit for `R4`.
   - For parameterized tests, `Arguments` row count `MUST` be greater than or equal to 3.
   - Tests `MUST` exercise behavior through public methods only.
+  - Coverage-relevant invocations of target public methods `MUST` appear in test method bodies together with assertions for the externally observable result of that invocation.
+  - Helper methods and `@MethodSource` providers `MUST NOT` invoke target public methods merely to warm caches, precompute coverage, or otherwise execute target behavior without assertions in the same test method body.
   - Public production methods with business logic `MUST` be covered with dedicated test methods.
   - For interface targets, only `default` public methods are required test targets by default, and non-`default` public methods `MUST NOT` be tested unless the user explicitly requests them in the current turn.
   - Dedicated test targets `MUST` follow the `R4` branch-mapping exclusion scope.
@@ -176,6 +183,7 @@ Module resolution order:
   - `R15-G` (parameterized nested-type ban): when a file contains `@ParameterizedTest`, newly introduced diff lines `MUST NOT` add nested helper type declarations (`class` / `interface` / `enum` / `record`) inside the test class.
   - `R15-H` (boolean variable assertion style): for variable-driven boolean expectations, tests `MUST` assert with `assertThat(actual, is(expected))`, and `MUST NOT` use control-flow dispatch only to choose `assertTrue`/`assertFalse`.
   - `R15-I` (parameterized Consumer ban): files containing `@ParameterizedTest` `MUST NOT` introduce or retain `Consumer`-based scenario transport in parameterized method signatures or `@MethodSource` argument rows.
+  - `R15-J` (assertion-backed target invocation): non-test helper methods and `@MethodSource` providers `MUST NOT` invoke target public methods; target public method invocations that contribute to coverage `MUST` be asserted in the same test method body.
 
 ## Workflow
 
@@ -183,14 +191,28 @@ Module resolution order:
    - Capture scope baseline once: `git status --porcelain > /tmp/gen-ut-status-before.txt`.
 2. Parse target classes, related test classes, and input-blocked state (`R10-INPUT_BLOCKED`).
 3. Resolve `<ResolvedTestClass>`, `<ResolvedTestFileSet>`, `<ResolvedTestModules>`, and record `pom.xml` evidence (`R3`).
-4. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
-5. Execute `R8` parameterized optimization analysis, output `R8-CANDIDATES`, and apply required refactoring.
-6. Execute `R9` dead-code checks and record evidence.
-7. Complete test implementation or extension according to `R2-R7`.
-8. Perform necessity trimming and coverage re-verification according to `R13`.
-9. Run verification commands and handle failures by `R11`; execute two `R14` scans and all required `R15` scans.
-10. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
-11. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
+4. Run a `Baseline quality summary` using the bundled baseline script unless equivalent evidence was just produced in the same turn.
+    - Use the baseline summary to identify current branch-miss lines, existing `R15` risks, and likely `R8-CANDIDATES` before editing.
+    - `SHOULD` fix deterministic precheck warnings from the baseline summary before the first standalone target-test run; these warnings are advisory only and do not replace final `checkstyle` / `spotless` / hard-gate verification.
+5. Decide whether `R12` is triggered; if not, output `R4` branch mapping.
+   - For parser / utility classes that return context or value objects, `SHOULD` align planned assertions with the returned object's public API before the first target-test run, to avoid internal-branch coverage assertions that do not match externally observable behavior.
+6. Execute `R8` parameterized optimization analysis, output `R8-CANDIDATES`, and apply required refactoring.
+7. Execute `R9` dead-code checks and record evidence.
+8. Complete test implementation or extension according to `R2-R7`.
+9. Perform necessity trimming and coverage re-verification according to `R13`.
+10. After each edit batch, `SHOULD` run one lightweight precheck pass before expensive verification when signatures or parameterized-test structure changed.
+    - Recommended command: `python3 scripts/scan_quality_rules.py --precheck-only <ResolvedTestFileSet>`.
+    - This pass is advisory and deterministic; it may fail fast on early style issues such as missing `final` on test-method parameters, missing `@MethodSource`, too-few `Arguments` rows, or an invalid first parameter for parameterized tests, but it does not replace formal `R14` / `R15` / `checkstyle` verification.
+11. After each edit batch, recompute the `Verification snapshot digest`; during in-scope repair loops, prefer `target test + one consolidated hard-gate scan` as the minimal verification required by `R11`.
+    - After any standalone target-test command succeeds, `SHOULD` persist the digest through `scripts/verification_gate_state.py mark-gate-green --gate target-test`.
+12. Run final verification commands and handle failures by `R11`.
+    - Independent final gates (`coverage`, `checkstyle`, `spotless`, `consolidated hard-gate scan`) `SHOULD` run in parallel when the environment allows; otherwise serialize them.
+    - Prefer the bundled `scripts/run_quality_gates.py` runner so independent gates share one orchestration entry and can reuse gate-level green results from `Gate reuse state`.
+    - If `scripts/verification_gate_state.py match-gate-green --gate target-test` reports a match for the current `<ResolvedTestFileSet>`, and the final coverage command re-executes tests on that same digest, `MAY` skip an extra standalone target-test rerun before delivery.
+    - A previously green `coverage` gate `MAY` be reused for the same digest; `checkstyle` and `spotless` `SHOULD` still execute for the current module scope.
+    - The consolidated hard-gate scan `MUST` be executed twice to satisfy `R14`: once after implementation stabilizes and once immediately before delivery. Only the earlier scan may be reused for diagnostics; the delivery scan must execute again.
+13. Decide status by `R10` after verification; if status is `R10-D`, return to Step 5 and continue.
+14. Before final response, run a second `R10` status decision and output `R10=<state>` with rule-to-evidence mapping.
 
 ## Verification and Commands
 
@@ -203,9 +225,41 @@ Flag presets:
   - `<GateModuleFlags>` = `-pl <ResolvedTestModules>`
   - `<FallbackGateModuleFlags>` = `<GateModuleFlags> -am` (for troubleshooting missing cross-module dependencies only; does not change `R3` and `R10`).
 
+0. Baseline quality summary (recommended before editing):
+```bash
+python3 scripts/collect_quality_baseline.py --workdir <RepoRoot> \
+  --coverage-command "./mvnw <GateModuleFlags> -DskipITs -Dsurefire.useManifestOnlyJar=false -Dtest=<ResolvedTestClass> -DfailIfNoTests=true -Dsurefire.failIfNoSpecifiedTests=false -Djacoco.skip=false -Djacoco.append=false -Djacoco.destFile=/tmp/gen-ut-baseline.exec test jacoco:report -Djacoco.dataFile=/tmp/gen-ut-baseline.exec" \
+  --jacoco-xml-path <JacocoXmlPath> \
+  --target-classes <ResolvedTargetClasses> \
+  --baseline-before /tmp/gen-ut-status-before.txt \
+  <ResolvedTestFileSet>
+```
+The baseline script reuses `scan_quality_rules.py` diagnostics and prints current coverage plus branch-miss lines for each target class.
+It also prints deterministic non-blocking precheck warnings for high-frequency style failures such as missing `final` on test-method parameters or obvious parameterized-test structure issues; these warnings are for early repair only and do not replace formal gates.
+
+0.1 Lightweight precheck pass (recommended after structural edits and before the next standalone target-test):
+```bash
+python3 scripts/scan_quality_rules.py --precheck-only <ResolvedTestFileSet>
+```
+This mode is intentionally narrower than the consolidated hard-gate scan. It exists only to catch deterministic early-fix issues cheaply and `MUST NOT` be used as a replacement for final `R14`, `R15`, `checkstyle`, or `spotless` verification.
+
 1. Target tests:
 ```bash
 ./mvnw <TestModuleFlags> -DskipITs -Dspotless.skip=true -Dtest=<ResolvedTestClass> -DfailIfNoTests=true -Dsurefire.failIfNoSpecifiedTests=false test
+```
+After a green standalone target-test command, record the digest:
+```bash
+python3 scripts/verification_gate_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
+```
+
+1.1 Verification snapshot digest:
+```bash
+python3 scripts/verification_gate_state.py digest <ResolvedTestFileSet>
+```
+
+1.2 Latest green target-test digest reuse check:
+```bash
+python3 scripts/verification_gate_state.py match-gate-green --state-file /tmp/gen-ut-gate-state.json --gate target-test <ResolvedTestFileSet>
 ```
 
 2. Coverage:
@@ -215,6 +269,10 @@ Flag presets:
 If the module does not define `jacoco-check@jacoco-check`:
 ```bash
 ./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report
+```
+After a green standalone coverage command, the digest may be recorded for reuse:
+```bash
+python3 scripts/verification_gate_state.py mark-gate-green --state-file /tmp/gen-ut-gate-state.json --gate coverage <ResolvedTestFileSet>
 ```
 
 2.1 Target-class coverage hard gate (default target 100 unless explicitly lowered, aggregated over `Target-class coverage scope`):
@@ -275,470 +333,40 @@ PY
 ```
 If missing cross-module dependencies occur, rerun the gate command above once with `<FallbackGateModuleFlags>` and record the trigger reason and result.
 
-5. `R8` parameterized compliance scan (annotation block parsing):
+4.1 Unified final-gate runner (recommended):
 ```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import sys
-from pathlib import Path
+python3 scripts/run_quality_gates.py --workdir <RepoRoot> \
+  --state-file /tmp/gen-ut-gate-state.json \
+  --tracked-path <ResolvedTestFileSet> \
+  --reuse-gate coverage \
+  --record-gate coverage \
+  --record-gate hard-gate=rule-scan \
+  --gate coverage="./mvnw <GateModuleFlags> -DskipITs -Djacoco.skip=false test jacoco:report" \
+  --gate checkstyle="./mvnw <GateModuleFlags> -Pcheck checkstyle:check -DskipTests" \
+  --gate spotless="./mvnw <GateModuleFlags> -Pcheck spotless:check -DskipTests" \
+  --gate hard-gate="python3 scripts/scan_quality_rules.py --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>"
+```
+If the environment cannot or should not parallelize, rerun the same command with `--serial`.
+Coverage still remains the authoritative source for target-class counters, and the runner does not relax any gate.
 
-name_pattern = re.compile(r'name\s*=\s*"\{0\}"')
-token = "@ParameterizedTest"
-violations = []
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    pos = 0
-    while True:
-        token_pos = source.find(token, pos)
-        if token_pos < 0:
-            break
-        line = source.count("\n", 0, token_pos) + 1
-        cursor = token_pos + len(token)
-        while cursor < len(source) and source[cursor].isspace():
-            cursor += 1
-        if cursor >= len(source) or "(" != source[cursor]:
-            violations.append(f"{path}:{line}")
-            pos = token_pos + len(token)
-            continue
-        depth = 1
-        end = cursor + 1
-        while end < len(source) and depth:
-            if "(" == source[end]:
-                depth += 1
-            elif ")" == source[end]:
-                depth -= 1
-            end += 1
-        if depth or not name_pattern.search(source[cursor + 1:end - 1]):
-            violations.append(f"{path}:{line}")
-        pos = end
-if violations:
-    print("[R8] @ParameterizedTest must use name = \"{0}\"")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
+5. Consolidated hard-gate scan (`R8`, `R14`, `R15-A/B/C/D/E/F/G/H/I/J`):
+```bash
+python3 scripts/scan_quality_rules.py --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
+```
+If the user explicitly requested metadata accessor tests in the current turn:
+```bash
+python3 scripts/scan_quality_rules.py --allow-metadata-accessor-tests --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
+```
+The script consolidates repeated file parsing and git-diff inspection without changing rule accuracy. It also evaluates `R15-C` by comparing the current git status against `/tmp/gen-ut-status-before.txt`.
+For machine-readable automation or quick summaries, the script also supports:
+```bash
+python3 scripts/scan_quality_rules.py --json --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
+python3 scripts/scan_quality_rules.py --summary-only --baseline-before /tmp/gen-ut-status-before.txt <ResolvedTestFileSet>
 ```
 
-5.1 `R15-A` high-fit candidate enforcement scan (shape-based):
-```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import sys
-from pathlib import Path
-from collections import defaultdict
-
-IGNORE = {"assertThat", "assertTrue", "assertFalse", "mock", "when", "verify", "is", "not"}
-
-def extract_block(text, brace_index):
-    depth = 0
-    i = brace_index
-    while i < len(text):
-        if "{" == text[i]:
-            depth += 1
-        elif "}" == text[i]:
-            depth -= 1
-            if 0 == depth:
-                return text[brace_index + 1:i]
-        i += 1
-    return ""
-
-decl = re.compile(r"(?:@Test|@ParameterizedTest(?:\\([^)]*\\))?)\\s+void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
-call = re.compile(r"\\b\\w+\\.(\\w+)\\s*\\(")
-param_targets = defaultdict(set)
-plain_target_count = defaultdict(lambda: defaultdict(int))
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    for match in decl.finditer(source):
-        brace_index = source.find("{", match.start())
-        body = extract_block(source, brace_index)
-        methods = [each for each in call.findall(body) if each not in IGNORE]
-        if not methods:
-            continue
-        target = methods[0]
-        header = source[max(0, match.start() - 160):match.start()]
-        if "@ParameterizedTest" in header:
-            param_targets[path].add(target)
-        else:
-            plain_target_count[path][target] += 1
-violations = []
-for path, each_counter in plain_target_count.items():
-    for method_name, count in each_counter.items():
-        if count >= 3 and method_name not in param_targets[path]:
-            violations.append(f"{path}: method={method_name} nonParameterizedCount={count}")
-if violations:
-    print("[R15-A] high-fit candidate likely exists but no parameterized test found:")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
-```
-
-5.2 `R15-D` parameterized minimum arguments scan:
-```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import sys
-from pathlib import Path
-
-PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*((?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*)void\\s+(assert\\w+)\\s*\\(", re.S)
-METHOD_SOURCE_PATTERN = re.compile(r"@MethodSource(?:\\s*\\(([^)]*)\\))?")
-METHOD_DECL_PATTERN = re.compile(r"(?:private|protected|public)?\\s*(?:static\\s+)?[\\w$<>\\[\\], ?]+\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
-ARGUMENT_ROW_PATTERN = re.compile(r"\\b(?:Arguments\\.of|arguments)\\s*\\(")
-
-def extract_block(text, brace_index):
-    depth = 0
-    index = brace_index
-    while index < len(text):
-        if "{" == text[index]:
-            depth += 1
-        elif "}" == text[index]:
-            depth -= 1
-            if 0 == depth:
-                return text[brace_index + 1:index]
-        index += 1
-    return ""
-
-def parse_method_sources(method_name, annotation_block):
-    resolved = []
-    matches = list(METHOD_SOURCE_PATTERN.finditer(annotation_block))
-    if not matches:
-        return resolved
-    for each in matches:
-        raw = each.group(1)
-        if raw is None or not raw.strip():
-            resolved.append(method_name)
-            continue
-        raw = raw.strip()
-        normalized = re.sub(r"\\bvalue\\s*=\\s*", "", raw)
-        names = re.findall(r'"([^"]+)"', normalized)
-        for name in names:
-            # Ignore external references such as "pkg.Class#method"; they are unresolved in this scan.
-            resolved.append(name.split("#", 1)[-1])
-    return resolved
-
-violations = []
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    method_bodies = {}
-    for match in METHOD_DECL_PATTERN.finditer(source):
-        method_name = match.group(1)
-        brace_index = source.find("{", match.start())
-        if brace_index < 0:
-            continue
-        method_bodies[method_name] = extract_block(source, brace_index)
-    for match in PARAM_METHOD_PATTERN.finditer(source):
-        annotation_block = match.group(1)
-        method_name = match.group(2)
-        line = source.count("\\n", 0, match.start()) + 1
-        source_methods = parse_method_sources(method_name, annotation_block)
-        if not source_methods:
-            violations.append(f"{path}:{line} method={method_name} missing @MethodSource")
-            continue
-        total_rows = 0
-        unresolved = []
-        for provider in source_methods:
-            body = method_bodies.get(provider)
-            if body is None:
-                unresolved.append(provider)
-                continue
-            total_rows += len(ARGUMENT_ROW_PATTERN.findall(body))
-        if unresolved:
-            violations.append(f"{path}:{line} method={method_name} unresolvedProviders={','.join(unresolved)}")
-            continue
-        if total_rows < 3:
-            violations.append(f"{path}:{line} method={method_name} argumentsRows={total_rows}")
-if violations:
-    print("[R15-D] each @ParameterizedTest must have >= 3 Arguments rows from @MethodSource")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
-```
-
-5.3 `R15-E` parameterized first-parameter scan:
-```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import sys
-from pathlib import Path
-
-PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\(([^)]*)\\)", re.S)
-violations = []
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    for match in PARAM_METHOD_PATTERN.finditer(source):
-        method_name = match.group(1)
-        params = match.group(2).strip()
-        line = source.count("\\n", 0, match.start()) + 1
-        if not params:
-            violations.append(f"{path}:{line} method={method_name} missingParameters")
-            continue
-        first_param = params.split(",", 1)[0].strip()
-        normalized = re.sub(r"\\s+", " ", first_param)
-        if "final String name" != normalized:
-            violations.append(f"{path}:{line} method={method_name} firstParam={first_param}")
-if violations:
-    print("[R15-E] each @ParameterizedTest method must declare first parameter as `final String name`")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
-```
-
-5.4 `R15-F` parameterized switch ban scan:
-```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import sys
-from pathlib import Path
-
-PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
-SWITCH_PATTERN = re.compile(r"\\bswitch\\s*\\(")
-
-def extract_block(text, brace_index):
-    depth = 0
-    index = brace_index
-    while index < len(text):
-        if "{" == text[index]:
-            depth += 1
-        elif "}" == text[index]:
-            depth -= 1
-            if 0 == depth:
-                return text[brace_index + 1:index]
-        index += 1
-    return ""
-
-violations = []
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    for match in PARAM_METHOD_PATTERN.finditer(source):
-        method_name = match.group(1)
-        line = source.count("\\n", 0, match.start()) + 1
-        brace_index = source.find("{", match.start())
-        if brace_index < 0:
-            continue
-        body = extract_block(source, brace_index)
-        if SWITCH_PATTERN.search(body):
-            violations.append(f"{path}:{line} method={method_name}")
-if violations:
-    print("[R15-F] @ParameterizedTest method body must not contain switch")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
-```
-
-5.5 `R15-G` parameterized nested-type ban scan (diff-based):
-```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import subprocess
-import sys
-from pathlib import Path
-
-TYPE_DECL_PATTERN = re.compile(r"^\+\s+(?:(?:public|protected|private|static|final|abstract)\s+)*(class|interface|enum|record)\b")
-violations = []
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    if "@ParameterizedTest" not in source:
-        continue
-    diff = subprocess.run(["git", "diff", "-U0", "--", path], check=True, capture_output=True, text=True).stdout.splitlines()
-    for line in diff:
-        if line.startswith("+++") or line.startswith("@@"):
-            continue
-        if TYPE_DECL_PATTERN.search(line):
-            violations.append(f"{path}: {line[1:].strip()}")
-if violations:
-    print("[R15-G] parameterized tests must not introduce nested helper type declarations")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
-```
-
-5.6 `R15-I` parameterized Consumer ban scan:
-```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import sys
-from pathlib import Path
-
-PARAM_METHOD_PATTERN = re.compile(r"@ParameterizedTest(?:\\s*\\([^)]*\\))?\\s*(?:@\\w+(?:\\s*\\([^)]*\\))?\\s*)*void\\s+(assert\\w+)\\s*\\(([^)]*)\\)", re.S)
-METHOD_SOURCE_PATTERN = re.compile(r"@MethodSource(?:\\s*\\(([^)]*)\\))?")
-METHOD_DECL_PATTERN = re.compile(r"(?:private|protected|public)?\\s*(?:static\\s+)?[\\w$<>\\[\\], ?]+\\s+(\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
-CONSUMER_TOKEN_PATTERN = re.compile(r"\\bConsumer\\s*(?:<|\\b)")
-
-def extract_block(text, brace_index):
-    depth = 0
-    index = brace_index
-    while index < len(text):
-        if "{" == text[index]:
-            depth += 1
-        elif "}" == text[index]:
-            depth -= 1
-            if 0 == depth:
-                return text[brace_index + 1:index]
-        index += 1
-    return ""
-
-def parse_method_sources(method_name, source, method_start):
-    header = source[max(0, method_start - 320):method_start]
-    matches = list(METHOD_SOURCE_PATTERN.finditer(header))
-    if not matches:
-        return []
-    resolved = []
-    for each in matches:
-        raw = each.group(1)
-        if raw is None or not raw.strip():
-            resolved.append(method_name)
-            continue
-        normalized = re.sub(r"\\bvalue\\s*=\\s*", "", raw.strip())
-        for name in re.findall(r'"([^"]+)"', normalized):
-            resolved.append(name.split("#", 1)[-1])
-    return resolved
-
-violations = []
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    if "@ParameterizedTest" not in source:
-        continue
-    method_bodies = {}
-    for match in METHOD_DECL_PATTERN.finditer(source):
-        method_name = match.group(1)
-        brace_index = source.find("{", match.start())
-        if brace_index < 0:
-            continue
-        method_bodies[method_name] = extract_block(source, brace_index)
-    for match in PARAM_METHOD_PATTERN.finditer(source):
-        method_name = match.group(1)
-        params = match.group(2)
-        line = source.count("\\n", 0, match.start()) + 1
-        if CONSUMER_TOKEN_PATTERN.search(params):
-            violations.append(f"{path}:{line} method={method_name} reason=consumerInParameterizedMethodSignature")
-        provider_names = parse_method_sources(method_name, source, match.start())
-        for each_provider in provider_names:
-            body = method_bodies.get(each_provider)
-            if body and CONSUMER_TOKEN_PATTERN.search(body):
-                violations.append(f"{path}:{line} method={method_name} provider={each_provider} reason=consumerInMethodSourceArguments")
-if violations:
-    print("[R15-I] parameterized tests must not use Consumer in signatures or @MethodSource argument rows")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
-```
-
-6. `R14` hard-gate scan:
-```bash
-bash -lc '
-BOOLEAN_ASSERTION_BAN_REGEX="assertThat\s*\((?s:.*?)is\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)\s*\)|assertEquals\s*\(\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*,"
-BOOLEAN_ASSERTION_BAN_REGEX+="|assertEquals\s*\((?s:.*?),\s*(?:true|false|Boolean\.TRUE|Boolean\.FALSE)\s*\)"
-if rg -n -U --pcre2 "$BOOLEAN_ASSERTION_BAN_REGEX" <ResolvedTestFileSet>; then
-  echo "[R14] forbidden boolean assertion found"
-  exit 1
-fi'
-```
-
-6.1 `R15-H` boolean control-flow dispatch scan:
-```bash
-bash -lc '
-python3 - <ResolvedTestFileSet> <<'"'"'PY'"'"'
-import re
-import sys
-from pathlib import Path
-
-METHOD_DECL_PATTERN = re.compile(r"(?:@Test|@ParameterizedTest(?:\\s*\\([^)]*\\))?(?:\\s*@\\w+(?:\\s*\\([^)]*\\))?)*)\\s*void\\s+(assert\\w+)\\s*\\([^)]*\\)\\s*\\{", re.S)
-IF_ELSE_PATTERN = re.compile(r"if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}\\s*else\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}|if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}\\s*else\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?\\}", re.S)
-IF_RETURN_PATTERN = re.compile(r"if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertTrue\\s*\\([^;]+\\)\\s*;[\\s\\S]*?return\\s*;[\\s\\S]*?\\}\\s*assertFalse\\s*\\([^;]+\\)\\s*;|if\\s*\\([^)]*\\)\\s*\\{[\\s\\S]*?assertFalse\\s*\\([^;]+\\)\\s*;[\\s\\S]*?return\\s*;[\\s\\S]*?\\}\\s*assertTrue\\s*\\([^;]+\\)\\s*;", re.S)
-
-def extract_block(text, brace_index):
-    depth = 0
-    i = brace_index
-    while i < len(text):
-        if "{" == text[i]:
-            depth += 1
-        elif "}" == text[i]:
-            depth -= 1
-            if 0 == depth:
-                return text[brace_index + 1:i]
-        i += 1
-    return ""
-
-violations = []
-for path in (each for each in sys.argv[1:] if each.endswith(".java")):
-    source = Path(path).read_text(encoding="utf-8")
-    for match in METHOD_DECL_PATTERN.finditer(source):
-        method_name = match.group(1)
-        line = source.count("\\n", 0, match.start()) + 1
-        brace_index = source.find("{", match.start())
-        if brace_index < 0:
-            continue
-        body = extract_block(source, brace_index)
-        if IF_ELSE_PATTERN.search(body) or IF_RETURN_PATTERN.search(body):
-            violations.append(f"{path}:{line} method={method_name}")
-if violations:
-    print("[R15-H] do not dispatch boolean assertions by control flow to choose assertTrue/assertFalse")
-    for each in violations:
-        print(each)
-    sys.exit(1)
-PY
-'
-```
-
-7. `R15-B` metadata accessor test ban scan (skip only when explicitly requested by user):
-```bash
-bash -lc '
-if rg -n -U "@Test(?s:.*?)void\\s+assert\\w*(GetType|GetOrder|GetTypeClass)\\b|assertThat\\((?s:.*?)\\.getType\\(\\)|assertThat\\((?s:.*?)\\.getOrder\\(\\)|assertThat\\((?s:.*?)\\.getTypeClass\\(\\)" <ResolvedTestFileSet>; then
-  echo "[R15-B] metadata accessor test detected without explicit user request"
-  exit 1
-fi'
-```
-
-8. Scope validation:
+6. Scope validation:
 ```bash
 git diff --name-only
-```
-
-9. `R15-C` production-path mutation guard (baseline-based):
-```bash
-bash -lc '
-# capture once at task start:
-# git status --porcelain > /tmp/gen-ut-status-before.txt
-git status --porcelain > /tmp/gen-ut-status-after.txt
-python3 - <<'"'"'PY'"'"'
-from pathlib import Path
-
-before_path = Path("/tmp/gen-ut-status-before.txt")
-after_path = Path("/tmp/gen-ut-status-after.txt")
-before = set(before_path.read_text(encoding="utf-8").splitlines()) if before_path.exists() else set()
-after = set(after_path.read_text(encoding="utf-8").splitlines())
-introduced = sorted(after - before)
-violations = []
-for each in introduced:
-    path = each[3:].strip()
-    if "/src/main/" in path or path.startswith("src/main/"):
-        violations.append(path)
-if violations:
-    print("[R15-C] out-of-scope production path modified:")
-    for each in violations:
-        print(each)
-    raise SystemExit(1)
-PY
-'
 ```
 
 ## Final Output Requirements

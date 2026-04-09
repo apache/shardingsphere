@@ -110,8 +110,13 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement insertStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result = InsertStatement.builder()
+                .databaseType(insertStatement.getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null))
+                .values(insertStatement.getValues())
+                .build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -119,16 +124,16 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
+        InsertStatement.InsertStatementBuilder result = InsertStatement.builder().databaseType(getDatabaseType());
         if (null != ctx.columnNames()) {
             ColumnNamesContext columnNames = ctx.columnNames();
             CollectionValue<ColumnSegment> columnSegments = (CollectionValue<ColumnSegment>) visit(columnNames);
-            result.setInsertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
+            result.insertColumns(new InsertColumnsSegment(columnNames.start.getStartIndex(), columnNames.stop.getStopIndex(), columnSegments.getValue()));
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            result.insertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        result.values(createInsertValuesSegments(ctx.assignmentValues()));
+        return result.build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -141,14 +146,16 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.tableReferences()));
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((TableSegment) visit(ctx.tableReferences()))
+                .setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
@@ -191,13 +198,13 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(getDatabaseType());
-        result.setTable((TableSegment) visit(ctx.singleTableClause()));
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(getDatabaseType()).table((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
@@ -225,28 +232,31 @@ public final class SQL92DMLStatementVisitor extends SQL92StatementVisitor implem
     
     @Override
     public ASTNode visitSelectClause(final SelectClauseContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         if (!ctx.selectSpecification().isEmpty()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
+            projections.setDistinctRow(isDistinct(ctx.selectSpecification().get(0)));
         }
+        TableSegment from = null;
         if (null != ctx.fromClause()) {
-            TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            result.setFrom(tableSegment);
+            from = (TableSegment) visit(ctx.fromClause());
         }
+        WhereSegment where = null;
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            where = (WhereSegment) visit(ctx.whereClause());
         }
+        GroupBySegment groupBy = null;
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            groupBy = (GroupBySegment) visit(ctx.groupByClause());
         }
+        OrderBySegment orderBy = null;
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            orderBy = (OrderBySegment) visit(ctx.orderByClause());
         }
+        HavingSegment having = null;
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            having = (HavingSegment) visit(ctx.havingClause());
         }
-        return result;
+        return SelectStatement.builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).groupBy(groupBy).orderBy(orderBy).having(having).build();
     }
     
     @Override

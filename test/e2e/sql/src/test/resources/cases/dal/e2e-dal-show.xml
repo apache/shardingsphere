@@ -46,4 +46,8 @@
     <test-case db-types="MySQL" scenario-types="db,tbl" sql="SHOW CREATE TABLE t_order">
         <assertion expected-data-file="show_create_table.xml" />
     </test-case>
+
+    <test-case sql="SHOW VARIABLES LIKE 'character_set_client'" db-types="MySQL" scenario-types="db,tbl,dbtbl_with_readwrite_splitting" adapters="proxy">
+        <assertion expected-data-file="show_variables.xml" />
+    </test-case>
 </e2e-test-cases>

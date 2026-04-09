@@ -67,6 +67,9 @@ public final class ColumnDefinitionSegment implements CreateDefinitionSegment {
     @Setter
     private String comment;
     
+    @Setter
+    private String aggType;
+    
     /**
      * Get charset name.
      *

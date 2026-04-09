@@ -116,9 +116,7 @@ class DistSQLQueryProxyBackendHandlerTest {
     }
     
     private ShowTableMetaDataStatement createSqlStatement() {
-        ShowTableMetaDataStatement result = new ShowTableMetaDataStatement(Collections.singleton("t_order"), new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db"))));
-        result.buildAttributes();
-        return result;
+        return new ShowTableMetaDataStatement(Collections.singleton("t_order"), new FromDatabaseSegment(0, new DatabaseSegment(0, 0, new IdentifierValue("foo_db"))));
     }
     
     @SuppressWarnings("unchecked")

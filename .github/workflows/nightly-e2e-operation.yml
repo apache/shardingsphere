@@ -68,6 +68,7 @@ jobs:
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
 
   e2e-operation-job:
@@ -80,7 +81,7 @@ jobs:
       max-parallel: 15
       fail-fast: false
       matrix:
-        java-version: [ 17, 21 ]
+        java-version: [ 21 ]
         operation: ${{ fromJson(github.event.inputs.operation || '[ "transaction", "pipeline", "showprocesslist" ]') }}
         image: [
           { type: "e2e.docker.database.mysql.images", version: "mysql:5.7" },
@@ -108,7 +109,20 @@ jobs:
           - operation: showprocesslist
             image: { type: "e2e.docker.database.opengauss.images", version: "opengauss/opengauss:3.1.0" }
     steps:
-      - uses: actions/checkout@v6.0.1
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: ${{ matrix.java-version }}

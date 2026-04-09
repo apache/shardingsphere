@@ -42,13 +42,14 @@ public final class MySQLShowColumnsStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowColumnsStatement(final DatabaseType databaseType, final SimpleTableSegment table, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
         super(databaseType);
         this.table = table;
         this.fromDatabase = fromDatabase;
         this.filter = filter;
+        attributes = new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
     }
     
     /**
@@ -67,10 +68,5 @@ public final class MySQLShowColumnsStatement extends DALStatement {
      */
     public Optional<ShowFilterSegment> getFilter() {
         return Optional.ofNullable(filter);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new ColumnInResultSetSQLStatementAttribute(1), new FromDatabaseSQLStatementAttribute(fromDatabase), new TableSQLStatementAttribute(table));
     }
 }

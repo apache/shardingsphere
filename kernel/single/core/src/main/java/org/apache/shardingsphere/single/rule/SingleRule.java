@@ -153,7 +153,7 @@ public final class SingleRule implements DatabaseRule {
     public Collection<QualifiedTable> getSingleTables(final Collection<QualifiedTable> qualifiedTables) {
         Collection<QualifiedTable> result = new LinkedList<>();
         for (QualifiedTable each : qualifiedTables) {
-            Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(each.getTableName().toLowerCase(), new LinkedList<>());
+            Collection<DataNode> dataNodes = mutableDataNodeRuleAttribute.findTableDataNodes(each.getTableName());
             if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes)) {
                 result.add(each);
             }
@@ -163,7 +163,7 @@ public final class SingleRule implements DatabaseRule {
     
     private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes) {
         for (DataNode each : dataNodes) {
-            if (qualifiedTable.getSchemaName().equalsIgnoreCase(each.getSchemaName())) {
+            if (qualifiedTable.getSchemaName().equals(each.getSchemaName())) {
                 return true;
             }
         }

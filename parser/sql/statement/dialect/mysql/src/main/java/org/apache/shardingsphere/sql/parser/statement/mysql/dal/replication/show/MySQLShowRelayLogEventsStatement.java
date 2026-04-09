@@ -36,17 +36,13 @@ public final class MySQLShowRelayLogEventsStatement extends DALStatement {
     
     private final String channel;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowRelayLogEventsStatement(final DatabaseType databaseType, final String logName, final LimitSegment limit, final String channel) {
         super(databaseType);
         this.logName = logName;
         this.limit = limit;
         this.channel = channel;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

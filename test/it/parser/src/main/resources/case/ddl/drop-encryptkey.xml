@@ -17,6 +17,27 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-encryptkey sql-case-id="drop_encryptkey" />
-    <drop-encryptkey sql-case-id="drop_encryptkey_my_key" />
+    <drop-encryptkey sql-case-id="drop_encryptkey">
+        <key-name name="key_name" start-index="16" stop-index="23" />
+    </drop-encryptkey>
+
+    <drop-encryptkey sql-case-id="drop_encryptkey_my_key">
+        <key-name name="my_key" start-index="16" stop-index="21" />
+    </drop-encryptkey>
+
+    <drop-encryptkey sql-case-id="drop_encryptkey_if_exists" if-exists="true">
+        <key-name name="my_key" start-index="26" stop-index="31" />
+    </drop-encryptkey>
+
+    <drop-encryptkey sql-case-id="drop_encryptkey_if_exists_with_database" if-exists="true">
+        <key-name name="my_key" start-index="26" stop-index="38">
+            <owner name="testdb" start-index="26" stop-index="31" />
+        </key-name>
+    </drop-encryptkey>
+
+    <drop-encryptkey sql-case-id="drop_encryptkey_with_database">
+        <key-name name="my_key" start-index="16" stop-index="28">
+            <owner name="testdb" start-index="16" stop-index="21" />
+        </key-name>
+    </drop-encryptkey>
 </sql-parser-test-cases>

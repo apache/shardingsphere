@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
@@ -32,30 +32,36 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
  * Drop index statement.
  */
 @Getter
-@Setter
 public final class DropIndexStatement extends DDLStatement {
     
-    private final Collection<IndexSegment> indexes = new LinkedList<>();
+    private final Collection<IndexSegment> indexes;
     
-    private boolean ifExists;
+    private final boolean ifExists;
     
-    private SimpleTableSegment simpleTable;
+    private final SimpleTableSegment simpleTable;
     
-    private AlgorithmTypeSegment algorithmType;
+    private final AlgorithmTypeSegment algorithmType;
     
-    private LockTableSegment lockTable;
+    private final LockTableSegment lockTable;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public DropIndexStatement(final DatabaseType databaseType) {
+    @Builder
+    private DropIndexStatement(final DatabaseType databaseType, final Collection<IndexSegment> indexes, final boolean ifExists,
+                               final SimpleTableSegment simpleTable, final AlgorithmTypeSegment algorithmType, final LockTableSegment lockTable) {
         super(databaseType);
+        this.indexes = null == indexes ? Collections.emptyList() : indexes;
+        this.ifExists = ifExists;
+        this.simpleTable = simpleTable;
+        this.algorithmType = algorithmType;
+        this.lockTable = lockTable;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new DropIndexIndexSQLStatementAttribute());
     }
     
     /**
@@ -83,11 +89,6 @@ public final class DropIndexStatement extends DDLStatement {
      */
     public Optional<LockTableSegment> getLockTable() {
         return Optional.ofNullable(lockTable);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(simpleTable), new DropIndexIndexSQLStatementAttribute());
     }
     
     private class DropIndexIndexSQLStatementAttribute implements IndexSQLStatementAttribute {

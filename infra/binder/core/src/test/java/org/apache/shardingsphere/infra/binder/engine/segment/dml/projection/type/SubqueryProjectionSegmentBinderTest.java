@@ -46,13 +46,13 @@ class SubqueryProjectionSegmentBinderTest {
     
     @Test
     void assertBindWithAlias() {
-        SubquerySegment subquerySegment = new SubquerySegment(0, 0, new SelectStatement(mock(DatabaseType.class)), "SELECT 1");
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, SelectStatement.builder().databaseType(mock(DatabaseType.class)).build(), "SELECT 1");
         SubqueryProjectionSegment projectionSegment = new SubqueryProjectionSegment(subquerySegment, "SELECT 1");
         AliasSegment aliasSegment = new AliasSegment(0, 0, new IdentifierValue("subquery_alias"));
         projectionSegment.setAlias(aliasSegment);
         SQLStatementBinderContext binderContext = mock(SQLStatementBinderContext.class);
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SubquerySegment boundSubquerySegment = new SubquerySegment(0, 0, new SelectStatement(mock(DatabaseType.class)), "SELECT 1");
+        SubquerySegment boundSubquerySegment = new SubquerySegment(0, 0, SelectStatement.builder().databaseType(mock(DatabaseType.class)).build(), "SELECT 1");
         when(SubquerySegmentBinder.bind(subquerySegment, binderContext, tableBinderContexts)).thenReturn(boundSubquerySegment);
         SubqueryProjectionSegment actual = SubqueryProjectionSegmentBinder.bind(projectionSegment, binderContext, tableBinderContexts);
         assertThat(actual.getSubquery(), is(boundSubquerySegment));

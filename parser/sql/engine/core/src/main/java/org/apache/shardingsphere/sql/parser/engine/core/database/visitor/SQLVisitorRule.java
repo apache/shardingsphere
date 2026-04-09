@@ -223,6 +223,10 @@ public enum SQLVisitorRule {
     
     DROP_FILE("DropFile", SQLStatementType.DDL),
     
+    SHOW_FILE("ShowFile", SQLStatementType.DAL),
+    
+    SHOW_ENCRYPT_KEYS("ShowEncryptKeys", SQLStatementType.DAL),
+    
     CREATE_SEQUENCE("CreateSequence", SQLStatementType.DDL),
     
     ALTER_SEQUENCE("AlterSequence", SQLStatementType.DDL),
@@ -291,6 +295,10 @@ public enum SQLVisitorRule {
     
     CREATE_JOB("CreateJob", SQLStatementType.DDL),
     
+    CREATE_STREAMING_JOB("CreateStreamingJob", SQLStatementType.DDL),
+    
+    CANCEL_TASK("CancelTask", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
@@ -302,6 +310,12 @@ public enum SQLVisitorRule {
     STOP_SYNC_JOB("StopSyncJob", SQLStatementType.DDL),
     
     SHOW_SYNC_JOB("ShowSyncJob", SQLStatementType.DAL),
+    
+    ALTER_JOB("AlterJob", SQLStatementType.DDL),
+    
+    DROP_JOB("DropJob", SQLStatementType.DDL),
+    
+    PAUSE_JOB("PauseJob", SQLStatementType.DDL),
     
     ALTER_CATALOG("AlterCatalog", SQLStatementType.DDL),
     
@@ -403,7 +417,11 @@ public enum SQLVisitorRule {
     
     SHOW_DATABASES("ShowDatabases", SQLStatementType.DAL),
     
+    SHOW_DATABASE("ShowDatabase", SQLStatementType.DAL),
+    
     SHOW_TABLES("ShowTables", SQLStatementType.DAL),
+    
+    SHOW_TABLE("ShowTable", SQLStatementType.DAL),
     
     SHOW_EVENTS("ShowEvents", SQLStatementType.DAL),
     
@@ -424,6 +442,8 @@ public enum SQLVisitorRule {
     SHOW_DATA("ShowData", SQLStatementType.DAL),
     
     SHOW_DATA_TYPES("ShowDataTypes", SQLStatementType.DAL),
+    
+    SHOW_TRASH("ShowTrash", SQLStatementType.DAL),
     
     ALTER_SQL_BLOCK_RULE("AlterSqlBlockRule", SQLStatementType.DAL),
     
@@ -446,6 +466,12 @@ public enum SQLVisitorRule {
     STOP_ROUTINE_LOAD("StopRoutineLoad", SQLStatementType.DML),
     
     SHOW_CREATE_ROUTINE_LOAD("ShowCreateRoutineLoad", SQLStatementType.DAL),
+    
+    SHOW_LOAD("ShowLoad", SQLStatementType.DAL),
+    
+    SHOW_CREATE_LOAD("ShowCreateLoad", SQLStatementType.DAL),
+    
+    SHOW_STREAM_LOAD("ShowStreamLoad", SQLStatementType.DAL),
     
     SHOW_CREATE_TABLE("ShowCreateTable", SQLStatementType.DAL),
     
@@ -553,7 +579,25 @@ public enum SQLVisitorRule {
     
     BACKUP("Backup", SQLStatementType.DAL),
     
+    CANCEL_BACKUP("CancelBackup", SQLStatementType.DAL),
+    
+    CANCEL_LOAD_STATEMENT("CancelLoadStatement", SQLStatementType.DAL),
+    
+    SHOW_LOAD_WARNINGS("ShowLoadWarnings", SQLStatementType.DAL),
+    
     DORIS_ALTER_SYSTEM("DorisAlterSystem", SQLStatementType.DAL),
+    
+    ADMIN_SET_REPLICA_STATUS("AdminSetReplicaStatus", SQLStatementType.DAL),
+    
+    ADMIN_SET_REPLICA_VERSION("AdminSetReplicaVersion", SQLStatementType.DAL),
+    
+    ADMIN_COPY_TABLET("AdminCopyTablet", SQLStatementType.DAL),
+    
+    ADMIN_CLEAN_TRASH("AdminCleanTrash", SQLStatementType.DAL),
+    
+    CLEAN_ALL_PROFILE("CleanAllProfile", SQLStatementType.DAL),
+    
+    PLAN_REPLAYER_PLAY("PlanReplayerPlay", SQLStatementType.DAL),
     
     CREATE_SQL_BLOCK_RULE("CreateSqlBlockRule", SQLStatementType.DAL),
     

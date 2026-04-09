@@ -31,15 +31,11 @@ public final class MySQLUseStatement extends DALStatement {
     
     private final String database;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLUseStatement(final DatabaseType databaseType, final String database) {
         super(databaseType);
         this.database = database;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

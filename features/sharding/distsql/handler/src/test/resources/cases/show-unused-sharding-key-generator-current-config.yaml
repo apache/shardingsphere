@@ -17,20 +17,12 @@
 
 rules:
   - !SHARDING
-    tables:
-      t_order:
-        actualDataNodes: ds_${0..1}.t_order_${0..1}
-        tableStrategy:
-          standard:
-            shardingColumn: order_id
-            shardingAlgorithmName: t_order_inline
-        keyGenerateStrategy:
-            column: order_id
-            keyGeneratorName: snowflake
-        auditStrategy:
-          auditorNames:
-            - sharding_key_required_auditor
-          allowHintDisable: true
+    keyGenerateStrategies:
+      order_id_strategy:
+        keyGenerateType: column
+        keyGeneratorName: snowflake
+        logicTable: t_order
+        keyGenerateColumn: order_id
 
     keyGenerators:
       snowflake:

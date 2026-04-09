@@ -90,18 +90,20 @@ class InsertClauseShardingConditionEngineTest {
     
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        IdentifierValue fooTable = new IdentifierValue("foo_tbl");
         when(result.getName()).thenReturn("foo_db");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
         when(schema.containsTable("foo_tbl")).thenReturn(true);
+        when(schema.containsTable(fooTable)).thenReturn(true);
         when(schema.getTable("foo_tbl").findColumnNamesIfNotExistedFrom(new LinkedHashSet<>(Arrays.asList("foo_col_1", "foo_col_3")))).thenReturn(Collections.singleton("foo_col_2"));
+        when(schema.getTable(fooTable).findColumnNamesIfNotExistedFrom(new LinkedHashSet<>(Arrays.asList("foo_col_1", "foo_col_3")))).thenReturn(Collections.singleton("foo_col_2"));
         when(result.getSchema("foo_db")).thenReturn(schema);
         return result;
     }
     
     private InsertStatement createInsertStatement() {
-        InsertStatement result = new InsertStatement(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"));
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl"))));
-        return result;
+        return InsertStatement.builder().databaseType(TypedSPILoader.getService(DatabaseType.class, "FIXTURE"))
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_tbl")))).build();
     }
     
     private InsertValueContext createInsertValueContext() {

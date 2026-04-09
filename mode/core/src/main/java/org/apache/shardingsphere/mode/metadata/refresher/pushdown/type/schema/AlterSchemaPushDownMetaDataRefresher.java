@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.schema.AlterSchemaStatement;
 
@@ -34,11 +35,11 @@ public final class AlterSchemaPushDownMetaDataRefresher implements PushDownMetaD
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) {
-        Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> optional.getValue().toLowerCase());
+        Optional<String> renameSchemaName = sqlStatement.getRenameSchema().map(optional -> SchemaRefreshUtils.getActualSchemaName(database, optional, props));
         if (!renameSchemaName.isPresent()) {
             return;
         }
-        metaDataManagerPersistService.renameSchema(database, sqlStatement.getSchemaName().getValue().toLowerCase(), renameSchemaName.get());
+        metaDataManagerPersistService.renameSchema(database, SchemaRefreshUtils.getActualSchemaName(database, sqlStatement.getSchemaName(), props), renameSchemaName.get());
     }
     
     @Override

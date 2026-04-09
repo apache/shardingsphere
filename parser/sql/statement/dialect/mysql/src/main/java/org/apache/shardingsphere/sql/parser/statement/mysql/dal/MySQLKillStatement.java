@@ -33,16 +33,12 @@ public final class MySQLKillStatement extends DALStatement {
     
     private final String scope;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLKillStatement(final DatabaseType databaseType, final String processId, final String scope) {
         super(databaseType);
         this.processId = processId;
         this.scope = scope;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

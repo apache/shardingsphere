@@ -34,6 +34,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.Postgre
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +51,10 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         PostgreSQLServerPreparedStatement preparedStatement = getPreparedStatement();
-        PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, readParameterSets(preparedStatement.getParameterTypes()));
+        List<List<Object>> parameterSets = readParameterSets(preparedStatement.getParameterTypes());
+        List<Object> sampleParameters = parameterSets.isEmpty() ? Collections.emptyList() : parameterSets.iterator().next();
+        PostgreSQLPreparedStatementParameterTypeResolver.resolveParameterTypes(connectionSession, preparedStatement, sampleParameters);
+        PostgreSQLBatchedStatementsExecutor executor = new PostgreSQLBatchedStatementsExecutor(connectionSession, preparedStatement, parameterSets);
         Collection<DatabasePacket> result = new ArrayList<>(packets.size());
         int totalInserted = executor.executeBatch();
         int executePacketCount = executePacketCount();

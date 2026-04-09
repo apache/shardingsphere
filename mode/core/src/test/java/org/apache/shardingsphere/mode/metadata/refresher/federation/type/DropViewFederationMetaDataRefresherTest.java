@@ -26,7 +26,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -49,18 +48,11 @@ class DropViewFederationMetaDataRefresherTest {
     @Mock
     private ShardingSphereDatabase database;
     
-    private DropViewStatement sqlStatement;
-    
-    @BeforeEach
-    void setUp() {
-        sqlStatement = new DropViewStatement(databaseType);
-    }
-    
     @Test
     void assertRefresh() {
         String schemaName = "foo_schema";
-        sqlStatement.getViews().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
-        sqlStatement.getViews().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_view"))));
+        DropViewStatement sqlStatement = new DropViewStatement(databaseType, Arrays.asList(
+                new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))), new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_view")))), false);
         refresher.refresh(metaDataManagerPersistService, databaseType, database, schemaName, sqlStatement);
         verify(metaDataManagerPersistService).dropViews(database, schemaName, Arrays.asList("foo_view", "bar_view"));
     }

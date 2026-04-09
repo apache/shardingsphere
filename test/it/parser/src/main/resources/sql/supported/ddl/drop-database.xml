@@ -33,4 +33,7 @@
     <sql-case id="drop_database_if_exists_cascade" value="DROP DATABASE IF EXISTS test_db CASCADE" db-types="Hive" />
     <sql-case id="drop_schema_if_exists_restrict" value="DROP SCHEMA IF EXISTS test_schema RESTRICT" db-types="Hive" />
     <sql-case id="drop_schema_if_exists_cascade" value="DROP SCHEMA IF EXISTS test_schema CASCADE" db-types="Hive" />
+    <sql-case id="drop_database_doris_force" value="DROP DATABASE db_test FORCE" db-types="Doris" />
+    <sql-case id="drop_database_doris_if_exists_force" value="DROP DATABASE IF EXISTS db_test FORCE" db-types="Doris" />
+    <sql-case id="drop_database_doris_without_force" value="DROP DATABASE db_test" db-types="Doris" />
 </sql-cases>

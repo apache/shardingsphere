@@ -196,7 +196,6 @@ class DistSQLProxyBackendHandlerFactoryTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         AlterDefaultShadowAlgorithmStatement statement = new AlterDefaultShadowAlgorithmStatement(
                 new ShadowAlgorithmSegment("foo", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value")))));
-        statement.buildAttributes();
         assertThat(new DistSQLUpdateProxyBackendHandler(statement, mock(), connectionSession, contextManager).execute(), isA(UpdateResponseHeader.class));
     }
     

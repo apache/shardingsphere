@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.constraint.ConstraintDefinitionSegment;
@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -45,31 +46,44 @@ import java.util.stream.Collectors;
  * Create table statement.
  */
 @Getter
-@Setter
 public final class CreateTableStatement extends DDLStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private SelectStatement selectStatement;
+    private final SelectStatement selectStatement;
     
-    private boolean ifNotExists;
+    private final boolean ifNotExists;
     
-    private SimpleTableSegment likeTable;
+    private final SimpleTableSegment likeTable;
     
-    private CreateTableOptionSegment createTableOption;
+    private final CreateTableOptionSegment createTableOption;
     
-    private final Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+    private final Collection<ColumnDefinitionSegment> columnDefinitions;
     
-    private final Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
+    private final Collection<ConstraintDefinitionSegment> constraintDefinitions;
     
-    private final List<ColumnSegment> columns = new LinkedList<>();
+    private final List<ColumnSegment> columns;
     
-    private final Collection<RollupSegment> rollups = new LinkedList<>();
+    private final Collection<RollupSegment> rollups;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public CreateTableStatement(final DatabaseType databaseType) {
+    @Builder
+    private CreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table, final SelectStatement selectStatement,
+                                 final boolean ifNotExists, final SimpleTableSegment likeTable, final CreateTableOptionSegment createTableOption,
+                                 final Collection<ColumnDefinitionSegment> columnDefinitions, final Collection<ConstraintDefinitionSegment> constraintDefinitions,
+                                 final List<ColumnSegment> columns, final Collection<RollupSegment> rollups) {
         super(databaseType);
+        this.table = table;
+        this.selectStatement = selectStatement;
+        this.ifNotExists = ifNotExists;
+        this.likeTable = likeTable;
+        this.createTableOption = createTableOption;
+        this.columnDefinitions = null == columnDefinitions ? Collections.emptyList() : columnDefinitions;
+        this.constraintDefinitions = null == constraintDefinitions ? Collections.emptyList() : constraintDefinitions;
+        this.columns = null == columns ? Collections.emptyList() : columns;
+        this.rollups = null == rollups ? Collections.emptyList() : rollups;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new CreateTableConstraintSQLStatementAttribute(), new CreateTableIndexSQLStatementAttribute());
     }
     
     /**
@@ -99,14 +113,11 @@ public final class CreateTableStatement extends DDLStatement {
         return Optional.ofNullable(createTableOption);
     }
     
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(getTables()), new CreateTableConstraintSQLStatementAttribute(), new CreateTableIndexSQLStatementAttribute());
-    }
-    
     private Collection<SimpleTableSegment> getTables() {
         Collection<SimpleTableSegment> result = new LinkedList<>();
-        result.add(table);
+        if (null != table) {
+            result.add(table);
+        }
         for (ColumnDefinitionSegment each : columnDefinitions) {
             result.addAll(each.getReferencedTables());
         }

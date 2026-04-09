@@ -17,9 +17,12 @@
 
 # ---- Adapter dimension ----
 adapter_proxy:
-  - 'proxy/**/src/main/**'
-  - 'distribution/proxy/**'
-  - '!distribution/proxy/src/main/release-docs/**'
+  - 'proxy/backend/core/src/main/**'
+  - 'proxy/bootstrap/src/main/**'
+  - 'proxy/frontend/core/src/main/**'
+  - 'proxy/frontend/spi/src/main/**'
+  - 'kernel/global-clock/**/src/main/**'
+  - 'kernel/time-service/**/src/main/**'
 
 adapter_jdbc:
   - 'jdbc/src/main/**'
@@ -33,29 +36,30 @@ mode_cluster:
   - 'mode/type/cluster/**/src/main/**'
 
 mode_core:
-  - 'mode/core/**/src/main/**'
-  - 'mode/api/**/src/main/**'
+  - 'mode/core/src/main/**'
+  - 'mode/node/src/main/**'
+  - 'mode/spi/src/main/**'
 
 # ---- Database dimension ----
 database_mysql:
-  - 'parser/dialect/mysql/**/src/main/**'
-  - 'database/protocol/mysql/**/src/main/**'
-  - 'proxy/frontend/type/mysql/**/src/main/**'
-  - 'jdbc-dialect/mysql/**/src/main/**'
+  - 'database/**/mysql/**/src/main/**'
+  - 'features/**/mysql/**/src/main/**'
+  - 'infra/**/mysql/**/src/main/**'
+  - 'kernel/**/mysql/**/src/main/**'
+  - 'parser/**/mysql/**/src/main/**'
+  - 'proxy/**/mysql/**/src/main/**'
 
 database_postgresql:
-  - 'parser/dialect/postgresql/**/src/main/**'
-  - 'parser/dialect/opengauss/**/src/main/**'
-  - 'database/protocol/postgresql/**/src/main/**'
-  - 'database/protocol/opengauss/**/src/main/**'
-  - 'proxy/frontend/type/postgresql/**/src/main/**'
-  - 'proxy/frontend/type/opengauss/**/src/main/**'
-  - 'jdbc-dialect/postgresql/**/src/main/**'
-  - 'jdbc-dialect/opengauss/**/src/main/**'
+  - 'database/**/postgresql/**/src/main/**'
+  - 'features/**/postgresql/**/src/main/**'
+  - 'infra/**/postgresql/**/src/main/**'
+  - 'kernel/**/postgresql/**/src/main/**'
+  - 'parser/**/postgresql/**/src/main/**'
+  - 'proxy/**/postgresql/**/src/main/**'
 
 # ---- Feature / Scenario dimension ----
 feature_sharding:
-  - 'features/sharding/**/src/main/**'
+  - 'features/sharding/!(dialect)/**/src/main/**'
 
 feature_encrypt:
   - 'features/encrypt/**/src/main/**'
@@ -73,26 +77,37 @@ feature_broadcast:
   - 'features/broadcast/**/src/main/**'
 
 feature_distsql:
-  - '**/*-distsql*/**/src/main/**'
+  - 'features/**/distsql/**/src/main/**'
+  - 'kernel/!(data-pipeline)/distsql/**/src/main/**'
+  - 'parser/distsql/**/src/main/**'
 
 feature_sql_federation:
   - 'kernel/sql-federation/**/src/main/**'
 
 # ---- Core / Infra (full fallback triggers) ----
 core_infra:
-  - 'infra/**/src/main/**'
-  - 'parser/core/**/src/main/**'
-  - 'database/connector/core/**/src/main/**'
-  - 'database/exception/**/src/main/**'
+  - 'infra/!(binder|rewrite|route)/**/src/main/**'
+  - 'infra/binder/core/src/main/**'
+  - 'infra/rewrite/core/src/main/**'
+  - 'infra/route/core/src/main/**'
+  - 'database/connector/core/src/main/**'
+  - 'database/exception/core/src/main/**'
+  - 'database/protocol/core/src/main/**'
   - 'kernel/authority/**/src/main/**'
-  - 'kernel/logging/**/src/main/**'
-  - 'kernel/metadata/**/src/main/**'
   - 'kernel/single/**/src/main/**'
   - 'kernel/sql-parser/**/src/main/**'
+  - 'kernel/sql-translator/**/src/main/**'
+  - 'kernel/transaction/**/src/main/**'
+  - 'parser/sql/engine/core/src/main/**'
+  - 'parser/sql/spi/src/main/**'
+  - 'parser/sql/statement/core/src/main/**'
 
 # ---- Test framework changes (full fallback triggers) ----
 test_framework:
   - '.github/workflows/e2e-sql.yml'
+  - '.github/workflows/resources/filter/e2e-sql-filters.yml'
+  - '.github/workflows/resources/scripts/e2e-sql/generate-e2e-sql-matrix.sh'
+  - '.github/workflows/resources/scripts/e2e-sql/generate-remaining-matrix.sh'
   - 'test/pom.xml'
   - 'test/e2e/fixture/**'
   - 'test/e2e/env/**'
@@ -100,4 +115,14 @@ test_framework:
 
 # ---- POM changes (full fallback triggers) ----
 pom_changes:
-  - '**/pom.xml'
+  - 'database/**/pom.xml'
+  - 'features/**/pom.xml'
+  - 'infra/**/pom.xml'
+  - 'jdbc/**/pom.xml'
+  - 'jdbc-dialect/**/pom.xml'
+  - 'kernel/**/pom.xml'
+  - 'mode/**/pom.xml'
+  - 'parser/**/pom.xml'
+  - 'proxy/**/pom.xml'
+  - 'test/**/pom.xml'
+  - 'pom.xml'

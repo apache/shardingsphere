@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.SimpleTableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.hint.HintValueContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TableSourceType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ColumnProjectionSegment;
@@ -31,7 +33,10 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.join.Oute
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.ColumnSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -39,6 +44,7 @@ import java.util.Collections;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class OuterJoinExpressionBinderTest {
     
@@ -55,11 +61,17 @@ class OuterJoinExpressionBinderTest {
         column.setOwner(new OwnerSegment(0, 0, new IdentifierValue("t_order")));
         OuterJoinExpression originalExpression = new OuterJoinExpression(0, 0, column, "+", "t_order.order_id(+)");
         OuterJoinExpression actual = OuterJoinExpressionBinder.bind(
-                originalExpression, SegmentType.PREDICATE, mock(SQLStatementBinderContext.class), tableBinderContexts, LinkedHashMultimap.create());
+                originalExpression, SegmentType.PREDICATE, createBinderContext(), tableBinderContexts, LinkedHashMultimap.create());
         assertThat(actual.getStartIndex(), is(originalExpression.getStartIndex()));
         assertThat(actual.getStopIndex(), is(originalExpression.getStopIndex()));
         assertThat(actual.getColumnName().getIdentifier().getValue(), is("order_id"));
         assertThat(actual.getJoinOperator(), is("+"));
         assertThat(actual.getText(), is("t_order.order_id(+)"));
+    }
+    
+    private SQLStatementBinderContext createBinderContext() {
+        SelectStatement selectStatement = mock(SelectStatement.class);
+        when(selectStatement.getDatabaseType()).thenReturn(TypedSPILoader.getService(DatabaseType.class, "MySQL"));
+        return new SQLStatementBinderContext(mock(ShardingSphereMetaData.class), "foo_db", new HintValueContext(), selectStatement);
     }
 }

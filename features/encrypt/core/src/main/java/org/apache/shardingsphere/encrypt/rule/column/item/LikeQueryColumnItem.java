@@ -34,6 +34,7 @@ public final class LikeQueryColumnItem {
     @Getter
     private final String name;
     
+    @Getter
     private final EncryptAlgorithm encryptor;
     
     /**

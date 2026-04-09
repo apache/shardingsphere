@@ -20,7 +20,7 @@
     <test-case dist-sql="SHOW SHARDING KEY GENERATORS" current-rule-config-yaml-file="cases/show-sharding-key-generator-current-config.yaml">
         <expected-query-result-rows>
             <expected-query-result-row>
-                snowflake|SNOWFLAKE|
+                snowflake|SNOWFLAKE|{"worker-id":1}
             </expected-query-result-row>
         </expected-query-result-rows>
     </test-case>

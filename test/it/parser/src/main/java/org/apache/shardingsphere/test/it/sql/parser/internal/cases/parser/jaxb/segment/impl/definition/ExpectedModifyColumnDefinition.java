@@ -20,6 +20,8 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.index.ExpectedIndex;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -35,4 +37,10 @@ public final class ExpectedModifyColumnDefinition extends AbstractExpectedSQLSeg
     
     @XmlElement(name = "column-position")
     private ExpectedColumnPosition columnPosition;
+    
+    @XmlElement(name = "rollup-index")
+    private ExpectedIndex rollupIndex;
+    
+    @XmlElement(name = "properties")
+    private ExpectedProperties properties;
 }

@@ -241,7 +241,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -266,13 +266,14 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         } else {
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -282,7 +283,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
         }
         return result;
     }
@@ -293,22 +294,16 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             return visit(ctx.queryPrimary());
         }
         if (null != ctx.queryExpressionBody()) {
-            SelectStatement result = new SelectStatement(getDatabaseType());
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody().start.getStartIndex(), ctx.queryExpressionBody().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionBody()), getOriginalText(ctx.queryExpressionBody()));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
-            return result;
+            return SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getSelect().getProjections())
+                    .from(left.getSelect().getFrom().orElse(null)).combine(createCombineSegment(ctx.combineClause(), left)).build();
         }
         if (null != ctx.queryExpressionParens()) {
-            SelectStatement result = new SelectStatement(getDatabaseType());
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionParens().start.getStartIndex(), ctx.queryExpressionParens().stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionParens()), getOriginalText(ctx.queryExpressionParens()));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            result.setCombine(createCombineSegment(ctx.combineClause(), left));
-            return result;
+            return SelectStatement.builder().databaseType(getDatabaseType()).projections(left.getSelect().getProjections())
+                    .from(left.getSelect().getFrom().orElse(null)).combine(createCombineSegment(ctx.combineClause(), left)).build();
         }
         return visit(ctx.queryExpressionParens());
     }
@@ -327,47 +322,46 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         if (null != ctx.selectSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
+            projections.setDistinctRow(isDistinct(ctx));
         }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(getDatabaseType()).projections(projections);
         if (null != ctx.fromClause()) {
             if (null != ctx.fromClause().tableReferences()) {
                 TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-                result.setFrom(tableSource);
+                selectStatementBuilder.from(tableSource);
             }
             if (null != ctx.fromClause().DUAL()) {
                 TableSegment tableSource = new SimpleTableSegment(new TableNameSegment(ctx.fromClause().DUAL().getSymbol().getStartIndex(),
                         ctx.fromClause().DUAL().getSymbol().getStopIndex(), new IdentifierValue(ctx.fromClause().DUAL().getText())));
-                result.setFrom(tableSource);
+                selectStatementBuilder.from(tableSource);
             }
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            selectStatementBuilder.groupBy((GroupBySegment) visit(ctx.groupByClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.windowClause()) {
-            result.setWindow((WindowSegment) visit(ctx.windowClause()));
+            selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
     public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
         valuesExpression.getRowConstructorList().addAll(createRowConstructorList(ctx.rowConstructorList()));
-        result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
-        result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
-        return result;
+        ProjectionsSegment projections = new ProjectionsSegment(startIndex, stopIndex);
+        projections.getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
+        return SelectStatement.builder().databaseType(getDatabaseType()).projections(projections).build();
     }
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
@@ -380,14 +374,11 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
-        SelectStatement result = new SelectStatement(getDatabaseType());
         if (null != ctx.TABLE()) {
-            result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
-                    new IdentifierValue(ctx.tableName().getText()))));
-        } else {
-            result.setFrom((SimpleTableSegment) visit(ctx.tableName()));
+            return SelectStatement.builder().databaseType(getDatabaseType()).from(new SimpleTableSegment(
+                    new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText())))).build();
         }
-        return result;
+        return SelectStatement.builder().databaseType(getDatabaseType()).from((SimpleTableSegment) visit(ctx.tableName())).build();
     }
     
     @Override
@@ -880,19 +871,28 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.insertingValuesIntoTables()) {
             return visit(ctx.insertingValuesIntoTables());
         }
-        InsertStatement result;
+        InsertStatement insertStatement;
         if (null != ctx.insertValuesClause()) {
-            result = (InsertStatement) visit(ctx.insertValuesClause());
+            insertStatement = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertSelectClause()) {
-            result = (InsertStatement) visit(ctx.insertSelectClause());
+            insertStatement = (InsertStatement) visit(ctx.insertSelectClause());
         } else {
-            result = new InsertStatement(getDatabaseType());
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+            insertStatement = InsertStatement.builder().databaseType(getDatabaseType()).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
         }
-        if (null != ctx.onDuplicateKeyClause()) {
-            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
-        }
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertStatement.getSetAssignment().orElse(null))
+                .onDuplicateKeyColumns(null == ctx.onDuplicateKeyClause() ? insertStatement.getOnDuplicateKeyColumns().orElse(null) : (OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()))
+                .valueReference(insertStatement.getValueReference().orElse(null)).returning(insertStatement.getReturning().orElse(null))
+                .output(insertStatement.getOutput().orElse(null)).with(insertStatement.getWith().orElse(null))
+                .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null)).multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null)).where(insertStatement.getWhere().orElse(null))
+                .exec(insertStatement.getExec().orElse(null)).withTableHint(insertStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertStatement.getRowSetFunction().orElse(null)).ignore(insertStatement.isIgnore()).replace(insertStatement.isReplace())
+                .values(new LinkedList<>(insertStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertStatement.getVariableNames());
+        result.getComments().addAll(insertStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -945,8 +945,6 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             single.addParameterMarkers(getParameterMarkerSegments());
             return single;
         }
-        InsertStatement result = new InsertStatement(getDatabaseType());
-        result.setMultiTableInsertType(MultiTableInsertType.ALL);
         MultiTableInsertIntoSegment multiTableInsertInto = new MultiTableInsertIntoSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         for (HiveInsertStatementContext each : insertStatements) {
@@ -955,37 +953,30 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
             }
             insertStmt.addParameterMarkers(getParameterMarkerSegments());
-            insertStmt.buildAttributes();
             multiTableInsertInto.getInsertStatements().add(insertStmt);
         }
-        result.setMultiTableInsertInto(multiTableInsertInto);
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).multiTableInsertType(MultiTableInsertType.ALL).multiTableInsertInto(multiTableInsertInto).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     private void setFromForSelect(final SubquerySegment subquery, final TableSegment sourceTable) {
         Optional.ofNullable(subquery.getSelect())
-                .ifPresent(selectStmt -> selectStmt.setFrom(sourceTable));
+                .ifPresent(selectStmt -> subquery.setSelect(createSelectStatementBuilder(selectStmt).from(sourceTable).build()));
     }
     
     private InsertStatement createHiveInsertStatement(final TableNameContext tableName, final SelectContext select, final int startIndex) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(tableName));
-        result.setInsertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList()));
-        result.setInsertSelect(createInsertSelectSegment(select));
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(tableName))
+                .insertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList())).insertSelect(createInsertSelectSegment(select)).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitHiveInsertStatement(final HiveInsertStatementContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex(), Collections.emptyList()));
-        if (null != ctx.select()) {
-            result.setInsertSelect(createInsertSelectSegment(ctx.select()));
-        }
-        return result;
+        return InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(new InsertColumnsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex(), Collections.emptyList()))
+                .insertSelect(null == ctx.select() ? null : createInsertSelectSegment(ctx.select())).build();
     }
     
     @Override
@@ -1013,8 +1004,6 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
             single.addParameterMarkers(getParameterMarkerSegments());
             return single;
         }
-        InsertStatement result = new InsertStatement(getDatabaseType());
-        result.setMultiTableInsertType(MultiTableInsertType.ALL);
         MultiTableInsertIntoSegment multiTableInsertInto = new MultiTableInsertIntoSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex());
         for (InsertOverwriteStandardSyntaxContext each : statements) {
@@ -1023,10 +1012,9 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
                 insertStmt.getInsertSelect().ifPresent(subquery -> setFromForSelect(subquery, sourceTable));
             }
             insertStmt.addParameterMarkers(getParameterMarkerSegments());
-            insertStmt.buildAttributes();
             multiTableInsertInto.getInsertStatements().add(insertStmt);
         }
-        result.setMultiTableInsertInto(multiTableInsertInto);
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).multiTableInsertType(MultiTableInsertType.ALL).multiTableInsertInto(multiTableInsertInto).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -1037,17 +1025,28 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     }
     
     private InsertStatement createHiveInsertStatementForDirectory(final SelectContext select, final int startIndex) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
-        result.setInsertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList()));
-        result.setInsertSelect(createInsertSelectSegment(select));
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType())
+                .insertColumns(new InsertColumnsSegment(startIndex, startIndex, Collections.emptyList())).insertSelect(createInsertSelectSegment(select)).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
     
     @Override
     public ASTNode visitInsertingValuesIntoTables(final InsertingValuesIntoTablesContext ctx) {
-        InsertStatement result = (InsertStatement) visit(ctx.insertValuesClause());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement insertStatement = (InsertStatement) visit(ctx.insertValuesClause());
+        InsertStatement result = InsertStatement.builder().databaseType(getDatabaseType()).table((SimpleTableSegment) visit(ctx.tableName()))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertStatement.getValueReference().orElse(null)).returning(insertStatement.getReturning().orElse(null))
+                .output(insertStatement.getOutput().orElse(null)).with(insertStatement.getWith().orElse(null))
+                .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null)).multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null)).where(insertStatement.getWhere().orElse(null))
+                .exec(insertStatement.getExec().orElse(null)).withTableHint(insertStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertStatement.getRowSetFunction().orElse(null)).ignore(insertStatement.isIgnore()).replace(insertStatement.isReplace())
+                .values(new LinkedList<>(insertStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertStatement.getVariableNames());
+        result.getComments().addAll(insertStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -1064,34 +1063,32 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.setInsertSelect(createInsertSelectSegment(ctx));
-        return result;
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).insertSelect(createInsertSelectSegment(ctx)).build();
     }
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(getDatabaseType());
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        return InsertStatement.builder().databaseType(getDatabaseType()).insertColumns(insertColumns).values(createInsertValuesSegments(ctx.assignmentValues())).build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -1121,21 +1118,23 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(getDatabaseType());
         TableSegment tableSegment = (TableSegment) visit(ctx.tableReferences());
-        result.setTable(tableSegment);
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(getDatabaseType())
+                .table(tableSegment)
+                .setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            result.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
@@ -1181,29 +1180,29 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(getDatabaseType());
-        result.setTable(null == ctx.multipleTablesClause() ? (TableSegment) visit(ctx.singleTableClause()) : (TableSegment) visit(ctx.multipleTablesClause()));
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder()
+                .databaseType(getDatabaseType())
+                .table(null == ctx.multipleTablesClause() ? (TableSegment) visit(ctx.singleTableClause()) : (TableSegment) visit(ctx.multipleTablesClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            result.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
     public ASTNode visitMerge(final MergeContext ctx) {
-        MergeStatement result = new MergeStatement(getDatabaseType());
         TableSegment target = (TableSegment) visit(ctx.tableName(0));
         if (null != ctx.tableNameAs(0)) {
             target.setAlias((AliasSegment) visit(ctx.tableNameAs(0).alias()));
         }
-        result.setTarget(target);
         TableSegment source;
         if (null != ctx.tableName(1)) {
             source = (TableSegment) visit(ctx.tableName(1));
@@ -1215,27 +1214,27 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.tableNameAs(1)) {
             source.setAlias((AliasSegment) visit(ctx.tableNameAs(1).alias()));
         }
-        result.setSource(source);
         ExpressionWithParamsSegment onExpression = new ExpressionWithParamsSegment(ctx.expr().start.getStartIndex(), ctx.expr().stop.getStopIndex(), (ExpressionSegment) visit(ctx.expr()));
-        result.setExpression(onExpression);
+        Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
         for (MergeWhenClauseContext each : ctx.mergeWhenClause()) {
             int start = each.getStart().getStartIndex();
             int stop = each.getStop().getStopIndex();
             MergeWhenAndThenSegment seg = new MergeWhenAndThenSegment(start, stop, getOriginalText(each));
             if (null != each.UPDATE()) {
-                UpdateStatement upd = new UpdateStatement(getDatabaseType());
-                upd.setSetAssignment((SetAssignmentSegment) visit(each.setAssignmentsClause()));
+                UpdateStatement upd = UpdateStatement.builder().databaseType(getDatabaseType()).setAssignment((SetAssignmentSegment) visit(each.setAssignmentsClause())).build();
                 seg.setUpdate(upd);
             }
             if (null != each.INSERT()) {
-                InsertStatement ins = new InsertStatement(getDatabaseType());
+                Collection<InsertValuesSegment> values = new LinkedList<>();
                 if (null != each.insertValuesClause().assignmentValues()) {
-                    ins.getValues().addAll(createInsertValuesSegments(each.insertValuesClause().assignmentValues()));
+                    values.addAll(createInsertValuesSegments(each.insertValuesClause().assignmentValues()));
                 }
+                InsertStatement ins = InsertStatement.builder().databaseType(getDatabaseType()).values(values).build();
                 seg.setInsert(ins);
             }
-            result.getWhenAndThens().add(seg);
+            whenAndThens.add(seg);
         }
+        MergeStatement result = MergeStatement.builder().databaseType(getDatabaseType()).target(target).source(source).expression(onExpression).whenAndThens(whenAndThens).build();
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -1273,7 +1272,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         if (null != ctx.queryExpression()) {
             result = (SelectStatement) visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
-                result.setLock((LockSegment) visit(ctx.lockClauseList()));
+                result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
             }
         } else if (null != ctx.selectWithInto()) {
             result = (SelectStatement) visit(ctx.selectWithInto());
@@ -1574,7 +1573,7 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
         for (OrderByItemContext each : ctx.orderByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP());
     }
     
     @Override
@@ -1640,5 +1639,17 @@ public final class HiveDMLStatementVisitor extends HiveStatementVisitor implemen
     @Override
     public ASTNode visitLoadDataStatement(final LoadDataStatementContext ctx) {
         return new MySQLLoadDataStatement(getDatabaseType(), (SimpleTableSegment) visit(ctx.tableName()));
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
 }

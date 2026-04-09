@@ -28,7 +28,9 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.datat
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -37,12 +39,10 @@ import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
+import java.util.stream.Stream;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.startsWith;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -74,18 +74,26 @@ class PostgreSQLMetaDataLoaderTest {
     
     private static final String LOAD_ALL_ROLE_TABLE_GRANTS_SQL = "SELECT table_name FROM information_schema.role_table_grants";
     
-    private static final String VIEW_META_DATA_SQL = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ('tbl')";
+    private static final String LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL = LOAD_ALL_ROLE_TABLE_GRANTS_SQL + " WHERE table_name IN ('tbl')";
+    
+    private static final String VIEW_META_DATA_SQL_WITHOUT_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ()";
+    
+    private static final String VIEW_META_DATA_SQL_WITH_TABLES = "SELECT table_schema, table_name FROM information_schema.views WHERE table_schema IN ('public') and table_name IN ('tbl')";
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
-    @Test
-    void assertLoadWithoutTables() throws SQLException {
+    private final DialectMetaDataLoader metaDataLoader = DatabaseTypedSPILoader.getService(DialectMetaDataLoader.class, databaseType);
+    
+    @SuppressWarnings({"JDBCResourceOpenedButNotSafelyClosed", "resource"})
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadArguments")
+    void assertLoad(final String name, final Collection<String> actualTableNames, final String tableMetaDataSQL, final String roleTableGrantsSQL,
+                    final String viewMetaDataSQL, final boolean hasView, final String secondColumnDefault) throws SQLException {
         DataSource dataSource = mockDataSource();
         ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
         when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
-        ResultSet tableResultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITHOUT_TABLES).executeQuery()).thenReturn(tableResultSet);
+        ResultSet tableResultSet = mockTableMetaDataResultSet(secondColumnDefault);
+        when(dataSource.getConnection().prepareStatement(tableMetaDataSQL).executeQuery()).thenReturn(tableResultSet);
         ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
@@ -95,47 +103,11 @@ class PostgreSQLMetaDataLoaderTest {
         ResultSet constraintResultSet = mockConstraintMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
         ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
-        when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
+        when(dataSource.getConnection().prepareStatement(roleTableGrantsSQL).executeQuery()).thenReturn(roleTableGrantsResultSet);
+        ResultSet viewResultSet = mockViewMetaDataResultSet(hasView);
+        when(dataSource.getConnection().prepareStatement(viewMetaDataSQL).executeQuery()).thenReturn(viewResultSet);
         DataTypeRegistry.load(dataSource, "PostgreSQL");
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.emptyList(), "foo_ds", dataSource, databaseType, "sharding_db")));
-    }
-    
-    private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("TABLE_SCHEM")).thenReturn("public");
-        return result;
-    }
-    
-    @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
-    @Test
-    void assertLoadWithTables() throws SQLException {
-        DataSource dataSource = mockDataSource();
-        ResultSet schemaResultSet = mockSchemaMetaDataResultSet();
-        when(dataSource.getConnection().getMetaData().getSchemas()).thenReturn(schemaResultSet);
-        ResultSet tableResultSet = mockTableMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(TABLE_META_DATA_SQL_WITH_TABLES).executeQuery()).thenReturn(tableResultSet);
-        ResultSet primaryKeyResultSet = mockPrimaryKeyMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(PRIMARY_KEY_META_DATA_SQL).executeQuery()).thenReturn(primaryKeyResultSet);
-        ResultSet indexResultSet = mockIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(BASIC_INDEX_META_DATA_SQL).executeQuery()).thenReturn(indexResultSet);
-        ResultSet advanceIndexResultSet = mockAdvanceIndexMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(ADVANCE_INDEX_META_DATA_SQL).executeQuery()).thenReturn(advanceIndexResultSet);
-        ResultSet constraintResultSet = mockConstraintMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(BASIC_CONSTRAINT_META_DATA_SQL).executeQuery()).thenReturn(constraintResultSet);
-        ResultSet roleTableGrantsResultSet = mockRoleTableGrantsResultSet();
-        when(dataSource.getConnection().prepareStatement(startsWith(LOAD_ALL_ROLE_TABLE_GRANTS_SQL)).executeQuery()).thenReturn(roleTableGrantsResultSet);
-        ResultSet viewResultSet = mockViewMetaDataResultSet();
-        when(dataSource.getConnection().prepareStatement(VIEW_META_DATA_SQL).executeQuery()).thenReturn(viewResultSet);
-        DataTypeRegistry.load(dataSource, "PostgreSQL");
-        assertTableMetaDataMap(getDialectTableMetaDataLoader().load(new MetaDataLoaderMaterial(Collections.singletonList("tbl"), "foo_ds", dataSource, databaseType, "sharding_db")));
-    }
-    
-    private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("table_name")).thenReturn("tbl");
-        return result;
+        assertTableMetaDataMap(metaDataLoader.load(new MetaDataLoaderMaterial(actualTableNames, "foo_ds", dataSource, databaseType, "sharding_db")));
     }
     
     @SuppressWarnings("JDBCResourceOpenedButNotSafelyClosed")
@@ -143,6 +115,13 @@ class PostgreSQLMetaDataLoaderTest {
         DataSource result = mock(DataSource.class, RETURNS_DEEP_STUBS);
         ResultSet typeInfoResultSet = mockTypeInfoResultSet();
         when(result.getConnection().getMetaData().getTypeInfo()).thenReturn(typeInfoResultSet);
+        return result;
+    }
+    
+    private ResultSet mockSchemaMetaDataResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_SCHEM")).thenReturn("public");
         return result;
     }
     
@@ -154,7 +133,7 @@ class PostgreSQLMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockTableMetaDataResultSet() throws SQLException {
+    private ResultSet mockTableMetaDataResultSet(final String secondColumnDefault) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, false);
         when(result.getString("table_name")).thenReturn("ignored_tbl", "tbl", "tbl");
@@ -162,7 +141,7 @@ class PostgreSQLMetaDataLoaderTest {
         when(result.getInt("ordinal_position")).thenReturn(1, 2, 3);
         when(result.getString("data_type")).thenReturn("integer", "character varying");
         when(result.getString("udt_name")).thenReturn("int4", "varchar");
-        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", null);
+        when(result.getString("column_default")).thenReturn("nextval('id_seq'::regclass)", secondColumnDefault);
         when(result.getString("table_schema")).thenReturn("public", "public");
         when(result.getString("is_nullable")).thenReturn("NO", "YES");
         return result;
@@ -197,14 +176,6 @@ class PostgreSQLMetaDataLoaderTest {
         return result;
     }
     
-    private ResultSet mockViewMetaDataResultSet() throws SQLException {
-        ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, false);
-        when(result.getString("table_schema")).thenReturn("public");
-        when(result.getString("table_name")).thenReturn("tbl");
-        return result;
-    }
-    
     private ResultSet mockConstraintMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, false);
@@ -215,10 +186,19 @@ class PostgreSQLMetaDataLoaderTest {
         return result;
     }
     
-    private DialectMetaDataLoader getDialectTableMetaDataLoader() {
-        Optional<DialectMetaDataLoader> result = DatabaseTypedSPILoader.findService(DialectMetaDataLoader.class, TypedSPILoader.getService(DatabaseType.class, "PostgreSQL"));
-        assertTrue(result.isPresent());
-        return result.get();
+    private ResultSet mockRoleTableGrantsResultSet() throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("table_name")).thenReturn("tbl");
+        return result;
+    }
+    
+    private ResultSet mockViewMetaDataResultSet(final boolean hasView) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(hasView, false);
+        when(result.getString("table_schema")).thenReturn("public");
+        when(result.getString("table_name")).thenReturn("tbl");
+        return result;
     }
     
     private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
@@ -258,5 +238,14 @@ class PostgreSQLMetaDataLoaderTest {
     private void assertConstraintMetaData(final ConstraintMetaData actual, final ConstraintMetaData expected) {
         assertThat(actual.getName(), is(expected.getName()));
         assertThat(actual.getReferencedTableName(), is(expected.getReferencedTableName()));
+    }
+    
+    private static Stream<Arguments> loadArguments() {
+        return Stream.of(
+                Arguments.of("without tables", Collections.emptyList(), TABLE_META_DATA_SQL_WITHOUT_TABLES, LOAD_ALL_ROLE_TABLE_GRANTS_SQL, VIEW_META_DATA_SQL_WITHOUT_TABLES, false, null),
+                Arguments.of("with view table", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
+                        VIEW_META_DATA_SQL_WITH_TABLES, true, null),
+                Arguments.of("with non generated default", Collections.singletonList("tbl"), TABLE_META_DATA_SQL_WITH_TABLES, LOAD_FILTERED_ROLE_TABLE_GRANTS_SQL,
+                        VIEW_META_DATA_SQL_WITH_TABLES, false, "'anonymous'"));
     }
 }

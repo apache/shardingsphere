@@ -37,10 +37,9 @@ import org.mockito.quality.Strictness;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -94,7 +93,7 @@ class DatabaseRuleConfigurationCheckEngineTest {
                 .thenReturn(Collections.singletonMap(FixtureRuleConfiguration.class, checker));
         Collection<String> requiredDataSources = Arrays.asList("foo_ds", "bar_ds");
         when(checker.getRequiredDataSourceNames(any())).thenReturn(requiredDataSources);
-        when(resourceMetaData.getNotExistedDataSources(requiredDataSources)).thenReturn(new LinkedList<>(Collections.singleton("foo_ds")));
+        when(resourceMetaData.getNotExistedDataSources(requiredDataSources)).thenReturn(Collections.singleton("foo_ds"));
         when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("bar_ds", mock(StorageUnit.class, RETURNS_DEEP_STUBS)));
         DataSourceMapperRuleAttribute dataSourceMapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
         when(dataSourceMapperRuleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("foo_ds", Collections.singleton("some_logic_name")));

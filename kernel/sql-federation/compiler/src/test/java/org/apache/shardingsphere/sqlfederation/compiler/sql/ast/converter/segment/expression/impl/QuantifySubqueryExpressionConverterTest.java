@@ -34,10 +34,9 @@ class QuantifySubqueryExpressionConverterTest {
     
     @Test
     void assertConvertQuantifySubqueryExpression() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0));
-        selectStatement.setProjections(projections);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).build();
         SubquerySegment subquerySegment = new SubquerySegment(0, 0, selectStatement, "sub");
         QuantifySubqueryExpression expression = new QuantifySubqueryExpression(0, 0, subquerySegment, "ALL");
         assertNotNull(QuantifySubqueryExpressionConverter.convert(expression));

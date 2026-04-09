@@ -56,15 +56,16 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForSelectStatementWithFrom() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t"))))
+                .build();
         assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException("")), is(Optional.empty()));
     }
     
     @Test
     void assertGetSaneQueryResultForSelectStatementWithoutFrom() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.transaction_read_only", new VariableSegment(0, 0, "transaction_read_only")));
         selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "unknown_variable"));
         Optional<ExecuteResult> actual = new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException(""));
@@ -80,8 +81,7 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForSelectNoProjectionsStatementWithoutFrom() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(new ProjectionsSegment(0, 0));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).build();
         assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException("")), is(Optional.empty()));
     }
     
@@ -106,7 +106,7 @@ class MySQLDialectSaneQueryResultEngineTest {
     
     @Test
     void assertGetSaneQueryResultForOtherStatements() {
-        assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(new InsertStatement(databaseType), new SQLException("")), is(Optional.empty()));
+        assertThat(new MySQLDialectSaneQueryResultEngine().getSaneQueryResult(InsertStatement.builder().databaseType(databaseType).build(), new SQLException("")), is(Optional.empty()));
     }
     
     @Test

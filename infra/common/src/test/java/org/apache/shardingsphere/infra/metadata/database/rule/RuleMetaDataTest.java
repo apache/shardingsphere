@@ -26,12 +26,16 @@ import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMappe
 import org.apache.shardingsphere.infra.rule.scope.GlobalRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -45,27 +49,20 @@ import static org.mockito.Mockito.when;
 
 class RuleMetaDataTest {
     
+    private RuleMetaDataShardingSphereRuleFixture fixtureRule;
+    
+    private ShardingSphereRule dataSourceMapperRule;
+    
+    private ShardingSphereRule dataNodeRule;
+    
     private RuleMetaData ruleMetaData;
     
     @BeforeEach
     void setUp() {
-        ruleMetaData = new RuleMetaData(Arrays.asList(new RuleMetaDataShardingSphereRuleFixture(), mockDataSourceMapperRule(), mockDataNodeRule()));
-    }
-    
-    private ShardingSphereRule mockDataSourceMapperRule() {
-        ShardingSphereRule result = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
-        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getDataSourceMapper().values()).thenReturn(Collections.singletonList(Collections.singletonList("foo_ds")));
-        when(result.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
-        return result;
-    }
-    
-    private ShardingSphereRule mockDataNodeRule() {
-        ShardingSphereRule result = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
-        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class, RETURNS_DEEP_STUBS);
-        when(ruleAttribute.getAllDataNodes().values()).thenReturn(Collections.singleton(Collections.singleton(new DataNode("foo_db.foo_tbl"))));
-        when(result.getAttributes().findAttribute(DataNodeRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
-        return result;
+        fixtureRule = new RuleMetaDataShardingSphereRuleFixture();
+        dataSourceMapperRule = mockDataSourceMapperRule("foo_ds");
+        dataNodeRule = mockDataNodeRule();
+        ruleMetaData = new RuleMetaData(Arrays.asList(fixtureRule, dataSourceMapperRule, dataNodeRule));
     }
     
     @Test
@@ -79,23 +76,32 @@ class RuleMetaDataTest {
     }
     
     @Test
-    void assertFindSingleRule() {
-        assertTrue(ruleMetaData.findSingleRule(RuleMetaDataShardingSphereRuleFixture.class).isPresent());
+    void assertFindRulesWithCachedRules() {
+        ruleMetaData.findSingleRule(RuleMetaDataShardingSphereRuleFixture.class);
+        assertThat(ruleMetaData.findRules(RuleMetaDataShardingSphereRuleFixture.class).size(), is(1));
     }
     
-    @Test
-    void assertFindSingleRuleFailed() {
-        assertFalse(ruleMetaData.findSingleRule(mock(GlobalRule.class).getClass()).isPresent());
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("findSingleRuleArguments")
+    void assertFindSingleRule(final String name, final boolean cached, final Class<? extends ShardingSphereRule> ruleClass, final boolean expectedPresent) {
+        if (cached) {
+            assertThat(ruleMetaData.getSingleRule(RuleMetaDataShardingSphereRuleFixture.class), isA(RuleMetaDataShardingSphereRuleFixture.class));
+        }
+        assertThat(ruleMetaData.findSingleRule(ruleClass).isPresent(), is(expectedPresent));
     }
     
-    @Test
-    void assertGetSingleRule() {
-        assertThat(ruleMetaData.getSingleRule(RuleMetaDataShardingSphereRuleFixture.class), isA(RuleMetaDataShardingSphereRuleFixture.class));
-    }
-    
-    @Test
-    void assertGetSingleRuleFailed() {
-        assertThrows(IllegalStateException.class, () -> ruleMetaData.getSingleRule(mock(GlobalRule.class).getClass()));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getSingleRuleArguments")
+    void assertGetSingleRule(final String name, final boolean cached,
+                             final Class<? extends ShardingSphereRule> ruleClass, final Class<?> expectedType, final Class<? extends Throwable> expectedExceptionClass) {
+        if (cached) {
+            assertTrue(ruleMetaData.findSingleRule(RuleMetaDataShardingSphereRuleFixture.class).isPresent());
+        }
+        if (null == expectedExceptionClass) {
+            assertThat(ruleMetaData.getSingleRule(ruleClass), isA(expectedType));
+        } else {
+            assertThat(assertThrows(expectedExceptionClass, () -> ruleMetaData.getSingleRule(ruleClass)), isA(expectedExceptionClass));
+        }
     }
     
     @Test
@@ -108,8 +114,8 @@ class RuleMetaDataTest {
     
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenRuleClassAddedForExistingStorageUnit() {
-        ShardingSphereRule firstRule = mockRuleMetaDataShardingSphereRuleFixture("shared_ds");
-        ShardingSphereRule secondRule = mockShardingSphereRule();
+        ShardingSphereRule firstRule = mockDataSourceMapperRuleAttributeRule(RuleMetaDataShardingSphereRuleFixture.class, "shared_ds");
+        ShardingSphereRule secondRule = mockDataSourceMapperRuleAttributeRule(ShardingSphereRule.class, "shared_ds");
         Map<String, Collection<Class<? extends ShardingSphereRule>>> actual = new RuleMetaData(Arrays.asList(firstRule, secondRule)).getInUsedStorageUnitNameAndRulesMap();
         Collection<Class<? extends ShardingSphereRule>> ruleClasses = actual.get("shared_ds");
         assertThat(ruleClasses.size(), is(2));
@@ -119,17 +125,9 @@ class RuleMetaDataTest {
     
     @Test
     void assertGetInUsedStorageUnitNameAndRulesMapWhenDuplicatedRuleClassSkippedForExistingStorageUnit() {
-        ShardingSphereRule duplicatedRule = mockRuleMetaDataShardingSphereRuleFixture("dup_ds");
+        ShardingSphereRule duplicatedRule = mockDataSourceMapperRuleAttributeRule(RuleMetaDataShardingSphereRuleFixture.class, "dup_ds");
         RuleMetaData metaData = new RuleMetaData(Arrays.asList(duplicatedRule, duplicatedRule));
         assertThat(metaData.getInUsedStorageUnitNameAndRulesMap().get("dup_ds").size(), is(1));
-    }
-    
-    private RuleMetaDataShardingSphereRuleFixture mockRuleMetaDataShardingSphereRuleFixture(final String storageUnitName) {
-        return mockDataSourceMapperRuleAttributeRule(RuleMetaDataShardingSphereRuleFixture.class, storageUnitName);
-    }
-    
-    private ShardingSphereRule mockShardingSphereRule() {
-        return mockDataSourceMapperRuleAttributeRule(ShardingSphereRule.class, "shared_ds");
     }
     
     private <T extends ShardingSphereRule> T mockDataSourceMapperRuleAttributeRule(final Class<T> type, final String storageUnitName) {
@@ -148,6 +146,12 @@ class RuleMetaDataTest {
     }
     
     @Test
+    void assertGetAttributesWithCachedAttributes() {
+        ruleMetaData.findAttribute(DataSourceMapperRuleAttribute.class);
+        assertThat(ruleMetaData.getAttributes(DataSourceMapperRuleAttribute.class).size(), is(1));
+    }
+    
+    @Test
     void assertFindAttribute() {
         Optional<DataSourceMapperRuleAttribute> actual = ruleMetaData.findAttribute(DataSourceMapperRuleAttribute.class);
         assertTrue(actual.isPresent());
@@ -156,7 +160,85 @@ class RuleMetaDataTest {
     
     @Test
     void assertFindEmptyAttribute() {
-        RuleMetaData metaData = new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS)));
-        assertFalse(metaData.findAttribute(DataSourceMapperRuleAttribute.class).isPresent());
+        assertFalse(new RuleMetaData(Collections.singleton(mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS))).findAttribute(DataSourceMapperRuleAttribute.class).isPresent());
+    }
+    
+    @Test
+    void assertInvalidateCacheWhenRuleAdded() {
+        ruleMetaData.findSingleRule(RuleMetaDataShardingSphereRuleFixture.class);
+        ruleMetaData.getRules().add(new RuleMetaDataShardingSphereRuleFixture());
+        assertThat(ruleMetaData.findRules(RuleMetaDataShardingSphereRuleFixture.class).size(), is(2));
+    }
+    
+    @Test
+    void assertInvalidateCacheWhenRulesAdded() {
+        ruleMetaData.findAttribute(DataSourceMapperRuleAttribute.class);
+        ruleMetaData.getRules().add(mockDataSourceMapperRule("bar_ds"));
+        assertThat(ruleMetaData.getAttributes(DataSourceMapperRuleAttribute.class).size(), is(2));
+    }
+    
+    @Test
+    void assertInvalidateCacheWhenRuleRemoved() {
+        ruleMetaData.findSingleRule(RuleMetaDataShardingSphereRuleFixture.class);
+        ruleMetaData.getRules().remove(fixtureRule);
+        assertTrue(ruleMetaData.findRules(RuleMetaDataShardingSphereRuleFixture.class).isEmpty());
+    }
+    
+    @Test
+    void assertInvalidateCacheWhenRulesRemoved() {
+        ruleMetaData.findAttribute(DataSourceMapperRuleAttribute.class);
+        ruleMetaData.getRules().removeAll(Collections.singleton(dataSourceMapperRule));
+        assertTrue(ruleMetaData.getAttributes(DataSourceMapperRuleAttribute.class).isEmpty());
+    }
+    
+    @Test
+    void assertInvalidateCacheWhenRulesRemovedByPredicate() {
+        ruleMetaData.getInUsedStorageUnitNameAndRulesMap();
+        ruleMetaData.getRules().removeIf(each -> each == dataNodeRule);
+        assertThat(ruleMetaData.getInUsedStorageUnitNameAndRulesMap().size(), is(1));
+    }
+    
+    @Test
+    void assertInvalidateCacheWhenRulesRetained() {
+        ruleMetaData.findAttribute(DataNodeRuleAttribute.class);
+        ruleMetaData.getRules().retainAll(Collections.singleton(dataSourceMapperRule));
+        assertTrue(ruleMetaData.getAttributes(DataNodeRuleAttribute.class).isEmpty());
+    }
+    
+    @Test
+    void assertInvalidateCacheWhenRulesCleared() {
+        ruleMetaData.findSingleRule(RuleMetaDataShardingSphereRuleFixture.class);
+        ruleMetaData.getRules().clear();
+        assertTrue(ruleMetaData.getConfigurations().isEmpty());
+    }
+    
+    private ShardingSphereRule mockDataSourceMapperRule(final String storageUnitName) {
+        ShardingSphereRule result = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
+        DataSourceMapperRuleAttribute ruleAttribute = mock(DataSourceMapperRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getDataSourceMapper().values()).thenReturn(Collections.singletonList(Collections.singletonList(storageUnitName)));
+        when(result.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
+        return result;
+    }
+    
+    private ShardingSphereRule mockDataNodeRule() {
+        ShardingSphereRule result = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
+        DataNodeRuleAttribute ruleAttribute = mock(DataNodeRuleAttribute.class, RETURNS_DEEP_STUBS);
+        when(ruleAttribute.getAllDataNodes().values()).thenReturn(Collections.singleton(Collections.singleton(new DataNode("foo_db.foo_tbl"))));
+        when(result.getAttributes().findAttribute(DataNodeRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
+        return result;
+    }
+    
+    private static Stream<Arguments> findSingleRuleArguments() {
+        return Stream.of(
+                Arguments.of("single rule present", false, RuleMetaDataShardingSphereRuleFixture.class, true),
+                Arguments.of("single rule cached", true, RuleMetaDataShardingSphereRuleFixture.class, true),
+                Arguments.of("single rule absent", false, GlobalRule.class, false));
+    }
+    
+    private static Stream<Arguments> getSingleRuleArguments() {
+        return Stream.of(
+                Arguments.of("single rule present", false, RuleMetaDataShardingSphereRuleFixture.class, RuleMetaDataShardingSphereRuleFixture.class, null),
+                Arguments.of("single rule cached", true, RuleMetaDataShardingSphereRuleFixture.class, RuleMetaDataShardingSphereRuleFixture.class, null),
+                Arguments.of("single rule absent", false, GlobalRule.class, null, IllegalStateException.class));
     }
 }

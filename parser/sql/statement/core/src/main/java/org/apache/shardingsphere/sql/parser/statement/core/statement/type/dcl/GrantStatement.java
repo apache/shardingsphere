@@ -24,7 +24,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Grant statement.
@@ -32,16 +31,13 @@ import java.util.LinkedList;
 @Getter
 public class GrantStatement extends DCLStatement {
     
-    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> tables;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public GrantStatement(final DatabaseType databaseType) {
+    public GrantStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
         super(databaseType);
-    }
-    
-    @Override
-    public void buildAttributes() {
+        this.tables = tables;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

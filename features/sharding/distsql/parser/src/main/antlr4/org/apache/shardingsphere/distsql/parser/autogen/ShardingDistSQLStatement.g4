@@ -21,13 +21,18 @@ import Symbol, RDLStatement, RQLStatement, RALStatement;
 
 execute
     : (createShardingTableRule
+    | createShardingKeyGenerator
+    | createShardingKeyGenerateStrategy
     | createDefaultShardingStrategy
     | createShardingTableReferenceRule
+    | alterShardingKeyGenerator
+    | alterShardingKeyGenerateStrategy
     | alterShardingTableRule
     | alterShardingTableReferenceRule
     | dropShardingTableRule
     | dropShardingTableReferenceRule
     | dropShardingAlgorithm
+    | dropShardingKeyGenerateStrategy
     | showShardingTableRulesUsedAlgorithm
     | showShardingTableRulesUsedKeyGenerator
     | showShardingTableRulesUsedAuditor
@@ -35,6 +40,7 @@ execute
     | showShardingTableReferenceRules
     | showShardingAlgorithms
     | showShardingTableNodes
+    | showShardingKeyGenerateStrategies
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
     | showShardingAuditors

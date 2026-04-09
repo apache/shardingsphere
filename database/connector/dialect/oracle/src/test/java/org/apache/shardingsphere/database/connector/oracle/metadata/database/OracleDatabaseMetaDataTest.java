@@ -28,6 +28,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleDataTypeOption;
+import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleFunctionOption;
 import org.apache.shardingsphere.database.connector.oracle.metadata.database.option.OracleSchemaOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
@@ -111,5 +112,10 @@ class OracleDatabaseMetaDataTest {
         assertTrue(actualAlterTableOption.isPresent());
         assertTrue(actualAlterTableOption.get().isSupportMergeDropColumns());
         assertTrue(actualAlterTableOption.get().isContainsParenthesesOnMergeDropColumns());
+    }
+    
+    @Test
+    void assertGetFunctionOption() {
+        assertThat(dialectDatabaseMetaData.getFunctionOption(), isA(OracleFunctionOption.class));
     }
 }

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionWithParamsSegment;
@@ -39,35 +39,50 @@ import java.util.Optional;
  * Merge statement.
  */
 @Getter
-@Setter
 public final class MergeStatement extends DMLStatement {
     
-    private TableSegment target;
+    private final TableSegment target;
     
-    private TableSegment source;
+    private final TableSegment source;
     
-    private ExpressionWithParamsSegment expression;
+    private final ExpressionWithParamsSegment expression;
     
-    private UpdateStatement update;
+    private final UpdateStatement update;
     
-    private InsertStatement insert;
+    private final InsertStatement insert;
     
-    private WithSegment with;
+    private final WithSegment with;
     
-    private WithTableHintSegment withTableHint;
+    private final WithTableHintSegment withTableHint;
     
-    private Collection<IndexSegment> indexes = new LinkedList<>();
+    private final Collection<IndexSegment> indexes;
     
-    private OutputSegment output;
+    private final OutputSegment output;
     
-    private OptionHintSegment optionHint;
+    private final OptionHintSegment optionHint;
     
-    private Collection<MergeWhenAndThenSegment> whenAndThens = new LinkedList<>();
+    private final Collection<MergeWhenAndThenSegment> whenAndThens;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public MergeStatement(final DatabaseType databaseType) {
+    @Builder
+    private MergeStatement(final DatabaseType databaseType, final TableSegment target, final TableSegment source, final ExpressionWithParamsSegment expression,
+                           final UpdateStatement update, final InsertStatement insert, final WithSegment with, final WithTableHintSegment withTableHint,
+                           final Collection<IndexSegment> indexes, final OutputSegment output, final OptionHintSegment optionHint,
+                           final Collection<MergeWhenAndThenSegment> whenAndThens) {
         super(databaseType);
+        this.target = target;
+        this.source = source;
+        this.expression = expression;
+        this.update = update;
+        this.insert = insert;
+        this.with = with;
+        this.withTableHint = withTableHint;
+        this.indexes = null == indexes ? new LinkedList<>() : indexes;
+        this.output = output;
+        this.optionHint = optionHint;
+        this.whenAndThens = null == whenAndThens ? new LinkedList<>() : whenAndThens;
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
     
     /**
@@ -122,10 +137,5 @@ public final class MergeStatement extends DMLStatement {
      */
     public Optional<OptionHintSegment> getOptionHint() {
         return Optional.ofNullable(optionHint);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

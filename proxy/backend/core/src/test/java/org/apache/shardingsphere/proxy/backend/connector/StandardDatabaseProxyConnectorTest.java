@@ -236,7 +236,7 @@ class StandardDatabaseProxyConnectorTest {
     void assertExecuteWithImplicitCommitTransaction() throws SQLException {
         when(databaseConnectionManager.getConnectionSession().isAutoCommit()).thenReturn(true);
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("XA"));
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new InsertStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(InsertStatement.builder().databaseType(databaseType).build());
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
@@ -265,7 +265,7 @@ class StandardDatabaseProxyConnectorTest {
     void assertExecuteWithImplicitCommitTransactionAndException() throws SQLException {
         when(databaseConnectionManager.getConnectionSession().isAutoCommit()).thenReturn(true);
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getTransactionContext().getTransactionType()).thenReturn(Optional.of("XA"));
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new InsertStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(InsertStatement.builder().databaseType(databaseType).build());
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
         setField(engine, "proxySQLExecutor", proxySQLExecutor);
@@ -292,8 +292,7 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertExecuteWithUpdateResultAndAccumulate() throws SQLException {
         InsertStatementContext sqlStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.buildAttributes();
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         when(sqlStatementContext.getSqlStatement()).thenReturn(insertStatement);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
@@ -364,7 +363,6 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertConstructWithCloseAllCursorStatement() {
         CloseStatement closeStatement = new CloseStatement(databaseType, null, true);
-        closeStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = createSQLStatementContext(closeStatement);
         ConnectionContext connectionContext = mock(ConnectionContext.class, RETURNS_DEEP_STUBS);
         when(databaseConnectionManager.getConnectionSession().getConnectionContext()).thenReturn(connectionContext);
@@ -376,7 +374,6 @@ class StandardDatabaseProxyConnectorTest {
     void assertConstructWithNotExistedCursorHeldSQLStatementContext() {
         CursorNameSegment cursorNameSegment = new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor"));
         CloseStatement closeStatement = new CloseStatement(databaseType, cursorNameSegment, false);
-        closeStatement.buildAttributes();
         CursorHeldSQLStatementContext sqlStatementContext = new CursorHeldSQLStatementContext(closeStatement);
         when(databaseConnectionManager.getConnectionSession().getConnectionContext().getCursorContext()).thenReturn(new CursorConnectionContext());
         assertNotNull(assertThrows(IllegalArgumentException.class, () -> createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()))));
@@ -386,7 +383,6 @@ class StandardDatabaseProxyConnectorTest {
     void assertConstructWithCursorHeldSQLStatementContext() {
         CursorNameSegment cursorNameSegment = new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor"));
         CloseStatement closeStatement = new CloseStatement(databaseType, cursorNameSegment, false);
-        closeStatement.buildAttributes();
         CursorHeldSQLStatementContext sqlStatementContext = new CursorHeldSQLStatementContext(closeStatement);
         CursorConnectionContext cursorConnectionContext = new CursorConnectionContext();
         CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
@@ -401,7 +397,6 @@ class StandardDatabaseProxyConnectorTest {
     void assertConstructWithCursorStatementContext() {
         CursorNameSegment cursorNameSegment = new CursorNameSegment(0, 0, new IdentifierValue("foo_cursor"));
         CursorStatement cursorStatement = new CursorStatement(databaseType, cursorNameSegment, mock(SelectStatement.class));
-        cursorStatement.buildAttributes();
         CursorStatementContext sqlStatementContext = mock(CursorStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getSqlStatement()).thenReturn(cursorStatement);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
@@ -415,8 +410,7 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertConstructWithSelectStatementContextWithoutDerivedProjections() {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.buildAttributes();
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
@@ -425,7 +419,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithFederation() throws SQLException {
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SelectStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());
         QueryContext queryContext = createQueryContext(sqlStatementContext, mockDatabase());
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         SQLFederationEngine sqlFederationEngine = mock(SQLFederationEngine.class);
@@ -450,7 +444,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithFederationAndNotNullDatabase() throws SQLException {
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new SelectStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(SelectStatement.builder().databaseType(databaseType).build());
         QueryContext queryContext = createQueryContext(sqlStatementContext, mockDatabase());
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         SQLFederationEngine sqlFederationEngine = mock(SQLFederationEngine.class);
@@ -539,8 +533,7 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertExecuteWithDerivedQueryResult() throws SQLException {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.buildAttributes();
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
@@ -586,7 +579,6 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertExecuteWithImplicitCommit() throws SQLException {
         CloseStatement closeStatement = new CloseStatement(databaseType, null, false);
-        closeStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = createSQLStatementContext(closeStatement);
         QueryContext queryContext = createQueryContext(sqlStatementContext, mockDatabase());
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
@@ -617,7 +609,7 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithUpdateResultAndNoAccumulate() throws SQLException {
-        SQLStatementContext sqlStatementContext = createSQLStatementContext(new InsertStatement(databaseType));
+        SQLStatementContext sqlStatementContext = createSQLStatementContext(InsertStatement.builder().databaseType(databaseType).build());
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singleton("t_order"));
         ShardingSphereDatabase database = mockDatabase();
         when(database.getRuleMetaData().getAttributes(DataNodeRuleAttribute.class)).thenReturn(Collections.singleton(mock(DataNodeRuleAttribute.class)));
@@ -644,25 +636,25 @@ class StandardDatabaseProxyConnectorTest {
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenSingleExecutionUnit() throws SQLException {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", false, 1), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenLocalTransaction() throws SQLException {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(insertStatement, "LOCAL", false, 2), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenAlreadyInTransaction() throws SQLException {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(insertStatement, "XA", true, 2), isA(UpdateResponseHeader.class));
     }
     
     @Test
     void assertExecuteWithoutImplicitCommitWhenSelectStatement() throws SQLException {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         assertThat(executeWithImplicitCommitCondition(selectStatement, "XA", false, 2), isA(UpdateResponseHeader.class));
     }
     
@@ -675,7 +667,6 @@ class StandardDatabaseProxyConnectorTest {
     @Test
     void assertExecuteWithoutImplicitCommitForDDLWhenOptionDisabled() throws SQLException {
         CloseStatement closeStatement = new CloseStatement(databaseType, null, false);
-        closeStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = createSQLStatementContext(closeStatement);
         ProxySQLExecutor proxySQLExecutor = mock(ProxySQLExecutor.class, RETURNS_DEEP_STUBS);
         DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
@@ -888,7 +879,6 @@ class StandardDatabaseProxyConnectorTest {
     }
     
     private SQLStatementContext createSQLStatementContext(final SQLStatement sqlStatement) {
-        sqlStatement.buildAttributes();
         SQLStatementContext result = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(result.getSqlStatement()).thenReturn(sqlStatement);
         when(result.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());

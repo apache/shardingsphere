@@ -65,8 +65,10 @@ class SubqueryTableConverterTest {
     
     @Test
     void assertConvertBuildsExplicitTableWhenProjectionsAbsent() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_from"))));
+        SelectStatement selectStatement = SelectStatement.builder()
+                .databaseType(databaseType)
+                .from(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_from"))))
+                .build();
         SubqueryTableSegment segment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, "sub"));
         segment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         SqlBasicCall actual = (SqlBasicCall) SubqueryTableConverter.convert(segment).orElse(null);
@@ -80,9 +82,8 @@ class SubqueryTableConverterTest {
     
     @Test
     void assertConvertDelegatesSelectConversionWhenProjectionsPresent() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
-        selectStatement.setProjections(projections);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projections).build();
         when(DistinctConverter.convert(projections)).thenReturn(Optional.empty());
         when(ProjectionsConverter.convert(projections)).thenReturn(Optional.of(new SqlNodeList(Collections.singletonList(mock(SqlNode.class)), SqlParserPos.ZERO)));
         SubqueryTableSegment segment = new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, selectStatement, "sub"));

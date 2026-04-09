@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.jdbc.adapter;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
@@ -40,6 +41,7 @@ import java.util.Collection;
 /**
  * Adapter for {@code Statement}.
  */
+@Slf4j
 @Getter
 public abstract class AbstractStatementAdapter extends WrapperAdapter implements Statement {
     
@@ -51,6 +53,8 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     private int fetchSize;
     
     private int fetchDirection;
+    
+    private int maxRows;
     
     private boolean closeOnCompletion;
     
@@ -123,12 +127,13 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     // TODO Confirm MaxRows for multiple databases is need special handle. eg: 10 statements maybe MaxRows / 10
     @Override
     public final int getMaxRows() throws SQLException {
-        return getRoutedStatements().isEmpty() ? -1 : getRoutedStatements().iterator().next().getMaxRows();
+        return getRoutedStatements().isEmpty() ? maxRows : getRoutedStatements().iterator().next().getMaxRows();
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void setMaxRows(final int max) throws SQLException {
+        maxRows = max;
         getMethodInvocationRecorder().record("setMaxRows", statement -> statement.setMaxRows(max));
         forceExecuteTemplate.execute((Collection) getRoutedStatements(), statement -> statement.setMaxRows(max));
     }
@@ -225,24 +230,77 @@ public abstract class AbstractStatementAdapter extends WrapperAdapter implements
     public final void clearWarnings() {
     }
     
-    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public final void close() throws SQLException {
         closed = true;
         try {
-            forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
-            closeExecutor();
-            if (null != getStatementManager()) {
-                getStatementManager().close();
-                Connection connection = getConnection();
-                if (connection instanceof ShardingSphereConnection) {
-                    ShardingSphereConnection logicalConnection = (ShardingSphereConnection) connection;
-                    logicalConnection.getStatementManagers().remove(getStatementManager());
-                    handleAutoCommitAfterExecution(logicalConnection);
-                }
-            }
+            safeCloseRoutedStatements();
+            safeCloseExecutor();
+            safeCloseAndUnregisterStatementManager();
         } finally {
             getRoutedStatements().clear();
+        }
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private void safeCloseRoutedStatements() {
+        try {
+            forceExecuteTemplate.execute((Collection) getRoutedStatements(), Statement::close);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close routed statements failed", ex);
+        }
+    }
+    
+    private void safeCloseExecutor() {
+        try {
+            closeExecutor();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close executor failed", ex);
+        }
+    }
+    
+    private void safeCloseAndUnregisterStatementManager() {
+        StatementManager statementManager = getStatementManager();
+        if (null == statementManager) {
+            return;
+        }
+        safeCloseStatementManager(statementManager);
+        try {
+            Connection connection = getConnection();
+            if (!(connection instanceof ShardingSphereConnection)) {
+                return;
+            }
+            ShardingSphereConnection logicalConnection = (ShardingSphereConnection) connection;
+            logicalConnection.unregisterStatementManager(statementManager);
+            safeHandleAutoCommitAfterExecution(logicalConnection);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close and unregister statement manager failed", ex);
+        }
+    }
+    
+    private void safeCloseStatementManager(final StatementManager statementManager) {
+        try {
+            statementManager.close();
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Close manager failed", ex);
+        }
+    }
+    
+    private void safeHandleAutoCommitAfterExecution(final ShardingSphereConnection logicalConnection) {
+        try {
+            handleAutoCommitAfterExecution(logicalConnection);
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            log.warn("Handle auto commit after execution failed", ex);
         }
     }
     

@@ -941,6 +941,16 @@
         </filter>
     </show-databases>
 
+    <show-databases sql-case-id="show_databases_doris" />
+
+    <show-databases sql-case-id="show_databases_doris_from_catalog" catalog-name="hms_catalog" />
+
+    <show-databases sql-case-id="show_databases_doris_with_like">
+        <filter start-index="15" stop-index="27">
+            <like pattern="infor%" start-delimiter="'" end-delimiter="'" start-index="15" stop-index="27" />
+        </filter>
+    </show-databases>
+
     <show sql-case-id="show_connectors" />
 
     <show-tables sql-case-id="show_tables_basic" />
@@ -1238,4 +1248,20 @@
             <owner name="demo" start-index="24" stop-index="27" />
         </table>
     </show-create-table>
+
+    <doris-show-database sql-case-id="show_database_by_id" database-id="10396" />
+
+    <doris-show-table sql-case-id="show_table_by_id" table-id="2261121" />
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_simple" />
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_with_database">
+        <database name="demo" start-index="24" stop-index="27" />
+    </doris-show-load-warnings>
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_with_label" condition-type="LABEL" condition-value="load_demo_20210112">
+        <database name="demo" start-index="24" stop-index="27" />
+    </doris-show-load-warnings>
+
+    <doris-show-load-warnings sql-case-id="doris_show_load_warnings_with_load_job_id" condition-type="LOAD_JOB_ID" condition-value="20001" />
 </sql-parser-test-cases>

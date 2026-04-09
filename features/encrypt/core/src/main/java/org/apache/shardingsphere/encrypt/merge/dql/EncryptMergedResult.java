@@ -58,8 +58,8 @@ public final class EncryptMergedResult extends DecoratorMergedResult {
         }
         String originalTableName = columnSegmentBoundInfo.get().getOriginalTable().getValue();
         String originalColumnName = columnSegmentBoundInfo.get().getOriginalColumn().getValue();
-        ShardingSphereDatabase database = metaData.containsDatabase(columnSegmentBoundInfo.get().getOriginalDatabase().getValue())
-                ? metaData.getDatabase(columnSegmentBoundInfo.get().getOriginalDatabase().getValue())
+        ShardingSphereDatabase database = metaData.containsDatabase(columnSegmentBoundInfo.get().getOriginalDatabase())
+                ? metaData.getDatabase(columnSegmentBoundInfo.get().getOriginalDatabase())
                 : this.database;
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
         if (!rule.isPresent() || !rule.get().findEncryptTable(originalTableName).map(optional -> optional.isEncryptColumn(originalColumnName)).orElse(false)) {

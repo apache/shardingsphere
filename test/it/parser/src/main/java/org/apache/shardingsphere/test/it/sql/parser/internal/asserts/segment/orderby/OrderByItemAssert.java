@@ -120,6 +120,10 @@ public final class OrderByItemAssert {
     private static void assertIndexOrderByItem(final SQLCaseAssertContext assertContext,
                                                final IndexOrderByItemSegment actual, final ExpectedIndexOrderByItem expected, final String type) {
         assertThat(assertContext.getText(String.format("%s item index assertion error: ", type)), actual.getColumnIndex(), is(expected.getIndex()));
+        if (null != expected.getColumnBound()) {
+            assertTrue(actual.getBoundColumn().isPresent(), assertContext.getText("Actual bound column should exist."));
+            ColumnBoundAssert.assertIs(assertContext, actual.getBoundColumn().get().getColumnBoundInfo(), expected.getColumnBound());
+        }
         SQLSegmentAssert.assertIs(assertContext, actual, expected);
     }
     

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.InsertValuesSegment;
@@ -50,53 +50,80 @@ import java.util.Optional;
  * Insert statement.
  */
 @Getter
-@Setter
 public final class InsertStatement extends DMLStatement {
     
-    private SimpleTableSegment table;
+    private final SimpleTableSegment table;
     
-    private InsertColumnsSegment insertColumns;
+    private final InsertColumnsSegment insertColumns;
     
-    private SubquerySegment insertSelect;
+    private final SubquerySegment insertSelect;
     
-    private SetAssignmentSegment setAssignment;
+    private final SetAssignmentSegment setAssignment;
     
-    private OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
+    private final OnDuplicateKeyColumnsSegment onDuplicateKeyColumns;
     
-    private ValueReferenceSegment valueReference;
+    private final ValueReferenceSegment valueReference;
     
-    private ReturningSegment returning;
+    private final ReturningSegment returning;
     
-    private OutputSegment output;
+    private final OutputSegment output;
     
-    private WithSegment with;
+    private final WithSegment with;
     
-    private MultiTableInsertType multiTableInsertType;
+    private final MultiTableInsertType multiTableInsertType;
     
-    private MultiTableInsertIntoSegment multiTableInsertInto;
+    private final MultiTableInsertIntoSegment multiTableInsertInto;
     
-    private MultiTableConditionalIntoSegment multiTableConditionalInto;
+    private final MultiTableConditionalIntoSegment multiTableConditionalInto;
     
-    private WhereSegment where;
+    private final WhereSegment where;
     
-    private ExecSegment exec;
+    private final ExecSegment exec;
     
-    private WithTableHintSegment withTableHint;
+    private final WithTableHintSegment withTableHint;
     
-    private FunctionSegment rowSetFunction;
+    private final FunctionSegment rowSetFunction;
     
-    private boolean ignore;
+    private final boolean ignore;
     
-    private boolean replace;
+    private final boolean replace;
     
-    private final Collection<InsertValuesSegment> values = new LinkedList<>();
+    private final Collection<InsertValuesSegment> values;
     
-    private final Collection<ColumnSegment> derivedInsertColumns = new LinkedList<>();
+    private final Collection<ColumnSegment> derivedInsertColumns;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public InsertStatement(final DatabaseType databaseType) {
+    @Builder
+    private InsertStatement(final DatabaseType databaseType, final SimpleTableSegment table, final InsertColumnsSegment insertColumns,
+                            final SubquerySegment insertSelect, final SetAssignmentSegment setAssignment, final OnDuplicateKeyColumnsSegment onDuplicateKeyColumns,
+                            final ValueReferenceSegment valueReference, final ReturningSegment returning, final OutputSegment output, final WithSegment with,
+                            final MultiTableInsertType multiTableInsertType, final MultiTableInsertIntoSegment multiTableInsertInto,
+                            final MultiTableConditionalIntoSegment multiTableConditionalInto, final WhereSegment where, final ExecSegment exec,
+                            final WithTableHintSegment withTableHint, final FunctionSegment rowSetFunction, final boolean ignore, final boolean replace,
+                            final Collection<InsertValuesSegment> values, final Collection<ColumnSegment> derivedInsertColumns) {
         super(databaseType);
+        this.table = table;
+        this.insertColumns = insertColumns;
+        this.insertSelect = insertSelect;
+        this.setAssignment = setAssignment;
+        this.onDuplicateKeyColumns = onDuplicateKeyColumns;
+        this.valueReference = valueReference;
+        this.returning = returning;
+        this.output = output;
+        this.with = with;
+        this.multiTableInsertType = multiTableInsertType;
+        this.multiTableInsertInto = multiTableInsertInto;
+        this.multiTableConditionalInto = multiTableConditionalInto;
+        this.where = where;
+        this.exec = exec;
+        this.withTableHint = withTableHint;
+        this.rowSetFunction = rowSetFunction;
+        this.ignore = ignore;
+        this.replace = replace;
+        this.values = null == values ? new LinkedList<>() : values;
+        this.derivedInsertColumns = null == derivedInsertColumns ? new LinkedList<>() : derivedInsertColumns;
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
     
     /**
@@ -250,10 +277,5 @@ public final class InsertStatement extends DMLStatement {
      */
     public Optional<FunctionSegment> getRowSetFunction() {
         return Optional.ofNullable(rowSetFunction);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

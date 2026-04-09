@@ -19,6 +19,7 @@ package org.apache.shardingsphere.database.protocol.mysql.packet.generic;
 
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.database.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -26,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,8 +72,14 @@ class MySQLOKPacketTest {
     }
     
     @Test
+    void assertNewOKPacketWithInvalidHeader() {
+        when(packetPayload.readInt1()).thenReturn(1);
+        assertThat(assertThrows(IllegalArgumentException.class, () -> new MySQLOKPacket(packetPayload)).getMessage(), is("Header of MySQL OK packet must be `0x00`."));
+    }
+    
+    @Test
     void assertWrite() {
-        new MySQLOKPacket(100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(packetPayload);
+        new MySQLOKPacket(100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write((PacketPayload) packetPayload);
         verify(packetPayload).writeInt1(MySQLOKPacket.HEADER);
         verify(packetPayload).writeIntLenenc(100L);
         verify(packetPayload).writeIntLenenc(9999L);

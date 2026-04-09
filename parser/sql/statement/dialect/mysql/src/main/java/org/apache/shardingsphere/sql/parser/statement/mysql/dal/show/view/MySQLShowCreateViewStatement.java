@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.view;
 
-import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.DatabaseSelectRequiredSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.ViewInResultSetSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DALStatement;
 
 /**
@@ -33,16 +33,16 @@ public final class MySQLShowCreateViewStatement extends DALStatement {
     
     private final SimpleTableSegment viewName;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowCreateViewStatement(final DatabaseType databaseType, final SimpleTableSegment viewName) {
         super(databaseType);
         this.viewName = viewName;
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes =
-                new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new ViewInResultSetSQLStatementAttribute(2, getViewName().getTableName().getIdentifier().getValue()));
+        if (null == viewName) {
+            attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute());
+        } else {
+            attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(),
+                    new ViewInResultSetSQLStatementAttribute(2, viewName.getTableName().getIdentifier().getValue()));
+        }
     }
 }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.manager.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.mode.node.path.engine.generator.NodePathGenerator;
 import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.SchemaMetaDataNodePath;
-import org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath;
 import org.apache.shardingsphere.mode.persist.service.TableMetaDataPersistService;
 import org.apache.shardingsphere.mode.spi.repository.PersistRepository;
 
@@ -50,7 +49,7 @@ public final class SchemaMetaDataPersistService {
      * @param schemaName to be added schema name
      */
     public void add(final String databaseName, final String schemaName) {
-        repository.persist(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, null)), "");
+        repository.persist(NodePathGenerator.toPath(new SchemaMetaDataNodePath(databaseName, schemaName)), "");
     }
     
     /**
@@ -70,7 +69,7 @@ public final class SchemaMetaDataPersistService {
      * @param schema to be altered schema
      */
     public void alterByRefresh(final String databaseName, final ShardingSphereSchema schema) {
-        String schemaName = schema.getName().toLowerCase();
+        String schemaName = schema.getName();
         if (schema.isEmpty()) {
             add(databaseName, schemaName);
         }

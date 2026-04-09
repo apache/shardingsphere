@@ -53,7 +53,6 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         SingleRule rule = mock(SingleRule.class, RETURNS_DEEP_STUBS);
         when(rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.empty());
         SetDefaultSingleTableStorageUnitStatement sqlStatement = new SetDefaultSingleTableStorageUnitStatement("foo_ds");
-        sqlStatement.buildAttributes();
         DistSQLUpdateExecuteEngine engine = new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", mockContextManager(database, rule, "foo_ds"), null);
         assertThrows(MissingRequiredStorageUnitsException.class, engine::executeUpdate);
     }
@@ -65,7 +64,6 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(rule.getConfiguration()).thenReturn(new SingleRuleConfiguration(Collections.emptyList(), "foo_ds"));
         ContextManager contextManager = mockContextManager(database, rule, null);
         SetDefaultSingleTableStorageUnitStatement sqlStatement = new SetDefaultSingleTableStorageUnitStatement(null);
-        sqlStatement.buildAttributes();
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).removeRuleConfigurationItem(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("foo_ds"))));
@@ -83,7 +81,6 @@ class SetDefaultSingleTableStorageUnitExecutorTest {
         when(rule.getAttributes().findAttribute(DataSourceMapperRuleAttribute.class)).thenReturn(Optional.empty());
         ContextManager contextManager = mockContextManager(database, rule, "bar_ds");
         SetDefaultSingleTableStorageUnitStatement sqlStatement = new SetDefaultSingleTableStorageUnitStatement("bar_ds");
-        sqlStatement.buildAttributes();
         new DistSQLUpdateExecuteEngine(sqlStatement, "foo_db", contextManager, null).executeUpdate();
         MetaDataManagerPersistService metaDataManagerPersistService = contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService();
         verify(metaDataManagerPersistService).alterRuleConfiguration(any(), ArgumentMatchers.<SingleRuleConfiguration>argThat(x -> x.getDefaultDataSource().equals(Optional.of("bar_ds"))));

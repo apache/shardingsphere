@@ -38,8 +38,8 @@ jobs:
     name: Import Global Environment
     uses: ./.github/workflows/required-reusable.yml
 
-  build-e2e-image:
-    name: Build E2E Image
+  prepare-e2e-artifacts:
+    name: Prepare E2E Artifacts
     needs: global-environment
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 40
@@ -49,7 +49,6 @@ jobs:
         uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'e2e-sql'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
@@ -59,24 +58,12 @@ jobs:
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
-      - name: Package ShardingSphere Maven Repository
-        run: tar -czf /tmp/apache-shardingsphere-maven-repo.tar.gz -C ~/.m2/repository org/apache/shardingsphere
-      - name: Save E2E Image
-        run: docker save -o /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar apache/shardingsphere-proxy-test:latest
-      - uses: actions/upload-artifact@v4
-        with:
-          name: e2e-image
-          path: /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar
-          retention-days: 10
-      - uses: actions/upload-artifact@v4
-        with:
-          name: e2e-maven-repo
-          path: /tmp/apache-shardingsphere-maven-repo.tar.gz
-          retention-days: 1
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
+      - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
   
   e2e-sql:
     name: E2E - SQL
-    needs: [ build-e2e-image, global-environment ]
+    needs: [ prepare-e2e-artifacts, global-environment ]
     if: ${{ needs.global-environment.outputs.GLOBAL_JOB_ENABLED == 'true' }}
     runs-on: ${{ needs.global-environment.outputs.GLOBAL_RUNS_ON }}
     timeout-minutes: 200
@@ -115,31 +102,28 @@ jobs:
             mode: Standalone
             scenario: passthrough
     steps:
-      - uses: actions/checkout@v6.0.1
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           java-version: 21
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'e2e-sql'
           cache-save-enabled: 'false'
           enable-docker-setup: 'true'
-      - name: Download Maven Repository
-        uses: actions/download-artifact@v4
+      - uses: ./.github/workflows/resources/actions/download-e2e-artifacts
         with:
-          name: e2e-maven-repo
-          path: /tmp/
-      - name: Restore Maven Repository
-        run: |
-          mkdir -p ~/.m2/repository
-          tar -xzf /tmp/apache-shardingsphere-maven-repo.tar.gz -C ~/.m2/repository
-      - name: Download E2E Image
-        if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v4
-        with:
-          name: e2e-image
-          path: /tmp/
-      - name: Load E2E Image
-        if: matrix.adapter == 'proxy'
-        run: docker load -i /tmp/${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}-proxy-test.tar
+          load-docker-image: ${{ matrix.adapter == 'proxy' }}
       - name: Run E2E Test
         run: ./mvnw -nsu -B install -f test/e2e/sql/pom.xml -Dspotless.apply.skip=true -De2e.run.type=DOCKER -De2e.artifact.modes=${{ matrix.mode }} -De2e.artifact.adapters=${{ matrix.adapter }} -De2e.run.additional.cases=false -De2e.scenarios=${{ matrix.scenario }} -De2e.artifact.databases=${{ matrix.database }} ${{ matrix.additional-options }}

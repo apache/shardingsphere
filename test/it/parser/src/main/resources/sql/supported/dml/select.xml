@@ -495,6 +495,9 @@
     <sql-case id="select_format_function_oracle" value="SELECT FORMAT('abc', '999') FROM dual" db-types="Oracle" />
     <sql-case id="select_first_value_oracle" value="SELECT FIRST_VALUE(salary) OVER (ORDER BY salary) FROM employees" db-types="Oracle" />
     <sql-case id="select_datetime_lbe_literal_oracle" value="SELECT {ts '2020-02-02 10:00:00'} FROM dual" db-types="Oracle" />
+    <sql-case id="select_plan_as_identifier_doris" value="SELECT plan FROM t_plan" db-types="Doris" />
+    <sql-case id="select_replayer_as_identifier_doris" value="SELECT replayer FROM t_replayer" db-types="Doris" />
+    <sql-case id="select_play_as_quoted_identifier_doris" value="SELECT `play` FROM t_play" db-types="Doris" />
     <sql-case id="select_order_by_order" value="SELECT id FROM test ORDER BY `order` " db-types="MySQL,Hive,Doris,Presto" />
     <sql-case id="select_order_by_order_two" value="SELECT id FROM t_test ORDER BY t_test.order" db-types="MySQL,Hive,Doris,SQLServer,Firebird,SQL92,Presto" />
     <sql-case id="select_pg_database_info" value="SELECT d.datname as &quot;Name&quot;, pg_catalog.pg_get_userbyid(d.datdba) as &quot;Owner&quot;, pg_catalog.pg_encoding_to_char(d.encoding) as &quot;Encoding&quot;, d.datcollate as &quot;Collate&quot;, d.datctype as &quot;Ctype&quot;, pg_catalog.array_to_string(d.datacl, E'\n') AS &quot;Access privileges&quot; FROM pg_catalog.pg_database d ORDER BY 1;" db-types="openGauss" />
@@ -537,4 +540,6 @@
     <sql-case id="select_use_index_twice" value="SELECT * FROM t1 USE INDEX (i1) USE INDEX (i1,i1);" db-types="MySQL" />
     <sql-case id="select_use_index_force_index_for_join" value="SELECT * FROM t1 USE INDEX FOR JOIN (i1) FORCE INDEX FOR JOIN (i2);" db-types="MySQL" />
     <sql-case id="select_group_by_match_against_with_rollup" value="SELECT 1 FROM t GROUP BY a, MATCH (a) AGAINST ('abc') WITH ROLLUP;" db-types="MySQL" />
+    <sql-case id="select_for_system_time_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_TIME AS OF '2021-08-09 10:35:57';" db-types="Hive" />
+    <sql-case id="select_for_system_version_as_of_hive" value="SELECT * FROM table_a FOR SYSTEM_VERSION AS OF 1234567;" db-types="Hive" />
 </sql-cases>

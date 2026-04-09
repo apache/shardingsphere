@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.distsql.statement.type.rql.resource;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.FromDatabaseSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.FromDatabaseSQLStatementAttribute;
@@ -28,7 +27,6 @@ import java.util.Optional;
 /**
  * Show tables statement.
  */
-@RequiredArgsConstructor
 @Getter
 public abstract class ShowTablesStatement extends ResourceQueryStatement {
     
@@ -36,7 +34,13 @@ public abstract class ShowTablesStatement extends ResourceQueryStatement {
     
     private final String likePattern;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
+    
+    public ShowTablesStatement(final FromDatabaseSegment fromDatabase, final String likePattern) {
+        this.fromDatabase = fromDatabase;
+        this.likePattern = likePattern;
+        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
+    }
     
     /**
      * Get like pattern.
@@ -45,10 +49,5 @@ public abstract class ShowTablesStatement extends ResourceQueryStatement {
      */
     public Optional<String> getLikePattern() {
         return Optional.ofNullable(likePattern);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
 }

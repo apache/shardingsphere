@@ -76,13 +76,14 @@ class CreateReadwriteSplittingRuleExecutorTest {
     void assertCheckBeforeUpdate() {
         mockCheckBeforeUpdateDependencies(Collections.emptySet());
         setRule(null);
-        assertDoesNotThrow(() -> executor.checkBeforeUpdate(createSQLStatement(false, Collections.singleton(createRuleSegment("readwrite_ds_1")))));
+        assertDoesNotThrow(() -> executor.checkBeforeUpdate(new CreateReadwriteSplittingRuleStatement(false, Collections.singleton(createRuleSegment("readwrite_ds_1")))));
     }
     
     @Test
     void assertBuildToBeCreatedRuleConfigurationWithoutIfNotExists() {
         setRule(createCurrentRuleConfiguration());
-        ReadwriteSplittingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(createSQLStatement(false, Collections.singleton(createRuleSegment("readwrite_ds_1"))));
+        ReadwriteSplittingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(
+                new CreateReadwriteSplittingRuleStatement(false, Collections.singleton(createRuleSegment("readwrite_ds_1"))));
         assertThat(actual.getDataSourceGroups().size(), is(1));
         assertThat(actual.getLoadBalancers().size(), is(1));
     }
@@ -92,7 +93,7 @@ class CreateReadwriteSplittingRuleExecutorTest {
     void assertBuildToBeCreatedRuleConfigurationWithIfNotExists(final String name, final ReadwriteSplittingRuleConfiguration currentRuleConfig,
                                                                 final Collection<ReadwriteSplittingRuleSegment> ruleSegments, final int expectedGroupCount) {
         setRule(currentRuleConfig);
-        assertThat(executor.buildToBeCreatedRuleConfiguration(createSQLStatement(true, ruleSegments)).getDataSourceGroups().size(), is(expectedGroupCount));
+        assertThat(executor.buildToBeCreatedRuleConfiguration(new CreateReadwriteSplittingRuleStatement(true, new LinkedList<>(ruleSegments))).getDataSourceGroups().size(), is(expectedGroupCount));
     }
     
     @Test
@@ -104,7 +105,8 @@ class CreateReadwriteSplittingRuleExecutorTest {
     void assertCheckBeforeUpdateWithMissingStorageUnit() {
         mockCheckBeforeUpdateDependencies(Collections.singleton("missing_ds"));
         setRule(null);
-        assertThrows(MissingRequiredStorageUnitsException.class, () -> executor.checkBeforeUpdate(createSQLStatement(false, Collections.singleton(createRuleSegment("readwrite_ds_1")))));
+        assertThrows(MissingRequiredStorageUnitsException.class,
+                () -> executor.checkBeforeUpdate(new CreateReadwriteSplittingRuleStatement(false, Collections.singleton(createRuleSegment("readwrite_ds_1")))));
     }
     
     private void mockCheckBeforeUpdateDependencies(final Collection<String> notExistedDataSources) {
@@ -123,17 +125,11 @@ class CreateReadwriteSplittingRuleExecutorTest {
         executor.setRule(rule);
     }
     
-    private CreateReadwriteSplittingRuleStatement createSQLStatement(final boolean ifNotExists, final Collection<ReadwriteSplittingRuleSegment> ruleSegments) {
-        CreateReadwriteSplittingRuleStatement result = new CreateReadwriteSplittingRuleStatement(ifNotExists, new LinkedList<>(ruleSegments));
-        result.buildAttributes();
-        return result;
-    }
-    
     private static Stream<Arguments> buildToBeCreatedRuleConfigurationArguments() {
         return Stream.of(
-                Arguments.of("if not exists with null rule", null, new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_1"))), 1),
-                Arguments.of("if not exists removes duplicated rule", createCurrentRuleConfiguration(), new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_0"))), 0),
-                Arguments.of("if not exists keeps non duplicated rule", createCurrentRuleConfiguration(), new LinkedList<>(Collections.singleton(createRuleSegment("readwrite_ds_1"))), 1));
+                Arguments.of("if not exists with null rule", null, Collections.singleton(createRuleSegment("readwrite_ds_1")), 1),
+                Arguments.of("if not exists removes duplicated rule", createCurrentRuleConfiguration(), Collections.singleton(createRuleSegment("readwrite_ds_0")), 0),
+                Arguments.of("if not exists keeps non duplicated rule", createCurrentRuleConfiguration(), Collections.singleton(createRuleSegment("readwrite_ds_1")), 1));
     }
     
     private static ReadwriteSplittingRuleSegment createRuleSegment(final String ruleName) {
@@ -141,8 +137,8 @@ class CreateReadwriteSplittingRuleExecutorTest {
     }
     
     private static ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
-        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration("readwrite_ds_0", "ds_write",
-                Arrays.asList("read_ds_0", "read_ds_1"), "RANDOM");
-        return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceGroupConfig)), Collections.emptyMap());
+        ReadwriteSplittingDataSourceGroupRuleConfiguration dataSourceGroupConfig = new ReadwriteSplittingDataSourceGroupRuleConfiguration(
+                "readwrite_ds_0", "ds_write", Arrays.asList("read_ds_0", "read_ds_1"), "RANDOM");
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceGroupConfig), Collections.emptyMap());
     }
 }

@@ -67,7 +67,7 @@ public final class FunctionExpressionSegmentBinder {
             }
             result.getParameters().add(ExpressionSegmentBinder.bind(each, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts));
         }
-        segment.getWindow().ifPresent(result::setWindow);
+        segment.getWindow().ifPresent(optional -> result.setWindow(WindowItemSegmentBinder.bind(optional, parentSegmentType, binderContext, tableBinderContexts, outerTableBinderContexts)));
         return result;
     }
 }

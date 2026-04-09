@@ -63,10 +63,8 @@ class SelectStatementConverterTest {
         SelectStatement left = createBaseSelect(true, true);
         SelectStatement right = createBaseSelect(false, false);
         CombineSegment combineSegment = new CombineSegment(0, 0, new SubquerySegment(0, 0, left, "left"), CombineType.UNION, new SubquerySegment(0, 0, right, "right"));
-        SelectStatement selectStatement = createBaseSelect(true, true);
-        selectStatement.setCombine(combineSegment);
         LimitSegment limit = new LimitSegment(0, 0, new NumberLiteralLimitValueSegment(0, 0, 1L), new ParameterMarkerLimitValueSegment(0, 0, 0));
-        selectStatement.setLimit(limit);
+        SelectStatement selectStatement = createBaseSelect(true, true, combineSegment, limit, null, null);
         SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
         assertThat(actual.offset, isA(SqlNode.class));
         assertThat(actual.fetch, isA(SqlNode.class));
@@ -75,31 +73,36 @@ class SelectStatementConverterTest {
     
     @Test
     void assertConvertWithoutLimitButWithOrderByAndWindow() {
-        SelectStatement selectStatement = createBaseSelect(false, false);
-        selectStatement.setOrderBy(createOrderBySegment());
-        selectStatement.setWindow(createWindowSegment());
+        SelectStatement selectStatement = createBaseSelect(false, false, null, null, createOrderBySegment(), createWindowSegment());
         SqlOrderBy actual = (SqlOrderBy) new SelectStatementConverter().convert(selectStatement);
         assertNull(actual.offset);
         assertThat(((SqlSelect) actual.query).getWindowList(), isA(SqlNode.class));
     }
     
     private SelectStatement createBaseSelect(final boolean withWithSegment, final boolean distinct) {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(createProjectionsSegment());
-        result.getProjections().setDistinctRow(distinct);
+        return createBaseSelect(withWithSegment, distinct, null, null, null, null);
+    }
+    
+    private SelectStatement createBaseSelect(final boolean withWithSegment, final boolean distinct,
+                                             final CombineSegment combine, final LimitSegment limit, final OrderBySegment orderBy, final WindowSegment window) {
+        ProjectionsSegment projectionsSegment = createProjectionsSegment();
+        projectionsSegment.setDistinctRow(distinct);
         SimpleTableSegment fromTable = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_select")));
         fromTable.setAlias(new AliasSegment(0, 0, new IdentifierValue("t")));
-        result.setFrom(fromTable);
-        result.setWhere(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)));
-        if (withWithSegment) {
-            result.setWith(createWithSegment());
-        }
-        return result;
+        return SelectStatement.builder()
+                .databaseType(databaseType)
+                .projections(projectionsSegment)
+                .from(fromTable)
+                .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
+                .with(withWithSegment ? createWithSegment() : null)
+                .combine(combine)
+                .limit(limit)
+                .orderBy(orderBy)
+                .window(window)
+                .build();
     }
     
     private WithSegment createWithSegment() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(createProjectionsSegment());
         return new WithSegment(0, 0, Collections.emptyList(), false);
     }
     

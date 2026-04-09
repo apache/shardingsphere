@@ -233,7 +233,7 @@ class OracleMetaDataLoaderTest {
     private ColumnMetaData getExpectedFirstColumnMetaData(final int majorVersion, final int minorVersion, final boolean withPrimaryKey) {
         boolean generated = majorVersion >= 12 && minorVersion >= 1;
         boolean caseSensitive = majorVersion >= 12 && minorVersion >= 2;
-        return new ColumnMetaData("id", Types.INTEGER, withPrimaryKey, generated, caseSensitive, true, false, false);
+        return new ColumnMetaData("id", Types.NUMERIC, withPrimaryKey, generated, caseSensitive, true, false, false);
     }
     
     private Collection<SchemaMetaData> loadMetaData(final DataSource dataSource) throws SQLException {

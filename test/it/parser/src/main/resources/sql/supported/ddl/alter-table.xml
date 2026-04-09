@@ -131,7 +131,6 @@
     <sql-case id="alter_table_drop_constraints_postgresql" value="ALTER TABLE t_order DROP CONSTRAINT pk_order_id, DROP CONSTRAINT uk_order_id, DROP CONSTRAINT order_index" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_rename_constraints" value="ALTER TABLE t_order RENAME CONSTRAINT order_index_bak TO order_index" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_rename_table" value="ALTER TABLE t_order RENAME TO t_order1" db-types="MySQL,PostgreSQL,openGauss" />
-    <sql-case id="alter_table_rename_multi_tables" value="ALTER TABLE t_order RENAME TO t_order1, RENAME TO t_order2" db-types="MySQL" />
     <sql-case id="alter_table_rename_column" value="ALTER TABLE t_order RENAME COLUMN user_id to user_id1" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_with_exist_index" value="ALTER TABLE t_order ADD PRIMARY KEY USING INDEX order_index" db-types="PostgreSQL,openGauss" />
     <sql-case id="alter_table_with_bracket" value="ALTER TABLE [t_order] REBUILD" db-types="SQLServer" />
@@ -431,6 +430,8 @@
     <sql-case id="alter_table_add_partitions_from_to_interval_day_doris" value="ALTER TABLE example_db.my_table ADD PARTITIONS FROM (&quot;2023-01-01&quot;) TO (&quot;2025-01-01&quot;) INTERVAL 1 DAY" db-types="Doris" />
     <sql-case id="alter_table_set_bloom_filter_columns_doris" value="ALTER TABLE example_db.my_table SET (&quot;bloom_filter_columns&quot;=&quot;k1,k2,k3&quot;)" db-types="Doris" />
     <sql-case id="alter_table_set_colocate_with_doris" value="ALTER TABLE example_db.my_table SET (&quot;colocate_with&quot; = &quot;t1&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_simple_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col1" db-types="Doris" />
+    <sql-case id="alter_table_drop_column_from_rollup_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col1 FROM rollup_1" db-types="Doris" />
     <sql-case id="alter_table_drop_column_with_properties_doris" value="ALTER TABLE example_db.my_table DROP COLUMN col2 PROPERTIES (&quot;bloom_filter_columns&quot;=&quot;k1,k2,k3&quot;)" db-types="Doris" />
     <sql-case id="alter_table_enable_feature_batch_delete_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;BATCH_DELETE&quot;" db-types="Doris" />
     <sql-case id="alter_table_enable_feature_sequence_load_doris" value="ALTER TABLE example_db.my_table ENABLE FEATURE &quot;SEQUENCE_LOAD&quot; WITH PROPERTIES (&quot;function_column.sequence_type&quot; = &quot;Date&quot;)" db-types="Doris" />
@@ -444,4 +445,27 @@
     <sql-case id="alter_table_modify_column_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k1 COMMENT &quot;k1&quot;" db-types="Doris" />
     <sql-case id="alter_table_modify_multiple_column_comments_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k1 COMMENT &quot;k1&quot;, MODIFY COLUMN k2 COMMENT &quot;k2&quot;" db-types="Doris" />
     <sql-case id="alter_table_modify_engine_doris" value="ALTER TABLE example_db.mysql_table MODIFY ENGINE TO odbc PROPERTIES(&quot;driver&quot; = &quot;MySQL&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_order_by_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1)" db-types="Doris" />
+    <sql-case id="alter_table_order_by_with_rollup_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1) FROM rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_order_by_with_properties_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1) PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_order_by_with_rollup_and_properties_doris" value="ALTER TABLE example_db.my_table ORDER BY (k_2,k_1,v_3,v_2,v_1) FROM rollup_1 PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; AFTER value_1" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_and_rollup_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; AFTER value_1 TO rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_rollup_and_properties_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; AFTER value_1 TO rollup_1 PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_key_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT KEY DEFAULT &quot;0&quot; AFTER value_1" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_first_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; FIRST" db-types="Doris" />
+    <sql-case id="alter_table_add_column_with_agg_type_first_and_rollup_doris" value="ALTER TABLE example_db.my_table ADD COLUMN new_col INT SUM DEFAULT &quot;0&quot; FIRST TO rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_agg_type_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT SUM DEFAULT &quot;0&quot;, new_col2 INT SUM DEFAULT &quot;0&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_agg_type_and_rollup_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT SUM DEFAULT &quot;0&quot;, new_col2 INT SUM DEFAULT &quot;0&quot;) TO rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_agg_type_and_properties_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT SUM DEFAULT &quot;0&quot;, new_col2 INT SUM DEFAULT &quot;0&quot;) PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_different_agg_types_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (c1 INT SUM DEFAULT &quot;0&quot;, c2 INT MAX DEFAULT &quot;0&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_add_columns_with_key_doris" value="ALTER TABLE example_db.my_table ADD COLUMN (new_col1 INT KEY DEFAULT &quot;0&quot;, new_col2 INT DEFAULT &quot;0&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot;" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_after_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; AFTER k1" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_first_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; FIRST" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_from_rollup_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; FROM rollup_1" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_agg_type_rollup_and_properties_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN val1 VARCHAR(64) REPLACE DEFAULT &quot;abc&quot; AFTER k1 FROM rollup_1 PROPERTIES(&quot;timeout&quot; = &quot;100&quot;)" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_key_after_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN col1 BIGINT KEY DEFAULT &quot;1&quot; AFTER col2;" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_key_null_comment_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NULL COMMENT 'to 50'" db-types="Doris" />
+    <sql-case id="alter_table_modify_column_with_key_not_null_doris" value="ALTER TABLE example_db.my_table MODIFY COLUMN k3 VARCHAR(50) KEY NOT NULL COMMENT 'not null'" db-types="Doris" />
 </sql-cases>

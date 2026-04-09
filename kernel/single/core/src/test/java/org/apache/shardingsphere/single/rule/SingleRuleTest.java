@@ -29,14 +29,17 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.DataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.rule.attribute.datasource.DataSourceMapperRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.constant.SingleOrder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.IndexSQLStatementAttribute;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -173,6 +176,30 @@ class SingleRuleTest {
         } else {
             assertTrue(actualTables.isEmpty());
         }
+    }
+    
+    @Test
+    void assertFindSingleLogicalDataSource() {
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(Collections.singletonMap("logical_ds", Arrays.asList("foo_ds", "bar_ds")));
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
+        SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
+        assertThat(singleRule.getDataSourceNames().size(), is(1));
+        assertThat(singleRule.getDataSourceNames().iterator().next(), is("logical_ds"));
+    }
+    
+    @Test
+    void assertFindSingleLogicalDataSourceWhenMultipleLogicalDataSources() {
+        DataSourceMapperRuleAttribute mapperRuleAttribute = mock(DataSourceMapperRuleAttribute.class);
+        Map<String, Collection<String>> dataSourceMapper = new LinkedHashMap<>();
+        dataSourceMapper.put("logic_ds_0", Collections.singleton("foo_ds"));
+        dataSourceMapper.put("logic_ds_1", Collections.singleton("bar_ds"));
+        when(mapperRuleAttribute.getDataSourceMapper()).thenReturn(dataSourceMapper);
+        ShardingSphereRule builtRule = mock(ShardingSphereRule.class);
+        when(builtRule.getAttributes()).thenReturn(new RuleAttributes(mapperRuleAttribute));
+        SingleRule singleRule = new SingleRule(ruleConfig, "foo_db", databaseType, dataSourceMap, Collections.singleton(builtRule));
+        assertThat(singleRule.getDataSourceNames().size(), is(2));
     }
     
     @Test
@@ -320,16 +347,15 @@ class SingleRuleTest {
     }
     
     private static IndexSQLStatementAttribute createIndexAttribute(final ShardingSphereDatabase database, final String schemaName) {
-        IndexSegment indexSegment = mock(IndexSegment.class, RETURNS_DEEP_STUBS);
-        when(indexSegment.getOwner()).thenReturn(Optional.empty());
-        when(indexSegment.getIndexName().getIdentifier().getValue()).thenReturn("idx_employee");
+        IdentifierValue identifierValue = new IdentifierValue("idx_employee");
+        IndexSegment indexSegment = new IndexSegment(1, 3, new IndexNameSegment(1, 3, identifierValue));
         IndexSQLStatementAttribute result = mock(IndexSQLStatementAttribute.class);
         when(result.getIndexes()).thenReturn(Collections.singleton(indexSegment));
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         when(database.getSchema(schemaName)).thenReturn(schema);
         when(schema.getAllTables()).thenReturn(Collections.singleton(table));
-        when(table.containsIndex("idx_employee")).thenReturn(true);
+        when(table.containsIndex(identifierValue)).thenReturn(true);
         when(table.getName()).thenReturn("employee");
         return result;
     }
@@ -365,6 +391,7 @@ class SingleRuleTest {
     private static Stream<Arguments> getSingleTablesArguments() {
         return Stream.of(
                 Arguments.of("table exists in same schema", new QualifiedTable("foo_db", "employee"), true, "foo_db", "employee"),
+                Arguments.of("table exists in schema with different case", new QualifiedTable("FOO_DB", "employee"), false, null, null),
                 Arguments.of("table exists in different schema", new QualifiedTable("bar_db", "employee"), false, null, null),
                 Arguments.of("table does not exist", new QualifiedTable("foo_db", "missing_table"), false, null, null));
     }

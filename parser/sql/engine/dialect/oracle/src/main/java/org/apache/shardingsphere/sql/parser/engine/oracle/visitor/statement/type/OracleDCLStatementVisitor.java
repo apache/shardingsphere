@@ -54,20 +54,16 @@ public final class OracleDCLStatementVisitor extends OracleStatementVisitor impl
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement(getDatabaseType());
-        if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
-        }
-        return result;
+        return new GrantStatement(getDatabaseType(), null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()
+                ? Collections.singleton((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()))
+                : Collections.emptyList());
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement(getDatabaseType());
-        if (null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()));
-        }
-        return result;
+        return new RevokeStatement(getDatabaseType(), null != ctx.objectPrivilegeClause() && null != ctx.objectPrivilegeClause().onObjectClause().tableName()
+                ? Collections.singleton((SimpleTableSegment) visit(ctx.objectPrivilegeClause().onObjectClause().tableName()))
+                : Collections.emptyList());
     }
     
     @Override

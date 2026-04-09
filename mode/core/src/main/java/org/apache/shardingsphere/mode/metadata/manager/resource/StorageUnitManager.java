@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.metadata.manager.resource;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.temporary.TemporaryConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePoolProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
@@ -108,13 +109,13 @@ public final class StorageUnitManager {
         MetaDataContexts reloadMetaDataContexts = new MetaDataContextsFactory(metaDataPersistFacade, computeNodeInstanceContext).createBySwitchResource(
                 databaseName, isLoadSchemasFromRegisterCenter, switchingResource, metaDataContexts);
         metaDataContexts.update(reloadMetaDataContexts);
-        metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName)));
+        metaDataContexts.getMetaData().putDatabase(buildDatabase(reloadMetaDataContexts.getMetaData().getDatabase(databaseName), reloadMetaDataContexts.getMetaData().getProps()));
         switchingResource.closeStaleDataSources();
     }
     
-    private ShardingSphereDatabase buildDatabase(final ShardingSphereDatabase originalDatabase) {
+    private ShardingSphereDatabase buildDatabase(final ShardingSphereDatabase originalDatabase, final ConfigurationProperties props) {
         return new ShardingSphereDatabase(
-                originalDatabase.getName(), originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(), buildSchemas(originalDatabase));
+                originalDatabase.getName(), originalDatabase.getProtocolType(), originalDatabase.getResourceMetaData(), originalDatabase.getRuleMetaData(), buildSchemas(originalDatabase), props);
     }
     
     private Collection<ShardingSphereSchema> buildSchemas(final ShardingSphereDatabase originalDatabase) {

@@ -56,7 +56,7 @@ class SimpleTableSegmentBinderTest {
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
         assertThrows(TableNotFoundException.class, () -> SimpleTableSegmentBinder.bind(
-                simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts));
+                simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts));
     }
     
     @Test
@@ -65,18 +65,25 @@ class SimpleTableSegmentBinderTest {
         simpleTableSegment.setDbLink(new IdentifierValue("foo_db_link"));
         ShardingSphereMetaData metaData = createMetaData();
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts = LinkedHashMultimap.create();
-        SimpleTableSegmentBinder.bind(simpleTableSegment, new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), new SelectStatement(databaseType)), tableBinderContexts);
+        SimpleTableSegmentBinder.bind(simpleTableSegment,
+                new SQLStatementBinderContext(metaData, "foo_db", new HintValueContext(), SelectStatement.builder().databaseType(databaseType).build()), tableBinderContexts);
         SimpleTableSegmentBinderContext tableSegmentBinderContext = (SimpleTableSegmentBinderContext) tableBinderContexts.values().iterator().next();
         assertTrue(tableSegmentBinderContext.isContainsDBLink());
     }
     
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getTable("t_order").getAllColumns()).thenReturn(Arrays.asList(
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue shardingDatabase = new IdentifierValue("sharding_db");
+        IdentifierValue publicSchema = new IdentifierValue("public");
+        IdentifierValue testSchema = new IdentifierValue("test");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        IdentifierValue pgDatabase = new IdentifierValue("pg_database");
+        when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
-        when(schema.getTable("pg_database").getAllColumns()).thenReturn(Arrays.asList(
+        when(schema.getTable(pgDatabase).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("datname", Types.VARCHAR, false, false, false, true, false, false),
                 new ShardingSphereColumn("datdba", Types.VARCHAR, false, false, false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
@@ -84,12 +91,18 @@ class SimpleTableSegmentBinderTest {
         when(result.getDatabase("sharding_db").getSchema("sharding_db")).thenReturn(schema);
         when(result.getDatabase("foo_db").getSchema("public")).thenReturn(schema);
         when(result.getDatabase("sharding_db").getSchema("test")).thenReturn(schema);
-        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase)).thenReturn(schema);
+        when(result.getDatabase(shardingDatabase).getSchema(shardingDatabase)).thenReturn(schema);
+        when(result.getDatabase(fooDatabase).getSchema(publicSchema)).thenReturn(schema);
+        when(result.getDatabase(shardingDatabase).getSchema(testSchema)).thenReturn(schema);
+        when(result.containsDatabase(fooDatabase)).thenReturn(true);
         when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
-        when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
-        when(result.containsDatabase("sharding_db")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
+        when(result.containsDatabase(shardingDatabase)).thenReturn(true);
         when(result.getDatabase("sharding_db").containsSchema("sharding_db")).thenReturn(true);
-        when(result.getDatabase("sharding_db").getSchema("sharding_db").containsTable("t_order")).thenReturn(true);
+        when(result.getDatabase(shardingDatabase).containsSchema(shardingDatabase)).thenReturn(true);
+        when(result.getDatabase(shardingDatabase).getSchema(shardingDatabase).containsTable(tOrder)).thenReturn(true);
         return result;
     }
 }

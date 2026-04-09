@@ -47,22 +47,24 @@ class MultiSQLSplitterTest {
     
     private static Stream<Arguments> provideHasSameTypeArguments() {
         return Stream.of(
-                Arguments.of("nonDmlSample", new UpdateStatement(DATABASE_TYPE), Arrays.asList("select * from t_order;", "select * from t_order_item;"), false),
-                Arguments.of("singleStatementFalse", new UpdateStatement(DATABASE_TYPE), Collections.singletonList("update t_order set status='OK' where id=1"), false),
-                Arguments.of("insertWithBlockComment", new InsertStatement(DATABASE_TYPE),
+                Arguments.of("nonDmlSample", UpdateStatement.builder().databaseType(DATABASE_TYPE).build(), Arrays.asList("select * from t_order;", "select * from t_order_item;"), false),
+                Arguments.of("singleStatementFalse", UpdateStatement.builder().databaseType(DATABASE_TYPE).build(), Collections.singletonList("update t_order set status='OK' where id=1"), false),
+                Arguments.of("insertWithBlockComment", InsertStatement.builder().databaseType(DATABASE_TYPE).build(),
                         Arrays.asList("   /*comment*/ INSERT INTO t_order VALUES (1);", "/*remark*/ insert into t_order values (2)"), true),
-                Arguments.of("updateWithDashComment", new UpdateStatement(DATABASE_TYPE),
+                Arguments.of("updateWithDashComment", UpdateStatement.builder().databaseType(DATABASE_TYPE).build(),
                         Arrays.asList("-- comment before\r\nupdate t_order set status='PAID' where id=1;", "-- \t\nupdate t_order set status='FAIL' where id=2;"), true),
-                Arguments.of("deleteWithHashComment", new DeleteStatement(DATABASE_TYPE),
+                Arguments.of("deleteWithHashComment", DeleteStatement.builder().databaseType(DATABASE_TYPE).build(),
                         Arrays.asList("# comment before\n delete from t_order where id=1;", "#\t\n delete from t_order where id=2;"), true),
-                Arguments.of("hashCommentWithCRLF", new DeleteStatement(DATABASE_TYPE),
+                Arguments.of("hashCommentWithCRLF", DeleteStatement.builder().databaseType(DATABASE_TYPE).build(),
                         Arrays.asList("# comment\r\ndelete from t_order where id=1;", "# comment\r\ndelete from t_order where id=2;"), true),
-                Arguments.of("hashCommentWithCROnly", new DeleteStatement(DATABASE_TYPE),
+                Arguments.of("hashCommentWithCROnly", DeleteStatement.builder().databaseType(DATABASE_TYPE).build(),
                         Arrays.asList("# comment\rdelete from t_order where id=1;", "# comment\rdelete from t_order where id=2;"), true),
-                Arguments.of("updateTypeMismatch", new UpdateStatement(DATABASE_TYPE), Arrays.asList("update t_order set status='PAID' where id=1;", "select * from t_order"), false),
-                Arguments.of("unterminatedBlockComment", new InsertStatement(DATABASE_TYPE), Arrays.asList("/* incomplete comment", "insert into t_order values (1);"), false),
-                Arguments.of("dashCommentOnlySegment", new UpdateStatement(DATABASE_TYPE), Arrays.asList("--", "update t_order set status='DONE' where id=1;"), false),
-                Arguments.of("whitespaceOnlySegment", new UpdateStatement(DATABASE_TYPE), Arrays.asList("   \t ", "update t_order set status='DONE' where id=1;"), false));
+                Arguments.of("updateTypeMismatch", UpdateStatement.builder().databaseType(DATABASE_TYPE).build(),
+                        Arrays.asList("update t_order set status='PAID' where id=1;", "select * from t_order"), false),
+                Arguments.of("unterminatedBlockComment", InsertStatement.builder().databaseType(DATABASE_TYPE).build(), Arrays.asList("/* incomplete comment", "insert into t_order values (1);"),
+                        false),
+                Arguments.of("dashCommentOnlySegment", UpdateStatement.builder().databaseType(DATABASE_TYPE).build(), Arrays.asList("--", "update t_order set status='DONE' where id=1;"), false),
+                Arguments.of("whitespaceOnlySegment", UpdateStatement.builder().databaseType(DATABASE_TYPE).build(), Arrays.asList("   \t ", "update t_order set status='DONE' where id=1;"), false));
     }
     
     @ParameterizedTest(name = "{0}")

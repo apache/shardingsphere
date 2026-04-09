@@ -64,14 +64,12 @@ class SubquerySegmentBinderTest {
     
     @Test
     void assertBind() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         ColumnSegment columnSegment = new ColumnSegment(58, 65, new IdentifierValue("order_id"));
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(58, 65);
         projectionsSegment.getProjections().add(new ColumnProjectionSegment(columnSegment));
-        selectStatement.setProjections(projectionsSegment);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order"))));
         ExpressionSegment whereExpressionSegment = new ColumnSegment(86, 91, new IdentifierValue("status"));
-        selectStatement.setWhere(new WhereSegment(80, 102, whereExpressionSegment));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment)
+                .from(new SimpleTableSegment(new TableNameSegment(72, 78, new IdentifierValue("t_order")))).where(new WhereSegment(80, 102, whereExpressionSegment)).build();
         SubquerySegment subquerySegment = new SubquerySegment(39, 103, selectStatement, "order_id = (SELECT order_id FROM t_order WHERE status = 'SUBMIT')");
         SQLStatementBinderContext sqlStatementBinderContext = new SQLStatementBinderContext(createMetaData(), "foo_db", new HintValueContext(), selectStatement);
         ColumnSegment boundNameColumn = new ColumnSegment(7, 13, new IdentifierValue("user_id"));
@@ -107,15 +105,19 @@ class SubquerySegmentBinderTest {
     
     private ShardingSphereMetaData createMetaData() {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class, RETURNS_DEEP_STUBS);
-        when(schema.getTable("t_order").getAllColumns()).thenReturn(Arrays.asList(
+        IdentifierValue fooDatabase = new IdentifierValue("foo_db");
+        IdentifierValue tOrder = new IdentifierValue("t_order");
+        when(schema.getTable(tOrder).getAllColumns()).thenReturn(Arrays.asList(
                 new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
                 new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
                 new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)));
         ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
         when(result.getDatabase("foo_db").getSchema("foo_db")).thenReturn(schema);
-        when(result.containsDatabase("foo_db")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase)).thenReturn(schema);
+        when(result.containsDatabase(fooDatabase)).thenReturn(true);
         when(result.getDatabase("foo_db").containsSchema("foo_db")).thenReturn(true);
-        when(result.getDatabase("foo_db").getSchema("foo_db").containsTable("t_order")).thenReturn(true);
+        when(result.getDatabase(fooDatabase).containsSchema(fooDatabase)).thenReturn(true);
+        when(result.getDatabase(fooDatabase).getSchema(fooDatabase).containsTable(tOrder)).thenReturn(true);
         return result;
     }
 }

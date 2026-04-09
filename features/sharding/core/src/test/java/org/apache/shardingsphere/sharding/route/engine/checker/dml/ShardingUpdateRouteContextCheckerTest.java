@@ -125,12 +125,13 @@ class ShardingUpdateRouteContextCheckerTest {
     }
     
     private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new UpdateStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))));
         List<ColumnSegment> columns = new LinkedList<>();
         columns.add(new ColumnSegment(0, 0, new IdentifierValue("id")));
         ColumnAssignmentSegment assignment = new ColumnAssignmentSegment(0, 0, columns, new LiteralExpressionSegment(0, 0, 1));
-        result.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(assignment)));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("user"))))
+                .setAssignment(new SetAssignmentSegment(0, 0, Collections.singleton(assignment)))
+                .build();
     }
 }

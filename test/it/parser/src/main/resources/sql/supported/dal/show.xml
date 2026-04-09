@@ -157,6 +157,9 @@
     <sql-case id="show_databases_with_like_wildcard" value="SHOW DATABASES LIKE 'emp*';" db-types="Hive" />
     <sql-case id="show_schemas_with_like_sql_wildcard" value="SHOW SCHEMAS LIKE 'emplo_ees';" db-types="Hive" />
     <sql-case id="show_databases_with_like_exact_match" value="SHOW DATABASES LIKE 'employees';" db-types="Hive" />
+    <sql-case id="show_databases_doris" value="SHOW DATABASES" db-types="Doris" />
+    <sql-case id="show_databases_doris_from_catalog" value="SHOW DATABASES FROM hms_catalog" db-types="Doris" />
+    <sql-case id="show_databases_doris_with_like" value="SHOW DATABASES LIKE 'infor%'" db-types="Doris" />
     <sql-case id="show_connectors" value="SHOW CONNECTORS;" db-types="Hive" />
     <sql-case id="show_tables_basic" value="SHOW TABLES;" db-types="Hive" />
     <sql-case id="show_tables_in_database" value="SHOW TABLES IN sales_db;" db-types="Hive" />
@@ -275,4 +278,10 @@
     <sql-case id="show_all_routine_load_for_job_with_db" value="SHOW ALL ROUTINE LOAD FOR example_db.test1" db-types="Doris" />
     <sql-case id="show_brief_create_table_doris" value="SHOW BRIEF CREATE TABLE test_table" db-types="Doris" />
     <sql-case id="show_brief_create_table_with_db_doris" value="SHOW BRIEF CREATE TABLE demo.test_table" db-types="Doris" />
+    <sql-case id="show_database_by_id" value="SHOW DATABASE 10396;" db-types="Doris" />
+    <sql-case id="show_table_by_id" value="SHOW TABLE 2261121;" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_simple" value="SHOW LOAD WARNINGS" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_with_database" value="SHOW LOAD WARNINGS FROM demo" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_with_label" value="SHOW LOAD WARNINGS FROM demo WHERE LABEL = &quot;load_demo_20210112&quot;" db-types="Doris" />
+    <sql-case id="doris_show_load_warnings_with_load_job_id" value="SHOW LOAD WARNINGS WHERE LOAD_JOB_ID = &quot;20001&quot;" db-types="Doris" />
 </sql-cases>

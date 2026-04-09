@@ -41,7 +41,6 @@ import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 import java.util.stream.Stream;
 
@@ -80,7 +79,7 @@ class DropShadowAlgorithmExecutorTest {
     void assertCheckBeforeUpdate() {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getShadowAlgorithms().put("droppable_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
-        ruleConfig.getTables().put("t_order_empty", new ShadowTableConfiguration(new LinkedList<>(), new LinkedList<>(Collections.singleton("droppable_algorithm"))));
+        ruleConfig.getTables().put("t_order_empty", new ShadowTableConfiguration(Collections.emptyList(), Collections.singleton("droppable_algorithm")));
         executor.setRule(createRule(ruleConfig));
         assertDoesNotThrow(() -> executor.checkBeforeUpdate(new DropShadowAlgorithmStatement(false, Collections.singleton("droppable_algorithm"))));
     }
@@ -131,8 +130,8 @@ class DropShadowAlgorithmExecutorTest {
         inUsedAlgorithmConfig.getShadowAlgorithms().put("in_used_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
         inUsedAlgorithmConfig.getShadowAlgorithms().put("algorithm_from_empty_table", new AlgorithmConfiguration("SQL_HINT", new Properties()));
         inUsedAlgorithmConfig.getTables().put("t_order",
-                new ShadowTableConfiguration(new LinkedList<>(Collections.singleton("shadow_group")), new LinkedList<>(Collections.singleton("in_used_algorithm"))));
-        inUsedAlgorithmConfig.getTables().put("t_order_empty", new ShadowTableConfiguration(new LinkedList<>(), new LinkedList<>(Collections.singleton("algorithm_from_empty_table"))));
+                new ShadowTableConfiguration(Collections.singleton("shadow_group"), Collections.singleton("in_used_algorithm")));
+        inUsedAlgorithmConfig.getTables().put("t_order_empty", new ShadowTableConfiguration(Collections.emptyList(), Collections.singleton("algorithm_from_empty_table")));
         ShadowRuleConfiguration defaultAlgorithmConfig = new ShadowRuleConfiguration();
         defaultAlgorithmConfig.getShadowAlgorithms().put("default_shadow_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
         defaultAlgorithmConfig.setDefaultShadowAlgorithmName("default_shadow_algorithm");

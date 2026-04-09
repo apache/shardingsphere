@@ -22,110 +22,98 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
-import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataManagerPersistServiceFixture;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
-import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
+import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
 
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.sql.Statement;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Properties;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-@ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({TableRefreshUtils.class, GenericSchemaBuilder.class})
-@MockitoSettings(strictness = Strictness.LENIENT)
 class AlterViewPushDownMetaDataRefresherTest {
     
-    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    private static final String LOGIC_DATA_SOURCE_NAME = "logic_ds";
     
-    private final AlterViewPushDownMetaDataRefresher refresher = (AlterViewPushDownMetaDataRefresher) TypedSPILoader.getService(PushDownMetaDataRefresher.class, AlterViewStatement.class);
+    private static final String SCHEMA_NAME = "PUBLIC";
     
-    @Mock
-    private MetaDataManagerPersistService metaDataManagerPersistService;
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "H2");
     
-    @Mock
-    private MutableDataNodeRuleAttribute mutableDataNodeRuleAttribute;
-    
-    @SuppressWarnings("unchecked")
     @Test
-    void assertRefreshRenameView() throws SQLException {
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
+    void assertRefreshRenameViewUsesActualDroppedName() throws SQLException {
+        JdbcDataSource dataSource = createDataSource("rename_view");
+        executeUpdate(dataSource, "CREATE VIEW \"Foo_New_View\" AS SELECT 1");
+        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
+        ShardingSphereDatabase database = createDatabase(dataSource, "Foo_Old_View");
         AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
-        sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
-        sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("bar_view"))));
-        when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
-        ShardingSphereView existingView = new ShardingSphereView("foo_view", "SELECT 1");
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
-                Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.singleton(existingView))));
-        when(TableRefreshUtils.isSingleTable("bar_view", database)).thenReturn(true);
-        ShardingSphereTable renamedTable = new ShardingSphereTable("bar_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
-                "foo_schema", new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(renamedTable), Collections.emptyList()));
-        when(GenericSchemaBuilder.build(eq(Collections.singletonList("bar_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
-        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        ArgumentCaptor<Collection<ShardingSphereTable>> alteredCaptor = ArgumentCaptor.forClass(Collection.class);
-        ArgumentCaptor<Collection<String>> droppedCaptor = ArgumentCaptor.forClass(Collection.class);
-        verify(mutableDataNodeRuleAttribute).put("logic_ds", "foo_schema", "bar_view");
-        verify(metaDataManagerPersistService).alterTables(eq(database), eq("foo_schema"), alteredCaptor.capture());
-        verify(metaDataManagerPersistService).dropTables(eq(database), eq("foo_schema"), droppedCaptor.capture());
-        assertThat(alteredCaptor.getValue().iterator().next().getName(), is("bar_view"));
-        assertThat(droppedCaptor.getValue().iterator().next(), is("foo_view"));
+        sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("\"Foo_Old_View\""))));
+        sqlStatement.setRenameView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("\"Foo_New_View\""))));
+        new AlterViewPushDownMetaDataRefresher().refresh(persistService, database, LOGIC_DATA_SOURCE_NAME, SCHEMA_NAME,
+                databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getAlteredTableSchemaName(), is(SCHEMA_NAME));
+        assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Foo_New_View"));
+        assertThat(persistService.getAlteredViewSchemaName(), is(SCHEMA_NAME));
+        assertThat(persistService.getAlteredViews().iterator().next().getName(), is("Foo_New_View"));
+        assertThat(persistService.getAlteredViews().iterator().next().getViewDefinition(), is("SELECT 1"));
+        assertThat(persistService.getDroppedTableNames(), contains("Foo_Old_View"));
+        assertThat(persistService.getDroppedViewNames(), contains("Foo_Old_View"));
     }
     
-    @SuppressWarnings("unchecked")
     @Test
-    void assertRefreshUpdatesViewDefinitionWithoutRename() throws SQLException {
-        ShardingSphereRule rule = mock(ShardingSphereRule.class);
-        when(rule.getAttributes()).thenReturn(new RuleAttributes(mutableDataNodeRuleAttribute));
+    void assertRefreshAlterViewUsesLoadedViewTable() throws SQLException {
+        JdbcDataSource dataSource = createDataSource("alter_view");
+        executeUpdate(dataSource, "CREATE VIEW \"Foo_Old_View\" AS SELECT 1");
+        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
+        ShardingSphereDatabase database = createDatabase(dataSource, "Foo_Old_View");
         AlterViewStatement sqlStatement = new AlterViewStatement(databaseType);
-        sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("foo_view"))));
-        sqlStatement.setViewDefinition("SELECT * FROM t_order");
-        when(TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType)).thenReturn("foo_view");
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.singleton(rule)),
-                Collections.singleton(new ShardingSphereSchema("foo_schema", databaseType, Collections.emptyList(), Collections.emptyList())));
-        ShardingSphereTable table = new ShardingSphereTable("foo_view", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(
-                "foo_schema", new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList()));
-        when(GenericSchemaBuilder.build(eq(Collections.singletonList("foo_view")), eq(database.getProtocolType()), any())).thenReturn(schemas);
-        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        ArgumentCaptor<Collection<ShardingSphereTable>> alteredCaptor = ArgumentCaptor.forClass(Collection.class);
-        ArgumentCaptor<Collection<String>> droppedCaptor = ArgumentCaptor.forClass(Collection.class);
-        verify(mutableDataNodeRuleAttribute, never()).put("logic_ds", "foo_schema", "foo_view");
-        verify(metaDataManagerPersistService).alterTables(eq(database), eq("foo_schema"), alteredCaptor.capture());
-        verify(metaDataManagerPersistService).dropTables(eq(database), eq("foo_schema"), droppedCaptor.capture());
-        assertThat(alteredCaptor.getValue().iterator().next().getName(), is("foo_view"));
-        assertTrue(droppedCaptor.getValue().isEmpty());
+        sqlStatement.setView(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("\"Foo_Old_View\""))));
+        sqlStatement.setViewDefinition("SELECT 1");
+        new AlterViewPushDownMetaDataRefresher().refresh(persistService, database, LOGIC_DATA_SOURCE_NAME, SCHEMA_NAME,
+                databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertThat(persistService.getAlteredTableSchemaName(), is(SCHEMA_NAME));
+        assertThat(persistService.getAlteredTables().iterator().next().getName(), is("Foo_Old_View"));
+        assertThat(persistService.getAlteredViewSchemaName(), is(SCHEMA_NAME));
+        assertThat(persistService.getAlteredViews().iterator().next().getName(), is("Foo_Old_View"));
+        assertThat(persistService.getAlteredViews().iterator().next().getViewDefinition(), is("SELECT 1"));
+        assertTrue(persistService.getDroppedTableNames().isEmpty());
+        assertTrue(persistService.getDroppedViewNames().isEmpty());
+    }
+    
+    private ShardingSphereDatabase createDatabase(final JdbcDataSource dataSource, final String currentViewName) {
+        ShardingSphereSchema schema = new ShardingSphereSchema(SCHEMA_NAME, databaseType, Collections.emptyList(),
+                Collections.singleton(new ShardingSphereView(currentViewName, "SELECT 1")));
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.singletonMap(LOGIC_DATA_SOURCE_NAME, dataSource)),
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+    }
+    
+    private JdbcDataSource createDataSource(final String databaseName) {
+        JdbcDataSource result = new JdbcDataSource();
+        result.setURL("jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false");
+        result.setUser("sa");
+        result.setPassword("");
+        return result;
+    }
+    
+    private void executeUpdate(final JdbcDataSource dataSource, final String... sqls) throws SQLException {
+        try (
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement()) {
+            for (String each : sqls) {
+                statement.execute(each);
+            }
+        }
     }
 }

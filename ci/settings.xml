@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+    <mirrors>
+        <mirror>
+            <id>nexus</id>
+            <name>Nexus Repository Manager</name>
+            <url>http://10.81.107.47:80/repository/maven-public/</url>
+            <mirrorOf>central,snapshots</mirrorOf>
+        </mirror>
+    </mirrors>
+
+    <!-- Profiles -->
+    <profiles>
+        <profile>
+            <id>nexus</id>
+            <!-- Repository configuration -->
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>http://10.81.107.47:80/repository/maven-central/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>snapshots</id>
+                    <url>http://10.81.107.47:80/repository/maven-snapshots/</url>
+                    <releases><enabled>false</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>jaybird</id>
+                    <url>http://nexus.red-soft.biz/repository/jaybird-releases/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+                <repository>
+                    <id>jaybird-snapshot</id>
+                    <url>http://nexus.red-soft.biz/repository/jaybird-snapshots/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </repository>
+            </repositories>
+
+            <!-- Plugin repositories -->
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>central</id>
+                    <url>http://10.81.107.47:80/repository/maven-central/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>true</enabled></snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
+
+    <!-- Active profiles -->
+    <activeProfiles>
+        <activeProfile>nexus</activeProfile>
+    </activeProfiles>
+</settings>

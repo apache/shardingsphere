@@ -43,6 +43,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,18 +65,18 @@ class PrepareStatementBinderTest {
     
     @Test
     void assertBindWithSelect() {
-        PrepareStatement prepareStatement = new PrepareStatement(databaseType);
-        SelectStatement selectStatement = createSelectStatement();
-        prepareStatement.setSelect(selectStatement);
-        when(metaData.containsDatabase("foo_db_1")).thenReturn(true);
-        when(metaData.getDatabase("foo_db_1")).thenReturn(database);
-        when(database.containsSchema("foo_db_1")).thenReturn(true);
-        when(database.getSchema("foo_db_1")).thenReturn(schema);
-        when(schema.containsTable("t_order")).thenReturn(true);
-        when(schema.getTable("t_order")).thenReturn(table);
+        IdentifierValue databaseName = new IdentifierValue("foo_db_1");
+        IdentifierValue tableName = new IdentifierValue("t_order");
+        when(metaData.containsDatabase(eq(databaseName))).thenReturn(true);
+        when(metaData.getDatabase(eq(databaseName))).thenReturn(database);
+        when(database.containsSchema(eq(databaseName))).thenReturn(true);
+        when(database.getSchema(eq(databaseName))).thenReturn(schema);
+        when(schema.containsTable(eq(tableName))).thenReturn(true);
+        when(schema.getTable(eq(tableName))).thenReturn(table);
         when(table.getAllColumns()).thenReturn(Collections.emptyList());
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
+        PrepareStatement prepareStatement = PrepareStatement.builder().databaseType(databaseType).select(createSelectStatement()).build();
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, prepareStatement);
         PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
         assertThat(actual.getDatabaseType(), is(databaseType));
@@ -87,9 +88,9 @@ class PrepareStatementBinderTest {
     
     @Test
     void assertBindWithoutInnerStatements() {
-        PrepareStatement prepareStatement = new PrepareStatement(databaseType);
         HintValueContext hintValueContext = new HintValueContext();
         hintValueContext.setSkipMetadataValidate(true);
+        PrepareStatement prepareStatement = PrepareStatement.builder().databaseType(databaseType).build();
         SQLStatementBinderContext binderContext = new SQLStatementBinderContext(metaData, "foo_db_1", hintValueContext, prepareStatement);
         PrepareStatement actual = new PrepareStatementBinder().bind(prepareStatement, binderContext);
         assertThat(actual.getDatabaseType(), is(databaseType));
@@ -100,11 +101,8 @@ class PrepareStatementBinderTest {
     }
     
     private SelectStatement createSelectStatement() {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(createProjectionsSegment());
         SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(10, 15, new IdentifierValue("t_order")));
-        result.setFrom(tableSegment);
-        return result;
+        return SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).from(tableSegment).build();
     }
     
     private ProjectionsSegment createProjectionsSegment() {

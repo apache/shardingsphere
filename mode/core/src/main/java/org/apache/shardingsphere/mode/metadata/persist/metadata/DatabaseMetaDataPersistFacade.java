@@ -78,8 +78,8 @@ public final class DatabaseMetaDataPersistFacade {
     public void persistReloadDatabase(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
         Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesAdded = GenericSchemaManager.getToBeAlteredSchemasWithTablesAdded(reloadDatabase, currentDatabase);
-        toBeAlteredSchemasWithTablesAdded.forEach(each -> table.persist(databaseName, each.getName().toLowerCase(), each.getAllTables()));
-        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName().toLowerCase(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesAdded.forEach(each -> table.persist(databaseName, each.getName(), each.getAllTables()));
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
     }
     
     /**

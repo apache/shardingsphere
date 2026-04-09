@@ -3,8 +3,10 @@ title = "Optional Plugins"
 weight = 6
 +++
 
-ShardingSphere only includes the implementation of the core SPI by default, and there is a part of the SPI that contains third-party dependencies in Git Source
-Implemented plugins are not included. Retrievable at https://central.sonatype.com/ .
+ShardingSphere only loads the implementation of the core SPI by default.
+The binary release package ships some ShardingSphere-maintained optional plugins in the `opt-lib` directory, but they are not added to the classpath by default.
+To enable these plugins, copy the corresponding jars to `ext-lib` first, then add the required third-party dependencies according to the plugin documentation.
+Other plugins that are not shipped with the binary package can be retrieved at https://central.sonatype.com/ .
 
 SPI and existing implementation classes of SPI corresponding to all plugins can be retrieved at https://shardingsphere.apache.org/document/current/cn/dev-manual/ .
 

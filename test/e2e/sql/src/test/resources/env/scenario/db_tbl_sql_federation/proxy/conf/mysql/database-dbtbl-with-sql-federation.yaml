@@ -20,6 +20,7 @@ databaseName: db_tbl_sql_federation
 dataSources:
   sql_federation_ds_0:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_0?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_1:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_1?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -38,6 +40,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_2:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_2?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -47,6 +50,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_3:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_3?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -56,6 +60,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_4:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_4?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -65,6 +70,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_5:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_5?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -74,6 +80,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_6:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_6?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -83,6 +90,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_7:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_7?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -92,6 +100,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_8:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_8?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -101,6 +110,7 @@ dataSources:
     minPoolSize: 2
   sql_federation_ds_9:
     url: jdbc:mysql://mysql.db_tbl_sql_federation.host:3306/sql_federation_ds_9?useSSL=false&characterEncoding=utf-8
+    driverClassName: com.mysql.cj.jdbc.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

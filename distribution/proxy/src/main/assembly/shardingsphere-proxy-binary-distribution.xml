@@ -78,7 +78,23 @@
             <fileMode>0644</fileMode>
             <excludes>
                 <exclude>org.apache.shardingsphere:shardingsphere-agent*</exclude>
+                <exclude>org.apache.shardingsphere:*-hive</exclude>
+                <exclude>org.apache.shardingsphere:*-seata-at</exclude>
             </excludes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>opt-lib/hive</outputDirectory>
+            <fileMode>0644</fileMode>
+            <includes>
+                <include>org.apache.shardingsphere:*-hive</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>opt-lib/seata-at</outputDirectory>
+            <fileMode>0644</fileMode>
+            <includes>
+                <include>org.apache.shardingsphere:*-seata-at</include>
+            </includes>
         </dependencySet>
     </dependencySets>
 </assembly>

@@ -80,9 +80,7 @@ class AlterEncryptRuleExecutorTest {
                 new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("MD5", new Properties())),
                 new EncryptColumnItemSegment(assistQueryColumnName, new AlgorithmSegment("MD5", new Properties())),
                 new EncryptColumnItemSegment(likeColumnName, new AlgorithmSegment("MD5", new Properties())));
-        AlterEncryptRuleStatement result = new AlterEncryptRuleStatement(Collections.singleton(new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment))));
-        result.buildAttributes();
-        return result;
+        return new AlterEncryptRuleStatement(Collections.singleton(new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment))));
     }
     
     @Test
@@ -121,17 +119,13 @@ class AlterEncryptRuleExecutorTest {
                 new EncryptColumnItemSegment("assisted_column", new AlgorithmSegment("MD5", new Properties())),
                 new EncryptColumnItemSegment("like_column", new AlgorithmSegment("MD5", new Properties())));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
-        AlterEncryptRuleStatement result = new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
-        result.buildAttributes();
-        return result;
+        return new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
     }
     
     private AlterEncryptRuleStatement createSQLStatementWithoutAssistQueryAndLikeColumns() {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", new EncryptColumnItemSegment("user_cipher", new AlgorithmSegment("MD5", new Properties())), null, null);
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment));
-        AlterEncryptRuleStatement result = new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
-        result.buildAttributes();
-        return result;
+        return new AlterEncryptRuleStatement(Collections.singleton(ruleSegment));
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {

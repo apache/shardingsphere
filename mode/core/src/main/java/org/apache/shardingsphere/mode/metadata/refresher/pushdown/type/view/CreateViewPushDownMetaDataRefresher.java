@@ -17,16 +17,11 @@
 
 package org.apache.shardingsphere.mode.metadata.refresher.pushdown.type.view;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
@@ -34,28 +29,23 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.vi
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Create view push down meta data refresher.
  */
 public final class CreateViewPushDownMetaDataRefresher implements PushDownMetaDataRefresher<CreateViewStatement> {
     
+    private final ViewMetaDataRefresherLoader metaDataLoader = new ViewMetaDataRefresherLoader();
+    
     @Override
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final CreateViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
-        String viewName = TableRefreshUtils.getTableName(sqlStatement.getView().getTableName().getIdentifier(), databaseType);
-        RuleMetaData ruleMetaData = new RuleMetaData(new LinkedList<>(database.getRuleMetaData().getRules()));
-        if (TableRefreshUtils.isSingleTable(viewName, database)) {
-            ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, viewName));
+        ShardingSphereTable actualViewMetaData = metaDataLoader.loadCreatedView(database, logicDataSourceName, schemaName, sqlStatement.getView().getTableName().getIdentifier(), props);
+        metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(actualViewMetaData));
+        metaDataManagerPersistService.alterViews(database, schemaName, Collections.singleton(new ShardingSphereView(actualViewMetaData.getName(), sqlStatement.getViewDefinition())));
+        if (TableRefreshUtils.isSingleTable(actualViewMetaData.getName(), database) && TableRefreshUtils.isNeedRefresh(database.getRuleMetaData(), schemaName, actualViewMetaData.getName())) {
+            metaDataManagerPersistService.alterSingleRuleConfiguration(database, database.getRuleMetaData());
         }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
-        Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(viewName), database.getProtocolType(), material);
-        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(viewName));
-        Preconditions.checkState(actualTableMetaData.isPresent(), "Load actual view metadata '%s' failed.", viewName);
-        metaDataManagerPersistService.alterTables(database, schemaName, Collections.singleton(actualTableMetaData.get()));
     }
     
     @Override

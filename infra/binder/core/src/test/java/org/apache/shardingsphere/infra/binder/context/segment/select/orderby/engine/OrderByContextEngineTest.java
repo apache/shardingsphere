@@ -52,7 +52,7 @@ class OrderByContextEngineTest {
     
     @Test
     void assertCreateOrderByWithoutOrderBy() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         OrderByItem orderByItem1 = new OrderByItem(new IndexOrderByItemSegment(0, 1, 1, OrderDirection.ASC, NullsOrderType.LAST));
         OrderByItem orderByItem2 = new OrderByItem(new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST));
         Collection<OrderByItem> orderByItems = Arrays.asList(orderByItem1, orderByItem2);
@@ -64,12 +64,11 @@ class OrderByContextEngineTest {
     
     @Test
     void assertCreateOrderByWithOrderBy() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         OrderByItemSegment columnOrderByItemSegment = new ColumnOrderByItemSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")), OrderDirection.ASC, NullsOrderType.FIRST);
         OrderByItemSegment indexOrderByItemSegment1 = new IndexOrderByItemSegment(1, 2, 2, OrderDirection.ASC, NullsOrderType.LAST);
         OrderByItemSegment indexOrderByItemSegment2 = new IndexOrderByItemSegment(2, 3, 3, OrderDirection.ASC, NullsOrderType.LAST);
         OrderBySegment orderBySegment = new OrderBySegment(0, 1, Arrays.asList(columnOrderByItemSegment, indexOrderByItemSegment1, indexOrderByItemSegment2));
-        selectStatement.setOrderBy(orderBySegment);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).orderBy(orderBySegment).build();
         GroupByContext emptyGroupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine(databaseType).createOrderBy(selectStatement, emptyGroupByContext);
         OrderByItem expectedOrderByItem1 = new OrderByItem(columnOrderByItemSegment);
@@ -83,14 +82,13 @@ class OrderByContextEngineTest {
     
     @Test
     void assertCreateOrderInDistinctByWithoutOrderBy() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
         ColumnProjectionSegment columnProjectionSegment1 = new ColumnProjectionSegment(new ColumnSegment(0, 1, new IdentifierValue("column1")));
         ColumnProjectionSegment columnProjectionSegment2 = new ColumnProjectionSegment(new ColumnSegment(1, 2, new IdentifierValue("column2")));
         List<ProjectionSegment> list = Arrays.asList(columnProjectionSegment1, columnProjectionSegment2);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 1);
         projectionsSegment.setDistinctRow(true);
         projectionsSegment.getProjections().addAll(list);
-        selectStatement.setProjections(projectionsSegment);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment).build();
         GroupByContext groupByContext = new GroupByContext(Collections.emptyList());
         OrderByContext actualOrderByContext = new OrderByContextEngine(databaseType).createOrderBy(selectStatement, groupByContext);
         assertThat(actualOrderByContext.getItems().size(), is(list.size()));

@@ -61,10 +61,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForAsc() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        selectStatement.setProjections(projectionsSegment);
-        selectStatement.setOrderBy(createOrderBySegment());
+        SelectStatement selectStatement = createSelectStatement();
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(), "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
@@ -94,10 +91,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToForDesc() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        selectStatement.setProjections(projectionsSegment);
-        selectStatement.setOrderBy(createOrderBySegment());
+        SelectStatement selectStatement = createSelectStatement();
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(), "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.getTable("foo_tbl")).thenReturn(new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), TableType.TABLE));
@@ -122,10 +116,7 @@ class OrderByValueTest {
     
     @Test
     void assertCompareToWhenEqual() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
-        selectStatement.setProjections(projectionsSegment);
-        selectStatement.setOrderBy(createOrderBySegment());
+        SelectStatement selectStatement = createSelectStatement();
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, createShardingSphereMetaData(), "foo_db", Collections.emptyList());
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         QueryResult queryResult1 = createQueryResult("1", "2");
@@ -154,6 +145,10 @@ class OrderByValueTest {
             when(result.getValue(i + 1, Object.class)).thenReturn(values[i]);
         }
         return result;
+    }
+    
+    private SelectStatement createSelectStatement() {
+        return SelectStatement.builder().databaseType(databaseType).projections(new ProjectionsSegment(0, 0)).orderBy(createOrderBySegment()).build();
     }
     
     private OrderByItem createOrderByItem(final IndexOrderByItemSegment indexOrderByItemSegment) {

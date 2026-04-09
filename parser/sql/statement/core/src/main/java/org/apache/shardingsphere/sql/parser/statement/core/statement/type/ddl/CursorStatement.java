@@ -34,16 +34,12 @@ public final class CursorStatement extends DDLStatement {
     
     private final SelectStatement select;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public CursorStatement(final DatabaseType databaseType, final CursorNameSegment cursorName, final SelectStatement select) {
         super(databaseType);
         this.cursorName = cursorName;
         this.select = select;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new CursorSQLStatementAttribute(cursorName));
     }
 }

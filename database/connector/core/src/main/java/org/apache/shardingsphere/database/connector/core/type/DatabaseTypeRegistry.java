@@ -57,7 +57,7 @@ public final class DatabaseTypeRegistry {
      * @return default schema name
      */
     public String getDefaultSchemaName(final String databaseName) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(databaseName);
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().orElse(null == databaseName ? null : formatIdentifierPattern(databaseName));
     }
     
     /**

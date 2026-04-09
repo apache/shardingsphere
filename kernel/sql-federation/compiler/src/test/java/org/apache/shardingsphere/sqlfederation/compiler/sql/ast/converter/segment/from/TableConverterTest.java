@@ -65,7 +65,7 @@ class TableConverterTest {
         joinTableSegment.setRight(simpleTableSegment);
         when(JoinTableConverter.convert(joinTableSegment)).thenReturn(Optional.of(expectedJoinNode));
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
-        SubquerySegment subquerySegment = new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub");
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub");
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(0, 0, subquerySegment);
         when(SubqueryTableConverter.convert(subqueryTableSegment)).thenReturn(Optional.of(expectedSubqueryNode));
         SqlNode expectedDeleteNode = mock(SqlNode.class);

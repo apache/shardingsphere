@@ -65,7 +65,6 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     @Getter
     private final DriverDatabaseConnectionManager databaseConnectionManager;
     
-    @Getter
     private final Collection<StatementManager> statementManagers = new ConcurrentLinkedQueue<>();
     
     @Getter
@@ -310,5 +309,23 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             statementManagers.clear();
             databaseConnectionManager.close();
         }
+    }
+    
+    /**
+     * Register statement manager.
+     *
+     * @param statementManager statement manager to be registered
+     */
+    public void registerStatementManager(final StatementManager statementManager) {
+        statementManagers.add(statementManager);
+    }
+    
+    /**
+     * Unregister statement manager.
+     *
+     * @param statementManager statement manager to be unregistered
+     */
+    public void unregisterStatementManager(final StatementManager statementManager) {
+        statementManagers.remove(statementManager);
     }
 }

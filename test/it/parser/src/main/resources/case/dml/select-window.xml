@@ -143,6 +143,11 @@
     <select sql-case-id="select_window_frame_mysql">
         <projections start-index="7" stop-index="86">
             <aggregation-projection type="SUM" expression="SUM(v) OVER (PARTITION BY k ORDER BY v ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" start-index="7" stop-index="86">
+                <window-item start-index="14" stop-index="86">
+                    <order-by start-index="35" stop-index="44">
+                        <column-item name="v" order-direction="ASC" start-index="44" stop-index="44" />
+                    </order-by>
+                </window-item>
                 <parameter>
                     <column name="v" start-index="11" stop-index="11" />
                 </parameter>
@@ -169,4 +174,209 @@
             <simple-table name="t_order" start-index="40" stop-index="46" />
         </from>
     </select>
+
+    <select sql-case-id="select_window_order_by_mysql">
+        <projections start-index="7" stop-index="49">
+            <expression-projection text="ROW_NUMBER() OVER (ORDER BY order_id)" start-index="7" stop-index="49" alias="rn">
+                <expr>
+                    <function function-name="ROW_NUMBER" start-index="7" stop-index="43" text="ROW_NUMBER() OVER (ORDER BY order_id)">
+                        <window-item start-index="20" stop-index="43">
+                            <order-by start-index="26" stop-index="42">
+                                <column-item name="order_id" order-direction="ASC" start-index="35" stop-index="42" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="56" stop-index="62" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_partition_order_by_mysql">
+        <projections start-index="7" stop-index="70">
+            <expression-projection text="ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY order_id)" start-index="7" stop-index="70" alias="rn">
+                <expr>
+                    <function function-name="ROW_NUMBER" start-index="7" stop-index="64" text="ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY order_id)">
+                        <window-item start-index="20" stop-index="64">
+                            <order-by start-index="47" stop-index="63">
+                                <column-item name="order_id" order-direction="ASC" start-index="56" stop-index="63" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="77" stop-index="83" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_expression_partition_order_by_mysql">
+        <projections start-index="7" stop-index="75">
+            <expression-projection text="ROW_NUMBER() OVER (PARTITION BY LENGTH(email) ORDER BY user_id)" start-index="7" stop-index="75" alias="rn">
+                <expr>
+                    <function function-name="ROW_NUMBER" start-index="7" stop-index="69" text="ROW_NUMBER() OVER (PARTITION BY LENGTH(email) ORDER BY user_id)">
+                        <window-item start-index="20" stop-index="69">
+                            <order-by start-index="53" stop-index="68">
+                                <column-item name="user_id" order-direction="ASC" start-index="62" stop-index="68" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="82" stop-index="88" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_lead_placeholder_mysql" parameters="1, 0, 1, 2">
+        <projections start-index="7" stop-index="113">
+            <column-projection name="order_id" start-index="7" stop-index="14" />
+            <column-projection name="user_id" start-index="17" stop-index="23" />
+            <expression-projection text="LEAD(order_id, ?, ?) OVER (PARTITION BY user_id ORDER BY order_id)" start-index="26" stop-index="113" alias="next_order_default">
+                <expr>
+                    <function function-name="LEAD" start-index="26" stop-index="91" text="LEAD(order_id, ?, ?) OVER (PARTITION BY user_id ORDER BY order_id)">
+                        <parameter>
+                            <column name="order_id" start-index="31" stop-index="38" />
+                        </parameter>
+                        <parameter>
+                            <parameter-marker-expression parameter-index="0" start-index="41" stop-index="41" />
+                            <literal-expression value="1" start-index="41" stop-index="41" />
+                        </parameter>
+                        <parameter>
+                            <parameter-marker-expression parameter-index="1" start-index="44" stop-index="44" />
+                            <literal-expression value="0" start-index="44" stop-index="44" />
+                        </parameter>
+                        <window-item start-index="47" stop-index="91">
+                            <partition-by>
+                                <column name="user_id" start-index="66" stop-index="72" />
+                            </partition-by>
+                            <order-by>
+                                <column-item name="order_id" order-direction="ASC" start-index="83" stop-index="90" />
+                            </order-by>
+                        </window-item>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="120" stop-index="126" />
+        </from>
+        <where start-index="128" stop-index="156">
+            <expr>
+                <between-expression start-index="134" stop-index="156">
+                    <not>false</not>
+                    <left>
+                        <column name="user_id" start-index="134" stop-index="140" />
+                    </left>
+                    <between-expr>
+                        <parameter-marker-expression parameter-index="2" start-index="150" stop-index="150" />
+                        <literal-expression value="1" start-index="150" stop-index="150" />
+                    </between-expr>
+                    <and-expr>
+                        <parameter-marker-expression parameter-index="3" start-index="156" stop-index="156" />
+                        <literal-expression value="2" start-index="156" stop-index="156" />
+                    </and-expr>
+                </between-expression>
+            </expr>
+        </where>
+        <order-by>
+            <column-item name="user_id" order-direction="ASC" start-index="167" stop-index="173" />
+            <column-item name="order_id" order-direction="ASC" start-index="176" stop-index="183" />
+        </order-by>
+    </select>
+
+    <select sql-case-id="select_named_window_expression_order_by_mysql">
+        <projections start-index="7" stop-index="51">
+            <column-projection name="user_id" start-index="7" stop-index="13" />
+            <column-projection name="user_name" start-index="16" stop-index="24" />
+            <expression-projection text="ROW_NUMBER() OVER w" start-index="27" stop-index="51" alias="rn">
+                <expr>
+                    <function function-name="ROW_NUMBER" start-index="27" stop-index="45" text="ROW_NUMBER() OVER w" />
+                </expr>
+            </expression-projection>
+        </projections>
+        <from>
+            <simple-table name="t_user" start-index="58" stop-index="63" />
+        </from>
+        <window start-index="65" stop-index="113">
+            <window-item start-index="72" stop-index="113">
+                <order-by>
+                    <expression-item expression="LENGTH(user_name)" order-direction="ASC" start-index="87" stop-index="103">
+                        <expr>
+                            <function function-name="LENGTH" start-index="87" stop-index="103" text="LENGTH(user_name)">
+                                <parameter>
+                                    <column name="user_name" start-index="94" stop-index="102" />
+                                </parameter>
+                            </function>
+                        </expr>
+                    </expression-item>
+                    <column-item name="user_id" order-direction="ASC" start-index="106" stop-index="112" />
+                </order-by>
+            </window-item>
+        </window>
+    </select>
+
+    <select sql-case-id="select_window_sum_partition_order_by_mysql">
+        <projections start-index="7" stop-index="129">
+            <aggregation-projection type="SUM" expression="SUM(order_id) OVER (PARTITION BY user_id ORDER BY order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)" start-index="7" stop-index="114" alias="running_sum">
+                <window-item start-index="21" stop-index="114">
+                    <order-by start-index="48" stop-index="64">
+                        <column-item name="order_id" order-direction="ASC" start-index="57" stop-index="64" />
+                    </order-by>
+                </window-item>
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="136" stop-index="142" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_count_partition_mysql">
+        <projections start-index="7" stop-index="61">
+            <aggregation-projection type="COUNT" expression="COUNT(*) OVER (PARTITION BY user_id)" start-index="7" stop-index="42" alias="partition_count">
+                <window-item start-index="16" stop-index="42" />
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="68" stop-index="74" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_avg_partition_mysql">
+        <projections start-index="7" stop-index="63">
+            <aggregation-projection type="AVG" expression="AVG(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="47" alias="avg_order_id">
+                <window-item start-index="21" stop-index="47" />
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="70" stop-index="76" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_min_partition_mysql">
+        <projections start-index="7" stop-index="63">
+            <aggregation-projection type="MIN" expression="MIN(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="47" alias="min_order_id">
+                <window-item start-index="21" stop-index="47" />
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="70" stop-index="76" />
+        </from>
+    </select>
+
+    <select sql-case-id="select_window_max_partition_mysql">
+        <projections start-index="7" stop-index="63">
+            <aggregation-projection type="MAX" expression="MAX(order_id) OVER (PARTITION BY user_id)" start-index="7" stop-index="47" alias="max_order_id">
+                <window-item start-index="21" stop-index="47" />
+            </aggregation-projection>
+        </projections>
+        <from>
+            <simple-table name="t_order" start-index="70" stop-index="76" />
+        </from>
+    </select>
+
 </sql-parser-test-cases>

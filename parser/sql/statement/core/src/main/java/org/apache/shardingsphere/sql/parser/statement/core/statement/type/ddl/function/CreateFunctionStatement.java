@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.function;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.routine.FunctionNameSegment;
@@ -28,7 +27,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -37,19 +35,23 @@ import java.util.Optional;
  * Create function statement.
  */
 @Getter
-@Setter
 public class CreateFunctionStatement extends DDLStatement {
     
-    private FunctionNameSegment functionName;
+    private final FunctionNameSegment functionName;
     
-    private RoutineBodySegment routineBody;
+    private final RoutineBodySegment routineBody;
     
-    private final List<ExpressionSegment> dynamicSqlStatementExpressions = new ArrayList<>();
+    private final List<ExpressionSegment> dynamicSqlStatementExpressions;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public CreateFunctionStatement(final DatabaseType databaseType) {
+    public CreateFunctionStatement(final DatabaseType databaseType,
+                                   final FunctionNameSegment functionName, final RoutineBodySegment routineBody, final List<ExpressionSegment> dynamicSqlStatementExpressions) {
         super(databaseType);
+        this.functionName = functionName;
+        this.routineBody = routineBody;
+        this.dynamicSqlStatementExpressions = dynamicSqlStatementExpressions;
+        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(null == routineBody ? Collections.emptyList() : new TableExtractor().extractExistTableFromRoutineBody(routineBody)));
     }
     
     /**
@@ -68,11 +70,5 @@ public class CreateFunctionStatement extends DDLStatement {
      */
     public Optional<RoutineBodySegment> getRoutineBody() {
         return Optional.ofNullable(routineBody);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(
-                new TableSQLStatementAttribute(getRoutineBody().map(optional -> new TableExtractor().extractExistTableFromRoutineBody(optional)).orElseGet(Collections::emptyList)));
     }
 }

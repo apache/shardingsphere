@@ -18,19 +18,26 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLDatabaseRuleQueryExecutorAssert;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorSettings;
 import org.apache.shardingsphere.test.it.distsql.handler.engine.query.DistSQLRuleQueryExecutorTestCaseArgumentsProvider;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @DistSQLRuleQueryExecutorSettings("cases/show-sharding-key-generator.xml")
 class ShowShardingKeyGeneratorExecutorTest {
@@ -40,5 +47,18 @@ class ShowShardingKeyGeneratorExecutorTest {
     void assertExecuteQuery(@SuppressWarnings("unused") final String distSQL, final DistSQLStatement sqlStatement,
                             final ShardingRuleConfiguration currentRuleConfig, final Collection<LocalDataQueryResultRow> expected) throws SQLException {
         new DistSQLDatabaseRuleQueryExecutorAssert(mock(ShardingRule.class)).assertQueryResultRows(currentRuleConfig, sqlStatement, expected);
+    }
+    
+    @Test
+    void assertGetRowsWithName() {
+        ShardingRule rule = mock(ShardingRule.class);
+        ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
+        ruleConfig.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        ruleConfig.getKeyGenerators().put("uuid", new AlgorithmConfiguration("UUID", new Properties()));
+        when(rule.getConfiguration()).thenReturn(ruleConfig);
+        ShowShardingKeyGeneratorExecutor executor = new ShowShardingKeyGeneratorExecutor();
+        executor.setRule(rule);
+        Collection<LocalDataQueryResultRow> actual = executor.getRows(new ShowShardingKeyGeneratorsStatement("snowflake", null), null);
+        assertThat(actual, hasSize(1));
     }
 }

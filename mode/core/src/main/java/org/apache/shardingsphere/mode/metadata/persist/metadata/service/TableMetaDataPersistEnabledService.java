@@ -49,12 +49,16 @@ public final class TableMetaDataPersistEnabledService implements TableMetaDataPe
     @Override
     public Collection<ShardingSphereTable> load(final String databaseName, final String schemaName) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, null))).stream()
-                .map(each -> load(databaseName, schemaName, each))
+                .map(each -> loadByPath(databaseName, schemaName, each))
                 .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
     
     @Override
     public Optional<ShardingSphereTable> load(final String databaseName, final String schemaName, final String tableName) {
+        return loadByPath(databaseName, schemaName, tableName);
+    }
+    
+    private Optional<ShardingSphereTable> loadByPath(final String databaseName, final String schemaName, final String tableName) {
         VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath(databaseName, schemaName, tableName));
         String activeVersion = repository.query(versionNodePath.getActiveVersionPath());
         if (Strings.isNullOrEmpty(activeVersion)) {
@@ -70,15 +74,14 @@ public final class TableMetaDataPersistEnabledService implements TableMetaDataPe
     @Override
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereTable> tables) {
         for (ShardingSphereTable each : tables) {
-            String tableName = each.getName().toLowerCase();
-            VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath(databaseName, schemaName, tableName));
+            VersionNodePath versionNodePath = new VersionNodePath(new TableMetaDataNodePath(databaseName, schemaName, each.getName()));
             versionPersistService.persist(versionNodePath, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
         }
     }
     
     @Override
     public void drop(final String databaseName, final String schemaName, final String tableName) {
-        repository.delete(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, tableName.toLowerCase())));
+        repository.delete(NodePathGenerator.toPath(new TableMetaDataNodePath(databaseName, schemaName, tableName)));
     }
     
     @Override

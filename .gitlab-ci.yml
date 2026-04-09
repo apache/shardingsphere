@@ -1,0 +1,201 @@
+# Building with jdk11 and running tests with jdk8,
+# see https://github.com/apache/shardingsphere/blob/master/.github/workflows/ci.yml
+
+variables:
+  JDK_BUILD_IMAGE: registry.red-soft.biz:5000/jdk/temurin-11-jdk
+  JDK_TEST_IMAGE: registry.red-soft.biz:5000/jdk/temurin-8-jdk
+  RELEASEHUB_CLIENT_IMAGE: registry.red-soft.biz:5000/utils/red-release-manager/client:master
+  M2_SETTINGSFILE: ${CI_PROJECT_DIR}/ci/settings.xml
+  CI_URL: ${CI_PROJECT_URL}/pipelines/${CI_PIPELINE_ID}
+  BUILD_TYPE: commit
+  MAVEN_OPTS: "-Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true"
+  RELEASE_HUB_PROJECT: rshrd
+  TAG_BRANCH: "master"
+
+  # Mind that 'none' means git repo won't be downloaded.
+  # Override this variable with 'fetch' or 'rebase' in jobs if needed.
+  GIT_STRATEGY: none
+stages:
+  - prepare_env
+  - prepare_src
+  - build
+  - test
+  - deploy
+
+#workflow:
+#  rules:
+#    - if: $CI_PIPELINE_SOURCE == "web"
+#    - if: $CI_COMMIT_TAG
+
+######
+# Templates
+######
+.build-proxy-native-template:
+  image: docker
+  services:
+    - name: docker:dind
+      entrypoint: [ "dockerd-entrypoint.sh" ]
+      command: [ "--insecure-registry", "registry.red-soft.biz:5000", "--registry-mirror", "http://registry-mirror.red-soft.biz:6000" ]
+  rules:
+    - if: $CI_COMMIT_TAG
+  parallel:
+    matrix:
+      - TYPE: [ "mostly", "dynamic"] # 'static' is currently not compiling
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_BUILD_TOKEN" "$DOCKER_ENV_CI_REGISTRY"
+  dependencies:
+    - prepare_environment
+  variables:
+    DOCKERFILES: "distribution/proxy-native"
+    OUT_IMAGE: registry.red-soft.biz:5000/red-sharding/proxy-native:${VERSION}-${TYPE}
+
+
+
+######
+# Preparation
+######
+prepare_environment:
+  variables:
+    GIT_STRATEGY: fetch
+  tags:
+    - docker
+    - builder
+    - x86_64
+  stage: prepare_env
+  image: registry.red-soft.biz:5000/utils/red-release-manager/client:master
+  script:
+    - mkdir .ci
+    - apk --update add sed
+    - |
+      VERSION_IN_POM=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive org.codehaus.mojo:exec-maven-plugin:1.3.1:exec)
+      if [ "${CI_COMMIT_TAG}" ]; then
+        SUFFIX=$(echo $VERSION|awk -F- '{print $2}')
+        if [ "$VERSION" != "$VERSION_IN_POM" ]; then
+          echo Project versions in pom.xml $VERSION_IN_POM and tag $VERSION do not match!
+          exit 1
+        fi
+        if [ "${SUFFIX}" ]; then
+          STAGE=rc
+        else
+          STAGE=release
+        fi
+        BRANCH=${TAG_BRANCH}
+        CONTEXT=tag
+      elif [[ "${CI_PIPELINE_SOURCE}" == "schedule" ]]; then
+        DATE_TAG=$(date +"%y%m%d")
+        VERSION=$(echo ${VERSION_IN_POM}|sed 's/v//')
+        BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-NIGTHLY)
+        VERSION=${VERSION}_NIGHTLY_${DATE_TAG}_${BUILDNO}
+        BRANCH=${CI_COMMIT_REF_NAME}
+        CONTEXT=schedule
+        STAGE=snapshot
+      else
+        VERSION=$(date +"%Y.%m")
+        BUILDNO=$(relmanager_client genbuildno ${RELEASE_HUB_PROJECT} ${VERSION}-SNAPSHOT)
+        VERSION=${VERSION_IN_POM}_${VERSION}_${BUILDNO}
+        BRANCH=${CI_COMMIT_REF_NAME}
+        CONTEXT=commit
+        STAGE=snapshot
+      fi
+    - m4 -DRSHRD_VERSION=${VERSION} ci/artifacts.m4 >> ci/artifacts
+    - echo VERSION=${VERSION} > vars.env
+    - echo BUILD=${BUILD} >> vars.env
+    - echo BRANCH=${BRANCH} >> vars.env
+    - echo CONTEXT=${CONTEXT} >> vars.env
+    - echo STAGE=${STAGE} >> vars.env
+  artifacts:
+    paths:
+      - ci/artifacts
+    reports:
+      dotenv: vars.env
+
+apply_version:
+  variables:
+    GIT_STRATEGY: fetch
+  stage: prepare_src
+  tags:
+    - docker
+    - builder
+    - x86_64
+  image: registry.red-soft.biz:5000/utils/red-release-manager/client:master
+  script:
+    - ./mvnw -s ${M2_SETTINGSFILE} versions:set -DnewVersion=${VERSION}
+    - hash=$(git stash create)
+    - "[ \"$hash\" = \"\" ] && hash=HEAD"
+    - git archive --format=tar $hash | gzip > rshrd-${VERSION}-src.tar.gz
+  artifacts:
+    paths:
+      - rshrd-${VERSION}-src.tar.gz
+
+
+######
+# Building
+######
+proxy-native-docker:
+  extends: .build-proxy-native-template
+  stage: build
+  before_script:
+    - tar -xf rshrd-${VERSION}-src.tar.gz -C .
+  script:
+    - docker build . -f ${DOCKERFILES}/Dockerfile-linux-${TYPE} --build-arg PROJECT_VERSION=${VERSION} -t ${OUT_IMAGE}
+    - docker push ${OUT_IMAGE}
+    - docker rmi ${OUT_IMAGE}
+  dependencies:
+    - apply_version
+    - prepare_environment
+
+java11:
+  tags: ["docker", "linux", "x86_64"]
+  stage: build
+  image: $JDK_BUILD_IMAGE
+  variables:
+    ARTIFACTS_DIR: ${CI_PROJECT_DIR}/${VERSION}
+  before_script:
+    - tar -xvf rshrd-${VERSION}-src.tar.gz -C .
+  script:
+    - ./mvnw -s ${M2_SETTINGSFILE} clean package -Prelease,db-firebird -T1C -DskipTests -Djacoco.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Dmaven.javadoc.skip=true -B
+    - mkdir -pv ${ARTIFACTS_DIR}
+    - cp -v distribution/{jdbc,proxy,agent}/target/*.{tar.gz,tar.gz.sha512} ${ARTIFACTS_DIR}
+  artifacts:
+    paths:
+      - ${ARTIFACTS_DIR}/*.{tar.gz,tar.gz.sha512}
+  dependencies:
+    - prepare_environment
+    - apply_version
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
+    - if: '$CI_COMMIT_TAG'
+      when: always
+
+######
+# Testing
+######
+java8:
+  tags: ["docker", "linux", "x86_64"]
+  stage: test
+  #rules:
+    #- if: $CI_COMMIT_BRANCH == "master"
+  image: $JDK_TEST_IMAGE
+  dependencies:
+    - apply_version
+    - prepare_environment
+  before_script:
+    - tar -xvf rshrd-${VERSION}-src.tar.gz -C .
+  script:
+    - ./mvnw -s ${M2_SETTINGSFILE} install -T1C -B -ntp -fae
+  allow_failure: true
+
+
+######
+# Deploying
+######
+release_hub:
+  stage: deploy
+  tags: ["docker", "x86_64", "linux"]
+  image: $RELEASEHUB_CLIENT_IMAGE
+  script:
+    - relmanager_client deploy ${RELEASE_HUB_PROJECT} ${VERSION} --artifacts ci/artifacts --ci_url ${CI_URL} --context ${BUILD_TYPE} --branch ${BRANCH} --commit ${CI_COMMIT_SHA} --stage ${STAGE}
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: '$CI_COMMIT_TAG'

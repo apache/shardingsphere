@@ -23,6 +23,7 @@ import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.exception.metadata.EncryptTableNotFoundException;
 import org.apache.shardingsphere.encrypt.exception.metadata.MismatchedEncryptAlgorithmTypeException;
 import org.apache.shardingsphere.encrypt.rule.attribute.EncryptTableMapperRuleAttribute;
@@ -133,15 +134,16 @@ public final class EncryptRule implements DatabaseRule, PartialRuleUpdateSupport
     }
     
     /**
-     * Find query encryptor.
+     * Find encryptor.
      *
      * @param tableName table name
      * @param columnName column name
-     * @return query encryptor
+     * @param columnItemType column item type
+     * @return encryptor
      */
     @HighFrequencyInvocation
-    public Optional<EncryptAlgorithm> findQueryEncryptor(final String tableName, final String columnName) {
-        return findEncryptTable(tableName).flatMap(optional -> optional.findQueryEncryptor(columnName));
+    public Optional<EncryptAlgorithm> findEncryptor(final String tableName, final String columnName, final EncryptColumnItemType columnItemType) {
+        return findEncryptTable(tableName).flatMap(optional -> optional.findEncryptor(columnName, columnItemType));
     }
     
     @Override

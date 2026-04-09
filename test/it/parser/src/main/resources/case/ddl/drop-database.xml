@@ -33,4 +33,7 @@
     <drop-database sql-case-id="drop_database_if_exists_cascade" />
     <drop-database sql-case-id="drop_schema_if_exists_restrict" />
     <drop-database sql-case-id="drop_schema_if_exists_cascade" />
+    <drop-database sql-case-id="drop_database_doris_force" force="true" />
+    <drop-database sql-case-id="drop_database_doris_if_exists_force" force="true" />
+    <drop-database sql-case-id="drop_database_doris_without_force" />
 </sql-parser-test-cases>

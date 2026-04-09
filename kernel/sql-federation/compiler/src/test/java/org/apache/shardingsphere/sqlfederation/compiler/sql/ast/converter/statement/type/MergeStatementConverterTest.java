@@ -51,8 +51,7 @@ class MergeStatementConverterTest {
     
     @Test
     void assertConvertWithUpdate() {
-        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"));
-        mergeStatement.setUpdate(createUpdateStatement());
+        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"), createUpdateStatement());
         SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement);
         assertThat(actual.getCondition(), isA(SqlNode.class));
         assertThat(actual.getUpdateCall(), isA(SqlUpdate.class));
@@ -67,32 +66,37 @@ class MergeStatementConverterTest {
     
     @Test
     void assertConvertUpdateWithEmptyTable() {
-        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"));
-        UpdateStatement updateStatement = createUpdateStatement();
-        updateStatement.setTable(createSimpleTableSegment("DUAL"));
-        mergeStatement.setUpdate(updateStatement);
+        UpdateStatement updateStatement = createUpdateStatement(createSimpleTableSegment("DUAL"), false);
+        MergeStatement mergeStatement = createMergeStatement(createSimpleTableSegment("target_table"), createSimpleTableSegment("source_table"), updateStatement);
         SqlMerge actual = (SqlMerge) new MergeStatementConverter().convert(mergeStatement);
         assertNotNull(actual.getUpdateCall());
         assertThat(actual.getUpdateCall().getTargetTable(), is(SqlNodeList.EMPTY));
     }
     
     private MergeStatement createMergeStatement(final SimpleTableSegment target, final SimpleTableSegment source) {
-        MergeStatement result = new MergeStatement(databaseType);
-        result.setTarget(target);
-        result.setSource(source);
-        result.setExpression(new ExpressionWithParamsSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)));
-        return result;
+        return createMergeStatement(target, source, null);
+    }
+    
+    private MergeStatement createMergeStatement(final SimpleTableSegment target, final SimpleTableSegment source, final UpdateStatement updateStatement) {
+        return MergeStatement.builder().databaseType(databaseType).target(target).source(source)
+                .expression(new ExpressionWithParamsSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0))).update(updateStatement).build();
     }
     
     private UpdateStatement createUpdateStatement() {
-        UpdateStatement result = new UpdateStatement(databaseType);
-        SimpleTableSegment table = createSimpleTableSegment("t_update");
-        table.setAlias(new AliasSegment(0, 0, new IdentifierValue("u")));
-        result.setTable(table);
+        return createUpdateStatement(createSimpleTableSegment("t_update"), true);
+    }
+    
+    private UpdateStatement createUpdateStatement(final SimpleTableSegment table, final boolean withAlias) {
+        if (withAlias) {
+            table.setAlias(new AliasSegment(0, 0, new IdentifierValue("u")));
+        }
         SetAssignmentSegment setAssignment = createSetAssignmentSegment();
-        result.setSetAssignment(setAssignment);
-        result.setWhere(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)));
-        return result;
+        return UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(table)
+                .setAssignment(setAssignment)
+                .where(new WhereSegment(0, 0, new ParameterMarkerExpressionSegment(0, 0, 0)))
+                .build();
     }
     
     private SetAssignmentSegment createSetAssignmentSegment() {

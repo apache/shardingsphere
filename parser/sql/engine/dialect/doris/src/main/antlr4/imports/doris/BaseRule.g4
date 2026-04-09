@@ -154,6 +154,7 @@ identifierKeywordsUnambiguous
     | BEFORE
     | BINLOG
     | BIT
+    | BITMAP_UNION
     // DORIS ADDED BEGIN
     | BITXOR
     // DORIS ADDED END
@@ -161,6 +162,7 @@ identifierKeywordsUnambiguous
     | BOOLEAN
     | BOOL
     | BRIEF
+    | BROKER
     | BTREE
     | BUCKETS
     | BUILTIN
@@ -186,6 +188,7 @@ identifierKeywordsUnambiguous
     | COMPONENT
     | COMPRESSED
     | COMPRESSION
+    | COMPRESS_TYPE
     | CONCURRENT
     | CONNECTION
     | CONSISTENT
@@ -220,6 +223,7 @@ identifierKeywordsUnambiguous
     | DYNAMIC
     | ENABLE
     | ENCRYPTION
+    | ENCRYPTKEYS
     | ENDS
     | ENFORCED
     | ENGINES
@@ -263,6 +267,7 @@ identifierKeywordsUnambiguous
     | GROUPS
     | HASH
     | HDFS
+    | HLL_UNION
     | HISTOGRAM
     | HISTORY
     | HOSTS
@@ -290,6 +295,8 @@ identifierKeywordsUnambiguous
     | KEY
     | KEYS
     | KEY_BLOCK_SIZE
+    | LABEL
+    | LOAD_JOB_ID
     | LAST
     | LEAVES
     | LESS
@@ -350,7 +357,9 @@ identifierKeywordsUnambiguous
     | MULTIPOINT
     | MULTIPOLYGON
     | MUTEX
+    | MYSQL
     | Doris_ERRNO
+    | NEGATIVE
     | NAMES
     | NAME
     | NATIONAL
@@ -395,12 +404,16 @@ identifierKeywordsUnambiguous
     | PATH
     | PAUSE
     | PHASE
+    // DORIS ADDED BEGIN
+    | PLAN
+    // DORIS ADDED END
     | PLUGINS
     | PLUGIN_DIR
     | PLUGIN
     | POINT
     | POLYGON
     | PORT
+    | POSTGRES
     | PRECEDING
     | PRESERVE
     | PREV
@@ -431,6 +444,10 @@ identifierKeywordsUnambiguous
     | REMOVE
     | REORGANIZE
     | REPEATABLE
+    | REPLACE_IF_NOT_NULL
+    // DORIS ADDED BEGIN
+    | REPLAYER
+    // DORIS ADDED END
     | REPLICATE_DO_DB
     | REPLICATE_DO_TABLE
     | REPLICATE_IGNORE_DB
@@ -492,9 +509,11 @@ identifierKeywordsUnambiguous
     | STATS_AUTO_RECALC
     | STATS_PERSISTENT
     | STATS_SAMPLE_PAGES
+    | STATE
     | STATUS
     | STORAGE
     | STREAM
+    | STREAMING
     | STRING
     // DORIS ADDED BEGIN
     | STRRIGHT
@@ -547,6 +566,7 @@ identifierKeywordsUnambiguous
     | VARIABLES
     | VCPU
     | VERBOSE
+    | VERSION
     | VIEW
     | VISIBLE
     | WAIT

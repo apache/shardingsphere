@@ -31,6 +31,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.Re
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.role.CreateRoleStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.user.CreateUserStatement;
 
+import java.util.Collections;
+
 /**
  * DCL statement visitor for Firebird.
  */
@@ -42,20 +44,14 @@ public final class FirebirdDCLStatementVisitor extends FirebirdStatementVisitor 
     
     @Override
     public ASTNode visitGrant(final GrantContext ctx) {
-        GrantStatement result = new GrantStatement(getDatabaseType());
-        if (null != ctx.privilegeClause()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
-        }
-        return result;
+        return new GrantStatement(getDatabaseType(),
+                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override
     public ASTNode visitRevoke(final RevokeContext ctx) {
-        RevokeStatement result = new RevokeStatement(getDatabaseType());
-        if (null != ctx.privilegeClause()) {
-            result.getTables().add((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName()));
-        }
-        return result;
+        return new RevokeStatement(getDatabaseType(),
+                null == ctx.privilegeClause() ? Collections.emptyList() : Collections.singleton((SimpleTableSegment) visit(ctx.privilegeClause().onObjectClause().privilegeLevel().tableName())));
     }
     
     @Override

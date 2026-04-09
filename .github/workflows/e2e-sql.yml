@@ -20,22 +20,19 @@ name: E2E - SQL
 on:
   pull_request:
     branches: [ master ]
-    paths:
-      - '.github/workflows/e2e-sql.yml'
-      - '**/pom.xml'
-      - '**/src/main/**'
-      - '!examples/**'
-      - '!distribution/**'
-      - 'distribution/proxy/**'
-      - '!distribution/proxy/src/main/release-docs/**'
-      - '!kernel/data-pipeline/**'
-      - '!test/**'
-      - 'test/pom.xml'
-      - 'test/e2e/fixture/**'
-      - 'test/e2e/env/**'
-      - 'test/e2e/sql/**'
-      - '!*.md'
+    paths-ignore:
+      - '**/*.md'
   workflow_dispatch:
+    inputs:
+      full_matrix_algorithm:
+        description: Full matrix generation algorithm
+        required: false
+        default: auto
+        type: choice
+        options:
+          - auto
+          - cartesian
+          - pairwise
 
 concurrency:
   group: e2e-${{ github.workflow }}-${{ github.ref }}
@@ -62,12 +59,16 @@ jobs:
       full-matrix: ${{ steps.generate-matrix.outputs.full-matrix }}
       matrix: ${{ steps.generate-matrix.outputs.matrix }}
       has-jobs: ${{ steps.generate-matrix.outputs.has-jobs }}
-      need-proxy-image: ${{ steps.generate-matrix.outputs.need-proxy-image }}
+      full-matrix-algorithm: ${{ steps.generate-matrix.outputs.full-matrix-algorithm }}
+      full-smoke-overlap-count: ${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}
+      estimated-stage2-jobs: ${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}
+      total-two-stage-jobs: ${{ steps.generate-matrix.outputs.total-two-stage-jobs }}
+      effective-reduction-ratio: ${{ steps.generate-matrix.outputs.effective-reduction-ratio }}
       filter-json: ${{ steps.generate-matrix.outputs.filter-json }}
     steps:
       - uses: actions/checkout@v6.0.1
       - id: filter
-        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36
+        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d
         with:
           filters: .github/workflows/resources/filter/e2e-sql-filters.yml
       - id: generate-matrix
@@ -90,6 +91,7 @@ jobs:
           FILTER_CORE_INFRA: ${{ steps.filter.outputs.core_infra }}
           FILTER_TEST_FRAMEWORK: ${{ steps.filter.outputs.test_framework }}
           FILTER_POM_CHANGES: ${{ steps.filter.outputs.pom_changes }}
+          FULL_MATRIX_ALGORITHM_INPUT: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.full_matrix_algorithm || 'auto' }}
         run: |
           filters=$(jq -cn \
             --arg adapter_proxy          "$FILTER_ADAPTER_PROXY" \
@@ -111,13 +113,17 @@ jobs:
             --arg test_framework         "$FILTER_TEST_FRAMEWORK" \
             --arg pom_changes            "$FILTER_POM_CHANGES" \
             '$ARGS.named')
-          bash .github/workflows/resources/scripts/generate-e2e-sql-matrix.sh "$filters"
+          bash .github/workflows/resources/scripts/e2e-sql/generate-e2e-sql-matrix.sh "$filters"
           echo "filter-json=$filters" >> "$GITHUB_OUTPUT"
-      - name: Log Outputs
+      - name: Logs
         run: |
           echo "smoke-matrix=${{ steps.generate-matrix.outputs.smoke-matrix }}"
           echo "has-jobs=${{ steps.generate-matrix.outputs.has-jobs }}"
-          echo "need-proxy-image=${{ steps.generate-matrix.outputs.need-proxy-image }}"
+          echo "full-matrix-algorithm=${{ steps.generate-matrix.outputs.full-matrix-algorithm }}"
+          echo "full-smoke-overlap-count=${{ steps.generate-matrix.outputs.full-smoke-overlap-count }}"
+          echo "estimated-stage2-jobs=${{ steps.generate-matrix.outputs.estimated-stage2-jobs }}"
+          echo "total-two-stage-jobs=${{ steps.generate-matrix.outputs.total-two-stage-jobs }}"
+          echo "effective-reduction-ratio=${{ steps.generate-matrix.outputs.effective-reduction-ratio }}"
           echo "filter-json=${{ steps.generate-matrix.outputs.filter-json }}"
 
   prepare-e2e-artifacts:
@@ -140,6 +146,7 @@ jobs:
         with:
           cache-hit: ${{ steps.setup-build-environment.outputs.cache-hit }}
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
+      - uses: ./.github/workflows/resources/actions/upload-source-snapshot
       - uses: ./.github/workflows/resources/actions/upload-e2e-artifacts
 
   e2e-sql-smoke:
@@ -153,7 +160,20 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-and-generate-matrix.outputs.smoke-matrix) }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - name: Logs
+        run: |
+          echo "runner.temp=${{ runner.temp }}"
+          echo "RUNNER_TEMP=$RUNNER_TEMP"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'
@@ -178,7 +198,15 @@ jobs:
       matrix: ${{ steps.generate.outputs.matrix }}
       has-remaining-jobs: ${{ steps.generate.outputs.has-remaining-jobs }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
       - name: Detect Remaining Matrix
         id: generate
         env:
@@ -186,11 +214,11 @@ jobs:
           FULL_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.full-matrix }}
           SMOKE_MATRIX: ${{ needs.detect-and-generate-matrix.outputs.smoke-matrix }}
         run: |
-          bash .github/workflows/resources/scripts/generate-remaining-matrix.sh \
+          bash .github/workflows/resources/scripts/e2e-sql/generate-remaining-matrix.sh \
             "$FILTER_JSON" \
             "$FULL_MATRIX" \
             "$SMOKE_MATRIX"
-      - name: Log Outputs
+      - name: Logs
         run: |
           echo "matrix=${{ steps.generate.outputs.matrix }}"
           echo "has-remaining-jobs=${{ steps.generate.outputs.has-remaining-jobs }}"
@@ -210,7 +238,15 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.detect-remaining-matrix.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@v6.0.1
+      - name: Download Source Snapshot
+        uses: actions/download-artifact@v8
+        with:
+          name: source-snapshot
+          path: ${{ runner.temp }}/source-snapshot
+      - name: Restore Source Snapshot
+        run: |
+          find "$GITHUB_WORKSPACE" -mindepth 1 -delete 2>/dev/null || true
+          tar -xzf "$RUNNER_TEMP/source-snapshot/source-snapshot.tar.gz" -C "$GITHUB_WORKSPACE"
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
           cache-suffix: 'e2e-sql'

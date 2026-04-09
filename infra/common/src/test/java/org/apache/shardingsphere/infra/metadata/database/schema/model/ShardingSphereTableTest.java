@@ -30,7 +30,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 class ShardingSphereTableTest {
     
@@ -40,7 +39,7 @@ class ShardingSphereTableTest {
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         assertTrue(table.containsColumn("foo_col"));
         assertFalse(table.containsColumn("invalid"));
-        assertFalse(table.containsColumn(null));
+        assertFalse(table.containsColumn((String) null));
     }
     
     @Test
@@ -72,7 +71,8 @@ class ShardingSphereTableTest {
     
     @Test
     void assertFindColumnNamesIfNotExistedFromWithSameColumnSize() {
-        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(mock()), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereColumn column = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.singleton(column), Collections.emptyList(), Collections.emptyList());
         assertTrue(table.findColumnNamesIfNotExistedFrom(Collections.singleton("foo_col")).isEmpty());
     }
     
@@ -81,7 +81,7 @@ class ShardingSphereTableTest {
         ShardingSphereColumn column1 = new ShardingSphereColumn("foo_col", Types.INTEGER, true, true, false, true, false, false);
         ShardingSphereColumn column2 = new ShardingSphereColumn("bar_col", Types.INTEGER, true, true, false, true, false, false);
         ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
-        assertThat(table.findColumnNamesIfNotExistedFrom(Collections.singleton("FOO_COL")), is(Collections.singletonList("bar_col")));
+        assertThat(table.findColumnNamesIfNotExistedFrom(Collections.singleton("FOO_COL")), is(Collections.singleton("bar_col")));
     }
     
     @Test
@@ -92,7 +92,7 @@ class ShardingSphereTableTest {
         assertTrue(table.containsIndex("foo_idx_1"));
         assertTrue(table.containsIndex("foo_idx_2"));
         assertFalse(table.containsIndex("invalid"));
-        assertFalse(table.containsIndex(null));
+        assertFalse(table.containsIndex((String) null));
     }
     
     @Test

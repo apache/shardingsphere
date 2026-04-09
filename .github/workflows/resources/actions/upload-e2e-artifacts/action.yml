@@ -30,10 +30,10 @@ runs:
       run: |
         docker save -o /tmp/apache-shardingsphere-proxy-test.tar apache/shardingsphere-proxy-test:latest
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: build-outputs
         path: |
           /tmp/maven-repo-output.tar.gz
           /tmp/apache-shardingsphere-proxy-test.tar
-        retention-days: 1
+        retention-days: 3

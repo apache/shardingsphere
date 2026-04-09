@@ -119,7 +119,7 @@ public final class YamlRuleNodeTupleSwapperEngine {
     private Optional<RuleNodeTuple> swapToUniqueTuple(final String databaseName, final String ruleType, final String ruleItemType, final Object fieldValue) {
         DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath(databaseName, ruleType, new DatabaseRuleItem(ruleItemType));
         if (fieldValue instanceof Collection) {
-            return ((Collection) fieldValue).isEmpty() ? Optional.empty() : Optional.of(new RuleNodeTuple(databaseRuleNodePath, YamlEngine.marshal(fieldValue)));
+            return Optional.of(new RuleNodeTuple(databaseRuleNodePath, YamlEngine.marshal(fieldValue)));
         }
         if (fieldValue instanceof String) {
             return ((String) fieldValue).isEmpty() ? Optional.empty() : Optional.of(new RuleNodeTuple(databaseRuleNodePath, fieldValue.toString()));

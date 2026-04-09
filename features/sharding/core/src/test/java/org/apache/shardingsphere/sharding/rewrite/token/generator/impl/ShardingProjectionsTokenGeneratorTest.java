@@ -109,7 +109,7 @@ class ShardingProjectionsTokenGeneratorTest {
                 createAggregationProjection(), createDerivedProjectionWithOwner(), createDerivedProjectionWithoutOwner(), createOtherDerivedProjection(), mock());
         when(selectStatementContext.getProjectionsContext().getProjections()).thenReturn(projections);
         when(selectStatementContext.getProjectionsContext().getStopIndex()).thenReturn(2);
-        when(selectStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
+        when(selectStatementContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(databaseType).build());
         ProjectionsToken actual = generator.generateSQLToken(selectStatementContext);
         assertThat(actual.toString(routeUnit),
                 is(", foo_agg_expr AS foo_agg_alias , foo_tbl_0.foo_derived_col AS foo_derived_alias , bar_derived_col AS bar_derived_alias , other_expr AS other_alias "));

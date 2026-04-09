@@ -38,6 +38,7 @@ public final class GroupByClauseAssert {
      * @param expected expected group by clause
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final GroupBySegment actual, final ExpectedOrderByClause expected) {
+        org.hamcrest.MatcherAssert.assertThat(assertContext.getText("Group by with rollup assertion error: "), actual.isWithRollup(), org.hamcrest.Matchers.is(expected.isWithRollup()));
         OrderByItemAssert.assertIs(assertContext, actual.getGroupByItems(), expected, "Group by");
     }
 }

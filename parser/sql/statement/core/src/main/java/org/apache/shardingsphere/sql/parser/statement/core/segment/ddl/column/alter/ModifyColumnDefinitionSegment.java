@@ -23,6 +23,8 @@ import lombok.Setter;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.position.ColumnPositionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 
 import java.util.Optional;
 
@@ -42,6 +44,10 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
     
     private ColumnPositionSegment columnPosition;
     
+    private IndexSegment rollupIndex;
+    
+    private PropertiesSegment properties;
+    
     /**
      * Get column position.
      *
@@ -49,5 +55,23 @@ public final class ModifyColumnDefinitionSegment implements AlterDefinitionSegme
      */
     public Optional<ColumnPositionSegment> getColumnPosition() {
         return Optional.ofNullable(columnPosition);
+    }
+    
+    /**
+     * Get rollup index.
+     *
+     * @return rollup index
+     */
+    public Optional<IndexSegment> getRollupIndex() {
+        return Optional.ofNullable(rollupIndex);
+    }
+    
+    /**
+     * Get properties.
+     *
+     * @return properties
+     */
+    public Optional<PropertiesSegment> getProperties() {
+        return Optional.ofNullable(properties);
     }
 }

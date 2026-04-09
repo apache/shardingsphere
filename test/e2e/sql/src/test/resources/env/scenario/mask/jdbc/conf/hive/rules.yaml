@@ -20,6 +20,7 @@ databaseName: mask
 dataSources:
   mask:
     url: jdbc:hive2://hive.mask.host:10000/mask?ssl=false&useUnicode=true&characterEncoding=utf-8&hive.exec.dynamic.partition=true&hive.exec.dynamic.partition.mode=nonstrict
+    driverClassName: org.apache.hive.jdbc.HiveDriver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000

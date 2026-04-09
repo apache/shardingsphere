@@ -17,6 +17,10 @@ Start the Proxy with a binary package requires an environment with Java JRE 8 or
 
 Obtain the binary release package of ShardingSphere-Proxy on the [download page](https://shardingsphere.apache.org/document/current/en/downloads/).
 
+Notice: The `lib` directory in the binary release package only contains the dependencies required for the default startup.
+Some optional plugin jars are shipped in the `opt-lib` directory, but they are not loaded by default.
+To enable such plugins, copy the corresponding jars from `opt-lib` to `ext-lib` first, then add the required third-party dependencies.
+
 2. Configure `conf/global.yaml`
 
 ShardingSphere-Proxy's operational mode is configured on `global.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/).
@@ -47,6 +51,7 @@ If the cluster mode uses Etcd, please copy [vertx-grpc 4.5.1](https://repo1.mave
 
 It is the same with ShardingSphere-JDBC.
 Please refer to [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/special-api/transaction/) for more details.
+If Seata AT mode is used, copy the jars under `opt-lib/seata-at` to `ext-lib` first, then add Seata Client and its extra dependencies.
 
 7. Introduce custom algorithm (Optional)
 

@@ -125,7 +125,7 @@ class ExpressionConverterTest {
         ColumnSegment columnSegment = new ColumnSegment(0, 0, new IdentifierValue("col"));
         when(ColumnConverter.convert(columnSegment)).thenReturn(expectedColumnNode);
         SqlNode expectedExistsSubqueryNode = mock(SqlNode.class);
-        SubquerySegment subquerySegment = new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub");
+        SubquerySegment subquerySegment = new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub");
         ExistsSubqueryExpression existsSubqueryExpression = new ExistsSubqueryExpression(0, 0, subquerySegment);
         when(ExistsSubqueryExpressionConverter.convert(existsSubqueryExpression)).thenReturn(expectedExistsSubqueryNode);
         SqlNode expectedSubqueryNode = mock(SqlNode.class);
@@ -183,7 +183,8 @@ class ExpressionConverterTest {
         IntervalExpression intervalExpression = new IntervalExpression(0, 0, literalSegment, IntervalUnit.DAY, "interval");
         when(IntervalExpressionConverter.convert(intervalExpression)).thenReturn(expectedIntervalNode);
         SqlNode expectedQuantifyNode = mock(SqlNode.class);
-        QuantifySubqueryExpression quantifySubqueryExpression = new QuantifySubqueryExpression(0, 0, new SubquerySegment(0, 0, new SelectStatement(databaseType), "sub"), "ALL");
+        QuantifySubqueryExpression quantifySubqueryExpression = new QuantifySubqueryExpression(
+                0, 0, new SubquerySegment(0, 0, SelectStatement.builder().databaseType(databaseType).build(), "sub"), "ALL");
         when(QuantifySubqueryExpressionConverter.convert(quantifySubqueryExpression)).thenReturn(expectedQuantifyNode);
         Map<ExpressionSegment, SqlNode> expectations = new LinkedHashMap<>(23, 1F);
         expectations.put(literalSegment, expectedLiteralNode);

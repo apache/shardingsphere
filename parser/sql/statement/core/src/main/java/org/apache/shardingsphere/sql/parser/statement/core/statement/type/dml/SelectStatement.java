@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.SubqueryType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.hint.WithTableHintSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.pagination.limit.LimitSegment;
@@ -35,7 +36,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Model
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.outfile.OutfileSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.AllowNotUseDatabaseSQLStatementAttribute;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.WithSQLStatementAttribute;
@@ -46,47 +46,69 @@ import java.util.Optional;
  * Select statement.
  */
 @Getter
-@Setter
 public final class SelectStatement extends DMLStatement {
     
-    private ProjectionsSegment projections;
+    private final ProjectionsSegment projections;
     
-    private TableSegment from;
+    private final TableSegment from;
     
-    private WhereSegment where;
+    private final WhereSegment where;
     
-    private HierarchicalQuerySegment hierarchicalQuery;
+    private final HierarchicalQuerySegment hierarchicalQuery;
     
-    private GroupBySegment groupBy;
+    private final GroupBySegment groupBy;
     
-    private HavingSegment having;
+    private final HavingSegment having;
     
-    private OrderBySegment orderBy;
+    private final OrderBySegment orderBy;
     
-    private CombineSegment combine;
+    private final CombineSegment combine;
     
-    private WithSegment with;
+    private final WithSegment with;
     
-    private SubqueryType subqueryType;
+    private final SubqueryType subqueryType;
     
-    private LimitSegment limit;
+    private final LimitSegment limit;
     
-    private LockSegment lock;
+    private final LockSegment lock;
     
-    private WindowSegment window;
+    private final WindowSegment window;
     
-    private TableSegment into;
+    private final TableSegment into;
     
-    private ModelSegment model;
+    private final ModelSegment model;
     
-    private OutfileSegment outfile;
+    private final OutfileSegment outfile;
     
-    private WithTableHintSegment withTableHint;
+    private final WithTableHintSegment withTableHint;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public SelectStatement(final DatabaseType databaseType) {
+    @Builder
+    private SelectStatement(final DatabaseType databaseType, final ProjectionsSegment projections, final TableSegment from, final WhereSegment where,
+                            final HierarchicalQuerySegment hierarchicalQuery, final GroupBySegment groupBy, final HavingSegment having, final OrderBySegment orderBy,
+                            final CombineSegment combine, final WithSegment with, final SubqueryType subqueryType, final LimitSegment limit, final LockSegment lock,
+                            final WindowSegment window, final TableSegment into, final ModelSegment model, final OutfileSegment outfile,
+                            final WithTableHintSegment withTableHint) {
         super(databaseType);
+        this.projections = projections;
+        this.from = from;
+        this.where = where;
+        this.hierarchicalQuery = hierarchicalQuery;
+        this.groupBy = groupBy;
+        this.having = having;
+        this.orderBy = orderBy;
+        this.combine = combine;
+        this.with = with;
+        this.subqueryType = subqueryType;
+        this.limit = limit;
+        this.lock = lock;
+        this.window = window;
+        this.into = into;
+        this.model = model;
+        this.outfile = outfile;
+        this.withTableHint = withTableHint;
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with), new AllowNotUseDatabaseSQLStatementAttribute(null == from));
     }
     
     /**
@@ -171,6 +193,18 @@ public final class SelectStatement extends DMLStatement {
     }
     
     /**
+     * Get select statement with subquery type.
+     *
+     * @param subqueryType subquery type
+     * @return select statement
+     */
+    public SelectStatement withSubqueryType(final SubqueryType subqueryType) {
+        return builder().databaseType(getDatabaseType()).projections(projections).from(from).where(where).hierarchicalQuery(hierarchicalQuery)
+                .groupBy(groupBy).having(having).orderBy(orderBy).combine(combine).with(with).subqueryType(subqueryType).limit(limit).lock(lock).window(window)
+                .into(into).model(model).outfile(outfile).withTableHint(withTableHint).build();
+    }
+    
+    /**
      * Get limit.
      *
      * @return limit
@@ -231,10 +265,5 @@ public final class SelectStatement extends DMLStatement {
      */
     public Optional<WithTableHintSegment> getWithTableHint() {
         return Optional.ofNullable(withTableHint);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with), new AllowNotUseDatabaseSQLStatementAttribute(null == from));
     }
 }

@@ -48,6 +48,7 @@ rules:
         type: HASH_MOD
         props:
           sharding-count: 2
+          normalize-numeric-int-range: true
     
     keyGenerators:
       snowflake:

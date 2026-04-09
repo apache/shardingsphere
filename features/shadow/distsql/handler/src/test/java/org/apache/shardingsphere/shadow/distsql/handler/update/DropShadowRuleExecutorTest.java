@@ -126,9 +126,9 @@ class DropShadowRuleExecutorTest {
         result.getDataSources().add(new ShadowDataSourceConfiguration("shadow_group", "production_0", "shadow_0"));
         result.getDataSources().add(new ShadowDataSourceConfiguration("shadow_group_1", "production_1", "shadow_1"));
         result.getTables().put("t_order",
-                new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), new ArrayList<>(Collections.singleton("only_drop_algorithm"))));
+                new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("shadow_group")), Collections.singleton("only_drop_algorithm")));
         result.getTables().put("t_order_item",
-                new ShadowTableConfiguration(new ArrayList<>(Arrays.asList("shadow_group", "shadow_group_1")), new ArrayList<>(Collections.singleton("shared_algorithm"))));
+                new ShadowTableConfiguration(new ArrayList<>(Arrays.asList("shadow_group", "shadow_group_1")), Collections.singleton("shared_algorithm")));
         result.getShadowAlgorithms().put("only_drop_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
         result.getShadowAlgorithms().put("shared_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
         result.getShadowAlgorithms().put("unused_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
@@ -159,9 +159,7 @@ class DropShadowRuleExecutorTest {
     }
     
     private static DropShadowRuleStatement createStatement(final boolean ifExists, final String... ruleNames) {
-        DropShadowRuleStatement result = new DropShadowRuleStatement(ifExists, Arrays.asList(ruleNames));
-        result.buildAttributes();
-        return result;
+        return new DropShadowRuleStatement(ifExists, Arrays.asList(ruleNames));
     }
     
     private static ShadowRule createRule(final ShadowRuleConfiguration ruleConfig) {

@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.ReturningSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.OrderBySegment;
@@ -36,27 +36,36 @@ import java.util.Optional;
  * Delete statement.
  */
 @Getter
-@Setter
 public final class DeleteStatement extends DMLStatement {
     
-    private TableSegment table;
+    private final TableSegment table;
     
-    private WhereSegment where;
+    private final WhereSegment where;
     
-    private OrderBySegment orderBy;
+    private final OrderBySegment orderBy;
     
-    private LimitSegment limit;
+    private final LimitSegment limit;
     
-    private WithSegment with;
+    private final WithSegment with;
     
-    private ReturningSegment returning;
+    private final ReturningSegment returning;
     
-    private OutputSegment output;
+    private final OutputSegment output;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public DeleteStatement(final DatabaseType databaseType) {
+    @Builder
+    private DeleteStatement(final DatabaseType databaseType, final TableSegment table, final WhereSegment where,
+                            final OrderBySegment orderBy, final LimitSegment limit, final WithSegment with, final ReturningSegment returning, final OutputSegment output) {
         super(databaseType);
+        this.table = table;
+        this.where = where;
+        this.orderBy = orderBy;
+        this.limit = limit;
+        this.with = with;
+        this.returning = returning;
+        this.output = output;
+        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
     
     /**
@@ -111,10 +120,5 @@ public final class DeleteStatement extends DMLStatement {
      */
     public Optional<OutputSegment> getOutput() {
         return Optional.ofNullable(output);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        attributes = new SQLStatementAttributes(new WithSQLStatementAttribute(with));
     }
 }

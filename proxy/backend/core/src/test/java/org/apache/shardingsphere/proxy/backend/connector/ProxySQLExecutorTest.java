@@ -409,19 +409,18 @@ class ProxySQLExecutorTest {
     }
     
     private CreateTableStatement createCreateTableStatement(final DatabaseType databaseType) {
-        CreateTableStatement result = new CreateTableStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))))
+                .build();
     }
     
     private TruncateStatement createTruncateStatement(final DatabaseType databaseType) {
-        return new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))));
+        return new TruncateStatement(databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))), Collections.emptyList());
     }
     
     private InsertStatement createInsertStatement(final DatabaseType databaseType) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")))).build();
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

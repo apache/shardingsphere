@@ -95,12 +95,14 @@ class EncryptOrderByItemSupportedCheckerTest {
     
     @Test
     void assertCheckFailed() {
-        assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("foo_tbl")));
+        assertThrows(UnsupportedEncryptSQLException.class, () -> new EncryptOrderByItemSupportedChecker()
+                .check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("foo_tbl")));
     }
     
     @Test
     void assertCheckSuccess() {
-        assertDoesNotThrow(() -> new EncryptOrderByItemSupportedChecker().check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("bar_tbl")));
+        assertDoesNotThrow(() -> new EncryptOrderByItemSupportedChecker()
+                .check(mockEncryptRule(), mock(), mock(), mockSelectStatementContext("bar_tbl")));
     }
     
     private EncryptRule mockEncryptRule() {

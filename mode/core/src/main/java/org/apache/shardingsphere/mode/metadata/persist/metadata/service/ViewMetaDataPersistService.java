@@ -54,7 +54,8 @@ public final class ViewMetaDataPersistService {
      */
     public Collection<ShardingSphereView> load(final String databaseName, final String schemaName) {
         return repository.getChildrenKeys(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, null))).stream()
-                .map(each -> load(databaseName, schemaName, each)).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+                .map(each -> loadByPath(databaseName, schemaName, each))
+                .filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
     }
     
     /**
@@ -66,6 +67,10 @@ public final class ViewMetaDataPersistService {
      * @return loaded view
      */
     public Optional<ShardingSphereView> load(final String databaseName, final String schemaName, final String viewName) {
+        return loadByPath(databaseName, schemaName, viewName);
+    }
+    
+    private Optional<ShardingSphereView> loadByPath(final String databaseName, final String schemaName, final String viewName) {
         VersionNodePath versionNodePath = new VersionNodePath(new ViewMetaDataNodePath(databaseName, schemaName, viewName));
         String activeVersion = repository.query(versionNodePath.getActiveVersionPath());
         if (Strings.isNullOrEmpty(activeVersion)) {
@@ -87,8 +92,7 @@ public final class ViewMetaDataPersistService {
      */
     public void persist(final String databaseName, final String schemaName, final Collection<ShardingSphereView> views) {
         for (ShardingSphereView each : views) {
-            String viewName = each.getName().toLowerCase();
-            VersionNodePath versionNodePath = new VersionNodePath(new ViewMetaDataNodePath(databaseName, schemaName, viewName));
+            VersionNodePath versionNodePath = new VersionNodePath(new ViewMetaDataNodePath(databaseName, schemaName, each.getName()));
             versionPersistService.persist(versionNodePath, YamlEngine.marshal(swapper.swapToYamlConfiguration(each)));
         }
     }
@@ -101,6 +105,6 @@ public final class ViewMetaDataPersistService {
      * @param viewName to be dropped view name
      */
     public void drop(final String databaseName, final String schemaName, final String viewName) {
-        repository.delete(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, viewName.toLowerCase())));
+        repository.delete(NodePathGenerator.toPath(new ViewMetaDataNodePath(databaseName, schemaName, viewName)));
     }
 }

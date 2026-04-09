@@ -17,10 +17,22 @@
 
 package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl.standard.database;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.PropertyTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Create database statement test case.
  */
+@Getter
+@Setter
 public final class CreateDatabaseStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "property")
+    private final List<PropertyTestCase> properties = new LinkedList<>();
 }

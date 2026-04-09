@@ -22,6 +22,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.exception.mysql.exception.TooManyPlaceholdersException;
 import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLCharacterSets;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -34,6 +35,7 @@ import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
+import org.apache.shardingsphere.infra.binder.context.statement.type.dml.DeleteStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -51,7 +53,9 @@ import org.apache.shardingsphere.proxy.backend.session.ServerPreparedStatementRe
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLServerPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIdGenerator;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.InsertStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -65,6 +69,8 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,11 +82,13 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings(ProxyContext.class)
+@StaticMockSettings({ProxyContext.class, MySQLPreparedStatementMetadataFactory.class})
 @MockitoSettings(strictness = Strictness.LENIENT)
 class MySQLComStmtPrepareExecutorTest {
     
@@ -108,7 +116,7 @@ class MySQLComStmtPrepareExecutorTest {
     
     @Test
     void assertPrepareSelectStatement() {
-        String sql = "SELECT name FROM foo_db.user WHERE id = ?";
+        String sql = "SELECT name FROM foo_db.user WHERE id = ? AND name = ?";
         when(packet.getSQL()).thenReturn(sql);
         when(packet.getHintValueContext()).thenReturn(new HintValueContext());
         when(connectionSession.getConnectionId()).thenReturn(1);
@@ -119,6 +127,7 @@ class MySQLComStmtPrepareExecutorTest {
         Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
         assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
         assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
         assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
         assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
@@ -127,7 +136,46 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), isA(SelectStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(SelectStatement.class));
+        assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.LONGLONG, MySQLBinaryColumnType.VAR_STRING)));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
+    }
+    
+    @Test
+    void assertPrepareSelectExpressionStatementByProbe() throws Exception {
+        String sql = "SELECT ~id AS bitwise_not FROM foo_db.user";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 4;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        when(connectionSession.getUsedDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        PreparedStatement actualPreparedStatement = mock(PreparedStatement.class);
+        ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
+        when(actualPreparedStatement.getMetaData()).thenReturn(resultSetMetaData);
+        when(resultSetMetaData.getColumnCount()).thenReturn(1);
+        when(resultSetMetaData.getColumnName(1)).thenReturn("bitwise_not");
+        when(resultSetMetaData.getColumnLabel(1)).thenReturn("bitwise_not");
+        when(resultSetMetaData.getColumnType(1)).thenReturn(Types.BIGINT);
+        when(resultSetMetaData.getColumnTypeName(1)).thenReturn("BIGINT UNSIGNED");
+        when(resultSetMetaData.getColumnDisplaySize(1)).thenReturn(20);
+        when(resultSetMetaData.getScale(1)).thenReturn(0);
+        when(resultSetMetaData.isSigned(1)).thenReturn(false);
+        when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
+        when(resultSetMetaData.isAutoIncrement(1)).thenReturn(false);
+        when(resultSetMetaData.getTableName(1)).thenReturn("");
+        when(MySQLPreparedStatementMetadataFactory.load(eq(connectionSession), any(MySQLServerPreparedStatement.class))).thenReturn(actualPreparedStatement);
+        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        DatabasePacket actualProjectionPacket = actualIterator.next();
+        assertThat(actualProjectionPacket, isA(MySQLColumnDefinition41Packet.class));
+        assertThat(getColumnDefinitionFlag((MySQLColumnDefinition41Packet) actualProjectionPacket), is(MySQLColumnDefinitionFlag.UNSIGNED.getValue() + MySQLColumnDefinitionFlag.NOT_NULL.getValue()));
+        assertThat(getColumnDefinitionType((MySQLColumnDefinition41Packet) actualProjectionPacket), is(MySQLBinaryColumnType.LONGLONG.getValue()));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+        assertFalse(actualIterator.hasNext());
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
     @Test
@@ -160,13 +208,43 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), isA(InsertStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(InsertStatement.class));
+        assertThat(actualPreparedStatement.getParameterColumnTypes(),
+                is(Arrays.asList(MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.SHORT, MySQLBinaryColumnType.LONGLONG, MySQLBinaryColumnType.SHORT)));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
     private int getColumnDefinitionFlag(final MySQLColumnDefinition41Packet packet) {
-        ByteBuf byteBuf = Unpooled.buffer(22, 22);
+        MySQLPacketPayload payload = createPayload(packet);
+        skipColumnDefinitionStrings(payload);
+        payload.readIntLenenc();
+        payload.skipReserved(2);
+        payload.skipReserved(4);
+        payload.skipReserved(1);
+        return payload.readInt2();
+    }
+    
+    private int getColumnDefinitionType(final MySQLColumnDefinition41Packet packet) {
+        MySQLPacketPayload payload = createPayload(packet);
+        skipColumnDefinitionStrings(payload);
+        payload.readIntLenenc();
+        payload.skipReserved(2);
+        payload.skipReserved(4);
+        return payload.readInt1();
+    }
+    
+    private MySQLPacketPayload createPayload(final MySQLColumnDefinition41Packet packet) {
+        ByteBuf byteBuf = Unpooled.buffer();
         packet.write(new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8));
-        return byteBuf.getUnsignedShortLE(17);
+        return new MySQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
+    }
+    
+    private void skipColumnDefinitionStrings(final MySQLPacketPayload payload) {
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
+        payload.readStringLenenc();
     }
     
     @Test
@@ -212,7 +290,32 @@ class MySQLComStmtPrepareExecutorTest {
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatementContext(), isA(UpdateStatementContext.class));
         assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(UpdateStatement.class));
+        assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Arrays.asList(MySQLBinaryColumnType.VAR_STRING, MySQLBinaryColumnType.SHORT, MySQLBinaryColumnType.LONGLONG)));
         MySQLStatementIdGenerator.getInstance().unregisterConnection(1);
+    }
+    
+    @Test
+    void assertPrepareDeleteStatement() {
+        String sql = "DELETE FROM user WHERE name = ?";
+        when(packet.getSQL()).thenReturn(sql);
+        when(packet.getHintValueContext()).thenReturn(new HintValueContext());
+        int connectionId = 3;
+        when(connectionSession.getConnectionId()).thenReturn(connectionId);
+        when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        MySQLStatementIdGenerator.getInstance().registerConnection(connectionId);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        Iterator<DatabasePacket> actualIterator = new MySQLComStmtPrepareExecutor(packet, connectionSession).execute().iterator();
+        assertThat(actualIterator.next(), isA(MySQLComStmtPrepareOKPacket.class));
+        assertThat(actualIterator.next(), isA(MySQLColumnDefinition41Packet.class));
+        assertThat(actualIterator.next(), isA(MySQLEofPacket.class));
+        assertFalse(actualIterator.hasNext());
+        MySQLServerPreparedStatement actualPreparedStatement = connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(1);
+        assertThat(actualPreparedStatement.getSql(), is(sql));
+        assertThat(actualPreparedStatement.getSqlStatementContext(), isA(DeleteStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().getSqlStatement(), isA(DeleteStatement.class));
+        assertThat(actualPreparedStatement.getParameterColumnTypes(), is(Collections.singletonList(MySQLBinaryColumnType.VAR_STRING)));
+        MySQLStatementIdGenerator.getInstance().unregisterConnection(connectionId);
     }
     
     @Test
@@ -229,9 +332,11 @@ class MySQLComStmtPrepareExecutorTest {
         CacheOption cacheOption = new CacheOption(1024, 1024L);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(cacheOption, cacheOption)));
-        when(result.getMetaDataContexts().getMetaData().getDatabase(connectionSession.getUsedDatabaseName()).getProtocolType()).thenReturn(databaseType);
-        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(createDatabase());
+        ShardingSphereDatabase database = createDatabase();
+        when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue("foo_db"))).thenReturn(true);
         return result;
     }
     

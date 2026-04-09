@@ -32,15 +32,11 @@ public final class MySQLShowStatusStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowStatusStatement(final DatabaseType databaseType, final ShowFilterSegment filter) {
         super(databaseType);
         this.filter = filter;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

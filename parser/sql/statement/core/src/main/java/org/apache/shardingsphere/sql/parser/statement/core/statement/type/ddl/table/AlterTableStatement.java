@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.primary.D
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.AddRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.DropRollupDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.OrderByColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.rollup.RenameRollupDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.AlgorithmTypeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.table.ConvertTableDefinitionSegment;
@@ -129,6 +130,8 @@ public final class AlterTableStatement extends DDLStatement {
     
     private final Collection<RenameRollupDefinitionSegment> renameRollupDefinitions;
     
+    private final Collection<OrderByColumnDefinitionSegment> orderByColumnDefinitions;
+    
     private final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions;
     
     private final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions;
@@ -163,6 +166,7 @@ public final class AlterTableStatement extends DDLStatement {
                                 @Singular("addRollupDefinition") final Collection<AddRollupDefinitionSegment> addRollupDefinitions,
                                 @Singular("dropRollupDefinition") final Collection<DropRollupDefinitionSegment> dropRollupDefinitions,
                                 @Singular("renameRollupDefinition") final Collection<RenameRollupDefinitionSegment> renameRollupDefinitions,
+                                @Singular("orderByColumnDefinition") final Collection<OrderByColumnDefinitionSegment> orderByColumnDefinitions,
                                 @Singular("renamePartitionDefinition") final Collection<RenamePartitionDefinitionSegment> renamePartitionDefinitions,
                                 @Singular("addPartitionDefinition") final Collection<AddPartitionDefinitionSegment> addPartitionDefinitions,
                                 @Singular("addPartitionsSegment") final Collection<AddPartitionsSegment> addPartitionsSegments,
@@ -196,6 +200,7 @@ public final class AlterTableStatement extends DDLStatement {
         this.addRollupDefinitions = addRollupDefinitions;
         this.dropRollupDefinitions = dropRollupDefinitions;
         this.renameRollupDefinitions = renameRollupDefinitions;
+        this.orderByColumnDefinitions = orderByColumnDefinitions;
         this.renamePartitionDefinitions = renamePartitionDefinitions;
         this.addPartitionDefinitions = addPartitionDefinitions;
         this.addPartitionsSegments = addPartitionsSegments;
@@ -292,10 +297,6 @@ public final class AlterTableStatement extends DDLStatement {
      */
     public Optional<DropPrimaryKeyDefinitionSegment> getDropPrimaryKeyDefinition() {
         return Optional.ofNullable(dropPrimaryKeyDefinition);
-    }
-    
-    @Override
-    public void buildAttributes() {
     }
     
     private class AlterTableConstraintSQLStatementAttribute implements ConstraintSQLStatementAttribute {

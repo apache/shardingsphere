@@ -94,7 +94,9 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.Se
 import org.apache.shardingsphere.sql.parser.statement.core.value.collection.CollectionValue;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 
 /**
  * DDL statement visitor for Hive.
@@ -162,34 +164,36 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getTables().add((SimpleTableSegment) visit(ctx.tableNameWithDb()));
-        return result;
+        return new DropTableStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableNameWithDb())), null != ctx.ifExists(), false);
     }
     
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableNameWithDb())));
+        return new TruncateStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.tableNameWithDb())), Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.createTableCommonClause().tableNameWithDb()));
-        result.setIfNotExists(null != ctx.createTableCommonClause().ifNotExists());
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.createTableCommonClause().tableNameWithDb()))
+                .ifNotExists(null != ctx.createTableCommonClause().ifNotExists())
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     @Override
@@ -333,10 +337,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getViews().add((SimpleTableSegment) visit(ctx.viewNameWithDb()));
-        return result;
+        return new DropViewStatement(getDatabaseType(), Collections.singleton((SimpleTableSegment) visit(ctx.viewNameWithDb())), null != ctx.ifExists());
     }
     
     @Override
@@ -371,28 +372,32 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setIndex(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
-                new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
-                        new IdentifierValue(ctx.indexName().getText()))));
-        result.setTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
+        Collection<ColumnSegment> columns = new LinkedList<>();
         if (null != ctx.columnNamesCommonClause()) {
             for (ColumnNameContext each : ctx.columnNamesCommonClause().columnNames().columnName()) {
-                result.getColumns().add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
+                columns.add(new ColumnSegment(each.getStart().getStartIndex(), each.getStop().getStopIndex(), new IdentifierValue(each.getText())));
             }
         }
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .index(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                        new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
+                                new IdentifierValue(ctx.indexName().getText()))))
+                .table((SimpleTableSegment) visit(ctx.tableNameWithDb()))
+                .columns(columns)
+                .build();
     }
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(),
                 new IdentifierValue(ctx.indexName().getText()));
-        result.getIndexes().add(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName));
-        result.setSimpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()));
-        return result;
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .ifExists(null != ctx.ifExists())
+                .indexes(Collections.singleton(new IndexSegment(ctx.indexName().getStart().getStartIndex(), ctx.indexName().getStop().getStopIndex(), indexName)))
+                .simpleTable((SimpleTableSegment) visit(ctx.tableNameWithDb()))
+                .build();
     }
     
     @Override
@@ -414,7 +419,7 @@ public final class HiveDDLStatementVisitor extends HiveStatementVisitor implemen
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement(getDatabaseType());
+        return new CreateFunctionStatement(getDatabaseType(), null, null, Collections.emptyList());
     }
     
     @Override

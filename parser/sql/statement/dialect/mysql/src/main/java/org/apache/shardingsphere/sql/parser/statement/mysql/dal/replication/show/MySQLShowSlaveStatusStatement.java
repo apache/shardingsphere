@@ -31,15 +31,11 @@ public final class MySQLShowSlaveStatusStatement extends DALStatement {
     
     private final String channel;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowSlaveStatusStatement(final DatabaseType databaseType, final String channel) {
         super(databaseType);
         this.channel = channel;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

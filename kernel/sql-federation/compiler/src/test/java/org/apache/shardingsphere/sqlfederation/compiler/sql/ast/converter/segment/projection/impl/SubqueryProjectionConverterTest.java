@@ -55,7 +55,7 @@ class SubqueryProjectionConverterTest {
     
     @Test
     void assertConvertWrapsAliasWhenSubqueryTypeNotExists() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).build();
         SubqueryProjectionSegment projectionSegment = new SubqueryProjectionSegment(new SubquerySegment(0, 0, selectStatement, "sub"), "text");
         projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("alias")));
         SqlNode convertedNode = mock(SqlNode.class);
@@ -74,8 +74,7 @@ class SubqueryProjectionConverterTest {
     
     @Test
     void assertConvertWrapsExistsWhenSubqueryTypeIsExists() {
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setSubqueryType(SubqueryType.EXISTS);
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).subqueryType(SubqueryType.EXISTS).build();
         SubqueryProjectionSegment projectionSegment = new SubqueryProjectionSegment(new SubquerySegment(0, 0, selectStatement, "sub"), "text");
         SqlNode convertedNode = mock(SqlNode.class);
         try (

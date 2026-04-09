@@ -22,10 +22,15 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
@@ -42,6 +47,7 @@ import org.mockito.MockedStatic;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -86,6 +92,36 @@ class TableRefreshUtilsTest {
             mockedStatic.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, lowerCaseDatabaseType)).thenReturn(dialectDatabaseMetaData);
             assertThat(TableRefreshUtils.getTableName(new IdentifierValue("Foo_Table"), lowerCaseDatabaseType), is("foo_table"));
         }
+    }
+    
+    @Test
+    void assertGetActualTableNameUsesExistingTableName() {
+        ShardingSphereDatabase database = createDatabase();
+        assertThat(TableRefreshUtils.getActualTableName(database, "foo_schema", new IdentifierValue("foo_tbl"),
+                new ConfigurationProperties(new Properties())), is("Foo_Tbl"));
+    }
+    
+    @Test
+    void assertGetActualTableNameWithSensitiveProps() {
+        ShardingSphereDatabase database = createDatabase();
+        Properties props = new Properties();
+        props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
+        assertThat(TableRefreshUtils.getActualTableName(database, "Foo_Schema", new IdentifierValue("Foo_Tbl", QuoteCharacter.QUOTE),
+                new ConfigurationProperties(props)), is("Foo_Tbl"));
+    }
+    
+    @Test
+    void assertGetActualTableNamesUsesExistingTableNames() {
+        ShardingSphereDatabase database = createDatabase();
+        assertThat(TableRefreshUtils.getActualTableNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_tbl"), new IdentifierValue("bar_tbl")),
+                new ConfigurationProperties(new Properties())), is(Arrays.asList("Foo_Tbl", "Bar_Tbl")));
+    }
+    
+    @Test
+    void assertGetActualViewNamesUsesExistingViewNames() {
+        ShardingSphereDatabase database = createDatabase();
+        assertThat(TableRefreshUtils.getActualViewNames(database, "foo_schema", Arrays.asList(new IdentifierValue("foo_view"), new IdentifierValue("bar_view")),
+                new ConfigurationProperties(new Properties())), is(Arrays.asList("Foo_View", "Bar_View")));
     }
     
     @Test
@@ -226,5 +262,14 @@ class TableRefreshUtilsTest {
         ShardingSphereRule rule = mock(ShardingSphereRule.class);
         when(rule.getAttributes()).thenReturn(new RuleAttributes());
         assertFalse(TableRefreshUtils.isNeedRefresh(new RuleMetaData(Collections.singleton(rule)), "foo_schema", Arrays.asList("bar_tbl", "foo_tbl")));
+    }
+    
+    private ShardingSphereDatabase createDatabase() {
+        ShardingSphereSchema schema = new ShardingSphereSchema("Foo_Schema", fixtureDatabaseType,
+                Arrays.asList(new ShardingSphereTable("Foo_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()),
+                        new ShardingSphereTable("Bar_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())),
+                Arrays.asList(new ShardingSphereView("Foo_View", "SELECT 1"), new ShardingSphereView("Bar_View", "SELECT 1")));
+        return new ShardingSphereDatabase("foo_db", fixtureDatabaseType, new ResourceMetaData(Collections.emptyMap()),
+                new RuleMetaData(Collections.emptyList()), Collections.singletonList(schema));
     }
 }

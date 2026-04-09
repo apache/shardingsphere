@@ -60,7 +60,6 @@ public final class TableInventoryCheckParameter {
                                         final QualifiedTable sourceTable, final QualifiedTable targetTable,
                                         final List<String> columnNames, final List<PipelineColumnMetaData> uniqueKeys,
                                         final JobRateLimitAlgorithm readRateLimitAlgorithm, final ConsistencyCheckJobItemProgressContext progressContext) {
-        this(jobId, 0, sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext,
-                null);
+        this(jobId, 0, sourceDataSource, targetDataSource, sourceTable, targetTable, columnNames, uniqueKeys, readRateLimitAlgorithm, progressContext, null);
     }
 }

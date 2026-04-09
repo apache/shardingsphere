@@ -209,7 +209,15 @@ tableReference
     ;
 
 tableFactor
-    : tableName partitionNames? (AS? alias)? indexHintList? | subquery AS? alias (LP_ columnNames RP_)? | LP_ tableReferences RP_
+    : tableName partitionNames? (forSystemTimeClause | forSystemVersionClause)? (AS? alias)? indexHintList? | subquery AS? alias (LP_ columnNames RP_)? | LP_ tableReferences RP_
+    ;
+
+forSystemTimeClause
+    : FOR SYSTEM_TIME AS OF string_
+    ;
+
+forSystemVersionClause
+    : FOR SYSTEM_VERSION AS OF (NUMBER_ | identifier)
     ;
 
 partitionNames

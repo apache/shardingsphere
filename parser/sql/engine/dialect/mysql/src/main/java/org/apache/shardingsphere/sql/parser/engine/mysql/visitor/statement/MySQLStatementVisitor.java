@@ -25,7 +25,6 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.api.ASTNode;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementBaseVisitor;
@@ -70,6 +69,7 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.Functio
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GeomCollectionFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupByClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupConcatFunctionContext;
+import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.GroupingFunctionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HavingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.HexadecimalLiteralsContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.IdentifierContext;
@@ -233,6 +233,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.Datab
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParameterMarkerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.ParenthesesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WithSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.match.MatchAgainstExpression;
@@ -650,7 +651,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             SubquerySegment subquerySegment = new SubquerySegment(
                     ctx.subquery().getStart().getStartIndex(), ctx.subquery().getStop().getStopIndex(), (SelectStatement) visit(ctx.subquery()), getOriginalText(ctx.subquery()));
             if (null != ctx.EXISTS()) {
-                subquerySegment.getSelect().setSubqueryType(SubqueryType.EXISTS);
+                subquerySegment.setSelect(subquerySegment.getSelect().withSubqueryType(SubqueryType.EXISTS));
                 return new ExistsSubqueryExpression(startIndex, stopIndex, subquerySegment);
             }
             return new SubqueryExpressionSegment(subquerySegment);
@@ -735,7 +736,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
@@ -760,16 +761,17 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else {
             result = (SelectStatement) visit(ctx.queryExpressionParens());
         }
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
+        if (null != ctx.withClause()) {
+            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        if (null != result && null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
-        }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -779,7 +781,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         SelectStatement result = (SelectStatement) visit(ctx.queryExpression());
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
         }
         return result;
     }
@@ -811,13 +813,10 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             return visit(ctx.queryPrimary());
         }
         if (null != ctx.queryExpressionBody() && ctx.queryExpressionBody().size() > 1) {
-            SelectStatement result = new SelectStatement(databaseType);
             SubquerySegment left = new SubquerySegment(ctx.queryExpressionBody(0).start.getStartIndex(), ctx.queryExpressionBody(0).stop.getStopIndex(),
                     (SelectStatement) visit(ctx.queryExpressionBody(0)), getOriginalText(ctx.queryExpressionBody(0)));
-            result.setProjections(left.getSelect().getProjections());
-            left.getSelect().getFrom().ifPresent(result::setFrom);
-            result.setCombine(createCombineSegment(ctx, left));
-            return result;
+            return SelectStatement.builder().databaseType(databaseType).projections(left.getSelect().getProjections()).from(left.getSelect().getFrom().orElse(null))
+                    .combine(createCombineSegment(ctx, left)).build();
         }
         return visit(ctx.queryExpressionParens());
     }
@@ -838,71 +837,70 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitQuerySpecification(final QuerySpecificationContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections((ProjectionsSegment) visit(ctx.projections()));
+        ProjectionsSegment projections = (ProjectionsSegment) visit(ctx.projections());
         if (null != ctx.selectSpecification()) {
-            result.getProjections().setDistinctRow(isDistinct(ctx));
+            projections.setDistinctRow(isDistinct(ctx));
         }
+        TableSegment from = null;
         if (null != ctx.fromClause()) {
             if (null != ctx.fromClause().tableReferences()) {
-                TableSegment tableSource = (TableSegment) visit(ctx.fromClause().tableReferences());
-                result.setFrom(tableSource);
+                from = (TableSegment) visit(ctx.fromClause().tableReferences());
             }
             if (null != ctx.fromClause().DUAL()) {
-                TableSegment tableSource = new SimpleTableSegment(new TableNameSegment(ctx.fromClause().DUAL().getSymbol().getStartIndex(),
+                from = new SimpleTableSegment(new TableNameSegment(ctx.fromClause().DUAL().getSymbol().getStartIndex(),
                         ctx.fromClause().DUAL().getSymbol().getStopIndex(), new IdentifierValue(ctx.fromClause().DUAL().getText())));
-                result.setFrom(tableSource);
             }
         }
+        WhereSegment where = null;
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            where = (WhereSegment) visit(ctx.whereClause());
         }
+        GroupBySegment groupBy = null;
         if (null != ctx.groupByClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupByClause()));
+            groupBy = (GroupBySegment) visit(ctx.groupByClause());
         }
+        HavingSegment having = null;
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            having = (HavingSegment) visit(ctx.havingClause());
         }
+        WindowSegment window = null;
         if (null != ctx.windowClause()) {
-            result.setWindow((WindowSegment) visit(ctx.windowClause()));
+            window = (WindowSegment) visit(ctx.windowClause());
         }
+        LockSegment lock = null;
         if (null != ctx.lockClauseList()) {
-            result.setLock((LockSegment) visit(ctx.lockClauseList()));
+            lock = (LockSegment) visit(ctx.lockClauseList());
         }
-        return result;
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).from(from).where(where).groupBy(groupBy).having(having).window(window).lock(lock).build();
     }
     
     @Override
     public ASTNode visitTableValueConstructor(final TableValueConstructorContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
         int startIndex = ctx.getStart().getStartIndex();
         int stopIndex = ctx.getStop().getStopIndex();
         ValuesExpression valuesExpression = new ValuesExpression(startIndex, stopIndex);
         valuesExpression.getRowConstructorList().addAll(createRowConstructorList(ctx.rowConstructorList()));
-        result.setProjections(new ProjectionsSegment(startIndex, stopIndex));
-        result.getProjections().getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
-        return result;
+        ProjectionsSegment projections = new ProjectionsSegment(startIndex, stopIndex);
+        projections.getProjections().add(new ExpressionProjectionSegment(startIndex, stopIndex, getOriginalText(ctx), valuesExpression));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections).build();
     }
     
     private Collection<InsertValuesSegment> createRowConstructorList(final RowConstructorListContext ctx) {
         Collection<InsertValuesSegment> result = new LinkedList<>();
-        for (int index = 0; index < ctx.getChildCount(); index++) {
-            if (!(ctx.getChild(index) instanceof AssignmentValuesContext)) {
-                continue;
-            }
-            InsertValuesSegment valuesSegment = (InsertValuesSegment) visit(ctx.getChild(index));
-            result.add(new InsertValuesSegment(((TerminalNodeImpl) ctx.getChild(index - 1)).symbol.getStartIndex(), valuesSegment.getStopIndex(), valuesSegment.getValues()));
+        for (int index = 0; index < ctx.assignmentValues().size(); index++) {
+            AssignmentValuesContext each = ctx.assignmentValues(index);
+            InsertValuesSegment insertValuesSegment = (InsertValuesSegment) visit(each);
+            result.add(new InsertValuesSegment(ctx.ROW(index).getSymbol().getStartIndex(), insertValuesSegment.getStopIndex(), insertValuesSegment.getValues()));
         }
         return result;
     }
     
     @Override
     public ASTNode visitTableStatement(final TableStatementContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
-        result.setProjections(new ProjectionsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
-        result.getProjections().getProjections().add(new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
-        result.setFrom(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText()))));
-        return result;
+        ProjectionsSegment projections = new ProjectionsSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex());
+        projections.getProjections().add(new ShorthandProjectionSegment(ctx.start.getStartIndex(), ctx.start.getStartIndex()));
+        return SelectStatement.builder().databaseType(databaseType).projections(projections)
+                .from(new SimpleTableSegment(new TableNameSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), new IdentifierValue(ctx.tableName().getText())))).build();
     }
     
     @Override
@@ -1033,6 +1031,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         AggregationProjectionSegment result = new AggregationProjectionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), type, getOriginalText(ctx), separator);
         result.getParameters().addAll(getExpressions(ctx.aggregationExpression().expr()));
+        if (null != ctx.overClause()) {
+            result.setWindow((WindowItemSegment) visit(ctx.overClause()));
+        }
         return result;
     }
     
@@ -1055,6 +1056,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     public final ASTNode visitSpecialFunction(final SpecialFunctionContext ctx) {
         if (null != ctx.groupConcatFunction()) {
             return visit(ctx.groupConcatFunction());
+        }
+        if (null != ctx.groupingFunction()) {
+            return visit(ctx.groupingFunction());
         }
         if (null != ctx.windowFunction()) {
             return visit(ctx.windowFunction());
@@ -1104,6 +1108,13 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         for (ExprContext each : getTargetRuleContextFromParseTree(ctx, ExprContext.class)) {
             result.getParameters().add((ExpressionSegment) visit(each));
         }
+        return result;
+    }
+    
+    @Override
+    public final ASTNode visitGroupingFunction(final GroupingFunctionContext ctx) {
+        FunctionSegment result = new FunctionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), ctx.GROUPING().getText(), getOriginalText(ctx));
+        result.getParameters().addAll(getExpressions(ctx.expr()));
         return result;
     }
     
@@ -1486,16 +1497,14 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     @Override
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
-        InsertStatement result = (InsertStatement) visit(ctx.insertBody());
-        if (null != ctx.onDuplicateKeyClause()) {
-            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()));
-        }
-        result.setIgnore(null != ctx.insertSpecification().IGNORE());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        InsertStatement insertBodyStatement = (InsertStatement) visit(ctx.insertBody());
+        InsertStatement result = createInsertStatementBuilder(insertBodyStatement).table((SimpleTableSegment) visit(ctx.tableName()))
+                .onDuplicateKeyColumns(
+                        null == ctx.onDuplicateKeyClause() ? insertBodyStatement.getOnDuplicateKeyColumns().orElse(null) : (OnDuplicateKeyColumnsSegment) visit(ctx.onDuplicateKeyClause()))
+                .ignore(null != ctx.insertSpecification().IGNORE())
+                .returning(null == ctx.returningClause() ? insertBodyStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause())).build();
+        copyInsertStatementMetadata(insertBodyStatement, result);
         result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
-        }
         return result;
     }
     
@@ -1506,36 +1515,35 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             result = (InsertStatement) visit(ctx.insertValuesClause());
         } else if (null != ctx.insertSelectClause()) {
             result = (InsertStatement) visit(ctx.insertSelectClause());
-            if (null != ctx.valueReference()) {
-                result.setValueReference((ValueReferenceSegment) visit(ctx.valueReference()));
-            }
         } else {
-            result = new InsertStatement(databaseType);
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
-            if (null != ctx.valueReference()) {
-                result.setValueReference((ValueReferenceSegment) visit(ctx.valueReference()));
-            }
-            if (null == ctx.valueReference() && null != ctx.setAssignmentsClause().setRowAlias()) {
-                result.setValueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias()));
-            }
+            result = InsertStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
+        }
+        if (null != ctx.valueReference()) {
+            InsertStatement actual = createInsertStatementBuilder(result).valueReference((ValueReferenceSegment) visit(ctx.valueReference())).build();
+            copyInsertStatementMetadata(result, actual);
+            result = actual;
+        }
+        if (null == ctx.valueReference() && null != ctx.setAssignmentsClause() && null != ctx.setAssignmentsClause().setRowAlias()) {
+            InsertStatement actual = createInsertStatementBuilder(result).valueReference(createValueReferenceFromSetRowAlias(ctx.setAssignmentsClause().setRowAlias())).build();
+            copyInsertStatementMetadata(result, actual);
+            result = actual;
         }
         return result;
     }
     
     @Override
     public ASTNode visitInsertSelectClause(final InsertSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
-        result.setInsertSelect(createInsertSelectSegment(ctx));
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_() && !ctx.LP_().isEmpty()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().get(0).getSymbol().getStartIndex(), ctx.RP_().get(0).getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).insertSelect(createInsertSelectSegment(ctx)).build();
     }
     
     private ValueReferenceSegment createValueReferenceFromSetRowAlias(final SetRowAliasContext ctx) {
@@ -1560,24 +1568,23 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitInsertValuesClause(final InsertValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
+        ValueReferenceSegment valueReference = null;
         if (null != ctx.valueReference()) {
-            ValueReferenceSegment valueRef = (ValueReferenceSegment) visit(ctx.valueReference());
-            result.setValueReference(valueRef);
+            valueReference = (ValueReferenceSegment) visit(ctx.valueReference());
         }
         Collection<InsertValuesSegment> insertValuesSegments =
                 null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList());
-        result.getValues().addAll(insertValuesSegments);
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).valueReference(valueReference).values(insertValuesSegments).build();
     }
     
     private Collection<InsertValuesSegment> createInsertValuesSegments(final Collection<AssignmentValuesContext> assignmentValuesContexts) {
@@ -1636,32 +1643,28 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         } else if (null != ctx.replaceSelectClause()) {
             result = (InsertStatement) visit(ctx.replaceSelectClause());
         } else {
-            result = new InsertStatement(databaseType);
-            result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+            result = InsertStatement.builder().databaseType(databaseType).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause())).build();
         }
-        result.setReplace(true);
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.addParameterMarkers(getParameterMarkerSegments());
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
-        }
-        return result;
+        InsertStatement actual = createInsertStatementBuilder(result).replace(true).table((SimpleTableSegment) visit(ctx.tableName()))
+                .returning(null == ctx.returningClause() ? result.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause())).build();
+        copyInsertStatementMetadata(result, actual);
+        actual.addParameterMarkers(getParameterMarkerSegments());
+        return actual;
     }
     
     @Override
     public ASTNode visitReplaceSelectClause(final ReplaceSelectClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.setInsertSelect(createReplaceSelectSegment(ctx));
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).insertSelect(createReplaceSelectSegment(ctx)).build();
     }
     
     private SubquerySegment createReplaceSelectSegment(final ReplaceSelectClauseContext ctx) {
@@ -1671,18 +1674,38 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitReplaceValuesClause(final ReplaceValuesClauseContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        InsertColumnsSegment insertColumns;
         if (null != ctx.LP_()) {
             if (null != ctx.fields()) {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields())));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), createInsertColumns(ctx.fields()));
             } else {
-                result.setInsertColumns(new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList()));
+                insertColumns = new InsertColumnsSegment(ctx.LP_().getSymbol().getStartIndex(), ctx.RP_().getSymbol().getStopIndex(), Collections.emptyList());
             }
         } else {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         }
-        result.getValues().addAll(createInsertValuesSegments(ctx.assignmentValues()));
-        return result;
+        Collection<InsertValuesSegment> insertValuesSegments =
+                null == ctx.rowConstructorList() ? createInsertValuesSegments(ctx.assignmentValues()) : createRowConstructorList(ctx.rowConstructorList());
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).values(insertValuesSegments).build();
+    }
+    
+    private InsertStatement.InsertStatementBuilder createInsertStatementBuilder(final InsertStatement insertStatement) {
+        return InsertStatement.builder().databaseType(databaseType).table(insertStatement.getTable().orElse(null))
+                .insertColumns(insertStatement.getInsertColumns().orElse(null)).insertSelect(insertStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertStatement.getSetAssignment().orElse(null)).onDuplicateKeyColumns(insertStatement.getOnDuplicateKeyColumns().orElse(null))
+                .valueReference(insertStatement.getValueReference().orElse(null)).returning(insertStatement.getReturning().orElse(null))
+                .output(insertStatement.getOutput().orElse(null)).with(insertStatement.getWith().orElse(null))
+                .multiTableInsertType(insertStatement.getMultiTableInsertType().orElse(null)).multiTableInsertInto(insertStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertStatement.getMultiTableConditionalInto().orElse(null)).where(insertStatement.getWhere().orElse(null))
+                .exec(insertStatement.getExec().orElse(null)).withTableHint(insertStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertStatement.getRowSetFunction().orElse(null)).ignore(insertStatement.isIgnore()).replace(insertStatement.isReplace())
+                .values(new LinkedList<>(insertStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertStatement.getDerivedInsertColumns()));
+    }
+    
+    private void copyInsertStatementMetadata(final InsertStatement source, final InsertStatement target) {
+        target.addParameterMarkers(source.getParameterMarkers());
+        target.getVariableNames().addAll(source.getVariableNames());
+        target.getComments().addAll(source.getComments());
     }
     
     private List<ColumnSegment> createInsertColumns(final FieldsContext fields) {
@@ -1695,24 +1718,24 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder().databaseType(databaseType);
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
         TableSegment tableSegment = (TableSegment) visit(ctx.tableReferences());
-        result.setTable(tableSegment);
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
+        result.table(tableSegment).setAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            result.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
-        }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
@@ -1758,29 +1781,30 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType);
+        if (null != ctx.withClause()) {
+            result.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.multipleTablesClause()) {
-            result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
+            result.table((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
-            result.setTable((TableSegment) visit(ctx.singleTableClause()));
+            result.table((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            result.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.orderByClause()) {
-            result.setOrderBy((OrderBySegment) visit(ctx.orderByClause()));
+            result.orderBy((OrderBySegment) visit(ctx.orderByClause()));
         }
         if (null != ctx.limitClause()) {
-            result.setLimit((LimitSegment) visit(ctx.limitClause()));
+            result.limit((LimitSegment) visit(ctx.limitClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
         if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
+            result.returning((ReturningSegment) visit(ctx.returningClause()));
         }
-        if (null != ctx.withClause()) {
-            result.setWith((WithSegment) visit(ctx.withClause()));
-        }
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
@@ -1815,7 +1839,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         if (null != ctx.queryExpression()) {
             result = (SelectStatement) visit(ctx.queryExpression());
             if (null != ctx.lockClauseList()) {
-                result.setLock((LockSegment) visit(ctx.lockClauseList()));
+                result = createSelectStatementBuilder(result).lock((LockSegment) visit(ctx.lockClauseList())).build();
             }
         } else if (null != ctx.selectWithInto()) {
             result = (SelectStatement) visit(ctx.selectWithInto());
@@ -1824,6 +1848,18 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         }
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
     private boolean isDistinct(final QuerySpecificationContext ctx) {
@@ -2019,6 +2055,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         return result;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTableFactor(final TableFactorContext ctx) {
         if (null != ctx.subquery()) {
@@ -2027,6 +2064,9 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
             SubqueryTableSegment result = new SubqueryTableSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
             if (null != ctx.alias()) {
                 result.setAlias((AliasSegment) visit(ctx.alias()));
+            }
+            if (null != ctx.columnNames()) {
+                result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.columnNames())).getValue());
             }
             return result;
         }
@@ -2109,7 +2149,7 @@ public abstract class MySQLStatementVisitor extends MySQLStatementBaseVisitor<AS
         for (OrderByItemContext each : ctx.orderByItem()) {
             items.add((OrderByItemSegment) visit(each));
         }
-        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items);
+        return new GroupBySegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), items, null != ctx.ROLLUP());
     }
     
     @Override

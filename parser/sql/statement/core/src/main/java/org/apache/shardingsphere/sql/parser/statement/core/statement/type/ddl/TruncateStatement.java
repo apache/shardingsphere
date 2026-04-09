@@ -25,7 +25,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.S
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.type.TableSQLStatementAttribute;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Truncate table statement.
@@ -35,17 +34,14 @@ public final class TruncateStatement extends DDLStatement {
     
     private final Collection<SimpleTableSegment> tables;
     
-    private final Collection<PartitionSegment> partitions = new LinkedList<>();
+    private final Collection<PartitionSegment> partitions;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public TruncateStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
+    public TruncateStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables, final Collection<PartitionSegment> partitions) {
         super(databaseType);
         this.tables = tables;
-    }
-    
-    @Override
-    public void buildAttributes() {
+        this.partitions = partitions;
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tables));
     }
 }

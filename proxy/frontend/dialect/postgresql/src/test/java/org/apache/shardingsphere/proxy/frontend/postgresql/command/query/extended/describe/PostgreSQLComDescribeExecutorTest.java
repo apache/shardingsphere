@@ -55,6 +55,7 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extende
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLServerPreparedStatement;
 import org.apache.shardingsphere.sql.parser.engine.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
@@ -166,6 +167,35 @@ class PostgreSQLComDescribeExecutorTest {
         assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
     }
     
+    @Test
+    void assertDescribePreparedStatementWithExistingRowDescriptionAndUnspecifiedParameterType() throws SQLException {
+        when(packet.getType()).thenReturn('S');
+        String statementId = "S_existing_row_description";
+        when(packet.getName()).thenReturn(statementId);
+        String sql = "SELECT id FROM t_order WHERE id = ?";
+        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        ConnectionContext connectionContext = mock(ConnectionContext.class);
+        when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of(DATABASE_NAME));
+        when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
+        prepareJDBCBackendConnectionWithParamTypes(sql, new int[]{Types.INTEGER}, new String[]{"int4"});
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(sql, sqlStatementContext, new HintValueContext(),
+                new ArrayList<>(Collections.singletonList(PostgreSQLBinaryColumnType.UNSPECIFIED)), Collections.singletonList(0));
+        preparedStatement.setRowDescription(PostgreSQLNoDataPacket.getInstance());
+        connectionSession.getServerPreparedStatementRegistry().addPreparedStatement(statementId, preparedStatement);
+        Collection<DatabasePacket> actual = executor.execute();
+        Iterator<DatabasePacket> actualIterator = actual.iterator();
+        PostgreSQLParameterDescriptionPacket parameterDescription = (PostgreSQLParameterDescriptionPacket) actualIterator.next();
+        PostgreSQLPacketPayload mockPayload = mock(PostgreSQLPacketPayload.class);
+        parameterDescription.write(mockPayload);
+        verify(mockPayload).writeInt2(1);
+        verify(mockPayload).writeInt4(PostgreSQLBinaryColumnType.INT4.getValue());
+        assertThat(actualIterator.next(), is(PostgreSQLNoDataPacket.getInstance()));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideInsertMetaDataCases")
     void assertDescribePreparedStatementInsertByMetaData(final String testName, final String statementId, final String sql,
@@ -224,7 +254,7 @@ class PostgreSQLComDescribeExecutorTest {
         when(packet.getName()).thenReturn(statementId);
         String sql = "INSERT INTO public.t_small (col1, col2) VALUES (?, ?) RETURNING *, col1 + col2 expr_sum";
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED);
         SQLStatementContext sqlStatementContext = mock(InsertStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         ShardingSphereTable table = new ShardingSphereTable("t_small",
@@ -456,7 +486,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Collections.singleton(PostgreSQLBinaryColumnType.INT4));
+        List<PostgreSQLBinaryColumnType> parameterTypes = Collections.singletonList(PostgreSQLBinaryColumnType.INT4);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         PostgreSQLServerPreparedStatement preparedStatement = mock(PostgreSQLServerPreparedStatement.class);
         when(preparedStatement.describeRows()).thenReturn(Optional.empty(), Optional.of(PostgreSQLNoDataPacket.getInstance()));
@@ -493,7 +523,7 @@ class PostgreSQLComDescribeExecutorTest {
         SQLStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(sqlStatement);
         prepareJDBCBackendConnectionWithParamTypes(sql, new int[]{Types.INTEGER, Types.SMALLINT}, new String[]{"int4", "int2"});
-        List<PostgreSQLBinaryColumnType> parameterTypes = new ArrayList<>(Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED));
+        List<PostgreSQLBinaryColumnType> parameterTypes = Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.UNSPECIFIED);
         List<Integer> parameterIndexes = IntStream.range(0, sqlStatement.getParameterCount()).boxed().collect(Collectors.toList());
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
@@ -533,9 +563,15 @@ class PostgreSQLComDescribeExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(DATABASE_TYPE);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public").containsTable(TABLE_NAME)).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
+        when(database.containsSchema("public")).thenReturn(true);
+        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        when(schema.containsTable(TABLE_NAME)).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue(TABLE_NAME))).thenReturn(true);
+        when(schema.getTable(new IdentifierValue(TABLE_NAME))).thenReturn(new ShardingSphereTable(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList()));
         when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }
@@ -553,12 +589,18 @@ class PostgreSQLComDescribeExecutorTest {
         when(storageUnit.getStorageType()).thenReturn(DATABASE_TYPE);
         when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getResourceMetaData().getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
         when(result.getMetaDataContexts().getMetaData().containsDatabase(DATABASE_NAME)).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).containsSchema("public")).thenReturn(true);
-        when(result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME).getSchema("public")).thenReturn(schema);
-        when(schema.containsTable(table.getName())).thenReturn(true);
-        when(schema.getTable(table.getName())).thenReturn(table);
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
+        when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
+        when(database.containsSchema("public")).thenReturn(true);
+        when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        when(database.getSchema("public")).thenReturn(schema);
+        when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
+        when(schema.containsTable(table.getName())).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue(table.getName()))).thenReturn(true);
+        when(schema.getTable(table.getName())).thenReturn(table);
+        when(schema.getTable(new IdentifierValue(table.getName()))).thenReturn(table);
         when(result.getDatabase(DATABASE_NAME)).thenReturn(database);
         return result;
     }

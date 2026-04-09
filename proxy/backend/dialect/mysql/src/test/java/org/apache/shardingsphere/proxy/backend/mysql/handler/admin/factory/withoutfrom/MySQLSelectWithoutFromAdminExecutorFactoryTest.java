@@ -166,11 +166,9 @@ class MySQLSelectWithoutFromAdminExecutorFactoryTest {
     }
     
     private SelectStatement createSelectStatement(final Iterable<ProjectionSegment> projections) {
-        SelectStatement result = new SelectStatement(new MySQLDatabaseType());
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projections.forEach(projectionsSegment.getProjections()::add);
-        result.setProjections(projectionsSegment);
-        return result;
+        return SelectStatement.builder().databaseType(new MySQLDatabaseType()).projections(projectionsSegment).build();
     }
     
     private SelectStatementContext mockSelectStatementContext(final SelectStatement selectStatement) {

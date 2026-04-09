@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.RoleOrPrivilegeSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dcl.UserSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.GrantLevelSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dcl.RevokeStatement;
 
 import java.util.Collection;
@@ -47,7 +48,7 @@ public final class MySQLRevokeStatement extends RevokeStatement {
     
     private GrantLevelSegment level;
     
-    public MySQLRevokeStatement(final DatabaseType databaseType) {
-        super(databaseType);
+    public MySQLRevokeStatement(final DatabaseType databaseType, final Collection<SimpleTableSegment> tables) {
+        super(databaseType, tables);
     }
 }

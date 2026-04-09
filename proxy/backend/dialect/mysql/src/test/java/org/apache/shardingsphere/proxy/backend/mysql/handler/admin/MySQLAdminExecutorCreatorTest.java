@@ -97,7 +97,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithMySQLShowFunctionStatus() {
         MySQLShowFunctionStatusStatement sqlStatement = new MySQLShowFunctionStatusStatement(databaseType, null);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -107,7 +106,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowProcedureStatus() {
         MySQLShowProcedureStatusStatement sqlStatement = new MySQLShowProcedureStatusStatement(databaseType, null);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -117,7 +115,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowTables() {
         MySQLShowTablesStatement sqlStatement = new MySQLShowTablesStatement(databaseType, null, null, false);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -127,7 +124,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithUse() {
         MySQLUseStatement sqlStatement = new MySQLUseStatement(databaseType, null);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -137,7 +133,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithShowDatabasesStatement() {
         MySQLShowDatabasesStatement sqlStatement = new MySQLShowDatabasesStatement(databaseType, null);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -147,7 +142,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithMySQLShowProcessListStatement() {
         MySQLShowProcessListStatement sqlStatement = new MySQLShowProcessListStatement(databaseType, false);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -157,7 +151,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithMySQLShowCreateDatabaseStatement() {
         MySQLShowCreateDatabaseStatement sqlStatement = new MySQLShowCreateDatabaseStatement(databaseType, null);
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -167,7 +160,6 @@ class MySQLAdminExecutorCreatorTest {
     @Test
     void assertCreateWithSetStatement() {
         SetStatement sqlStatement = new SetStatement(databaseType, Collections.emptyList());
-        sqlStatement.buildAttributes();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "", Collections.emptyList());
         assertTrue(actual.isPresent());
@@ -418,8 +410,7 @@ class MySQLAdminExecutorCreatorTest {
     
     @Test
     void assertCreateWithDMLStatement() {
-        DeleteStatement sqlStatement = new DeleteStatement(databaseType);
-        sqlStatement.buildAttributes();
+        DeleteStatement sqlStatement = DeleteStatement.builder().databaseType(databaseType).build();
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "DELETE FROM t", "", Collections.emptyList());
         assertThat(actual, is(Optional.empty()));

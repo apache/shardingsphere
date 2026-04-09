@@ -51,22 +51,20 @@ class InsertStatementConverterTest {
     
     @Test
     void assertConvertWithInsertSelect() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_select"))));
-        SelectStatement selectStatement = new SelectStatement(databaseType);
-        selectStatement.setProjections(createProjectionsSegment());
-        insertStatement.setInsertSelect(new SubquerySegment(0, 0, selectStatement, "select"));
+        SelectStatement selectStatement = SelectStatement.builder().databaseType(databaseType).projections(createProjectionsSegment()).build();
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_select"))))
+                .insertSelect(new SubquerySegment(0, 0, selectStatement, "select")).build();
         SqlInsert actual = (SqlInsert) new InsertStatementConverter().convert(insertStatement);
         assertThat(actual.getSource(), isA(SqlNode.class));
     }
     
     @Test
     void assertConvertWithSetAssignmentColumns() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_set"))));
         SetAssignmentSegment setAssignment = createSetAssignmentSegment();
-        insertStatement.setSetAssignment(setAssignment);
-        insertStatement.setInsertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList()));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_set"))))
+                .setAssignment(setAssignment).insertColumns(new InsertColumnsSegment(0, 0, Collections.emptyList())).build();
         SqlInsert actual = (SqlInsert) new InsertStatementConverter().convert(insertStatement);
         assertThat(actual.getTargetTable(), isA(SqlNode.class));
         assertThat(actual.getSource(), isA(SqlBasicCall.class));
@@ -75,9 +73,9 @@ class InsertStatementConverterTest {
     
     @Test
     void assertConvertWithValuesOnly() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_values"))));
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_values"))))
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))))).build();
         SqlInsert actual = (SqlInsert) new InsertStatementConverter().convert(insertStatement);
         assertThat(actual.getSource(), isA(SqlBasicCall.class));
         assertNull(actual.getTargetColumnList());
@@ -85,11 +83,11 @@ class InsertStatementConverterTest {
     
     @Test
     void assertConvertWithExplicitColumns() {
-        InsertStatement insertStatement = new InsertStatement(databaseType);
-        insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_columns"))));
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
-        insertStatement.setInsertColumns(insertColumnsSegment);
-        insertStatement.getValues().add(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))));
+        InsertStatement insertStatement = InsertStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_insert_columns"))))
+                .insertColumns(insertColumnsSegment)
+                .values(Collections.singletonList(new InsertValuesSegment(0, 0, Collections.singletonList(new ParameterMarkerExpressionSegment(0, 0, 0))))).build();
         SqlInsert actual = (SqlInsert) new InsertStatementConverter().convert(insertStatement);
         assertThat(actual.getTargetColumnList(), isA(SqlNodeList.class));
     }

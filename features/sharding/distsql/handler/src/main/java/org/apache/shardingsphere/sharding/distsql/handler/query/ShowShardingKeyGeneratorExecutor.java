@@ -45,6 +45,7 @@ public final class ShowShardingKeyGeneratorExecutor implements DistSQLQueryExecu
     @Override
     public Collection<LocalDataQueryResultRow> getRows(final ShowShardingKeyGeneratorsStatement sqlStatement, final ContextManager contextManager) {
         return rule.getConfiguration().getKeyGenerators().entrySet().stream()
+                .filter(entry -> !sqlStatement.getName().isPresent() || sqlStatement.getName().get().equals(entry.getKey()))
                 .map(entry -> new LocalDataQueryResultRow(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps())).collect(Collectors.toList());
     }
     

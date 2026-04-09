@@ -124,9 +124,9 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData()).thenReturn(new ShardingSphereMetaData(Collections.emptyList(),
                 new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties())));
-        when(selectContext.getSqlStatement()).thenReturn(new SelectStatement(DATABASE_TYPE));
+        when(selectContext.getSqlStatement()).thenReturn(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         registry.addPreparedStatement(1, new FirebirdServerPreparedStatement("SELECT * FROM tbl", selectContext, new HintValueContext()));
-        when(updateContext.getSqlStatement()).thenReturn(new UpdateStatement(DATABASE_TYPE));
+        when(updateContext.getSqlStatement()).thenReturn(UpdateStatement.builder().databaseType(DATABASE_TYPE).build());
         registry.addPreparedStatement(2, new FirebirdServerPreparedStatement("UPDATE tbl SET col=1", updateContext, new HintValueContext()));
     }
     
@@ -164,7 +164,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterTypes()).thenReturn(Collections.emptyList());
         when(packet.getParameterValues()).thenReturn(Collections.emptyList());
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), any(QueryContext.class), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         Collection<DatabasePacket> actual = executor.execute();
         assertThat(executor.getResponseType(), is(ResponseType.UPDATE));
@@ -182,7 +182,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterTypes()).thenReturn(Collections.singletonList(FirebirdBinaryColumnType.BLOB));
         when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(blobId)));
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
         ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         executor.execute();
@@ -198,7 +198,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(9)));
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         executor.execute();
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
@@ -213,7 +213,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList("text")));
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         executor.execute();
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
@@ -228,7 +228,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterValues()).thenReturn(new ArrayList<>(Collections.singletonList(0L)));
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         executor.execute();
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();
@@ -250,7 +250,7 @@ class FirebirdExecuteStatementCommandExecutorTest {
         when(packet.getParameterValues()).thenReturn(params);
         executor = new FirebirdExecuteStatementCommandExecutor(packet, connectionSession);
         ArgumentCaptor<QueryContext> queryContextCaptor = ArgumentCaptor.forClass(QueryContext.class);
-        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(new UpdateStatement(DATABASE_TYPE)));
+        when(proxyBackendHandler.execute()).thenReturn(new UpdateResponseHeader(UpdateStatement.builder().databaseType(DATABASE_TYPE).build()));
         when(ProxyBackendHandlerFactory.newInstance(eq(DATABASE_TYPE), queryContextCaptor.capture(), eq(connectionSession), eq(true))).thenReturn(proxyBackendHandler);
         executor.execute();
         List<Object> actualParams = queryContextCaptor.getValue().getParameters();

@@ -70,7 +70,7 @@ jobs:
         run: ./mvnw install -DskipTests -Pe2e.env.proxy -f test/e2e/agent/engine/pom.xml
       - name: Save Proxy E2E Image
         run: docker save -o /tmp/apache-shardingsphere-proxy-agent-test.tar apache/shardingsphere-proxy-agent-test:latest
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: proxy-e2e-image
           path: /tmp/apache-shardingsphere-proxy-agent-test.tar
@@ -83,7 +83,7 @@ jobs:
           cache-primary-key: ${{ steps.setup-build-environment.outputs.cache-primary-key }}
       - name: Save JDBC E2E Image
         run: docker save -o /tmp/apache-shardingsphere-jdbc-agent-test.tar apache/shardingsphere-jdbc-agent-test:latest
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: jdbc-e2e-image
           path: /tmp/apache-shardingsphere-jdbc-agent-test.tar
@@ -134,7 +134,7 @@ jobs:
           enable-docker-setup: 'true'
       - name: Download Proxy E2E Image
         if: matrix.adapter == 'proxy'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: proxy-e2e-image
           path: /tmp/
@@ -143,7 +143,7 @@ jobs:
         run: docker load -i /tmp/apache-shardingsphere-proxy-agent-test.tar
       - name: Download JDBC E2E Image
         if: matrix.adapter == 'jdbc'
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: jdbc-e2e-image
           path: /tmp/

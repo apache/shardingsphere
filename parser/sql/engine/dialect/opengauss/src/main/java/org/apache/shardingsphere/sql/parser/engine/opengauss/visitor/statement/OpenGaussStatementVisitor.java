@@ -429,7 +429,7 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         SubquerySegment subquerySegment = new SubquerySegment(ctx.selectWithParens().getStart().getStartIndex(),
                 ctx.selectWithParens().getStop().getStopIndex(), (SelectStatement) visit(ctx.selectWithParens()), getOriginalText(ctx.selectWithParens()));
         if (null != ctx.EXISTS()) {
-            subquerySegment.getSelect().setSubqueryType(SubqueryType.EXISTS);
+            subquerySegment.setSelect(subquerySegment.getSelect().withSubqueryType(SubqueryType.EXISTS));
             return new ExistsSubqueryExpression(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), subquerySegment);
         }
         return new SubqueryExpressionSegment(subquerySegment);
@@ -703,14 +703,22 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     public ASTNode visitInsert(final InsertContext ctx) {
         // TODO :FIXME, since there is no segment for insertValuesClause, InsertStatement is created by sub rule.
         // TODO :deal with insert select
-        InsertStatement result = (InsertStatement) visit(ctx.insertRest());
-        result.setTable((SimpleTableSegment) visit(ctx.insertTarget()));
-        if (null != ctx.optOnDuplicateKey()) {
-            result.setOnDuplicateKeyColumns((OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()));
-        }
-        if (null != ctx.returningClause()) {
-            result.setReturning((ReturningSegment) visit(ctx.returningClause()));
-        }
+        InsertStatement insertRestStatement = (InsertStatement) visit(ctx.insertRest());
+        InsertStatement result = InsertStatement.builder().databaseType(databaseType).table((SimpleTableSegment) visit(ctx.insertTarget()))
+                .insertColumns(insertRestStatement.getInsertColumns().orElse(null)).insertSelect(insertRestStatement.getInsertSelect().orElse(null))
+                .setAssignment(insertRestStatement.getSetAssignment().orElse(null))
+                .onDuplicateKeyColumns(null == ctx.optOnDuplicateKey() ? insertRestStatement.getOnDuplicateKeyColumns().orElse(null) : (OnDuplicateKeyColumnsSegment) visit(ctx.optOnDuplicateKey()))
+                .valueReference(insertRestStatement.getValueReference().orElse(null))
+                .returning(null == ctx.returningClause() ? insertRestStatement.getReturning().orElse(null) : (ReturningSegment) visit(ctx.returningClause()))
+                .output(insertRestStatement.getOutput().orElse(null)).with(insertRestStatement.getWith().orElse(null))
+                .multiTableInsertType(insertRestStatement.getMultiTableInsertType().orElse(null)).multiTableInsertInto(insertRestStatement.getMultiTableInsertInto().orElse(null))
+                .multiTableConditionalInto(insertRestStatement.getMultiTableConditionalInto().orElse(null)).where(insertRestStatement.getWhere().orElse(null))
+                .exec(insertRestStatement.getExec().orElse(null)).withTableHint(insertRestStatement.getWithTableHint().orElse(null))
+                .rowSetFunction(insertRestStatement.getRowSetFunction().orElse(null)).ignore(insertRestStatement.isIgnore()).replace(insertRestStatement.isReplace())
+                .values(new LinkedList<>(insertRestStatement.getValues())).derivedInsertColumns(new LinkedList<>(insertRestStatement.getDerivedInsertColumns())).build();
+        result.addParameterMarkers(insertRestStatement.getParameterMarkers());
+        result.getVariableNames().addAll(insertRestStatement.getVariableNames());
+        result.getComments().addAll(insertRestStatement.getComments());
         result.addParameterMarkers(getParameterMarkerSegments());
         return result;
     }
@@ -760,23 +768,24 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitInsertRest(final InsertRestContext ctx) {
-        InsertStatement result = new InsertStatement(databaseType);
+        SubquerySegment insertSelect = null;
+        Collection<InsertValuesSegment> values = new LinkedList<>();
         ValuesClauseContext valuesClause = ctx.select().selectNoParens().selectClauseN().simpleSelect().valuesClause();
         if (null == valuesClause) {
             SelectStatement selectStatement = (SelectStatement) visit(ctx.select());
-            result.setInsertSelect(new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select())));
+            insertSelect = new SubquerySegment(ctx.select().start.getStartIndex(), ctx.select().stop.getStopIndex(), selectStatement, getOriginalText(ctx.select()));
         } else {
-            result.getValues().addAll(createInsertValuesSegments(valuesClause));
+            values.addAll(createInsertValuesSegments(valuesClause));
         }
+        InsertColumnsSegment insertColumns;
         if (null == ctx.insertColumnList()) {
-            result.setInsertColumns(new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList()));
+            insertColumns = new InsertColumnsSegment(ctx.start.getStartIndex() - 1, ctx.start.getStartIndex() - 1, Collections.emptyList());
         } else {
-            InsertColumnListContext insertColumns = ctx.insertColumnList();
-            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumns);
-            InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(insertColumns.start.getStartIndex() - 1, insertColumns.stop.getStopIndex() + 1, columns.getValue());
-            result.setInsertColumns(insertColumnsSegment);
+            InsertColumnListContext insertColumnList = ctx.insertColumnList();
+            CollectionValue<ColumnSegment> columns = (CollectionValue<ColumnSegment>) visit(insertColumnList);
+            insertColumns = new InsertColumnsSegment(insertColumnList.start.getStartIndex() - 1, insertColumnList.stop.getStopIndex() + 1, columns.getValue());
         }
-        return result;
+        return InsertStatement.builder().databaseType(databaseType).insertColumns(insertColumns).insertSelect(insertSelect).values(values).build();
     }
     
     @Override
@@ -895,18 +904,20 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
-        UpdateStatement result = new UpdateStatement(databaseType);
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTable(tableSegment);
-        result.setSetAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
+        UpdateStatement.UpdateStatementBuilder result = UpdateStatement.builder()
+                .databaseType(databaseType)
+                .table(tableSegment)
+                .setAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
         if (null != ctx.whereOrCurrentClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
+            result.where((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
         if (null != ctx.fromClause()) {
-            result.setFrom((TableSegment) visit(ctx.fromClause()));
+            result.from((TableSegment) visit(ctx.fromClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        UpdateStatement updateStatement = result.build();
+        updateStatement.addParameterMarkers(getParameterMarkerSegments());
+        return updateStatement;
     }
     
     @Override
@@ -917,14 +928,14 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
-        DeleteStatement result = new DeleteStatement(databaseType);
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTable(tableSegment);
+        DeleteStatement.DeleteStatementBuilder result = DeleteStatement.builder().databaseType(databaseType).table(tableSegment);
         if (null != ctx.whereOrCurrentClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
+            result.where((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }
-        result.addParameterMarkers(getParameterMarkerSegments());
-        return result;
+        DeleteStatement deleteStatement = result.build();
+        deleteStatement.addParameterMarkers(getParameterMarkerSegments());
+        return deleteStatement;
     }
     
     @Override
@@ -943,23 +954,20 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     @Override
     public ASTNode visitSelectNoParens(final SelectNoParensContext ctx) {
         SelectStatement result = (SelectStatement) visit(ctx.selectClauseN());
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = createSelectStatementBuilder(result);
+        if (null != ctx.withClause()) {
+            selectStatementBuilder.with((WithSegment) visit(ctx.withClause()));
+        }
         if (null != ctx.sortClause()) {
-            OrderBySegment orderBySegment = (OrderBySegment) visit(ctx.sortClause());
-            result.setOrderBy(orderBySegment);
+            selectStatementBuilder.orderBy((OrderBySegment) visit(ctx.sortClause()));
         }
         if (null != ctx.selectLimit()) {
-            LimitSegment limitSegment = (LimitSegment) visit(ctx.selectLimit());
-            result.setLimit(limitSegment);
+            selectStatementBuilder.limit((LimitSegment) visit(ctx.selectLimit()));
         }
         if (null != ctx.forLockingClause()) {
-            LockSegment lockSegment = (LockSegment) visit(ctx.forLockingClause());
-            result.setLock(lockSegment);
+            selectStatementBuilder.lock((LockSegment) visit(ctx.forLockingClause()));
         }
-        if (null != ctx.withClause()) {
-            WithSegment withSegment = (WithSegment) visit(ctx.withClause());
-            result.setWith(withSegment);
-        }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -1002,14 +1010,10 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
             return visit(ctx.simpleSelect());
         }
         if (null != ctx.selectClauseN() && !ctx.selectClauseN().isEmpty()) {
-            SelectStatement result = new SelectStatement(databaseType);
             SelectStatement left = (SelectStatement) visit(ctx.selectClauseN(0));
-            result.setProjections(left.getProjections());
-            left.getFrom().ifPresent(result::setFrom);
             CombineSegment combineSegment = new CombineSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(),
                     createSubquerySegment(ctx.selectClauseN(0), left), getCombineType(ctx), createSubquerySegment(ctx.selectClauseN(1), (SelectStatement) visit(ctx.selectClauseN(1))));
-            result.setCombine(combineSegment);
-            return result;
+            return SelectStatement.builder().databaseType(databaseType).projections(left.getProjections()).from(left.getFrom().orElse(null)).combine(combineSegment).build();
         }
         return visit(ctx.selectWithParens());
     }
@@ -1034,36 +1038,35 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     
     @Override
     public ASTNode visitSimpleSelect(final SimpleSelectContext ctx) {
-        SelectStatement result = new SelectStatement(databaseType);
+        SelectStatement.SelectStatementBuilder selectStatementBuilder = SelectStatement.builder().databaseType(databaseType);
         if (null != ctx.targetList()) {
             ProjectionsSegment projects = (ProjectionsSegment) visit(ctx.targetList());
             if (null != ctx.distinctClause()) {
                 projects.setDistinctRow(true);
             }
-            result.setProjections(projects);
+            selectStatementBuilder.projections(projects);
         } else {
-            result.setProjections(new ProjectionsSegment(-1, -1));
+            selectStatementBuilder.projections(new ProjectionsSegment(-1, -1));
         }
         if (null != ctx.intoClause()) {
-            result.setInto((TableSegment) visit(ctx.intoClause()));
+            selectStatementBuilder.into((TableSegment) visit(ctx.intoClause()));
         }
         if (null != ctx.fromClause()) {
-            TableSegment tableSegment = (TableSegment) visit(ctx.fromClause());
-            result.setFrom(tableSegment);
+            selectStatementBuilder.from((TableSegment) visit(ctx.fromClause()));
         }
         if (null != ctx.whereClause()) {
-            result.setWhere((WhereSegment) visit(ctx.whereClause()));
+            selectStatementBuilder.where((WhereSegment) visit(ctx.whereClause()));
         }
         if (null != ctx.groupClause()) {
-            result.setGroupBy((GroupBySegment) visit(ctx.groupClause()));
+            selectStatementBuilder.groupBy((GroupBySegment) visit(ctx.groupClause()));
         }
         if (null != ctx.havingClause()) {
-            result.setHaving((HavingSegment) visit(ctx.havingClause()));
+            selectStatementBuilder.having((HavingSegment) visit(ctx.havingClause()));
         }
         if (null != ctx.windowClause()) {
-            result.setWindow((WindowSegment) visit(ctx.windowClause()));
+            selectStatementBuilder.window((WindowSegment) visit(ctx.windowClause()));
         }
-        return result;
+        return selectStatementBuilder.build();
     }
     
     @Override
@@ -1461,6 +1464,18 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
         }
         LimitValueSegment offset = (LimitValueSegment) visit(ctx.offsetClause().selectOffsetValue());
         return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, null);
+    }
+    
+    private SelectStatement.SelectStatementBuilder createSelectStatementBuilder(final SelectStatement selectStatement) {
+        return SelectStatement.builder().databaseType(selectStatement.getDatabaseType()).projections(selectStatement.getProjections())
+                .from(selectStatement.getFrom().orElse(null)).where(selectStatement.getWhere().orElse(null))
+                .hierarchicalQuery(selectStatement.getHierarchicalQuery().orElse(null)).groupBy(selectStatement.getGroupBy().orElse(null))
+                .having(selectStatement.getHaving().orElse(null)).orderBy(selectStatement.getOrderBy().orElse(null))
+                .combine(selectStatement.getCombine().orElse(null)).with(selectStatement.getWith().orElse(null))
+                .subqueryType(selectStatement.getSubqueryType().orElse(null)).limit(selectStatement.getLimit().orElse(null))
+                .lock(selectStatement.getLock().orElse(null)).window(selectStatement.getWindow().orElse(null))
+                .into(selectStatement.getInto().orElse(null)).model(selectStatement.getModel().orElse(null))
+                .outfile(selectStatement.getOutfile().orElse(null)).withTableHint(selectStatement.getWithTableHint().orElse(null));
     }
     
     @Override

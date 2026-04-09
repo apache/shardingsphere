@@ -87,10 +87,8 @@ class NoResourceShowExecutorTest {
     }
     
     private SelectStatement createSelectStatement(final Collection<ProjectionSegment> projections) {
-        SelectStatement result = new SelectStatement(databaseType);
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().addAll(projections);
-        result.setProjections(projectionsSegment);
-        return result;
+        return SelectStatement.builder().databaseType(databaseType).projections(projectionsSegment).build();
     }
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.encrypt.rule.column;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.encrypt.enums.EncryptColumnItemType;
 import org.apache.shardingsphere.encrypt.rule.column.item.AssistedQueryColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.CipherColumnItem;
 import org.apache.shardingsphere.encrypt.rule.column.item.LikeQueryColumnItem;
@@ -62,11 +63,21 @@ public final class EncryptColumn {
     }
     
     /**
-     * Get query encryptor.
+     * Get encryptor by column item type.
      *
-     * @return query encryptor
+     * @param columnItemType column item type
+     * @return encryptor
      */
-    public EncryptAlgorithm getQueryEncryptor() {
-        return null == assistedQuery ? cipher.getEncryptor() : assistedQuery.getEncryptor();
+    public EncryptAlgorithm getEncryptor(final EncryptColumnItemType columnItemType) {
+        if (EncryptColumnItemType.CIPHER == columnItemType) {
+            return cipher.getEncryptor();
+        }
+        if (EncryptColumnItemType.ASSISTED_QUERY == columnItemType) {
+            return null == assistedQuery ? null : assistedQuery.getEncryptor();
+        }
+        if (EncryptColumnItemType.LIKE_QUERY == columnItemType) {
+            return null == likeQuery ? null : likeQuery.getEncryptor();
+        }
+        return null;
     }
 }

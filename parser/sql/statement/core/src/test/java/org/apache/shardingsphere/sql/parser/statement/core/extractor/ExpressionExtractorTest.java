@@ -28,8 +28,14 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.Type
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.AndPredicate;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 
@@ -220,6 +226,17 @@ class ExpressionExtractorTest {
     }
     
     @Test
+    void assertGetParameterMarkerExpressionsFromInExpressionWithSubquery() {
+        ParameterMarkerExpressionSegment expected = new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.QUESTION);
+        SelectStatement selectStatement = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build();
+        SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(0, 0, selectStatement, "(SELECT 1)"));
+        Collection<ExpressionSegment> inExpressions = Collections.singleton(new InExpression(0, 0, expected, right, false));
+        List<ParameterMarkerExpressionSegment> actual = ExpressionExtractor.getParameterMarkerExpressions(inExpressions);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0), is(expected));
+    }
+    
+    @Test
     void assertExtractJoinConditions() {
         Collection<BinaryOperationExpression> actual = new LinkedList<>();
         BinaryOperationExpression binaryExpression =
@@ -227,5 +244,30 @@ class ExpressionExtractorTest {
         ExpressionExtractor.extractJoinConditions(actual, Collections.singleton(new WhereSegment(0, 0, binaryExpression)));
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(binaryExpression));
+    }
+    
+    @Test
+    void assertGetNestedSubqueryCompareExpressionsFromUpdateStatement() {
+        ExpressionSegment expectedExpression = createSubqueryCompareExpression(">");
+        UpdateStatement updateStatement = UpdateStatement.builder().where(new WhereSegment(0, 0, expectedExpression)).build();
+        Collection<ExpressionSegment> actual = ExpressionExtractor.getNestedSubqueryCompareExpressions(updateStatement);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedExpression));
+    }
+    
+    @Test
+    void assertGetNestedSubqueryCompareExpressionsFromDeleteStatement() {
+        ExpressionSegment expectedExpression = createSubqueryCompareExpression("=");
+        DeleteStatement deleteStatement = DeleteStatement.builder().where(new WhereSegment(0, 0, expectedExpression)).build();
+        Collection<ExpressionSegment> actual = ExpressionExtractor.getNestedSubqueryCompareExpressions(deleteStatement);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.iterator().next(), is(expectedExpression));
+    }
+    
+    private ExpressionSegment createSubqueryCompareExpression(final String operator) {
+        ColumnSegment left = new ColumnSegment(0, 7, new IdentifierValue("order_id"));
+        SelectStatement selectStatement = SelectStatement.builder().projections(new ProjectionsSegment(0, 0)).build();
+        SubqueryExpressionSegment right = new SubqueryExpressionSegment(new SubquerySegment(10, 20, selectStatement, ""));
+        return new BinaryOperationExpression(0, 20, left, right, operator, "");
     }
 }

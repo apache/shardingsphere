@@ -23,6 +23,7 @@ import org.apache.shardingsphere.database.connector.core.exception.CheckDatabase
 import org.apache.shardingsphere.database.connector.core.exception.MissingRequiredPrivilegeException;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.hamcrest.CoreMatchers;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,7 @@ import java.sql.SQLException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -149,7 +151,7 @@ class MySQLDatabasePrivilegeCheckerTest {
     @Test
     void assertCheckFailureWhenReadResultSetAndCloseResultSetFail() throws SQLException {
         mockShowGrantsQuery();
-        when(resultSet.next()).thenThrow(new SQLException("mocked result set failure"));
+        when(resultSet.next()).thenThrow(SQLException.class);
         doThrow(SQLException.class).when(resultSet).close();
         assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> checker.check(dataSource, PrivilegeCheckType.PIPELINE));
     }
@@ -163,12 +165,40 @@ class MySQLDatabasePrivilegeCheckerTest {
     }
     
     @Test
+    void assertCheckFailureWhenCloseResultSetFailsAfterMatchedPrivilege() throws SQLException {
+        mockShowGrantsQuery();
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON *.* TO '%'@'%'");
+        doThrow(SQLException.class).when(resultSet).close();
+        assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> checker.check(dataSource, PrivilegeCheckType.PIPELINE));
+    }
+    
+    @Test
+    void assertCheckFailureWhenClosePreparedStatementFailsAfterMatchedPrivilege() throws SQLException {
+        mockShowGrantsQuery();
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON *.* TO '%'@'%'");
+        doThrow(new SQLException("mocked close prepared statement failure")).when(preparedStatement).close();
+        assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> checker.check(dataSource, PrivilegeCheckType.PIPELINE));
+    }
+    
+    @Test
     void assertCheckFailureWhenCloseConnectionFails() throws SQLException {
         mockShowGrantsQuery();
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString(1)).thenReturn("GRANT ALL PRIVILEGES ON *.* TO '%'@'%'");
         doThrow(SQLException.class).when(connection).close();
         assertThrows(CheckDatabaseEnvironmentFailedException.class, () -> checker.check(dataSource, PrivilegeCheckType.PIPELINE));
+    }
+    
+    @Test
+    void assertCheckWithMissingPrivilegeAndCloseConnectionFailure() throws SQLException {
+        mockShowGrantsQuery();
+        SQLException expected = new SQLException("mocked close connection failure");
+        doThrow(expected).when(connection).close();
+        MissingRequiredPrivilegeException actual = assertThrows(MissingRequiredPrivilegeException.class, () -> checker.check(dataSource, PrivilegeCheckType.PIPELINE));
+        assertThat(actual.getSuppressed().length, CoreMatchers.is(1));
+        assertThat(actual.getSuppressed()[0], CoreMatchers.is(expected));
     }
     
     @Test
@@ -203,6 +233,7 @@ class MySQLDatabasePrivilegeCheckerTest {
                 Arguments.of("xa with all privileges on mysql8", PrivilegeCheckType.XA, 8, null, "GRANT ALL PRIVILEGES ON *.* TO '%'@'%'"),
                 Arguments.of("select with select privilege on all databases", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT SELECT ON *.* TO '%'@'%'"),
                 Arguments.of("select with select privilege on target database", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT SELECT ON `FOO_DB`.* TO '%'@'%'"),
+                Arguments.of("select with escaped target database", PrivilegeCheckType.SELECT, 0, "account_db", "GRANT ALL PRIVILEGES ON `ACCOUNT\\_DB`.* TO '%'@'%'"),
                 Arguments.of("select with all privileges on all databases", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT ALL PRIVILEGES ON *.* TO '%'@'%'"),
                 Arguments.of("select with all privileges on target database", PrivilegeCheckType.SELECT, 0, "foo_db", "GRANT ALL PRIVILEGES ON `FOO_DB`.* TO '%'@'%'"));
     }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.Ta
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ColumnOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.ExpressionOrderByItemSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.IndexOrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 
 /**
@@ -52,6 +53,9 @@ public final class OrderByItemSegmentBinder {
         }
         if (segment instanceof ExpressionOrderByItemSegment) {
             return ExpressionOrderByItemSegmentBinder.bind((ExpressionOrderByItemSegment) segment, binderContext, tableBinderContexts, outerTableBinderContexts, segmentType);
+        }
+        if (segment instanceof IndexOrderByItemSegment) {
+            return IndexOrderByItemSegmentBinder.bind((IndexOrderByItemSegment) segment, tableBinderContexts);
         }
         return segment;
     }

@@ -52,15 +52,18 @@ public final class CreateTableStatementBinder implements SQLStatementBinder<Crea
     
     private CreateTableStatement copy(final CreateTableStatement sqlStatement,
                                       final SimpleTableSegment boundTable, final SelectStatement boundSelectStatement, final Collection<ColumnDefinitionSegment> boundColumnDefinitions) {
-        CreateTableStatement result = new CreateTableStatement(sqlStatement.getDatabaseType());
-        result.setTable(boundTable);
-        result.setSelectStatement(boundSelectStatement);
-        result.getColumnDefinitions().addAll(boundColumnDefinitions);
-        result.getConstraintDefinitions().addAll(sqlStatement.getConstraintDefinitions());
-        result.setIfNotExists(sqlStatement.isIfNotExists());
-        result.getColumns().addAll(sqlStatement.getColumns());
-        sqlStatement.getLikeTable().ifPresent(result::setLikeTable);
-        sqlStatement.getCreateTableOption().ifPresent(result::setCreateTableOption);
+        CreateTableStatement result = CreateTableStatement.builder()
+                .databaseType(sqlStatement.getDatabaseType())
+                .table(boundTable)
+                .selectStatement(boundSelectStatement)
+                .ifNotExists(sqlStatement.isIfNotExists())
+                .likeTable(sqlStatement.getLikeTable().orElse(null))
+                .createTableOption(sqlStatement.getCreateTableOption().orElse(null))
+                .columnDefinitions(boundColumnDefinitions)
+                .constraintDefinitions(sqlStatement.getConstraintDefinitions())
+                .columns(sqlStatement.getColumns())
+                .rollups(sqlStatement.getRollups())
+                .build();
         SQLStatementCopyUtils.copyAttributes(sqlStatement, result);
         return result;
     }

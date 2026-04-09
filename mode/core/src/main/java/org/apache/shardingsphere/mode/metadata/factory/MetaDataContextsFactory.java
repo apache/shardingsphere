@@ -102,7 +102,8 @@ public final class MetaDataContextsFactory {
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
+                clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(),
+                changedGlobalMetaData, props, originalMetaDataContexts.getMetaData().getProtocolType());
         return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistFacade.getStatisticsService().load(metaData)));
     }
     
@@ -124,13 +125,15 @@ public final class MetaDataContextsFactory {
         RuleMetaData changedGlobalMetaData = new RuleMetaData(
                 GlobalRulesBuilder.buildRules(originalMetaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), clonedMetaData.getAllDatabases(), props));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(), changedGlobalMetaData, props);
+                clonedMetaData.getAllDatabases(), originalMetaDataContexts.getMetaData().getGlobalResourceMetaData(),
+                changedGlobalMetaData, props, originalMetaDataContexts.getMetaData().getProtocolType());
         return new MetaDataContexts(metaData, ShardingSphereStatisticsFactory.create(metaData, persistFacade.getStatisticsService().load(metaData)));
     }
     
     private ShardingSphereMetaData cloneMetaData(final ShardingSphereMetaData originalMetaData, final ShardingSphereDatabase changedDatabase) {
         ShardingSphereMetaData result = new ShardingSphereMetaData(
-                originalMetaData.getAllDatabases(), originalMetaData.getGlobalResourceMetaData(), originalMetaData.getGlobalRuleMetaData(), originalMetaData.getProps());
+                originalMetaData.getAllDatabases(), originalMetaData.getGlobalResourceMetaData(),
+                originalMetaData.getGlobalRuleMetaData(), originalMetaData.getProps(), originalMetaData.getProtocolType());
         result.putDatabase(changedDatabase);
         return result;
     }
@@ -177,7 +180,7 @@ public final class MetaDataContextsFactory {
                 }
             }
         }
-        return ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, instanceContext, schemas);
+        return ShardingSphereDatabaseFactory.create(databaseName, protocolType, databaseConfig, originalMetaDataContext.getMetaData().getProps(), instanceContext, schemas);
     }
     
     private ResourceMetaData getEffectiveResourceMetaData(final ShardingSphereDatabase database, final SwitchingResource switchingResource) {

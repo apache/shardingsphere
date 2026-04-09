@@ -1,15 +1,40 @@
 ## Release 5.5.4
 
+### API Changes
+
+1. DistSQL: Add DistSQL to manage sharding key generate strategies - [#38572](https://github.com/apache/shardingsphere/pull/38572)
+1. DistSQL: Add DistSQL to manage sharding key generators - [#38576](https://github.com/apache/shardingsphere/pull/38576)
+
 ### Bug Fixes
 
 1. SQL Parser: Preserve unary NOT as NotExpression for scalar-subquery table extraction in PostgreSQL - [#38187](https://github.com/apache/shardingsphere/pull/38187)
+1. SQL Binder: Add DialectFunctionOption to handle wrong skip column bind in ColumnSegmentBinder - [#38350](https://github.com/apache/shardingsphere/pull/38350)
+1. SQL Binder: Fix wrong bind info when order by refer column from with temporary table - [#38353](https://github.com/apache/shardingsphere/pull/38353)
 1. JDBC: Fix stale generated values leaking into prepared statement executeBatch calls without pending batches - [#38160](https://github.com/apache/shardingsphere/pull/38160)
+1. JDBC & Proxy: Remove default MySQL prepared statement query properties when creating data sources - [#38593](https://github.com/apache/shardingsphere/pull/38593)
+1. Proxy: Resolve MySQL prepared statement parameter columns for where clause - [#38382](https://github.com/apache/shardingsphere/pull/38382)
+1. Proxy: Resolve PostgreSQL prepared statement parameter types before bind - [#38384](https://github.com/apache/shardingsphere/pull/38384)
+1. Proxy: Resolve openGauss batch bind parameter types before reading values - [#38390](https://github.com/apache/shardingsphere/pull/38390)
+1. Proxy: Fix primary key metadata loss for aliased columns in mysql prepare probe path - [#38517](https://github.com/apache/shardingsphere/pull/38517)
+1. Sharding: Fix incorrect routing when irrelevant sharding conditions are present - [#38527](https://github.com/apache/shardingsphere/pull/38527)
 
 ### Enhancements
 
+1. Metadata: Support Oracle dictionary views by adding SYS default system schema and YAML definitions - [#38388](https://github.com/apache/shardingsphere/pull/38388)
 1. SQL Parser: Support MySQL Function statement parse - [#38182](https://github.com/apache/shardingsphere/pull/38182) [#38219](https://github.com/apache/shardingsphere/pull/38219)
-2. SQL Parser: Support parsing MySQL SELECT sql - [#38233](https://github.com/apache/shardingsphere/pull/38233)
-3. SQL Parser: Support parsing MySQL CREATE sql - [#38237](https://github.com/apache/shardingsphere/pull/38237)
+1. SQL Parser: Support additional MySQL SELECT index hint and MATCH ... AGAINST WITH ROLLUP syntax - [#38233](https://github.com/apache/shardingsphere/pull/38233)
+1. SQL Parser: Support MySQL CREATE EVENT and additional CREATE FUNCTION RETURN syntax - [#38237](https://github.com/apache/shardingsphere/pull/38237)
+1. SQL Parser: Support MySQL subquery table projection alias visit to SQL statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
+1. SQL Parser: Enhance select window partition by order by, lead placeholder parse - [#38392](https://github.com/apache/shardingsphere/pull/38392)
+1. SQL Parser: Support MariaDB cycleClause, groupConcatLimitClause, MEDIAN window function parse - [#38579](https://github.com/apache/shardingsphere/pull/38579)
+1. SQL Parser: Support mysql, doris insert & replace rows statement parse - [#38585](https://github.com/apache/shardingsphere/pull/38585)
+1. SQL Binder: Support select order by index bind metadata - [#38386](https://github.com/apache/shardingsphere/pull/38386)
+1. SQL Binder: Support SQL bind when with temp table name is same with physical table - [#38411](https://github.com/apache/shardingsphere/pull/38411)
+1. JDBC: Support setMaxRows and getMaxRows method in jdbc when not execute SQL - [#38337](https://github.com/apache/shardingsphere/pull/38337)
+1. JDBC: Support safe close statement manager - [#38473](https://github.com/apache/shardingsphere/pull/38473)
+1. Sharding: Fix HASH_MOD routing mismatch for same negative numeric values across numeric Java types with compatibility switch `normalize-numeric-int-range` - [#38327](https://github.com/apache/shardingsphere/pull/38327)
+1. Proxy: Support non column projection for MySQL prepared statement in Proxy - [#38507](https://github.com/apache/shardingsphere/pull/38507)
+1. Proxy: Support driverClassName config in proxy storage unit to solve mysql and mariadb jdbc url conflict - [#38582](https://github.com/apache/shardingsphere/pull/38582)
 
 ## Release 5.5.3
 

@@ -63,8 +63,7 @@ class IndexTokenTest {
     
     @Test
     void assertToStringWithShardingTableAndGeneratedIndex() {
-        CreateIndexStatement sqlStatement = new CreateIndexStatement(databaseType);
-        sqlStatement.buildAttributes();
+        CreateIndexStatement sqlStatement = CreateIndexStatement.builder().databaseType(databaseType).build();
         CommonSQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         IndexToken indexToken = new IndexToken(0, 0, new IdentifierValue("bar_idx"), sqlStatementContext, mock(ShardingRule.class), mockSchema());
         assertThat(indexToken.toString(mockRouteUnit()), is(" bar_idx_foo_tbl_0 "));

@@ -31,15 +31,11 @@ public final class MySQLShowCreateEventStatement extends DALStatement {
     
     private final String eventName;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowCreateEventStatement(final DatabaseType databaseType, final String eventName) {
         super(databaseType);
         this.eventName = eventName;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

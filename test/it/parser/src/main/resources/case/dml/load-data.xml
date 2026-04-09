@@ -82,4 +82,135 @@
     <load-data sql-case-id="load_data_hive_local_overwrite_partition_with_inputformat_serde">
         <table name="parquet_partitioned_table" start-index="225" stop-index="249" />
     </load-data>
+    <load-data sql-case-id="doris_load_data_into_table_from_server_file">
+        <file-name value="/temp/test.txt" start-index="17" stop-index="32" />
+        <table name="t_order" start-index="45" stop-index="51" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_into_table_from_local_file" local="true">
+        <file-name value="/temp/test.txt" start-index="23" stop-index="38" />
+        <table name="t_order" start-index="51" stop-index="57" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_into_table_with_schema_name">
+        <file-name value="/temp/test.txt" start-index="17" stop-index="32" />
+        <table name="t_order" start-index="45" stop-index="63">
+            <owner name="sharding_db" start-index="45" stop-index="55" />
+        </table>
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_properties" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <property key="timeout" value="100" start-index="72" stop-index="86" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_column_list_and_properties" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <column name="k2" start-index="61" stop-index="62" />
+        <column name="k1" start-index="65" stop-index="66" />
+        <column name="v1" start-index="69" stop-index="70" />
+        <property key="max_filter_ratio" value="0.2" start-index="85" stop-index="108" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_partition_and_properties" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <partition name="p1" start-index="71" stop-index="72" />
+        <partition name="p2" start-index="75" stop-index="76" />
+        <property key="max_filter_ratio" value="0.2" start-index="91" stop-index="114" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_multiple_properties" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <property key="strict_mode" value="true" start-index="72" stop-index="91" />
+        <property key="timezone" value="Africa/Abidjan" start-index="94" stop-index="120" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_columns_and_lines" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <column-separator value="0304" start-index="82" stop-index="87" />
+        <line-delimiter value="0102" start-index="109" stop-index="114" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_partition_and_ignore_lines" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <partition name="p1" start-index="71" stop-index="72" />
+        <partition name="p2" start-index="75" stop-index="76" />
+        <ignore-lines number="1" unit="LINES" start-index="79" stop-index="92" />
+    </load-data>
+    <load-data sql-case-id="doris_load_data_with_set_clause" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <column name="k1" start-index="61" stop-index="62" />
+        <column name="k2" start-index="65" stop-index="66" />
+        <column name="v1" start-index="69" stop-index="70" />
+        <set-assignments start-index="73" stop-index="104">
+            <assignment start-index="78" stop-index="89">
+                <column name="v2" start-index="78" stop-index="79" />
+                <assignment-value>
+                    <binary-operation-expression start-index="83" stop-index="89">
+                        <left>
+                            <column name="k1" start-index="83" stop-index="84" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <column name="k2" start-index="88" stop-index="89" />
+                        </right>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+            <assignment start-index="92" stop-index="103">
+                <column name="v3" start-index="92" stop-index="93" />
+                <assignment-value>
+                    <common-expression text="DEFAULT" start-index="97" stop-index="103" />
+                </assignment-value>
+            </assignment>
+        </set-assignments>
+    </load-data>
+    <load-data sql-case-id="doris_load_data_all_clauses" local="true">
+        <file-name value="testData" start-index="23" stop-index="32" />
+        <table name="testTbl" start-index="45" stop-index="58">
+            <owner name="testDb" start-index="45" stop-index="50" />
+        </table>
+        <partition name="p1" start-index="71" stop-index="72" />
+        <column-separator value="," start-index="97" stop-index="99" />
+        <line-delimiter value="\n" start-index="121" stop-index="124" />
+        <ignore-lines number="2" unit="ROWS" start-index="126" stop-index="138" />
+        <column name="k1" start-index="141" stop-index="142" />
+        <column name="k2" start-index="145" stop-index="146" />
+        <set-assignments start-index="149" stop-index="180">
+            <assignment start-index="154" stop-index="165">
+                <column name="v1" start-index="154" stop-index="155" />
+                <assignment-value>
+                    <common-expression text="DEFAULT" start-index="159" stop-index="165" />
+                </assignment-value>
+            </assignment>
+            <assignment start-index="168" stop-index="179">
+                <column name="v2" start-index="168" stop-index="169" />
+                <assignment-value>
+                    <binary-operation-expression start-index="173" stop-index="179">
+                        <left>
+                            <column name="k1" start-index="173" stop-index="174" />
+                        </left>
+                        <operator>+</operator>
+                        <right>
+                            <column name="k2" start-index="178" stop-index="179" />
+                        </right>
+                    </binary-operation-expression>
+                </assignment-value>
+            </assignment>
+        </set-assignments>
+        <property key="timeout" value="100" start-index="194" stop-index="208" />
+    </load-data>
 </sql-parser-test-cases>

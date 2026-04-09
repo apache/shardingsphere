@@ -19,16 +19,19 @@ package org.apache.shardingsphere.database.protocol.firebird.packet.handshake;
 
 import org.apache.shardingsphere.database.protocol.firebird.constant.FirebirdAuthenticationMethod;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Stream;
 
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdAcceptDataPacketTest {
@@ -36,31 +39,35 @@ class FirebirdAcceptDataPacketTest {
     @Mock
     private FirebirdPacketPayload payload;
     
-    @Test
-    void assertWriteWithData() {
-        byte[] salt = {1, 2};
-        String publicKey = "key";
-        FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(salt, publicKey,
-                FirebirdAuthenticationMethod.SRP, 1, "k");
-        packet.write(payload);
-        verify(payload).writeInt4(salt.length + publicKey.length() + 4);
-        verify(payload).writeInt2LE(salt.length);
-        verify(payload).writeBytes(salt);
-        verify(payload).writeInt2LE(publicKey.length());
-        verify(payload).writeBytes(publicKey.getBytes(StandardCharsets.US_ASCII));
-        verify(payload).writeString("Srp");
-        verify(payload).writeInt4(1);
-        verify(payload).writeString("k");
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("writeArguments")
+    void assertWrite(final String name, final byte[] salt, final String publicKey, final FirebirdAuthenticationMethod plugin,
+                     final int authenticated, final String keys, final int expectedPayloadLength, final boolean expectedPayloadData) {
+        FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(salt, publicKey, plugin, authenticated, keys);
+        packet.write((PacketPayload) payload);
+        InOrder order = inOrder(payload);
+        order.verify(payload).writeInt4(expectedPayloadLength);
+        verifyPayloadData(order, payload, expectedPayloadData, salt, publicKey);
+        order.verify(payload).writeString(plugin.getMethodName());
+        order.verify(payload).writeInt4(authenticated);
+        order.verify(payload).writeString(keys);
+        order.verifyNoMoreInteractions();
     }
     
-    @Test
-    void assertWriteWithoutData() {
-        FirebirdAcceptDataPacket packet = new FirebirdAcceptDataPacket(new byte[0], "", FirebirdAuthenticationMethod.SRP, 0, "");
-        packet.write(payload);
-        InOrder order = inOrder(payload);
-        order.verify(payload).writeInt4(0);
-        order.verify(payload).writeString("Srp");
-        order.verify(payload).writeInt4(0);
-        order.verify(payload).writeString("");
+    private void verifyPayloadData(final InOrder order, final FirebirdPacketPayload payload, final boolean expectedPayloadData, final byte[] salt, final String publicKey) {
+        if (!expectedPayloadData) {
+            return;
+        }
+        order.verify(payload).writeInt2LE(salt.length);
+        order.verify(payload).writeBytes(salt);
+        order.verify(payload).writeInt2LE(publicKey.length());
+        order.verify(payload).writeBytes(publicKey.getBytes(StandardCharsets.US_ASCII));
+    }
+    
+    private static Stream<Arguments> writeArguments() {
+        return Stream.of(
+                Arguments.of("salt_and_public_key", new byte[]{1, 2}, "key", FirebirdAuthenticationMethod.SRP, 1, "k", 9, true),
+                Arguments.of("empty_salt", new byte[0], "key", FirebirdAuthenticationMethod.SRP224, 0, "", 0, false),
+                Arguments.of("empty_public_key", new byte[]{1, 2}, "", FirebirdAuthenticationMethod.LEGACY_AUTH, 7, "keys", 0, false));
     }
 }

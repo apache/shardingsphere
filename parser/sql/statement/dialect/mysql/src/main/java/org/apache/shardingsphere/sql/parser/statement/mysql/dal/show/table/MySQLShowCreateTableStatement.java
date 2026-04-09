@@ -34,15 +34,11 @@ public final class MySQLShowCreateTableStatement extends DALStatement {
     
     private final SimpleTableSegment table;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowCreateTableStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
         super(databaseType);
         this.table = table;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableInResultSetSQLStatementAttribute(2), new TableSQLStatementAttribute(table));
     }
 }

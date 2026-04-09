@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLAl
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLCreateResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLDropResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.statement.mysql.dal.resource.MySQLSetResourceGroupStatement;
+import org.apache.shardingsphere.sql.parser.statement.mysql.dal.show.variable.MySQLShowVariablesStatement;
 
 import java.util.Optional;
 
@@ -46,6 +47,11 @@ public final class MySQLDALStatementBroadcastRouteDecider implements DialectDALS
     private boolean isResourceGroupStatement(final DALStatement sqlStatement) {
         return sqlStatement instanceof MySQLCreateResourceGroupStatement || sqlStatement instanceof MySQLAlterResourceGroupStatement || sqlStatement instanceof MySQLDropResourceGroupStatement
                 || sqlStatement instanceof MySQLSetResourceGroupStatement;
+    }
+    
+    @Override
+    public boolean isDataSourceUnicastRoute(final DALStatement sqlStatement) {
+        return sqlStatement instanceof MySQLShowVariablesStatement;
     }
     
     @Override

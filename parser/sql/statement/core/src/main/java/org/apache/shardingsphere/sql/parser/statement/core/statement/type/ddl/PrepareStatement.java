@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.statement.core.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.SQLStatementAttributes;
@@ -34,21 +34,35 @@ import java.util.Optional;
  * Prepare statement.
  */
 @Getter
-@Setter
 public final class PrepareStatement extends DDLStatement {
     
-    private SelectStatement select;
+    private final SelectStatement select;
     
-    private InsertStatement insert;
+    private final InsertStatement insert;
     
-    private UpdateStatement update;
+    private final UpdateStatement update;
     
-    private DeleteStatement delete;
+    private final DeleteStatement delete;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
-    public PrepareStatement(final DatabaseType databaseType) {
+    @Builder
+    private PrepareStatement(final DatabaseType databaseType, final SelectStatement select, final InsertStatement insert, final UpdateStatement update, final DeleteStatement delete) {
         super(databaseType);
+        this.select = select;
+        this.insert = insert;
+        this.update = update;
+        this.delete = delete;
+        attributes = createAttributes(select, insert, update, delete);
+    }
+    
+    private SQLStatementAttributes createAttributes(final SelectStatement select, final InsertStatement insert, final UpdateStatement update, final DeleteStatement delete) {
+        TableExtractor tableExtractor = new TableExtractor();
+        Optional.ofNullable(select).ifPresent(tableExtractor::extractTablesFromSelect);
+        Optional.ofNullable(insert).ifPresent(tableExtractor::extractTablesFromInsert);
+        Optional.ofNullable(update).ifPresent(tableExtractor::extractTablesFromUpdate);
+        Optional.ofNullable(delete).ifPresent(tableExtractor::extractTablesFromDelete);
+        return new SQLStatementAttributes(new TableSQLStatementAttribute(tableExtractor.getRewriteTables()));
     }
     
     /**
@@ -85,15 +99,5 @@ public final class PrepareStatement extends DDLStatement {
      */
     public Optional<DeleteStatement> getDelete() {
         return Optional.ofNullable(delete);
-    }
-    
-    @Override
-    public void buildAttributes() {
-        TableExtractor tableExtractor = new TableExtractor();
-        Optional.ofNullable(select).ifPresent(tableExtractor::extractTablesFromSelect);
-        Optional.ofNullable(insert).ifPresent(tableExtractor::extractTablesFromInsert);
-        Optional.ofNullable(update).ifPresent(tableExtractor::extractTablesFromUpdate);
-        Optional.ofNullable(delete).ifPresent(tableExtractor::extractTablesFromDelete);
-        attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(tableExtractor.getRewriteTables()));
     }
 }

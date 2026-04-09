@@ -219,6 +219,7 @@ class ProxyConfigurationLoaderTest {
     }
     
     private void assertDataSourceConfiguration(final YamlProxyDataSourceConfiguration actual, final String expectedURL) {
+        assertThat(actual.getDriverClassName(), is("com.mysql.cj.jdbc.Driver"));
         assertThat(actual.getUrl(), is(expectedURL));
         assertThat(actual.getUsername(), is("root"));
         assertNull(actual.getPassword());

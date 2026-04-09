@@ -23,17 +23,17 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
+import org.apache.shardingsphere.mode.metadata.refresher.util.SchemaRefreshUtils;
+import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
 import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.DropIndexStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -46,8 +46,9 @@ public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDat
     public void refresh(final MetaDataManagerPersistService metaDataManagerPersistService, final ShardingSphereDatabase database, final String logicDataSourceName,
                         final String schemaName, final DatabaseType databaseType, final DropIndexStatement sqlStatement, final ConfigurationProperties props) {
         for (IndexSegment each : sqlStatement.getIndexes()) {
-            String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue().toLowerCase()).orElse(schemaName);
-            Optional<String> logicTableName = findLogicTableName(database, sqlStatement, Collections.singletonList(each));
+            String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database,
+                    each.getOwner().map(optional -> optional.getIdentifier()).orElse(new IdentifierValue(schemaName)), props);
+            Optional<String> logicTableName = findActualTableName(database, actualSchemaName, sqlStatement, each, props);
             if (!logicTableName.isPresent()) {
                 continue;
             }
@@ -56,18 +57,18 @@ public final class DropIndexPushDownMetaDataRefresher implements PushDownMetaDat
             ShardingSpherePreconditions.checkState(schema.containsTable(logicTableName.get()), () -> new TableNotFoundException(logicTableName.get()));
             ShardingSphereTable table = schema.getTable(logicTableName.get());
             ShardingSphereTable newTable = new ShardingSphereTable(table.getName(), table.getAllColumns(), table.getAllIndexes(), table.getAllConstraints(), table.getType());
-            newTable.removeIndex(each.getIndexName().getIdentifier().getValue());
+            newTable.removeIndex(TableRefreshUtils.getActualIndexName(database, actualSchemaName, logicTableName.get(), each.getIndexName().getIdentifier(), props));
             metaDataManagerPersistService.alterTables(database, actualSchemaName, Collections.singleton(newTable));
         }
     }
     
-    private Optional<String> findLogicTableName(final ShardingSphereDatabase database, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
+    private Optional<String> findActualTableName(final ShardingSphereDatabase database, final String schemaName,
+                                                 final DropIndexStatement sqlStatement, final IndexSegment indexSegment, final ConfigurationProperties props) {
         Optional<SimpleTableSegment> simpleTableSegment = sqlStatement.getSimpleTable();
         if (simpleTableSegment.isPresent()) {
-            return Optional.of(simpleTableSegment.get().getTableName().getIdentifier().getValue());
+            return Optional.of(TableRefreshUtils.getActualTableName(database, schemaName, simpleTableSegment.get().getTableName().getIdentifier(), props));
         }
-        Collection<QualifiedTable> tableNames = IndexMetaDataUtils.getTableNames(database, database.getProtocolType(), indexSegments);
-        return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
+        return TableRefreshUtils.findActualTableNameByIndex(database, schemaName, indexSegment.getIndexName().getIdentifier(), props);
     }
     
     @Override

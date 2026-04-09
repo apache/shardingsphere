@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.ty
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.type.SubqueryTableSegmentBinder;
 import org.apache.shardingsphere.infra.binder.engine.segment.util.SubqueryTableBindUtils;
 import org.apache.shardingsphere.infra.binder.engine.statement.SQLStatementBinderContext;
+import org.apache.shardingsphere.infra.binder.engine.statement.dml.SelectStatementBinder;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.DifferenceInColumnCountOfSelectListAndColumnNameListException;
 import org.apache.shardingsphere.infra.exception.kernel.syntax.DuplicateCommonTableExpressionAliasException;
@@ -58,32 +59,35 @@ public final class CommonTableExpressionSegmentBinder {
      *
      * @param segment common table expression segment
      * @param binderContext SQL statement binder context
-     * @param externalTableBinderContexts external table binder contexts
+     * @param tableBinderContexts table binder contexts
      * @param recursive recursive
      * @return bound common table expression segment
      */
     public static CommonTableExpressionSegment bind(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext,
-                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts, final boolean recursive) {
+                                                    final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts, final boolean recursive) {
         if (segment.getAliasName().isPresent()) {
             ShardingSpherePreconditions.checkState(!binderContext.getCommonTableExpressionsSegmentsUniqueAliases().contains(segment.getAliasName().get()),
                     () -> new DuplicateCommonTableExpressionAliasException(segment.getAliasName().get()));
             binderContext.getCommonTableExpressionsSegmentsUniqueAliases().add(segment.getAliasName().get());
         }
         if (recursive && segment.getAliasName().isPresent()) {
-            binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of(segment.getAliasName().get()),
-                    new SimpleTableSegmentBinderContext(segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList()), TableSourceType.TEMPORARY_TABLE));
+            SimpleTableSegmentBinderContext recursiveTableBinderContext =
+                    new SimpleTableSegmentBinderContext(createRecursiveWithProjections(segment, binderContext), TableSourceType.TEMPORARY_TABLE);
+            tableBinderContexts.put(CaseInsensitiveString.of(segment.getAliasName().get()), recursiveTableBinderContext);
+            binderContext.getExternalTableBinderContexts().put(CaseInsensitiveString.of(segment.getAliasName().get()), recursiveTableBinderContext);
         }
         SubqueryTableSegment subqueryTableSegment = new SubqueryTableSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getSubquery());
         segment.getAliasSegment().ifPresent(subqueryTableSegment::setAlias);
         SubqueryTableSegment boundSubquerySegment =
-                SubqueryTableSegmentBinder.bind(subqueryTableSegment, binderContext, LinkedHashMultimap.create(), binderContext.getExternalTableBinderContexts(), true);
+                SubqueryTableSegmentBinder.bind(subqueryTableSegment, binderContext, LinkedHashMultimap.create(), tableBinderContexts, true);
         CommonTableExpressionSegment result = new CommonTableExpressionSegment(
                 segment.getStartIndex(), segment.getStopIndex(), boundSubquerySegment.getAliasSegment().orElse(null), boundSubquerySegment.getSubquery());
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts =
                 createCurrentTableBinderContexts(segment.getColumns(), binderContext, boundSubquerySegment.getSubquery().getSelect());
         segment.getColumns()
                 .forEach(each -> result.getColumns().add(ColumnSegmentBinder.bind(each, SegmentType.DEFINITION_COLUMNS, binderContext, currentTableBinderContexts, LinkedHashMultimap.create())));
-        putExternalTableBinderContext(segment, externalTableBinderContexts, recursive, currentTableBinderContexts);
+        putTableBinderContext(segment, tableBinderContexts, recursive, currentTableBinderContexts);
+        putExternalTableBinderContext(segment, binderContext, recursive, currentTableBinderContexts);
         return result;
     }
     
@@ -97,6 +101,23 @@ public final class CommonTableExpressionSegmentBinder {
         SimpleTableSegmentBinderContext tableSegmentBinderContext = new SimpleTableSegmentBinderContext(boundProjectionSegments, TableSourceType.TEMPORARY_TABLE);
         tableSegmentBinderContext.setFromWithSegment(true);
         result.put(CaseInsensitiveString.of(""), tableSegmentBinderContext);
+        return result;
+    }
+    
+    private static Collection<ProjectionSegment> createRecursiveWithProjections(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext) {
+        if (!segment.getColumns().isEmpty()) {
+            return segment.getColumns().stream().map(ColumnProjectionSegment::new).collect(Collectors.toList());
+        }
+        Collection<ProjectionSegment> result = new LinkedList<>();
+        SelectStatement boundAnchorSelect = new SelectStatementBinder().bind(segment.getSubquery().getSelect().getCombine()
+                .map(optional -> optional.getLeft().getSelect()).orElse(segment.getSubquery().getSelect()), binderContext);
+        for (ProjectionSegment each : boundAnchorSelect.getProjections().getProjections()) {
+            if (each instanceof ColumnProjectionSegment) {
+                result.add(new ColumnProjectionSegment(((ColumnProjectionSegment) each).getColumn()));
+            } else {
+                result.add(new ColumnProjectionSegment(new ColumnSegment(each.getStartIndex(), each.getStopIndex(), new IdentifierValue(each.getColumnLabel()))));
+            }
+        }
         return result;
     }
     
@@ -135,14 +156,25 @@ public final class CommonTableExpressionSegmentBinder {
         return result;
     }
     
-    private static void putExternalTableBinderContext(final CommonTableExpressionSegment segment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts,
-                                                      final boolean recursive, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts) {
+    private static void putTableBinderContext(final CommonTableExpressionSegment segment, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
+                                              final boolean recursive, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts) {
         if (!segment.getAliasName().isPresent()) {
             return;
         }
         if (recursive && segment.getAliasName().isPresent()) {
-            externalTableBinderContexts.removeAll(CaseInsensitiveString.of(segment.getAliasName().get()));
+            tableBinderContexts.removeAll(CaseInsensitiveString.of(segment.getAliasName().get()));
         }
-        externalTableBinderContexts.putAll(CaseInsensitiveString.of(segment.getAliasName().get()), currentTableBinderContexts.values());
+        tableBinderContexts.putAll(CaseInsensitiveString.of(segment.getAliasName().get()), currentTableBinderContexts.values());
+    }
+    
+    private static void putExternalTableBinderContext(final CommonTableExpressionSegment segment, final SQLStatementBinderContext binderContext,
+                                                      final boolean recursive, final Multimap<CaseInsensitiveString, TableSegmentBinderContext> currentTableBinderContexts) {
+        if (!segment.getAliasName().isPresent()) {
+            return;
+        }
+        if (recursive) {
+            binderContext.getExternalTableBinderContexts().removeAll(CaseInsensitiveString.of(segment.getAliasName().get()));
+        }
+        binderContext.getExternalTableBinderContexts().putAll(CaseInsensitiveString.of(segment.getAliasName().get()), currentTableBinderContexts.values());
     }
 }

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.binder.engine.segment.dml.expression.type;
 
 import com.cedarsoftware.util.CaseInsensitiveMap.CaseInsensitiveString;
-import com.cedarsoftware.util.CaseInsensitiveSet;
 import com.google.common.base.Strings;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
@@ -26,6 +25,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.apache.groovy.util.Maps;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.segment.SegmentType;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.TableSegmentBinderContext;
 import org.apache.shardingsphere.infra.binder.engine.segment.dml.from.context.type.FunctionTableSegmentBinderContext;
@@ -48,7 +48,6 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -62,8 +61,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ColumnSegmentBinder {
     
-    private static final Collection<String> EXCLUDE_BIND_COLUMNS = new CaseInsensitiveSet<>(Arrays.asList(
-            "ROWNUM", "ROW_NUMBER", "ROWNUM_", "ROWID", "SYSDATE", "SYSTIMESTAMP", "CURRENT_TIMESTAMP", "LOCALTIMESTAMP", "UID", "USER", "NEXTVAL", "LEVEL", "DAY"));
+    private static final String EXCLUDED_TABLE_NAME = "excluded";
     
     private static final Map<SegmentType, String> SEGMENT_TYPE_MESSAGES = Maps.of(SegmentType.PROJECTION, "field list", SegmentType.JOIN_ON, "on clause", SegmentType.JOIN_USING, "from clause",
             SegmentType.PREDICATE, "where clause", SegmentType.HAVING, "having clause", SegmentType.ORDER_BY, "order clause", SegmentType.GROUP_BY, "group statement", SegmentType.INSERT_COLUMNS,
@@ -84,7 +82,10 @@ public final class ColumnSegmentBinder {
     public static ColumnSegment bind(final ColumnSegment segment, final SegmentType parentSegmentType, final SQLStatementBinderContext binderContext,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts,
                                      final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts) {
-        if (EXCLUDE_BIND_COLUMNS.contains(segment.getIdentifier().getValue())) {
+        if (isExcludedColumn(segment, parentSegmentType)) {
+            return segment;
+        }
+        if (isUnparenthesizedFunction(segment, binderContext)) {
             return segment;
         }
         ColumnSegment result = copy(segment);
@@ -97,6 +98,10 @@ public final class ColumnSegmentBinder {
         return result;
     }
     
+    private static boolean isExcludedColumn(final ColumnSegment segment, final SegmentType parentSegmentType) {
+        return SegmentType.SET_ASSIGNMENT == parentSegmentType && segment.getOwner().isPresent() && EXCLUDED_TABLE_NAME.equalsIgnoreCase(segment.getOwner().get().getIdentifier().getValue());
+    }
+    
     private static ColumnSegment copy(final ColumnSegment segment) {
         ColumnSegment result = new ColumnSegment(segment.getStartIndex(), segment.getStopIndex(), segment.getIdentifier());
         result.setNestedObjectAttributes(segment.getNestedObjectAttributes());
@@ -104,6 +109,11 @@ public final class ColumnSegmentBinder {
         segment.getLeftParentheses().ifPresent(result::setLeftParentheses);
         segment.getRightParentheses().ifPresent(result::setRightParentheses);
         return result;
+    }
+    
+    private static boolean isUnparenthesizedFunction(final ColumnSegment segment, final SQLStatementBinderContext binderContext) {
+        return new DatabaseTypeRegistry(binderContext.getSqlStatement().getDatabaseType())
+                .getDialectDatabaseMetaData().getFunctionOption().getUnparenthesizedFunctionNames().contains(segment.getIdentifier().getValue());
     }
     
     private static OwnerSegment bindOwnerTableContext(final OwnerSegment owner, final ColumnSegment inputColumnSegment) {
@@ -157,23 +167,27 @@ public final class ColumnSegmentBinder {
                                                           final Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts,
                                                           final SQLStatementBinderContext binderContext) {
         ColumnSegmentInfo result = getInputInfoFromTableBinderContexts(tableBinderContexts, segment, parentSegmentType);
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromOuterTable(segment, outerTableBinderContexts).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             ColumnSegment inputColumnSegment = findInputColumnSegmentFromExternalTables(segment, binderContext.getExternalTableBinderContexts()).orElse(null);
             result = new ColumnSegmentInfo(inputColumnSegment, null == inputColumnSegment ? TableSourceType.TEMPORARY_TABLE : inputColumnSegment.getColumnBoundInfo().getTableSourceType());
         }
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByVariables(segment, binderContext.getSqlStatement().getVariableNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
-        if (!result.getInputColumnSegment().isPresent()) {
+        if (isNotFoundInputColumn(result, segment)) {
             result = new ColumnSegmentInfo(findInputColumnSegmentByPivotColumns(segment, binderContext.getPivotColumnNames()).orElse(null), TableSourceType.TEMPORARY_TABLE);
         }
         ShardingSpherePreconditions.checkState(result.getInputColumnSegment().isPresent() || isSkipColumnBind(tableBinderContexts, outerTableBinderContexts.values()),
                 () -> new ColumnNotFoundException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
         return result;
+    }
+    
+    private static boolean isNotFoundInputColumn(final ColumnSegmentInfo segmentInfo, final ColumnSegment segment) {
+        return !segmentInfo.getInputColumnSegment().isPresent() && !segment.getOwner().isPresent();
     }
     
     private static ColumnSegmentInfo getInputInfoFromTableBinderContexts(final Collection<TableSegmentBinderContext> tableBinderContexts,
@@ -190,9 +204,6 @@ public final class ColumnSegmentBinder {
                         () -> new AmbiguousColumnException(segment.getExpression(), SEGMENT_TYPE_MESSAGES.getOrDefault(parentSegmentType, UNKNOWN_SEGMENT_TYPE_MESSAGE)));
             }
             inputColumnSegment = getColumnSegment(projectionSegment.get());
-            // SPEX ADDED: BEGIN
-            // NOTE: MIXED_TABLE 用于表示 JOIN 之后的字段，其中可能会包含部分物理表字段，以及派生的临时表字段，同层级查询的 ORDER BY, GROUP BY, HAVING 会引用 JOIN 之后的字段
-            // SPEX ADDED: END
             tableSourceType = TableSourceType.MIXED_TABLE == each.getTableSourceType() ? getTableSourceTypeFromInputColumn(inputColumnSegment) : each.getTableSourceType();
             if (each instanceof SimpleTableSegmentBinderContext && ((SimpleTableSegmentBinderContext) each).isFromWithSegment()) {
                 break;
@@ -209,7 +220,6 @@ public final class ColumnSegmentBinder {
         if (projectionSegment instanceof ColumnProjectionSegment) {
             return ((ColumnProjectionSegment) projectionSegment).getColumn();
         }
-        // SPEX ADDED: BEGIN
         if (projectionSegment instanceof ExpressionProjectionSegment
                 && ((ExpressionProjectionSegment) projectionSegment).getExpr() instanceof FunctionSegment) {
             Optional<ColumnSegment> columnSegment = getFirstColumnParameter(((FunctionSegment) ((ExpressionProjectionSegment) projectionSegment).getExpr()).getParameters());
@@ -220,7 +230,6 @@ public final class ColumnSegmentBinder {
         if (projectionSegment instanceof SubqueryProjectionSegment && 1 == ((SubqueryProjectionSegment) projectionSegment).getSubquery().getSelect().getProjections().getProjections().size()) {
             return getColumnSegment(((SubqueryProjectionSegment) projectionSegment).getSubquery().getSelect().getProjections().getProjections().iterator().next());
         }
-        // SPEX ADDED: END
         return new ColumnSegment(0, 0, new IdentifierValue(projectionSegment.getColumnLabel()));
     }
     

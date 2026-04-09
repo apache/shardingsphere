@@ -24,6 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.enums.AggregationType
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -51,6 +52,9 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     @Setter
     private AliasSegment alias;
+    
+    @Setter
+    private WindowItemSegment window;
     
     public AggregationProjectionSegment(final int startIndex, final int stopIndex, final AggregationType type, final String expression) {
         this(startIndex, stopIndex, type, expression, null);
@@ -87,5 +91,14 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     
     public Optional<String> getSeparator() {
         return Optional.ofNullable(separator);
+    }
+    
+    /**
+     * Get window.
+     *
+     * @return window
+     */
+    public Optional<WindowItemSegment> getWindow() {
+        return Optional.ofNullable(window);
     }
 }

@@ -34,6 +34,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,7 +60,7 @@ class FederationMetaDataRefreshEngineTest {
     
     @Test
     void assertIsNeedRefreshWhenStatementNotSupported() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new UpdateStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(UpdateStatement.builder().databaseType(databaseType).build());
         assertFalse(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
@@ -77,7 +78,7 @@ class FederationMetaDataRefreshEngineTest {
     
     @Test
     void assertIsNeedRefreshWhenDropViewStatement() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new DropViewStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new DropViewStatement(databaseType, Collections.emptyList(), false));
         assertTrue(new FederationMetaDataRefreshEngine(sqlStatementContext).isNeedRefresh());
     }
     
@@ -105,7 +106,7 @@ class FederationMetaDataRefreshEngineTest {
     
     @Test
     void assertRefreshWhenRefresherNotFound() {
-        when(sqlStatementContext.getSqlStatement()).thenReturn(new UpdateStatement(databaseType));
+        when(sqlStatementContext.getSqlStatement()).thenReturn(UpdateStatement.builder().databaseType(databaseType).build());
         FederationMetaDataRefreshEngine engine = new FederationMetaDataRefreshEngine(sqlStatementContext);
         engine.refresh(metaDataManagerPersistService, database);
     }

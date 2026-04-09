@@ -36,9 +36,9 @@ description: |
 
 inputs:
   java-version:
-    description: 'Java version to setup (default: 17)'
+    description: 'Java version to setup (default: 21)'
     required: false
-    default: '17'
+    default: '21'
   distribution:
     description: 'Java distribution (default: temurin)'
     required: false
@@ -63,11 +63,11 @@ inputs:
     required: false
     default: 'true'
   github-token:
-    description: 'GitHub token for GraalVM setup (required when distribution is graalvm)'
+    description: 'GitHub token for authenticated GraalVM Community downloads (optional when distribution is graalvm)'
     required: false
     default: ''
   enable-docker-setup:
-    description: 'Whether to setup Docker via docker/setup-docker-action (set to true for GitHub-hosted runners that need Docker setup)'
+    description: 'Whether to verify the preinstalled Docker environment on GitHub-hosted runners'
     required: false
     default: 'false'
 outputs:
@@ -87,20 +87,67 @@ runs:
       with:
         distribution: ${{ inputs.distribution }}
         java-version: ${{ inputs.java-version }}
+    - name: Prepare GraalVM Package
+      id: prepare-graalvm-package
+      if: inputs.distribution == 'graalvm'
+      shell: bash
+      env:
+        GITHUB_TOKEN_INPUT: ${{ inputs.github-token }}
+      run: |
+        set -euo pipefail
+        case "${{ runner.os }}" in
+          Linux)
+            graalvm_os='linux'
+            archive_extension='tar.gz'
+            ;;
+          Windows)
+            graalvm_os='windows'
+            archive_extension='zip'
+            ;;
+          *)
+            echo "Unsupported runner OS for GraalVM Community: ${{ runner.os }}" >&2
+            exit 1
+            ;;
+        esac
+        case "${{ runner.arch }}" in
+          X64)
+            graalvm_arch='x64'
+            setup_java_arch='x64'
+            ;;
+          ARM64)
+            graalvm_arch='aarch64'
+            setup_java_arch='aarch64'
+            ;;
+          *)
+            echo "Unsupported runner architecture for GraalVM Community: ${{ runner.arch }}" >&2
+            exit 1
+            ;;
+        esac
+        archive_name="graalvm-community-jdk-${{ inputs.java-version }}_${graalvm_os}-${graalvm_arch}_bin.${archive_extension}"
+        archive_path="${RUNNER_TEMP}/${archive_name}"
+        download_url="https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-${{ inputs.java-version }}/${archive_name}"
+        curl_args=(--fail --silent --show-error --location --retry 3 --output "${archive_path}")
+        if [ -n "${GITHUB_TOKEN_INPUT}" ]; then
+          curl_args=(-H "Authorization: Bearer ${GITHUB_TOKEN_INPUT}" "${curl_args[@]}")
+        fi
+        curl "${curl_args[@]}" "${download_url}"
+        echo "archive-path=${archive_path}" >> "${GITHUB_OUTPUT}"
+        echo "setup-java-architecture=${setup_java_arch}" >> "${GITHUB_OUTPUT}"
     - name: Setup GraalVM
       if: inputs.distribution == 'graalvm'
-      uses: graalvm/setup-graalvm@v1
+      uses: actions/setup-java@v5.2.0
       with:
-        distribution: 'graalvm-community'
+        distribution: 'jdkfile'
+        jdkFile: ${{ steps.prepare-graalvm-package.outputs.archive-path }}
         java-version: ${{ inputs.java-version }}
-        github-token: ${{ inputs.github-token }}
-        native-image-job-reports: 'true'
-    - name: Setup Docker
+        architecture: ${{ steps.prepare-graalvm-package.outputs.setup-java-architecture }}
+    - name: Verify Preinstalled Docker
       if: inputs.enable-docker-setup == 'true'
-      uses: docker/setup-docker-action@v4
-      with:
-        version: v28.0.4
-        set-host: true
+      shell: bash
+      run: |
+        set -euo pipefail
+        docker version
+        docker compose version
     - name: Restore Maven Cache
       id: restore-maven-cache
       uses: actions/cache/restore@v5.0.1

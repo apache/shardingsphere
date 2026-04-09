@@ -31,15 +31,11 @@ public final class MySQLShowEngineStatement extends DALStatement {
     
     private final String engineName;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowEngineStatement(final DatabaseType databaseType, final String engineName) {
         super(databaseType);
         this.engineName = engineName;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

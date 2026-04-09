@@ -77,7 +77,6 @@ class ShowShardingTableNodesExecutorTest {
     
     private void assertOrder(final ShardingRule rule) throws SQLException {
         ShowShardingTableNodesStatement sqlStatement = new ShowShardingTableNodesStatement("t_order", null);
-        sqlStatement.buildAttributes();
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
@@ -97,7 +96,6 @@ class ShowShardingTableNodesExecutorTest {
     
     private void assertOrderItem(final ShardingRule rule) throws SQLException {
         ShowShardingTableNodesStatement sqlStatement = new ShowShardingTableNodesStatement("t_order_item", null);
-        sqlStatement.buildAttributes();
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         Collection<LocalDataQueryResultRow> actual = engine.getRows();
@@ -109,7 +107,6 @@ class ShowShardingTableNodesExecutorTest {
     
     private void assertAll(final ShardingRule rule) throws SQLException {
         ShowShardingTableNodesStatement sqlStatement = new ShowShardingTableNodesStatement(null, null);
-        sqlStatement.buildAttributes();
         DistSQLQueryExecuteEngine engine = new DistSQLQueryExecuteEngine(sqlStatement, "foo_db", mockContextManager(rule), mock(DistSQLConnectionContext.class));
         engine.executeQuery();
         List<LocalDataQueryResultRow> actual = new ArrayList<>(engine.getRows());

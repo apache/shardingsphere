@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.ColumnKeyGenerateStrategiesRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategiesConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.SequenceKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration;
 
 /**
@@ -45,15 +45,8 @@ public final class YamlKeyGenerateStrategyRuleConfigurationSwapper implements Ya
     @Override
     public KeyGenerateStrategiesConfiguration swapToObject(final YamlKeyGenerateStrategyRuleConfiguration yamlConfig) {
         if ("sequence".equalsIgnoreCase(yamlConfig.getKeyGenerateType())) {
-            SequenceKeyGenerateStrategiesRuleConfiguration result = new SequenceKeyGenerateStrategiesRuleConfiguration();
-            result.setKeyGeneratorName(yamlConfig.getKeyGeneratorName());
-            result.setKeyGenerateSequence(yamlConfig.getKeyGenerateSequence());
-            return result;
+            return new SequenceKeyGenerateStrategiesRuleConfiguration(yamlConfig.getKeyGeneratorName(), yamlConfig.getKeyGenerateSequence());
         }
-        ColumnKeyGenerateStrategiesRuleConfiguration result = new ColumnKeyGenerateStrategiesRuleConfiguration();
-        result.setKeyGeneratorName(yamlConfig.getKeyGeneratorName());
-        result.setLogicTable(yamlConfig.getLogicTable());
-        result.setKeyGenerateColumn(yamlConfig.getKeyGenerateColumn());
-        return result;
+        return new ColumnKeyGenerateStrategiesRuleConfiguration(yamlConfig.getKeyGeneratorName(), yamlConfig.getLogicTable(), yamlConfig.getKeyGenerateColumn());
     }
 }

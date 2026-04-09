@@ -46,8 +46,4 @@ public final class AlterReadwriteSplittingStorageUnitStatusStatement extends Upd
         this.enable = enable;
         attributes = new SQLStatementAttributes(new FromDatabaseSQLStatementAttribute(fromDatabase));
     }
-    
-    @Override
-    public void buildAttributes() {
-    }
 }

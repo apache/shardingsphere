@@ -23,46 +23,37 @@ import org.apache.shardingsphere.infra.props.fixture.TypedPropertyKeyFixture;
 import org.apache.shardingsphere.infra.props.fixture.typed.PropertiesTypedSPIFixture;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class TypedPropertyValueTest {
     
-    @Test
-    void assertGetBooleanValue() throws TypedPropertyValueException {
-        assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, Boolean.TRUE.toString()).getValue());
-        assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE, Boolean.TRUE.toString()).getValue());
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getBooleanValueArguments")
+    void assertGetBooleanValue(final String name, final TypedPropertyKey key, final String value, final boolean expectedValue) throws TypedPropertyValueException {
+        assertThat(new TypedPropertyValue(key, value).getValue(), is(expectedValue));
     }
     
-    @Test
-    void assertGetInvalidBooleanValue() throws TypedPropertyValueException {
-        assertFalse((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, "test").getValue());
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getNumberValueArguments")
+    void assertGetNumberValue(final String name, final TypedPropertyKey key, final String value, final Object expectedValue) throws TypedPropertyValueException {
+        assertThat(new TypedPropertyValue(key, value).getValue(), is(expectedValue));
     }
     
-    @Test
-    void assertGetIntValue() throws TypedPropertyValueException {
-        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "1000").getValue(), is(1000));
-        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE, "1000").getValue(), is(1000));
-    }
-    
-    @Test
-    void assertGetInvalidIntValue() {
-        assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "test"));
-    }
-    
-    @Test
-    void assertGetLongValue() throws TypedPropertyValueException {
-        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "10000").getValue(), is(10000L));
-        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE, "10000").getValue(), is(10000L));
-    }
-    
-    @Test
-    void assertGetInvalidLongValue() {
-        assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "test"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getInvalidNumberValueArguments")
+    void assertGetInvalidNumberValue(final String name, final TypedPropertyKey key) {
+        assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(key, "test"));
     }
     
     @Test
@@ -80,8 +71,50 @@ class TypedPropertyValueTest {
         assertThrows(TypedPropertyValueException.class, () -> new TypedPropertyValue(TypedPropertyKeyFixture.ENUM_VALUE, "BAR"));
     }
     
-    @Test
-    void assertGetTypedSPI() throws TypedPropertyValueException {
-        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.TYPED_SPI_VALUE, "TYPED.SPI.PROPS").getValue(), is(TypedSPILoader.getService(PropertiesTypedSPIFixture.class, "TYPED.SPI.PROPS")));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getTypedSPIArguments")
+    void assertGetTypedSPI(final String name, final String value, final Object expectedValue) throws TypedPropertyValueException {
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.TYPED_SPI_VALUE, value).getValue(), is(expectedValue));
+    }
+    
+    private static Stream<Arguments> getBooleanValueArguments() {
+        return Stream.of(
+                Arguments.of("primitive true", TypedPropertyKeyFixture.BOOLEAN_VALUE, Boolean.TRUE.toString(), true),
+                Arguments.of("wrapper true", TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE, Boolean.TRUE.toString(), true),
+                Arguments.of("invalid value returns false", TypedPropertyKeyFixture.BOOLEAN_VALUE, "test", false));
+    }
+    
+    private static Stream<Arguments> getNumberValueArguments() {
+        return Stream.of(
+                Arguments.of("int primitive", TypedPropertyKeyFixture.INT_VALUE, "1000", 1000),
+                Arguments.of("int wrapper", TypedPropertyKeyFixture.INT_OBJECT_VALUE, "1000", 1000),
+                Arguments.of("long primitive", TypedPropertyKeyFixture.LONG_VALUE, "10000", 10000L),
+                Arguments.of("long wrapper", TypedPropertyKeyFixture.LONG_OBJECT_VALUE, "10000", 10000L),
+                Arguments.of("float primitive", createTypedPropertyKey(float.class), "3.14", 3.14F),
+                Arguments.of("float wrapper", createTypedPropertyKey(Float.class), "3.14", 3.14F),
+                Arguments.of("double primitive", createTypedPropertyKey(double.class), "6.28", 6.28D),
+                Arguments.of("double wrapper", createTypedPropertyKey(Double.class), "6.28", 6.28D));
+    }
+    
+    private static Stream<Arguments> getInvalidNumberValueArguments() {
+        return Stream.of(
+                Arguments.of("int primitive", TypedPropertyKeyFixture.INT_VALUE),
+                Arguments.of("long primitive", TypedPropertyKeyFixture.LONG_VALUE),
+                Arguments.of("float primitive", createTypedPropertyKey(float.class)),
+                Arguments.of("double primitive", createTypedPropertyKey(double.class)));
+    }
+    
+    private static Stream<Arguments> getTypedSPIArguments() {
+        return Stream.of(
+                Arguments.of("service value", "TYPED.SPI.PROPS", TypedSPILoader.getService(PropertiesTypedSPIFixture.class, "TYPED.SPI.PROPS")),
+                Arguments.of("empty value", "", null),
+                Arguments.of("null value", null, null));
+    }
+    
+    private static TypedPropertyKey createTypedPropertyKey(final Class<?> type) {
+        TypedPropertyKey result = mock(TypedPropertyKey.class);
+        when(result.getKey()).thenReturn("key");
+        doReturn(type).when(result).getType();
+        return result;
     }
 }

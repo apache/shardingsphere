@@ -52,8 +52,8 @@ class CombineSegmentBinderTest {
     
     @Test
     void assertBind() {
-        SelectStatement leftSelect = new SelectStatement(mock(DatabaseType.class));
-        SelectStatement rightSelect = new SelectStatement(mock(DatabaseType.class));
+        SelectStatement leftSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).build();
+        SelectStatement rightSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).build();
         SubquerySegment leftSegment = new SubquerySegment(1, 5, leftSelect, "LEFT");
         SubquerySegment rightSegment = new SubquerySegment(6, 10, rightSelect, "RIGHT");
         CombineSegment segment = new CombineSegment(0, 20, leftSegment, CombineType.UNION, rightSegment);
@@ -65,8 +65,8 @@ class CombineSegmentBinderTest {
         Collection<String> cteAliases = binderContext.getCommonTableExpressionsSegmentsUniqueAliases();
         cteAliases.add("existing_cte");
         Multimap<CaseInsensitiveString, TableSegmentBinderContext> outerTableBinderContexts = LinkedHashMultimap.create();
-        SelectStatement boundLeftSelect = new SelectStatement(mock(DatabaseType.class));
-        SelectStatement boundRightSelect = new SelectStatement(mock(DatabaseType.class));
+        SelectStatement boundLeftSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).build();
+        SelectStatement boundRightSelect = SelectStatement.builder().databaseType(mock(DatabaseType.class)).build();
         AtomicReference<SQLStatementBinderContext> capturedLeftContext = new AtomicReference<>();
         AtomicReference<SQLStatementBinderContext> capturedRightContext = new AtomicReference<>();
         try (MockedConstruction<SelectStatementBinder> ignore = mockConstruction(SelectStatementBinder.class, (mock, context) -> {

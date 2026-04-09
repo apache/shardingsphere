@@ -26,69 +26,57 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataManagerPersistServiceFixture;
 import org.apache.shardingsphere.mode.metadata.refresher.pushdown.PushDownMetaDataRefresher;
-import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistService;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.index.AlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
-@ExtendWith(MockitoExtension.class)
 class AlterIndexPushDownMetaDataRefresherTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
     
-    private final AlterIndexPushDownMetaDataRefresher refresher = (AlterIndexPushDownMetaDataRefresher) TypedSPILoader.getService(PushDownMetaDataRefresher.class, AlterIndexStatement.class);
-    
-    @Mock
-    private MetaDataManagerPersistService metaDataManagerPersistService;
+    private final AlterIndexPushDownMetaDataRefresher refresher =
+            (AlterIndexPushDownMetaDataRefresher) TypedSPILoader.getService(PushDownMetaDataRefresher.class, AlterIndexStatement.class);
     
     @Test
     void assertRefreshReturnWhenRenameMissing() {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_old"))), null, null);
-        refresher.refresh(metaDataManagerPersistService, new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.emptyList()), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        verifyNoInteractions(metaDataManagerPersistService);
+        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
+        refresher.refresh(persistService, createDatabase(Collections.emptyList()), "logic_ds", "Foo_Schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertTrue(persistService.getAlteredTables().isEmpty());
     }
     
     @Test
     void assertRefreshReturnWhenIndexMissing() {
         AlterIndexStatement sqlStatement = new AlterIndexStatement(databaseType, null, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_new"))), null);
-        refresher.refresh(metaDataManagerPersistService, new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.emptyList()), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        verifyNoInteractions(metaDataManagerPersistService);
+        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
+        refresher.refresh(persistService, createDatabase(Collections.emptyList()), "logic_ds", "Foo_Schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
+        assertTrue(persistService.getAlteredTables().isEmpty());
     }
     
-    @SuppressWarnings("unchecked")
     @Test
     void assertRefreshRenameIndex() {
         ShardingSphereTable table = new ShardingSphereTable(
-                "foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("idx_old", Collections.emptyList(), false)), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema("bar_schema", databaseType, Collections.singleton(table), Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
-        AlterIndexStatement sqlStatement = createAlterStatement();
-        refresher.refresh(metaDataManagerPersistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
-        ArgumentCaptor<Collection<ShardingSphereTable>> alteredTablesCaptor = ArgumentCaptor.forClass(Collection.class);
-        verify(metaDataManagerPersistService).alterTables(eq(database), eq("bar_schema"), alteredTablesCaptor.capture());
-        ShardingSphereTable actualTable = alteredTablesCaptor.getValue().iterator().next();
-        assertFalse(actualTable.containsIndex("idx_old"));
+                "Foo_Tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("Idx_Old", Collections.emptyList(), false)), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("Bar_Schema", databaseType, Collections.singleton(table), Collections.emptyList());
+        ShardingSphereDatabase database = createDatabase(Collections.singleton(schema));
+        PushDownMetaDataManagerPersistServiceFixture persistService = new PushDownMetaDataManagerPersistServiceFixture();
+        refresher.refresh(persistService, database, "logic_ds", "foo_schema", databaseType, createAlterStatement(), new ConfigurationProperties(new Properties()));
+        ShardingSphereTable actualTable = persistService.getAlteredTables().iterator().next();
+        assertThat(persistService.getAlteredTableSchemaName(), is("Bar_Schema"));
+        assertFalse(actualTable.containsIndex("Idx_Old"));
         assertTrue(actualTable.containsIndex("idx_new"));
     }
     
@@ -96,5 +84,9 @@ class AlterIndexPushDownMetaDataRefresherTest {
         IndexSegment index = new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_old")));
         index.setOwner(new OwnerSegment(0, 0, new IdentifierValue("BAR_SCHEMA")));
         return new AlterIndexStatement(databaseType, index, new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("idx_new"))), null);
+    }
+    
+    private ShardingSphereDatabase createDatabase(final java.util.Collection<ShardingSphereSchema> schemas) {
+        return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas);
     }
 }

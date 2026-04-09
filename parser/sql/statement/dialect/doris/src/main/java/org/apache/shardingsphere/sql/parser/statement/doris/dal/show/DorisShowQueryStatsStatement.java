@@ -45,7 +45,7 @@ public final class DorisShowQueryStatsStatement extends DALStatement {
     
     private final boolean verbose;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public DorisShowQueryStatsStatement(final DatabaseType databaseType, final DatabaseSegment database, final FromTableSegment fromTable, final boolean all, final boolean verbose) {
         super(databaseType);
@@ -53,6 +53,11 @@ public final class DorisShowQueryStatsStatement extends DALStatement {
         this.fromTable = fromTable;
         this.all = all;
         this.verbose = verbose;
+        attributes = new SQLStatementAttributes(
+                new DatabaseSelectRequiredSQLStatementAttribute(),
+                new TableSQLStatementAttribute(null == fromTable ? null : fromTable.getTable()),
+                new TablelessDataSourceBroadcastRouteSQLStatementAttribute(),
+                new AllowNotUseDatabaseSQLStatementAttribute(true, null == database ? null : database.getIdentifier().getValue()));
     }
     
     /**
@@ -80,13 +85,5 @@ public final class DorisShowQueryStatsStatement extends DALStatement {
      */
     public Optional<SimpleTableSegment> getTable() {
         return null == fromTable ? Optional.empty() : Optional.ofNullable(fromTable.getTable());
-    }
-    
-    @Override
-    public void buildAttributes() {
-        String databaseName = null == database ? null : database.getIdentifier().getValue();
-        SimpleTableSegment table = null == fromTable ? null : fromTable.getTable();
-        attributes = new SQLStatementAttributes(new DatabaseSelectRequiredSQLStatementAttribute(), new TableSQLStatementAttribute(table),
-                new TablelessDataSourceBroadcastRouteSQLStatementAttribute(), new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
     }
 }

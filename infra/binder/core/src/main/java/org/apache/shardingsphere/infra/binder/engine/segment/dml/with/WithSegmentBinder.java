@@ -40,14 +40,14 @@ public final class WithSegmentBinder {
      *
      * @param segment with segment
      * @param binderContext SQL statement binder context
-     * @param externalTableBinderContexts external table binder contexts
+     * @param tableBinderContexts table binder contexts
      * @return bound with segment
      */
     public static WithSegment bind(final WithSegment segment, final SQLStatementBinderContext binderContext,
-                                   final Multimap<CaseInsensitiveString, TableSegmentBinderContext> externalTableBinderContexts) {
+                                   final Multimap<CaseInsensitiveString, TableSegmentBinderContext> tableBinderContexts) {
         Collection<CommonTableExpressionSegment> boundCommonTableExpressions = new LinkedList<>();
         for (CommonTableExpressionSegment each : segment.getCommonTableExpressions()) {
-            CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, externalTableBinderContexts, segment.isRecursive());
+            CommonTableExpressionSegment boundCommonTableExpression = CommonTableExpressionSegmentBinder.bind(each, binderContext, tableBinderContexts, segment.isRecursive());
             boundCommonTableExpressions.add(boundCommonTableExpression);
         }
         return new WithSegment(segment.getStartIndex(), segment.getStopIndex(), boundCommonTableExpressions, segment.isRecursive());

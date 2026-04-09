@@ -21,9 +21,11 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.enums
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.DialectDatabaseMetaData;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.IdentifierPatternType;
+import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.function.DialectFunctionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.schema.DialectSchemaOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.transaction.DialectTransactionOption;
 import org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.version.DialectProtocolVersionOption;
+import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdFunctionOption;
 import org.apache.shardingsphere.database.connector.firebird.metadata.database.option.FirebirdSchemaOption;
 
 import java.sql.Connection;
@@ -62,6 +64,11 @@ public final class FirebirdDatabaseMetaData implements DialectDatabaseMetaData {
     @Override
     public DialectProtocolVersionOption getProtocolVersionOption() {
         return new DialectProtocolVersionOption("18");
+    }
+    
+    @Override
+    public DialectFunctionOption getFunctionOption() {
+        return new FirebirdFunctionOption();
     }
     
     @Override

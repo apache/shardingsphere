@@ -166,30 +166,20 @@ class ColumnExtractorTest {
         projections.getProjections().add(new IntervalExpressionProjection(0, 0, createColumnSegment("foo_interval_left"),
                 createColumnSegment("foo_interval_minus"), createColumnSegment("foo_interval_right"), "interval expr"));
         projections.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_subquery_projection_column"), ""), "subquery"));
-        SelectStatement result = new SelectStatement(mock(DatabaseType.class));
-        result.setProjections(projections);
-        result.setFrom(createJoinTableForExtraction());
-        result.setWhere(new WhereSegment(0, 0, createBinaryOperation("foo_where_left", "bar_where_right")));
-        result.setGroupBy(createGroupBySegment());
-        result.setHaving(new HavingSegment(0, 0, createBinaryOperation("foo_having_left", "bar_having_right")));
-        result.setOrderBy(createOrderBySegment());
-        result.setCombine(createCombineSegment());
-        return result;
+        return SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projections).from(createJoinTableForExtraction())
+                .where(new WhereSegment(0, 0, createBinaryOperation("foo_where_left", "bar_where_right"))).groupBy(createGroupBySegment())
+                .having(new HavingSegment(0, 0, createBinaryOperation("foo_having_left", "bar_having_right"))).orderBy(createOrderBySegment()).combine(createCombineSegment()).build();
     }
     
     private static SelectStatement createSelectStatementWithoutOptionalSegments() {
-        SelectStatement result = new SelectStatement(mock(DatabaseType.class));
-        result.setProjections(new ProjectionsSegment(0, 0));
-        return result;
+        return SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(new ProjectionsSegment(0, 0)).build();
     }
     
     private static SelectStatement createSelectStatementSkippingSubquery() {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new SubqueryProjectionSegment(new SubquerySegment(0, 0, createSelectStatementWithProjection("foo_skip_projection"), ""), "sub"));
-        SelectStatement result = new SelectStatement(mock(DatabaseType.class));
-        result.setProjections(projectionsSegment);
-        result.setFrom(new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createSelectStatementWithProjection("bar_skip_from"), "")));
-        return result;
+        return SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projectionsSegment)
+                .from(new SubqueryTableSegment(0, 0, new SubquerySegment(0, 0, createSelectStatementWithProjection("bar_skip_from"), ""))).build();
     }
     
     private static GroupBySegment createGroupBySegment() {
@@ -229,11 +219,9 @@ class ColumnExtractorTest {
     }
     
     private static SelectStatement createSelectStatementWithProjection(final String columnName) {
-        SelectStatement result = new SelectStatement(mock(DatabaseType.class));
         ProjectionsSegment projections = new ProjectionsSegment(0, 0);
         projections.getProjections().add(new ColumnProjectionSegment(createColumnSegment(columnName)));
-        result.setProjections(projections);
-        return result;
+        return SelectStatement.builder().databaseType(mock(DatabaseType.class)).projections(projections).build();
     }
     
     private static BinaryOperationExpression createBinaryOperation(final String leftColumnName, final String rightColumnName) {

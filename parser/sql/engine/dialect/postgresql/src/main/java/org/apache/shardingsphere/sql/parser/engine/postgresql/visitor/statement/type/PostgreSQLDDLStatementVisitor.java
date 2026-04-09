@@ -346,20 +346,25 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        CreateTableStatement result = new CreateTableStatement(getDatabaseType());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setIfNotExists(null != ctx.ifNotExists());
+        Collection<ColumnDefinitionSegment> columnDefinitions = new LinkedList<>();
+        Collection<ConstraintDefinitionSegment> constraintDefinitions = new LinkedList<>();
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
                 if (each instanceof ColumnDefinitionSegment) {
-                    result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
+                    columnDefinitions.add((ColumnDefinitionSegment) each);
                 } else if (each instanceof ConstraintDefinitionSegment) {
-                    result.getConstraintDefinitions().add((ConstraintDefinitionSegment) each);
+                    constraintDefinitions.add((ConstraintDefinitionSegment) each);
                 }
             }
         }
-        return result;
+        return CreateTableStatement.builder()
+                .databaseType(getDatabaseType())
+                .table((SimpleTableSegment) visit(ctx.tableName()))
+                .ifNotExists(null != ctx.ifNotExists())
+                .columnDefinitions(columnDefinitions)
+                .constraintDefinitions(constraintDefinitions)
+                .build();
     }
     
     @Override
@@ -633,17 +638,13 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
         boolean containsCascade = null != ctx.dropTableOpt() && null != ctx.dropTableOpt().CASCADE();
-        DropTableStatement result = new DropTableStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.setContainsCascade(containsCascade);
-        result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        return result;
+        return new DropTableStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue(), null != ctx.ifExists(), containsCascade);
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitTruncateTable(final TruncateTableContext ctx) {
-        return new TruncateStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue());
+        return new TruncateStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.tableNamesClause())).getValue(), Collections.emptyList());
     }
     
     @Override
@@ -674,16 +675,24 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        CreateIndexStatement result = new CreateIndexStatement(getDatabaseType());
-        result.setIfNotExists(null != ctx.ifNotExists());
-        result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
-        if (null != ctx.indexName()) {
-            result.setIndex((IndexSegment) visit(ctx.indexName()));
-        } else {
-            result.setAnonymousIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1);
+        SimpleTableSegment table = (SimpleTableSegment) visit(ctx.tableName());
+        Collection<ColumnSegment> columns = ((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue();
+        if (null == ctx.indexName()) {
+            return CreateIndexStatement.builder()
+                    .databaseType(getDatabaseType())
+                    .ifNotExists(null != ctx.ifNotExists())
+                    .table(table)
+                    .columns(columns)
+                    .anonymousIndexStartIndex(ctx.ON().getSymbol().getStartIndex() - 1)
+                    .build();
         }
-        return result;
+        return CreateIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .ifNotExists(null != ctx.ifNotExists())
+                .table(table)
+                .columns(columns)
+                .index((IndexSegment) visit(ctx.indexName()))
+                .build();
     }
     
     @Override
@@ -741,10 +750,11 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        DropIndexStatement result = new DropIndexStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
-        return result;
+        return DropIndexStatement.builder()
+                .databaseType(getDatabaseType())
+                .ifExists(null != ctx.ifExists())
+                .indexes(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()))
+                .build();
     }
     
     private Collection<IndexSegment> createIndexSegments(final Collection<SimpleTableSegment> tableSegments) {
@@ -792,7 +802,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitCreateFunction(final CreateFunctionContext ctx) {
-        return new CreateFunctionStatement(getDatabaseType());
+        return new CreateFunctionStatement(getDatabaseType(), null, null, Collections.emptyList());
     }
     
     @Override
@@ -813,10 +823,7 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropView(final DropViewContext ctx) {
-        DropViewStatement result = new DropViewStatement(getDatabaseType());
-        result.setIfExists(null != ctx.ifExists());
-        result.getViews().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue());
-        return result;
+        return new DropViewStatement(getDatabaseType(), ((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue(), null != ctx.ifExists());
     }
     
     @Override
@@ -894,20 +901,13 @@ public final class PostgreSQLDDLStatementVisitor extends PostgreSQLStatementVisi
     
     @Override
     public ASTNode visitPrepare(final PrepareContext ctx) {
-        PrepareStatement result = new PrepareStatement(getDatabaseType());
-        if (null != ctx.preparableStmt().select()) {
-            result.setSelect((SelectStatement) visit(ctx.preparableStmt().select()));
-        }
-        if (null != ctx.preparableStmt().insert()) {
-            result.setInsert((InsertStatement) visit(ctx.preparableStmt().insert()));
-        }
-        if (null != ctx.preparableStmt().update()) {
-            result.setUpdate((UpdateStatement) visit(ctx.preparableStmt().update()));
-        }
-        if (null != ctx.preparableStmt().delete()) {
-            result.setDelete((DeleteStatement) visit(ctx.preparableStmt().delete()));
-        }
-        return result;
+        return PrepareStatement.builder()
+                .databaseType(getDatabaseType())
+                .select(null == ctx.preparableStmt().select() ? null : (SelectStatement) visit(ctx.preparableStmt().select()))
+                .insert(null == ctx.preparableStmt().insert() ? null : (InsertStatement) visit(ctx.preparableStmt().insert()))
+                .update(null == ctx.preparableStmt().update() ? null : (UpdateStatement) visit(ctx.preparableStmt().update()))
+                .delete(null == ctx.preparableStmt().delete() ? null : (DeleteStatement) visit(ctx.preparableStmt().delete()))
+                .build();
     }
     
     @Override

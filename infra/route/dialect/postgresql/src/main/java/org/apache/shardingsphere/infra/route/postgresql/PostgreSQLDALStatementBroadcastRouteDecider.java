@@ -38,6 +38,11 @@ public final class PostgreSQLDALStatementBroadcastRouteDecider implements Dialec
     }
     
     @Override
+    public boolean isDataSourceUnicastRoute(final DALStatement sqlStatement) {
+        return false;
+    }
+    
+    @Override
     public String getDatabaseType() {
         return "PostgreSQL";
     }

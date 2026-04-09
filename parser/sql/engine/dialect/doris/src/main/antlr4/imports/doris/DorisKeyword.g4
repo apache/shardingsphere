@@ -87,6 +87,10 @@ ANY
     : A N Y
     ;
 
+APPEND
+    : A P P E N D
+    ;
+
 ARRAY
     : A R R A Y
     ;
@@ -185,6 +189,10 @@ BIT
     : B I T
     ;
 
+BITMAP_UNION
+    : B I T M A P UL_ U N I O N
+    ;
+
 BLOB
     : B L O B
     ;
@@ -207,6 +215,10 @@ BOTH
 
 BRIEF
     : B R I E F
+    ;
+
+BROKER
+    : B R O K E R
     ;
 
 BTREE
@@ -321,6 +333,10 @@ CLIENT
     : C L I E N T
     ;
 
+CLEAN
+    : C L E A N
+    ;
+
 CLONE
     : C L O N E
     ;
@@ -401,6 +417,10 @@ COMPRESSED
 
 COMPRESSION
     : C O M P R E S S I O N
+    ;
+
+COMPRESS_TYPE
+    : C O M P R E S S UL_ T Y P E
     ;
 
 CONCURRENT
@@ -719,6 +739,10 @@ ENCRYPTION
 
 ENCRYPTKEY
     : E N C R Y P T K E Y
+    ;
+
+ENCRYPTKEYS
+    : E N C R Y P T K E Y S
     ;
 
 END
@@ -1047,6 +1071,10 @@ HIGH_PRIORITY
     : H I G H UL_ P R I O R I T Y
     ;
 
+HLL_UNION
+    : H L L UL_ U N I O N
+    ;
+
 HISTOGRAM
     : H I S T O G R A M
     ;
@@ -1295,6 +1323,10 @@ KILL
     : K I L L
     ;
 
+LABEL
+    : L A B E L
+    ;
+
 LAG
     : L A G
     ;
@@ -1373,6 +1405,10 @@ LIST
 
 LOAD
     : L O A D
+    ;
+
+LOAD_JOB_ID
+    : L O A D UL_ J O B UL_ I D
     ;
 
 LOCAL
@@ -1689,6 +1725,10 @@ MUTEX
     : M U T E X
     ;
 
+MYSQL
+    : M Y S Q L
+    ;
+
 Doris_ERRNO
     : M Y S Q L UL_ E R R N O
     ;
@@ -1727,6 +1767,10 @@ NDB
 
 NDBCLUSTER
     : N D B C L U S T E R
+    ;
+
+NEGATIVE
+    : N E G A T I V E
     ;
 
 NESTED
@@ -1982,6 +2026,16 @@ PHASE
     : P H A S E
     ;
 
+// DORIS ADDED BEGIN
+PLAN
+    : P L A N
+    ;
+
+PLAY
+    : P L A Y
+    ;
+// DORIS ADDED END
+
 PLUGIN
     : P L U G I N
     ;
@@ -2004,6 +2058,10 @@ POLYGON
 
 PORT
     : P O R T
+    ;
+
+POSTGRES
+    : P O S T G R E S
     ;
 
 PRECEDES
@@ -2228,6 +2286,12 @@ REPLACE
     : R E P L A C E
     ;
 
+// DORIS ADDED BEGIN
+REPLAYER
+    : R E P L A Y E R
+    ;
+// DORIS ADDED END
+
 REPLICA
     : R E P L I C A
     ;
@@ -2242,6 +2306,10 @@ REPLICATE_DO_DB
 
 REPLICATE_DO_TABLE
     : R E P L I C A T E UL_ D O UL_ T A B L E
+    ;
+
+REPLACE_IF_NOT_NULL
+    : R E P L A C E UL_ I F UL_ N O T UL_ N U L L
     ;
 
 REPLICATE_IGNORE_DB
@@ -2696,6 +2764,10 @@ STATS_SAMPLE_PAGES
     : S T A T S UL_ S A M P L E UL_ P A G E S
     ;
 
+STATE
+    : S T A T E
+    ;
+
 STATUS
     : S T A T U S
     ;
@@ -2718,6 +2790,10 @@ STRAIGHT_JOIN
 
 STREAM
     : S T R E A M
+    ;
+
+STREAMING
+    : S T R E A M I N G
     ;
 
 STRING
@@ -2902,6 +2978,10 @@ TABLE_NAME
     : T A B L E UL_ N A M E
     ;
 
+TABLET
+    : T A B L E T
+    ;
+
 TASK
     : T A S K
     ;
@@ -2976,6 +3056,10 @@ TO
 
 TRAILING
     : T R A I L I N G
+    ;
+
+TRASH
+    : T R A S H
     ;
 
 TRANSACTION
@@ -3160,6 +3244,10 @@ VCPU
 
 VERBOSE
     : V E R B O S E
+    ;
+
+VERSION
+    : V E R S I O N
     ;
 
 VIEW

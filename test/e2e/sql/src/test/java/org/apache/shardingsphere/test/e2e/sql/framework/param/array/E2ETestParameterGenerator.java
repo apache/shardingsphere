@@ -35,7 +35,6 @@ import org.apache.shardingsphere.test.e2e.sql.framework.param.model.E2ETestParam
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLCommandType;
 import org.apache.shardingsphere.test.e2e.sql.framework.type.SQLExecuteType;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -122,7 +121,7 @@ public final class E2ETestParameterGenerator {
     private Collection<AssertionTestParameter> getAssertionTestParameter(final SQLE2ETestCaseContext testCaseContext, final SQLE2ETestCaseAssertion assertion,
                                                                          final String adapter, final DatabaseType databaseType,
                                                                          final SQLExecuteType sqlExecuteType, final SQLCommandType sqlCommandType) {
-        Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
+        Collection<String> scenarios = getScenarios(testCaseContext.getTestCase().getScenarioTypes());
         return envScenarios.stream().filter(each -> filterScenarios(each, scenarios, sqlCommandType.getSqlStatementClass()))
                 .map(each -> new AssertionTestParameter(testCaseContext, assertion, adapter, each, mode, databaseType, sqlExecuteType, sqlCommandType)).collect(Collectors.toList());
     }
@@ -192,9 +191,13 @@ public final class E2ETestParameterGenerator {
         if (null != testCaseContext.getTestCase().getAdapters() && !testCaseContext.getTestCase().getAdapters().contains(adapter)) {
             return Collections.emptyList();
         }
-        Collection<String> scenarios = null == testCaseContext.getTestCase().getScenarioTypes() ? Collections.emptyList() : Arrays.asList(testCaseContext.getTestCase().getScenarioTypes().split(","));
+        Collection<String> scenarios = getScenarios(testCaseContext.getTestCase().getScenarioTypes());
         return envScenarios.stream().filter(each -> scenarios.isEmpty() || scenarios.contains(each))
                 .map(each -> new CaseTestParameter(testCaseContext, adapter, each, mode, databaseType, sqlCommandType)).collect(Collectors.toList());
+    }
+    
+    private Collection<String> getScenarios(final String scenarioTypes) {
+        return Strings.isNullOrEmpty(scenarioTypes) ? Collections.emptyList() : Splitter.on(',').trimResults().omitEmptyStrings().splitToList(scenarioTypes);
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final String databaseTypes) {

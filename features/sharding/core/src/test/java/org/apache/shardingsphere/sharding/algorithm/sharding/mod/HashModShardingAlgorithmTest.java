@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -40,19 +41,69 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HashModShardingAlgorithmTest {
     
+    private static final String NORMALIZE_NUMERIC_INT_RANGE_KEY = "normalize-numeric-int-range";
+    
     private static final DataNodeInfo DATA_NODE_INFO = new DataNodeInfo("t_order_", 1, '0');
     
     private HashModShardingAlgorithm shardingAlgorithm;
     
+    private HashModShardingAlgorithm normalizedShardingAlgorithm;
+    
     @BeforeEach
     void setup() {
         shardingAlgorithm = (HashModShardingAlgorithm) TypedSPILoader.getService(ShardingAlgorithm.class, "HASH_MOD", PropertiesBuilder.build(new Property("sharding-count", "4")));
+        normalizedShardingAlgorithm = (HashModShardingAlgorithm) TypedSPILoader.getService(
+                ShardingAlgorithm.class, "HASH_MOD", PropertiesBuilder.build(new Property("sharding-count", "4"), new Property(NORMALIZE_NUMERIC_INT_RANGE_KEY, Boolean.TRUE.toString())));
     }
     
     @Test
     void assertPreciseDoSharding() {
         List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
         assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_type", DATA_NODE_INFO, "a")), is("t_order_1"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWithSameNegativeNumberValueForLegacyMode() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1L)), is("t_order_0"));
+        assertThat(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, BigInteger.valueOf(-1L))), is("t_order_1"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWithSameNegativeNumberValueForNormalizedMode() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(normalizedShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1)), is("t_order_1"));
+        assertThat(normalizedShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, -1L)), is("t_order_1"));
+        assertThat(normalizedShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, BigInteger.valueOf(-1L))), is("t_order_1"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWithLongValueOutOfIntegerRangeForNormalizedMode() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(normalizedShardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, Long.MAX_VALUE)), is("t_order_0"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWithBigIntegerBoundaryValuesForNormalizedMode() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        assertThat(normalizedShardingAlgorithm.doSharding(
+                availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, BigInteger.valueOf(Integer.MIN_VALUE))), is("t_order_0"));
+        assertThat(normalizedShardingAlgorithm.doSharding(
+                availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, BigInteger.valueOf(Integer.MAX_VALUE))), is("t_order_3"));
+    }
+    
+    @Test
+    void assertPreciseDoShardingWithBigIntegerOutOfIntegerRangeForNormalizedMode() {
+        List<String> availableTargetNames = Arrays.asList("t_order_0", "t_order_1", "t_order_2", "t_order_3");
+        BigInteger greaterThanIntegerMax = BigInteger.valueOf(Integer.MAX_VALUE).add(BigInteger.ONE);
+        BigInteger lessThanIntegerMin = BigInteger.valueOf(Integer.MIN_VALUE).subtract(BigInteger.ONE);
+        assertThat(normalizedShardingAlgorithm.doSharding(
+                availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, greaterThanIntegerMax)),
+                is(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, greaterThanIntegerMax))));
+        assertThat(normalizedShardingAlgorithm.doSharding(
+                availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, lessThanIntegerMin)),
+                is(shardingAlgorithm.doSharding(availableTargetNames, new PreciseShardingValue<>("t_order", "order_id", DATA_NODE_INFO, lessThanIntegerMin))));
     }
     
     @Test

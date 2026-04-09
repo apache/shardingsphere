@@ -55,8 +55,7 @@ class InsertSelectColumnsEncryptorCheckerTest {
         ColumnProjection projection1 = getSelectProjection("pwd", databaseValue, schemaValue);
         ColumnProjection projection2 = getSelectProjection("card", databaseValue, schemaValue);
         EncryptRule encryptRule = new EncryptRule(databaseName, createEncryptRuleConfiguration());
-        boolean result = InsertSelectColumnsEncryptorChecker.isSame(Arrays.asList(insertColumn1, insertColumn2), Arrays.asList(projection1, projection2), encryptRule);
-        assertTrue(result);
+        assertTrue(InsertSelectColumnsEncryptorChecker.isSame(Arrays.asList(insertColumn1, insertColumn2), Arrays.asList(projection1, projection2), encryptRule));
     }
     
     private ColumnProjection getSelectProjection(final String pwd, final IdentifierValue databaseValue, final IdentifierValue schemaValue) {

@@ -25,7 +25,6 @@ import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -60,7 +59,7 @@ public final class FirebirdBlobBinaryProtocolValue implements FirebirdBinaryProt
     
     private static long register(final byte[] bytes) {
         long id = ID_SEQ.getAndIncrement();
-        STORE.put(id, null == bytes ? new byte[0] : Arrays.copyOf(bytes, bytes.length));
+        STORE.put(id, bytes.clone());
         return id;
     }
     

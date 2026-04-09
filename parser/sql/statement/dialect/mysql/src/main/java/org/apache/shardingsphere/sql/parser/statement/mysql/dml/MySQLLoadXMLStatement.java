@@ -26,22 +26,18 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.attribute.t
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DMLStatement;
 
 /**
- * Load xml statement for MySQL.
+ * Load XML statement for MySQL.
  */
 @Getter
 public final class MySQLLoadXMLStatement extends DMLStatement {
     
     private final SimpleTableSegment table;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLLoadXMLStatement(final DatabaseType databaseType, final SimpleTableSegment table) {
         super(databaseType);
         this.table = table;
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new TableSQLStatementAttribute(table), new UnsupportedDistributeSQLStatementAttribute());
     }
 }

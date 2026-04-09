@@ -26,17 +26,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Show plugins statement for MySQL.
  */
+@Getter
 public final class MySQLShowPluginsStatement extends DALStatement {
     
-    @Getter
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowPluginsStatement(final DatabaseType databaseType) {
         super(databaseType);
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true));
     }
 }

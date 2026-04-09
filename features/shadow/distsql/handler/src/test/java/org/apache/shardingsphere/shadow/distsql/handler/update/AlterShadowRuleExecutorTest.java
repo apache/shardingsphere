@@ -49,7 +49,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -114,7 +113,7 @@ class AlterShadowRuleExecutorTest {
         Properties props = PropertiesBuilder.build(new Property("type", "value"));
         ShadowAlgorithmSegment segment1 = new ShadowAlgorithmSegment("algorithmName1", new AlgorithmSegment("SQL_HINT", props));
         ShadowAlgorithmSegment segment2 = new ShadowAlgorithmSegment("algorithmName2", new AlgorithmSegment("SQL_HINT", props));
-        AlterShadowRuleStatement sqlStatement = createAlterStatement(Arrays.asList(
+        AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(Arrays.asList(
                 new ShadowRuleSegment("initRuleName1", "ds_0", null, Collections.singletonMap("t_order", Collections.singleton(segment1))),
                 new ShadowRuleSegment("initRuleName2", "ds_1", null, Collections.singletonMap("t_order_1", Collections.singleton(segment2)))));
         assertDoesNotThrow(() -> executor.checkBeforeUpdate(sqlStatement));
@@ -123,7 +122,7 @@ class AlterShadowRuleExecutorTest {
     @Test
     void assertBuildToBeAlteredRuleConfiguration() {
         ShadowAlgorithmSegment algorithmSegment = new ShadowAlgorithmSegment("algorithm_name", new AlgorithmSegment("SQL_HINT", PropertiesBuilder.build(new Property("type", "value"))));
-        AlterShadowRuleStatement sqlStatement = createAlterStatement(
+        AlterShadowRuleStatement sqlStatement = new AlterShadowRuleStatement(
                 Collections.singleton(new ShadowRuleSegment("initRuleName1", "ds_0", "ds_0_shadow", Collections.singletonMap("t_order", Collections.singleton(algorithmSegment)))));
         ShadowRuleConfiguration actual = executor.buildToBeAlteredRuleConfiguration(sqlStatement);
         assertThat(actual.getDataSources().size(), is(1));
@@ -136,7 +135,7 @@ class AlterShadowRuleExecutorTest {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.getShadowAlgorithms().put("used_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
         ruleConfig.getShadowAlgorithms().put("unused_algorithm", new AlgorithmConfiguration("SQL_HINT", new Properties()));
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("initRuleName1")), new ArrayList<>(Collections.singleton("used_algorithm"))));
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(Collections.singleton("initRuleName1"), Collections.singleton("used_algorithm")));
         ruleConfig.setDefaultShadowAlgorithmName("used_algorithm");
         executor.setRule(createRule(ruleConfig));
         ShadowRuleConfiguration actual = executor.buildToBeDroppedRuleConfiguration(new ShadowRuleConfiguration());
@@ -155,26 +154,24 @@ class AlterShadowRuleExecutorTest {
         ShadowAlgorithmSegment invalidTypeSegment = new ShadowAlgorithmSegment("invalid_type_algorithm",
                 new AlgorithmSegment("INVALID_TYPE", PropertiesBuilder.build(new Property("type", "value"))));
         return Stream.of(
-                Arguments.of("duplicate rule name", createAlterStatement(Arrays.asList(
-                        new ShadowRuleSegment("rule_name", null, null, null),
-                        new ShadowRuleSegment("rule_name", null, null, null))), Collections.emptyList(), DuplicateRuleException.class),
-                Arguments.of("rule not found", createAlterStatement(Collections.singleton(
-                        new ShadowRuleSegment("missing_rule", null, null, null))), Collections.emptyList(), MissingRequiredRuleException.class),
-                Arguments.of("storage unit not found", createAlterStatement(Collections.singleton(
-                        new ShadowRuleSegment("initRuleName1", "missing_storage_unit", null, null))), Collections.singletonList("missing_storage_unit"),
+                Arguments.of("duplicate rule name", new AlterShadowRuleStatement(
+                        Arrays.asList(new ShadowRuleSegment("rule_name", null, null, null),
+                                new ShadowRuleSegment("rule_name", null, null, null))),
+                        Collections.emptyList(), DuplicateRuleException.class),
+                Arguments.of("rule not found", new AlterShadowRuleStatement(
+                        Collections.singleton(new ShadowRuleSegment("missing_rule", null, null, null))), Collections.emptyList(), MissingRequiredRuleException.class),
+                Arguments.of("storage unit not found", new AlterShadowRuleStatement(
+                        Collections.singleton(new ShadowRuleSegment("initRuleName1", "missing_storage_unit", null, null))), Collections.singletonList("missing_storage_unit"),
                         MissingRequiredStorageUnitsException.class),
-                Arguments.of("duplicate algorithm name", createAlterStatement(Arrays.asList(
-                        new ShadowRuleSegment("initRuleName1", "ds_0", null, Collections.singletonMap("t_order", Collections.singleton(duplicatedAlgorithmSegment))),
-                        new ShadowRuleSegment("initRuleName2", "ds_1", null, Collections.singletonMap("t_order_1", Collections.singleton(duplicatedAlgorithmSegment))))),
+                Arguments.of("duplicate algorithm name", new AlterShadowRuleStatement(
+                        Arrays.asList(new ShadowRuleSegment("initRuleName1", "ds_0", null,
+                                Collections.singletonMap("t_order", Collections.singleton(duplicatedAlgorithmSegment))),
+                                new ShadowRuleSegment("initRuleName2", "ds_1", null,
+                                        Collections.singletonMap("t_order_1", Collections.singleton(duplicatedAlgorithmSegment))))),
                         Collections.emptyList(), InUsedAlgorithmException.class),
-                Arguments.of("invalid algorithm type", createAlterStatement(Collections.singleton(
-                        new ShadowRuleSegment("initRuleName1", "ds_0", null, Collections.singletonMap("t_order", Collections.singleton(invalidTypeSegment))))),
+                Arguments.of("invalid algorithm type", new AlterShadowRuleStatement(
+                        Collections.singleton(new ShadowRuleSegment("initRuleName1", "ds_0", null, Collections.singletonMap("t_order", Collections.singleton(invalidTypeSegment))))),
                         Collections.emptyList(), ServiceProviderNotFoundException.class));
     }
     
-    private static AlterShadowRuleStatement createAlterStatement(final Collection<ShadowRuleSegment> rules) {
-        AlterShadowRuleStatement result = new AlterShadowRuleStatement(rules);
-        result.buildAttributes();
-        return result;
-    }
 }

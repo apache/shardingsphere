@@ -38,6 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,14 +68,13 @@ class ShardingDropTableSupportedCheckerTest {
     
     @Test
     void assertCheck() {
-        DropTableStatement sqlStatement = new DropTableStatement(databaseType);
-        SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")));
-        sqlStatement.getTables().add(table);
-        sqlStatement.buildAttributes();
+        DropTableStatement sqlStatement = new DropTableStatement(
+                databaseType, Collections.singleton(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item")))), false, false);
         SQLStatementContext sqlStatementContext = new CommonSQLStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.containsTable("t_order_item")).thenReturn(true);
+        when(schema.containsTable(new IdentifierValue("t_order_item"))).thenReturn(true);
         ShardingDropTableSupportedChecker checker = new ShardingDropTableSupportedChecker();
         assertDoesNotThrow(() -> checker.check(rule, database, schema, sqlStatementContext));
     }

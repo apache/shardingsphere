@@ -141,11 +141,18 @@ execute
     | startReplica
     | createMaterializedView
     | resumeJob
+    | pauseJob
+    | dropJob
+    | alterJob
     | resumeSyncJob
     | pauseSyncJob
     | stopSyncJob
     | createSyncJob
     | dorisAlterSystem
+    | adminSetReplicaStatus
+    | adminSetReplicaVersion
+    | adminCopyTablet
+    | adminCleanTrash
     | createSqlBlockRule
     | alterSqlBlockRule
     | dropSqlBlockRule
@@ -159,7 +166,13 @@ execute
     | sync
     | unsetVariable
     | createJob
+    | createStreamingJob
+    | cancelTask
     | backup
+    | cancelBackup
+    | cancelLoadStatement
+    | cleanAllProfile
+    | planReplayerPlay
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

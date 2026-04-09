@@ -26,17 +26,13 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 /**
  * Show partitions statement for Hive.
  */
+@Getter
 public final class HiveShowPartitionsStatement extends DALStatement {
     
-    @Getter
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public HiveShowPartitionsStatement(final DatabaseType databaseType) {
         super(databaseType);
-    }
-    
-    @Override
-    public void buildAttributes() {
         attributes = new SQLStatementAttributes(new TablelessDataSourceBroadcastRouteSQLStatementAttribute());
     }
 }

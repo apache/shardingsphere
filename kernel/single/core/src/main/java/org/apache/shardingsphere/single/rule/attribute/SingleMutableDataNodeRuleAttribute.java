@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.rule.attribute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -30,9 +31,11 @@ import org.apache.shardingsphere.single.util.SingleTableLoadUtils;
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
@@ -55,7 +58,7 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     @Override
     public void put(final String dataSourceName, final String schemaName, final String tableName) {
         if (dataSourceNames.contains(dataSourceName)) {
-            Collection<DataNode> dataNodes = singleTableDataNodes.computeIfAbsent(tableName.toLowerCase(), key -> new LinkedHashSet<>());
+            Collection<DataNode> dataNodes = singleTableDataNodes.computeIfAbsent(tableName, key -> new LinkedHashSet<>());
             dataNodes.add(new DataNode(dataSourceName, schemaName, tableName));
             tableMapperRuleAttribute.getLogicTableNames().add(tableName);
             addTableConfiguration(dataSourceName, schemaName, tableName);
@@ -76,39 +79,76 @@ public final class SingleMutableDataNodeRuleAttribute implements MutableDataNode
     
     @Override
     public void remove(final String schemaName, final String tableName) {
-        remove(Collections.singleton(schemaName.toLowerCase()), tableName);
+        remove(Collections.singleton(schemaName), tableName);
     }
     
     @Override
     public void remove(final Collection<String> schemaNames, final String tableName) {
-        if (!singleTableDataNodes.containsKey(tableName.toLowerCase())) {
-            return;
-        }
-        Collection<DataNode> dataNodes = singleTableDataNodes.get(tableName.toLowerCase());
-        Iterator<DataNode> iterator = dataNodes.iterator();
-        while (iterator.hasNext()) {
-            DataNode each = iterator.next();
-            if (schemaNames.contains(each.getSchemaName().toLowerCase())) {
-                iterator.remove();
-                configuration.getTables().remove(SingleTableLoadUtils.getDataNodeString(protocolType, each.getDataSourceName(), each.getSchemaName(), tableName));
+        for (String each : findMatchedTableKeys(tableName)) {
+            Collection<DataNode> dataNodes = singleTableDataNodes.get(each);
+            if (null == dataNodes) {
+                continue;
             }
-        }
-        if (dataNodes.isEmpty()) {
-            singleTableDataNodes.remove(tableName.toLowerCase());
-            tableMapperRuleAttribute.getLogicTableNames().remove(tableName);
+            Iterator<DataNode> iterator = dataNodes.iterator();
+            while (iterator.hasNext()) {
+                DataNode dataNode = iterator.next();
+                if (schemaNames.contains(dataNode.getSchemaName())) {
+                    iterator.remove();
+                    configuration.getTables().remove(SingleTableLoadUtils.getDataNodeString(protocolType, dataNode.getDataSourceName(), dataNode.getSchemaName(), each));
+                }
+            }
+            if (dataNodes.isEmpty()) {
+                singleTableDataNodes.remove(each);
+                tableMapperRuleAttribute.getLogicTableNames().remove(each);
+            }
         }
     }
     
     @SuppressWarnings("CollectionWithoutInitialCapacity")
     @Override
     public Optional<DataNode> findTableDataNode(final String schemaName, final String tableName) {
-        Collection<DataNode> dataNodes = singleTableDataNodes.getOrDefault(tableName.toLowerCase(), new LinkedHashSet<>());
+        Collection<DataNode> dataNodes = findTableDataNodes(tableName);
         for (DataNode each : dataNodes) {
-            if (schemaName.equalsIgnoreCase(each.getSchemaName())) {
+            if (schemaName.equals(each.getSchemaName())) {
                 return Optional.of(each);
             }
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Find table data nodes.
+     *
+     * @param tableName table name
+     * @return table data nodes
+     */
+    public Collection<DataNode> findTableDataNodes(final String tableName) {
+        for (String each : findMatchedTableKeys(tableName)) {
+            Collection<DataNode> dataNodes = singleTableDataNodes.get(each);
+            if (null != dataNodes) {
+                return dataNodes;
+            }
+        }
+        return Collections.emptyList();
+    }
+    
+    private Collection<String> findMatchedTableKeys(final String tableName) {
+        Collection<String> result = new LinkedList<>();
+        String formattedTableName = new DatabaseTypeRegistry(protocolType).formatIdentifierPattern(tableName);
+        if (singleTableDataNodes.containsKey(formattedTableName)) {
+            result.add(formattedTableName);
+            return result;
+        }
+        if (singleTableDataNodes.containsKey(tableName)) {
+            result.add(tableName);
+            return result;
+        }
+        for (Entry<String, Collection<DataNode>> entry : singleTableDataNodes.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(tableName)) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
     }
     
     @Override

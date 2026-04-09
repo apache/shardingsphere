@@ -35,17 +35,12 @@ public final class MySQLShowTriggersStatement extends DALStatement {
     
     private final ShowFilterSegment filter;
     
-    private SQLStatementAttributes attributes;
+    private final SQLStatementAttributes attributes;
     
     public MySQLShowTriggersStatement(final DatabaseType databaseType, final FromDatabaseSegment fromDatabase, final ShowFilterSegment filter) {
         super(databaseType);
         this.fromDatabase = fromDatabase;
         this.filter = filter;
-    }
-    
-    @Override
-    public void buildAttributes() {
-        String databaseName = null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue();
-        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true, databaseName));
+        attributes = new SQLStatementAttributes(new AllowNotUseDatabaseSQLStatementAttribute(true, null == fromDatabase ? null : fromDatabase.getDatabase().getIdentifier().getValue()));
     }
 }
