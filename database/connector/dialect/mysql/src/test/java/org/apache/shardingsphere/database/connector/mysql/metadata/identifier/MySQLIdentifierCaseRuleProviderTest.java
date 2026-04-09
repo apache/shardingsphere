@@ -32,6 +32,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,12 +43,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MySQLIdentifierCaseRuleProviderTest {
-    
-    private static final String QUERY_LOWER_CASE_TABLE_NAMES = "SELECT @@lower_case_table_names";
     
     private static final DatabaseType DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
@@ -67,6 +64,14 @@ class MySQLIdentifierCaseRuleProviderTest {
         assertLookupMode(actual, QuoteCharacter.BACK_QUOTE, expectedQuotedLookupMode);
         assertLookupMode(actual, QuoteCharacter.NONE, expectedUnquotedLookupMode);
         assertMatch(actual, expectedMatch);
+    }
+    
+    @Test
+    void assertProvideWithQuotedTableName() throws SQLException {
+        IdentifierCaseRule actual = provider.provide(new IdentifierCaseRuleProviderContext(DATABASE_TYPE, mockDataSource(true, 1)))
+                .map(ruleSet -> ruleSet.getRule(IdentifierScope.TABLE)).orElseThrow(AssertionError::new);
+        assertThat(actual.getLookupMode(QuoteCharacter.BACK_QUOTE), is(LookupMode.NORMALIZED));
+        assertThat(actual.matches("t_mask", "T_MASK", QuoteCharacter.BACK_QUOTE), is(Boolean.TRUE));
     }
     
     private void assertMatch(final IdentifierCaseRule actual, final Boolean expected) {
@@ -98,21 +103,125 @@ class MySQLIdentifierCaseRuleProviderTest {
     }
     
     private static DataSource mockDataSource(final boolean hasResultSetRow, final int lowerCaseTableNames) throws SQLException {
-        DataSource result = mock(DataSource.class);
-        Connection connection = mock(Connection.class);
-        PreparedStatement preparedStatement = mock(PreparedStatement.class);
-        ResultSet resultSet = mock(ResultSet.class);
-        when(result.getConnection()).thenReturn(connection);
-        when(connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES)).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(hasResultSetRow);
-        when(resultSet.getInt(1)).thenReturn(lowerCaseTableNames);
-        return result;
+        return (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(), new Class[]{DataSource.class},
+                (proxy, method, args) -> handleDataSourceMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames));
     }
     
     private static DataSource mockFailingDataSource() throws SQLException {
-        DataSource result = mock(DataSource.class);
-        when(result.getConnection()).thenThrow(new SQLException("expected"));
-        return result;
+        return (DataSource) Proxy.newProxyInstance(DataSource.class.getClassLoader(), new Class[]{DataSource.class},
+                (proxy, method, args) -> handleFailingDataSourceMethod(method.getName(), method.getReturnType()));
+    }
+    
+    private static Connection createConnection(final boolean hasResultSetRow, final int lowerCaseTableNames) {
+        return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
+                (proxy, method, args) -> handleConnectionMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames));
+    }
+    
+    private static PreparedStatement createPreparedStatement(final boolean hasResultSetRow, final int lowerCaseTableNames) {
+        return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[]{PreparedStatement.class},
+                (proxy, method, args) -> handlePreparedStatementMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames));
+    }
+    
+    private static ResultSet createResultSet(final boolean hasResultSetRow, final int lowerCaseTableNames) {
+        boolean[] nextInvoked = new boolean[1];
+        return (ResultSet) Proxy.newProxyInstance(ResultSet.class.getClassLoader(), new Class[]{ResultSet.class},
+                (proxy, method, args) -> handleResultSetMethod(method.getName(), method.getReturnType(), hasResultSetRow, lowerCaseTableNames, nextInvoked));
+    }
+    
+    private static Object handleDataSourceMethod(final String methodName, final Class<?> returnType, final boolean hasResultSetRow,
+                                                 final int lowerCaseTableNames) {
+        switch (methodName) {
+            case "getConnection":
+                return createConnection(hasResultSetRow, lowerCaseTableNames);
+            case "unwrap":
+                return null;
+            case "isWrapperFor":
+                return false;
+            default:
+                return getDefaultValue(returnType);
+        }
+    }
+    
+    private static Object handleFailingDataSourceMethod(final String methodName, final Class<?> returnType) throws SQLException {
+        if ("getConnection".equals(methodName)) {
+            throw new SQLException("expected");
+        }
+        return "isWrapperFor".equals(methodName) ? false : getDefaultValue(returnType);
+    }
+    
+    private static Object handleConnectionMethod(final String methodName, final Class<?> returnType, final boolean hasResultSetRow, final int lowerCaseTableNames) {
+        switch (methodName) {
+            case "prepareStatement":
+                return createPreparedStatement(hasResultSetRow, lowerCaseTableNames);
+            case "close":
+                return null;
+            case "isWrapperFor":
+                return false;
+            default:
+                return getDefaultValue(returnType);
+        }
+    }
+    
+    private static Object handlePreparedStatementMethod(final String methodName, final Class<?> returnType,
+                                                        final boolean hasResultSetRow, final int lowerCaseTableNames) {
+        switch (methodName) {
+            case "executeQuery":
+                return createResultSet(hasResultSetRow, lowerCaseTableNames);
+            case "close":
+                return null;
+            case "isWrapperFor":
+                return false;
+            default:
+                return getDefaultValue(returnType);
+        }
+    }
+    
+    private static Object handleResultSetMethod(final String methodName, final Class<?> returnType, final boolean hasResultSetRow,
+                                                final int lowerCaseTableNames, final boolean[] nextInvoked) {
+        switch (methodName) {
+            case "next":
+                boolean result = hasResultSetRow && !nextInvoked[0];
+                nextInvoked[0] = true;
+                return result;
+            case "getInt":
+                return lowerCaseTableNames;
+            case "close":
+                return null;
+            case "isWrapperFor":
+                return false;
+            default:
+                return getDefaultValue(returnType);
+        }
+    }
+    
+    private static Object getDefaultValue(final Class<?> returnType) {
+        if (!returnType.isPrimitive()) {
+            return null;
+        }
+        if (boolean.class == returnType) {
+            return false;
+        }
+        if (byte.class == returnType) {
+            return (byte) 0;
+        }
+        if (short.class == returnType) {
+            return (short) 0;
+        }
+        if (int.class == returnType) {
+            return 0;
+        }
+        if (long.class == returnType) {
+            return 0L;
+        }
+        if (float.class == returnType) {
+            return 0F;
+        }
+        if (double.class == returnType) {
+            return 0D;
+        }
+        if (char.class == returnType) {
+            return '\0';
+        }
+        return null;
     }
 }
