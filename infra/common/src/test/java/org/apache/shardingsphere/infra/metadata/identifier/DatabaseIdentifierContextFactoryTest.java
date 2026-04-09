@@ -25,6 +25,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -32,12 +34,14 @@ import org.apache.shardingsphere.infra.datasource.pool.props.domain.DataSourcePo
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
+import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -45,6 +49,8 @@ import java.util.Properties;
 import java.util.stream.Stream;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
@@ -152,6 +158,16 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(actualRule.matches("foo_db", "FOO_DB", QuoteCharacter.NONE));
     }
     
+    @Test
+    void assertCreateContainsQuotedTableWithMySQLInsensitiveStorageRule() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE,
+                createResourceMetaDataWithMySQLLowerCaseTableNames(1), new ConfigurationProperties(new Properties()));
+        ShardingSphereTable table = new ShardingSphereTable("t_mask", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", MYSQL_DATABASE_TYPE, Collections.singleton(table), Collections.emptyList());
+        schema.refreshIdentifierContext(actual);
+        assertTrue(schema.containsTable(new IdentifierValue("`T_MASK`")));
+    }
+    
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
         return Stream.of(
                 Arguments.of("null protocol type and null props use insensitive rules", null, null, LookupMode.NORMALIZED, "Foo", "foo", true),
@@ -210,6 +226,12 @@ class DatabaseIdentifierContextFactoryTest {
         return createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db");
     }
     
+    private static ResourceMetaData createResourceMetaDataWithMySQLLowerCaseTableNames(final int lowerCaseTableNames) {
+        Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(1, 1F);
+        storageUnits.put("ds_0", createStorageUnit("ds_0", "jdbc:mysql://localhost:3306/foo_db", new LowerCaseTableNamesDataSource(lowerCaseTableNames)));
+        return new ResourceMetaData(Collections.emptyMap(), storageUnits);
+    }
+    
     private static ResourceMetaData createResourceMetaDataWithStorageUrls(final String... urls) {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(urls.length, 1F);
         for (int i = 0; i < urls.length; i++) {
@@ -219,10 +241,14 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     private static StorageUnit createStorageUnit(final String name, final String url) {
+        return createStorageUnit(name, url, new FixtureDataSource());
+    }
+    
+    private static StorageUnit createStorageUnit(final String name, final String url, final DataSource dataSource) {
         Map<String, Object> props = new LinkedHashMap<>(2, 1F);
         props.put("url", url);
         props.put("username", "root");
-        return new StorageUnit(new StorageNode(name), new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props), new FixtureDataSource());
+        return new StorageUnit(new StorageNode(name), new DataSourcePoolProperties("com.zaxxer.hikari.HikariDataSource", props), dataSource);
     }
     
     private static final class FixtureDataSource implements DataSource {
@@ -263,6 +289,107 @@ class DatabaseIdentifierContextFactoryTest {
         @Override
         public <T> T unwrap(final Class<T> iface) throws SQLException {
             throw new SQLFeatureNotSupportedException("Not supported in fixture.");
+        }
+        
+        @Override
+        public boolean isWrapperFor(final Class<?> iface) {
+            return false;
+        }
+    }
+    
+    private static final class LowerCaseTableNamesDataSource implements DataSource {
+        
+        private final int lowerCaseTableNames;
+        
+        private LowerCaseTableNamesDataSource(final int lowerCaseTableNames) {
+            this.lowerCaseTableNames = lowerCaseTableNames;
+        }
+        
+        @Override
+        public Connection getConnection() {
+            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class},
+                    (proxy, method, args) -> "prepareStatement".equals(method.getName()) ? createPreparedStatement(lowerCaseTableNames) : getDefaultValue(method.getReturnType()));
+        }
+        
+        @Override
+        public Connection getConnection(final String username, final String password) {
+            return getConnection();
+        }
+        
+        private PreparedStatement createPreparedStatement(final int lowerCaseTableNames) {
+            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[]{PreparedStatement.class},
+                    (proxy, method, args) -> "executeQuery".equals(method.getName()) ? createResultSet(lowerCaseTableNames) : getDefaultValue(method.getReturnType()));
+        }
+        
+        private ResultSet createResultSet(final int lowerCaseTableNames) {
+            boolean[] nextInvoked = new boolean[1];
+            return (ResultSet) Proxy.newProxyInstance(ResultSet.class.getClassLoader(), new Class[]{ResultSet.class}, (proxy, method, args) -> {
+                if ("next".equals(method.getName())) {
+                    boolean result = !nextInvoked[0];
+                    nextInvoked[0] = true;
+                    return result;
+                }
+                return "getInt".equals(method.getName()) ? lowerCaseTableNames : getDefaultValue(method.getReturnType());
+            });
+        }
+        
+        private Object getDefaultValue(final Class<?> returnType) {
+            if (!returnType.isPrimitive()) {
+                return null;
+            }
+            if (boolean.class == returnType) {
+                return false;
+            }
+            if (int.class == returnType) {
+                return 0;
+            }
+            if (long.class == returnType) {
+                return 0L;
+            }
+            if (float.class == returnType) {
+                return 0F;
+            }
+            if (double.class == returnType) {
+                return 0D;
+            }
+            if (byte.class == returnType) {
+                return (byte) 0;
+            }
+            if (short.class == returnType) {
+                return (short) 0;
+            }
+            if (char.class == returnType) {
+                return '\0';
+            }
+            return null;
+        }
+        
+        @Override
+        public PrintWriter getLogWriter() {
+            return null;
+        }
+        
+        @Override
+        public void setLogWriter(final PrintWriter out) {
+        }
+        
+        @Override
+        public void setLoginTimeout(final int seconds) {
+        }
+        
+        @Override
+        public int getLoginTimeout() {
+            return 0;
+        }
+        
+        @Override
+        public Logger getParentLogger() {
+            return Logger.getGlobal();
+        }
+        
+        @Override
+        public <T> T unwrap(final Class<T> iface) {
+            return null;
         }
         
         @Override

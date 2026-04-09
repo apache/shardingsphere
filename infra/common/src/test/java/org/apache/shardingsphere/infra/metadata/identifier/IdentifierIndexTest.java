@@ -113,11 +113,11 @@ class IdentifierIndexTest {
     }
     
     @Test
-    void assertFindWithQuotedNormalizedLookupReturnsEmptyWhenActualNameDiffers() {
+    void assertFindWithQuotedNormalizedLookup() {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
-        index.rebuild(createSingleValueMap("Foo", "value_1"));
-        Optional<String> actualValue = index.find(new IdentifierValue("\"FOO\""));
-        assertThat(actualValue, is(Optional.empty()));
+        index.rebuild(createSingleValueMap("t_mask", "value_1"));
+        Optional<String> actualValue = index.find(new IdentifierValue("`T_MASK`"));
+        assertThat(actualValue, is(Optional.of("value_1")));
     }
     
     @Test
