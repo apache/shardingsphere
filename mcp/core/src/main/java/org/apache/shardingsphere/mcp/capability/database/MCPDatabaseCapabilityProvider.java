@@ -54,8 +54,8 @@ public final class MCPDatabaseCapabilityProvider {
         boolean supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
         TransactionCapability transactionCapability = option.getTransactionCapability();
         return new MCPDatabaseCapability(databaseName, databaseType, createSupportedMetadataObjectTypes(option),
-                createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze), TransactionCapability.NONE != transactionCapability,
-                TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability, option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze);
+                createSupportedStatementClasses(transactionCapability, supportsExplainAnalyze), transactionCapability,
+                option.getDefaultSchemaSemantics(), option.isCrossSchemaQuerySupported(), supportsExplainAnalyze);
     }
     
     private Set<SupportedMCPMetadataObjectType> createSupportedMetadataObjectTypes(final DatabaseCapabilityOption option) {

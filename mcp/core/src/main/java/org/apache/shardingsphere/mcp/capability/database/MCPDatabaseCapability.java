@@ -39,13 +39,29 @@ public final class MCPDatabaseCapability {
     
     private final Set<SupportedMCPStatement> supportedStatementClasses;
     
-    private final boolean supportsTransactionControl;
-    
-    private final boolean supportsSavepoint;
+    private final TransactionCapability transactionCapability;
     
     private final SchemaSemantics defaultSchemaSemantics;
     
     private final boolean supportsCrossSchemaSql;
     
     private final boolean supportsExplainAnalyze;
+    
+    /**
+     * Judge whether transaction control is supported.
+     *
+     * @return whether transaction control is supported
+     */
+    public boolean isSupportsTransactionControl() {
+        return TransactionCapability.NONE != transactionCapability;
+    }
+    
+    /**
+     * Judge whether savepoint is supported.
+     *
+     * @return whether savepoint is supported
+     */
+    public boolean isSupportsSavepoint() {
+        return TransactionCapability.LOCAL_WITH_SAVEPOINT == transactionCapability;
+    }
 }

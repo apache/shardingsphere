@@ -47,6 +47,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getSupportedMetadataObjectTypes(),
                 is(EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN,
                         SupportedMCPMetadataObjectType.INDEX)));
+        assertThat(actual.get().getTransactionCapability(), is(TransactionCapability.LOCAL_WITH_SAVEPOINT));
         assertTrue(actual.get().isSupportsTransactionControl());
         assertTrue(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
@@ -60,6 +61,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.isPresent());
         assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
         assertFalse(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE));
+        assertThat(actual.get().getTransactionCapability(), is(TransactionCapability.NONE));
         assertFalse(actual.get().isSupportsTransactionControl());
         assertFalse(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
