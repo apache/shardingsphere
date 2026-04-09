@@ -77,7 +77,6 @@ class FirebirdCommandPacketFactoryTest {
     private static Stream<Arguments> newInstanceArguments() {
         return Stream.of(
                 Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, FirebirdInfoPacket.class),
-                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, FirebirdInfoPacket.class),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, FirebirdStartTransactionPacket.class),
                 Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, FirebirdCreateBlobCommandPacket.class),
                 Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, FirebirdCreateBlobCommandPacket.class),
@@ -108,7 +107,6 @@ class FirebirdCommandPacketFactoryTest {
         return Stream.of(
                 Arguments.of("info_database", FirebirdCommandPacketType.INFO_DATABASE, 16),
                 Arguments.of("info_sql", FirebirdCommandPacketType.INFO_SQL, 16),
-                Arguments.of("info_blob", FirebirdCommandPacketType.INFO_BLOB, 16),
                 Arguments.of("transaction", FirebirdCommandPacketType.TRANSACTION, 8),
                 Arguments.of("create_blob", FirebirdCommandPacketType.CREATE_BLOB, 16),
                 Arguments.of("create_blob2", FirebirdCommandPacketType.CREATE_BLOB2, 16),
