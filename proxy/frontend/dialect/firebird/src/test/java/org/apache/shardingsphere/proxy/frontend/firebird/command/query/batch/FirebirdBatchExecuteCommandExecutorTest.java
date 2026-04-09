@@ -76,9 +76,10 @@ class FirebirdBatchExecuteCommandExecutorTest {
         when(batchStatement.getParameterValues()).thenReturn(Collections.singletonList(Arrays.asList(1, "foo_1")));
         when(connectionSession.getServerPreparedStatementRegistry().getPreparedStatement(STATEMENT_ID)).thenReturn(preparedStatement);
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
-        try (MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
-             MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
-                     (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{1, 0, -2, 3}))) {
+        try (
+                MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
+                MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
+                        (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{1, 0, -2, 3}))) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
             Collection<DatabasePacket> actual = new FirebirdBatchExecuteCommandExecutor(packet, connectionSession).execute();
             assertThat(actual.size(), is(1));
