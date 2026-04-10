@@ -36,7 +36,7 @@ public final class MCPToolValueDefinition {
     private final MCPToolValueDefinition itemDefinition;
     
     /**
-     * to schema fragment.
+     * To schema fragment.
      *
      * @return schema fragment
      * @throws IllegalStateException unsupported tool value type
