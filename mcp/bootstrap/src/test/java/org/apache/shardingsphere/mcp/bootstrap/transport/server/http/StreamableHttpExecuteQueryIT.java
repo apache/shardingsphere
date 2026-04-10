@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-class JDBCRuntimeExecuteQueryIntegrationTest extends AbstractJDBCRuntimeIntegrationTest {
+class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
     private String jdbcUrl;
     

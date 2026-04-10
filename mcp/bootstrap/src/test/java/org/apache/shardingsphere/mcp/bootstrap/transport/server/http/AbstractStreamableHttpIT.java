@@ -43,7 +43,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractJDBCRuntimeIntegrationTest {
+abstract class AbstractStreamableHttpIT {
     
     private static final String PROTOCOL_VERSION = MCPTransportConstants.PROTOCOL_VERSION;
     

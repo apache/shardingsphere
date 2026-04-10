@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StreamableHttpTransportIntegrationTest extends AbstractJDBCRuntimeIntegrationTest {
+class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException, SQLException {
