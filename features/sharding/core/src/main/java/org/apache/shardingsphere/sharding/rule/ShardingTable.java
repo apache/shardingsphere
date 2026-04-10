@@ -87,6 +87,24 @@ public final class ShardingTable {
     
     private final DataNodeInfo tableDataNode;
     
+    public ShardingTable(final Collection<String> dataSourceNames, final String logicTableName) {
+        logicTable = logicTableName;
+        dataNodeIndexMap = new HashMap<>(dataSourceNames.size(), 1F);
+        actualDataNodes = generateDataNodes(logicTableName, dataSourceNames);
+        actualTables = getActualTables();
+        databaseShardingStrategyConfig = null;
+        tableShardingStrategyConfig = null;
+        auditStrategyConfig = null;
+        generateKeyColumn = null;
+        keyGeneratorName = null;
+        dataSourceDataNode = actualDataNodes.isEmpty() ? null : createDataSourceDataNode(actualDataNodes);
+        tableDataNode = actualDataNodes.isEmpty() ? null : createTableDataNode(actualDataNodes);
+    }
+    
+    public ShardingTable(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames, final String defaultGenerateKeyColumn) {
+        this(tableRuleConfig, dataSourceNames, null, defaultGenerateKeyColumn);
+    }
+    
     public ShardingTable(final ShardingTableRuleConfiguration tableRuleConfig, final Collection<String> dataSourceNames,
                          final KeyGenerateStrategyConfiguration keyGeneratorConfig, final String defaultGenerateKeyColumn) {
         logicTable = tableRuleConfig.getLogicTable();
