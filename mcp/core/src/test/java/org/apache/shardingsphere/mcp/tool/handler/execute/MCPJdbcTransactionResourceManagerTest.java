@@ -20,154 +20,219 @@ package org.apache.shardingsphere.mcp.tool.handler.execute;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Savepoint;
 import java.sql.Statement;
-import java.util.LinkedHashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MCPJdbcTransactionResourceManagerTest {
     
     @TempDir
     private Path tempDir;
     
-    @Test
-    void assertFindTransactionConnection() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-find");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
-        manager.beginTransaction("session-1", "logic_db");
-        Connection actual = manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new);
-        assertNotNull(actual);
-        manager.closeSession("session-1");
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertFindTransactionConnectionCases")
+    void assertFindTransactionConnection(final String name,
+                                         final String activeDatabaseName, final String databaseName, final boolean expectedPresent, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        MCPJdbcTransactionResourceManager manager = new MCPJdbcTransactionResourceManager(Map.of("logic_db", runtimeDatabaseConfig));
+        if (null != activeDatabaseName) {
+            manager.beginTransaction("session-1", activeDatabaseName);
+        }
+        if (null != expectedMessage) {
+            assertThat(assertThrows(IllegalStateException.class, () -> manager.findTransactionConnection("session-1", databaseName)).getMessage(), is(expectedMessage));
+            return;
+        }
+        Optional<Connection> actual = manager.findTransactionConnection("session-1", databaseName);
+        assertThat(actual.isPresent(), is(expectedPresent));
+        if (expectedPresent) {
+            assertThat(actual.orElseThrow(IllegalStateException::new), is(connection));
+        }
     }
     
-    @Test
-    void assertBeginTransaction() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-begin");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
-        assertDoesNotThrow(() -> manager.beginTransaction("session-1", "logic_db"));
-        manager.closeSession("session-1");
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertBeginTransactionCases")
+    void assertBeginTransaction(final String name, final String configuredDatabaseName, final String activeDatabaseName, final String databaseName,
+                                final String openFailureMessage, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        if (null != configuredDatabaseName && null == openFailureMessage) {
+            when(runtimeDatabaseConfig.openConnection(configuredDatabaseName)).thenReturn(connection);
+        }
+        if (null != configuredDatabaseName && null != openFailureMessage) {
+            when(runtimeDatabaseConfig.openConnection(configuredDatabaseName)).thenThrow(new SQLException(openFailureMessage));
+        }
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = null == configuredDatabaseName ? Collections.emptyMap() : Map.of(configuredDatabaseName, runtimeDatabaseConfig);
+        MCPJdbcTransactionResourceManager manager = new MCPJdbcTransactionResourceManager(runtimeDatabases);
+        if (null != activeDatabaseName) {
+            manager.beginTransaction("session-1", activeDatabaseName);
+        }
+        if (null != expectedMessage) {
+            assertThat(assertThrows(IllegalStateException.class, () -> manager.beginTransaction("session-1", databaseName)).getMessage(), is(expectedMessage));
+            return;
+        }
+        manager.beginTransaction("session-1", databaseName);
+        verify(runtimeDatabaseConfig).openConnection(databaseName);
+        verify(connection).setAutoCommit(false);
     }
     
-    @Test
-    void assertCommitTransaction() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-commit");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
-        manager.beginTransaction("session-1", "logic_db");
-        executeStatement(manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new),
-                "UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1");
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertCommitTransactionCases")
+    void assertCommitTransaction(final String name, final boolean active, final String commitFailureMessage, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
+        if (active) {
+            manager.beginTransaction("session-1", "logic_db");
+        }
+        if (null != commitFailureMessage) {
+            doThrow(new SQLException(commitFailureMessage)).when(connection).commit();
+        }
+        if (null != expectedMessage) {
+            assertThat(assertThrows(IllegalStateException.class, () -> manager.commitTransaction("session-1")).getMessage(), is(expectedMessage));
+            return;
+        }
         manager.commitTransaction("session-1");
-        assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
+        verify(connection).commit();
+        verify(connection).setAutoCommit(true);
+        verify(connection).close();
     }
     
-    @Test
-    void assertRollbackTransaction() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-rollback");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
-        manager.beginTransaction("session-1", "logic_db");
-        executeStatement(manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new),
-                "UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1");
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertRollbackTransactionCases")
+    void assertRollbackTransaction(final String name, final boolean active, final String rollbackFailureMessage, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
+        if (active) {
+            manager.beginTransaction("session-1", "logic_db");
+        }
+        if (null != rollbackFailureMessage) {
+            doThrow(new SQLException(rollbackFailureMessage)).when(connection).rollback();
+        }
+        if (null != expectedMessage) {
+            assertThat(assertThrows(IllegalStateException.class, () -> manager.rollbackTransaction("session-1")).getMessage(), is(expectedMessage));
+            return;
+        }
         manager.rollbackTransaction("session-1");
-        assertThat(querySingleString(jdbcUrl), is("NEW"));
+        verify(connection).rollback();
+        verify(connection).setAutoCommit(true);
+        verify(connection).close();
     }
     
-    @Test
-    void assertCreateSavepoint() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-savepoint");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertCreateSavepointCases")
+    void assertCreateSavepoint(final String name, final String savepointName,
+                               final String savepointFailureMessage, final Class<? extends RuntimeException> expectedExceptionType, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        Savepoint savepoint = mock(Savepoint.class);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
         manager.beginTransaction("session-1", "logic_db");
-        assertDoesNotThrow(() -> manager.createSavepoint("session-1", "sp_1"));
-        manager.closeSession("session-1");
+        if (null == expectedExceptionType) {
+            when(connection.setSavepoint("SP_1")).thenReturn(savepoint);
+            manager.createSavepoint("session-1", savepointName);
+            verify(connection).setSavepoint("SP_1");
+            return;
+        }
+        if (null != savepointFailureMessage) {
+            when(connection.setSavepoint("SP_1")).thenThrow(new SQLException(savepointFailureMessage));
+        }
+        assertThat(assertThrows(expectedExceptionType, () -> manager.createSavepoint("session-1", savepointName)).getMessage(), is(expectedMessage));
     }
     
-    @Test
-    void assertRollbackToSavepoint() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-rollback-savepoint");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertRollbackToSavepointCases")
+    void assertRollbackToSavepoint(final String name, final boolean savepointExists, final String rollbackFailureMessage, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        Savepoint savepoint = mock(Savepoint.class);
+        when(connection.setSavepoint("SP_1")).thenReturn(savepoint);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
         manager.beginTransaction("session-1", "logic_db");
-        executeStatement(manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new),
-                "UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1");
-        manager.createSavepoint("session-1", "sp_1");
-        executeStatement(manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new),
-                "UPDATE public.orders SET status = 'DONE' WHERE order_id = 1");
+        if (savepointExists) {
+            manager.createSavepoint("session-1", "sp_1");
+        }
+        if (null != rollbackFailureMessage) {
+            doThrow(new SQLException(rollbackFailureMessage)).when(connection).rollback(savepoint);
+        }
+        if (null != expectedMessage) {
+            assertThat(assertThrows(IllegalStateException.class, () -> manager.rollbackToSavepoint("session-1", "sp_1")).getMessage(), is(expectedMessage));
+            return;
+        }
         manager.rollbackToSavepoint("session-1", "sp_1");
-        manager.commitTransaction("session-1");
-        assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
+        verify(connection).rollback(savepoint);
     }
     
-    @Test
-    void assertReleaseSavepoint() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-release-savepoint");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertReleaseSavepointCases")
+    void assertReleaseSavepoint(final String name, final boolean savepointExists, final String releaseFailureMessage, final String expectedMessage) throws SQLException {
+        Connection connection = mock(Connection.class);
+        Savepoint savepoint = mock(Savepoint.class);
+        when(connection.setSavepoint("SP_1")).thenReturn(savepoint);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
         manager.beginTransaction("session-1", "logic_db");
-        manager.createSavepoint("session-1", "sp_1");
-        assertDoesNotThrow(() -> manager.releaseSavepoint("session-1", "sp_1"));
-        manager.closeSession("session-1");
+        if (savepointExists) {
+            manager.createSavepoint("session-1", "sp_1");
+        }
+        if (null != releaseFailureMessage) {
+            doThrow(new SQLException(releaseFailureMessage)).when(connection).releaseSavepoint(savepoint);
+        }
+        if (null != expectedMessage) {
+            assertThat(assertThrows(IllegalStateException.class, () -> manager.releaseSavepoint("session-1", "sp_1")).getMessage(), is(expectedMessage));
+            return;
+        }
+        manager.releaseSavepoint("session-1", "sp_1");
+        verify(connection).releaseSavepoint(savepoint);
     }
     
     @Test
     void assertCloseSession() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-close");
+        String jdbcUrl = String.format("jdbc:h2:file:%s;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", tempDir.resolve("resource-close").toAbsolutePath());
         initializeDatabase(jdbcUrl);
         MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
         manager.beginTransaction("session-1", "logic_db");
-        executeStatement(manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new),
-                "UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1");
+        try (Statement statement = manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new).createStatement()) {
+            statement.execute("UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1");
+        }
         manager.closeSession("session-1");
         assertThat(querySingleString(jdbcUrl), is("NEW"));
     }
     
     @Test
-    void assertFindTransactionConnectionWithCrossDatabaseTransaction() throws SQLException {
-        String firstJdbcUrl = createJdbcUrl("resource-cross-first");
-        String secondJdbcUrl = createJdbcUrl("resource-cross-second");
-        initializeDatabase(firstJdbcUrl);
-        initializeDatabase(secondJdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", firstJdbcUrl, "analytics_db", secondJdbcUrl));
-        manager.beginTransaction("session-1", "logic_db");
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> manager.findTransactionConnection("session-1", "analytics_db"));
-        assertThat(actual.getMessage(), is("Cross-database transaction switching is not supported."));
-        manager.closeSession("session-1");
+    void assertCloseSessionWithoutTransaction() {
+        assertDoesNotThrow(() -> new MCPJdbcTransactionResourceManager(Collections.emptyMap()).closeSession("session-1"));
     }
     
-    @Test
-    void assertFindTransactionConnectionWithoutTransaction() throws SQLException {
-        String jdbcUrl = createJdbcUrl("resource-find-missing");
-        initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
-        assertTrue(manager.findTransactionConnection("session-1", "logic_db").isEmpty());
+    private MCPJdbcTransactionResourceManager createResourceManager(final Connection connection) throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
+        return new MCPJdbcTransactionResourceManager(Map.of("logic_db", runtimeDatabaseConfig));
     }
     
     private MCPJdbcTransactionResourceManager createResourceManager(final Map<String, String> jdbcUrls) {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>();
-        for (Entry<String, String> entry : jdbcUrls.entrySet()) {
-            runtimeDatabases.put(entry.getKey(), new RuntimeDatabaseConfiguration("H2", entry.getValue(), "", "", "org.h2.Driver"));
-        }
-        return new MCPJdbcTransactionResourceManager(runtimeDatabases);
-    }
-    
-    private String createJdbcUrl(final String databaseName) {
-        return String.format("jdbc:h2:file:%s;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false",
-                tempDir.resolve(databaseName).toAbsolutePath());
+        return new MCPJdbcTransactionResourceManager(jdbcUrls.entrySet().stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> new RuntimeDatabaseConfiguration("H2", entry.getValue(), "", "", "org.h2.Driver"))));
     }
     
     private void initializeDatabase(final String jdbcUrl) throws SQLException {
@@ -177,12 +242,6 @@ class MCPJdbcTransactionResourceManagerTest {
                 "CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)",
                 "MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (1, 'NEW', 10)",
                 "MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (2, 'DONE', 20)");
-    }
-    
-    private void executeStatement(final Connection connection, final String sql) throws SQLException {
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-        }
     }
     
     private void executeStatements(final String jdbcUrl, final String... sqls) throws SQLException {
@@ -203,5 +262,56 @@ class MCPJdbcTransactionResourceManagerTest {
             resultSet.next();
             return resultSet.getString(1);
         }
+    }
+    
+    private static Stream<Arguments> assertFindTransactionConnectionCases() {
+        return java.util.stream.Stream.of(
+                Arguments.of("active transaction", "logic_db", "logic_db", true, null),
+                Arguments.of("no active transaction", null, "logic_db", false, null),
+                Arguments.of("cross database transaction", "logic_db", "analytics_db", false, "Cross-database transaction switching is not supported."));
+    }
+    
+    private static Stream<Arguments> assertBeginTransactionCases() {
+        return Stream.of(
+                Arguments.of("new transaction", "logic_db", null, "logic_db", null, null),
+                Arguments.of("already active transaction", "logic_db", "logic_db", "logic_db", null, "Transaction already active."),
+                Arguments.of("cross database transaction", "logic_db", "logic_db", "analytics_db", null, "Cross-database transaction switching is not supported."),
+                Arguments.of("missing database", null, null, "logic_db", null, "Database `logic_db` is not configured."),
+                Arguments.of("open connection failure", "logic_db", null, "logic_db", "open failed", "open failed"));
+    }
+    
+    private static Stream<Arguments> assertCommitTransactionCases() {
+        return Stream.of(
+                Arguments.of("commit active transaction", true, null, null),
+                Arguments.of("commit without transaction", false, null, "No active transaction."),
+                Arguments.of("commit failure", true, "commit failed", "commit failed"));
+    }
+    
+    private static Stream<Arguments> assertRollbackTransactionCases() {
+        return Stream.of(
+                Arguments.of("rollback active transaction", true, null, null),
+                Arguments.of("rollback without transaction", false, null, "No active transaction."),
+                Arguments.of("rollback failure", true, "rollback failed", "rollback failed"));
+    }
+    
+    private static Stream<Arguments> assertRollbackToSavepointCases() {
+        return Stream.of(
+                Arguments.of("rollback to savepoint", true, null, null),
+                Arguments.of("missing savepoint", false, null, "Savepoint does not exist."),
+                Arguments.of("rollback to savepoint failure", true, "rollback to savepoint failed", "rollback to savepoint failed"));
+    }
+    
+    private static Stream<Arguments> assertCreateSavepointCases() {
+        return Stream.of(
+                Arguments.of("create savepoint", "sp_1", null, null, null),
+                Arguments.of("empty savepoint name", " ", null, IllegalArgumentException.class, "savepointName cannot be empty."),
+                Arguments.of("savepoint creation failure", "sp_1", "savepoint failed", IllegalStateException.class, "savepoint failed"));
+    }
+    
+    private static Stream<Arguments> assertReleaseSavepointCases() {
+        return Stream.of(
+                Arguments.of("release savepoint", true, null, null),
+                Arguments.of("missing savepoint", false, null, "Savepoint does not exist."),
+                Arguments.of("release savepoint failure", true, "release savepoint failed", "release savepoint failed"));
     }
 }
