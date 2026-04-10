@@ -17,6 +17,7 @@ transport:
   http:
     enabled: false
     bindHost: 127.0.0.1
+    allowRemoteAccess: false
     port: 18088
     endpointPath: /mcp
   stdio:

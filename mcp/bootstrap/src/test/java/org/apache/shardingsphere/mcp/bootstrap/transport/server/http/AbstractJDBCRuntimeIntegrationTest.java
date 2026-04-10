@@ -43,7 +43,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractProductionRuntimeIntegrationTest {
+abstract class AbstractJDBCRuntimeIntegrationTest {
     
     private static final String PROTOCOL_VERSION = MCPTransportConstants.PROTOCOL_VERSION;
     
@@ -60,7 +60,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
         }
     }
     
-    protected final void launchProductionRuntime() throws SQLException, IOException {
+    protected final void launchJDBCRuntime() throws SQLException, IOException {
         prepareRuntimeFixture();
         httpServer = launchHttpServer(createRuntimeConfiguration());
     }
@@ -75,7 +75,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     }
     
     protected final RuntimeHttpSession launchRuntimeWithSession() throws SQLException, IOException, InterruptedException {
-        launchProductionRuntime();
+        launchJDBCRuntime();
         HttpClient httpClient = createHttpClient();
         return new RuntimeHttpSession(httpClient, initializeSession(httpClient));
     }
@@ -95,7 +95,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
                         "jsonrpc", "2.0",
                         "id", "init-1",
                         "method", "initialize",
-                        "params", createInitializeRequestParams("production-runtime-integration")))))
+                        "params", createInitializeRequestParams("jdbc-runtime-integration")))))
                 .build();
         HttpResponse<String> actual = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
@@ -179,7 +179,7 @@ abstract class AbstractProductionRuntimeIntegrationTest {
     
     private MCPLaunchConfiguration createRuntimeConfiguration() {
         return new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", 0, "/gateway"), new StdioTransportConfiguration(false), createRuntimeDatabases());
+                new HttpTransportConfiguration(true, "127.0.0.1", false, 0, "/gateway"), new StdioTransportConfiguration(false), createRuntimeDatabases());
     }
     
     private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfiguration) throws IOException {

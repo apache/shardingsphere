@@ -30,13 +30,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRuntimeIntegrationTest {
+class JDBCRuntimeMetadataDiscoveryIntegrationTest extends AbstractJDBCRuntimeIntegrationTest {
     
     private String jdbcUrl;
     
     @Override
     protected void prepareRuntimeFixture() throws SQLException {
-        jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-metadata");
+        jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "jdbc-metadata");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
     }
     

@@ -36,6 +36,7 @@ class YamlHttpTransportConfigurationSwapperTest {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("127.0.0.1", 18088, "/mcp"));
         assertTrue(actual.isEnabled());
         assertThat(actual.getBindHost(), is("127.0.0.1"));
+        assertFalse(actual.isAllowRemoteAccess());
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
     }
@@ -64,10 +65,17 @@ class YamlHttpTransportConfigurationSwapperTest {
     }
     
     @Test
-    void assertSwapToObjectWithNonLoopbackBindHost() {
+    void assertSwapToObjectWithDisallowedRemoteAccess() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> swapper.swapToObject(createYamlConfig("0.0.0.0", 18088, "/mcp")));
-        assertThat(actual.getMessage(), is("Property `transport.http.bindHost` must be loopback-only in V0. Use `127.0.0.1`, `localhost`, or `::1`."));
+        assertThat(actual.getMessage(), is("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
+    }
+
+    @Test
+    void assertSwapToObjectWithAllowedRemoteAccess() {
+        HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, 18088, "/mcp"));
+        assertThat(actual.getBindHost(), is("0.0.0.0"));
+        assertTrue(actual.isAllowRemoteAccess());
     }
     
     @Test
@@ -92,17 +100,23 @@ class YamlHttpTransportConfigurationSwapperTest {
     
     @Test
     void assertSwapToYamlConfiguration() {
-        YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", 18088, "/mcp"));
+        YamlHttpTransportConfiguration actual = swapper.swapToYamlConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, 18088, "/mcp"));
         assertTrue(actual.isEnabled());
         assertThat(actual.getBindHost(), is("127.0.0.1"));
+        assertFalse(actual.isAllowRemoteAccess());
         assertThat(actual.getPort(), is(18088));
         assertThat(actual.getEndpointPath(), is("/mcp"));
     }
     
     private YamlHttpTransportConfiguration createYamlConfig(final String bindHost, final Integer port, final String endpointPath) {
+        return createYamlConfig(bindHost, false, port, endpointPath);
+    }
+
+    private YamlHttpTransportConfiguration createYamlConfig(final String bindHost, final boolean allowRemoteAccess, final Integer port, final String endpointPath) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setEnabled(true);
         result.setBindHost(bindHost);
+        result.setAllowRemoteAccess(allowRemoteAccess);
         result.setPort(port);
         result.setEndpointPath(endpointPath);
         return result;

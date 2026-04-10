@@ -14,7 +14,7 @@
 - `search_metadata` 支持 `sequence`
 - contract / README / quickstart 同步更新
 
-不会切换分支，不引入鉴权，不放松 loopback-only 安全基线，也不泛化到更多数据库对象。
+不会切换分支，不引入鉴权，不放松默认 loopback 安全基线，也不泛化到更多数据库对象。
 
 ## Technical Context
 
@@ -48,7 +48,7 @@
 - 以新增为主，非必要不改动无关现有代码
 - 不恢复旧 metadata tools
 - 不引入鉴权
-- 不放松 loopback-only 默认安全边界
+- 不放松默认 loopback 安全边界
 - 只扩 `sequence`，不顺带扩其他 metadata object
 - 必须通过 resources + `search_metadata` 两条 discovery 链路暴露 `sequence`
 - 必须让 capability 对实际支持数据库真实声明 `SEQUENCE`

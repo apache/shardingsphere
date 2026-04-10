@@ -34,6 +34,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setEnabled(data.isEnabled());
         result.setBindHost(data.getBindHost());
+        result.setAllowRemoteAccess(data.isAllowRemoteAccess());
         result.setPort(data.getPort());
         result.setEndpointPath(data.getEndpointPath());
         return result;
@@ -42,14 +43,15 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
-        return new HttpTransportConfiguration(yamlConfig.isEnabled(), resolveBindHost(yamlConfig.getBindHost()),
-                resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
+        boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), resolveBindHost(yamlConfig.getBindHost(), allowRemoteAccess), allowRemoteAccess, resolvePort(yamlConfig.getPort()),
+                resolveEndpointPath(yamlConfig.getEndpointPath()));
     }
     
-    private String resolveBindHost(final String bindHost) {
+    private String resolveBindHost(final String bindHost, final boolean allowRemoteAccess) {
         String result = resolveRequiredText(bindHost, "transport.http.bindHost");
-        ShardingSpherePreconditions.checkState(isLoopbackHost(result), () -> new IllegalArgumentException(
-                "Property `transport.http.bindHost` must be loopback-only in V0. Use `127.0.0.1`, `localhost`, or `::1`."));
+        ShardingSpherePreconditions.checkState(allowRemoteAccess || isLoopbackHost(result),
+                () -> new IllegalArgumentException("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
         return result;
     }
     

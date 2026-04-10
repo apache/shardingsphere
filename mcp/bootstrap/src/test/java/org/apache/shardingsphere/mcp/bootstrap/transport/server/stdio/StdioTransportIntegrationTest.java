@@ -69,6 +69,7 @@ class StdioTransportIntegrationTest {
                 + "  http:\n"
                 + "    enabled: false\n"
                 + "    bindHost: 127.0.0.1\n"
+                + "    allowRemoteAccess: false\n"
                 + "    port: 18088\n"
                 + "    endpointPath: /mcp\n"
                 + "  stdio:\n"

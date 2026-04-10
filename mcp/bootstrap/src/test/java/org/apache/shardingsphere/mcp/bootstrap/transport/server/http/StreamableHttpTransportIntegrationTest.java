@@ -36,11 +36,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeIntegrationTest {
+class StreamableHttpTransportIntegrationTest extends AbstractJDBCRuntimeIntegrationTest {
     
     @Test
     void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException, SQLException {
-        launchProductionRuntime();
+        launchJDBCRuntime();
         HttpClient httpClient = createHttpClient();
         HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of("Content-Type", "application/json", "Accept", "application/json, text/event-stream"),
                 createInitializeRequestParams("integration-test"));
@@ -93,7 +93,7 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
     
     @Test
     void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException, SQLException {
-        launchProductionRuntime();
+        launchJDBCRuntime();
         HttpClient httpClient = createHttpClient();
         HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
                 "Origin", "https://evil.example.com",

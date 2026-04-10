@@ -11,7 +11,7 @@
 - public surface 改成 resource-only 真口径
 - 修 `execute_query` 截断语义
 - 收紧 tool 参数校验
-- 收紧 HTTP 默认安全边界到 loopback-only
+- 收紧 HTTP 默认安全边界，非 loopback 绑定必须显式声明远程访问意图
 
 不会切换分支，不恢复旧 tools，不引入新的安全配置开关。
 
@@ -33,7 +33,7 @@
 - **Gate 1 - Smallest safe change**: PASS  
   本轮只修 correctness、validation、default security baseline 与 contract truthfulness，不扩大到 metadata model 或 remote platformization。
 - **Gate 2 - Explicit governance and security**: PASS  
-  loopback-only 默认边界、resource-only public surface 与 invalid-request rules 都被显式记录。
+  默认 loopback 边界、显式 remote intent、resource-only public surface 与 invalid-request rules 都被显式记录。
 - **Gate 3 - Testable delivery**: PASS  
   四个 V0 问题都有对应 scoped verification。
 - **Gate 4 - Traceable contracts**: PASS  
@@ -50,7 +50,7 @@
 - 必须让 required string args 的空白值返回 `invalid_request`
 - 必须让非法 `object_types` 显式失败，不能静默扩大查询范围
 - 必须让 HTTP `bindHost` 默认只接受 loopback
-- 不新增 remote HTTP 放行开关
+- 非 loopback `bindHost` 必须通过 `allowRemoteAccess: true` 显式声明远程访问意图
 - 必须用 scoped tests 和 style checks 验证 touched modules
 
 ## Project Structure
@@ -114,10 +114,11 @@ mcp/README.md
 - `MCPToolArguments` 解析时一旦发现超出该白名单的值，立即抛 `MCPInvalidRequestException`
 - 保持合法过滤语义不变；不在本轮改变 index unsupported 的现有行为
 
-### 5. HTTP 配置层直接拒绝非 loopback `bindHost`
+### 5. HTTP 配置层要求显式允许非 loopback `bindHost`
 
 - `YamlHttpTransportConfigurationSwapper` 在 `swapToObject(...)` 阶段校验 `bindHost`
-- 只允许 `127.0.0.1`、`localhost`、`::1`
+- 默认只允许 `127.0.0.1`、`localhost`、`::1`
+- 如果 `bindHost` 是非 loopback，必须设置 `allowRemoteAccess: true`
 - 这样默认发行包、配置文件和 runtime 行为都明确落在本地调试边界内
 
 ## Branch Checklist
@@ -139,7 +140,7 @@ mcp/README.md
 2. 更新 `specs/001` contract/quickstart 与 README，先把对外口径收口到 resource-only。
 3. 修改 `MCPJdbcStatementExecutor`，用 “多取一行” 修正 `truncated` 语义，并补核心与 HTTP 集成测试。
 4. 修改 `MCPToolController` 与 `MCPToolArguments`，收紧 required string / invalid `object_types` 校验，并补 dedicated tests。
-5. 修改 `YamlHttpTransportConfigurationSwapper`，拒绝非 loopback `bindHost`，同步配置装配测试与说明。
+5. 修改 `YamlHttpTransportConfigurationSwapper`，让非 loopback `bindHost` 必须显式设置 `allowRemoteAccess: true`，同步配置装配测试与说明。
 6. 跑 scoped tests、package、style checks，最后回填 Speckit 状态。
 
 ## Validation Strategy

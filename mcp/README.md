@@ -43,7 +43,7 @@ Notes:
 - The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
-- `conf/mcp.yaml` is now strict: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be explicitly declared.
+- `conf/mcp.yaml` is now strict: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be explicitly declared.
 - Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
 - `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `ext-lib/`, then starts from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
@@ -56,6 +56,7 @@ transport:
   http:
     enabled: true
     bindHost: 127.0.0.1
+    allowRemoteAccess: false
     port: 18088
     endpointPath: /mcp
   stdio:
@@ -247,8 +248,8 @@ Reference:
 - Exactly one transport must be enabled for each runtime process.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and `transport.stdio.enabled: false`.
 - For local MCP client integration, keep `transport.http.enabled: false` and `transport.stdio.enabled: true`.
-- The current V0 only supports loopback HTTP binding: `127.0.0.1`, `localhost`, or `::1`.
-- Non-loopback HTTP exposure is out of scope for this round and should wait for an explicit auth / access-policy follow-up.
+- `transport.http.bindHost` controls which address the HTTP service listens on: `127.0.0.1`, `localhost`, and `::1` are local-only; `0.0.0.0` or a specific intranet IP exposes the matching network interface.
+- Non-loopback `bindHost` values require `transport.http.allowRemoteAccess: true`, otherwise startup fails; this field only declares remote-exposure intent and does not provide authentication or authorization.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.
 

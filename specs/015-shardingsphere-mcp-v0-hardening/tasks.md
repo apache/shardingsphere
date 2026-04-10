@@ -3,7 +3,7 @@
 **Input**: Design documents from `/Users/zhangliang/IdeaProjects/shardingsphere/specs/015-shardingsphere-mcp-v0-hardening/`  
 **Prerequisites**: plan.md (required), spec.md (required)
 
-**Tests**: Add and update dedicated `mcp/core` and `mcp/bootstrap` tests for truncation, strict validation, and loopback-only HTTP config.
+**Tests**: Add and update dedicated `mcp/core` and `mcp/bootstrap` tests for truncation, strict validation, and explicit remote-intent HTTP config.
 
 **Organization**: Tasks are grouped by V0 delivery slice so contract/doc alignment, correctness fixes, and security hardening can be reviewed independently.
 
@@ -85,24 +85,24 @@
 
 ---
 
-## Phase 5: User Story 4 - HTTP 默认边界收紧到 loopback-only (Priority: P1)
+## Phase 5: User Story 4 - HTTP 默认边界要求显式远程访问意图 (Priority: P1)
 
-**Goal**: Fail non-loopback HTTP binds during config assembly.
+**Goal**: Fail non-loopback HTTP binds unless `allowRemoteAccess` is explicitly enabled.
 
-**Independent Test**: YAML swapper and config loader tests both reject non-loopback `bindHost`.
+**Independent Test**: YAML swapper and config loader tests reject non-loopback `bindHost` by default and accept it when `allowRemoteAccess` is true.
 
 ### Tests for User Story 4
 
 - [X] T015 [P] [US4] Update `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlHttpTransportConfigurationSwapperTest.java`
-  to accept loopback hosts and reject non-loopback hosts
+  to accept loopback hosts, reject non-loopback hosts by default, and accept explicitly allowed remote hosts
 - [X] T016 [P] [US4] Update `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/config/loader/MCPConfigurationLoaderTest.java`
   and `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/LoopbackOriginSecurityValidatorTest.java`
-  to align with loopback-only config behavior
+  to align with default-loopback and explicit-remote config behavior
 
 ### Implementation for User Story 4
 
 - [X] T017 [US4] Refactor `/Users/zhangliang/IdeaProjects/shardingsphere/mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/config/yaml/swapper/YamlHttpTransportConfigurationSwapper.java`
-  to reject non-loopback `bindHost` values during swap
+  to require `allowRemoteAccess: true` for non-loopback `bindHost` values during swap
 
 ---
 

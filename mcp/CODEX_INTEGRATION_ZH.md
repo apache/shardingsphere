@@ -50,6 +50,7 @@ transport:
   http:
     enabled: false
     bindHost: 127.0.0.1
+    allowRemoteAccess: false
     port: 18088
     endpointPath: /mcp
   stdio:
@@ -71,6 +72,7 @@ transport:
   http:
     enabled: false
     bindHost: 127.0.0.1
+    allowRemoteAccess: false
     port: 18088
     endpointPath: /mcp
   stdio:
@@ -94,6 +96,7 @@ transport:
   http:
     enabled: false
     bindHost: 127.0.0.1
+    allowRemoteAccess: false
     port: 18088
     endpointPath: /mcp
   stdio:
@@ -172,6 +175,7 @@ transport:
   http:
     enabled: true
     bindHost: 127.0.0.1
+    allowRemoteAccess: false
     port: 18088
     endpointPath: /mcp
   stdio:
@@ -234,7 +238,7 @@ ShardingSphere MCP 当前暴露的核心 tool 和 resource 包括：
 
 - 本地联调阶段，优先给 MCP 使用只读数据库账号
 - 需要执行 DDL、DML 时，再切换成具备写权限的账号
-- 如果 HTTP 暴露到 `127.0.0.1` 之外，建议放在受信网络或反向代理后面
+- 如果 HTTP 暴露到 `127.0.0.1` 之外，需要把 `bindHost` 改为非 loopback 地址并设置 `allowRemoteAccess: true`，同时建议放在受信网络或反向代理后面
 - 不要同时启用 HTTP 和 STDIO
 
 ## 9. 常见问题
