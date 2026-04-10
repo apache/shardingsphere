@@ -78,49 +78,37 @@ public final class MCPJdbcTransactionStatementExecutor {
     }
     
     private SQLExecutionResponse executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final String statementType) {
-        if (!databaseCapability.isSupportsTransactionControl()) {
-            throw new MCPUnsupportedException("Transaction control is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(databaseCapability.isSupportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().beginTransaction(sessionId, databaseName);
         return SQLExecutionResponse.statementAck(statementType, "Transaction started.");
     }
     
     private SQLExecutionResponse executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
-        if (!databaseCapability.isSupportsTransactionControl()) {
-            throw new MCPUnsupportedException("Transaction control is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(databaseCapability.isSupportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().commitTransaction(sessionId);
         return SQLExecutionResponse.statementAck("COMMIT", "Transaction committed.");
     }
     
     private SQLExecutionResponse executeRollback(final String sessionId, final MCPDatabaseCapability databaseCapability) {
-        if (!databaseCapability.isSupportsTransactionControl()) {
-            throw new MCPUnsupportedException("Transaction control is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(databaseCapability.isSupportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().rollbackTransaction(sessionId);
         return SQLExecutionResponse.statementAck("ROLLBACK", "Transaction rolled back.");
     }
     
     private SQLExecutionResponse executeSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
-        if (!databaseCapability.isSupportsSavepoint()) {
-            throw new MCPUnsupportedException("Savepoint is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(databaseCapability.isSupportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().createSavepoint(sessionId, savepointName);
         return SQLExecutionResponse.statementAck("SAVEPOINT", "Savepoint created.");
     }
     
     private SQLExecutionResponse executeRollbackSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
-        if (!databaseCapability.isSupportsSavepoint()) {
-            throw new MCPUnsupportedException("Savepoint is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(databaseCapability.isSupportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().rollbackToSavepoint(sessionId, savepointName);
         return SQLExecutionResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
     private SQLExecutionResponse executeReleaseSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
-        if (!databaseCapability.isSupportsSavepoint()) {
-            throw new MCPUnsupportedException("Savepoint is not supported.");
-        }
+        ShardingSpherePreconditions.checkState(databaseCapability.isSupportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().releaseSavepoint(sessionId, savepointName);
         return SQLExecutionResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
     }
