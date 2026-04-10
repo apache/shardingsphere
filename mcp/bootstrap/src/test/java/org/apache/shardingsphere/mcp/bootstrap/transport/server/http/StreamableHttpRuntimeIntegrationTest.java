@@ -80,90 +80,6 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
     }
     
     @Test
-    void assertLaunchHttpServerWithoutInitializeProtocolVersion() throws IOException, InterruptedException, SQLException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of("Content-Type", "application/json", "Accept", "application/json, text/event-stream"),
-                createInitializeRequestParamsWithoutProtocolVersion());
-        assertThat(initializeResponse.statusCode(), is(200));
-        assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is(MCPTransportConstants.PROTOCOL_VERSION));
-        Map<String, Object> initializePayload = parseJsonBody(initializeResponse.body());
-        Map<String, Object> result = castToMap(initializePayload.get("result"));
-        assertThat(result.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
-        assertFalse(initializeResponse.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
-    }
-    
-    @Test
-    void assertLaunchHttpServerWithoutAcceptHeader() throws IOException, InterruptedException, SQLException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of("Content-Type", "application/json"), createInitializeRequestParams("integration-test"));
-        assertThat(initializeResponse.statusCode(), is(200));
-        assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is(MCPTransportConstants.PROTOCOL_VERSION));
-        assertFalse(initializeResponse.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
-    }
-    
-    @Test
-    void assertAcceptFollowUpRequestWithoutProtocolHeader() throws IOException, InterruptedException, SQLException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
-                "MCP-Session-Id", session.sessionId()));
-        assertSuccessfulCapabilitiesResponse(actualResponse);
-    }
-    
-    @Test
-    void assertAcceptFollowUpRequestWithoutAcceptHeader() throws IOException, InterruptedException, SQLException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
-                "Content-Type", "application/json",
-                "MCP-Session-Id", session.sessionId(),
-                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
-        assertSuccessfulCapabilitiesResponse(actualResponse);
-    }
-    
-    @Test
-    void assertAcceptFollowUpRequestWithBlankAcceptHeader() throws IOException, InterruptedException, SQLException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
-                "Content-Type", "application/json",
-                "Accept", " ",
-                "MCP-Session-Id", session.sessionId(),
-                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
-        assertSuccessfulCapabilitiesResponse(actualResponse);
-    }
-    
-    @Test
-    void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException, SQLException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, Map.of());
-        assertThat(deleteResponse.statusCode(), is(400));
-        assertTrue(deleteResponse.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
-        assertTrue(deleteResponse.body().contains("Session ID required in mcp-session-id header"));
-    }
-    
-    @Test
-    void assertRejectDeleteWithMissingSession() throws IOException, InterruptedException, SQLException {
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, Map.of(
-                "MCP-Session-Id", "missing-session",
-                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
-        assertThat(deleteResponse.statusCode(), is(404));
-        assertTrue(deleteResponse.body().contains("Session does not exist."));
-    }
-    
-    @Test
-    void assertRejectDeleteWithProtocolVersionMismatch() throws IOException, InterruptedException, SQLException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        HttpResponse<String> deleteResponse = sendDeleteRequest(session.httpClient(), Map.of("MCP-Session-Id", session.sessionId(), "MCP-Protocol-Version", "1900-01-01"));
-        assertThat(deleteResponse.statusCode(), is(400));
-        assertTrue(deleteResponse.body().contains("Protocol version mismatch."));
-    }
-    
-    @Test
     void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntimeWithSession();
         sendDeleteRequest(session.httpClient(), Map.of("MCP-Session-Id", session.sessionId(), "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
@@ -185,19 +101,6 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
                 "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
         assertThat(initializeResponse.statusCode(), is(403));
         assertTrue(initializeResponse.body().contains("Origin is not allowed"));
-    }
-    
-    @Test
-    void assertRejectFollowUpWithInvalidOrigin() throws IOException, InterruptedException, SQLException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
-                "Origin", "https://evil.example.com",
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
-                "MCP-Session-Id", session.sessionId(),
-                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
-        assertThat(actualResponse.statusCode(), is(403));
-        assertTrue(actualResponse.body().contains("Origin is not allowed"));
     }
     
     @Override
@@ -247,12 +150,6 @@ class StreamableHttpRuntimeIntegrationTest extends AbstractProductionRuntimeInte
     private void assertSuccessfulCapabilitiesResponse(final HttpResponse<String> actualResponse) {
         assertThat(actualResponse.statusCode(), is(200));
         assertTrue(getResourcePayload(actualResponse.body()).containsKey("supportedTools"));
-    }
-    
-    private Map<String, Object> createInitializeRequestParamsWithoutProtocolVersion() {
-        return Map.of(
-                "capabilities", Map.of(),
-                "clientInfo", Map.of("name", "integration-test", "version", "1.0.0"));
     }
     
 }

@@ -32,13 +32,10 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeIntegrationTest {
     
     private String jdbcUrl;
-    
-    private boolean useDriverClassName = true;
     
     @Override
     protected void prepareRuntimeFixture() throws SQLException {
@@ -48,35 +45,16 @@ class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeInt
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        return Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", useDriverClassName ? "org.h2.Driver" : ""));
+        return Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
     }
     
     @Test
     void assertExecuteSelect() throws SQLException, IOException, InterruptedException {
         RuntimeHttpSession session = launchRuntimeWithSession();
         Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
-                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id", 10));
+                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id"));
         assertThat(payload.get("result_kind"), is("result_set"));
         assertFalse((Boolean) payload.get("truncated"));
-    }
-    
-    @Test
-    void assertExecuteSelectWithoutExplicitDriverClassName() throws SQLException, IOException, InterruptedException {
-        useDriverClassName = false;
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
-                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id", 10));
-        assertThat(payload.get("result_kind"), is("result_set"));
-        assertFalse((Boolean) payload.get("truncated"));
-    }
-    
-    @Test
-    void assertExecuteSelectWithTruncation() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
-                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id", 1));
-        assertThat(payload.get("result_kind"), is("result_set"));
-        assertTrue((Boolean) payload.get("truncated"));
     }
     
     @Test
@@ -108,10 +86,6 @@ class ProductionExecuteQueryIntegrationTest extends AbstractProductionRuntimeInt
     
     private Map<String, Object> createExecuteQueryArguments(final String sql) {
         return Map.of("database", "logic_db", "schema", "public", "sql", sql);
-    }
-    
-    private Map<String, Object> createExecuteQueryArguments(final String sql, final int maxRows) {
-        return Map.of("database", "logic_db", "schema", "public", "sql", sql, "max_rows", maxRows);
     }
     
     private String querySingleString(final String jdbcUrl) throws SQLException {

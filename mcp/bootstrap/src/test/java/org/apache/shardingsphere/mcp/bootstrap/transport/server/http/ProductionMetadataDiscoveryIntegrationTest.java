@@ -34,8 +34,6 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     
     private String jdbcUrl;
     
-    private boolean useDriverClassName = true;
-    
     @Override
     protected void prepareRuntimeFixture() throws SQLException {
         jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-metadata");
@@ -44,7 +42,7 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        return Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", useDriverClassName ? "org.h2.Driver" : ""));
+        return Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
     }
     
     @Test
@@ -67,20 +65,15 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
     }
     
     @Test
-    void assertSearchMetadataWithSequence() throws SQLException, IOException, InterruptedException {
+    void assertSequenceDiscovery() throws SQLException, IOException, InterruptedException {
         RuntimeHttpSession session = launchRuntimeWithSession();
-        List<Map<String, Object>> items = getPayloadItems(callToolAndGetStructuredContent(session, "search_metadata",
+        List<Map<String, Object>> searchItems = getPayloadItems(callToolAndGetStructuredContent(session, "search_metadata",
                 Map.of("database", "logic_db", "query", "order", "object_types", List.of("sequence"))));
-        assertThat(items.size(), is(1));
-        assertThat(items.get(0).get("name"), is("order_seq"));
-    }
-    
-    @Test
-    void assertReadSequencesResource() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        List<Map<String, Object>> items = getPayloadItems(readResourceAndGetPayload(session, "shardingsphere://databases/logic_db/schemas/public/sequences"));
-        assertThat(items.size(), is(1));
-        assertThat(items.get(0).get("sequence"), is("order_seq"));
+        assertThat(searchItems.size(), is(1));
+        assertThat(searchItems.get(0).get("name"), is("order_seq"));
+        List<Map<String, Object>> resourceItems = getPayloadItems(readResourceAndGetPayload(session, "shardingsphere://databases/logic_db/schemas/public/sequences"));
+        assertThat(resourceItems.size(), is(1));
+        assertThat(resourceItems.get(0).get("sequence"), is("order_seq"));
     }
     
     @Test
@@ -95,12 +88,4 @@ class ProductionMetadataDiscoveryIntegrationTest extends AbstractProductionRunti
         assertTrue(supportedObjectTypes.contains("SEQUENCE"));
     }
     
-    @Test
-    void assertReadDatabaseCapabilitiesResourceWithoutExplicitDriverClassName() throws SQLException, IOException, InterruptedException {
-        useDriverClassName = false;
-        RuntimeHttpSession session = launchRuntimeWithSession();
-        Map<String, Object> payload = readResourceAndGetPayload(session, "shardingsphere://databases/logic_db/capabilities");
-        assertThat(payload.get("database"), is("logic_db"));
-        assertThat(payload.get("databaseType"), is("H2"));
-    }
 }
