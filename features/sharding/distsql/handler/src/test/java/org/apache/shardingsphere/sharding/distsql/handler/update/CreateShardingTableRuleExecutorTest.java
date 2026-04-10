@@ -22,6 +22,7 @@ import org.apache.shardingsphere.distsql.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.rule.MissingRequiredRuleException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.facade.ShardingDistSQLParserFacade;
 import org.apache.shardingsphere.sharding.distsql.segment.strategy.KeyGenerateStrategySegment;
@@ -120,8 +120,8 @@ class CreateShardingTableRuleExecutorTest {
         assertThat(autoTableRule.getActualDataSources(), is("logic_ds"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
-        assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
-        assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_input_distsql.fixture"));
+        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) actual.getKeyGenerateStrategies().get("t_order_item_input_product_id")).getKeyGenerateColumn(), is("product_id"));
+        assertThat(actual.getKeyGenerateStrategies().get("t_order_item_input_product_id").getKeyGeneratorName(), is("t_order_item_input_distsql.fixture"));
     }
     
     @Test
@@ -287,8 +287,8 @@ class CreateShardingTableRuleExecutorTest {
         assertThat(autoTableRule.getActualDataSources(), is("logic_ds"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_item_input_foo.distsql.fixture"));
         assertThat(((StandardShardingStrategyConfiguration) autoTableRule.getShardingStrategy()).getShardingColumn(), is("order_id"));
-        assertThat(autoTableRule.getKeyGenerateStrategy().getColumn(), is("product_id"));
-        assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_item_input_distsql.fixture"));
+        assertThat(((ColumnKeyGenerateStrategiesRuleConfiguration) actual.getKeyGenerateStrategies().get("t_order_item_input_product_id")).getKeyGenerateColumn(), is("product_id"));
+        assertThat(actual.getKeyGenerateStrategies().get("t_order_item_input_product_id").getKeyGeneratorName(), is("t_order_item_input_distsql.fixture"));
     }
     
     @Test
@@ -301,8 +301,6 @@ class CreateShardingTableRuleExecutorTest {
         CreateShardingTableRuleStatement sqlStatement = new CreateShardingTableRuleStatement(false, Collections.singleton(createTableRuleWithReferencedKeyGenerator()));
         executor.checkBeforeUpdate(sqlStatement);
         ShardingRuleConfiguration actual = executor.buildToBeCreatedRuleConfiguration(sqlStatement);
-        ShardingTableRuleConfiguration tableRule = actual.getTables().iterator().next();
-        assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("existing_snowflake"));
         assertTrue(actual.getKeyGenerators().isEmpty());
         assertThat(actual.getKeyGenerateStrategies().get("t_order_ref_input_product_id").getKeyGeneratorName(), is("existing_snowflake"));
     }
@@ -331,6 +329,7 @@ class CreateShardingTableRuleExecutorTest {
         result.getShardingAlgorithms().put("t_order_algorithm", new AlgorithmConfiguration("hash_mod", PropertiesBuilder.build(new Property("sharding-count", "4"))));
         result.getKeyGenerators().put("t_order_item_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
         result.getKeyGenerators().put("existing_snowflake", new AlgorithmConfiguration("snowflake", new Properties()));
+        result.getKeyGenerateStrategies().put("t_order_item_product_id", new ColumnKeyGenerateStrategiesRuleConfiguration("product_id_DISTSQL.FIXTURE", "t_order_item", "product_id"));
         return result;
     }
     
@@ -343,7 +342,6 @@ class CreateShardingTableRuleExecutorTest {
     private ShardingAutoTableRuleConfiguration createAutoTableRuleConfiguration() {
         ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
         result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_mod_test"));
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("product_id", "product_id_DISTSQL.FIXTURE"));
         return result;
     }
     

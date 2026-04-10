@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.algorithm.core.context.AlgorithmSQLContext;
 import org.apache.shardingsphere.infra.algorithm.core.exception.AlgorithmInitializationException;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.algorithm.keygen.snowflake.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.algorithm.keygen.uuid.UUIDKeyGenerateAlgorithm;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
@@ -368,20 +369,14 @@ class ShardingRuleTest {
     }
     
     @Test
-    void assertGenerateKeyFailure() {
-        AlgorithmSQLContext generateContext = mock(AlgorithmSQLContext.class);
-        when(generateContext.getTableName()).thenReturn("table_0");
-        assertThrows(ShardingTableRuleNotFoundException.class, () -> createMaximumShardingRule().generateKeys(generateContext, 1));
-    }
-    
-    @Test
     void assertCreateInconsistentActualDataSourceNamesFailure() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..2}.table_${0..2}");
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "uuid"));
         ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
         shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getKeyGenerateStrategies().put("logic_table_id", new ColumnKeyGenerateStrategiesRuleConfiguration("uuid", "LOGIC_TABLE", "id"));
+        shardingRuleConfig.getKeyGenerators().put("uuid", new AlgorithmConfiguration("UUID", new Properties()));
         shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable()));
         assertThrows(InvalidBindingTablesException.class, () -> new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
     }
@@ -390,10 +385,11 @@ class ShardingRuleTest {
     void assertCreateInconsistentActualTableNamesFailure() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..3}");
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "uuid"));
         ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
         shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getKeyGenerateStrategies().put("logic_table_id", new ColumnKeyGenerateStrategiesRuleConfiguration("uuid", "LOGIC_TABLE", "id"));
+        shardingRuleConfig.getKeyGenerators().put("uuid", new AlgorithmConfiguration("UUID", new Properties()));
         shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable()));
         assertThrows(InvalidBindingTablesException.class, () -> new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList()));
     }
@@ -551,11 +547,11 @@ class ShardingRuleTest {
     private ShardingRule createMaximumShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "uuid"));
         ShardingTableRuleConfiguration subTableRuleConfig = createTableRuleConfiguration("SUB_LOGIC_TABLE", "ds_${0..1}.sub_table_${0..2}");
-        subTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "auto_increment"));
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
         shardingRuleConfig.getTables().add(subTableRuleConfig);
+        shardingRuleConfig.getKeyGenerateStrategies().put("logic_table_id", new ColumnKeyGenerateStrategiesRuleConfiguration("uuid", "LOGIC_TABLE", "id"));
+        shardingRuleConfig.getKeyGenerateStrategies().put("sub_logic_table_id", new ColumnKeyGenerateStrategiesRuleConfiguration("auto_increment", "SUB_LOGIC_TABLE", "id"));
         shardingRuleConfig.getBindingTableGroups().add(new ShardingTableReferenceRuleConfiguration("foo", shardingTableRuleConfig.getLogicTable() + "," + subTableRuleConfig.getLogicTable()));
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("ds_id", "standard"));
         shardingRuleConfig.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("table_id", "standard"));

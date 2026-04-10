@@ -78,8 +78,7 @@ class ShardingTableTest {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}");
         shardingTableRuleConfig.setDatabaseShardingStrategy(new NoneShardingStrategyConfiguration());
         shardingTableRuleConfig.setTableShardingStrategy(new NoneShardingStrategyConfiguration());
-        shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("col_1", "increment"));
-        return new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), null);
+        return new ShardingTable(shardingTableRuleConfig, Arrays.asList("ds0", "ds1"), new KeyGenerateStrategyConfiguration("col_1", "increment"), null);
     }
     
     @Test

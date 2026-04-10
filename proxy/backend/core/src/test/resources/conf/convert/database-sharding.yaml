@@ -48,9 +48,6 @@ rules:
          shardingAlgorithmName: t_order_inline
      databaseStrategy:
        none:
-     keyGenerateStrategy:
-       column: order_id
-       keyGeneratorName: snowflake
      auditStrategy:
        auditorNames:
          - sharding_key_required_auditor
@@ -64,18 +61,12 @@ rules:
      databaseStrategy:
        hint:
          shardingAlgorithmName: t_order_item_hint_inline
-     keyGenerateStrategy:
-       column: order_item_id
-       keyGeneratorName: snowflake
  autoTables:
    t_account:
      actualDataSources: ds_0,ds_1
      shardingStrategy:
        standard:
          shardingAlgorithmName: auto_mod
-     keyGenerateStrategy:
-       column: account_id
-       keyGeneratorName: snowflake
 
  defaultDatabaseStrategy:
    standard:
@@ -87,6 +78,22 @@ rules:
    auditorNames:
      - sharding_key_required_auditor
    allowHintDisable: true
+ keyGenerateStrategies:
+   t_order_order_id:
+     keyGenerateType: column
+     keyGeneratorName: snowflake
+     logicTable: t_order
+     keyGenerateColumn: order_id
+   t_order_item_order_item_id:
+     keyGenerateType: column
+     keyGeneratorName: snowflake
+     logicTable: t_order_item
+     keyGenerateColumn: order_item_id
+   t_account_account_id:
+     keyGenerateType: column
+     keyGeneratorName: snowflake
+     logicTable: t_account
+     keyGenerateColumn: account_id
 
  shardingAlgorithms:
    database_inline:

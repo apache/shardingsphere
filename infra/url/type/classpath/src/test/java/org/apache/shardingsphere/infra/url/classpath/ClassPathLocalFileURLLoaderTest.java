@@ -31,7 +31,7 @@ class ClassPathLocalFileURLLoaderTest {
     @Test
     @EnabledOnOs({OS.LINUX, OS.MAC})
     void assertGetContentOnLinux() {
-        assertGetContent(1783);
+        assertGetContent(1872);
     }
     
     @Test

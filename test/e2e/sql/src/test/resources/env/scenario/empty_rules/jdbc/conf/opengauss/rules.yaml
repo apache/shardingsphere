@@ -234,6 +234,18 @@ rules:
     tables:
       - "*.*.*"
   - !SHARDING
+    keyGenerateStrategies:
+      t_user_user_id:
+        keyGenerateType: column
+        keyGeneratorName: constant
+        logicTable: t_user
+        keyGenerateColumn: user_id
+      t_user_item_user_id:
+        keyGenerateType: column
+        keyGeneratorName: constant
+        logicTable: t_user_item
+        keyGenerateColumn: user_id
+
     autoTables:
       t_user:
         actualDataSources: write_ds_${0..9}
@@ -241,9 +253,6 @@ rules:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: mod
-        keyGenerateStrategy:
-          column: user_id
-          keyGeneratorName: constant
         auditStrategy:
           auditorNames:
             - auditor_constant
@@ -254,10 +263,6 @@ rules:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: mod
-        keyGenerateStrategy:
-          column: user_id
-          keyGeneratorName: constant
-
     shardingAlgorithms:
       mod:
         type: MOD

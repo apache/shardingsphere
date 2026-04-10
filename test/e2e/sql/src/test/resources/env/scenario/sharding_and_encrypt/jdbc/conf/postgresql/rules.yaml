@@ -145,9 +145,6 @@ rules:
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: e2e_standard_fixture
-        keyGenerateStrategy:
-          column: item_id
-          keyGeneratorName: constant
         auditStrategy:
           auditorNames:
             - auditor_constant
@@ -162,9 +159,6 @@ rules:
           standard:
             shardingColumn: item_id
             shardingAlgorithmName: e2e_standard_fixture
-        keyGenerateStrategy:
-          column: item_id
-          keyGeneratorName: constant
         auditStrategy:
           auditorNames:
             - auditor_constant
@@ -179,9 +173,6 @@ rules:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: e2e_standard_fixture
-        keyGenerateStrategy:
-          column: user_id
-          keyGeneratorName: constant
         auditStrategy:
           auditorNames:
             - auditor_constant
@@ -196,6 +187,23 @@ rules:
           standard:
             shardingColumn: user_id
             shardingAlgorithmName: e2e_standard_fixture
+    keyGenerateStrategies:
+      t_order_item_item_id:
+        keyGenerateType: column
+        keyGeneratorName: constant
+        logicTable: t_order_item
+        keyGenerateColumn: item_id
+      t_user_item_item_id:
+        keyGenerateType: column
+        keyGeneratorName: constant
+        logicTable: t_user_item
+        keyGenerateColumn: item_id
+      t_user_user_id:
+        keyGenerateType: column
+        keyGeneratorName: constant
+        logicTable: t_user
+        keyGenerateColumn: user_id
+
     bindingTables:
       - ref_0:t_user,t_user_item,t_user_details
       - ref_1:t_order,t_order_item
