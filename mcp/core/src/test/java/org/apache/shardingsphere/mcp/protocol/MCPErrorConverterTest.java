@@ -19,45 +19,41 @@ package org.apache.shardingsphere.mcp.protocol;
 
 import org.apache.shardingsphere.mcp.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
-import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
-import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
-import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class MCPErrorConverterTest {
     
-    @Test
-    void assertConvertWithProtocolException() {
-        MCPError actual = MCPErrorConverter.convert(new UnsupportedToolException());
-        assertThat(actual.getCode(), is(MCPErrorCode.INVALID_REQUEST));
-        assertThat(actual.getMessage(), is("Unsupported tool."));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertConvertCases")
+    void assertConvert(final String name, final Throwable cause, final MCPErrorCode expectedErrorCode, final String expectedMessage) {
+        MCPError actual = MCPErrorConverter.convert(cause);
+        assertThat(actual.getCode(), is(expectedErrorCode));
+        assertThat(actual.getMessage(), is(expectedMessage));
     }
     
-    @Test
-    void assertConvertWithSqlTimeoutException() {
-        MCPError actual = MCPErrorConverter.convert(new SQLTimeoutException("Timed out."));
-        assertThat(actual.getCode(), is(MCPErrorCode.TIMEOUT));
-        assertThat(actual.getMessage(), is("Timed out."));
-    }
-    
-    @Test
-    void assertToPayloadWithNotFoundException() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPErrorConverter.convert(new DatabaseCapabilityNotFoundException())).toPayload();
-        assertThat(actual.get("error_code"), is("not_found"));
-        assertThat(actual.get("message"), is("Database capability does not exist."));
-    }
-    
-    @Test
-    void assertToPayloadWithUnknownException() {
-        Map<String, Object> actual = new MCPErrorResponse(MCPErrorConverter.convert(new RuntimeException())).toPayload();
-        assertThat(actual.get("error_code"), is("unavailable"));
-        assertThat(actual.get("message"), is("Service is temporarily unavailable."));
+    static Stream<Arguments> assertConvertCases() {
+        return Stream.of(
+                Arguments.of("protocol exception", new DatabaseCapabilityNotFoundException(), MCPErrorCode.NOT_FOUND, "Database capability does not exist."),
+                Arguments.of("sql syntax exception", new SQLSyntaxErrorException("Bad SQL."), MCPErrorCode.INVALID_REQUEST, "Bad SQL."),
+                Arguments.of("sql timeout exception", new SQLTimeoutException("Timed out."), MCPErrorCode.TIMEOUT, "Timed out."),
+                Arguments.of("sql unsupported feature exception", new SQLFeatureNotSupportedException("Unsupported feature."), MCPErrorCode.UNSUPPORTED, "Unsupported feature."),
+                Arguments.of("unsupported operation exception", new UnsupportedOperationException("Unsupported operation."), MCPErrorCode.UNSUPPORTED, "Unsupported operation."),
+                Arguments.of("sql exception", new SQLException("Query failed."), MCPErrorCode.QUERY_FAILED, "Query failed."),
+                Arguments.of("illegal argument exception", new IllegalArgumentException("Illegal argument."), MCPErrorCode.INVALID_REQUEST, "Illegal argument."),
+                Arguments.of("illegal state exception", new IllegalStateException(" Transaction already active. "), MCPErrorCode.TRANSACTION_STATE_ERROR, "Transaction already active."),
+                Arguments.of("unknown exception", new RuntimeException(), MCPErrorCode.UNAVAILABLE, "Service is temporarily unavailable."));
     }
 }
