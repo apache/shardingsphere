@@ -77,14 +77,7 @@ abstract class AbstractStreamableHttpIT {
         return new RuntimeHttpSession(httpClient, initializeSession(httpClient));
     }
     
-    protected final void stopRuntime() {
-        if (null != httpServer) {
-            httpServer.stop();
-            httpServer = null;
-        }
-    }
-    
-    protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
+    private String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
         HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
@@ -97,6 +90,13 @@ abstract class AbstractStreamableHttpIT {
         HttpResponse<String> actual = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
+    }
+    
+    protected final void stopRuntime() {
+        if (null != httpServer) {
+            httpServer.stop();
+            httpServer = null;
+        }
     }
     
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
