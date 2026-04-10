@@ -22,31 +22,56 @@ import org.junit.jupiter.api.Test;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDatabaseMetadataCatalogTest {
     
     @Test
+    void assertNewWithCopiedMetadata() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(1, 1F);
+        databaseMetadataMap.put("logic_db", createDatabaseMetadata("logic_db", "MySQL", "orders"));
+        MCPDatabaseMetadataCatalog actual = new MCPDatabaseMetadataCatalog(databaseMetadataMap);
+        databaseMetadataMap.clear();
+        assertThat(actual.getDatabaseMetadataMap().size(), is(1));
+        assertThat(actual.getDatabaseMetadataMap().get("logic_db").getDatabaseType(), is("MySQL"));
+    }
+    
+    @Test
+    void assertFindMetadata() {
+        Optional<MCPDatabaseMetadata> actual = createDatabaseMetadataCatalog().findMetadata("logic_db");
+        assertTrue(actual.isPresent());
+        assertThat(actual.orElseThrow().getDatabaseType(), is("MySQL"));
+    }
+    
+    @Test
+    void assertFindMetadataWhenNotFound() {
+        Optional<MCPDatabaseMetadata> actual = createDatabaseMetadataCatalog().findMetadata("missing_db");
+        assertFalse(actual.isPresent());
+    }
+    
+    @Test
     void assertReplaceMetadata() {
         MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
-        metadataCatalog.replaceMetadata("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(
-                new MCPTableMetadata("logic_db", "public", "orders_archive", List.of(), List.of())), List.of()))));
-        assertThat(metadataCatalog.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("MySQL"));
-        assertThat(metadataCatalog.findMetadata("logic_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("orders_archive"));
-        assertThat(metadataCatalog.findMetadata("analytics_db").orElseThrow().getSchemas().get(0).getTables().get(0).getTable(), is("metrics"));
+        MCPDatabaseMetadata replacement = createDatabaseMetadata("logic_db", "MySQL", "orders_archive");
+        metadataCatalog.replaceMetadata("logic_db", replacement);
+        assertThat(metadataCatalog.getDatabaseMetadataMap().get("logic_db"), is(replacement));
     }
     
     private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
         Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
-        databaseMetadataMap.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "",
-                List.of(new MCPSchemaMetadata("logic_db", "public", List.of(new MCPTableMetadata("logic_db", "public", "orders", List.of(), List.of())), List.of()))));
-        databaseMetadataMap.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "",
-                List.of(new MCPSchemaMetadata("analytics_db", "public", List.of(
-                        new MCPTableMetadata("analytics_db", "public", "metrics", List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())), List.of()))));
-        databaseMetadataMap.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
-                new MCPSchemaMetadata("warehouse", "warehouse", List.of(new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(), List.of())), List.of()))));
+        databaseMetadataMap.put("logic_db", createDatabaseMetadata("logic_db", "MySQL", "orders"));
+        databaseMetadataMap.put("analytics_db", createDatabaseMetadata("analytics_db", "PostgreSQL", "metrics"));
+        databaseMetadataMap.put("warehouse", createDatabaseMetadata("warehouse", "Hive", "facts"));
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
+    }
+    
+    private MCPDatabaseMetadata createDatabaseMetadata(final String databaseName, final String databaseType, final String tableName) {
+        return new MCPDatabaseMetadata(databaseName, databaseType, "",
+                List.of(new MCPSchemaMetadata(databaseName, "public", List.of(new MCPTableMetadata(databaseName, "public", tableName, List.of(), List.of())), List.of())));
     }
 }
