@@ -20,10 +20,14 @@ package org.apache.shardingsphere.mcp.jdbc;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -35,11 +39,26 @@ class RuntimeDatabaseConfigurationTest {
     @TempDir
     private Path tempDir;
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidDatabaseTypeArguments")
+    void assertConstructWithInvalidDatabaseType(final String name, final String databaseType, final String expectedMessage) {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> new RuntimeDatabaseConfiguration(databaseType, "jdbc:h2:mem:logic", "", "", ""));
+        assertThat(actual.getMessage(), is(expectedMessage));
+    }
+    
     @Test
     void assertOpenConnectionWithoutDriverClassName() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "connection-factory");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         try (Connection actual = new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "").openConnection("logic_db")) {
+            assertFalse(actual.isClosed());
+        }
+    }
+    
+    @Test
+    void assertOpenConnectionWithDriverClassNameAndCredentials() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "credentialed-connection");
+        try (Connection actual = new RuntimeDatabaseConfiguration("H2", jdbcUrl, "sa", "pwd", "org.h2.Driver").openConnection("logic_db")) {
             assertFalse(actual.isClosed());
         }
     }
@@ -52,24 +71,10 @@ class RuntimeDatabaseConfigurationTest {
         assertThat(actual.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
     }
     
-    @Test
-    void assertConstructWithNullDatabaseType() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> new RuntimeDatabaseConfiguration(null, "jdbc:h2:mem:logic", "", "", ""));
-        assertThat(actual.getMessage(), is("databaseType cannot be null."));
-    }
-    
-    @Test
-    void assertConstructWithEmptyDatabaseType() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> new RuntimeDatabaseConfiguration("", "jdbc:h2:mem:logic", "", "", ""));
-        assertThat(actual.getMessage(), is("databaseType cannot be empty."));
-    }
-    
-    @Test
-    void assertConstructWithBlankDatabaseType() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                () -> new RuntimeDatabaseConfiguration("   ", "jdbc:h2:mem:logic", "", "", ""));
-        assertThat(actual.getMessage(), is("databaseType cannot be empty."));
+    private static Stream<Arguments> invalidDatabaseTypeArguments() {
+        return Stream.of(
+                Arguments.of("null database type", null, "databaseType cannot be null."),
+                Arguments.of("empty database type", "", "databaseType cannot be empty."),
+                Arguments.of("blank database type", "   ", "databaseType cannot be empty."));
     }
 }
