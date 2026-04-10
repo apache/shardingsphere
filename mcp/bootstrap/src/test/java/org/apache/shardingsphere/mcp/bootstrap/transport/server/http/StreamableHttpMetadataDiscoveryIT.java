@@ -47,7 +47,7 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertReadDatabasesResource() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         List<Map<String, Object>> items = getPayloadItems(readResourceAndGetPayload(session, "shardingsphere://databases"));
         assertThat(items.size(), is(1));
         assertThat(items.get(0).get("database"), is("logic_db"));
@@ -55,7 +55,7 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertSearchMetadata() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         List<Map<String, Object>> items = getPayloadItems(callToolAndGetStructuredContent(session, "search_metadata",
                 Map.of("database", "logic_db", "query", "order", "object_types", List.of("table", "view"))));
         assertThat(items.size(), is(3));
@@ -66,7 +66,7 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertSequenceDiscovery() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         List<Map<String, Object>> searchItems = getPayloadItems(callToolAndGetStructuredContent(session, "search_metadata",
                 Map.of("database", "logic_db", "query", "order", "object_types", List.of("sequence"))));
         assertThat(searchItems.size(), is(1));
@@ -78,7 +78,7 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertReadDatabaseCapabilitiesResource() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         Map<String, Object> payload = readResourceAndGetPayload(session, "shardingsphere://databases/logic_db/capabilities");
         assertThat(payload.get("database"), is("logic_db"));
         assertThat(payload.get("databaseType"), is("H2"));

@@ -50,7 +50,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertExecuteSelect() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
                 createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id"));
         assertThat(payload.get("result_kind"), is("result_set"));
@@ -59,7 +59,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertExecuteTransactionCommit() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("COMMIT"));
@@ -68,7 +68,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertDeleteRollsBackPendingTransaction() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         assertThat(sendDeleteRequest(session.httpClient(), session.sessionId()).statusCode(), is(200));
@@ -77,7 +77,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertStopRollsBackPendingTransaction() throws SQLException, IOException, InterruptedException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         stopRuntime();

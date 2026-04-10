@@ -55,26 +55,32 @@ abstract class AbstractStreamableHttpIT {
     private StreamableHttpMCPServer httpServer;
     
     @AfterEach
-    void tearDown() {
+    final void tearDown() {
         if (null != httpServer) {
             httpServer.stop();
             httpServer = null;
         }
     }
     
-    protected final void launchJDBCRuntime() throws SQLException, IOException {
-        prepareRuntimeFixture();
-        httpServer = launchHttpServer(createRuntimeConfiguration());
-    }
-    
-    protected final URI createEndpointUri() {
-        return URI.create(String.format("http://127.0.0.1:%d/gateway", httpServer.getLocalPort()));
-    }
-    
-    protected final RuntimeHttpSession launchRuntimeWithSession() throws SQLException, IOException, InterruptedException {
+    protected final RuntimeHttpSession launchRuntime() throws SQLException, IOException, InterruptedException {
         launchJDBCRuntime();
         HttpClient httpClient = HttpClient.newHttpClient();
         return new RuntimeHttpSession(httpClient, initializeSession(httpClient));
+    }
+    
+    protected final void launchJDBCRuntime() throws SQLException, IOException {
+        prepareRuntimeFixture();
+        httpServer = launchHttpServer(
+                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, 0, "/gateway"), new StdioTransportConfiguration(false), createRuntimeDatabases()));
+    }
+    
+    private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfig) throws IOException {
+        MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(launchConfig);
+        if (actual instanceof StreamableHttpMCPServer) {
+            return (StreamableHttpMCPServer) actual;
+        }
+        actual.stop();
+        throw new IllegalStateException("HTTP server must be enabled for HTTP integration tests.");
     }
     
     private String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
@@ -92,11 +98,8 @@ abstract class AbstractStreamableHttpIT {
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
     }
     
-    protected final void stopRuntime() {
-        if (null != httpServer) {
-            httpServer.stop();
-            httpServer = null;
-        }
+    protected final URI createEndpointUri() {
+        return URI.create(String.format("http://127.0.0.1:%d/gateway", httpServer.getLocalPort()));
     }
     
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
@@ -174,20 +177,6 @@ abstract class AbstractStreamableHttpIT {
         return castToMap(parseJsonBody(responseBody).get("result"));
     }
     
-    private MCPLaunchConfiguration createRuntimeConfiguration() {
-        return new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, 0, "/gateway"), new StdioTransportConfiguration(false), createRuntimeDatabases());
-    }
-    
-    private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfiguration) throws IOException {
-        MCPRuntimeServer actual = new MCPRuntimeLauncher().launch(launchConfiguration);
-        if (actual instanceof StreamableHttpMCPServer) {
-            return (StreamableHttpMCPServer) actual;
-        }
-        actual.stop();
-        throw new IllegalStateException("HTTP server must be enabled for HTTP integration tests.");
-    }
-    
     protected final Map<String, Object> createInitializeRequestParams(final String clientName) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("protocolVersion", PROTOCOL_VERSION);
@@ -234,6 +223,13 @@ abstract class AbstractStreamableHttpIT {
             hasDataLine = true;
         }
         return hasDataLine ? result.toString() : trimmedResponseBody;
+    }
+    
+    protected final void stopRuntime() {
+        if (null != httpServer) {
+            httpServer.stop();
+            httpServer = null;
+        }
     }
     
     protected void prepareRuntimeFixture() throws SQLException {

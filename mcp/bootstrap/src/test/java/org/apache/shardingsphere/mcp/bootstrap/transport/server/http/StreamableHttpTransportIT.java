@@ -70,7 +70,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertAcceptFollowUpRequestWithLowercaseHeaders() throws IOException, InterruptedException, SQLException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
                 "Content-Type", "application/json",
                 "Accept", "application/json, text/event-stream",
@@ -81,7 +81,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     
     @Test
     void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException, SQLException {
-        RuntimeHttpSession session = launchRuntimeWithSession();
+        RuntimeHttpSession session = launchRuntime();
         sendDeleteRequest(session.httpClient(), Map.of("MCP-Session-Id", session.sessionId(), "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
         HttpResponse<String> streamResponse = openEventStream(session.httpClient(), Map.of(
                 "Accept", "text/event-stream",
