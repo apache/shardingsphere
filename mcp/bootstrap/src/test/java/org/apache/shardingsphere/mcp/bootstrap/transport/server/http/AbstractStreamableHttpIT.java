@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
@@ -47,6 +48,7 @@ abstract class AbstractStreamableHttpIT {
     
     private static final String PROTOCOL_VERSION = MCPTransportConstants.PROTOCOL_VERSION;
     
+    @Getter
     @TempDir
     private Path tempDir;
     
@@ -243,10 +245,6 @@ abstract class AbstractStreamableHttpIT {
     }
     
     protected abstract Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases();
-    
-    protected final Path getTempDir() {
-        return tempDir;
-    }
     
     protected record RuntimeHttpSession(HttpClient httpClient, String sessionId) {
     }
