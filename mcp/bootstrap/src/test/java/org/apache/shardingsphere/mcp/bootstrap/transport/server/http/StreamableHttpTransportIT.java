@@ -41,7 +41,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     @Test
     void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of("Content-Type", "application/json", "Accept", "application/json, text/event-stream"),
                 createInitializeRequestParams("integration-test"));
         assertThat(initializeResponse.statusCode(), is(200));
@@ -94,7 +94,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     @Test
     void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
                 "Origin", "https://evil.example.com",
                 "Content-Type", "application/json",

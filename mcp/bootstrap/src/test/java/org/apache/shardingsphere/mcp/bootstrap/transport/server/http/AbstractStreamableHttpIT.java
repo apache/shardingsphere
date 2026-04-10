@@ -68,17 +68,12 @@ abstract class AbstractStreamableHttpIT {
     }
     
     protected final URI createEndpointUri() {
-        int localPort = httpServer.getLocalPort();
-        return URI.create(String.format("http://127.0.0.1:%d/gateway", localPort));
-    }
-    
-    protected final HttpClient createHttpClient() {
-        return HttpClient.newHttpClient();
+        return URI.create(String.format("http://127.0.0.1:%d/gateway", httpServer.getLocalPort()));
     }
     
     protected final RuntimeHttpSession launchRuntimeWithSession() throws SQLException, IOException, InterruptedException {
         launchJDBCRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         return new RuntimeHttpSession(httpClient, initializeSession(httpClient));
     }
     
