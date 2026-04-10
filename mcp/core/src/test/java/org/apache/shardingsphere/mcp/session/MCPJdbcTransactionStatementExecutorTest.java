@@ -71,6 +71,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     static Stream<Arguments> assertExecuteCases() {
         return Stream.of(
                 Arguments.of("begin", "BEGIN", "BEGIN", "Transaction started."),
+                Arguments.of("start transaction", "START TRANSACTION", "START TRANSACTION", "Transaction started."),
                 Arguments.of("commit", "COMMIT", "COMMIT", "Transaction committed."),
                 Arguments.of("rollback", "ROLLBACK", "ROLLBACK", "Transaction rolled back."),
                 Arguments.of("savepoint", "SAVEPOINT sp_1", "SAVEPOINT", "Savepoint created."),
@@ -86,22 +87,6 @@ class MCPJdbcTransactionStatementExecutorTest {
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class,
                 () -> executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1")));
         assertThat(actual.getMessage(), is("Savepoint is not supported."));
-    }
-    
-    @Test
-    void assertExecuteWithClassificationResult() throws SQLException {
-        Connection connection = mock(Connection.class);
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
-        when(runtimeDatabaseConfig.openConnection("logic_db")).thenReturn(connection);
-        MCPSessionManager sessionManager = new MCPSessionManager(Map.of("logic_db", runtimeDatabaseConfig));
-        sessionManager.createSession("session-1");
-        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
-        SQLExecutionResponse actual = executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN"));
-        assertThat(actual.getStatementType(), is("BEGIN"));
-        assertThat(actual.getMessage(), is("Transaction started."));
-        verify(runtimeDatabaseConfig).openConnection("logic_db");
-        verify(connection).setAutoCommit(false);
-        assertTrue(sessionManager.getTransactionResourceManager().findTransactionConnection("session-1", "logic_db").isPresent());
     }
     
     @Test
@@ -144,7 +129,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     }
     
     private void prepareTransactionState(final String sql, final MCPSessionManager sessionManager, final Connection connection, final Savepoint savepoint) throws SQLException {
-        if ("BEGIN".equals(sql)) {
+        if ("BEGIN".equals(sql) || "START TRANSACTION".equals(sql)) {
             return;
         }
         sessionManager.getTransactionResourceManager().beginTransaction("session-1", "logic_db");
@@ -158,7 +143,7 @@ class MCPJdbcTransactionStatementExecutorTest {
     
     private void assertDatabaseExecution(final String sql, final MCPSessionManager sessionManager, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
                                          final Connection connection, final Savepoint savepoint) throws SQLException {
-        if ("BEGIN".equals(sql)) {
+        if ("BEGIN".equals(sql) || "START TRANSACTION".equals(sql)) {
             verify(runtimeDatabaseConfig).openConnection("logic_db");
             verify(connection).setAutoCommit(false);
             assertTrue(sessionManager.getTransactionResourceManager().findTransactionConnection("session-1", "logic_db").isPresent());
