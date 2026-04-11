@@ -39,7 +39,7 @@ public final class StatementClassifier {
             throw new UnsupportedOperationException("Statement is banned by the MCP contract.");
         }
         if (upperSql.startsWith("EXPLAIN ANALYZE")) {
-            return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, extractTargetObject(actualSql), extractSavepointName(actualSql));
+            return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql, extractTargetObject(actualSql), "");
         }
         if (upperSql.startsWith("ROLLBACK TO SAVEPOINT") || upperSql.startsWith("RELEASE SAVEPOINT") || upperSql.startsWith("SAVEPOINT ")) {
             return new ClassificationResult(SupportedMCPStatement.SAVEPOINT, extractStatementType(upperSql), actualSql, "", extractSavepointName(actualSql));
@@ -101,9 +101,6 @@ public final class StatementClassifier {
         if (upperSql.startsWith("RELEASE SAVEPOINT")) {
             return "RELEASE SAVEPOINT";
         }
-        if (upperSql.startsWith("EXPLAIN ANALYZE")) {
-            return "EXPLAIN ANALYZE";
-        }
         return upperSql.split("\\s+")[0];
     }
     
@@ -120,9 +117,6 @@ public final class StatementClassifier {
     
     private String extractSavepointName(final String sql) {
         String[] tokens = sql.split("\\s+");
-        if (tokens.length < 2) {
-            return "";
-        }
         if ("SAVEPOINT".equalsIgnoreCase(tokens[0])) {
             return tokens[tokens.length - 1];
         }
