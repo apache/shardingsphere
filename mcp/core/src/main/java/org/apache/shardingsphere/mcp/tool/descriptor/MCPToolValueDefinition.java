@@ -29,6 +29,12 @@ import java.util.Map;
 @Getter
 public final class MCPToolValueDefinition {
     
+    private static final int STRING_TYPE_ORDINAL = 0;
+    
+    private static final int INTEGER_TYPE_ORDINAL = 1;
+    
+    private static final int ARRAY_TYPE_ORDINAL = 2;
+    
     private final Type type;
     
     private final String description;
@@ -42,12 +48,12 @@ public final class MCPToolValueDefinition {
      * @throws IllegalStateException unsupported tool value type
      */
     public Map<String, Object> toSchemaFragment() {
-        switch (type) {
-            case STRING:
+        switch (type.ordinal()) {
+            case STRING_TYPE_ORDINAL:
                 return toScalarSchemaFragment("string");
-            case INTEGER:
+            case INTEGER_TYPE_ORDINAL:
                 return toScalarSchemaFragment("integer");
-            case ARRAY:
+            case ARRAY_TYPE_ORDINAL:
                 return toArraySchemaFragment();
             default:
                 throw new IllegalStateException(String.format("Unsupported MCP tool value type `%s`.", type));
