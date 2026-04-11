@@ -18,6 +18,14 @@
 name: MCP - LLM E2E
 
 on:
+  pull_request:
+    branches: [ master ]
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - labeled
+      - ready_for_review
   schedule:
     - cron: '0 17 * * 1-5'
   workflow_dispatch:
@@ -43,11 +51,12 @@ env:
 jobs:
   global-environment:
     name: Import Global Environment
+    if: github.repository == 'apache/shardingsphere' && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'mcp'))
     uses: ./.github/workflows/required-reusable.yml
 
   mcp-llm-e2e:
     name: MCP - LLM E2E
-    if: github.repository == 'apache/shardingsphere'
+    if: github.repository == 'apache/shardingsphere' && (github.event_name != 'pull_request' || contains(github.event.pull_request.labels.*.name, 'mcp'))
     needs: global-environment
     runs-on: ubuntu-latest
     timeout-minutes: 60
