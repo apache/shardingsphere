@@ -108,7 +108,7 @@ public interface CrossDatabaseTransactionContractTest {
     
     /**
      * Assert reject cross database transaction switch.
-     * 
+     *
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
      */

@@ -93,7 +93,7 @@ public interface MetadataResourceContractTest {
     
     /**
      * Assert service capabilities resource.
-     * 
+     *
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
      */
@@ -109,7 +109,7 @@ public interface MetadataResourceContractTest {
     
     /**
      * Assert table detail resource.
-     * 
+     *
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
      */
