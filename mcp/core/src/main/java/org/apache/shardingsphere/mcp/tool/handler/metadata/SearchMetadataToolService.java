@@ -40,6 +40,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,9 @@ import java.util.stream.Collectors;
  * Search metadata tool service.
  */
 public final class SearchMetadataToolService {
+    
+    private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
+            "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
     
     private final MetadataQueryService metadataQueryService;
     
@@ -85,38 +89,37 @@ public final class SearchMetadataToolService {
     
     private List<MetadataSearchHit> querySearchHits(final String databaseName, final SupportedMCPMetadataObjectType objectType, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
-        switch (objectType) {
-            case SCHEMA:
-                if (!schemaName.isEmpty()) {
-                    metadataQueryService.querySchema(databaseName, schemaName).ifPresent(optional -> result.add(createSearchHit(optional)));
-                    break;
-                }
-                for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
-                    result.add(createSearchHit(each));
-                }
-                break;
-            case TABLE:
-                for (MCPTableMetadata each : queryTables(databaseName, schemaName)) {
-                    result.add(createSearchHit(each));
-                }
-                break;
-            case VIEW:
-                for (MCPViewMetadata each : queryViews(databaseName, schemaName)) {
-                    result.add(createSearchHit(each));
-                }
-                break;
-            case COLUMN:
-                result.addAll(queryColumnSearchHits(databaseName, schemaName));
-                break;
-            case INDEX:
-                result.addAll(queryIndexSearchHits(databaseName, schemaName));
-                break;
-            case SEQUENCE:
-                result.addAll(querySequenceSearchHits(databaseName, schemaName));
-                break;
-            default:
-                break;
+        if (SupportedMCPMetadataObjectType.SCHEMA == objectType) {
+            if (!schemaName.isEmpty()) {
+                metadataQueryService.querySchema(databaseName, schemaName).ifPresent(optional -> result.add(createSearchHit(optional)));
+                return result;
+            }
+            for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
+                result.add(createSearchHit(each));
+            }
+            return result;
         }
+        if (SupportedMCPMetadataObjectType.TABLE == objectType) {
+            for (MCPTableMetadata each : queryTables(databaseName, schemaName)) {
+                result.add(createSearchHit(each));
+            }
+            return result;
+        }
+        if (SupportedMCPMetadataObjectType.VIEW == objectType) {
+            for (MCPViewMetadata each : queryViews(databaseName, schemaName)) {
+                result.add(createSearchHit(each));
+            }
+            return result;
+        }
+        if (SupportedMCPMetadataObjectType.COLUMN == objectType) {
+            result.addAll(queryColumnSearchHits(databaseName, schemaName));
+            return result;
+        }
+        if (SupportedMCPMetadataObjectType.INDEX == objectType) {
+            result.addAll(queryIndexSearchHits(databaseName, schemaName));
+            return result;
+        }
+        result.addAll(querySequenceSearchHits(databaseName, schemaName));
         return result;
     }
     
@@ -155,17 +158,11 @@ public final class SearchMetadataToolService {
     }
     
     private List<MetadataSearchHit> queryIndexSearchHits(final String databaseName, final String schemaName) {
-        if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.INDEX)) {
-            return Collections.emptyList();
-        }
         return queryTables(databaseName, schemaName).stream()
                 .flatMap(each -> metadataQueryService.queryIndexes(databaseName, each.getSchema(), each.getTable()).stream()).map(this::createSearchHit).collect(Collectors.toList());
     }
     
     private List<MetadataSearchHit> querySequenceSearchHits(final String databaseName, final String schemaName) {
-        if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SEQUENCE)) {
-            return Collections.emptyList();
-        }
         if (!schemaName.isEmpty()) {
             return metadataQueryService.querySequences(databaseName, schemaName).stream().map(this::createSearchHit).collect(Collectors.toList());
         }
@@ -259,24 +256,7 @@ public final class SearchMetadataToolService {
     }
     
     private int getObjectTypeOrder(final String objectType) {
-        switch (objectType) {
-            case "database":
-                return 0;
-            case "schema":
-                return 1;
-            case "table":
-                return 2;
-            case "view":
-                return 3;
-            case "column":
-                return 4;
-            case "index":
-                return 5;
-            case "sequence":
-                return 6;
-            default:
-                return Integer.MAX_VALUE;
-        }
+        return OBJECT_TYPE_ORDERS.getOrDefault(objectType, Integer.MAX_VALUE);
     }
     
     private List<MetadataSearchHit> filterByQuery(final List<MetadataSearchHit> metadataItems, final String query) {
