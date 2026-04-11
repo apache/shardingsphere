@@ -1,0 +1,205 @@
+{
+  "reflection": [
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.model.processor.ImplicitModelHandler"
+      },
+      "type": "ch.qos.logback.classic.encoder.PatternLayoutEncoder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.classic.util.ContextInitializer"
+      },
+      "type": "ch.qos.logback.classic.joran.SerializedModelConfigurator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.pattern.parser.Compiler"
+      },
+      "type": "ch.qos.logback.classic.pattern.DateConverter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.pattern.parser.Compiler"
+      },
+      "type": "ch.qos.logback.classic.pattern.LevelConverter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.pattern.parser.Compiler"
+      },
+      "type": "ch.qos.logback.classic.pattern.LineSeparatorConverter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.pattern.parser.Compiler"
+      },
+      "type": "ch.qos.logback.classic.pattern.LoggerConverter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.pattern.parser.Compiler"
+      },
+      "type": "ch.qos.logback.classic.pattern.MessageConverter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.pattern.parser.Compiler"
+      },
+      "type": "ch.qos.logback.classic.pattern.ThreadConverter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.classic.util.ContextInitializer"
+      },
+      "type": "ch.qos.logback.classic.util.DefaultJoranConfigurator",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.model.processor.AppenderModelHandler"
+      },
+      "type": "ch.qos.logback.core.ConsoleAppender",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.util.PropertySetter"
+      },
+      "type": "ch.qos.logback.core.OutputStreamAppender",
+      "methods": [
+        {
+          "name": "setEncoder",
+          "parameterTypes": [
+            "ch.qos.logback.core.encoder.Encoder"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.util.PropertySetter"
+      },
+      "type": "ch.qos.logback.core.encoder.LayoutWrappingEncoder",
+      "methods": [
+        {
+          "name": "setParent",
+          "parameterTypes": [
+            "ch.qos.logback.core.spi.ContextAware"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.util.PropertySetter"
+      },
+      "type": "ch.qos.logback.core.pattern.PatternLayoutEncoderBase",
+      "methods": [
+        {
+          "name": "setPattern",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.model.processor.ImplicitModelHandler"
+      },
+      "type": "ch.qos.logback.core.spi.ContextAware"
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.model.processor.StatusListenerModelHandler"
+      },
+      "type": "ch.qos.logback.core.status.NopStatusListener",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.core.joran.util.StringToObjectConverter"
+      },
+      "type": "ch.qos.logback.core.encoder.Encoder",
+      "allPublicMethods": true
+    }
+  ],
+  "resources": [
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.classic.joran.SerializedModelConfigurator"
+      },
+      "glob": "logback-test.scmo"
+    },
+    {
+      "condition": {
+        "typeReached": "ch.qos.logback.classic.joran.SerializedModelConfigurator"
+      },
+      "glob": "logback.scmo"
+    }
+  ]
+}
