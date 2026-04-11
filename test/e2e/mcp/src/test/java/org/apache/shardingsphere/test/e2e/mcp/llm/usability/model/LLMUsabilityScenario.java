@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 
 import java.util.List;
 
+@RequiredArgsConstructor
+@Getter
 public final class LLMUsabilityScenario {
     
     private final String scenarioId;
@@ -39,51 +43,11 @@ public final class LLMUsabilityScenario {
     
     private final boolean recoveryExpected;
     
-    public LLMUsabilityScenario(final String scenarioId, final LLMUsabilityDimension dimension, final String runtimeKind, final LLME2EScenario llmScenario,
-                                final List<String> expectedFirstActionNames, final List<String> expectedResourceUris,
-                                final boolean resourceHitRequired, final boolean recoveryExpected) {
-        this.scenarioId = scenarioId;
-        this.dimension = dimension;
-        this.runtimeKind = runtimeKind;
-        this.llmScenario = llmScenario;
-        this.expectedFirstActionNames = List.copyOf(expectedFirstActionNames);
-        this.expectedResourceUris = List.copyOf(expectedResourceUris);
-        this.resourceHitRequired = resourceHitRequired;
-        this.recoveryExpected = recoveryExpected;
-    }
-    
-    public String scenarioId() {
-        return scenarioId;
-    }
-    
-    public LLMUsabilityDimension dimension() {
-        return dimension;
-    }
-    
-    public String runtimeKind() {
-        return runtimeKind;
-    }
-    
-    public LLME2EScenario llmScenario() {
-        return llmScenario;
-    }
-    
-    public List<String> expectedFirstActionNames() {
-        return expectedFirstActionNames;
-    }
-    
-    public List<String> expectedResourceUris() {
-        return expectedResourceUris;
-    }
-    
-    public boolean resourceHitRequired() {
-        return resourceHitRequired;
-    }
-    
-    public boolean recoveryExpected() {
-        return recoveryExpected;
-    }
-    
+    /**
+     * Is query scenario.
+     *
+     * @return query scenario
+     */
     public boolean isQueryScenario() {
         return LLMUsabilityDimension.QUERY == dimension || LLMUsabilityDimension.RECOVERY == dimension || LLMUsabilityDimension.RESOURCE == dimension;
     }

@@ -17,6 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.artifact;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * LLM E2E assertion report.
+ */
+@RequiredArgsConstructor
+@Getter
 public final class LLME2EAssertionReport {
     
     private final boolean success;
@@ -25,29 +33,24 @@ public final class LLME2EAssertionReport {
     
     private final String message;
     
-    private LLME2EAssertionReport(final boolean success, final String failureType, final String message) {
-        this.success = success;
-        this.failureType = failureType;
-        this.message = message;
-    }
-    
-    public static LLME2EAssertionReport success(final String message) {
+    /**
+     * Whether success.
+     *
+     * @param message message
+     * @return success or not
+     */
+    public static LLME2EAssertionReport isSuccess(final String message) {
         return new LLME2EAssertionReport(true, "", message);
     }
     
-    public boolean success() {
-        return success;
-    }
-    
+    /**
+     * Whether failure.
+     *
+     * @param failureType failure type
+     * @param message message
+     * @return failure or not
+     */
     public static LLME2EAssertionReport failure(final String failureType, final String message) {
         return new LLME2EAssertionReport(false, failureType, message);
-    }
-    
-    public String failureType() {
-        return failureType;
-    }
-    
-    public String message() {
-        return message;
     }
 }

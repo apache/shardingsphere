@@ -20,12 +20,16 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.scenario;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@RequiredArgsConstructor
+@Getter
 public final class LLMStructuredAnswer {
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -42,16 +46,12 @@ public final class LLMStructuredAnswer {
     
     private final List<String> interactionSequence;
     
-    public LLMStructuredAnswer(final String database, final String schema, final String table, final String query,
-                               final int totalOrders, final List<String> interactionSequence) {
-        this.database = database;
-        this.schema = schema;
-        this.table = table;
-        this.query = query;
-        this.totalOrders = totalOrders;
-        this.interactionSequence = List.copyOf(interactionSequence);
-    }
-    
+    /**
+     * Grom json.
+     *
+     * @param json json
+     * @return LLM structured answer
+     */
     public static LLMStructuredAnswer fromJson(final String json) {
         final Map<String, Object> payload = readPayload(json);
         List<String> interactionSequence = createInteractionSequence(payload);
@@ -64,30 +64,11 @@ public final class LLMStructuredAnswer {
                 interactionSequence);
     }
     
-    public String database() {
-        return database;
-    }
-    
-    public String schema() {
-        return schema;
-    }
-    
-    public String table() {
-        return table;
-    }
-    
-    public String query() {
-        return query;
-    }
-    
-    public int totalOrders() {
-        return totalOrders;
-    }
-    
-    public List<String> interactionSequence() {
-        return interactionSequence;
-    }
-    
+    /**
+     * Get normalized query.
+     *
+     * @return normalized query
+     */
     public String getNormalizedQuery() {
         return query.replaceAll("\\s+", " ").trim();
     }

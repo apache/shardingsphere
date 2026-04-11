@@ -28,22 +28,75 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+/**
+ * Metadata resource contract test.
+ */
 public interface MetadataResourceContractTest {
     
+    /**
+     * Launch contract runtime.
+     *
+     * @throws IOException IO exception
+     */
     void launchContractRuntime() throws IOException;
     
+    /**
+     * Create contract HTTP client.
+     *
+     * @return contract HTTP client
+     */
     HttpClient createContractHttpClient();
     
+    /**
+     * Initialize contract session.
+     *
+     * @param httpClient http client
+     * @return session ID
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
     String initializeContractSession(HttpClient httpClient) throws IOException, InterruptedException;
     
+    /**
+     * Read contract resource.
+     *
+     * @param httpClient http client
+     * @param sessionId session ID
+     * @param resourceUri resource URI
+     * @return HTTP response
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
     HttpResponse<String> readContractResource(HttpClient httpClient, String sessionId, String resourceUri) throws IOException, InterruptedException;
     
+    /**
+     * Get contract resource payload.
+     *
+     * @param responseBody response body
+     * @return payload
+     */
     Map<String, Object> getContractResourcePayload(String responseBody);
     
+    /**
+     * Get expected table columns.
+     *
+     * @return expected table columns
+     */
     List<String> getExpectedTableColumns();
     
+    /**
+     * Get expected table indexes.
+     *
+     * @return expected table indexes
+     */
     List<String> getExpectedTableIndexes();
     
+    /**
+     * Assert service capabilities resource.
+     * 
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
     @Test
     default void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         launchContractRuntime();
@@ -54,6 +107,12 @@ public interface MetadataResourceContractTest {
         assertThat(getContractResourcePayload(actual.body()).get("supportedTools"), is(List.of("search_metadata", "execute_query")));
     }
     
+    /**
+     * Assert table detail resource.
+     * 
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
     @Test
     default void assertTableDetailResource() throws IOException, InterruptedException {
         launchContractRuntime();

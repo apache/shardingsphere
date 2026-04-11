@@ -39,9 +39,9 @@ class LLMUsabilityScenarioCatalogTest {
                 "orders", "SELECT COUNT(*) AS total_orders FROM orders", 2);
         
         assertThat(actual, hasSize(6));
-        assertThat(actual.get(0).dimension(), is(LLMUsabilityDimension.RESOURCE));
-        assertThat(actual.get(4).dimension(), is(LLMUsabilityDimension.RECOVERY));
-        assertThat(actual.get(1).expectedResourceUris().get(0), is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
+        assertThat(actual.get(0).getDimension(), is(LLMUsabilityDimension.RESOURCE));
+        assertThat(actual.get(4).getDimension(), is(LLMUsabilityDimension.RECOVERY));
+        assertThat(actual.get(1).getExpectedResourceUris().get(0), is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -53,20 +53,20 @@ class LLMUsabilityScenarioCatalogTest {
                                              final List<String> expectedRequiredToolNames) {
         LLMUsabilityScenario actual = createMinimalBaseline().get(scenarioIndex);
         
-        assertThat(actual.scenarioId(), is(expectedScenarioId));
-        assertThat(actual.runtimeKind(), is("h2"));
-        assertThat(actual.dimension(), is(expectedDimension));
-        assertThat(actual.expectedFirstActionNames(), is(expectedFirstActionNames));
-        assertThat(actual.expectedResourceUris(), is(expectedResourceUris));
-        assertThat(actual.resourceHitRequired(), is(expectedResourceHitRequired));
-        assertThat(actual.recoveryExpected(), is(expectedRecoveryExpected));
-        assertThat(actual.llmScenario().allowedToolNames(), is(expectedAllowedToolNames));
-        assertThat(actual.llmScenario().requiredToolNames(), is(expectedRequiredToolNames));
-        assertThat(actual.llmScenario().expectedAnswer().database(), is("logic_db"));
-        assertThat(actual.llmScenario().expectedAnswer().schema(), is("public"));
-        assertThat(actual.llmScenario().expectedAnswer().table(), is("orders"));
-        assertThat(actual.llmScenario().expectedAnswer().query(), is("SELECT COUNT(*) AS total_orders FROM orders"));
-        assertThat(actual.llmScenario().expectedAnswer().totalOrders(), is(2));
+        assertThat(actual.getScenarioId(), is(expectedScenarioId));
+        assertThat(actual.getRuntimeKind(), is("h2"));
+        assertThat(actual.getDimension(), is(expectedDimension));
+        assertThat(actual.getExpectedFirstActionNames(), is(expectedFirstActionNames));
+        assertThat(actual.getExpectedResourceUris(), is(expectedResourceUris));
+        assertThat(actual.isResourceHitRequired(), is(expectedResourceHitRequired));
+        assertThat(actual.isRecoveryExpected(), is(expectedRecoveryExpected));
+        assertThat(actual.getLlmScenario().getAllowedToolNames(), is(expectedAllowedToolNames));
+        assertThat(actual.getLlmScenario().getRequiredToolNames(), is(expectedRequiredToolNames));
+        assertThat(actual.getLlmScenario().getExpectedAnswer().getDatabase(), is("logic_db"));
+        assertThat(actual.getLlmScenario().getExpectedAnswer().getSchema(), is("public"));
+        assertThat(actual.getLlmScenario().getExpectedAnswer().getTable(), is("orders"));
+        assertThat(actual.getLlmScenario().getExpectedAnswer().getQuery(), is("SELECT COUNT(*) AS total_orders FROM orders"));
+        assertThat(actual.getLlmScenario().getExpectedAnswer().getTotalOrders(), is(2));
     }
     
     static Stream<Arguments> assertCreateMinimalBaselineScenarioCases() {

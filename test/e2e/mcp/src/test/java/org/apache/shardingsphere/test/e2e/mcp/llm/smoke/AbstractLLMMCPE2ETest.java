@@ -57,13 +57,13 @@ abstract class AbstractLLMMCPE2ETest extends AbstractProductionRuntimeE2ETest {
                 "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM MCP smoke tests.");
         launchProductionRuntime();
         LLME2EScenario scenario = scenarioSupplier.get();
-        LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.maxTurns(),
+        LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.getMaxTurns(),
                 new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()), new MCPHttpInteractionClient(getEndpointUri(), createHttpClient())).run(scenario);
-        Path artifactDirectory = llmConfiguration.createArtifactDirectory(scenario.scenarioId());
+        Path artifactDirectory = llmConfiguration.createArtifactDirectory(scenario.getScenarioId());
         artifactWriter.write(artifactDirectory, artifactBundle);
-        LLME2EAssertionReport assertionReport = artifactBundle.assertionReport();
-        assertTrue(assertionReport.success(),
-                () -> String.format(Locale.ENGLISH, "%s: %s (artifacts: %s)", assertionReport.failureType(), assertionReport.message(), artifactDirectory));
+        LLME2EAssertionReport assertionReport = artifactBundle.getAssertionReport();
+        assertTrue(assertionReport.isSuccess(),
+                () -> String.format(Locale.ENGLISH, "%s: %s (artifacts: %s)", assertionReport.getFailureType(), assertionReport.getMessage(), artifactDirectory));
     }
     
     protected final LLME2EScenario createMinimalSmokeScenario(final String scenarioId, final String databaseName,
@@ -79,7 +79,7 @@ abstract class AbstractLLMMCPE2ETest extends AbstractProductionRuntimeE2ETest {
     }
     
     protected final boolean isLLMSmokeEnabled() {
-        return llmConfiguration.enabled();
+        return llmConfiguration.isEnabled();
     }
     
     private String loadResource(final String resourcePath) {

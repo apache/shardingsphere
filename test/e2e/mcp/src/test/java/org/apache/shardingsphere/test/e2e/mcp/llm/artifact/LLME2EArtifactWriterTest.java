@@ -40,7 +40,7 @@ class LLME2EArtifactWriterTest {
     void assertWrite() throws IOException {
         final LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-a", "system prompt", "user prompt", "{\"database\":\"logic_db\"}",
                 List.of("{\"content\":\"a\"}"), List.of(new MCPInteractionTraceRecord(1, "list_tables", Map.of("database", "logic_db"), Map.of("items", List.of()))),
-                List.of("tool=list_tables"), LLME2EAssertionReport.success("ok"));
+                List.of("tool=list_tables"), LLME2EAssertionReport.isSuccess("ok"));
         
         new LLME2EArtifactWriter().write(tempDir, artifactBundle);
         

@@ -59,9 +59,7 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases");
-        
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
         assertThat(items.size(), is(1));
@@ -75,8 +73,7 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         actual.open();
         MCPInteractionResponse response = actual.listResources();
         actual.close();
-        
-        assertThat(String.valueOf(response.structuredContent().get("resources")), containsString("shardingsphere://capabilities"));
+        assertThat(String.valueOf(response.getStructuredContent().get("resources")), containsString("shardingsphere://capabilities"));
     }
     
     @Test
@@ -84,10 +81,8 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
-        
         assertThat(actual.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(actual.body()).get("result_kind")), is("result_set"));
     }
@@ -97,10 +92,8 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-        
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
@@ -113,9 +106,7 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/schemas/public/sequences");
-        
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
         assertThat(items.size(), is(1));
@@ -127,10 +118,8 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("SEQUENCE")));
-        
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> items = getPayloadItems(getStructuredContent(actual.body()));
         assertThat(items.size(), is(1));
@@ -142,7 +131,6 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        
         sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
         sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
@@ -152,9 +140,7 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
         HttpResponse<String> rollbackResponse = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "ROLLBACK TO SAVEPOINT sp_1"));
-        HttpResponse<String> commitResponse = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
-        
+        final HttpResponse<String> commitResponse = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
         assertThat(savepointResponse.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(savepointResponse.body()).get("message")), is("Savepoint created."));
         assertThat(rollbackResponse.statusCode(), is(200));
@@ -169,12 +155,9 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         launchProductionRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        
         sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-        sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+        sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         HttpResponse<String> actual = sendDeleteRequest(httpClient, sessionId);
-        
         assertThat(actual.statusCode(), is(200));
         assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
     }

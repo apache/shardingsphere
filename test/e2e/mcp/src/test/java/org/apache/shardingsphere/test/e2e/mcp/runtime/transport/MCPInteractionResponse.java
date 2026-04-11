@@ -17,24 +17,19 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.transport;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Map;
 
+/**
+ * MCP interaction response.
+ */
+@RequiredArgsConstructor
+@Getter
 public final class MCPInteractionResponse {
     
     private final Map<String, Object> structuredContent;
     
     private final String rawResponse;
-    
-    public MCPInteractionResponse(final Map<String, Object> structuredContent, final String rawResponse) {
-        this.structuredContent = Map.copyOf(structuredContent);
-        this.rawResponse = rawResponse;
-    }
-    
-    public Map<String, Object> structuredContent() {
-        return structuredContent;
-    }
-    
-    public String rawResponse() {
-        return rawResponse;
-    }
 }

@@ -31,47 +31,65 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
+/**
+ * LLM usability metric calculator.
+ */
 public final class LLMUsabilityMetricCalculator {
     
+    /**
+     * Evaluate scenario.
+     *
+     * @param scenario scenario
+     * @param artifactBundle artifact bundle
+     * @return LLM usability scenario result
+     */
     public LLMUsabilityScenarioResult evaluateScenario(final LLMUsabilityScenario scenario, final LLME2EArtifactBundle artifactBundle) {
-        List<MCPInteractionTraceRecord> interactionTrace = artifactBundle.interactionTrace();
-        boolean firstCorrectAction = interactionTrace.isEmpty() || scenario.expectedFirstActionNames().isEmpty()
+        List<MCPInteractionTraceRecord> interactionTrace = artifactBundle.getInteractionTrace();
+        boolean firstCorrectAction = interactionTrace.isEmpty() || scenario.getExpectedFirstActionNames().isEmpty()
                 ? !interactionTrace.isEmpty()
-                : scenario.expectedFirstActionNames().contains(interactionTrace.get(0).targetName());
+                : scenario.getExpectedFirstActionNames().contains(interactionTrace.get(0).getTargetName());
         int invalidCallCount = getInvalidCallCount(interactionTrace);
-        boolean resourceHit = hasResourceHit(scenario.expectedResourceUris(), interactionTrace);
+        boolean resourceHit = hasResourceHit(scenario.getExpectedResourceUris(), interactionTrace);
         boolean errorInteractionObserved = hasErrorInteraction(interactionTrace);
-        boolean boundaryConfusion = !scenario.expectedFirstActionNames().isEmpty() && !firstCorrectAction;
-        LLME2EAssertionReport assertionReport = artifactBundle.assertionReport();
-        boolean success = assertionReport.success();
-        String failureType = assertionReport.failureType();
-        String message = assertionReport.message();
-        if (success && scenario.resourceHitRequired() && !resourceHit) {
+        boolean boundaryConfusion = !scenario.getExpectedFirstActionNames().isEmpty() && !firstCorrectAction;
+        LLME2EAssertionReport assertionReport = artifactBundle.getAssertionReport();
+        boolean success = assertionReport.isSuccess();
+        String failureType = assertionReport.getFailureType();
+        String message = assertionReport.getMessage();
+        if (success && scenario.isResourceHitRequired() && !resourceHit) {
             success = false;
             failureType = "boundary_confusion";
             message = "Scenario required a resource hit but the trace did not contain the expected resource URI.";
             boundaryConfusion = true;
         }
-        if (success && scenario.recoveryExpected() && !errorInteractionObserved) {
+        if (success && scenario.isRecoveryExpected() && !errorInteractionObserved) {
             success = false;
             failureType = "missing_expected_error_path";
             message = "Scenario expected one recoverable MCP error before final success.";
         }
         boolean recoveredAfterError = success && errorInteractionObserved;
         double queryAnswerFidelity = scenario.isQueryScenario() ? success ? 1.0D : 0.0D : 0.0D;
-        boolean degradedSuccess = success && (invalidCallCount > 0 || boundaryConfusion || interactionTrace.size() > scenario.llmScenario().requiredToolNames().size());
-        return new LLMUsabilityScenarioResult(scenario.scenarioId(), scenario.dimension(), scenario.runtimeKind(), success, failureType, message,
+        boolean degradedSuccess = success && (invalidCallCount > 0 || boundaryConfusion || interactionTrace.size() > scenario.getLlmScenario().getRequiredToolNames().size());
+        return new LLMUsabilityScenarioResult(scenario.getScenarioId(), scenario.getDimension(), scenario.getRuntimeKind(), success, failureType, message,
                 firstCorrectAction, invalidCallCount, interactionTrace.size(), resourceHit, recoveredAfterError, queryAnswerFidelity,
                 boundaryConfusion, degradedSuccess, interactionTrace);
     }
     
+    /**
+     * Create scorecard.
+     *
+     * @param suiteId suite id
+     * @param runId run id 
+     * @param scenarioResults scenario results
+     * @return LLM usability scorecard
+     */
     public LLMUsabilityScorecard createScorecard(final String suiteId, final String runId, final List<LLMUsabilityScenarioResult> scenarioResults) {
-        double taskSuccessRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::success);
-        double firstCorrectActionRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::firstCorrectAction);
+        double taskSuccessRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isSuccess);
+        double firstCorrectActionRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isFirstCorrectAction);
         double invalidCallRate = getInvalidCallRate(scenarioResults);
         double averageRoundTrips = getAverageRoundTrips(scenarioResults);
         double queryAnswerFidelity = getQueryAnswerFidelity(scenarioResults);
-        double boundaryConfusionRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::boundaryConfusion);
+        double boundaryConfusionRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isBoundaryConfusion);
         double resourceHitRate = getResourceHitRate(scenarioResults);
         double recoveryRate = getRecoveryRate(scenarioResults);
         List<LLMUsabilityDimensionScore> dimensionScores = new LinkedList<>();
@@ -85,19 +103,19 @@ public final class LLMUsabilityMetricCalculator {
     private LLMUsabilityDimensionScore createDimensionScore(final LLMUsabilityDimension dimension, final List<LLMUsabilityScenarioResult> scenarioResults) {
         List<LLMUsabilityScenarioResult> matchedResults = new LinkedList<>();
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            if (dimension == each.dimension()) {
+            if (dimension == each.getDimension()) {
                 matchedResults.add(each);
             }
         }
         int scenarioCount = matchedResults.size();
-        double successRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::success);
-        double firstCorrectActionRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::firstCorrectAction);
+        double successRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isSuccess);
+        double firstCorrectActionRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isFirstCorrectAction);
         double invalidCallRate = getInvalidCallRate(matchedResults);
         double averageRoundTrips = getAverageRoundTrips(matchedResults);
-        double resourceHitRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::resourceHit);
-        double recoveryRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::recoveredAfterError);
+        double resourceHitRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isResourceHit);
+        double recoveryRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isRecoveredAfterError);
         double queryAnswerFidelity = getAverageQueryAnswerFidelity(matchedResults);
-        double boundaryConfusionRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::boundaryConfusion);
+        double boundaryConfusionRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isBoundaryConfusion);
         return new LLMUsabilityDimensionScore(dimension, scenarioCount, successRate, firstCorrectActionRate, invalidCallRate,
                 averageRoundTrips, resourceHitRate, recoveryRate, queryAnswerFidelity, boundaryConfusionRate);
     }
@@ -118,7 +136,7 @@ public final class LLMUsabilityMetricCalculator {
     private double getQueryAnswerFidelity(final List<LLMUsabilityScenarioResult> scenarioResults) {
         List<LLMUsabilityScenarioResult> queryResults = new LinkedList<>();
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            if (LLMUsabilityDimension.QUERY == each.dimension() || LLMUsabilityDimension.RECOVERY == each.dimension() || LLMUsabilityDimension.RESOURCE == each.dimension()) {
+            if (LLMUsabilityDimension.QUERY == each.getDimension() || LLMUsabilityDimension.RECOVERY == each.getDimension() || LLMUsabilityDimension.RESOURCE == each.getDimension()) {
                 queryResults.add(each);
             }
         }
@@ -131,7 +149,7 @@ public final class LLMUsabilityMetricCalculator {
         }
         double total = 0.0D;
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            total += each.queryAnswerFidelity();
+            total += each.getQueryAnswerFidelity();
         }
         return total / scenarioResults.size();
     }
@@ -139,21 +157,21 @@ public final class LLMUsabilityMetricCalculator {
     private double getResourceHitRate(final List<LLMUsabilityScenarioResult> scenarioResults) {
         List<LLMUsabilityScenarioResult> resourceRequiredResults = new LinkedList<>();
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            if (LLMUsabilityDimension.RESOURCE == each.dimension()) {
+            if (LLMUsabilityDimension.RESOURCE == each.getDimension()) {
                 resourceRequiredResults.add(each);
             }
         }
-        return calculateRate(resourceRequiredResults, LLMUsabilityScenarioResult::resourceHit);
+        return calculateRate(resourceRequiredResults, LLMUsabilityScenarioResult::isResourceHit);
     }
     
     private double getRecoveryRate(final List<LLMUsabilityScenarioResult> scenarioResults) {
         List<LLMUsabilityScenarioResult> recoveryResults = new LinkedList<>();
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            if (LLMUsabilityDimension.RECOVERY == each.dimension()) {
+            if (LLMUsabilityDimension.RECOVERY == each.getDimension()) {
                 recoveryResults.add(each);
             }
         }
-        return calculateRate(recoveryResults, LLMUsabilityScenarioResult::recoveredAfterError);
+        return calculateRate(recoveryResults, LLMUsabilityScenarioResult::isRecoveredAfterError);
     }
     
     private double getInvalidCallRate(final List<LLMUsabilityScenarioResult> scenarioResults) {
@@ -168,7 +186,7 @@ public final class LLMUsabilityMetricCalculator {
     private int getInvalidCallCountTotal(final List<LLMUsabilityScenarioResult> scenarioResults) {
         int total = 0;
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            total += each.invalidCallCount();
+            total += each.getInvalidCallCount();
         }
         return total;
     }
@@ -176,7 +194,7 @@ public final class LLMUsabilityMetricCalculator {
     private int getRoundTripCountTotal(final List<LLMUsabilityScenarioResult> scenarioResults) {
         int total = 0;
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            total += each.roundTripCount();
+            total += each.getRoundTripCount();
         }
         return total;
     }
@@ -184,7 +202,7 @@ public final class LLMUsabilityMetricCalculator {
     private int getInvalidCallCount(final List<MCPInteractionTraceRecord> interactionTrace) {
         int result = 0;
         for (MCPInteractionTraceRecord each : interactionTrace) {
-            if (!each.valid() || each.structuredContent().containsKey("error_code")) {
+            if (!each.isValid() || each.getStructuredContent().containsKey("error_code")) {
                 result++;
             }
         }
@@ -196,10 +214,10 @@ public final class LLMUsabilityMetricCalculator {
             return true;
         }
         for (MCPInteractionTraceRecord each : interactionTrace) {
-            if (!"resource_read".equals(each.actionKind())) {
+            if (!"resource_read".equals(each.getActionKind())) {
                 continue;
             }
-            String resourceUri = String.valueOf(each.arguments().getOrDefault("uri", ""));
+            String resourceUri = String.valueOf(each.getArguments().getOrDefault("uri", ""));
             if (expectedResourceUris.contains(resourceUri)) {
                 return true;
             }
@@ -209,10 +227,10 @@ public final class LLMUsabilityMetricCalculator {
     
     private boolean hasErrorInteraction(final List<MCPInteractionTraceRecord> interactionTrace) {
         for (MCPInteractionTraceRecord each : interactionTrace) {
-            if (!each.valid()) {
+            if (!each.isValid()) {
                 return true;
             }
-            for (Entry<String, Object> entry : each.structuredContent().entrySet()) {
+            for (Entry<String, Object> entry : each.getStructuredContent().entrySet()) {
                 if ("error_code".equals(entry.getKey())) {
                     return true;
                 }
@@ -220,5 +238,4 @@ public final class LLMUsabilityMetricCalculator {
         }
         return false;
     }
-    
 }

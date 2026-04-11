@@ -132,9 +132,9 @@ class LLMChatModelClientTest {
         LLMChatCompletion actual = createClient().complete(List.of(LLMChatMessage.user("Run the smoke.")),
                 List.of(Map.of("type", "function", "function", Map.of("name", "list_tables", "parameters", Map.of("type", "object")))), "auto", true);
         
-        assertThat(actual.toolCalls().size(), is(1));
-        assertThat(actual.toolCalls().get(0).name(), is("list_tables"));
-        assertThat(actual.toolCalls().get(0).argumentsJson(), containsString("\"logic_db\""));
+        assertThat(actual.getToolCalls().size(), is(1));
+        assertThat(actual.getToolCalls().get(0).getName(), is("list_tables"));
+        assertThat(actual.getToolCalls().get(0).getArgumentsJson(), containsString("\"logic_db\""));
         assertThat(requestBody.get(), containsString("\"response_format\""));
         assertThat(requestBody.get(), containsString("\"tools\""));
     }
@@ -148,8 +148,8 @@ class LLMChatModelClientTest {
         
         LLMChatCompletion actual = createClient().complete(List.of(LLMChatMessage.user("Return JSON.")), List.of(), "none", true);
         
-        assertThat(actual.content(), is("{\"database\":\"logic_db\"}"));
-        assertThat(actual.toolCalls(), is(List.of()));
+        assertThat(actual.getContent(), is("{\"database\":\"logic_db\"}"));
+        assertThat(actual.getToolCalls(), is(List.of()));
     }
     
     @Test
@@ -168,7 +168,7 @@ class LLMChatModelClientTest {
                         "{\"database\":\"logic_db\",\"schema\":\"public\",\"query\":\"orders\",\"object_types\":[\"TABLE\"]}"))),
                 LLMChatMessage.tool("call-1", "{\"items\":[{\"name\":\"orders\"}]}")), List.of(), "auto", false);
         
-        assertThat(actual.content(), is("{\"database\":\"logic_db\"}"));
+        assertThat(actual.getContent(), is("{\"database\":\"logic_db\"}"));
         assertThat(requestBody.get(), containsString("\"role\":\"assistant\""));
         assertThat(requestBody.get(), containsString("\"tool_calls\":[{"));
         assertThat(requestBody.get(), containsString("\"id\":\"call-1\""));

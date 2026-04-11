@@ -35,12 +35,12 @@ class LLMStructuredAnswerTest {
     @MethodSource("assertFromJsonCases")
     void assertFromJson(final String name, final String json, final List<String> expectedInteractionSequence) {
         LLMStructuredAnswer actual = LLMStructuredAnswer.fromJson(json);
-        assertThat(actual.database(), is("logic_db"));
-        assertThat(actual.schema(), is("public"));
-        assertThat(actual.table(), is("orders"));
-        assertThat(actual.totalOrders(), is(2));
+        assertThat(actual.getDatabase(), is("logic_db"));
+        assertThat(actual.getSchema(), is("public"));
+        assertThat(actual.getTable(), is("orders"));
+        assertThat(actual.getTotalOrders(), is(2));
         assertThat(actual.getNormalizedQuery(), is("SELECT COUNT(*) AS total_orders FROM orders"));
-        assertThat(actual.interactionSequence(), is(expectedInteractionSequence));
+        assertThat(actual.getInteractionSequence(), is(expectedInteractionSequence));
     }
     
     static Stream<Arguments> assertFromJsonCases() {

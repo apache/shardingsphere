@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.support;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.GenericContainer;
@@ -36,6 +40,7 @@ import java.util.Objects;
 /**
  * E2E-local MySQL-backed runtime test support.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MySQLRuntimeTestSupport {
     
     private static final Duration JDBC_READY_TIMEOUT = Duration.ofSeconds(30);
@@ -49,9 +54,6 @@ public final class MySQLRuntimeTestSupport {
     private static final String PASSWORD = "mcp";
     
     private static final String ROOT_PASSWORD = "root";
-    
-    private MySQLRuntimeTestSupport() {
-    }
     
     /**
      * Create one MySQL runtime container.
@@ -93,13 +95,20 @@ public final class MySQLRuntimeTestSupport {
         return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("MySQL", createJdbcUrl(container), USERNAME, PASSWORD, "com.mysql.cj.jdbc.Driver"));
     }
     
+    /**
+     * Create LLM runtime fixture.
+     *
+     * @param logicalDatabase logical database
+     * @return fixture
+     * @throws SQLException SQL exception
+     */
     public static LLMMySQLRuntimeFixture createLLMRuntimeFixture(final String logicalDatabase) throws SQLException {
-        final GenericContainer<?> container = createContainer();
+        GenericContainer<?> container = createContainer();
         container.start();
         initializeDatabase(container);
-        final String schemaName = detectSchema(container);
-        final String actualSchemaName = schemaName.isEmpty() ? DATABASE_NAME : schemaName;
-        final int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, actualSchemaName));
+        String schemaName = detectSchema(container);
+        String actualSchemaName = schemaName.isEmpty() ? DATABASE_NAME : schemaName;
+        int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, actualSchemaName));
         return new LLMMySQLRuntimeFixture(container, actualSchemaName, totalOrders, createRuntimeDatabases(container, logicalDatabase));
     }
     
@@ -210,6 +219,8 @@ public final class MySQLRuntimeTestSupport {
                 container.getHost(), container.getMappedPort(3306), DATABASE_NAME);
     }
     
+    @RequiredArgsConstructor
+    @Getter
     public static final class LLMMySQLRuntimeFixture implements AutoCloseable {
         
         private final GenericContainer<?> container;
@@ -219,26 +230,6 @@ public final class MySQLRuntimeTestSupport {
         private final int totalOrders;
         
         private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-        
-        LLMMySQLRuntimeFixture(final GenericContainer<?> container, final String schemaName, final int totalOrders,
-                               final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-            this.container = container;
-            this.schemaName = schemaName;
-            this.totalOrders = totalOrders;
-            this.runtimeDatabases = runtimeDatabases;
-        }
-        
-        public String schemaName() {
-            return schemaName;
-        }
-        
-        public int totalOrders() {
-            return totalOrders;
-        }
-        
-        public Map<String, RuntimeDatabaseConfiguration> runtimeDatabases() {
-            return runtimeDatabases;
-        }
         
         @Override
         public void close() {

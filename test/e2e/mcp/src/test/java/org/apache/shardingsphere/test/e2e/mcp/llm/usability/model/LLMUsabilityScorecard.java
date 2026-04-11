@@ -17,8 +17,13 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
+@RequiredArgsConstructor
+@Getter
 public final class LLMUsabilityScorecard {
     
     private final String suiteId;
@@ -44,70 +49,4 @@ public final class LLMUsabilityScorecard {
     private final List<LLMUsabilityDimensionScore> dimensionScores;
     
     private final List<LLMUsabilityScenarioResult> scenarioResults;
-    
-    public LLMUsabilityScorecard(final String suiteId, final String runId, final double taskSuccessRate, final double firstCorrectActionRate,
-                                 final double invalidCallRate, final double averageRoundTrips, final double queryAnswerFidelity,
-                                 final double boundaryConfusionRate, final double resourceHitRate, final double recoveryRate,
-                                 final List<LLMUsabilityDimensionScore> dimensionScores, final List<LLMUsabilityScenarioResult> scenarioResults) {
-        this.suiteId = suiteId;
-        this.runId = runId;
-        this.taskSuccessRate = taskSuccessRate;
-        this.firstCorrectActionRate = firstCorrectActionRate;
-        this.invalidCallRate = invalidCallRate;
-        this.averageRoundTrips = averageRoundTrips;
-        this.queryAnswerFidelity = queryAnswerFidelity;
-        this.boundaryConfusionRate = boundaryConfusionRate;
-        this.resourceHitRate = resourceHitRate;
-        this.recoveryRate = recoveryRate;
-        this.dimensionScores = List.copyOf(dimensionScores);
-        this.scenarioResults = List.copyOf(scenarioResults);
-    }
-    
-    public String suiteId() {
-        return suiteId;
-    }
-    
-    public String runId() {
-        return runId;
-    }
-    
-    public double taskSuccessRate() {
-        return taskSuccessRate;
-    }
-    
-    public double firstCorrectActionRate() {
-        return firstCorrectActionRate;
-    }
-    
-    public double invalidCallRate() {
-        return invalidCallRate;
-    }
-    
-    public double averageRoundTrips() {
-        return averageRoundTrips;
-    }
-    
-    public double queryAnswerFidelity() {
-        return queryAnswerFidelity;
-    }
-    
-    public double boundaryConfusionRate() {
-        return boundaryConfusionRate;
-    }
-    
-    public double resourceHitRate() {
-        return resourceHitRate;
-    }
-    
-    public double recoveryRate() {
-        return recoveryRate;
-    }
-    
-    public List<LLMUsabilityDimensionScore> dimensionScores() {
-        return dimensionScores;
-    }
-    
-    public List<LLMUsabilityScenarioResult> scenarioResults() {
-        return scenarioResults;
-    }
 }

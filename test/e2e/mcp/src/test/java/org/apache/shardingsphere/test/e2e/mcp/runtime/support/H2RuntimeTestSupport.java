@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.support;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 
 import java.nio.file.Path;
@@ -30,12 +32,10 @@ import java.util.Map;
 /**
  * E2E-local H2-backed runtime test support.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class H2RuntimeTestSupport {
     
     private static final String COUNT_ORDERS_JDBC_SQL = "SELECT COUNT(*) AS total_orders FROM public.orders";
-    
-    private H2RuntimeTestSupport() {
-    }
     
     /**
      * Create one file-backed H2 JDBC URL in MySQL compatibility mode.
@@ -59,6 +59,15 @@ public final class H2RuntimeTestSupport {
         return Map.of(logicalDatabase, new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
     }
     
+    /**
+     * Create LLM runtime fixture.
+     *
+     * @param tempDir temp dir
+     * @param databaseName database name 
+     * @param logicalDatabase logical database
+     * @return fixture
+     * @throws SQLException SQL exception
+     */
     public static LLMH2RuntimeFixture createLLMRuntimeFixture(final Path tempDir, final String databaseName, final String logicalDatabase) throws SQLException {
         String jdbcUrl = createJdbcUrl(tempDir, databaseName);
         initializeDatabase(jdbcUrl);

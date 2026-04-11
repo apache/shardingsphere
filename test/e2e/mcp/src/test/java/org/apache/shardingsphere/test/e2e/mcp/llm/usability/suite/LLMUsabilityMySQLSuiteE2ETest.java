@@ -53,13 +53,13 @@ class LLMUsabilityMySQLSuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return runtimeFixture.runtimeDatabases();
+        return runtimeFixture.getRuntimeDatabases();
     }
     
     @Test
     void assertMinimalBaseline() throws IOException {
         assertAdvisoryUsabilitySuite("minimal-usability-mysql",
-                () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("mysql", "logic_db", runtimeFixture.schemaName(),
-                        "orders", COUNT_ORDERS_SQL, runtimeFixture.totalOrders()));
+                () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("mysql", "logic_db", runtimeFixture.getSchemaName(),
+                        "orders", COUNT_ORDERS_SQL, runtimeFixture.getTotalOrders()));
     }
 }

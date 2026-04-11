@@ -20,16 +20,51 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.transport;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * MCP interaction client.
+ */
 public interface MCPInteractionClient extends AutoCloseable {
     
+    /**
+     * Open.
+     *
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
     void open() throws IOException, InterruptedException;
     
+    /**
+     * Call.
+     *
+     * @param actionName action name
+     * @param arguments arguments
+     * @return MCP interaction response
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
     MCPInteractionResponse call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
     
+    /**
+     * List resources.
+     *
+     * @return MCP interaction response
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     * @throws UnsupportedOperationException unsupported operation exception
+     */
     default MCPInteractionResponse listResources() throws IOException, InterruptedException {
         throw new UnsupportedOperationException("resources/list is not supported.");
     }
     
+    /**
+     * Read resource.
+     *
+     * @param resourceUri resource URI
+     * @return MCP interaction response
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     * @throws UnsupportedOperationException unsupported operation exception
+     */
     default MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException {
         throw new UnsupportedOperationException("resources/read is not supported.");
     }

@@ -28,12 +28,12 @@ final class LLME2EConfigurationEnvProbe {
     public static void main(final String[] args) {
         // CHECKSTYLE:ON
         LLME2EConfiguration actual = LLME2EConfiguration.load();
-        System.out.println("enabled=" + actual.enabled());
-        System.out.println("baseUrl=" + actual.baseUrl());
-        System.out.println("modelName=" + actual.modelName());
-        System.out.println("requestTimeoutSeconds=" + actual.requestTimeoutSeconds());
-        System.out.println("maxTurns=" + actual.maxTurns());
-        System.out.println("artifactRoot=" + actual.artifactRoot());
-        System.out.println("runId=" + actual.runId());
+        System.out.println("enabled=" + actual.isEnabled());
+        System.out.println("baseUrl=" + actual.getBaseUrl());
+        System.out.println("modelName=" + actual.getModelName());
+        System.out.println("requestTimeoutSeconds=" + actual.getRequestTimeoutSeconds());
+        System.out.println("maxTurns=" + actual.getMaxTurns());
+        System.out.println("artifactRoot=" + actual.getArtifactRoot());
+        System.out.println("runId=" + actual.getRunId());
     }
 }

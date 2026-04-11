@@ -29,21 +29,21 @@ final class LLMUsabilityRegressionChecker {
         List<String> regressedMetrics = new LinkedList<>();
         List<String> improvedMetrics = new LinkedList<>();
         List<String> stableMetrics = new LinkedList<>();
-        classifyHigherIsBetterMetric("task_success_rate", baseline.taskSuccessRate(), candidate.taskSuccessRate(), regressionBudget.maxTaskSuccessRateDrop(),
+        classifyHigherIsBetterMetric("task_success_rate", baseline.getTaskSuccessRate(), candidate.getTaskSuccessRate(), regressionBudget.maxTaskSuccessRateDrop(),
                 regressedMetrics, improvedMetrics, stableMetrics);
-        classifyHigherIsBetterMetric("first_correct_action_rate", baseline.firstCorrectActionRate(), candidate.firstCorrectActionRate(),
+        classifyHigherIsBetterMetric("first_correct_action_rate", baseline.getFirstCorrectActionRate(), candidate.getFirstCorrectActionRate(),
                 regressionBudget.maxFirstCorrectActionRateDrop(), regressedMetrics, improvedMetrics, stableMetrics);
-        classifyLowerIsBetterMetric("invalid_call_rate", baseline.invalidCallRate(), candidate.invalidCallRate(),
+        classifyLowerIsBetterMetric("invalid_call_rate", baseline.getInvalidCallRate(), candidate.getInvalidCallRate(),
                 regressionBudget.maxInvalidCallRateIncrease(), regressedMetrics, improvedMetrics, stableMetrics);
-        classifyLowerIsBetterMetric("average_round_trips", baseline.averageRoundTrips(), candidate.averageRoundTrips(),
+        classifyLowerIsBetterMetric("average_round_trips", baseline.getAverageRoundTrips(), candidate.getAverageRoundTrips(),
                 regressionBudget.maxAverageRoundTripsIncrease(), regressedMetrics, improvedMetrics, stableMetrics);
-        classifyHigherIsBetterMetric("query_answer_fidelity", baseline.queryAnswerFidelity(), candidate.queryAnswerFidelity(),
+        classifyHigherIsBetterMetric("query_answer_fidelity", baseline.getQueryAnswerFidelity(), candidate.getQueryAnswerFidelity(),
                 regressionBudget.maxQueryAnswerFidelityDrop(), regressedMetrics, improvedMetrics, stableMetrics);
-        classifyLowerIsBetterMetric("boundary_confusion_rate", baseline.boundaryConfusionRate(), candidate.boundaryConfusionRate(),
+        classifyLowerIsBetterMetric("boundary_confusion_rate", baseline.getBoundaryConfusionRate(), candidate.getBoundaryConfusionRate(),
                 regressionBudget.maxBoundaryConfusionRateIncrease(), regressedMetrics, improvedMetrics, stableMetrics);
         boolean regressionDetected = !regressedMetrics.isEmpty();
         String decision = regressionDetected ? "regression_detected" : "within_budget";
-        return new LLMUsabilityComparisonResult(baseline.runId(), candidate.runId(), regressionDetected, regressedMetrics, improvedMetrics, stableMetrics, decision);
+        return new LLMUsabilityComparisonResult(baseline.getRunId(), candidate.getRunId(), regressionDetected, regressedMetrics, improvedMetrics, stableMetrics, decision);
     }
     
     private void classifyHigherIsBetterMetric(final String metricName, final double baselineValue, final double candidateValue, final double allowedDrop,

@@ -69,14 +69,14 @@ class LLME2EConfigurationTest {
         
         final LLME2EConfiguration actual = LLME2EConfiguration.load();
         
-        assertTrue(actual.enabled());
-        assertThat(actual.baseUrl(), is("http://127.0.0.1:11434/v1"));
-        assertThat(actual.modelName(), is("mock-model"));
-        assertThat(actual.apiKey(), is("mock-key"));
-        assertThat(actual.readyTimeoutSeconds(), is(5));
-        assertThat(actual.requestTimeoutSeconds(), is(7));
-        assertThat(actual.maxTurns(), is(9));
-        assertThat(actual.runId(), is("fixed-run"));
+        assertTrue(actual.isEnabled());
+        assertThat(actual.getBaseUrl(), is("http://127.0.0.1:11434/v1"));
+        assertThat(actual.getModelName(), is("mock-model"));
+        assertThat(actual.getApiKey(), is("mock-key"));
+        assertThat(actual.getReadyTimeoutSeconds(), is(5));
+        assertThat(actual.getRequestTimeoutSeconds(), is(7));
+        assertThat(actual.getMaxTurns(), is(9));
+        assertThat(actual.getRunId(), is("fixed-run"));
         assertThat(actual.getChatCompletionsUrl(), is("http://127.0.0.1:11434/v1/chat/completions"));
         assertThat(actual.getModelsUrl(), is("http://127.0.0.1:11434/v1/models"));
         final Path artifactDirectory = actual.createArtifactDirectory("scenario-a");
@@ -87,8 +87,8 @@ class LLME2EConfigurationTest {
     @Test
     void assertLoadWithDefaultRunIdAndArtifactRoot() {
         LLME2EConfiguration actual = LLME2EConfiguration.load();
-        assertThat(actual.artifactRoot(), is(Paths.get("target/llm-e2e")));
-        assertTrue(actual.runId().matches("\\d{14}-[0-9a-f]{8}"));
+        assertThat(actual.getArtifactRoot(), is(Paths.get("target/llm-e2e")));
+        assertTrue(actual.getRunId().matches("\\d{14}-[0-9a-f]{8}"));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -98,11 +98,11 @@ class LLME2EConfigurationTest {
         LLME2EConfiguration actual = LLME2EConfiguration.load();
         String actualValue;
         if ("mcp.llm.base-url".equals(propertyName)) {
-            actualValue = actual.baseUrl();
+            actualValue = actual.getBaseUrl();
         } else if ("mcp.llm.model".equals(propertyName)) {
-            actualValue = actual.modelName();
+            actualValue = actual.getModelName();
         } else {
-            actualValue = actual.apiKey();
+            actualValue = actual.getApiKey();
         }
         assertThat(actualValue, is(expectedValue));
     }
@@ -116,11 +116,11 @@ class LLME2EConfigurationTest {
         
         int actualValue;
         if ("mcp.llm.ready-timeout-seconds".equals(propertyName)) {
-            actualValue = actual.readyTimeoutSeconds();
+            actualValue = actual.getReadyTimeoutSeconds();
         } else if ("mcp.llm.request-timeout-seconds".equals(propertyName)) {
-            actualValue = actual.requestTimeoutSeconds();
+            actualValue = actual.getRequestTimeoutSeconds();
         } else {
-            actualValue = actual.maxTurns();
+            actualValue = actual.getMaxTurns();
         }
         assertThat(actualValue, is(expectedValue));
     }

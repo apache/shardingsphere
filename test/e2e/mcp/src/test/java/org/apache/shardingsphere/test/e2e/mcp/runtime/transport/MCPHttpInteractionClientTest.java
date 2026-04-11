@@ -68,10 +68,10 @@ class MCPHttpInteractionClientTest {
         final MCPInteractionResponse resourceResponse = actual.readResource("shardingsphere://capabilities");
         actual.close();
         
-        assertThat(String.valueOf(response.structuredContent().get("result_kind")), is("result_set"));
-        assertThat(String.valueOf(listResponse.structuredContent().get("resources")), containsString("shardingsphere://capabilities"));
-        assertThat(String.valueOf(resourceResponse.structuredContent().get("supportedTools")), containsString("execute_query"));
-        assertThat(response.rawResponse(), containsString("structuredContent"));
+        assertThat(String.valueOf(response.getStructuredContent().get("result_kind")), is("result_set"));
+        assertThat(String.valueOf(listResponse.getStructuredContent().get("resources")), containsString("shardingsphere://capabilities"));
+        assertThat(String.valueOf(resourceResponse.getStructuredContent().get("supportedTools")), containsString("execute_query"));
+        assertThat(response.getRawResponse(), containsString("structuredContent"));
         assertThat(toolSessionId.get(), is("session-1"));
         assertThat(resourceSessionId.get(), is("session-1"));
         assertThat(deleteSessionId.get(), is("session-1"));
@@ -172,8 +172,8 @@ class MCPHttpInteractionClientTest {
         MCPHttpInteractionClient actual = createClient();
         actual.open();
         MCPInteractionResponse response = executeOperation(actual, operation);
-        assertThat(String.valueOf(response.structuredContent().get("error_code")), is("json_rpc_error"));
-        assertThat(String.valueOf(response.structuredContent().get("message")), is("Unsupported resource."));
+        assertThat(String.valueOf(response.getStructuredContent().get("error_code")), is("json_rpc_error"));
+        assertThat(String.valueOf(response.getStructuredContent().get("message")), is("Unsupported resource."));
     }
     
     static Stream<Arguments> assertJsonRpcErrorCases() {
@@ -200,11 +200,11 @@ class MCPHttpInteractionClientTest {
         }
         MCPInteractionResponse response = actual.readResource("shardingsphere://capabilities");
         if (expectedEmptyPayload) {
-            assertThat(response.structuredContent(), is(Map.of()));
+            assertThat(response.getStructuredContent(), is(Map.of()));
             return;
         }
-        assertThat(String.valueOf(response.structuredContent().get("error_code")), is(expectedErrorCode));
-        assertThat(String.valueOf(response.structuredContent().get("message")), is(expectedMessage));
+        assertThat(String.valueOf(response.getStructuredContent().get("error_code")), is(expectedErrorCode));
+        assertThat(String.valueOf(response.getStructuredContent().get("message")), is(expectedMessage));
     }
     
     static Stream<Arguments> assertReadResourceBoundaryCases() {

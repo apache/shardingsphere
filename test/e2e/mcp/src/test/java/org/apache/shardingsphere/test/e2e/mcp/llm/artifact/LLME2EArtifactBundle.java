@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.artifact;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionTraceRecord;
 
 import java.util.List;
 
+@RequiredArgsConstructor
+@Getter
 public final class LLME2EArtifactBundle {
     
     private final String scenarioId;
@@ -38,50 +42,4 @@ public final class LLME2EArtifactBundle {
     private final List<String> mcpRuntimeLogLines;
     
     private final LLME2EAssertionReport assertionReport;
-    
-    public LLME2EArtifactBundle(final String scenarioId, final String systemPrompt, final String userPrompt,
-                                final String finalAnswerJson, final List<String> rawModelOutputs,
-                                final List<MCPInteractionTraceRecord> interactionTrace, final List<String> mcpRuntimeLogLines,
-                                final LLME2EAssertionReport assertionReport) {
-        this.scenarioId = scenarioId;
-        this.systemPrompt = systemPrompt;
-        this.userPrompt = userPrompt;
-        this.finalAnswerJson = finalAnswerJson;
-        this.rawModelOutputs = List.copyOf(rawModelOutputs);
-        this.interactionTrace = List.copyOf(interactionTrace);
-        this.mcpRuntimeLogLines = List.copyOf(mcpRuntimeLogLines);
-        this.assertionReport = assertionReport;
-    }
-    
-    public String scenarioId() {
-        return scenarioId;
-    }
-    
-    public String systemPrompt() {
-        return systemPrompt;
-    }
-    
-    public String userPrompt() {
-        return userPrompt;
-    }
-    
-    public String finalAnswerJson() {
-        return finalAnswerJson;
-    }
-    
-    public List<String> rawModelOutputs() {
-        return rawModelOutputs;
-    }
-    
-    public List<MCPInteractionTraceRecord> interactionTrace() {
-        return interactionTrace;
-    }
-    
-    public List<String> mcpRuntimeLogLines() {
-        return mcpRuntimeLogLines;
-    }
-    
-    public LLME2EAssertionReport assertionReport() {
-        return assertionReport;
-    }
 }

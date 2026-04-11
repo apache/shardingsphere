@@ -17,8 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.scenario;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
+/**
+ * LLM E2E scenario.
+ */
+@RequiredArgsConstructor
+@Getter
 public final class LLME2EScenario {
     
     private final String scenarioId;
@@ -32,39 +40,4 @@ public final class LLME2EScenario {
     private final List<String> allowedToolNames;
     
     private final List<String> requiredToolNames;
-    
-    public LLME2EScenario(final String scenarioId, final String systemPrompt, final String userPrompt,
-                          final LLMStructuredAnswer expectedAnswer, final List<String> allowedToolNames,
-                          final List<String> requiredToolNames) {
-        this.scenarioId = scenarioId;
-        this.systemPrompt = systemPrompt;
-        this.userPrompt = userPrompt;
-        this.expectedAnswer = expectedAnswer;
-        this.allowedToolNames = List.copyOf(allowedToolNames);
-        this.requiredToolNames = List.copyOf(requiredToolNames);
-    }
-    
-    public String scenarioId() {
-        return scenarioId;
-    }
-    
-    public String systemPrompt() {
-        return systemPrompt;
-    }
-    
-    public String userPrompt() {
-        return userPrompt;
-    }
-    
-    public LLMStructuredAnswer expectedAnswer() {
-        return expectedAnswer;
-    }
-    
-    public List<String> allowedToolNames() {
-        return allowedToolNames;
-    }
-    
-    public List<String> requiredToolNames() {
-        return requiredToolNames;
-    }
 }

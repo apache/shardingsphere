@@ -49,7 +49,7 @@ public final class LLMChatModelClient implements LLMChatClient {
     
     @Override
     public void waitUntilReady() throws InterruptedException {
-        long deadline = System.currentTimeMillis() + config.readyTimeoutSeconds() * 1000L;
+        long deadline = System.currentTimeMillis() + config.getReadyTimeoutSeconds() * 1000L;
         IOException lastException = null;
         IllegalStateException lastStateException = null;
         while (System.currentTimeMillis() < deadline) {
@@ -65,7 +65,7 @@ public final class LLMChatModelClient implements LLMChatClient {
             }
             Thread.sleep(2000L);
         }
-        IllegalStateException result = new IllegalStateException(String.format("Model service is not ready for `%s`.", config.modelName()));
+        IllegalStateException result = new IllegalStateException(String.format("Model service is not ready for `%s`.", config.getModelName()));
         if (null != lastException) {
             result.initCause(lastException);
         } else if (null != lastStateException) {
@@ -78,7 +78,7 @@ public final class LLMChatModelClient implements LLMChatClient {
     public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                       final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
         Map<String, Object> requestPayload = new LinkedHashMap<>(16, 1F);
-        requestPayload.put("model", config.modelName());
+        requestPayload.put("model", config.getModelName());
         requestPayload.put("messages", createMessages(messages));
         requestPayload.put("stream", false);
         requestPayload.put("temperature", 0);
@@ -95,8 +95,8 @@ public final class LLMChatModelClient implements LLMChatClient {
             requestPayload.put("response_format", Map.of("type", "json_object"));
         }
         HttpRequest request = HttpRequest.newBuilder(URI.create(config.getChatCompletionsUrl()))
-                .timeout(Duration.ofSeconds(config.requestTimeoutSeconds()))
-                .header("Authorization", "Bearer " + config.apiKey())
+                .timeout(Duration.ofSeconds(config.getRequestTimeoutSeconds()))
+                .header("Authorization", "Bearer " + config.getApiKey())
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(requestPayload)))
                 .build();
@@ -118,8 +118,8 @@ public final class LLMChatModelClient implements LLMChatClient {
     
     private HttpResponse<String> sendModelListRequest() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(URI.create(config.getModelsUrl()))
-                .timeout(Duration.ofSeconds(Math.min(config.requestTimeoutSeconds(), 30)))
-                .header("Authorization", "Bearer " + config.apiKey())
+                .timeout(Duration.ofSeconds(Math.min(config.getRequestTimeoutSeconds(), 30)))
+                .header("Authorization", "Bearer " + config.getApiKey())
                 .GET()
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
@@ -129,7 +129,7 @@ public final class LLMChatModelClient implements LLMChatClient {
         Map<String, Object> payload = parseJsonObject(responseBody, "Failed to parse model-list response.");
         List<Map<String, Object>> data = castToList(payload.get("data"));
         for (Map<String, Object> each : data) {
-            if (config.modelName().equals(Objects.toString(each.get("id"), "").trim())) {
+            if (config.getModelName().equals(Objects.toString(each.get("id"), "").trim())) {
                 return true;
             }
         }
@@ -140,17 +140,17 @@ public final class LLMChatModelClient implements LLMChatClient {
         List<Map<String, Object>> result = new LinkedList<>();
         for (LLMChatMessage each : messages) {
             Map<String, Object> message = new LinkedHashMap<>(8, 1F);
-            message.put("role", each.role());
-            if (!each.toolCallId().isEmpty()) {
-                message.put("tool_call_id", each.toolCallId());
+            message.put("role", each.getRole());
+            if (!each.getToolCallId().isEmpty()) {
+                message.put("tool_call_id", each.getToolCallId());
             }
-            if (!each.content().isEmpty()) {
-                message.put("content", each.content());
-            } else if (each.toolCalls().isEmpty()) {
+            if (!each.getContent().isEmpty()) {
+                message.put("content", each.getContent());
+            } else if (each.getToolCalls().isEmpty()) {
                 message.put("content", "");
             }
-            if (!each.toolCalls().isEmpty()) {
-                message.put("tool_calls", createToolCalls(each.toolCalls()));
+            if (!each.getToolCalls().isEmpty()) {
+                message.put("tool_calls", createToolCalls(each.getToolCalls()));
             }
             result.add(message);
         }
@@ -160,8 +160,8 @@ public final class LLMChatModelClient implements LLMChatClient {
     private List<Map<String, Object>> createToolCalls(final List<LLMToolCall> toolCalls) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (LLMToolCall each : toolCalls) {
-            result.add(Map.of("id", each.id(), "type", "function",
-                    "function", Map.of("name", each.name(), "arguments", each.argumentsJson())));
+            result.add(Map.of("id", each.getId(), "type", "function",
+                    "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson())));
         }
         return result;
     }
@@ -196,7 +196,9 @@ public final class LLMChatModelClient implements LLMChatClient {
         try {
             return JsonUtils.fromJsonString(responseBody, new TypeReference<>() {
             });
+            // CHECKSTYLE:OFF
         } catch (final Exception ex) {
+            // CHECKSTYLE:ON
             throw new IllegalStateException(errorMessage, ex);
         }
     }

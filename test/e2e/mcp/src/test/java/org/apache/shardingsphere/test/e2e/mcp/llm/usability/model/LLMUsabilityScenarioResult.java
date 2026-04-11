@@ -17,12 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionTraceRecord;
 
 import java.util.List;
 
 @RequiredArgsConstructor
+@Getter
 public final class LLMUsabilityScenarioResult {
     
     private final String scenarioId;
@@ -54,64 +56,4 @@ public final class LLMUsabilityScenarioResult {
     private final boolean degradedSuccess;
     
     private final List<MCPInteractionTraceRecord> interactionTrace;
-    
-    public String scenarioId() {
-        return scenarioId;
-    }
-    
-    public LLMUsabilityDimension dimension() {
-        return dimension;
-    }
-    
-    public String runtimeKind() {
-        return runtimeKind;
-    }
-    
-    public boolean success() {
-        return success;
-    }
-    
-    public String failureType() {
-        return failureType;
-    }
-    
-    public String message() {
-        return message;
-    }
-    
-    public boolean firstCorrectAction() {
-        return firstCorrectAction;
-    }
-    
-    public int invalidCallCount() {
-        return invalidCallCount;
-    }
-    
-    public int roundTripCount() {
-        return roundTripCount;
-    }
-    
-    public boolean resourceHit() {
-        return resourceHit;
-    }
-    
-    public boolean recoveredAfterError() {
-        return recoveredAfterError;
-    }
-    
-    public double queryAnswerFidelity() {
-        return queryAnswerFidelity;
-    }
-    
-    public boolean boundaryConfusion() {
-        return boundaryConfusion;
-    }
-    
-    public boolean degradedSuccess() {
-        return degradedSuccess;
-    }
-    
-    public List<MCPInteractionTraceRecord> interactionTrace() {
-        return interactionTrace;
-    }
 }

@@ -21,10 +21,29 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * LLM chat client.
+ */
 public interface LLMChatClient {
     
+    /**
+     * Wait until ready.
+     *
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
     void waitUntilReady() throws IOException, InterruptedException;
     
-    LLMChatCompletion complete(List<LLMChatMessage> messages, List<Map<String, Object>> tools, String toolChoice,
-                               boolean jsonResponse) throws IOException, InterruptedException;
+    /**
+     * Complete.
+     *
+     * @param messages messages
+     * @param tools tools
+     * @param toolChoice tool choice
+     * @param jsonResponse json response
+     * @return LLM chat completion
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     */
+    LLMChatCompletion complete(List<LLMChatMessage> messages, List<Map<String, Object>> tools, String toolChoice, boolean jsonResponse) throws IOException, InterruptedException;
 }

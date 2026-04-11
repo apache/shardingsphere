@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
+@Getter
 public final class LLMUsabilityDimensionScore {
     
     private final LLMUsabilityDimension dimension;
@@ -41,44 +43,4 @@ public final class LLMUsabilityDimensionScore {
     private final double queryAnswerFidelity;
     
     private final double boundaryConfusionRate;
-    
-    public LLMUsabilityDimension dimension() {
-        return dimension;
-    }
-    
-    public int scenarioCount() {
-        return scenarioCount;
-    }
-    
-    public double successRate() {
-        return successRate;
-    }
-    
-    public double firstCorrectActionRate() {
-        return firstCorrectActionRate;
-    }
-    
-    public double invalidCallRate() {
-        return invalidCallRate;
-    }
-    
-    public double averageRoundTrips() {
-        return averageRoundTrips;
-    }
-    
-    public double resourceHitRate() {
-        return resourceHitRate;
-    }
-    
-    public double recoveryRate() {
-        return recoveryRate;
-    }
-    
-    public double queryAnswerFidelity() {
-        return queryAnswerFidelity;
-    }
-    
-    public double boundaryConfusionRate() {
-        return boundaryConfusionRate;
-    }
 }

@@ -63,10 +63,10 @@ class LLMMCPConversationRunnerTest {
                    final MCPInteractionClient mcpInteractionClient, final int expectedInteractionCount,
                    final String expectedFirstActionKind, final String expectedLastTargetName) {
         LLME2EArtifactBundle result = new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient).run(scenario);
-        assertTrue(result.assertionReport().success());
-        assertThat(result.interactionTrace().size(), is(expectedInteractionCount));
-        assertThat(result.interactionTrace().get(0).actionKind(), is(expectedFirstActionKind));
-        assertThat(result.interactionTrace().get(result.interactionTrace().size() - 1).targetName(), is(expectedLastTargetName));
+        assertTrue(result.getAssertionReport().isSuccess());
+        assertThat(result.getInteractionTrace().size(), is(expectedInteractionCount));
+        assertThat(result.getInteractionTrace().get(0).getActionKind(), is(expectedFirstActionKind));
+        assertThat(result.getInteractionTrace().get(result.getInteractionTrace().size() - 1).getTargetName(), is(expectedLastTargetName));
     }
     
     static Stream<Arguments> assertRunCases() {
@@ -116,8 +116,8 @@ class LLMMCPConversationRunnerTest {
     void assertRejectEarlyFailure(final String name, final LLME2EScenario scenario, final LLMChatClient llmChatClient,
                                   final String expectedFailureType) {
         LLME2EArtifactBundle result = new LLMMCPConversationRunner(2, llmChatClient, new StubMCPInteractionClient(Map.of())).run(scenario);
-        assertFalse(result.assertionReport().success());
-        assertThat(result.assertionReport().failureType(), is(expectedFailureType));
+        assertFalse(result.getAssertionReport().isSuccess());
+        assertThat(result.getAssertionReport().getFailureType(), is(expectedFailureType));
     }
     
     static Stream<Arguments> assertRejectEarlyFailureCases() {
@@ -154,9 +154,9 @@ class LLMMCPConversationRunnerTest {
                         Map.of("shardingsphere://databases/logic_db/schemas/public/tables/orders",
                                 new MCPInteractionResponse(Map.of("table", "orders", "columns", List.of(Map.of("column", "order_id"))), "{}"))))
                 .run(SCENARIO);
-        assertFalse(result.assertionReport().success());
-        assertThat(result.assertionReport().failureType(), is("unexpected_query_result"));
-        assertThat(result.assertionReport().message(), is(expectedMessage));
+        assertFalse(result.getAssertionReport().isSuccess());
+        assertThat(result.getAssertionReport().getFailureType(), is("unexpected_query_result"));
+        assertThat(result.getAssertionReport().getMessage(), is(expectedMessage));
     }
     
     static Stream<Arguments> assertUnexpectedQueryResultCases() {
@@ -204,9 +204,9 @@ class LLMMCPConversationRunnerTest {
                         Map.of("shardingsphere://databases/logic_db/schemas/public/tables/orders",
                                 new MCPInteractionResponse(Map.of("table", "orders", "columns", List.of(Map.of("column", "order_id"))), "{}"))))
                 .run(SCENARIO);
-        assertFalse(result.assertionReport().success());
-        assertThat(result.assertionReport().failureType(), is("invalid_final_json"));
-        assertThat(result.assertionReport().message(), is("Model did not return a valid final JSON payload."));
+        assertFalse(result.getAssertionReport().isSuccess());
+        assertThat(result.getAssertionReport().getFailureType(), is("invalid_final_json"));
+        assertThat(result.getAssertionReport().getMessage(), is("Model did not return a valid final JSON payload."));
     }
     
     @Test
@@ -228,9 +228,9 @@ class LLMMCPConversationRunnerTest {
                         Map.of("shardingsphere://databases/logic_db/schemas/public/tables/orders",
                                 new MCPInteractionResponse(Map.of("table", "orders", "columns", List.of(Map.of("column", "order_id"))), "{}"))))
                 .run(SCENARIO);
-        assertTrue(result.assertionReport().success());
-        assertThat(result.finalAnswerJson(), is(expectedFinalAnswerJson));
-        assertThat(result.rawModelOutputs().size(), is(3));
+        assertTrue(result.getAssertionReport().isSuccess());
+        assertThat(result.getFinalAnswerJson(), is(expectedFinalAnswerJson));
+        assertThat(result.getRawModelOutputs().size(), is(3));
     }
     
     @Test
@@ -246,7 +246,7 @@ class LLMMCPConversationRunnerTest {
                         new MCPInteractionResponse(Map.of("resources",
                                 List.of(Map.of("uri", "shardingsphere://databases/logic_db/schemas/public/tables/orders"))), "{}")))
                 .run(scenario);
-        assertTrue(result.assertionReport().success());
+        assertTrue(result.getAssertionReport().isSuccess());
         assertThat(actualTools.get().size(), is(4));
         Map<String, Object> listParameters = findToolParameters(actualTools.get(), "mcp_list_resources");
         assertThat(listParameters.get("type"), is("object"));
@@ -311,8 +311,8 @@ class LLMMCPConversationRunnerTest {
     void assertMissingRequiredToolCoverage(final String name, final int maxTurns, final LLME2EScenario scenario,
                                            final LLMChatClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
         LLME2EArtifactBundle result = new LLMMCPConversationRunner(maxTurns, llmChatClient, mcpInteractionClient).run(scenario);
-        assertFalse(result.assertionReport().success());
-        assertThat(result.assertionReport().failureType(), is("missing_required_tool_coverage"));
+        assertFalse(result.getAssertionReport().isSuccess());
+        assertThat(result.getAssertionReport().getFailureType(), is("missing_required_tool_coverage"));
     }
     
     static Stream<Arguments> assertMissingRequiredToolCoverageCases() {
@@ -344,12 +344,12 @@ class LLMMCPConversationRunnerTest {
                                     final String expectedFailureType, final String expectedMessage, final boolean exactMessage,
                                     final boolean expectedInterrupted) {
         LLME2EArtifactBundle result = new LLMMCPConversationRunner(2, llmChatClient, mcpInteractionClient).run(SCENARIO);
-        assertFalse(result.assertionReport().success());
-        assertThat(result.assertionReport().failureType(), is(expectedFailureType));
+        assertFalse(result.getAssertionReport().isSuccess());
+        assertThat(result.getAssertionReport().getFailureType(), is(expectedFailureType));
         if (exactMessage) {
-            assertThat(result.assertionReport().message(), is(expectedMessage));
+            assertThat(result.getAssertionReport().getMessage(), is(expectedMessage));
         } else {
-            assertThat(result.assertionReport().message(), containsString(expectedMessage));
+            assertThat(result.getAssertionReport().getMessage(), containsString(expectedMessage));
         }
         assertThat(Thread.interrupted(), is(expectedInterrupted));
     }
@@ -404,9 +404,9 @@ class LLMMCPConversationRunnerTest {
                         Map.of("shardingsphere://databases/logic_db/schemas/public/tables/orders",
                                 new MCPInteractionResponse(Map.of("table", "orders", "columns", List.of(Map.of("column", "order_id"))), "{}"))))
                 .run(SCENARIO);
-        assertFalse(result.assertionReport().success());
-        assertThat(result.assertionReport().failureType(), is("unexpected_query_result"));
-        assertThat(result.assertionReport().message(), is("The execute_query trace does not contain a numeric result set."));
+        assertFalse(result.getAssertionReport().isSuccess());
+        assertThat(result.getAssertionReport().getFailureType(), is("unexpected_query_result"));
+        assertThat(result.getAssertionReport().getMessage(), is("The execute_query trace does not contain a numeric result set."));
     }
     
     static Stream<Arguments> assertUnexpectedQueryResultWhenExecuteQueryTraceDoesNotContainNumericResultCases() {
@@ -517,6 +517,7 @@ class LLMMCPConversationRunnerTest {
     }
     
     private static MCPInteractionClient createFailingMCPInteractionClient(final String actionName, final Exception failure) {
+        // CHECKSTYLE:OFF
         return new MCPInteractionClient() {
             
             @Override
@@ -549,5 +550,6 @@ class LLMMCPConversationRunnerTest {
             public void close() {
             }
         };
+        // CHECKSTYLE:ON
     }
 }

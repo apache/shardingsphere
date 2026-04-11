@@ -28,16 +28,23 @@ import java.nio.file.Path;
  */
 public final class LLME2EArtifactWriter {
     
+    /**
+     * Write.
+     *
+     * @param artifactDirectory artifact directory
+     * @param artifactBundle artifact bundle
+     * @throws IOException IO exception
+     */
     public void write(final Path artifactDirectory, final LLME2EArtifactBundle artifactBundle) throws IOException {
         Files.createDirectories(artifactDirectory);
-        Files.writeString(artifactDirectory.resolve("system-prompt.md"), artifactBundle.systemPrompt());
-        Files.writeString(artifactDirectory.resolve("user-prompt.md"), artifactBundle.userPrompt());
-        Files.writeString(artifactDirectory.resolve("raw-model-output.txt"), String.join(System.lineSeparator() + System.lineSeparator(), artifactBundle.rawModelOutputs()));
-        Files.writeString(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(artifactBundle.interactionTrace()));
-        Files.writeString(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(artifactBundle.assertionReport()));
-        Files.writeString(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), artifactBundle.mcpRuntimeLogLines()));
-        if (null != artifactBundle.finalAnswerJson() && !artifactBundle.finalAnswerJson().isEmpty()) {
-            Files.writeString(artifactDirectory.resolve("final-answer.json"), artifactBundle.finalAnswerJson());
+        Files.writeString(artifactDirectory.resolve("system-prompt.md"), artifactBundle.getSystemPrompt());
+        Files.writeString(artifactDirectory.resolve("user-prompt.md"), artifactBundle.getUserPrompt());
+        Files.writeString(artifactDirectory.resolve("raw-model-output.txt"), String.join(System.lineSeparator() + System.lineSeparator(), artifactBundle.getRawModelOutputs()));
+        Files.writeString(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(artifactBundle.getInteractionTrace()));
+        Files.writeString(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(artifactBundle.getAssertionReport()));
+        Files.writeString(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), artifactBundle.getMcpRuntimeLogLines()));
+        if (null != artifactBundle.getFinalAnswerJson() && !artifactBundle.getFinalAnswerJson().isEmpty()) {
+            Files.writeString(artifactDirectory.resolve("final-answer.json"), artifactBundle.getFinalAnswerJson());
         }
     }
 }

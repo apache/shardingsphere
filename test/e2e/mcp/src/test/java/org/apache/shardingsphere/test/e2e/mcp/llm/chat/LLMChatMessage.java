@@ -17,8 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
+/**
+ * LLM chat message.
+ */
+@RequiredArgsConstructor
+@Getter
 public final class LLMChatMessage {
     
     private final String role;
@@ -29,42 +37,45 @@ public final class LLMChatMessage {
     
     private final List<LLMToolCall> toolCalls;
     
-    LLMChatMessage(final String role, final String content, final String toolCallId, final List<LLMToolCall> toolCalls) {
-        this.role = role;
-        this.content = content;
-        this.toolCallId = toolCallId;
-        this.toolCalls = List.copyOf(toolCalls);
-    }
-    
+    /**
+     * Get system message.
+     *
+     * @param content content
+     * @return system message
+     */
     public static LLMChatMessage system(final String content) {
         return new LLMChatMessage("system", content, "", List.of());
     }
     
+    /**
+     * Get user message.
+     *
+     * @param content content
+     * @return user message
+     */
     public static LLMChatMessage user(final String content) {
         return new LLMChatMessage("user", content, "", List.of());
     }
     
+    /**
+     * Get assistant message.
+     *
+     * @param content content
+     * @param toolCalls tool calls
+     * @return assistant message
+     */
     public static LLMChatMessage assistant(final String content, final List<LLMToolCall> toolCalls) {
         return new LLMChatMessage("assistant", content, "", toolCalls);
     }
     
+    /**
+     * Get tool message.
+     *
+     * @param toolCallId tool call ID
+     * @param content content
+     * @return tool message
+     */
     public static LLMChatMessage tool(final String toolCallId, final String content) {
         return new LLMChatMessage("tool", content, toolCallId, List.of());
-    }
-    
-    public String role() {
-        return role;
-    }
-    
-    public String content() {
-        return content;
-    }
-    
-    public String toolCallId() {
-        return toolCallId;
-    }
-    
-    public List<LLMToolCall> toolCalls() {
-        return toolCalls;
     }
 }

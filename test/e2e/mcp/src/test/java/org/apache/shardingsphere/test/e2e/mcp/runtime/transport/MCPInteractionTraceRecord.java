@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.transport;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
+/**
+ * MCP interaction trace record.
+ */
 @RequiredArgsConstructor
+@Getter
 public final class MCPInteractionTraceRecord {
     
     private final int sequence;
@@ -43,44 +48,43 @@ public final class MCPInteractionTraceRecord {
         this(sequence, "tool_call", targetName, arguments, structuredContent, true, 0L);
     }
     
+    /**
+     * Create resource list.
+     *
+     * @param sequence sequence
+     * @param structuredContent structured content
+     * @param latencyMillis latency millis
+     * @return interaction trace record
+     */
     public static MCPInteractionTraceRecord createResourceList(final int sequence, final Map<String, Object> structuredContent, final long latencyMillis) {
         return new MCPInteractionTraceRecord(sequence, "resource_list", "mcp_list_resources", Map.of(), structuredContent, true, latencyMillis);
     }
     
+    /**
+     * Create resource read.
+     *
+     * @param sequence sequence
+     * @param resourceUri resource URI
+     * @param structuredContent structured content
+     * @param latencyMillis latency millis
+     * @return interaction trace record
+     */
     public static MCPInteractionTraceRecord createResourceRead(final int sequence, final String resourceUri, final Map<String, Object> structuredContent, final long latencyMillis) {
         return new MCPInteractionTraceRecord(sequence, "resource_read", "mcp_read_resource", Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
     }
     
+    /**
+     * Create invalid action.
+     *
+     * @param sequence sequence
+     * @param actionKind action kind
+     * @param targetName target name
+     * @param arguments arguments
+     * @param failureType failure type
+     * @return interaction trace record
+     */
     public static MCPInteractionTraceRecord createInvalidAction(final int sequence, final String actionKind, final String targetName,
                                                                 final Map<String, Object> arguments, final String failureType) {
         return new MCPInteractionTraceRecord(sequence, actionKind, targetName, arguments, Map.of("error_code", failureType), false, 0L);
-    }
-    
-    public int sequence() {
-        return sequence;
-    }
-    
-    public String actionKind() {
-        return actionKind;
-    }
-    
-    public String targetName() {
-        return targetName;
-    }
-    
-    public Map<String, Object> arguments() {
-        return arguments;
-    }
-    
-    public Map<String, Object> structuredContent() {
-        return structuredContent;
-    }
-    
-    public boolean valid() {
-        return valid;
-    }
-    
-    public long latencyMillis() {
-        return latencyMillis;
     }
 }

@@ -17,6 +17,14 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * LLM tool call.
+ */
+@RequiredArgsConstructor
+@Getter
 public final class LLMToolCall {
     
     private final String id;
@@ -24,22 +32,4 @@ public final class LLMToolCall {
     private final String name;
     
     private final String argumentsJson;
-    
-    public LLMToolCall(final String id, final String name, final String argumentsJson) {
-        this.id = id;
-        this.name = name;
-        this.argumentsJson = argumentsJson;
-    }
-    
-    public String id() {
-        return id;
-    }
-    
-    public String name() {
-        return name;
-    }
-    
-    public String argumentsJson() {
-        return argumentsJson;
-    }
 }

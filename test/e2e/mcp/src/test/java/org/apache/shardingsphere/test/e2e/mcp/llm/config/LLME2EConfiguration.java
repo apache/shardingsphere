@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.config;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +29,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.UUID;
 
+/**
+ * LLM E2E configuration.
+ */
+@RequiredArgsConstructor
+@Getter
 public final class LLME2EConfiguration {
     
     private static final DateTimeFormatter RUN_ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.ENGLISH);
@@ -48,20 +56,11 @@ public final class LLME2EConfiguration {
     
     private final String runId;
     
-    public LLME2EConfiguration(final boolean enabled, final String baseUrl, final String modelName, final String apiKey,
-                               final int readyTimeoutSeconds, final int requestTimeoutSeconds, final int maxTurns,
-                               final Path artifactRoot, final String runId) {
-        this.enabled = enabled;
-        this.baseUrl = baseUrl;
-        this.modelName = modelName;
-        this.apiKey = apiKey;
-        this.readyTimeoutSeconds = readyTimeoutSeconds;
-        this.requestTimeoutSeconds = requestTimeoutSeconds;
-        this.maxTurns = maxTurns;
-        this.artifactRoot = artifactRoot;
-        this.runId = runId;
-    }
-    
+    /**
+     * Load LLM E2E configuration.
+     *
+     * @return LLM E2E configuration
+     */
     public static LLME2EConfiguration load() {
         return new LLME2EConfiguration(
                 readBoolean("mcp.llm.e2e.enabled", "MCP_LLM_E2E_ENABLED", false),
@@ -75,52 +74,33 @@ public final class LLME2EConfiguration {
                 readString("mcp.llm.run-id", "MCP_LLM_RUN_ID", createDefaultRunId()));
     }
     
+    /**
+     * Create artifact directory.
+     *
+     * @param scenarioId scenario ID
+     * @return path
+     * @throws IOException IO exception
+     */
     public Path createArtifactDirectory(final String scenarioId) throws IOException {
         final Path result = artifactRoot.resolve(runId).resolve(scenarioId);
         Files.createDirectories(result);
         return result;
     }
     
-    public boolean enabled() {
-        return enabled;
-    }
-    
-    public String baseUrl() {
-        return baseUrl;
-    }
-    
-    public String modelName() {
-        return modelName;
-    }
-    
-    public String apiKey() {
-        return apiKey;
-    }
-    
-    public int readyTimeoutSeconds() {
-        return readyTimeoutSeconds;
-    }
-    
-    public int requestTimeoutSeconds() {
-        return requestTimeoutSeconds;
-    }
-    
-    public int maxTurns() {
-        return maxTurns;
-    }
-    
-    public Path artifactRoot() {
-        return artifactRoot;
-    }
-    
-    public String runId() {
-        return runId;
-    }
-    
+    /**
+     * Get chat completions URL.
+     *
+     * @return chat completions URL
+     */
     public String getChatCompletionsUrl() {
         return baseUrl + "/chat/completions";
     }
     
+    /**
+     * Get models URL.
+     *
+     * @return models URL
+     */
     public String getModelsUrl() {
         return baseUrl + "/models";
     }

@@ -76,64 +76,70 @@ public final class LLMMCPConversationRunner {
         this.mcpInteractionClient = mcpInteractionClient;
     }
     
+    /**
+     * Run.
+     *
+     * @param scenario scenario
+     * @return LLM E2E artifact bundle
+     */
     public LLME2EArtifactBundle run(final LLME2EScenario scenario) {
         final List<LLMChatMessage> messages = new LinkedList<>();
         final List<String> rawModelOutputs = new LinkedList<>();
         final List<MCPInteractionTraceRecord> interactionTrace = new LinkedList<>();
         final List<String> mcpRuntimeLogLines = new LinkedList<>();
         String finalAnswerJson = "";
-        messages.add(LLMChatMessage.system(scenario.systemPrompt()));
-        messages.add(LLMChatMessage.user(scenario.userPrompt()));
+        messages.add(LLMChatMessage.system(scenario.getSystemPrompt()));
+        messages.add(LLMChatMessage.user(scenario.getUserPrompt()));
         try {
             llmChatClient.waitUntilReady();
             openInteractionClient();
             boolean finalAnswerRequested = false;
             int finalAnswerAttempts = 0;
             for (int turnIndex = 0; turnIndex < maxTurns; turnIndex++) {
-                if (!finalAnswerRequested && hasRequiredInteractionCoverage(scenario.requiredToolNames(), interactionTrace)) {
+                if (!finalAnswerRequested && hasRequiredInteractionCoverage(scenario.getRequiredToolNames(), interactionTrace)) {
                     messages.add(LLMChatMessage.user(createFinalAnswerInstruction(scenario)));
                     finalAnswerRequested = true;
                 }
                 final String toolChoice = finalAnswerRequested ? "none" : interactionTrace.isEmpty() ? "required" : "auto";
                 final LLMChatCompletion completion = llmChatClient.complete(messages,
-                        finalAnswerRequested ? List.of() : createToolDefinitions(scenario.allowedToolNames()),
+                        finalAnswerRequested ? List.of() : createToolDefinitions(scenario.getAllowedToolNames()),
                         toolChoice, finalAnswerRequested);
-                rawModelOutputs.add(completion.rawResponse());
-                if (!completion.toolCalls().isEmpty()) {
-                    messages.add(LLMChatMessage.assistant(completion.content(), completion.toolCalls()));
-                    for (LLMToolCall each : completion.toolCalls()) {
-                        if (!scenario.allowedToolNames().contains(each.name())) {
-                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "tool_call", each.name(),
-                                    Map.of("rawArgumentsJson", each.argumentsJson()), "unexpected_tool_requested"));
+                rawModelOutputs.add(completion.getRawResponse());
+                if (!completion.getToolCalls().isEmpty()) {
+                    messages.add(LLMChatMessage.assistant(completion.getContent(), completion.getToolCalls()));
+                    for (LLMToolCall each : completion.getToolCalls()) {
+                        if (!scenario.getAllowedToolNames().contains(each.getName())) {
+                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "tool_call", each.getName(),
+                                    Map.of("rawArgumentsJson", each.getArgumentsJson()), "unexpected_tool_requested"));
                             return createArtifactBundle(scenario, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, finalAnswerJson,
                                     LLME2EAssertionReport.failure("unexpected_tool_requested", "Model requested an unsupported tool."));
                         }
                         final Map<String, Object> arguments;
                         try {
-                            arguments = parseToolArguments(each.argumentsJson());
+                            arguments = parseToolArguments(each.getArgumentsJson());
                         } catch (final IllegalArgumentException ex) {
-                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "tool_call", each.name(),
-                                    Map.of("rawArgumentsJson", each.argumentsJson()), "invalid_tool_arguments"));
+                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "tool_call", each.getName(),
+                                    Map.of("rawArgumentsJson", each.getArgumentsJson()), "invalid_tool_arguments"));
                             return createArtifactBundle(scenario, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, finalAnswerJson,
                                     LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned invalid tool arguments JSON."));
                         }
-                        if (RESOURCE_READ_BRIDGE_NAME.equals(each.name()) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
-                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "resource_read", each.name(), arguments, "invalid_tool_arguments"));
+                        if (RESOURCE_READ_BRIDGE_NAME.equals(each.getName()) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
+                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "resource_read", each.getName(), arguments, "invalid_tool_arguments"));
                             return createArtifactBundle(scenario, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, finalAnswerJson,
                                     LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned an empty resource URI."));
                         }
-                        if ("execute_query".equals(each.name()) && !isReadOnlyQuery(arguments)) {
-                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "tool_call", each.name(), arguments, "unsafe_sql_attempted"));
+                        if ("execute_query".equals(each.getName()) && !isReadOnlyQuery(arguments)) {
+                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "tool_call", each.getName(), arguments, "unsafe_sql_attempted"));
                             return createArtifactBundle(scenario, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, finalAnswerJson,
                                     LLME2EAssertionReport.failure("unsafe_sql_attempted", "Model attempted a non-read-only SQL statement."));
                         }
                         long startTime = System.currentTimeMillis();
-                        MCPInteractionResponse response = executeActionSafely(each.name(), arguments);
+                        MCPInteractionResponse response = executeActionSafely(each.getName(), arguments);
                         long latencyMillis = System.currentTimeMillis() - startTime;
-                        mcpRuntimeLogLines.add("action=" + each.name() + " args=" + JsonUtils.toJsonString(arguments));
-                        mcpRuntimeLogLines.add("response=" + JsonUtils.toJsonString(response.structuredContent()));
-                        interactionTrace.add(createTraceRecord(interactionTrace.size() + 1, each.name(), arguments, response.structuredContent(), latencyMillis));
-                        messages.add(LLMChatMessage.tool(each.id(), JsonUtils.toJsonString(response.structuredContent())));
+                        mcpRuntimeLogLines.add("action=" + each.getName() + " args=" + JsonUtils.toJsonString(arguments));
+                        mcpRuntimeLogLines.add("response=" + JsonUtils.toJsonString(response.getStructuredContent()));
+                        interactionTrace.add(createTraceRecord(interactionTrace.size() + 1, each.getName(), arguments, response.getStructuredContent(), latencyMillis));
+                        messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(response.getStructuredContent())));
                     }
                     continue;
                 }
@@ -141,7 +147,7 @@ public final class LLMMCPConversationRunner {
                     messages.add(LLMChatMessage.user("You must call the required MCP tools before answering. Do not guess. Use the tools now."));
                     continue;
                 }
-                finalAnswerJson = completion.content();
+                finalAnswerJson = completion.getContent();
                 finalAnswerAttempts++;
                 try {
                     final LLMStructuredAnswer actualAnswer = LLMStructuredAnswer.fromJson(finalAnswerJson);
@@ -178,7 +184,7 @@ public final class LLMMCPConversationRunner {
     
     private LLME2EArtifactBundle createArtifactBundle(final LLME2EScenario scenario, final List<String> rawModelOutputs, final List<MCPInteractionTraceRecord> interactionTrace,
                                                       final List<String> mcpRuntimeLogLines, final String finalAnswerJson, final LLME2EAssertionReport assertionReport) {
-        return new LLME2EArtifactBundle(scenario.scenarioId(), scenario.systemPrompt(), scenario.userPrompt(), finalAnswerJson,
+        return new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), finalAnswerJson,
                 List.copyOf(rawModelOutputs), List.copyOf(interactionTrace), List.copyOf(mcpRuntimeLogLines), assertionReport);
     }
     
@@ -206,13 +212,13 @@ public final class LLMMCPConversationRunner {
             if (!isSuccessfulInteraction(each)) {
                 continue;
             }
-            result.add(each.targetName());
+            result.add(each.getTargetName());
         }
         return result.containsAll(requiredActionNames);
     }
     
     private boolean isSuccessfulInteraction(final MCPInteractionTraceRecord interactionTraceRecord) {
-        return interactionTraceRecord.valid() && !interactionTraceRecord.structuredContent().containsKey("error_code");
+        return interactionTraceRecord.isValid() && !interactionTraceRecord.getStructuredContent().containsKey("error_code");
     }
     
     private boolean isReadOnlyQuery(final Map<String, Object> arguments) {
@@ -222,45 +228,45 @@ public final class LLMMCPConversationRunner {
     }
     
     private String createFinalAnswerInstruction(final LLME2EScenario scenario) {
-        final LLMStructuredAnswer expectedAnswer = scenario.expectedAnswer();
+        final LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
         final String prompt = "Return JSON only with keys database, schema, table, query, totalOrders, interactionSequence. "
                 + "The target table is `%s`, the final interactionSequence must match the observed interaction trace exactly, "
                 + "and the required tools are `%s`.";
         return String.format(Locale.ENGLISH,
                 prompt,
-                expectedAnswer.table(), String.join(", ", scenario.requiredToolNames()));
+                expectedAnswer.getTable(), String.join(", ", scenario.getRequiredToolNames()));
     }
     
     private LLME2EAssertionReport validateFinalAnswer(final LLME2EScenario scenario, final LLMStructuredAnswer actualAnswer,
                                                       final List<MCPInteractionTraceRecord> interactionTrace) {
-        final LLMStructuredAnswer expectedAnswer = scenario.expectedAnswer();
-        if (!hasRequiredInteractionCoverage(scenario.requiredToolNames(), interactionTrace)) {
+        final LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
+        if (!hasRequiredInteractionCoverage(scenario.getRequiredToolNames(), interactionTrace)) {
             return LLME2EAssertionReport.failure("missing_required_tool_coverage", "Tool trace does not contain the required tools.");
         }
-        if (!expectedAnswer.database().equals(actualAnswer.database())) {
+        if (!expectedAnswer.getDatabase().equals(actualAnswer.getDatabase())) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer database does not match expected database.");
         }
-        if (!expectedAnswer.schema().equals(actualAnswer.schema())) {
+        if (!expectedAnswer.getSchema().equals(actualAnswer.getSchema())) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer schema does not match expected schema.");
         }
-        if (!expectedAnswer.table().equals(actualAnswer.table())) {
+        if (!expectedAnswer.getTable().equals(actualAnswer.getTable())) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer table does not match expected table.");
         }
         if (!expectedAnswer.getNormalizedQuery().equals(actualAnswer.getNormalizedQuery())) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer query does not match expected query.");
         }
         int actualTotalOrders = getActualTotalOrders(interactionTrace);
-        if (actualTotalOrders != actualAnswer.totalOrders() || expectedAnswer.totalOrders() != actualAnswer.totalOrders()) {
+        if (actualTotalOrders != actualAnswer.getTotalOrders() || expectedAnswer.getTotalOrders() != actualAnswer.getTotalOrders()) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer totalOrders does not match the execute_query result.");
         }
         List<String> actualInteractionSequence = new LinkedList<>();
         for (MCPInteractionTraceRecord each : interactionTrace) {
-            actualInteractionSequence.add(each.targetName());
+            actualInteractionSequence.add(each.getTargetName());
         }
-        if (!actualInteractionSequence.equals(actualAnswer.interactionSequence())) {
+        if (!actualInteractionSequence.equals(actualAnswer.getInteractionSequence())) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer interactionSequence does not match the observed interaction trace.");
         }
-        return LLME2EAssertionReport.success("LLM MCP smoke passed.");
+        return LLME2EAssertionReport.isSuccess("LLM MCP smoke passed.");
     }
     
     private LLME2EAssertionReport validateFinalAnswerSafely(final LLME2EScenario scenario, final LLMStructuredAnswer actualAnswer,
@@ -275,14 +281,14 @@ public final class LLMMCPConversationRunner {
     private int getActualTotalOrders(final List<MCPInteractionTraceRecord> interactionTrace) {
         for (int index = interactionTrace.size() - 1; index >= 0; index--) {
             final MCPInteractionTraceRecord each = interactionTrace.get(index);
-            if (!"execute_query".equals(each.targetName())) {
+            if (!"execute_query".equals(each.getTargetName())) {
                 continue;
             }
-            final Object resultKind = each.structuredContent().get("result_kind");
+            final Object resultKind = each.getStructuredContent().get("result_kind");
             if (!"result_set".equals(Objects.toString(resultKind, ""))) {
                 break;
             }
-            final List<List<Object>> rows = castToRows(each.structuredContent().get("rows"));
+            final List<List<Object>> rows = castToRows(each.getStructuredContent().get("rows"));
             if (!rows.isEmpty() && !rows.get(0).isEmpty()) {
                 final Object value = rows.get(0).get(0);
                 if (value instanceof Number) {

@@ -53,23 +53,23 @@ abstract class AbstractLLMUsabilityE2ETest extends AbstractProductionRuntimeE2ET
     private final LLMUsabilityReportWriter reportWriter = new LLMUsabilityReportWriter();
     
     protected final void assertAdvisoryUsabilitySuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier) throws IOException {
-        Assumptions.assumeTrue(llmConfiguration.enabled(),
+        Assumptions.assumeTrue(llmConfiguration.isEnabled(),
                 "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM usability suite.");
         launchProductionRuntime();
         List<LLMUsabilityScenario> scenarios = scenarioSupplier.get();
         List<LLMUsabilityScenarioResult> scenarioResults = new LinkedList<>();
         for (LLMUsabilityScenario each : scenarios) {
-            LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.maxTurns(),
+            LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.getMaxTurns(),
                     new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()),
-                    new MCPHttpInteractionClient(getEndpointUri(), createHttpClient())).run(each.llmScenario());
-            Path artifactDirectory = llmConfiguration.createArtifactDirectory(each.scenarioId());
+                    new MCPHttpInteractionClient(getEndpointUri(), createHttpClient())).run(each.getLlmScenario());
+            Path artifactDirectory = llmConfiguration.createArtifactDirectory(each.getScenarioId());
             artifactWriter.write(artifactDirectory, artifactBundle);
             scenarioResults.add(metricCalculator.evaluateScenario(each, artifactBundle));
         }
-        LLMUsabilityScorecard scorecard = metricCalculator.createScorecard(suiteId, llmConfiguration.runId(), scenarioResults);
-        Path suiteDirectory = llmConfiguration.artifactRoot().resolve(llmConfiguration.runId()).resolve(suiteId);
+        LLMUsabilityScorecard scorecard = metricCalculator.createScorecard(suiteId, llmConfiguration.getRunId(), scenarioResults);
+        Path suiteDirectory = llmConfiguration.getArtifactRoot().resolve(llmConfiguration.getRunId()).resolve(suiteId);
         reportWriter.writeScorecard(suiteDirectory, scorecard);
-        assertThat(scorecard.scenarioResults().size(), is(scenarios.size()));
-        assertTrue(scorecard.taskSuccessRate() >= 0.0D);
+        assertThat(scorecard.getScenarioResults().size(), is(scenarios.size()));
+        assertTrue(scorecard.getTaskSuccessRate() >= 0.0D);
     }
 }

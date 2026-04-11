@@ -53,12 +53,12 @@ class ProductionLLMMySQLSmokeE2ETest extends AbstractLLMMCPE2ETest {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return runtimeFixture.runtimeDatabases();
+        return runtimeFixture.getRuntimeDatabases();
     }
     
     @Test
     void assertSmoke() throws IOException {
-        assertLLMSmoke(() -> createMinimalSmokeScenario("minimal-smoke-mysql", "logic_db", runtimeFixture.schemaName(),
-                "orders", COUNT_ORDERS_SQL, runtimeFixture.totalOrders()));
+        assertLLMSmoke(() -> createMinimalSmokeScenario("minimal-smoke-mysql", "logic_db", runtimeFixture.getSchemaName(),
+                "orders", COUNT_ORDERS_SQL, runtimeFixture.getTotalOrders()));
     }
 }

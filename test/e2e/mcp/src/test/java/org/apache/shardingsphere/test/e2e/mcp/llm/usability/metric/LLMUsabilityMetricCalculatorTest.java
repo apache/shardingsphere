@@ -53,14 +53,14 @@ class LLMUsabilityMetricCalculatorTest {
                                 final boolean expectedBoundaryConfusion, final double expectedQueryAnswerFidelity,
                                 final boolean expectedDegradedSuccess) {
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(scenario, artifactBundle);
-        assertThat(actual.success(), is(expectedSuccess));
-        assertThat(actual.failureType(), is(expectedFailureType));
-        assertThat(actual.resourceHit(), is(expectedResourceHit));
-        assertThat(actual.recoveredAfterError(), is(expectedRecoveredAfterError));
-        assertThat(actual.invalidCallCount(), is(expectedInvalidCallCount));
-        assertThat(actual.boundaryConfusion(), is(expectedBoundaryConfusion));
-        assertThat(actual.queryAnswerFidelity(), is(expectedQueryAnswerFidelity));
-        assertThat(actual.degradedSuccess(), is(expectedDegradedSuccess));
+        assertThat(actual.isSuccess(), is(expectedSuccess));
+        assertThat(actual.getFailureType(), is(expectedFailureType));
+        assertThat(actual.isResourceHit(), is(expectedResourceHit));
+        assertThat(actual.isRecoveredAfterError(), is(expectedRecoveredAfterError));
+        assertThat(actual.getInvalidCallCount(), is(expectedInvalidCallCount));
+        assertThat(actual.isBoundaryConfusion(), is(expectedBoundaryConfusion));
+        assertThat(actual.getQueryAnswerFidelity(), is(expectedQueryAnswerFidelity));
+        assertThat(actual.isDegradedSuccess(), is(expectedDegradedSuccess));
     }
     
     @Test
@@ -72,20 +72,20 @@ class LLMUsabilityMetricCalculatorTest {
         
         LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite-a", "run-a", scenarioResults);
         
-        assertThat(actual.taskSuccessRate(), is(2D / 3D));
-        assertThat(actual.firstCorrectActionRate(), is(2D / 3D));
-        assertThat(actual.invalidCallRate(), is(1D / 9D));
-        assertThat(actual.resourceHitRate(), is(1.0D));
-        assertThat(actual.recoveryRate(), is(1.0D));
-        assertThat(actual.boundaryConfusionRate(), is(1D / 3D));
-        assertThat(actual.dimensionScores().size(), is(4));
-        assertThat(actual.dimensionScores().get(0).dimension(), is(LLMUsabilityDimension.RESOURCE));
-        assertThat(actual.dimensionScores().get(0).scenarioCount(), is(1));
-        assertThat(actual.dimensionScores().get(0).resourceHitRate(), is(1.0D));
-        assertThat(actual.dimensionScores().get(1).dimension(), is(LLMUsabilityDimension.TOOL));
-        assertThat(actual.dimensionScores().get(1).boundaryConfusionRate(), is(1.0D));
-        assertThat(actual.dimensionScores().get(3).dimension(), is(LLMUsabilityDimension.RECOVERY));
-        assertThat(actual.dimensionScores().get(3).recoveryRate(), is(1.0D));
+        assertThat(actual.getTaskSuccessRate(), is(2D / 3D));
+        assertThat(actual.getFirstCorrectActionRate(), is(2D / 3D));
+        assertThat(actual.getInvalidCallRate(), is(1D / 9D));
+        assertThat(actual.getResourceHitRate(), is(1.0D));
+        assertThat(actual.getRecoveryRate(), is(1.0D));
+        assertThat(actual.getBoundaryConfusionRate(), is(1D / 3D));
+        assertThat(actual.getDimensionScores().size(), is(4));
+        assertThat(actual.getDimensionScores().get(0).getDimension(), is(LLMUsabilityDimension.RESOURCE));
+        assertThat(actual.getDimensionScores().get(0).getScenarioCount(), is(1));
+        assertThat(actual.getDimensionScores().get(0).getResourceHitRate(), is(1.0D));
+        assertThat(actual.getDimensionScores().get(1).getDimension(), is(LLMUsabilityDimension.TOOL));
+        assertThat(actual.getDimensionScores().get(1).getBoundaryConfusionRate(), is(1.0D));
+        assertThat(actual.getDimensionScores().get(3).getDimension(), is(LLMUsabilityDimension.RECOVERY));
+        assertThat(actual.getDimensionScores().get(3).getRecoveryRate(), is(1.0D));
     }
     
     static Stream<Arguments> assertEvaluateScenarioCases() {
@@ -101,7 +101,7 @@ class LLMUsabilityMetricCalculatorTest {
                                                 Map.of("items", List.of(Map.of("name", "orders"))), 2L),
                                         new MCPInteractionTraceRecord(3, "tool_call", "execute_query", Map.of("sql", "SELECT COUNT(*) AS total_orders FROM orders"),
                                                 Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), true, 3L)),
-                                List.of(), LLME2EAssertionReport.success("ok")),
+                                List.of(), LLME2EAssertionReport.isSuccess("ok")),
                         true, "", true, true, 1, false, 1.0D, true),
                 Arguments.of("boundary confusion on first action",
                         new LLMUsabilityScenario("resource-first", LLMUsabilityDimension.RESOURCE, "h2", SCENARIO,
@@ -112,7 +112,7 @@ class LLMUsabilityMetricCalculatorTest {
                                                 Map.of("database", "logic_db", "query", "orders"), Map.of("items", List.of()), true, 1L),
                                         new MCPInteractionTraceRecord(2, "tool_call", "execute_query", Map.of("sql", "SELECT COUNT(*) AS total_orders FROM orders"),
                                                 Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), true, 3L)),
-                                List.of(), LLME2EAssertionReport.success("ok")),
+                                List.of(), LLME2EAssertionReport.isSuccess("ok")),
                         false, "boundary_confusion", false, false, 0, true, 0.0D, false),
                 Arguments.of("missing expected error path",
                         new LLMUsabilityScenario("recovery-without-error", LLMUsabilityDimension.RECOVERY, "h2", SCENARIO,
@@ -123,7 +123,7 @@ class LLMUsabilityMetricCalculatorTest {
                                                 Map.of("items", List.of(Map.of("name", "orders"))), 2L),
                                         new MCPInteractionTraceRecord(2, "tool_call", "execute_query", Map.of("sql", "SELECT COUNT(*) AS total_orders FROM orders"),
                                                 Map.of("result_kind", "result_set", "rows", List.of(List.of(2))), true, 3L)),
-                                List.of(), LLME2EAssertionReport.success("ok")),
+                                List.of(), LLME2EAssertionReport.isSuccess("ok")),
                         false, "missing_expected_error_path", true, false, 0, false, 0.0D, false));
     }
 }

@@ -17,8 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.List;
 
+/**
+ * LLM chat completion.
+ */
+@RequiredArgsConstructor
+@Getter
 public final class LLMChatCompletion {
     
     private final String content;
@@ -26,22 +34,4 @@ public final class LLMChatCompletion {
     private final List<LLMToolCall> toolCalls;
     
     private final String rawResponse;
-    
-    public LLMChatCompletion(final String content, final List<LLMToolCall> toolCalls, final String rawResponse) {
-        this.content = content;
-        this.toolCalls = List.copyOf(toolCalls);
-        this.rawResponse = rawResponse;
-    }
-    
-    public String content() {
-        return content;
-    }
-    
-    public List<LLMToolCall> toolCalls() {
-        return toolCalls;
-    }
-    
-    public String rawResponse() {
-        return rawResponse;
-    }
 }
