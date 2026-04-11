@@ -33,11 +33,13 @@ import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenExceptio
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -51,10 +53,7 @@ class SearchMetadataToolServiceTest {
     void assertExecuteSearchAcrossDatabases() {
         MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("", "", "order",
                 Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.INDEX), 20, ""));
-        Set<String> actualNames = new LinkedHashSet<>();
-        for (MetadataSearchHit each : actual.getItems()) {
-            actualNames.add(each.getName());
-        }
+        Set<String> actualNames = actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet());
         assertTrue(actualNames.contains("orders"));
         assertTrue(actualNames.contains("order_items"));
         assertTrue(actualNames.contains("active_orders"));
@@ -64,15 +63,36 @@ class SearchMetadataToolServiceTest {
     }
     
     @Test
+    void assertExecuteSearchAcrossDatabasesWithDatabaseObjectType() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("", "", "", Set.of(SupportedMCPMetadataObjectType.DATABASE), 10, ""));
+        assertThat(actual.getItems().size(), is(4));
+        assertThat(actual.getItems().get(0).getName(), is("analytics_db"));
+        assertThat(actual.getItems().get(1).getName(), is("logic_db"));
+        assertThat(actual.getItems().get(2).getName(), is("runtime_db"));
+        assertThat(actual.getItems().get(3).getName(), is("warehouse"));
+        assertThat(actual.getNextPageToken(), is(""));
+    }
+    
+    @Test
     void assertExecuteSearchWithPagination() {
-        Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>();
-        objectTypes.add(SupportedMCPMetadataObjectType.TABLE);
-        objectTypes.add(SupportedMCPMetadataObjectType.VIEW);
-        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "order",
-                objectTypes, 1, ""));
+        Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>(Arrays.asList(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW));
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("logic_db", "", "order", objectTypes, 1, ""));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getName(), is("order_items"));
         assertThat(actual.getNextPageToken(), is("1"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithDefaultPageSize() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("runtime_db", "", "", Set.of(), 0, ""));
+        assertThat(actual.getItems().size(), is(3));
+        assertThat(actual.getItems().get(0).getObjectType(), is("database"));
+        assertThat(actual.getItems().get(1).getObjectType(), is("schema"));
+        assertThat(actual.getItems().get(2).getObjectType(), is("sequence"));
+        assertThat(actual.getItems().get(2).getName(), is("order_seq"));
+        assertThat(actual.getNextPageToken(), is(""));
     }
     
     @Test
@@ -83,16 +103,70 @@ class SearchMetadataToolServiceTest {
     }
     
     @Test
+    void assertExecuteSearchWithSchemaObjectTypeAndSchemaFilter() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("logic_db", "public", "public", Set.of(SupportedMCPMetadataObjectType.SCHEMA), 10, ""));
+        assertThat(actual.getItems().size(), is(1));
+        assertThat(actual.getItems().get(0).getObjectType(), is("schema"));
+        assertThat(actual.getItems().get(0).getName(), is("public"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithTableObjectTypeAndSchemaFilter() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("logic_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.TABLE), 10, ""));
+        assertThat(actual.getItems().size(), is(2));
+        assertThat(actual.getItems().get(0).getName(), is("order_items"));
+        assertThat(actual.getItems().get(1).getName(), is("orders"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithViewObjectTypeAndSchemaFilter() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("logic_db", "public", "orders", Set.of(SupportedMCPMetadataObjectType.VIEW), 10, ""));
+        assertThat(actual.getItems().size(), is(2));
+        assertThat(actual.getItems().get(0).getName(), is("active_orders"));
+        assertThat(actual.getItems().get(1).getName(), is("archived_orders"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithColumnObjectTypeMatchedByViewName() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("logic_db", "", "active", Set.of(SupportedMCPMetadataObjectType.COLUMN), 10, ""));
+        assertThat(actual.getItems().size(), is(2));
+        assertThat(actual.getItems().get(0).getName(), is("order_id"));
+        assertThat(actual.getItems().get(0).getView(), is("active_orders"));
+        assertThat(actual.getItems().get(1).getName(), is("order_status"));
+        assertThat(actual.getItems().get(1).getView(), is("active_orders"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithDatabaseAndTableInEmptySchema() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalogWithEmptySchema()).execute(
+                new MetadataSearchRequest("schema_less_db", "", "", Set.of(), 10, ""));
+        assertThat(actual.getItems().size(), is(2));
+        assertThat(actual.getItems().get(0).getObjectType(), is("database"));
+        assertThat(actual.getItems().get(1).getObjectType(), is("table"));
+        assertThat(actual.getItems().get(1).getName(), is("schema_less_orders"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithNullViewValueInColumnMetadata() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalogWithNullViewColumn()).execute(
+                new MetadataSearchRequest("null_view_db", "", "missing", Set.of(SupportedMCPMetadataObjectType.COLUMN), 10, ""));
+        assertThat(actual.getItems().size(), is(0));
+        assertThat(actual.getNextPageToken(), is(""));
+    }
+    
+    @Test
     void assertExecuteSearchWithEmptyQuery() {
         MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(new MetadataSearchRequest("logic_db", "", "", Set.of(), 10, ""));
-        Set<String> actualNames = new LinkedHashSet<>();
-        for (MetadataSearchHit each : actual.getItems()) {
-            actualNames.add(each.getName());
-        }
-        assertThat(actual.getItems().size(), is(8));
-        assertThat(actual.getNextPageToken(), is(""));
+        Set<String> actualNames = actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet());
+        assertThat(actual.getItems().size(), is(10));
+        assertThat(actual.getNextPageToken(), is("10"));
         assertTrue(actualNames.contains("logic_db"));
-        assertTrue(actualNames.contains("idx_orders_status"));
+        assertTrue(actualNames.contains("active_orders"));
+        assertFalse(actualNames.contains("idx_orders_status"));
     }
     
     @Test
@@ -101,6 +175,30 @@ class SearchMetadataToolServiceTest {
                 Set.of(SupportedMCPMetadataObjectType.SEQUENCE), 10, ""));
         assertThat(actual.getItems().size(), is(1));
         assertThat(actual.getItems().get(0).getName(), is("order_seq"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithSchemaScopedSequenceObjectType() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("runtime_db", "public", "order", Set.of(SupportedMCPMetadataObjectType.SEQUENCE), 10, ""));
+        assertThat(actual.getItems().size(), is(1));
+        assertThat(actual.getItems().get(0).getName(), is("order_seq"));
+    }
+    
+    @Test
+    void assertExecuteSearchWithUnsupportedIndexObjectType() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("warehouse", "", "", Set.of(SupportedMCPMetadataObjectType.INDEX), 10, ""));
+        assertThat(actual.getItems().size(), is(0));
+        assertThat(actual.getNextPageToken(), is(""));
+    }
+    
+    @Test
+    void assertExecuteSearchWithUnsupportedSequenceObjectType() {
+        MetadataSearchResult actual = new SearchMetadataToolService(createDatabaseMetadataCatalog()).execute(
+                new MetadataSearchRequest("logic_db", "", "", Set.of(SupportedMCPMetadataObjectType.SEQUENCE), 10, ""));
+        assertThat(actual.getItems().size(), is(0));
+        assertThat(actual.getNextPageToken(), is(""));
     }
     
     @Test
@@ -126,19 +224,36 @@ class SearchMetadataToolServiceTest {
                                         new MCPColumnMetadata("logic_db", "public", "orders", "", "status")),
                                 List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
                         new MCPTableMetadata("logic_db", "public", "order_items", List.of(), List.of())),
-                        List.of(new MCPViewMetadata("logic_db", "public", "active_orders", List.of()))))));
+                        List.of(
+                                new MCPViewMetadata("logic_db", "public", "active_orders",
+                                        List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id"),
+                                                new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_status"))),
+                                new MCPViewMetadata("logic_db", "public", "archived_orders", List.of()))))));
         databaseMetadataMap.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
                 new MCPSchemaMetadata("analytics_db", "public", List.of(
                         new MCPTableMetadata("analytics_db", "public", "metrics",
-                                List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
-                        List.of()))));
+                                List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())), List.of()))));
         databaseMetadataMap.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(
                         new MCPTableMetadata("warehouse", "warehouse", "facts",
-                                List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
-                        List.of()))));
+                                List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())), List.of()))));
         databaseMetadataMap.put("runtime_db", new MCPDatabaseMetadata("runtime_db", "H2", "", List.of(
                 new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
+        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
+    }
+    
+    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalogWithEmptySchema() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>();
+        databaseMetadataMap.put("schema_less_db", new MCPDatabaseMetadata("schema_less_db", "H2", "", 
+                List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of()))));
+        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
+    }
+    
+    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalogWithNullViewColumn() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>();
+        databaseMetadataMap.put("null_view_db", new MCPDatabaseMetadata("null_view_db", "H2", "",
+                List.of(new MCPSchemaMetadata("null_view_db", "public", List.of(),
+                        List.of(new MCPViewMetadata("null_view_db", "public", "active_view", List.of(new MCPColumnMetadata("null_view_db", "public", "", null, "status"))))))));
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
 }
