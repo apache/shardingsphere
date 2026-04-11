@@ -30,9 +30,9 @@ public final class HttpTransportConfiguration {
     private final boolean enabled;
     
     private final String bindHost;
-
+    
     private final boolean allowRemoteAccess;
-
+    
     private final int port;
     
     private final String endpointPath;

@@ -31,9 +31,9 @@ public final class YamlHttpTransportConfiguration implements YamlConfiguration {
     private boolean enabled;
     
     private String bindHost;
-
+    
     private boolean allowRemoteAccess;
-
+    
     private Integer port;
     
     private String endpointPath;

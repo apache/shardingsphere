@@ -70,7 +70,7 @@ class YamlHttpTransportConfigurationSwapperTest {
                 () -> swapper.swapToObject(createYamlConfig("0.0.0.0", 18088, "/mcp")));
         assertThat(actual.getMessage(), is("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
     }
-
+    
     @Test
     void assertSwapToObjectWithAllowedRemoteAccess() {
         HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, 18088, "/mcp"));
@@ -111,7 +111,7 @@ class YamlHttpTransportConfigurationSwapperTest {
     private YamlHttpTransportConfiguration createYamlConfig(final String bindHost, final Integer port, final String endpointPath) {
         return createYamlConfig(bindHost, false, port, endpointPath);
     }
-
+    
     private YamlHttpTransportConfiguration createYamlConfig(final String bindHost, final boolean allowRemoteAccess, final Integer port, final String endpointPath) {
         YamlHttpTransportConfiguration result = new YamlHttpTransportConfiguration();
         result.setEnabled(true);

@@ -232,11 +232,13 @@ class SearchMetadataToolServiceTest {
         databaseMetadataMap.put("analytics_db", new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
                 new MCPSchemaMetadata("analytics_db", "public", List.of(
                         new MCPTableMetadata("analytics_db", "public", "metrics",
-                                List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())), List.of()))));
+                                List.of(new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
+                        List.of()))));
         databaseMetadataMap.put("warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(
                         new MCPTableMetadata("warehouse", "warehouse", "facts",
-                                List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())), List.of()))));
+                                List.of(new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
+                        List.of()))));
         databaseMetadataMap.put("runtime_db", new MCPDatabaseMetadata("runtime_db", "H2", "", List.of(
                 new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
@@ -244,7 +246,7 @@ class SearchMetadataToolServiceTest {
     
     private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalogWithEmptySchema() {
         Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>();
-        databaseMetadataMap.put("schema_less_db", new MCPDatabaseMetadata("schema_less_db", "H2", "", 
+        databaseMetadataMap.put("schema_less_db", new MCPDatabaseMetadata("schema_less_db", "H2", "",
                 List.of(new MCPSchemaMetadata("schema_less_db", "", List.of(new MCPTableMetadata("schema_less_db", "", "schema_less_orders", List.of(), List.of())), List.of()))));
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }

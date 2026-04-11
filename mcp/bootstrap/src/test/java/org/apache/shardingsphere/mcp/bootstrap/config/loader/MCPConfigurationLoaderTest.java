@@ -205,7 +205,7 @@ class MCPConfigurationLoaderTest {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
         assertThat(actual.getMessage(), is("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
     }
-
+    
     @Test
     void assertLoadWithAllowedRemoteAccess() throws IOException {
         Path configFile = createConfigFile("transport:\n"

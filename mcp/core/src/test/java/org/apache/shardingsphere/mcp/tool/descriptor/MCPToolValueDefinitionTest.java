@@ -63,7 +63,7 @@ class MCPToolValueDefinitionTest {
                 Arguments.of("integer", new MCPToolValueDefinition(MCPToolValueDefinition.Type.INTEGER, "bar description", null),
                         Map.of("type", "integer", "description", "bar description")),
                 Arguments.of("array", new MCPToolValueDefinition(MCPToolValueDefinition.Type.ARRAY, "baz description",
-                                new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "item description", null)),
+                        new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "item description", null)),
                         Map.of("type", "array", "description", "baz description", "items", Map.of("type", "string", "description", "item description"))));
     }
 }
