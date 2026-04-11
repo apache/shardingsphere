@@ -31,13 +31,13 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest implements CrossDatabaseTransactionContractTest {
+class ExecuteQueryTransactionE2ETest extends AbstractDirectRuntimeE2ETest implements CrossDatabaseTransactionContractTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteTransactionControlCases")
     void assertExecuteTransactionControl(final String name, final String sql, final boolean requiresActiveTransaction,
                                          final String expectedMessage) throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
@@ -62,7 +62,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest implements Cross
     void assertExecuteSavepoint(final String name, final String databaseName, final String schemaName, final String sql,
                                 final boolean requiresActiveTransaction, final boolean requiresExistingSavepoint,
                                 final String expectedKey, final String expectedValue) throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
@@ -91,7 +91,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest implements Cross
     @MethodSource("assertRejectInvalidTransactionStateCases")
     void assertRejectInvalidTransactionState(final String name, final String sql, final boolean createActiveTransaction,
                                              final boolean createExistingSavepoint, final String expectedMessage) throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         if (createActiveTransaction) {
@@ -122,7 +122,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest implements Cross
     
     @Test
     void assertExecuteSelectOverHttpSession() throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
@@ -136,7 +136,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest implements Cross
     
     @Test
     void assertExecuteSingleStatementValidation() throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
@@ -150,7 +150,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractMCPE2ETest implements Cross
     
     @Override
     public void launchContractRuntime() {
-        launchRuntime();
+        launchDirectRuntime();
     }
     
     @Override

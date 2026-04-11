@@ -32,13 +32,13 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest implements MetadataResourceContractTest {
+class MetadataDiscoveryE2ETest extends AbstractDirectRuntimeE2ETest implements MetadataResourceContractTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertMetadataResourcesCases")
     void assertMetadataResources(final String name, final String resourceUri, final String itemKey,
                                  final List<String> expectedNames) throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId, resourceUri);
@@ -60,7 +60,7 @@ class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest implements MetadataRes
     @MethodSource("assertSearchMetadataCases")
     void assertSearchMetadata(final String name, final String databaseName, final String query, final List<String> objectTypes,
                               final List<String> expectedNames) throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "search_metadata",
@@ -82,7 +82,7 @@ class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest implements MetadataRes
     @MethodSource("assertRejectUnsupportedMetadataRequestCases")
     void assertRejectUnsupportedMetadataRequest(final String name, final Map<String, Object> toolArguments, final String resourceUri,
                                                 final Map<String, String> expectedPayload) throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual;
@@ -119,7 +119,7 @@ class MetadataDiscoveryE2ETest extends AbstractMCPE2ETest implements MetadataRes
     
     @Override
     public void launchContractRuntime() {
-        launchRuntime();
+        launchDirectRuntime();
     }
     
     @Override

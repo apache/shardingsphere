@@ -33,11 +33,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
+class RuntimeAuditE2ETest extends AbstractDirectRuntimeE2ETest {
     
     @Test
     void assertExecuteDdlAndDeleteSession() throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
@@ -58,7 +58,7 @@ class RuntimeAuditE2ETest extends AbstractMCPE2ETest {
     void assertInitializeAnonymousSession(final String name, final boolean protocolVersionIncluded,
                                           final String toolName, final Map<String, Object> arguments,
                                           final String expectedKey, final String expectedValue) throws IOException, InterruptedException {
-        launchRuntime();
+        launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
         
         String sessionId = protocolVersionIncluded ? initializeSession(httpClient) : initializeSessionWithoutProtocolVersion(httpClient);
