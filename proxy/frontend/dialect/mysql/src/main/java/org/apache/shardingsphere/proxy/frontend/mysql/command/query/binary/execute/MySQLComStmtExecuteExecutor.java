@@ -101,10 +101,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (expectedParamCount <= 0) {
             return parameterTypes;
         }
-        if (null == packet.getNullBitmap()) {
-            throw new UnsupportedPreparedStatementException();
-        }
-        if (!isAllParametersNull(expectedParamCount)) {
+        if (null == packet.getNullBitmap() || !isAllParametersNull(expectedParamCount)) {
             throw new UnsupportedPreparedStatementException();
         }
         List<MySQLPreparedStatementParameterType> result = new ArrayList<>(expectedParamCount);
