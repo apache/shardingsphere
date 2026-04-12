@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.exec
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
@@ -92,23 +93,34 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (!parameterTypes.isEmpty()) {
             return parameterTypes;
         }
-        int expectedParamCount = preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount();
-        if (expectedParamCount <= 0) {
-            return parameterTypes;
-        }
         List<MySQLPreparedStatementParameterType> originalTypes = packet.getNewParameterTypes();
         if (!originalTypes.isEmpty()) {
             return originalTypes;
         }
+        int expectedParamCount = preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount();
+        if (expectedParamCount <= 0) {
+            return parameterTypes;
+        }
+        if (null == packet.getNullBitmap()) {
+            throw new UnsupportedPreparedStatementException();
+        }
+        if (!isAllParametersNull(expectedParamCount)) {
+            throw new UnsupportedPreparedStatementException();
+        }
         List<MySQLPreparedStatementParameterType> result = new ArrayList<>(expectedParamCount);
         for (int i = 0; i < expectedParamCount; i++) {
-            if (null != packet.getNullBitmap() && packet.getNullBitmap().isNullParameter(i)) {
-                result.add(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.NULL, 0));
-            } else {
-                result.add(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.VARCHAR, 0));
-            }
+            result.add(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.NULL, 0));
         }
         return result;
+    }
+    
+    private boolean isAllParametersNull(final int expectedParamCount) {
+        for (int i = 0; i < expectedParamCount; i++) {
+            if (!packet.getNullBitmap().isNullParameter(i)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private MySQLServerPreparedStatement updateAndGetPreparedStatement() {
