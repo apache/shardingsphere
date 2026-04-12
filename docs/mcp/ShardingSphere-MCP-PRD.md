@@ -298,26 +298,39 @@
 ## 17. 统一执行结果模型
 
 ### `result_set`
-- 用于查询类语句，至少包含：
+- 用于返回结果集的语句，至少包含：
 - `result_kind`
+- `statement_class`
+- `statement_type`
+- `status`
 - `columns`
 - `rows`
 - `truncated`
 
 ### `update_count`
-- 用于 DML，至少包含：
+- 用于返回更新计数的语句，至少包含：
 - `result_kind`
+- `statement_class`
+- `statement_type`
+- `status`
 - `affected_rows`
+- `truncated`
 
 ### `statement_ack`
 - 用于 DDL、DCL、事务控制和其他非结果集语句，至少包含：
 - `result_kind`
+- `statement_class`
 - `statement_type`
 - `status`
 - `message`
+- `truncated`
 
 ### 补充约束
-- `INSERT`、`UPDATE`、`DELETE`、`MERGE` 返回 `update_count`。
+- `statement_class` 表达治理语义和副作用级别。
+- `statement_type` 表达用户可读的主要语句类型。
+- `result_kind` 表达返回形状，不能反向替代 `statement_class`。
+- `INSERT`、`UPDATE`、`DELETE`、`MERGE` 默认返回 `update_count`；
+  但 data-modifying CTE 等场景允许 `statement_class = dml` 且返回 `result_set`。
 - `CREATE`、`ALTER`、`DROP`、`TRUNCATE`、`GRANT`、`REVOKE`、事务控制语句默认返回 `statement_ack`。
 - `EXPLAIN ANALYZE` 的返回形态由数据库级 `capability` 决定。
 - 一次 `execute_query` 只返回一个结果对象。

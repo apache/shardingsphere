@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.tool.handler.execute.audit.AuditRecorder;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -71,7 +72,7 @@ public final class MCPSQLExecutionFacade {
         try {
             return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest));
         } catch (final MCPSessionNotExistedException ex) {
-            throw recordFailure(executionRequest, "QUERY", ex);
+            throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
     }
     
@@ -82,32 +83,32 @@ public final class MCPSQLExecutionFacade {
         try {
             classificationResult = new StatementClassifier().classify(executionRequest.getSql());
         } catch (final UnsupportedOperationException | IllegalArgumentException ex) {
-            throw recordFailure(executionRequest, "QUERY", ex);
+            throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
         ShardingSpherePreconditions.checkContains(databaseCapability.get().getSupportedStatementClasses(), classificationResult.getStatementClass(),
-                () -> recordFailure(executionRequest, classificationResult.getStatementType(), new StatementClassNotSupportedException()));
+                () -> recordFailure(executionRequest, classificationResult.getAuditMarker(), new StatementClassNotSupportedException()));
         try {
             switch (classificationResult.getStatementClass()) {
                 case TRANSACTION_CONTROL:
                 case SAVEPOINT:
                     return recordSuccess(executionRequest, transactionStatementExecutor.execute(
-                            executionRequest.getSessionId(), executionRequest.getDatabase(), databaseCapability.get(), classificationResult), classificationResult.getStatementType());
+                            executionRequest.getSessionId(), executionRequest.getDatabase(), databaseCapability.get(), classificationResult), classificationResult.getAuditMarker());
                 case QUERY:
                 case DML:
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getStatementType());
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getAuditMarker());
                 case DDL:
                 case DCL:
-                    return recordSuccess(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getStatementType());
+                    return recordSuccess(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getAuditMarker());
                 case EXPLAIN_ANALYZE:
                     ShardingSpherePreconditions.checkState(databaseCapability.get().isSupportsExplainAnalyze(), () -> new MCPUnsupportedException("EXPLAIN ANALYZE is not supported."));
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getStatementType());
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getAuditMarker());
                 default:
                     throw new StatementClassNotSupportedException();
             }
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            throw recordFailure(executionRequest, classificationResult.getStatementType(), ex);
+            throw recordFailure(executionRequest, classificationResult.getAuditMarker(), ex);
         }
     }
     
@@ -118,14 +119,14 @@ public final class MCPSQLExecutionFacade {
         return result;
     }
     
-    private SQLExecutionResponse recordSuccess(final SQLExecutionRequest executionRequest, final SQLExecutionResponse response, final String transactionMarker) {
-        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, transactionMarker);
+    private SQLExecutionResponse recordSuccess(final SQLExecutionRequest executionRequest, final SQLExecutionResponse response, final String statementMarker) {
+        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), true, statementMarker);
         return response;
     }
     
-    private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String transactionMarker, final T ex) {
+    private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String statementMarker, final T ex) {
         MCPError error = MCPErrorConverter.convert(ex);
-        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, error.getCode(), transactionMarker);
+        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, error.getCode(), statementMarker);
         return ex;
     }
 }

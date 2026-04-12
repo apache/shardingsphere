@@ -58,34 +58,46 @@ The V1 public tool set is fixed to:
 
 ### `result_set`
 
-- Used for query-style statements.
+- Used when execution returns a result set.
 - Must include:
   - `result_kind`
+  - `statement_class`
+  - `statement_type`
+  - `status`
   - `columns`
   - `rows`
   - `truncated`
 
 ### `update_count`
 
-- Used for DML statements.
+- Used when execution returns an update count.
 - Must include:
   - `result_kind`
+  - `statement_class`
+  - `statement_type`
+  - `status`
   - `affected_rows`
+  - `truncated`
 
 ### `statement_ack`
 
 - Used for DDL, DCL, transaction-control statements, and other non-result statements.
 - Must include:
   - `result_kind`
+  - `statement_class`
   - `statement_type`
   - `status`
   - `message`
+  - `truncated`
 
 ### Result invariants
 
 - Each `execute_query` call returns exactly one result object.
 - Multi-result-set behavior is out of scope for V1.
 - Result fields must normalize column metadata, null handling, complex values, timestamps, and truncation semantics.
+- `statement_class` expresses side effects and governance semantics.
+- `statement_type` expresses the primary user-visible statement type.
+- `statement_class = dml` may coexist with `result_kind = result_set`.
 
 ## Error Surface
 

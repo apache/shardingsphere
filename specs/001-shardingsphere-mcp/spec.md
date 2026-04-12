@@ -51,7 +51,8 @@
 1. **Given** 调用方显式指定一个 logical database，并提交一条允许执行的单语句 SQL，
    **When** 调用 `execute_query`，
    **Then** 系统返回且只返回一个统一结果对象，类型为 `result_set`、
-   `update_count` 或 `statement_ack` 之一。
+   `update_count` 或 `statement_ack` 之一，
+   且结果中包含可供调用方消费的 `statement_class`。
 2. **Given** 调用方提交多语句 SQL，或提交 `USE`、`SET`、`COPY`、`LOAD`、`CALL`
    等 V1 明确不支持的语句，
    **When** 调用 `execute_query`，
@@ -155,9 +156,13 @@
 - **FR-016**: 系统 MUST 在 MCP 会话结束时自动回滚未提交事务。
 - **FR-017**: 系统 MUST 为每次 `execute_query` 返回且只返回一个统一结果对象，
   结果类型限定为 `result_set`、`update_count` 或 `statement_ack`。
-- **FR-018**: 系统 MUST 让查询类结果至少包含 `result_kind`、`columns`、
-  `rows` 与 `truncated`；DML 至少包含 `result_kind` 与 `affected_rows`；
-  非结果集语句至少包含 `result_kind`、`statement_type`、`status` 与 `message`。
+- **FR-018**: 系统 MUST 让每个成功结果至少包含 `result_kind`、
+  `statement_class`、`statement_type`、`status` 与 `truncated`；
+  `result_set` 至少包含 `columns` 与 `rows`；
+  `update_count` 至少包含 `affected_rows`；
+  `statement_ack` 至少包含 `message`。
+- **FR-018A**: 系统 MUST 允许 `statement_class = dml` 与 `result_kind = result_set`
+  的组合，用于表达 data-modifying CTE 等“写操作语义 + 结果集返回”的场景。
 - **FR-019**: 系统 MUST 以统一契约表达列名、统一逻辑类型、底层原生类型、
   可空性、`null` 值与截断语义，避免调用方自行解析方言差异。
 - **FR-020**: 系统 MUST 提供 service-level capability，
@@ -206,7 +211,8 @@
 - **Session Context**: 一个 MCP 会话对应的 `autocommit` 状态、
   事务状态、保存点集合与当前绑定 database 的组合。
 - **Execution Result**: `result_set`、`update_count` 或 `statement_ack`
-  之一，是每次 `execute_query` 的唯一返回对象。
+  之一，是每次 `execute_query` 的唯一返回对象；
+  结果中必须显式包含 `statement_class` 与 `statement_type`。
 - **Audit Record**: 对 resource 读取、metadata tool 调用或 SQL 执行的统一审计条目。
 - **Refresh Visibility State**: 对结构变化与 DCL 变化的会话级与全局可见性标记。
 

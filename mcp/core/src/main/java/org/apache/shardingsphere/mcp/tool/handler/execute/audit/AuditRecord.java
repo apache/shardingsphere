@@ -47,7 +47,7 @@ public final class AuditRecord {
     @Getter(AccessLevel.NONE)
     private final MCPErrorCode errorCode;
     
-    private final String transactionMarker;
+    private final String statementMarker;
     
     private final String timestamp;
     

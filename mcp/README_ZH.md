@@ -147,6 +147,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 - 响应类型是 `text/event-stream`。
 - JSON 负载位于 `data:` 行，其中 `result_kind` 为 `result_set`。
+- 同一负载还会包含 `statement_class = query`、`statement_type = SELECT`，以及 `columns`、`rows`。
 
 完成后，可使用下方的 DELETE 示例关闭会话。
 

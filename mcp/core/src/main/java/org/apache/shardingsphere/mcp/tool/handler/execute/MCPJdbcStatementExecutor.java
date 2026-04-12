@@ -101,12 +101,14 @@ public final class MCPJdbcStatementExecutor {
                         if (!hasResultSet) {
                             throw new QueryDidNotReturnResultSetException();
                         }
-                        return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows());
+                        return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult);
                     case DML:
-                        return SQLExecutionResponse.updateCount(classificationResult.getStatementType(), statement.getUpdateCount());
+                        return hasResultSet
+                                ? createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult)
+                                : SQLExecutionResponse.updateCount(classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount());
                     case DDL:
                     case DCL:
-                        return SQLExecutionResponse.statementAck(classificationResult.getStatementType(), "Statement executed.");
+                        return SQLExecutionResponse.statementAck(classificationResult.getStatementClass(), classificationResult.getStatementType(), "Statement executed.");
                     default:
                         throw new StatementClassNotSupportedException();
                 }
@@ -129,7 +131,7 @@ public final class MCPJdbcStatementExecutor {
         }
     }
     
-    private SQLExecutionResponse createResultSetResponse(final ResultSet resultSet, final int maxRows) throws SQLException {
+    private SQLExecutionResponse createResultSetResponse(final ResultSet resultSet, final int maxRows, final ClassificationResult classificationResult) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
         for (int index = 1; index <= resultSetMetaData.getColumnCount(); index++) {
@@ -150,7 +152,7 @@ public final class MCPJdbcStatementExecutor {
             }
             rows.add(row);
         }
-        return SQLExecutionResponse.resultSet(columns, rows, truncated);
+        return SQLExecutionResponse.resultSet(classificationResult.getStatementClass(), classificationResult.getStatementType(), columns, rows, truncated);
     }
     
     private int resolveStatementMaxRows(final int maxRows) {

@@ -100,13 +100,21 @@
   - `StatementAckResult`
 - **Shared fields**:
   - `resultKind`
+  - `statementClass`
+  - `statementType`
+  - `status`
+  - `truncated`
 - **Variant fields**:
-  - `ResultSetResult`: `columns`, `rows`, `truncated`
+  - `ResultSetResult`: `columns`, `rows`
   - `UpdateCountResult`: `affectedRows`
-  - `StatementAckResult`: `statementType`, `status`, `message`
+  - `StatementAckResult`: `message`
 - **Validation rules**:
   - Only one variant may be returned for one request.
+  - `statementClass` expresses governance and side-effect semantics.
+  - `statementType` expresses the user-visible primary statement type.
+  - `resultKind` expresses the payload shape and must not be used to infer write safety.
   - Result shape must align with statement class and effective capability behavior.
+  - `statementClass = DML` may legally coexist with `resultKind = RESULT_SET`.
 
 ### AuditRecord
 

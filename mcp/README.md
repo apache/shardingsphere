@@ -146,7 +146,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 Expected result:
 
 - The response content type is `text/event-stream`.
-- The JSON payload appears on the `data:` line and includes a `result_kind` of `result_set`.
+- The JSON payload appears on the `data:` line and includes `result_kind = result_set`.
+- The same payload also includes `statement_class = query`, `statement_type = SELECT`, plus `columns` and `rows`.
 
 Close the session with the DELETE example below when you are done.
 

@@ -413,12 +413,22 @@ stateDiagram-v2
   - `transaction_control`
   - `savepoint`
   - `explain_analyze`
+- `WITH` 只表示 CTE 写法，不单独形成产品 statement class。
+- `statement class` 用于 capability、audit 和执行分支。
+- `statement type` 用于表达更具体的用户可读动作，如 `SELECT`、`UPDATE`、`MERGE`。
 
 ### 10.4 统一结果
 - 仅允许三类：
   - `result_set`
   - `update_count`
   - `statement_ack`
+- 每个成功结果都携带：
+  - `statement_class`
+  - `statement_type`
+  - `status`
+  - `truncated`
+- `result_kind` 只表达返回形状，不表达副作用等级。
+- data-modifying CTE 可被表达为 `statement_class = dml` 且 `result_kind = result_set`。
 
 ### 10.5 错误映射
 - 底层异常不得直接透传。

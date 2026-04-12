@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,7 +32,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SQLExecutionResponseTest {
@@ -40,10 +40,11 @@ class SQLExecutionResponseTest {
     void assertResultSet() {
         SQLExecutionResponse actual = SQLExecutionResponse.resultSet(List.of(new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false)), List.of(List.of(1)), true);
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.QUERY));
         assertThat(actual.getColumns().size(), is(1));
         assertThat(actual.getRows().size(), is(1));
         assertThat(actual.getAffectedRows(), is(0));
-        assertThat(actual.getStatementType(), is("QUERY"));
+        assertThat(actual.getStatementType(), is("SELECT"));
         assertThat(actual.getStatus(), is("OK"));
         assertThat(actual.getMessage(), is(""));
         assertTrue(actual.isTruncated());
@@ -53,6 +54,7 @@ class SQLExecutionResponseTest {
     void assertUpdateCount() {
         SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 2);
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
         assertThat(actual.getStatementType(), is("UPDATE"));
         assertThat(actual.getAffectedRows(), is(2));
         assertThat(actual.getStatus(), is("OK"));
@@ -64,8 +66,9 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertStatementAck() {
-        SQLExecutionResponse actual = SQLExecutionResponse.statementAck("COMMIT", "Transaction committed.");
+        SQLExecutionResponse actual = SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction committed.");
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.STATEMENT_ACK));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.TRANSACTION_CONTROL));
         assertThat(actual.getStatementType(), is("COMMIT"));
         assertThat(actual.getAffectedRows(), is(0));
         assertThat(actual.getStatus(), is("OK"));
@@ -82,7 +85,21 @@ class SQLExecutionResponseTest {
     
     @Test
     void assertResultSetWithNullRows() {
-        assertNull(SQLExecutionResponse.resultSet(List.of(), null, false).getRows());
+        assertThat(SQLExecutionResponse.resultSet(List.of(), null, false).getRows(), is(List.of()));
+    }
+    
+    @Test
+    void assertResultSetWithDmlStatementClass() {
+        SQLExecutionResponse actual = SQLExecutionResponse.resultSet(SupportedMCPStatement.DML, "SELECT", List.of(), List.of(List.of(1)), false);
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
+        assertThat(actual.getStatementType(), is("SELECT"));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
+    }
+    
+    @Test
+    void assertUpdateCountWithZeroAffectedRows() {
+        SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 0);
+        assertThat(actual.toPayload().get("affected_rows"), is(0));
     }
     
     private static Stream<Arguments> assertToPayloadCases() {
@@ -91,12 +108,15 @@ class SQLExecutionResponseTest {
         List<List<Object>> rows = List.of(List.of(1));
         return Stream.of(
                 Arguments.of("result set with rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(columns, rows, true),
-                        Map.of("result_kind", "result_set", "statement_type", "QUERY", "status", "OK", "columns", columns, "rows", rows, "truncated", true)),
+                        Map.of("result_kind", "result_set", "statement_class", "query", "statement_type", "SELECT", "status", "OK", "columns", columns, "rows", rows, "truncated", true)),
                 Arguments.of("result set with null rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(List.of(), null, false),
-                        Map.of("result_kind", "result_set", "statement_type", "QUERY", "status", "OK", "truncated", false)),
+                        Map.of("result_kind", "result_set", "statement_class", "query", "statement_type", "SELECT", "status", "OK",
+                                "columns", List.of(), "rows", List.of(), "truncated", false)),
                 Arguments.of("update count", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.updateCount("UPDATE", 2),
-                        Map.of("result_kind", "update_count", "statement_type", "UPDATE", "status", "OK", "affected_rows", 2, "truncated", false)),
-                Arguments.of("statement acknowledgement", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.statementAck("COMMIT", "Transaction committed."),
-                        Map.of("result_kind", "statement_ack", "statement_type", "COMMIT", "status", "OK", "message", "Transaction committed.", "truncated", false)));
+                        Map.of("result_kind", "update_count", "statement_class", "dml", "statement_type", "UPDATE", "status", "OK", "affected_rows", 2, "truncated", false)),
+                Arguments.of("statement acknowledgement",
+                        (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction committed."),
+                        Map.of("result_kind", "statement_ack", "statement_class", "transaction_control", "statement_type", "COMMIT",
+                                "status", "OK", "message", "Transaction committed.", "truncated", false)));
     }
 }

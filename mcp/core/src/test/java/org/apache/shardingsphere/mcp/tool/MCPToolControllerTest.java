@@ -65,6 +65,9 @@ class MCPToolControllerTest {
     void assertHandleExecuteQuery() throws SQLException {
         Map<String, Object> actual = createController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
         assertThat(actual.get("result_kind"), is("result_set"));
+        assertThat(actual.get("statement_class"), is("query"));
+        assertThat(actual.get("statement_type"), is("SELECT"));
+        assertThat(((List<?>) actual.get("columns")).size(), is(1));
         assertThat(((List<?>) actual.get("rows")).size(), is(1));
     }
     

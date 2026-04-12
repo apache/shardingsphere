@@ -32,6 +32,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
@@ -54,6 +55,10 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
         Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
                 createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id"));
         assertThat(payload.get("result_kind"), is("result_set"));
+        assertThat(payload.get("statement_class"), is("query"));
+        assertThat(payload.get("statement_type"), is("SELECT"));
+        assertTrue(((Iterable<?>) payload.get("columns")).iterator().hasNext());
+        assertTrue(((Iterable<?>) payload.get("rows")).iterator().hasNext());
         assertFalse((Boolean) payload.get("truncated"));
     }
     

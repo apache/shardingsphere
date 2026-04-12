@@ -57,4 +57,8 @@ public final class ClassificationResult {
     public Optional<String> getSavepointName() {
         return savepointName.isEmpty() ? Optional.empty() : Optional.of(savepointName);
     }
+    
+    String getAuditMarker() {
+        return SupportedMCPStatement.TRANSACTION_CONTROL == statementClass || SupportedMCPStatement.SAVEPOINT == statementClass ? statementType : statementClass.name();
+    }
 }

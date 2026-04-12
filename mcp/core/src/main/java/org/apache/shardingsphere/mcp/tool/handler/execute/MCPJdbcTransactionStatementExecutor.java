@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
@@ -80,36 +81,42 @@ public final class MCPJdbcTransactionStatementExecutor {
     private SQLExecutionResponse executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final String statementType) {
         ShardingSpherePreconditions.checkState(databaseCapability.isSupportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().beginTransaction(sessionId, databaseName);
-        return SQLExecutionResponse.statementAck(statementType, "Transaction started.");
+        return SQLExecutionResponse.statementAck(classifyTransactionStatement(statementType), statementType, "Transaction started.");
     }
     
     private SQLExecutionResponse executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         ShardingSpherePreconditions.checkState(databaseCapability.isSupportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().commitTransaction(sessionId);
-        return SQLExecutionResponse.statementAck("COMMIT", "Transaction committed.");
+        return SQLExecutionResponse.statementAck(classifyTransactionStatement("COMMIT"), "COMMIT", "Transaction committed.");
     }
     
     private SQLExecutionResponse executeRollback(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         ShardingSpherePreconditions.checkState(databaseCapability.isSupportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
         sessionManager.getTransactionResourceManager().rollbackTransaction(sessionId);
-        return SQLExecutionResponse.statementAck("ROLLBACK", "Transaction rolled back.");
+        return SQLExecutionResponse.statementAck(classifyTransactionStatement("ROLLBACK"), "ROLLBACK", "Transaction rolled back.");
     }
     
     private SQLExecutionResponse executeSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         ShardingSpherePreconditions.checkState(databaseCapability.isSupportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().createSavepoint(sessionId, savepointName);
-        return SQLExecutionResponse.statementAck("SAVEPOINT", "Savepoint created.");
+        return SQLExecutionResponse.statementAck(classifyTransactionStatement("SAVEPOINT"), "SAVEPOINT", "Savepoint created.");
     }
     
     private SQLExecutionResponse executeRollbackSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         ShardingSpherePreconditions.checkState(databaseCapability.isSupportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().rollbackToSavepoint(sessionId, savepointName);
-        return SQLExecutionResponse.statementAck("ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
+        return SQLExecutionResponse.statementAck(classifyTransactionStatement("ROLLBACK TO SAVEPOINT"), "ROLLBACK TO SAVEPOINT", "Savepoint rolled back.");
     }
     
     private SQLExecutionResponse executeReleaseSavepoint(final String sessionId, final MCPDatabaseCapability databaseCapability, final String savepointName) {
         ShardingSpherePreconditions.checkState(databaseCapability.isSupportsSavepoint(), () -> new MCPUnsupportedException("Savepoint is not supported."));
         sessionManager.getTransactionResourceManager().releaseSavepoint(sessionId, savepointName);
-        return SQLExecutionResponse.statementAck("RELEASE SAVEPOINT", "Savepoint released.");
+        return SQLExecutionResponse.statementAck(classifyTransactionStatement("RELEASE SAVEPOINT"), "RELEASE SAVEPOINT", "Savepoint released.");
+    }
+    
+    private SupportedMCPStatement classifyTransactionStatement(final String statementType) {
+        return "SAVEPOINT".equals(statementType) || "ROLLBACK TO SAVEPOINT".equals(statementType) || "RELEASE SAVEPOINT".equals(statementType)
+                ? SupportedMCPStatement.SAVEPOINT
+                : SupportedMCPStatement.TRANSACTION_CONTROL;
     }
 }

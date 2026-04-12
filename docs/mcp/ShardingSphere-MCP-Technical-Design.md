@@ -501,11 +501,21 @@ flowchart TB
 - `transaction_control`
 - `savepoint`
 - `explain_analyze`
+- `WITH` 只是语法前导，不是独立 statement class。
+- `statement_class` 表达治理语义和副作用级别。
+- `statement_type` 表达用户可读的主要语句类型。
 
 ### 13.4 统一结果模型
 - `result_set`
 - `update_count`
 - `statement_ack`
+- 每个成功结果都包含：
+  - `statement_class`
+  - `statement_type`
+  - `status`
+  - `truncated`
+- `statement_class = dml` 允许与 `result_set` 组合，
+  用于表达 data-modifying CTE。
 
 ### 13.5 统一错误模型
 - `invalid_request`

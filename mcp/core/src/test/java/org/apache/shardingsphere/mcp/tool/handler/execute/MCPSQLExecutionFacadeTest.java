@@ -80,10 +80,18 @@ class MCPSQLExecutionFacadeTest {
     
     static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
-                Arguments.of("query", "SELECT * FROM orders", SupportedMCPStatement.QUERY, "QUERY", "orders", ""),
+                Arguments.of("query", "SELECT * FROM orders", SupportedMCPStatement.QUERY, "SELECT", "orders", ""),
+                Arguments.of("with query", "WITH order_rows AS (SELECT * FROM orders) SELECT * FROM order_rows", SupportedMCPStatement.QUERY, "SELECT", "orders", ""),
+                Arguments.of("with recursive query", "WITH RECURSIVE order_rows AS (SELECT * FROM orders) SELECT * FROM order_rows", SupportedMCPStatement.QUERY, "SELECT", "orders", ""),
+                Arguments.of("with quoted alias query", "WITH \"order_rows\" AS (SELECT * FROM \"orders\") SELECT * FROM \"order_rows\"", SupportedMCPStatement.QUERY, "SELECT", "orders", ""),
+                Arguments.of("with update", "WITH order_rows AS (SELECT * FROM orders) UPDATE orders SET status = 'DONE' FROM order_rows WHERE orders.order_id = order_rows.order_id",
+                        SupportedMCPStatement.DML, "UPDATE", "orders", ""),
+                Arguments.of("data modifying cte select", "WITH updated_orders AS (UPDATE orders SET status = 'DONE' RETURNING *) SELECT * FROM updated_orders",
+                        SupportedMCPStatement.DML, "SELECT", "orders", ""),
                 Arguments.of("dml", "UPDATE orders SET status = 'DONE'", SupportedMCPStatement.DML, "UPDATE", "orders", ""),
+                Arguments.of("drop table if exists", "DROP TABLE IF EXISTS orders", SupportedMCPStatement.DDL, "DROP", "orders", ""),
                 Arguments.of("ddl", "CREATE TABLE orders", SupportedMCPStatement.DDL, "CREATE", "orders", ""),
-                Arguments.of("dcl", "GRANT SELECT ON orders TO app_user", SupportedMCPStatement.DCL, "GRANT", "", ""),
+                Arguments.of("dcl", "GRANT SELECT ON orders TO app_user", SupportedMCPStatement.DCL, "GRANT", "orders", ""),
                 Arguments.of("transaction", "BEGIN", SupportedMCPStatement.TRANSACTION_CONTROL, "BEGIN", "", ""),
                 Arguments.of("savepoint", "SAVEPOINT sp_1", SupportedMCPStatement.SAVEPOINT, "SAVEPOINT", "", "sp_1"),
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", "orders", ""));
@@ -136,6 +144,8 @@ class MCPSQLExecutionFacadeTest {
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         SQLExecutionResponse actual = facade.execute(createExecutionRequest("SELECT * FROM orders", 1));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.QUERY));
+        assertThat(actual.getStatementType(), is("SELECT"));
         assertThat(actual.getRows().size(), is(1));
         assertTrue(actual.isTruncated());
         verify(runtimeDatabaseConfig).openConnection("logic_db");
@@ -149,7 +159,39 @@ class MCPSQLExecutionFacadeTest {
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         SQLExecutionResponse actual = facade.execute(createExecutionRequest("UPDATE orders SET status = 'DONE'", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
         assertThat(actual.getAffectedRows(), is(3));
+        verify(runtimeDatabaseConfig).openConnection("logic_db");
+    }
+    
+    @Test
+    void assertExecuteCtePrefixedUpdate() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createUpdateConnection(2));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest(
+                "WITH order_rows AS (SELECT * FROM orders) UPDATE orders SET status = 'DONE' FROM order_rows WHERE orders.order_id = order_rows.order_id", 10));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.UPDATE_COUNT));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
+        assertThat(actual.getStatementType(), is("UPDATE"));
+        assertThat(actual.getAffectedRows(), is(2));
+        verify(runtimeDatabaseConfig).openConnection("logic_db");
+    }
+    
+    @Test
+    void assertExecuteDataModifyingCteResultSet() throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createQueryConnection(createResultSet(
+                List.of(new ExecuteQueryColumnDefinition("order_id", "INTEGER", "INTEGER", false)), List.of(List.of(1)))));
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest(
+                "WITH updated_orders AS (UPDATE orders SET status = 'DONE' RETURNING *) SELECT * FROM updated_orders", 10));
+        assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
+        assertThat(actual.getStatementType(), is("SELECT"));
+        assertThat(actual.getRows().size(), is(1));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
     
@@ -223,6 +265,8 @@ class MCPSQLExecutionFacadeTest {
         MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
         SQLExecutionResponse actual = facade.execute(createExecutionRequest("EXPLAIN ANALYZE SELECT * FROM orders", 10));
         assertThat(actual.getResultKind(), is(ExecuteQueryResultKind.RESULT_SET));
+        assertThat(actual.getStatementClass(), is(SupportedMCPStatement.EXPLAIN_ANALYZE));
+        assertThat(actual.getStatementType(), is("EXPLAIN ANALYZE"));
         assertThat(actual.getRows().size(), is(1));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
