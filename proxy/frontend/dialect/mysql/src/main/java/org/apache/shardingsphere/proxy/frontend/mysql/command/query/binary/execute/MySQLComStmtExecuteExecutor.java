@@ -26,6 +26,7 @@ import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryCol
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -71,7 +72,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
-        List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet(),
+        List<MySQLPreparedStatementParameterType> parameterTypes = getParameterTypes(preparedStatement);
+        List<Object> params = packet.readParameters(parameterTypes, preparedStatement.getLongData().keySet(),
                 preparedStatement.getParameterColumnDefinitionFlags(), preparedStatement.getParameterColumnTypes());
         preparedStatement.getLongData().forEach(params::set);
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
@@ -83,6 +85,30 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
+    }
+    
+    private List<MySQLPreparedStatementParameterType> getParameterTypes(final MySQLServerPreparedStatement preparedStatement) {
+        List<MySQLPreparedStatementParameterType> parameterTypes = preparedStatement.getParameterTypes();
+        if (!parameterTypes.isEmpty()) {
+            return parameterTypes;
+        }
+        int expectedParamCount = preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount();
+        if (expectedParamCount <= 0) {
+            return parameterTypes;
+        }
+        List<MySQLPreparedStatementParameterType> originalTypes = packet.getNewParameterTypes();
+        if (!originalTypes.isEmpty()) {
+            return originalTypes;
+        }
+        List<MySQLPreparedStatementParameterType> result = new ArrayList<>(expectedParamCount);
+        for (int i = 0; i < expectedParamCount; i++) {
+            if (null != packet.getNullBitmap() && packet.getNullBitmap().isNullParameter(i)) {
+                result.add(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.NULL, 0));
+            } else {
+                result.add(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.VARCHAR, 0));
+            }
+        }
+        return result;
     }
     
     private MySQLServerPreparedStatement updateAndGetPreparedStatement() {
