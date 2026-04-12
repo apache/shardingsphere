@@ -670,7 +670,7 @@ sequenceDiagram
     participant E as ExecuteQuery Facade
     participant S as ShardingSphere Core
 
-    C->>M: execute_query(database, sql)
+    C->>M: execute_query(database, schema?, sql)
     M->>E: 执行统一 SQL 请求
     E->>S: parse / route / execute
     S-->>E: raw result
