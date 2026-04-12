@@ -94,7 +94,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             return parameterTypes;
         }
         List<MySQLPreparedStatementParameterType> originalTypes = packet.getNewParameterTypes();
-        if (!originalTypes.isEmpty()) {
+        if (null != originalTypes && !originalTypes.isEmpty()) {
             return originalTypes;
         }
         int expectedParamCount = preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount();
