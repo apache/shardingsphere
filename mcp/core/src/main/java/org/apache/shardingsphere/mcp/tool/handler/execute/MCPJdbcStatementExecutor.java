@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -60,6 +62,7 @@ public final class MCPJdbcStatementExecutor {
      *
      * @param executionRequest execution request
      * @param classificationResult classification result
+     * @param databaseCapability database capability
      * @return execution response
      * @throws MCPTransactionStateException when the current transaction state blocks execution
      * @throws MCPTimeoutException when the JDBC execution times out
@@ -68,7 +71,7 @@ public final class MCPJdbcStatementExecutor {
      * @throws MCPQueryFailedException when query execution fails
      * @throws MCPUnavailableException when the runtime database configuration is unavailable
      */
-    public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
+    public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) {
         Connection connection = null;
         boolean needCloseConnection = false;
         try {
@@ -83,7 +86,7 @@ public final class MCPJdbcStatementExecutor {
             } catch (final IllegalStateException ex) {
                 throw new MCPTransactionStateException(ex.getMessage(), ex);
             }
-            applySchema(connection, executionRequest.getSchema());
+            applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
             try (Statement statement = connection.createStatement()) {
                 if (0 < executionRequest.getMaxRows()) {
                     statement.setMaxRows(resolveStatementMaxRows(executionRequest.getMaxRows()));
@@ -160,9 +163,9 @@ public final class MCPJdbcStatementExecutor {
         return runtimeDatabaseConfig.openConnection(databaseName);
     }
     
-    private void applySchema(final Connection connection, final String schemaName) throws SQLException {
+    private void applySchema(final Connection connection, final String schemaName, final SchemaExecutionSemantics schemaExecutionSemantics) throws SQLException {
         String actualSchema = Objects.toString(schemaName, "").trim();
-        if (actualSchema.isEmpty()) {
+        if (actualSchema.isEmpty() || SchemaExecutionSemantics.FIXED_TO_DATABASE == schemaExecutionSemantics) {
             return;
         }
         try {

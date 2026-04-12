@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
@@ -33,6 +34,8 @@ public final class ClickHouseMCPDatabaseCapabilityOption implements MCPDatabaseC
     private final boolean indexSupported = false;
     
     private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
+    
+    private final SchemaExecutionSemantics schemaExecutionSemantics = SchemaExecutionSemantics.FIXED_TO_DATABASE;
     
     private final boolean crossSchemaQuerySupported = false;
     

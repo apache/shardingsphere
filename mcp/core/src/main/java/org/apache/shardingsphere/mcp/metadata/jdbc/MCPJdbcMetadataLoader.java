@@ -19,6 +19,9 @@ package org.apache.shardingsphere.mcp.metadata.jdbc;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
@@ -87,24 +90,25 @@ public final class MCPJdbcMetadataLoader {
     private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
         DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseType, databaseVersion);
-        loadTables(accumulator, databaseMetaData);
-        loadViews(accumulator, databaseMetaData);
-        loadSequences(accumulator, databaseType, connection);
+        loadTables(databaseName, databaseType, accumulator, databaseMetaData);
+        loadViews(databaseName, databaseType, accumulator, databaseMetaData);
+        loadSequences(databaseName, databaseType, accumulator, connection);
         return accumulator.build();
     }
     
-    private void loadTables(final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private void loadTables(final String databaseName, final String databaseType, final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String schemaName = Objects.toString(tables.getString("TABLE_SCHEM"), "").trim();
                 if (isSystemSchema(schemaName)) {
                     continue;
                 }
+                String normalizedSchemaName = normalizeSchemaName(databaseName, databaseType, schemaName);
                 String tableName = Objects.toString(tables.getString("TABLE_NAME"), "").trim();
                 if (tableName.isEmpty()) {
                     continue;
                 }
-                TableMetadataAccumulator tableMetadata = accumulator.getSchemaAccumulator(schemaName).getTableAccumulator(tableName);
+                TableMetadataAccumulator tableMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getTableAccumulator(tableName);
                 for (String each : loadColumns(databaseMetaData, schemaName, tableName)) {
                     tableMetadata.addColumn(each);
                 }
@@ -115,18 +119,19 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void loadViews(final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private void loadViews(final String databaseName, final String databaseType, final DatabaseMetadataAccumulator accumulator, final DatabaseMetaData databaseMetaData) throws SQLException {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
                 String schemaName = Objects.toString(views.getString("TABLE_SCHEM"), "").trim();
                 if (isSystemSchema(schemaName)) {
                     continue;
                 }
+                String normalizedSchemaName = normalizeSchemaName(databaseName, databaseType, schemaName);
                 String viewName = Objects.toString(views.getString("TABLE_NAME"), "").trim();
                 if (viewName.isEmpty()) {
                     continue;
                 }
-                ViewMetadataAccumulator viewMetadata = accumulator.getSchemaAccumulator(schemaName).getViewAccumulator(viewName);
+                ViewMetadataAccumulator viewMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getViewAccumulator(viewName);
                 for (String each : loadColumns(databaseMetaData, schemaName, viewName)) {
                     viewMetadata.addColumn(each);
                 }
@@ -134,7 +139,7 @@ public final class MCPJdbcMetadataLoader {
         }
     }
     
-    private void loadSequences(final DatabaseMetadataAccumulator accumulator, final String databaseType, final Connection connection) {
+    private void loadSequences(final String databaseName, final String databaseType, final DatabaseMetadataAccumulator accumulator, final Connection connection) {
         String sequenceQuery = getSequenceQuery(databaseType);
         if (null == sequenceQuery) {
             return;
@@ -147,9 +152,10 @@ public final class MCPJdbcMetadataLoader {
                 if (isSystemSchema(schemaName)) {
                     continue;
                 }
+                String normalizedSchemaName = normalizeSchemaName(databaseName, databaseType, schemaName);
                 String sequenceName = Objects.toString(sequences.getString("SEQUENCE_NAME"), "").trim();
                 if (!sequenceName.isEmpty()) {
-                    accumulator.getSchemaAccumulator(schemaName).addSequence(sequenceName);
+                    accumulator.getSchemaAccumulator(normalizedSchemaName).addSequence(sequenceName);
                 }
             }
         } catch (final SQLException ignored) {
@@ -213,6 +219,17 @@ public final class MCPJdbcMetadataLoader {
     private String getSchemaPattern(final String schemaName) {
         String result = Objects.toString(schemaName, "").trim();
         return result.isEmpty() ? null : result;
+    }
+    
+    private String normalizeSchemaName(final String databaseName, final String databaseType, final String schemaName) {
+        String result = Objects.toString(schemaName, "").trim();
+        if (!result.isEmpty()) {
+            return result;
+        }
+        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType)
+                .filter(optional -> SchemaSemantics.DATABASE_AS_SCHEMA == optional.getDefaultSchemaSemantics())
+                .map(optional -> databaseName)
+                .orElse(result);
     }
     
     private static final class DatabaseMetadataAccumulator {

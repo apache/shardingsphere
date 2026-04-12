@@ -453,6 +453,8 @@ flowchart TB
   - `supports_savepoint`
   - `supported_transaction_statements`
   - `default_autocommit`
+  - `default_schema_semantics`
+  - `schema_execution_semantics`
   - `supports_cross_schema_sql`
   - `supports_explain_analyze`
   - `ddl_transaction_behavior`
@@ -479,6 +481,9 @@ flowchart TB
 ### 13.1 设计原则
 - `execute_query` 是 V1 唯一 SQL 执行入口。
 - 它不是 SQL 透传接口，而是统一执行与治理入口。
+- `database` 是唯一强执行边界。
+- `schema` 是可选 namespace hint，不是第二个强路由键。
+- `schema_execution_semantics` 用于向调用方显式声明 request-level `schema` 的执行语义。
 
 ### 13.2 高层处理阶段
 - 统一划分为 5 个阶段：

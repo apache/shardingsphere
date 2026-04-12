@@ -42,6 +42,8 @@ public final class MCPDatabaseCapability {
     
     private final SchemaSemantics defaultSchemaSemantics;
     
+    private final SchemaExecutionSemantics schemaExecutionSemantics;
+    
     private final boolean supportsCrossSchemaSql;
     
     private final boolean supportsExplainAnalyze;
@@ -53,6 +55,7 @@ public final class MCPDatabaseCapability {
         supportedStatementClasses = createSupportedStatementClasses(databaseVersion, option);
         transactionCapability = option.getTransactionCapability();
         defaultSchemaSemantics = option.getDefaultSchemaSemantics();
+        schemaExecutionSemantics = option.getSchemaExecutionSemantics();
         supportsCrossSchemaSql = option.isCrossSchemaQuerySupported();
         supportsExplainAnalyze = option.isExplainAnalyzeSupported(databaseVersion);
     }

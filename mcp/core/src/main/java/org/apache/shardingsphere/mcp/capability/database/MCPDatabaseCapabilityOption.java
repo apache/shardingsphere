@@ -48,6 +48,13 @@ public interface MCPDatabaseCapabilityOption extends TypedSPI {
     SchemaSemantics getDefaultSchemaSemantics();
     
     /**
+     * Get execution-time schema semantics.
+     *
+     * @return execution-time schema semantics
+     */
+    SchemaExecutionSemantics getSchemaExecutionSemantics();
+    
+    /**
      * Judge whether cross-schema query is supported.
      *
      * @return whether cross-schema query is supported

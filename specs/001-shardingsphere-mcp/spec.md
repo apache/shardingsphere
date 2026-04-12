@@ -96,7 +96,8 @@
 
 - 当调用方指定 `schema` 但未指定 `database` 时，系统必须返回 `invalid_request`。
 - 当底层数据库没有独立 `schema` 概念时，系统仍需暴露统一 `schema` 语义，
-  且公共契约不额外引入 schema 名称推导字段。
+  并使用 logical `database` 名称作为公共 `schema` 名称；
+  `schema` 在执行时的含义由 database capability 的 `schemaExecutionSemantics` 解释。
 - 当目标 database 不支持事务控制或 savepoint 时，相关语句必须统一返回 `unsupported`。
 - 当事务已绑定一个 database 后再次指定其他 database 时，系统必须返回 `conflict`。
 - 当查询结果超过 `max_rows` 或 database capability 的默认返回行数限制时，
@@ -129,7 +130,11 @@
   当省略 `database` 时在当前 metadata catalog 中的全部 logical databases 范围内搜索；
   当指定 `schema` 但未指定 `database` 时 MUST 返回 `invalid_request`。
 - **FR-008**: 系统 MUST 让 `execute_query` 每次只接受一条 SQL 语句，
-  并 MUST 对多语句输入返回 `invalid_request`。
+  并 MUST 对多语句输入返回 `invalid_request`；
+  `execute_query` 的公共输入签名为 `execute_query(database, schema?, sql, max_rows?, timeout_ms?)`。
+- **FR-008A**: 系统 MUST 将 `execute_query.schema` 定义为 optional namespace hint，
+  用于表达未限定对象名的目标命名空间意图；
+  `schema` MUST NOT 作为第二个强执行边界。
 - **FR-009**: 系统 MUST 支持 capability 声明允许的 SQL 语句类别，
   包括查询、DML、DDL、DCL、事务控制、savepoint 与 `EXPLAIN ANALYZE`；
   但当目标 database 未声明支持时 MUST 返回 `unsupported`。
@@ -159,7 +164,7 @@
   用于声明协议公共支持的 resources、tools 与 statement classes。
 - **FR-021**: 系统 MUST 提供 database-level capability，
   用于声明对象类型、statement classes、事务能力、savepoint 能力、
-  默认 autocommit、默认 schema 语义、跨 schema SQL 能力、返回行数和超时默认值，
+  默认 autocommit、默认 schema 语义、schema 执行语义、跨 schema SQL 能力、返回行数和超时默认值，
   以及 DDL、DCL、`EXPLAIN ANALYZE` 的事务与结果边界行为。
 - **FR-022**: 系统 MUST 对 metadata 读取、metadata tool 调用与 SQL 执行执行审计，
   审计记录至少包含 `sessionId`、`database`、`operationClass`、

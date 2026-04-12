@@ -42,6 +42,7 @@ public final class MCPDatabaseCapabilityResponse implements MCPResponse {
         result.put("supportsTransactionControl", databaseCapability.isSupportsTransactionControl());
         result.put("supportsSavepoint", databaseCapability.isSupportsSavepoint());
         result.put("defaultSchemaSemantics", databaseCapability.getDefaultSchemaSemantics());
+        result.put("schemaExecutionSemantics", databaseCapability.getSchemaExecutionSemantics());
         result.put("supportsCrossSchemaSql", databaseCapability.isSupportsCrossSchemaSql());
         result.put("supportsExplainAnalyze", databaseCapability.isSupportsExplainAnalyze());
         return result;

@@ -40,11 +40,14 @@ The V1 public resource set is fixed to the following paths:
 The V1 public tool set is fixed to:
 
 - `search_metadata(database?, schema?, query, object_types?, page_size?, page_token?)`
-- `execute_query(database, sql, max_rows?, timeout_ms?)`
+- `execute_query(database, schema?, sql, max_rows?, timeout_ms?)`
 
 ### Tool rules
 
 - `execute_query` accepts one statement only.
+- `database` is the only strong execution boundary for `execute_query`.
+- `schema` is an optional namespace hint for unqualified object names; its execution meaning is guided by database capability `schemaExecutionSemantics`.
+- SQL explicit qualification takes precedence over request-level `schema`.
 - `search_metadata` may search all loaded logical databases when `database` is omitted.
 - `search_metadata.object_types` accepts only `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence`; other values return `invalid_request`.
 - If `schema` is provided without `database`, the request returns `invalid_request`.

@@ -94,13 +94,13 @@ public final class MCPSQLExecutionFacade {
                             executionRequest.getSessionId(), executionRequest.getDatabase(), databaseCapability.get(), classificationResult), classificationResult.getStatementType());
                 case QUERY:
                 case DML:
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getStatementType());
                 case DDL:
                 case DCL:
-                    return recordSuccess(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult), classificationResult.getStatementType());
+                    return recordSuccess(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getStatementType());
                 case EXPLAIN_ANALYZE:
                     ShardingSpherePreconditions.checkState(databaseCapability.get().isSupportsExplainAnalyze(), () -> new MCPUnsupportedException("EXPLAIN ANALYZE is not supported."));
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult), classificationResult.getStatementType());
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getStatementType());
                 default:
                     throw new StatementClassNotSupportedException();
             }
@@ -111,8 +111,9 @@ public final class MCPSQLExecutionFacade {
         }
     }
     
-    private SQLExecutionResponse executeAndRefreshMetadata(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult) {
-        SQLExecutionResponse result = statementExecutor.execute(executionRequest, classificationResult);
+    private SQLExecutionResponse executeAndRefreshMetadata(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult,
+                                                           final MCPDatabaseCapability databaseCapability) {
+        SQLExecutionResponse result = statementExecutor.execute(executionRequest, classificationResult, databaseCapability);
         jdbcMetadataRefresher.refresh(executionRequest.getDatabase());
         return result;
     }

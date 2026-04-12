@@ -51,6 +51,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.get().isSupportsTransactionControl());
         assertTrue(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
+        assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertFalse(actual.get().isSupportsExplainAnalyze());
     }
@@ -65,18 +66,21 @@ class MCPDatabaseCapabilityProviderTest {
         assertFalse(actual.get().isSupportsTransactionControl());
         assertFalse(actual.get().isSupportsSavepoint());
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
+        assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideCapabilityMatrixArguments")
     void assertProvideWithCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
-                                           final boolean expectedSavepoint, final boolean expectedIndexSupport, final boolean expectedSequenceSupport) {
+                                           final boolean expectedSavepoint, final boolean expectedIndexSupport, final boolean expectedSequenceSupport,
+                                           final SchemaExecutionSemantics expectedSchemaExecutionSemantics) {
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider(databaseType).provide("logic_db");
         assertTrue(actual.isPresent());
         assertThat(actual.get().isSupportsTransactionControl(), is(expectedTransactionControl));
         assertThat(actual.get().isSupportsSavepoint(), is(expectedSavepoint));
         assertThat(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX), is(expectedIndexSupport));
         assertThat(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
+        assertThat(actual.get().getSchemaExecutionSemantics(), is(expectedSchemaExecutionSemantics));
     }
     
     @Test
@@ -84,6 +88,7 @@ class MCPDatabaseCapabilityProviderTest {
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider("MySQL", "8.0.32").provide("logic_db");
         assertTrue(actual.isPresent());
         assertTrue(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.INDEX));
+        assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertTrue(actual.get().isSupportsExplainAnalyze());
     }
@@ -105,17 +110,17 @@ class MCPDatabaseCapabilityProviderTest {
     
     private static Stream<Arguments> provideCapabilityMatrixArguments() {
         return Stream.of(
-                Arguments.of("mysql", "MySQL", true, true, true, false),
-                Arguments.of("postgresql", "PostgreSQL", true, true, true, true),
-                Arguments.of("open gauss", "openGauss", true, true, true, true),
-                Arguments.of("sql server", "SQLServer", true, true, true, true),
-                Arguments.of("mariadb", "MariaDB", true, true, true, true),
-                Arguments.of("oracle", "Oracle", true, true, true, true),
-                Arguments.of("clickhouse", "ClickHouse", false, false, false, false),
-                Arguments.of("doris", "Doris", true, false, true, false),
-                Arguments.of("hive", "Hive", false, false, false, false),
-                Arguments.of("presto", "Presto", true, false, false, false),
-                Arguments.of("firebird", "Firebird", true, true, true, true),
-                Arguments.of("h2", "H2", true, true, true, true));
+                Arguments.of("mysql", "MySQL", true, true, true, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
+                Arguments.of("postgresql", "PostgreSQL", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
+                Arguments.of("open gauss", "openGauss", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
+                Arguments.of("sql server", "SQLServer", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
+                Arguments.of("mariadb", "MariaDB", true, true, true, true, SchemaExecutionSemantics.FIXED_TO_DATABASE),
+                Arguments.of("oracle", "Oracle", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
+                Arguments.of("clickhouse", "ClickHouse", false, false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
+                Arguments.of("doris", "Doris", true, false, true, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
+                Arguments.of("hive", "Hive", false, false, false, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),
+                Arguments.of("presto", "Presto", true, false, false, false, SchemaExecutionSemantics.BEST_EFFORT),
+                Arguments.of("firebird", "Firebird", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT),
+                Arguments.of("h2", "H2", true, true, true, true, SchemaExecutionSemantics.BEST_EFFORT));
     }
 }

@@ -378,6 +378,7 @@ stateDiagram-v2
 - `execute_query` 负责：
   - 单语句校验
   - statement class 归类
+  - request-level schema semantics 解释
   - capability 校验
   - session / transaction 校验
   - 调用 ShardingSphere parse / route / execute
@@ -393,6 +394,15 @@ stateDiagram-v2
   4. capability validation
   5. kernel execution
   6. result / error mapping
+
+### 10.2A `database` / `schema` 边界
+- `database` 是 `execute_query` 的唯一强执行边界。
+- `schema` 是可选 namespace hint，用于表达未限定对象名的目标命名空间意图。
+- 当数据库级 capability `schema_execution_semantics = fixed_to_database` 时，
+  request-level `schema` 不被承诺为独立执行命名空间切换器。
+- 当数据库级 capability `schema_execution_semantics = best_effort` 时，
+  runtime 可以尝试应用 request-level `schema`，但不对外宣传 strict guarantee。
+- SQL 自身显式限定名优先于 request-level `schema`。
 
 ### 10.3 Statement Class
 - 统一按以下维度治理：

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.capability.database.dialect;
 
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
@@ -33,6 +34,8 @@ public final class SQLServerMCPDatabaseCapabilityOption implements MCPDatabaseCa
     private final boolean indexSupported = true;
     
     private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
+    
+    private final SchemaExecutionSemantics schemaExecutionSemantics = SchemaExecutionSemantics.BEST_EFFORT;
     
     private final boolean crossSchemaQuerySupported = true;
     

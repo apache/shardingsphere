@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.request;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.mcp.capability.database;
 
 /**
- * SQL execution request.
- *
- * <p>The logical database is the only strong execution boundary.
- * The optional schema field is a namespace hint for unqualified object names.</p>
+ * Execution-time schema semantics exposed by database-level capability.
  */
-@RequiredArgsConstructor
-@Getter
-public final class SQLExecutionRequest {
+public enum SchemaExecutionSemantics {
     
-    private final String sessionId;
-    
-    private final String database;
-    
-    private final String schema;
-    
-    private final String sql;
-    
-    private final int maxRows;
-    
-    private final int timeoutMs;
+    FIXED_TO_DATABASE, BEST_EFFORT
 }

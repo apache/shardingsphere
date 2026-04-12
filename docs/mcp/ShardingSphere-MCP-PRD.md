@@ -115,7 +115,7 @@
 
 ## 10. 对象语义定义
 - `database`：MCP 对外暴露的一级访问目标，也是每次 SQL 执行必须显式指定的目标。
-- `schema`：数据库内部命名空间。
+- `schema`：`database` 内部命名空间；在 `execute_query` 中只作为可选 namespace hint，不是第二个强执行边界。
 - `table / view`：通过 `(database, schema, name)` 唯一确定。
 - `column`：从属于某个表或视图。
 - `index`：从属于某个表，仅在当前 `database` 支持时暴露。
@@ -126,6 +126,8 @@
 - V1 不支持跨 `database` SQL 执行。
 - 对没有独立 `schema` 概念的数据库，系统仍需暴露统一 `schema` 语义。
 - 对这类数据库，默认 `schema` 名称与 `database` 名称保持一致。
+- 对这类数据库，公共 `schema` 名称首先服务 MCP 统一 contract；
+  是否可作为独立执行命名空间切换由数据库级 capability 的 `schema_execution_semantics` 决定。
 - 本文中的 `database` 指 ShardingSphere MCP 对外暴露的逻辑数据库标识，不等同于底层物理数据库实例、存储单元或原生 `catalog`。
 
 ## 11. V1 公共 Resources
@@ -179,11 +181,14 @@
 - `describe_table(database, schema, table)`
 - `describe_view(database, schema, view)`
 - `get_capabilities(database?)`
-- `execute_query(database, sql, max_rows?, timeout_ms?)`
+- `execute_query(database, schema?, sql, max_rows?, timeout_ms?)`
 
 ### 补充定义
 - `object_type` 取值为 `table` 或 `view`。
 - `execute_query` 每次只允许执行单条 SQL，多语句统一返回 `invalid_request`。
+- `database` 是 `execute_query` 的唯一强边界。
+- `schema` 是可选 namespace hint，用于表达未限定对象名的目标命名空间意图。
+- SQL 已显式包含限定名时，SQL 自身限定关系优先于 request-level `schema`。
 
 #### `search_metadata` 返回项至少应包含
 - `database`
@@ -226,6 +231,7 @@
 - SQL 执行通过 `execute_query` 统一暴露。
 - 每次 SQL 必须显式指定 `database`。
 - V1 不支持跨 `database` SQL 执行。
+- `schema` 不构成第二个强执行边界。
 - 同一 `database` 内的跨 `schema` SQL 可在数据库能力允许时支持。
 - 不支持时必须明确返回 `unsupported`。
 - 事务一旦开始，当前事务绑定单一 `database`。
@@ -345,6 +351,7 @@
 - `max_rows_default`
 - `max_timeout_ms_default`
 - `default_schema_semantics`
+- `schema_execution_semantics`
 - `supports_cross_schema_sql`
 - `supports_explain_analyze`
 - `ddl_transaction_behavior`
@@ -360,6 +367,8 @@
 
 ### 19.4 说明
 - `default_autocommit` 指 ShardingSphere MCP 会话默认行为，不等同于底层数据库原生默认 `autocommit`。
+- `default_schema_semantics` 解决 metadata/discovery 侧的统一 schema 语义。
+- `schema_execution_semantics` 解决 `execute_query.schema` 在执行时如何解释。
 - 对原生支持事务控制的 `database`，`supports_transaction_control = true`。
 - 对原生不支持事务控制的 `database`，`supports_transaction_control = false`。
 - 对原生支持 `savepoint` 的 `database`，`supports_savepoint = true`。

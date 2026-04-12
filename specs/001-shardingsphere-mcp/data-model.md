@@ -24,12 +24,14 @@
   - `supportsTransactionControl`
   - `supportsSavepoint`
   - `defaultSchemaSemantics`
+  - `schemaExecutionSemantics`
   - `supportsCrossSchemaSql`
   - `supportsExplainAnalyze`
 - **Validation rules**:
   - Must be assembled in fixed order: transaction matrix, runtime metadata, deployment overrides.
   - `index` appears only when `supportedObjectTypes` explicitly includes it.
   - Transaction and savepoint flags must match the published V1 matrix.
+  - `defaultSchemaSemantics` describes metadata/discovery semantics; `schemaExecutionSemantics` describes `execute_query.schema` semantics.
 
 ### SessionContext
 
@@ -85,6 +87,8 @@
 - **Validation rules**:
   - `sql` must contain exactly one statement.
   - `database` is mandatory.
+  - `schema` is optional and acts as a namespace hint for unqualified object names.
+  - `database` remains the only strong execution boundary.
   - Statement class is derived during validation, not provided by the caller.
 
 ### ExecutionResult

@@ -113,7 +113,7 @@ class MCPJdbcMetadataLoaderTest {
             MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
             MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
             assertThat(databaseMetadata.getSchemas().size(), is(1));
-            assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is(""));
+            assertThat(databaseMetadata.getSchemas().get(0).getSchema(), is("logic_db"));
             assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
             assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.COLUMN, "order_id"));
             assertThat(databaseMetadata.getDatabaseVersion(), is(""));
