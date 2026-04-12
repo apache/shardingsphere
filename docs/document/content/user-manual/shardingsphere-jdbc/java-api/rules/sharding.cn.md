@@ -22,9 +22,10 @@ weight = 1
 | bindingTableGroups (*)              | Collection\<String\>                             | 绑定表规则列表      | 无     |
 | defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                    | 默认分库策略       | 不分片   |
 | defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                    | 默认分表策略       | 不分片   |
-| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                        | 默认自增列生成器配置   | 雪花算法  |
+| defaultKeyGenerateStrategy (?)      | KeyGenerateStrategyConfiguration                 | 默认自增列生成器配置   | 雪花算法  |
 | defaultAuditStrategy (?)            | ShardingAuditStrategyConfiguration               | 默认分片审计策略配置   | 强制分片键 |
 | defaultShardingColumn (?)           | String                                           | 默认分片列名称      | 无     |
+| keyGenerateStrategies (+)           | Map\<String, KeyGenerateStrategiesConfiguration\> | 分布式序列策略名称和配置 | 无     |
 | shardingAlgorithms (+)              | Map\<String, AlgorithmConfiguration\>            | 分片算法名称和配置    | 无     |
 | keyGenerators (?)                   | Map\<String, AlgorithmConfiguration\>            | 自增列生成算法名称和配置 | 无     |
 | auditors (?)                        | Map\<String, AlgorithmConfiguration\>            | 分片审计算法名称和配置  | 无     |
@@ -41,7 +42,6 @@ weight = 1
 | actualDataNodes (?)          | String                             | 由数据源名 + 表名组成，以小数点分隔。<br />多个表以逗号分隔，支持行表达式 | 使用已知数据源与逻辑表名称生成数据节点，用于广播表或只分库不分表且所有库的表结构完全一致的情况 |
 | databaseShardingStrategy (?) | ShardingStrategyConfiguration      | 分库策略                                      | 使用默认分库策略                                        |
 | tableShardingStrategy (?)    | ShardingStrategyConfiguration      | 分表策略                                      | 使用默认分表策略                                        |
-| keyGenerateStrategy (?)      | KeyGeneratorConfiguration          | 自增列生成器                                    | 使用默认自增主键生成器                                     |
 | auditStrategy (?)            | ShardingAuditStrategyConfiguration | 分片审计策略                                    | 使用默认分片审计策略                                      |
 
 ### 自动分片表配置
@@ -55,7 +55,6 @@ weight = 1
 | logicTable              | String                             | 分片逻辑表名称          | -           |
 | actualDataSources (?)   | String                             | 数据源名称，多个数据源以逗号分隔 | 使用全部配置的数据源  |
 | shardingStrategy (?)    | ShardingStrategyConfiguration      | 分片策略             | 使用默认分片策略    |
-| keyGenerateStrategy (?) | KeyGeneratorConfiguration          | 自增列生成器           | 使用默认自增主键生成器 |
 | auditStrategy (?)       | ShardingAuditStrategyConfiguration | 分片审计策略           | 使用默认分片审计策略  |
 
 ### 分片策略配置
@@ -111,6 +110,33 @@ weight = 1
 | column           | String | 分布式序列列名称  |
 | keyGeneratorName | String | 分布式序列算法名称 |
 
+### 分布式序列规则配置
+
+接口名称：org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration
+
+#### 基于列的分布式序列规则配置
+
+类名称：org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration
+
+可配置属性：
+
+| *名称*              | *数据类型* | *说明*      |
+|-------------------|--------|-----------|
+| keyGeneratorName  | String | 分布式序列算法名称 |
+| logicTable        | String | 逻辑表名称    |
+| keyGenerateColumn | String | 分布式序列列名称 |
+
+#### 基于序列的分布式序列规则配置
+
+类名称：org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration
+
+可配置属性：
+
+| *名称*                | *数据类型* | *说明*      |
+|---------------------|--------|-----------|
+| keyGeneratorName    | String | 分布式序列算法名称 |
+| keyGenerateSequence | String | 序列名称     |
+
 算法类型的详情，请参见[内置分布式序列算法列表](/cn/user-manual/common-config/builtin-algorithm/keygen)。
 
 ### 分片审计策略配置
@@ -154,20 +180,20 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
         result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
+        result.getKeyGenerateStrategies().put("t_order_item_order_item_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order_item", "order_item_id"));
         result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         return result;
     }
     
     private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
         return result;
     }
     
     private ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
         return result;
     }
     

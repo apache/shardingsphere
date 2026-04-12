@@ -264,9 +264,12 @@ rules:
    tables:
       t_order:
          actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
-         keyGenerateStrategy:
-            column: order_id
-            keyGeneratorName: snowflake
+   keyGenerateStrategies:
+      t_order_order_id:
+         keyGenerateType: column
+         keyGeneratorName: snowflake
+         logicTable: t_order
+         keyGenerateColumn: order_id
 ```
 
 3. 使用者依然需要在 `src/main/resources/META-INF/native-image` 文件夹或 `src/test/resources/META-INF/native-image` 文件夹配置独立

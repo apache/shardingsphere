@@ -22,9 +22,10 @@ Attributes:
 | bindingTableGroups (*)              | Collection\<String\>                             | Binding table rules                              | Empty                   |
 | defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                    | Default database sharding strategy               | Not sharding            |
 | defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                    | Default table sharding strategy                  | Not sharding            |
-| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                        | Default key generator                            | Snowflake               |
+| defaultKeyGenerateStrategy (?)      | KeyGenerateStrategyConfiguration                 | Default key generator                            | Snowflake               |
 | defaultAuditStrategy (?)            | ShardingAuditStrategyConfiguration               | Default key auditor                              | DML_SHARDING_CONDITIONS |
 | defaultShardingColumn (?)           | String                                           | Default sharding column name                     | None                    |
+| keyGenerateStrategies (+)           | Map\<String, KeyGenerateStrategiesConfiguration\> | Sharding key generate strategy name and configurations | None               |
 | shardingAlgorithms (+)              | Map\<String, AlgorithmConfiguration\>            | Sharding algorithm name and configurations       | None                    |
 | keyGenerators (?)                   | Map\<String, AlgorithmConfiguration\>            | Key generate algorithm name and configurations   | None                    |
 | auditors (?)                        | Map\<String, AlgorithmConfiguration\>            | Sharding audit algorithm name and configurations | None                    |
@@ -41,7 +42,6 @@ Attributes:
 | actualDataNodes (?)          | String                             | Describe data source names and actual tables, delimiter as point.<br /> Multiple data nodes split by comma, support inline expression | Broadcast table or databases sharding only |
 | databaseShardingStrategy (?) | ShardingStrategyConfiguration      | Databases sharding strategy                                                                                                           | Use default databases sharding strategy    |
 | tableShardingStrategy (?)    | ShardingStrategyConfiguration      | Tables sharding strategy                                                                                                              | Use default tables sharding strategy       |
-| keyGenerateStrategy (?)      | KeyGeneratorConfiguration          | Key generator configuration                                                                                                           | Use default key generator                  |
 | auditStrategy (?)            | ShardingAuditStrategyConfiguration | Sharding audit strategy configuration                                                                                                 | Use default auditor                        |
 
 ### Sharding Auto Table Configuration
@@ -55,7 +55,6 @@ Attributes:
 | logicTable              | String                        | Name of sharding logic table                                | -                               |
 | actualDataSources (?)   | String                        | Data source names.<br /> Multiple data nodes split by comma | Use all configured data sources |
 | shardingStrategy (?)    | ShardingStrategyConfiguration | Sharding strategy                                           | Use default sharding strategy   |
-| keyGenerateStrategy (?) | KeyGeneratorConfiguration     | Key generator configuration                                 | Use default key generator       |
 
 ### Sharding Strategy Configuration
 
@@ -110,6 +109,33 @@ Attributes:
 | column           | String     | Column name of key generate |
 | keyGeneratorName | String     | key generate algorithm name |
 
+### Sharding Key Generate Rule Configuration
+
+Interface name: org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration
+
+#### Column Sharding Key Generate Rule Configuration
+
+Class name: org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration
+
+Attributes:
+
+| *Name*            | *DataType* | *Description*               |
+|-------------------|------------|-----------------------------|
+| keyGeneratorName  | String     | Key generate algorithm name |
+| logicTable        | String     | Logic table name            |
+| keyGenerateColumn | String     | Column name of key generate |
+
+#### Sequence Sharding Key Generate Rule Configuration
+
+Class name: org.apache.shardingsphere.infra.config.keygen.impl.SequenceKeyGenerateStrategiesRuleConfiguration
+
+Attributes:
+
+| *Name*              | *DataType* | *Description*               |
+|---------------------|------------|-----------------------------|
+| keyGeneratorName    | String     | Key generate algorithm name |
+| keyGenerateSequence | String     | Sequence name               |
+
 Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/common-config/builtin-algorithm/keygen) for more details about type of algorithm.
 
 ### Sharding audit Strategy Configuration
@@ -153,20 +179,20 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise {
         result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
         result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
         result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
+        result.getKeyGenerateStrategies().put("t_order_item_order_item_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order_item", "order_item_id"));
         result.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         return result;
     }
     
     private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
         return result;
     }
     
     private ShardingTableRuleConfiguration getOrderItemTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order_item", "demo_ds_${0..1}.t_order_item_${[0, 1]}");
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
         return result;
     }
     

@@ -26,9 +26,6 @@ rules:
           shardingAlgorithmName: # Sharding algorithm name
         none: # Do not sharding
       tableStrategy: # Tables sharding strategy, same as database sharding strategy
-      keyGenerateStrategy: # Key generator strategy
-        column: # Column name of key generator
-        keyGeneratorName: # Key generator name
       auditStrategy: # Sharding audit strategy
         auditorNames: # Sharding auditor name
           - <auditor_name>
@@ -48,6 +45,13 @@ rules:
   defaultTableStrategy: # Default strategy for table sharding
   defaultKeyGenerateStrategy: # Default Key generator strategy
   defaultShardingColumn: # Default sharding column name
+  keyGenerateStrategies:
+    <key_generate_strategy_name> (+): # Sharding key generate strategy name
+      keyGenerateType: # Sharding key generate strategy type
+      keyGeneratorName: # Key generate algorithm name
+      logicTable: # Logic table name, required when keyGenerateType is column
+      keyGenerateColumn: # Column name of key generate, required when keyGenerateType is column
+      keyGenerateSequence: # Sequence name, required when keyGenerateType is sequence
 
   # Sharding algorithm configuration
   shardingAlgorithms:
@@ -109,9 +113,6 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_inline
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
       auditStrategy:
         auditorNames:
           - sharding_key_required_auditor
@@ -122,17 +123,11 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_item_inline
-      keyGenerateStrategy:
-        column: order_item_id
-        keyGeneratorName: snowflake
     t_account:
       actualDataNodes: ds_${0..1}.t_account_${0..1}
       tableStrategy:
         standard:
           shardingAlgorithmName: t_account_inline
-      keyGenerateStrategy:
-        column: account_id
-        keyGeneratorName: snowflake
   defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
@@ -142,6 +137,22 @@ rules:
       shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
+  keyGenerateStrategies:
+    t_order_order_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order
+      keyGenerateColumn: order_id
+    t_order_item_order_item_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order_item
+      keyGenerateColumn: order_item_id
+    t_account_account_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_account
+      keyGenerateColumn: account_id
   
   shardingAlgorithms:
     database_inline:
