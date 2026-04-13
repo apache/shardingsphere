@@ -124,7 +124,7 @@ class GenericSchemaManagerTest {
                 Arguments.of("table absent in current schema",
                         createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), createSchema("foo_schema"), Collections.singleton("foo_tbl")),
                 Arguments.of("same table definition already exists",
-                        createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), Collections.singleton("foo_tbl")),
+                        createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), Collections.emptySet()),
                 Arguments.of("same table name but different definition",
                         createSchema("foo_schema", createTable("foo_tbl", TableType.TABLE)), createSchema("foo_schema", createTable("foo_tbl", TableType.VIEW)), Collections.singleton("foo_tbl")));
     }

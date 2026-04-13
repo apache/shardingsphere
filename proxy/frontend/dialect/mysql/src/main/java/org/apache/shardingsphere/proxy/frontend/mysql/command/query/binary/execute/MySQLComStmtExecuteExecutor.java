@@ -20,12 +20,14 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.exec
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.exception.mysql.exception.UnsupportedPreparedStatementException;
 import org.apache.shardingsphere.database.protocol.binary.BinaryCell;
 import org.apache.shardingsphere.database.protocol.binary.BinaryRow;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.database.protocol.mysql.packet.MySQLPacket;
+import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLBinaryResultSetRowPacket;
 import org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -71,7 +73,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket> execute() throws SQLException {
         MySQLServerPreparedStatement preparedStatement = updateAndGetPreparedStatement();
-        List<Object> params = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet(),
+        List<MySQLPreparedStatementParameterType> parameterTypes = getParameterTypes(preparedStatement);
+        List<Object> params = packet.readParameters(parameterTypes, preparedStatement.getLongData().keySet(),
                 preparedStatement.getParameterColumnDefinitionFlags(), preparedStatement.getParameterColumnTypes());
         preparedStatement.getLongData().forEach(params::set);
         SQLStatementContext sqlStatementContext = preparedStatement.getSqlStatementContext();
@@ -83,6 +86,38 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(TypedSPILoader.getService(DatabaseType.class, "MySQL"), queryContext, connectionSession, true);
         ResponseHeader responseHeader = proxyBackendHandler.execute();
         return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
+    }
+    
+    private List<MySQLPreparedStatementParameterType> getParameterTypes(final MySQLServerPreparedStatement preparedStatement) {
+        List<MySQLPreparedStatementParameterType> parameterTypes = preparedStatement.getParameterTypes();
+        if (!parameterTypes.isEmpty()) {
+            return parameterTypes;
+        }
+        List<MySQLPreparedStatementParameterType> originalTypes = packet.getNewParameterTypes();
+        if (null != originalTypes && !originalTypes.isEmpty()) {
+            return originalTypes;
+        }
+        int expectedParamCount = preparedStatement.getSqlStatementContext().getSqlStatement().getParameterCount();
+        if (expectedParamCount <= 0) {
+            return parameterTypes;
+        }
+        if (null == packet.getNullBitmap() || !isAllParametersNull(expectedParamCount)) {
+            throw new UnsupportedPreparedStatementException();
+        }
+        List<MySQLPreparedStatementParameterType> result = new ArrayList<>(expectedParamCount);
+        for (int i = 0; i < expectedParamCount; i++) {
+            result.add(new MySQLPreparedStatementParameterType(MySQLBinaryColumnType.NULL, 0));
+        }
+        return result;
+    }
+    
+    private boolean isAllParametersNull(final int expectedParamCount) {
+        for (int i = 0; i < expectedParamCount; i++) {
+            if (!packet.getNullBitmap().isNullParameter(i)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private MySQLServerPreparedStatement updateAndGetPreparedStatement() {

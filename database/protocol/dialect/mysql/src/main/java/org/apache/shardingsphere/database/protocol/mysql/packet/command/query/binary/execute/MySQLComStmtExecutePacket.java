@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.database.protocol.mysql.packet.command.query.binary.execute;
 
 import com.google.common.base.Preconditions;
-import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.database.protocol.mysql.constant.MySQLNewParametersBoundFlag;
@@ -54,7 +53,6 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
     
     private final int flags;
     
-    @Getter(AccessLevel.NONE)
     private final MySQLNullBitmap nullBitmap;
     
     private final MySQLNewParametersBoundFlag newParametersBoundFlag;

@@ -20,6 +20,7 @@ databaseName: tbl
 dataSources:
   tbl:
     url: jdbc:postgresql://postgresql.tbl.host:5432/tbl
+    driverClassName: org.postgresql.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000

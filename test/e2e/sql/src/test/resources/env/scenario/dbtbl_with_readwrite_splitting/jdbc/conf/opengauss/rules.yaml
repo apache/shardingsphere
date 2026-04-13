@@ -20,6 +20,7 @@ databaseName: dbtbl_with_readwrite_splitting
 dataSources:
   write_ds_0:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_0?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -30,6 +31,7 @@ dataSources:
     minPoolSize: 2
   write_ds_1:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_1?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -40,6 +42,7 @@ dataSources:
     minPoolSize: 2
   write_ds_2:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_2?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -50,6 +53,7 @@ dataSources:
     minPoolSize: 2
   write_ds_3:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_3?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -60,6 +64,7 @@ dataSources:
     minPoolSize: 2
   write_ds_4:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_4?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -70,6 +75,7 @@ dataSources:
     minPoolSize: 2
   write_ds_5:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_5?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -80,6 +86,7 @@ dataSources:
     minPoolSize: 2
   write_ds_6:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_6?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -90,6 +97,7 @@ dataSources:
     minPoolSize: 2
   write_ds_7:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_7?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -100,6 +108,7 @@ dataSources:
     minPoolSize: 2
   write_ds_8:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_8?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -110,6 +119,7 @@ dataSources:
     minPoolSize: 2
   write_ds_9:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/write_ds_9?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -120,6 +130,7 @@ dataSources:
     minPoolSize: 2
   read_ds_0:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_0?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -130,6 +141,7 @@ dataSources:
     minPoolSize: 2
   read_ds_1:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_1?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -140,6 +152,7 @@ dataSources:
     minPoolSize: 2
   read_ds_2:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_2?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -150,6 +163,7 @@ dataSources:
     minPoolSize: 2
   read_ds_3:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_3?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -160,6 +174,7 @@ dataSources:
     minPoolSize: 2
   read_ds_4:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_4?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -170,6 +185,7 @@ dataSources:
     minPoolSize: 2
   read_ds_5:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_5?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -180,6 +196,7 @@ dataSources:
     minPoolSize: 2
   read_ds_6:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_6?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -190,6 +207,7 @@ dataSources:
     minPoolSize: 2
   read_ds_7:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_7?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -200,6 +218,7 @@ dataSources:
     minPoolSize: 2
   read_ds_8:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_8?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -210,6 +229,7 @@ dataSources:
     minPoolSize: 2
   read_ds_9:
     url: jdbc:opengauss://opengauss.dbtbl_with_readwrite_splitting.host:5432/read_ds_9?batchMode=OFF
+    driverClassName: org.opengauss.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876

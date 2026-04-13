@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.DuplicateIndexE
 import org.apache.shardingsphere.infra.exception.kernel.metadata.IndexNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.TableNotFoundException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.manager.SystemSchemaManager;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
@@ -130,7 +131,8 @@ public final class SimpleTableSegmentBinder {
         if (defaultSystemSchema.isPresent() && SystemSchemaManager.isSystemTable(databaseType.getType(), defaultSystemSchema.get(), segment.getTableName().getIdentifier().getValue())) {
             return Optional.of(new IdentifierValue(defaultSystemSchema.get()));
         }
-        return Optional.of(new IdentifierValue(databaseTypeRegistry.getDefaultSchemaName(binderContext.getCurrentDatabaseName())));
+        ShardingSphereDatabase database = binderContext.getMetaData().getDatabase(binderContext.getCurrentDatabaseName());
+        return Optional.ofNullable(database.getDefaultSchemaName()).map(IdentifierValue::new);
     }
     
     private static void checkTableExists(final SQLStatementBinderContext binderContext, final ShardingSphereSchema schema, final IdentifierValue tableName, final SimpleTableSegment segment) {

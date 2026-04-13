@@ -102,6 +102,33 @@ class IdentifierIndexTest {
     }
     
     @Test
+    void assertFindWithNormalizedLookupIgnoresNonMatchingStoredCase() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createPostgreSQLRule())), IdentifierScope.TABLE);
+        Map<String, String> values = new LinkedHashMap<>(2, 1F);
+        values.put("Foo", "value_1");
+        values.put("foo", "value_2");
+        index.rebuild(values);
+        Optional<String> actualValue = index.find(new IdentifierValue("FOO"));
+        assertThat(actualValue, is(Optional.of("value_2")));
+    }
+    
+    @Test
+    void assertFindWithQuotedNormalizedLookup() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createSingleValueMap("t_mask", "value_1"));
+        Optional<String> actualValue = index.find(new IdentifierValue("`T_MASK`"));
+        assertThat(actualValue, is(Optional.of("value_1")));
+    }
+    
+    @Test
+    void assertFindPrefersExactIdentifierWhenNormalizedLookupMatchesMultipleValues() {
+        IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createMySQLInsensitiveRule())), IdentifierScope.TABLE);
+        index.rebuild(createAmbiguousValueMap());
+        Optional<String> actualValue = index.find(new IdentifierValue("foo"));
+        assertThat(actualValue, is(Optional.of("value_2")));
+    }
+    
+    @Test
     void assertRemove() {
         IdentifierIndex<String> index = new IdentifierIndex<>(new DatabaseIdentifierContext(new IdentifierCaseRuleSet(createExactRule())), IdentifierScope.TABLE);
         index.put("Foo", "value_1");

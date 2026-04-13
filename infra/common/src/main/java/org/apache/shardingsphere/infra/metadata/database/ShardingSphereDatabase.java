@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.decorator.RuleConfigurationDecorator;
@@ -285,5 +286,14 @@ public final class ShardingSphereDatabase {
     private Map<String, ShardingSphereSchema> createSchemaMap(final Collection<ShardingSphereSchema> schemas) {
         return schemas.stream().collect(Collectors.toMap(ShardingSphereSchema::getName, each -> each, (oldValue, currentValue) -> currentValue,
                 () -> new LinkedHashMap<>(schemas.size(), 1F)));
+    }
+    
+    /**
+     * Get default schema name.
+     *
+     * @return default schema name
+     */
+    public String getDefaultSchemaName() {
+        return new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name);
     }
 }

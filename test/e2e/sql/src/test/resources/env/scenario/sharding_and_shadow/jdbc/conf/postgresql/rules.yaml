@@ -20,6 +20,7 @@ databaseName: sharding_and_shadow
 dataSources:
   db_0:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_0?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -30,6 +31,7 @@ dataSources:
     minPoolSize: 2
   db_1:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_1?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -40,6 +42,7 @@ dataSources:
     minPoolSize: 2
   db_2:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_2?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -50,6 +53,7 @@ dataSources:
     minPoolSize: 2
   db_3:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_3?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -60,6 +64,7 @@ dataSources:
     minPoolSize: 2
   db_4:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_4?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -70,6 +75,7 @@ dataSources:
     minPoolSize: 2
   db_5:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_5?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -80,6 +86,7 @@ dataSources:
     minPoolSize: 2
   db_6:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_6?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -90,6 +97,7 @@ dataSources:
     minPoolSize: 2
   db_7:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_7?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -100,6 +108,7 @@ dataSources:
     minPoolSize: 2
   db_8:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_8?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -110,6 +119,7 @@ dataSources:
     minPoolSize: 2
   db_9:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/db_9?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -120,6 +130,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_0:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_0?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -130,6 +141,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_1:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_1?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -140,6 +152,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_2:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_2?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -150,6 +163,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_3:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_3?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -160,6 +174,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_4:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_4?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -170,6 +185,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_5:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_5?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -180,6 +196,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_6:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_6?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -190,6 +207,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_7:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_7?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -200,6 +218,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_8:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_8?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
@@ -210,6 +229,7 @@ dataSources:
     minPoolSize: 2
   shadow_db_9:
     url: jdbc:postgresql://postgresql.sharding_and_shadow.host:5432/shadow_db_9?ssl=on&sslmode=prefer
+    driverClassName: org.postgresql.Driver
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     username: test_user
     password: Test@9876
