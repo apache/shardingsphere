@@ -133,6 +133,10 @@ class StatementClassifierTest {
                 Arguments.of("banned copy", "COPY foo_orders FROM '/tmp/foo.csv'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned load", "LOAD DATA INFILE '/tmp/foo.csv' INTO TABLE foo_orders", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned call", "CALL foo_refresh_orders()", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned select into outfile", "SELECT * FROM foo_orders INTO OUTFILE '/tmp/foo.csv'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned alter system", "ALTER SYSTEM SET shared_buffers = '128MB'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned create user", "CREATE USER foo_user IDENTIFIED BY 'pwd'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned alter role", "ALTER ROLE foo_role SET search_path = public", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("unsupported statement", "SHOW TABLES", IllegalArgumentException.class, "Statement is not supported by the MCP contract."));
     }
 }

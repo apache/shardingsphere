@@ -86,18 +86,35 @@ public final class MCPJdbcTransactionResourceManager {
      * Commit one session transaction.
      *
      * @param sessionId session identifier
+     * @return logical database name whose metadata needs refresh after commit
      * @throws IllegalStateException when commit fails
      */
-    public void commitTransaction(final String sessionId) {
+    public Optional<String> commitTransaction(final String sessionId) {
         TransactionResourceContext transactionResource = getTransactionResourceContext(sessionId);
+        Optional<String> result = transactionResource.isDirtyMetadata() ? Optional.of(transactionResource.getDatabaseName()) : Optional.empty();
         try {
             transactionResource.getConnection().commit();
             transactionResource.getConnection().setAutoCommit(true);
             transactionResource.getConnection().close();
-            transactionResources.remove(sessionId);
+            return result;
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
+        } finally {
+            transactionResources.remove(sessionId);
         }
+    }
+    
+    /**
+     * Mark current transaction metadata as dirty.
+     *
+     * @param sessionId session identifier
+     * @param databaseName logical database name
+     */
+    public void markDirtyMetadata(final String sessionId, final String databaseName) {
+        TransactionResourceContext transactionResource = getTransactionResourceContext(sessionId);
+        ShardingSpherePreconditions.checkState(transactionResource.getDatabaseName().equals(databaseName),
+                () -> new IllegalStateException("Cross-database transaction switching is not supported."));
+        transactionResource.markDirtyMetadata();
     }
     
     /**
@@ -213,6 +230,8 @@ public final class MCPJdbcTransactionResourceManager {
         
         private final Map<String, Savepoint> savepoints = new ConcurrentHashMap<>();
         
+        private boolean dirtyMetadata;
+        
         private void addSavepoint(final String savepointName, final Savepoint savepoint) {
             savepoints.put(savepointName, savepoint);
         }
@@ -223,6 +242,14 @@ public final class MCPJdbcTransactionResourceManager {
         
         private void removeSavepoint(final String savepointName) {
             savepoints.remove(savepointName);
+        }
+        
+        private boolean isDirtyMetadata() {
+            return dirtyMetadata;
+        }
+        
+        private void markDirtyMetadata() {
+            dirtyMetadata = true;
         }
     }
 }

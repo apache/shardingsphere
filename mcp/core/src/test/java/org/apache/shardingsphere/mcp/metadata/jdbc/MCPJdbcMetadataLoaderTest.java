@@ -107,7 +107,7 @@ class MCPJdbcMetadataLoaderTest {
     @Test
     void assertLoadWithoutSchemaObjects() throws SQLException {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema());
+        Driver mockDriver = new MockDriver("jdbc:mock:no-schema", createConnectionWithoutSchema("MySQL"));
         DriverManager.registerDriver(mockDriver);
         try {
             MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", "jdbc:mock:no-schema", "", "", "")));
@@ -138,7 +138,7 @@ class MCPJdbcMetadataLoaderTest {
     @MethodSource("loadWithoutSequenceQueryArguments")
     void assertLoadWithoutSequenceQuery(final String name, final String databaseType) throws SQLException {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(databaseType, createConnectionWithoutSchema());
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(databaseType, createConnectionWithoutSchema(databaseType));
         MCPDatabaseMetadata actual = metadataLoader.load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
@@ -218,7 +218,7 @@ class MCPJdbcMetadataLoaderTest {
     @Test
     void assertLoadWithoutSystemSchemaSequence() throws SQLException {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        Connection connection = createConnectionWithMetadata(
+        Connection connection = createConnectionWithMetadata("PostgreSQL",
                 List.of(),
                 List.of(),
                 Map.of(),
@@ -232,7 +232,7 @@ class MCPJdbcMetadataLoaderTest {
     @Test
     void assertLoadWithoutEmptySequenceName() throws SQLException {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        Connection connection = createConnectionWithMetadata(
+        Connection connection = createConnectionWithMetadata("PostgreSQL",
                 List.of(),
                 List.of(),
                 Map.of(),
@@ -277,12 +277,21 @@ class MCPJdbcMetadataLoaderTest {
         Driver mockDriver = new MockDriver("jdbc:mock:failed-sequence-query", createConnectionWithFailedSequenceMetadataQuery());
         DriverManager.registerDriver(mockDriver);
         try {
-            MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("PostgreSQL", "jdbc:mock:failed-sequence-query", "", "", "")));
-            assertTrue(actual.findMetadata("logic_db").isPresent());
-            assertFalse(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), SupportedMCPMetadataObjectType.SEQUENCE, "order_seq"));
+            IllegalStateException actual = assertThrows(IllegalStateException.class,
+                    () -> metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration("PostgreSQL", "jdbc:mock:failed-sequence-query", "", "", ""))));
+            assertThat(actual.getMessage(), is("Failed to load metadata for database `logic_db`."));
+            assertThat(actual.getCause().getMessage(), is("sequence metadata query failed"));
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }
+    }
+    
+    @Test
+    void assertLoadWithMismatchedDatabaseType() throws SQLException {
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", createConnectionWithoutSchema("H2"));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> metadataLoader.load(Map.of("logic_db", runtimeDatabaseConfiguration)));
+        assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -291,7 +300,7 @@ class MCPJdbcMetadataLoaderTest {
                                                final String sequenceName, final String sequenceQuery) throws SQLException {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
         String jdbcUrl = "jdbc:mock:sequence:" + databaseType.toLowerCase(Locale.ENGLISH);
-        Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(sequenceSchema, sequenceName, sequenceQuery));
+        Driver mockDriver = new MockDriver(jdbcUrl, createConnectionWithSequenceMetadata(databaseType, sequenceSchema, sequenceName, sequenceQuery));
         DriverManager.registerDriver(mockDriver);
         try {
             MCPDatabaseMetadataCatalog actual = metadataLoader.load(Map.of("logic_db", new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", "")));
@@ -335,12 +344,10 @@ class MCPJdbcMetadataLoaderTest {
     
     private static Stream<Arguments> loadWithoutSequenceQueryArguments() {
         return Stream.of(
-                Arguments.of("unsupported database type", "MySQL"),
-                Arguments.of("null database type", null),
-                Arguments.of("blank database type", "   "));
+                Arguments.of("unsupported database type", "MySQL"));
     }
     
-    private Connection createConnectionWithoutSchema() throws SQLException {
+    private Connection createConnectionWithoutSchema(final String databaseType) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         ResultSet tableResultSet = mockResultSet("TABLE_NAME", "orders");
@@ -348,6 +355,8 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet columnResultSet = mockResultSet("COLUMN_NAME", "order_id");
         ResultSet indexResultSet = mockResultSet("INDEX_NAME");
         when(result.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
+        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl(databaseType));
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;
@@ -357,7 +366,8 @@ class MCPJdbcMetadataLoaderTest {
         return result;
     }
     
-    private Connection createConnectionWithSequenceMetadata(final String sequenceSchema, final String sequenceName, final String sequenceQuery) throws SQLException {
+    private Connection createConnectionWithSequenceMetadata(final String databaseType, final String sequenceSchema,
+                                                            final String sequenceName, final String sequenceQuery) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         Statement statement = mock(Statement.class);
@@ -366,7 +376,9 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet sequenceResultSet = mockSingleRowResultSet(Map.of("SEQUENCE_SCHEMA", sequenceSchema, "SEQUENCE_NAME", sequenceName));
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
+        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl(databaseType));
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;
@@ -383,7 +395,9 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet viewResultSet = mockResultSet("TABLE_NAME");
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn("PostgreSQL");
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
+        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl("PostgreSQL"));
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;
@@ -402,13 +416,21 @@ class MCPJdbcMetadataLoaderTest {
     
     private Connection createConnectionWithMetadata(final List<Map<String, String>> tableRows, final List<Map<String, String>> viewRows, final Map<String, List<String>> columns,
                                                     final Map<String, List<String>> indexes, final List<Map<String, String>> sequenceRows) throws SQLException {
+        return createConnectionWithMetadata("H2", tableRows, viewRows, columns, indexes, sequenceRows);
+    }
+    
+    private Connection createConnectionWithMetadata(final String databaseType, final List<Map<String, String>> tableRows, final List<Map<String, String>> viewRows,
+                                                    final Map<String, List<String>> columns, final Map<String, List<String>> indexes,
+                                                    final List<Map<String, String>> sequenceRows) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         Statement statement = mock(Statement.class);
         ResultSet sequenceResultSet = mockMultiRowResultSet(sequenceRows);
         when(result.getMetaData()).thenReturn(databaseMetaData);
         when(result.createStatement()).thenReturn(statement);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
+        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl(databaseType));
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return mockMultiRowResultSet("TABLE".equals(tableTypes[0]) ? tableRows : viewRows);
@@ -421,8 +443,28 @@ class MCPJdbcMetadataLoaderTest {
             String tableName = invocation.getArgument(2);
             return mockResultSet("INDEX_NAME", indexes.getOrDefault(tableName, List.of()).toArray(new String[0]));
         });
-        when(statement.executeQuery(anyString())).thenReturn(sequenceResultSet);
+        when(statement.executeQuery(getSequenceQuery(databaseType))).thenReturn(sequenceResultSet);
         return result;
+    }
+    
+    private String getSequenceQuery(final String databaseType) {
+        switch (databaseType) {
+            case "PostgreSQL":
+            case "openGauss":
+                return "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
+            case "SQLServer":
+                return "SELECT schemas.name AS SEQUENCE_SCHEMA, seq.name AS SEQUENCE_NAME FROM sys.sequences seq INNER JOIN sys.schemas schemas ON seq.schema_id = schemas.schema_id";
+            case "Oracle":
+                return "SELECT USER AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM USER_SEQUENCES";
+            case "MariaDB":
+                return "SELECT TABLE_SCHEMA AS SEQUENCE_SCHEMA, TABLE_NAME AS SEQUENCE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'SEQUENCE'";
+            case "Firebird":
+                return "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
+            case "H2":
+                return "SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES";
+            default:
+                return "";
+        }
     }
     
     private ResultSet mockResultSet(final String columnName, final String... values) throws SQLException {
@@ -452,6 +494,31 @@ class MCPJdbcMetadataLoaderTest {
             return 0 <= currentRowIndex && currentRowIndex < values.size() ? values.get(currentRowIndex).get(invocation.getArgument(0)) : null;
         });
         return result;
+    }
+    
+    private String getMetadataJdbcUrl(final String databaseType) {
+        if ("MySQL".equals(databaseType)) {
+            return "jdbc:mysql://metadata-loader/test";
+        }
+        if ("PostgreSQL".equals(databaseType)) {
+            return "jdbc:postgresql://metadata-loader/test";
+        }
+        if ("openGauss".equals(databaseType)) {
+            return "jdbc:opengauss://metadata-loader/test";
+        }
+        if ("SQLServer".equals(databaseType)) {
+            return "jdbc:sqlserver://metadata-loader";
+        }
+        if ("Oracle".equals(databaseType)) {
+            return "jdbc:oracle:thin:@metadata-loader";
+        }
+        if ("MariaDB".equals(databaseType)) {
+            return "jdbc:mariadb://metadata-loader/test";
+        }
+        if ("Firebird".equals(databaseType)) {
+            return "jdbc:firebirdsql://metadata-loader/test";
+        }
+        return "jdbc:h2:mem:metadata-loader";
     }
     
     private int countMetadata(final MCPDatabaseMetadata databaseMetadata, final SupportedMCPMetadataObjectType objectType, final String objectName) {

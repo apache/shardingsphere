@@ -42,7 +42,7 @@ public final class StatementClassifier {
         String actualSql = normalizeSingleStatement(sql);
         String leadingSql = actualSql.substring(skipInsignificant(actualSql, 0)).trim();
         String upperLeadingSql = leadingSql.toUpperCase(Locale.ENGLISH);
-        if (isBannedCommand(upperLeadingSql)) {
+        if (isBannedCommand(upperLeadingSql, actualSql)) {
             throw new UnsupportedOperationException("Statement is banned by the MCP contract.");
         }
         if (upperLeadingSql.startsWith("EXPLAIN ANALYZE")) {
@@ -108,12 +108,47 @@ public final class StatementClassifier {
         return -1;
     }
     
-    private boolean isBannedCommand(final String upperSql) {
+    private boolean isBannedCommand(final String upperSql, final String sql) {
         return upperSql.startsWith("USE ")
                 || upperSql.startsWith("SET ")
                 || upperSql.startsWith("COPY ")
                 || upperSql.startsWith("LOAD ")
-                || upperSql.startsWith("CALL ");
+                || upperSql.startsWith("CALL ")
+                || containsBannedDialectPattern(tokenize(sql));
+    }
+    
+    private boolean containsBannedDialectPattern(final List<Token> tokens) {
+        return containsSelectIntoFile(tokens) || containsKeywordSequence(tokens, "ALTER", "SYSTEM") || containsUserOrRoleManagement(tokens);
+    }
+    
+    private boolean containsSelectIntoFile(final List<Token> tokens) {
+        for (int index = 0; index + 1 < tokens.size(); index++) {
+            if (!isKeyword(tokens.get(index), "INTO")) {
+                continue;
+            }
+            if (isKeyword(tokens.get(index + 1), "OUTFILE") || isKeyword(tokens.get(index + 1), "DUMPFILE")) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsUserOrRoleManagement(final List<Token> tokens) {
+        return containsKeywordSequence(tokens, "CREATE", "USER")
+                || containsKeywordSequence(tokens, "ALTER", "USER")
+                || containsKeywordSequence(tokens, "DROP", "USER")
+                || containsKeywordSequence(tokens, "CREATE", "ROLE")
+                || containsKeywordSequence(tokens, "ALTER", "ROLE")
+                || containsKeywordSequence(tokens, "DROP", "ROLE");
+    }
+    
+    private boolean containsKeywordSequence(final List<Token> tokens, final String firstKeyword, final String secondKeyword) {
+        for (int index = 0; index + 1 < tokens.size(); index++) {
+            if (isKeyword(tokens.get(index), firstKeyword) && isKeyword(tokens.get(index + 1), secondKeyword)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private boolean isTransactionControlStatement(final String upperSql) {

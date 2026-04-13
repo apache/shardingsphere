@@ -151,6 +151,29 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     }
     
     @Test
+    void assertAcceptInitializeWithUnsupportedProtocolVersion() throws IOException, InterruptedException, SQLException {
+        launchJDBCRuntime();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        Map<String, Object> requestParams = createInitializeRequestParams("integration-test");
+        requestParams.put("protocolVersion", "2024-11-05");
+        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream"), requestParams);
+        String sessionId = initializeResponse.headers().firstValue("MCP-Session-Id").orElse("");
+        String protocolVersion = initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse("");
+        assertThat(initializeResponse.statusCode(), is(200));
+        assertFalse(sessionId.isEmpty());
+        assertThat(protocolVersion, is(MCPTransportConstants.PROTOCOL_VERSION));
+        assertThat(castToMap(parseJsonBody(initializeResponse.body()).get("result")).get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(httpClient, Map.of(
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream",
+                "MCP-Session-Id", sessionId,
+                "MCP-Protocol-Version", protocolVersion));
+        assertSuccessfulCapabilitiesResponse(actualResponse);
+    }
+    
+    @Test
     void assertRejectFollowUpRequestWithoutAccessTokenBeforeSessionValidation() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntimeWithAccessToken();
         HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(

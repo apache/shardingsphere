@@ -127,6 +127,17 @@ class MCPRuntimeLauncherTest {
         assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
     }
     
+    @Test
+    void assertRejectLaunchWithMismatchedDatabaseType() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-mismatched-type");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> runtimeLauncher.launch(
+                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp"), new StdioTransportConfiguration(false),
+                        Map.of("logic_db", new RuntimeDatabaseConfiguration("MySQL", jdbcUrl, "", "", "org.h2.Driver")))));
+        assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
+    }
+    
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
@@ -193,6 +204,8 @@ class MCPRuntimeLauncherTest {
             ResultSet emptyResultSet = createEmptyResultSet();
             when(result.getMetaData()).thenReturn(databaseMetaData);
             when(result.createStatement()).thenReturn(statement);
+            when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
+            when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:counting");
             when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenReturn(emptyResultSet);
             when(databaseMetaData.getColumns(isNull(), nullable(String.class), anyString(), eq("%"))).thenReturn(emptyResultSet);
             when(databaseMetaData.getIndexInfo(isNull(), nullable(String.class), anyString(), eq(false), eq(false))).thenReturn(emptyResultSet);

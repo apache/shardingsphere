@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
+import java.sql.Connection;
 import java.util.Optional;
 
 /**
@@ -44,6 +45,8 @@ public final class MCPSQLExecutionFacade {
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
+    
+    private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
     private final MCPJdbcTransactionStatementExecutor transactionStatementExecutor;
     
@@ -56,10 +59,11 @@ public final class MCPSQLExecutionFacade {
     public MCPSQLExecutionFacade(final MCPRuntimeContext runtimeContext) {
         databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(runtimeContext.getMetadataCatalog());
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager());
-        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(runtimeContext.getSessionManager());
+        transactionResourceManager = runtimeContext.getSessionManager().getTransactionResourceManager();
+        jdbcMetadataRefresher = new MCPJdbcMetadataRefresher(transactionResourceManager.getRuntimeDatabases(), runtimeContext.getMetadataCatalog());
+        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(runtimeContext.getSessionManager(), jdbcMetadataRefresher);
         statementExecutor = new MCPJdbcStatementExecutor(
-                runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getSessionManager().getTransactionResourceManager());
-        jdbcMetadataRefresher = new MCPJdbcMetadataRefresher(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getMetadataCatalog());
+                transactionResourceManager.getRuntimeDatabases(), transactionResourceManager);
     }
     
     /**
@@ -115,7 +119,12 @@ public final class MCPSQLExecutionFacade {
     private SQLExecutionResponse executeAndRefreshMetadata(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult,
                                                            final MCPDatabaseCapability databaseCapability) {
         SQLExecutionResponse result = statementExecutor.execute(executionRequest, classificationResult, databaseCapability);
-        jdbcMetadataRefresher.refresh(executionRequest.getDatabase());
+        Optional<Connection> transactionConnection = transactionResourceManager.findTransactionConnection(executionRequest.getSessionId(), executionRequest.getDatabase());
+        if (transactionConnection.isPresent()) {
+            transactionResourceManager.markDirtyMetadata(executionRequest.getSessionId(), executionRequest.getDatabase());
+        } else {
+            jdbcMetadataRefresher.refresh(executionRequest.getDatabase());
+        }
         return result;
     }
     

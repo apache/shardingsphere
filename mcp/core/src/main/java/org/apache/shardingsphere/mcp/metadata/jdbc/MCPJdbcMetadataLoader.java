@@ -79,7 +79,7 @@ public final class MCPJdbcMetadataLoader {
         for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
             String databaseName = entry.getKey();
             try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                databaseMetadataMap.put(databaseName, loadDatabaseMetadata(databaseName, entry.getValue().getDatabaseType(), connection, connection.getMetaData()));
+                databaseMetadataMap.put(databaseName, loadDatabaseMetadata(databaseName, entry.getValue(), connection, connection.getMetaData()));
             } catch (final SQLException ex) {
                 throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
             }
@@ -87,14 +87,100 @@ public final class MCPJdbcMetadataLoader {
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
     
-    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final String databaseType, final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+                                                     final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
+        String actualDatabaseType = resolveActualDatabaseType(databaseName, runtimeDatabaseConfig.getDatabaseType(), databaseMetaData);
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-        SchemaSemantics defaultSchemaSemantics = getDefaultSchemaSemantics(databaseType);
-        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseType, databaseVersion);
+        SchemaSemantics defaultSchemaSemantics = getDefaultSchemaSemantics(actualDatabaseType);
+        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, actualDatabaseType, databaseVersion);
         loadTables(databaseName, defaultSchemaSemantics, accumulator, databaseMetaData);
         loadViews(databaseName, defaultSchemaSemantics, accumulator, databaseMetaData);
-        loadSequences(databaseName, defaultSchemaSemantics, databaseType, accumulator, connection);
+        loadSequences(databaseName, defaultSchemaSemantics, actualDatabaseType, accumulator, connection);
         return accumulator.build();
+    }
+    
+    private String resolveActualDatabaseType(final String databaseName, final String configuredDatabaseType, final DatabaseMetaData databaseMetaData) throws SQLException {
+        String actualDatabaseType = determineActualDatabaseType(databaseName, databaseMetaData);
+        String configuredType = Objects.toString(configuredDatabaseType, "").trim();
+        if (configuredType.isEmpty()) {
+            return actualDatabaseType;
+        }
+        String expectedDatabaseType = TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, configuredType)
+                .map(MCPDatabaseCapabilityOption::getType).orElse(configuredType);
+        if (!expectedDatabaseType.equalsIgnoreCase(actualDatabaseType)) {
+            throw new IllegalStateException(String.format("Configured databaseType `%s` does not match actual database type `%s` for database `%s`.",
+                    configuredType, actualDatabaseType, databaseName));
+        }
+        return actualDatabaseType;
+    }
+    
+    private String determineActualDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
+        String productName = Objects.toString(databaseMetaData.getDatabaseProductName(), "").trim();
+        String jdbcUrl = Objects.toString(databaseMetaData.getURL(), "").trim();
+        String result = resolveDatabaseTypeFromProductName(productName, jdbcUrl);
+        if (null == result) {
+            result = resolveDatabaseTypeFromJdbcUrl(jdbcUrl);
+        }
+        if (null == result) {
+            throw new IllegalStateException(String.format("Actual database type cannot be determined for database `%s`.", databaseName));
+        }
+        return result;
+    }
+    
+    private String resolveDatabaseTypeFromProductName(final String productName, final String jdbcUrl) {
+        if (!productName.isEmpty()) {
+            if (productName.toUpperCase(Locale.ENGLISH).contains("POSTGRESQL")) {
+                return jdbcUrl.toLowerCase(Locale.ENGLISH).startsWith("jdbc:opengauss:") ? "openGauss" : "PostgreSQL";
+            }
+            if (productName.toUpperCase(Locale.ENGLISH).contains("SQL SERVER")) {
+                return "SQLServer";
+            }
+            if (productName.toUpperCase(Locale.ENGLISH).contains("MARIADB")) {
+                return "MariaDB";
+            }
+            if (productName.toUpperCase(Locale.ENGLISH).contains("MYSQL")) {
+                return "MySQL";
+            }
+            if (productName.toUpperCase(Locale.ENGLISH).contains("ORACLE")) {
+                return "Oracle";
+            }
+            if (productName.toUpperCase(Locale.ENGLISH).contains("FIREBIRD")) {
+                return "Firebird";
+            }
+            if (productName.toUpperCase(Locale.ENGLISH).contains("H2")) {
+                return "H2";
+            }
+        }
+        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, productName).map(MCPDatabaseCapabilityOption::getType).orElse(null);
+    }
+    
+    private String resolveDatabaseTypeFromJdbcUrl(final String jdbcUrl) {
+        String actualJdbcUrl = jdbcUrl.toLowerCase(Locale.ENGLISH);
+        if (actualJdbcUrl.startsWith("jdbc:opengauss:")) {
+            return "openGauss";
+        }
+        if (actualJdbcUrl.startsWith("jdbc:postgresql:")) {
+            return "PostgreSQL";
+        }
+        if (actualJdbcUrl.startsWith("jdbc:sqlserver:")) {
+            return "SQLServer";
+        }
+        if (actualJdbcUrl.startsWith("jdbc:mariadb:")) {
+            return "MariaDB";
+        }
+        if (actualJdbcUrl.startsWith("jdbc:mysql:")) {
+            return "MySQL";
+        }
+        if (actualJdbcUrl.startsWith("jdbc:oracle:")) {
+            return "Oracle";
+        }
+        if (actualJdbcUrl.startsWith("jdbc:firebirdsql:")) {
+            return "Firebird";
+        }
+        if (actualJdbcUrl.startsWith("jdbc:h2:")) {
+            return "H2";
+        }
+        return null;
     }
     
     private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics,
@@ -143,14 +229,12 @@ public final class MCPJdbcMetadataLoader {
     }
     
     private void loadSequences(final String databaseName, final SchemaSemantics defaultSchemaSemantics, final String databaseType,
-                               final DatabaseMetadataAccumulator accumulator, final Connection connection) {
+                               final DatabaseMetadataAccumulator accumulator, final Connection connection) throws SQLException {
         String sequenceQuery = getSequenceQuery(databaseType);
         if (null == sequenceQuery) {
             return;
         }
-        try (
-                Statement statement = connection.createStatement();
-                ResultSet sequences = statement.executeQuery(sequenceQuery)) {
+        try (Statement statement = connection.createStatement(); ResultSet sequences = statement.executeQuery(sequenceQuery)) {
             while (sequences.next()) {
                 String schemaName = Objects.toString(sequences.getString("SEQUENCE_SCHEMA"), "").trim();
                 if (isSystemSchema(schemaName)) {
@@ -162,7 +246,6 @@ public final class MCPJdbcMetadataLoader {
                     accumulator.getSchemaAccumulator(normalizedSchemaName).addSequence(sequenceName);
                 }
             }
-        } catch (final SQLException ignored) {
         }
     }
     

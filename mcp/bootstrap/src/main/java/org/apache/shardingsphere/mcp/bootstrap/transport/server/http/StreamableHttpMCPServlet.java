@@ -109,7 +109,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private String normalizeProtocolVersion(final String rawProtocolVersion) {
         String protocolVersion = Objects.toString(rawProtocolVersion, "").trim();
-        return protocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
+        return protocolVersion.isEmpty() || !protocolVersions().contains(protocolVersion) ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
     }
     
     @Override

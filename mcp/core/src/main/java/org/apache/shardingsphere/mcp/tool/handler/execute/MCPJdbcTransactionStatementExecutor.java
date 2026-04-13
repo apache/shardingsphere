@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
@@ -28,13 +28,25 @@ import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 
+import java.util.Optional;
+
 /**
  * MCP JDBC transaction statement executor.
  */
-@RequiredArgsConstructor
 public final class MCPJdbcTransactionStatementExecutor {
     
     private final MCPSessionManager sessionManager;
+    
+    private final MCPJdbcMetadataRefresher jdbcMetadataRefresher;
+    
+    public MCPJdbcTransactionStatementExecutor(final MCPSessionManager sessionManager) {
+        this(sessionManager, null);
+    }
+    
+    public MCPJdbcTransactionStatementExecutor(final MCPSessionManager sessionManager, final MCPJdbcMetadataRefresher jdbcMetadataRefresher) {
+        this.sessionManager = sessionManager;
+        this.jdbcMetadataRefresher = jdbcMetadataRefresher;
+    }
     
     /**
      * Execute one transaction-control or savepoint command with resolved database capability.
@@ -94,7 +106,10 @@ public final class MCPJdbcTransactionStatementExecutor {
     
     private SQLExecutionResponse executeCommit(final String sessionId, final MCPDatabaseCapability databaseCapability) {
         ShardingSpherePreconditions.checkState(databaseCapability.isSupportsTransactionControl(), () -> new MCPUnsupportedException("Transaction control is not supported."));
-        sessionManager.getTransactionResourceManager().commitTransaction(sessionId);
+        Optional<String> dirtyDatabase = sessionManager.getTransactionResourceManager().commitTransaction(sessionId);
+        if (null != jdbcMetadataRefresher) {
+            dirtyDatabase.ifPresent(jdbcMetadataRefresher::refresh);
+        }
         return SQLExecutionResponse.statementAck(classifyTransactionStatement("COMMIT"), "COMMIT", "Transaction committed.");
     }
     

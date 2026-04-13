@@ -105,6 +105,18 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
+    void assertExecuteDangerousQueryDoesNotReachJdbc() {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
+        sessionManager.createSession("session-1");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, createMetadataCatalog("H2"));
+        UnsupportedOperationException actual = assertThrows(UnsupportedOperationException.class,
+                () -> facade.execute(createExecutionRequest("SELECT * FROM orders INTO OUTFILE '/tmp/orders.csv'", 10)));
+        assertThat(actual.getMessage(), is("Statement is banned by the MCP contract."));
+        verifyNoInteractions(runtimeDatabaseConfig);
+    }
+    
+    @Test
     void assertClassifyWithMultipleStatements() {
         StatementClassifier classifier = new StatementClassifier();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> classifier.classify("SELECT 1; SELECT 2"));
@@ -245,6 +257,40 @@ class MCPSQLExecutionFacadeTest {
     }
     
     @Test
+    void assertExecuteDdlInTransactionMarksDirtyMetadata() throws ReflectiveOperationException, SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
+        Connection transactionConnection = createStatementAckConnection();
+        MCPJdbcTransactionResourceManager transactionResourceManager = createTransactionResourceManager(runtimeDatabaseConfig);
+        when(transactionResourceManager.findTransactionConnection("session-1", "logic_db")).thenReturn(Optional.of(transactionConnection));
+        MCPSessionManager sessionManager = createSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig), transactionResourceManager);
+        sessionManager.createSession("session-1");
+        MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("CREATE TABLE orders_archive", 10));
+        assertThat(actual.getMessage(), is("Statement executed."));
+        assertThat(metadataCatalog.findMetadata("logic_db").orElseThrow().getSchemas().size(), is(0));
+        verify(transactionResourceManager).markDirtyMetadata("session-1", "logic_db");
+        verifyNoInteractions(runtimeDatabaseConfig);
+    }
+    
+    @Test
+    void assertExecuteCommitRefreshesDirtyMetadata() throws ReflectiveOperationException, SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createMetadataConnection("public", "orders_archive", List.of("order_id")));
+        MCPJdbcTransactionResourceManager transactionResourceManager = createTransactionResourceManager(runtimeDatabaseConfig);
+        when(transactionResourceManager.commitTransaction("session-1")).thenReturn(Optional.of("logic_db"));
+        MCPSessionManager sessionManager = createSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig), transactionResourceManager);
+        sessionManager.createSession("session-1");
+        MCPDatabaseMetadataCatalog metadataCatalog = createMetadataCatalog("H2");
+        MCPSQLExecutionFacade facade = createFacade(sessionManager, metadataCatalog);
+        SQLExecutionResponse actual = facade.execute(createExecutionRequest("COMMIT", 10));
+        MCPDatabaseMetadata actualMetadata = metadataCatalog.findMetadata("logic_db").orElseThrow();
+        assertThat(actual.getMessage(), is("Transaction committed."));
+        assertThat(actualMetadata.getSchemas().get(0).getTables().get(0).getTable(), is("orders_archive"));
+        verify(transactionResourceManager).commitTransaction("session-1");
+        verify(runtimeDatabaseConfig).openConnection("logic_db");
+    }
+    
+    @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.singletonMap("logic_db", runtimeDatabaseConfig));
@@ -292,6 +338,7 @@ class MCPSQLExecutionFacadeTest {
     
     private RuntimeDatabaseConfiguration mockRuntimeDatabaseConfiguration(final Connection... connections) throws SQLException {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
+        when(result.getDatabaseType()).thenReturn("H2");
         if (1 == connections.length) {
             when(result.openConnection("logic_db")).thenReturn(connections[0]);
         } else {
@@ -337,10 +384,15 @@ class MCPSQLExecutionFacadeTest {
     private Connection createMetadataConnection(final String schemaName, final String tableName, final List<String> columnNames) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        Statement statement = mock(Statement.class);
         ResultSet columnResultSet = createStringResultSet(columnNames.stream().map(each -> Map.of("COLUMN_NAME", each)).toList());
         ResultSet indexResultSet = createStringResultSet(Collections.emptyList());
+        ResultSet sequenceResultSet = createStringResultSet(Collections.emptyList());
         when(result.getMetaData()).thenReturn(databaseMetaData);
+        when(result.createStatement()).thenReturn(statement);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn("H2");
         when(databaseMetaData.getDatabaseProductVersion()).thenReturn("2.2.224");
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:metadata");
         when(databaseMetaData.getTables(nullable(String.class), nullable(String.class), anyString(), any(String[].class))).thenAnswer(invocation -> {
             String[] types = invocation.getArgument(3, String[].class);
             if (1 == types.length && "TABLE".equals(types[0])) {
@@ -350,6 +402,7 @@ class MCPSQLExecutionFacadeTest {
         });
         when(databaseMetaData.getColumns(nullable(String.class), nullable(String.class), eq(tableName), anyString())).thenReturn(columnResultSet);
         when(databaseMetaData.getIndexInfo(nullable(String.class), nullable(String.class), eq(tableName), eq(false), eq(false))).thenReturn(indexResultSet);
+        when(statement.executeQuery("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES")).thenReturn(sequenceResultSet);
         return result;
     }
     

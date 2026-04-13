@@ -34,6 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest implements CrossDatabaseTransactionContractTest {
@@ -105,20 +106,10 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest im
     }
     
     @Test
-    void assertGetCapabilitiesForMixedDatabaseTypes() throws IOException, InterruptedException {
+    void assertRejectMismatchedDatabaseType() {
         firstDatabaseType = "MySQL";
-        secondDatabaseType = "PostgreSQL";
-        launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
-        String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> firstResponse = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/capabilities");
-        HttpResponse<String> secondResponse = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/analytics_db/capabilities");
-        
-        assertThat(firstResponse.statusCode(), is(200));
-        assertThat(secondResponse.statusCode(), is(200));
-        assertThat(String.valueOf(getResourcePayload(firstResponse.body()).get("databaseType")), is("MySQL"));
-        assertThat(String.valueOf(getResourcePayload(secondResponse.body()).get("databaseType")), is("PostgreSQL"));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, this::launchProductionRuntime);
+        assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl) {
