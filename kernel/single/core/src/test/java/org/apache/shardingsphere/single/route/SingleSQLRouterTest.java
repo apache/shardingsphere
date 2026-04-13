@@ -164,10 +164,10 @@ class SingleSQLRouterTest {
         QualifiedTable qualifiedTable = new QualifiedTable("foo_db", "foo_tbl");
         SingleRule rule = mock(SingleRule.class);
         when(rule.getQualifiedTables(sqlStatementContext, database)).thenReturn(Collections.singletonList(qualifiedTable));
-        when(rule.getSingleTables(Collections.singletonList(qualifiedTable))).thenReturn(Collections.emptyList());
+        when(rule.getSingleTables(Collections.singletonList(qualifiedTable), database)).thenReturn(Collections.emptyList());
         RouteContext actual = singleSQLRouter.createRouteContext(queryContext, mock(), database, rule, Collections.singletonList("foo_tbl"), new ConfigurationProperties(new Properties()));
         assertTrue(actual.getRouteUnits().isEmpty());
-        verify(rule).getSingleTables(Collections.singletonList(qualifiedTable));
+        verify(rule).getSingleTables(Collections.singletonList(qualifiedTable), database);
     }
     
     @Test
@@ -189,7 +189,7 @@ class SingleSQLRouterTest {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 "foo_db", databaseType, Collections.singletonMap("readwrite_ds", new MockedDataSource()), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                mock(DatabaseType.class), mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
         singleSQLRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, Collections.singletonList("foo_tbl"), new ConfigurationProperties(new Properties()));
         assertThat(routeContext.getActualDataSourceNames().size(), is(1));
         assertTrue(Arrays.asList("write_ds", "readwrite_ds").contains(routeContext.getActualDataSourceNames().iterator().next()));
@@ -311,7 +311,7 @@ class SingleSQLRouterTest {
     void assertCreateRouteContextWhenNoSingleTablesButSingleLogicalDataSource() {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getQualifiedTables(any(), any())).thenReturn(Collections.emptyList());
-        when(rule.getSingleTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(rule.getSingleTables(anyCollection(), any())).thenReturn(Collections.emptyList());
         when(rule.getDataSourceNames()).thenReturn(Collections.singleton("logical_ds"));
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());
@@ -329,7 +329,7 @@ class SingleSQLRouterTest {
     void assertCreateRouteContextWhenNoSingleTablesAndMultipleDataNodeParticipants() {
         SingleRule rule = mock(SingleRule.class);
         when(rule.getQualifiedTables(any(), any())).thenReturn(Collections.emptyList());
-        when(rule.getSingleTables(anyCollection())).thenReturn(Collections.emptyList());
+        when(rule.getSingleTables(anyCollection(), any())).thenReturn(Collections.emptyList());
         when(rule.getDataSourceNames()).thenReturn(Collections.singleton("logical_ds"));
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         when(database.getRuleMetaData().getAttributes(TableMapperRuleAttribute.class)).thenReturn(Collections.emptyList());

@@ -19,8 +19,10 @@ package org.apache.shardingsphere.single.rule;
 
 import com.cedarsoftware.util.CaseInsensitiveSet;
 import lombok.Getter;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
-import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -104,14 +106,15 @@ public final class SingleRule implements DatabaseRule {
      *
      * @param dataNodes data nodes
      * @param singleTables single tables
+     * @param database database
      * @return whether all tables are in same compute node or not
      */
-    public boolean isAllTablesInSameComputeNode(final Collection<DataNode> dataNodes, final Collection<QualifiedTable> singleTables) {
-        if (!isSingleTablesInSameComputeNode(singleTables)) {
+    public boolean isAllTablesInSameComputeNode(final Collection<DataNode> dataNodes, final Collection<QualifiedTable> singleTables, final ShardingSphereDatabase database) {
+        if (!isSingleTablesInSameComputeNode(singleTables, database)) {
             return false;
         }
         QualifiedTable sampleTable = singleTables.iterator().next();
-        Optional<DataNode> sampleDataNode = mutableDataNodeRuleAttribute.findTableDataNode(sampleTable.getSchemaName(), sampleTable.getTableName());
+        Optional<DataNode> sampleDataNode = findTableDataNode(database, sampleTable);
         if (sampleDataNode.isPresent()) {
             for (DataNode each : dataNodes) {
                 if (isDifferentComputeNode(sampleDataNode.get().getDataSourceName(), each.getDataSourceName())) {
@@ -122,10 +125,10 @@ public final class SingleRule implements DatabaseRule {
         return true;
     }
     
-    private boolean isSingleTablesInSameComputeNode(final Collection<QualifiedTable> singleTables) {
+    private boolean isSingleTablesInSameComputeNode(final Collection<QualifiedTable> singleTables, final ShardingSphereDatabase database) {
         String sampleDataSourceName = null;
         for (QualifiedTable each : singleTables) {
-            Optional<DataNode> dataNode = mutableDataNodeRuleAttribute.findTableDataNode(each.getSchemaName(), each.getTableName());
+            Optional<DataNode> dataNode = findTableDataNode(database, each);
             if (!dataNode.isPresent()) {
                 continue;
             }
@@ -148,22 +151,24 @@ public final class SingleRule implements DatabaseRule {
      * Get single table names.
      *
      * @param qualifiedTables qualified tables
+     * @param database database
      * @return single table names
      */
-    public Collection<QualifiedTable> getSingleTables(final Collection<QualifiedTable> qualifiedTables) {
+    public Collection<QualifiedTable> getSingleTables(final Collection<QualifiedTable> qualifiedTables, final ShardingSphereDatabase database) {
         Collection<QualifiedTable> result = new LinkedList<>();
+        IdentifierCaseRule databaseRule = database.getIdentifierCaseRule(IdentifierScope.DATABASE);
         for (QualifiedTable each : qualifiedTables) {
             Collection<DataNode> dataNodes = mutableDataNodeRuleAttribute.findTableDataNodes(each.getTableName());
-            if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes)) {
+            if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes, databaseRule)) {
                 result.add(each);
             }
         }
         return result;
     }
     
-    private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes) {
+    private boolean containsDataNode(final QualifiedTable qualifiedTable, final Collection<DataNode> dataNodes, final IdentifierCaseRule databaseRule) {
         for (DataNode each : dataNodes) {
-            if (qualifiedTable.getSchemaName().equals(each.getSchemaName())) {
+            if (databaseRule.matches(each.getSchemaName(), qualifiedTable.getSchemaName(), QuoteCharacter.NONE)) {
                 return true;
             }
         }
@@ -179,7 +184,7 @@ public final class SingleRule implements DatabaseRule {
      */
     public Collection<QualifiedTable> getQualifiedTables(final SQLStatementContext sqlStatementContext, final ShardingSphereDatabase database) {
         Collection<SimpleTableSegment> tables = sqlStatementContext.getTablesContext().getSimpleTables();
-        Collection<QualifiedTable> result = getQualifiedTables(database, protocolType, tables);
+        Collection<QualifiedTable> result = getQualifiedTables(database, tables);
         if (!result.isEmpty()) {
             return result;
         }
@@ -187,14 +192,32 @@ public final class SingleRule implements DatabaseRule {
                 .map(optional -> IndexMetaDataUtils.getTableNames(database, protocolType, optional.getIndexes())).orElse(result);
     }
     
-    private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
+    private Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final Collection<SimpleTableSegment> tableSegments) {
         Collection<QualifiedTable> result = new ArrayList<>(tableSegments.size());
-        String schemaName = new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(database.getName());
+        String schemaName = database.getDefaultSchemaName();
         for (SimpleTableSegment each : tableSegments) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));
         }
         return result;
+    }
+
+    /**
+     * Find table data node with identifier rules.
+     *
+     * @param database database
+     * @param qualifiedTable qualified table
+     * @return matched data node
+     */
+    public Optional<DataNode> findTableDataNode(final ShardingSphereDatabase database, final QualifiedTable qualifiedTable) {
+        IdentifierCaseRule databaseRule = database.getIdentifierCaseRule(IdentifierScope.DATABASE);
+        Collection<DataNode> dataNodes = mutableDataNodeRuleAttribute.findTableDataNodes(qualifiedTable.getTableName());
+        for (DataNode each : dataNodes) {
+            if (databaseRule.matches(each.getSchemaName(), qualifiedTable.getSchemaName(), QuoteCharacter.NONE)) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
     @Override
