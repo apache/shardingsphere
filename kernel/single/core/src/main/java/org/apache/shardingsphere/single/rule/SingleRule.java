@@ -156,10 +156,10 @@ public final class SingleRule implements DatabaseRule {
      */
     public Collection<QualifiedTable> getSingleTables(final Collection<QualifiedTable> qualifiedTables, final ShardingSphereDatabase database) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        IdentifierCaseRule databaseRule = database.getIdentifierCaseRule(IdentifierScope.DATABASE);
+        IdentifierCaseRule schemaRule = database.getIdentifierCaseRule(IdentifierScope.SCHEMA);
         for (QualifiedTable each : qualifiedTables) {
             Collection<DataNode> dataNodes = mutableDataNodeRuleAttribute.findTableDataNodes(each.getTableName());
-            if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes, databaseRule)) {
+            if (!dataNodes.isEmpty() && containsDataNode(each, dataNodes, schemaRule)) {
                 result.add(each);
             }
         }
@@ -210,10 +210,10 @@ public final class SingleRule implements DatabaseRule {
      * @return matched data node
      */
     public Optional<DataNode> findTableDataNode(final ShardingSphereDatabase database, final QualifiedTable qualifiedTable) {
-        IdentifierCaseRule databaseRule = database.getIdentifierCaseRule(IdentifierScope.DATABASE);
+        IdentifierCaseRule schemaRule = database.getIdentifierCaseRule(IdentifierScope.SCHEMA);
         Collection<DataNode> dataNodes = mutableDataNodeRuleAttribute.findTableDataNodes(qualifiedTable.getTableName());
         for (DataNode each : dataNodes) {
-            if (databaseRule.matches(each.getSchemaName(), qualifiedTable.getSchemaName(), QuoteCharacter.NONE)) {
+            if (schemaRule.matches(each.getSchemaName(), qualifiedTable.getSchemaName(), QuoteCharacter.NONE)) {
                 return Optional.of(each);
             }
         }
