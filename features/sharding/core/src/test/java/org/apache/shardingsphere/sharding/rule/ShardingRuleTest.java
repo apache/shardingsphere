@@ -369,6 +369,13 @@ class ShardingRuleTest {
     }
     
     @Test
+    void assertFindGenerateKeyColumnWithDefaultKeyGenerateStrategy() {
+        Optional<String> actual = createDefaultKeyGenerateShardingRule().findGenerateKeyColumnName("logic_table");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), is("id"));
+    }
+    
+    @Test
     void assertCreateInconsistentActualDataSourceNamesFailure() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..2}.table_${0..2}");
@@ -570,6 +577,15 @@ class ShardingRuleTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
+    }
+    
+    private ShardingRule createDefaultKeyGenerateShardingRule() {
+        ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
+        ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..2}");
+        shardingRuleConfig.getTables().add(shardingTableRuleConfig);
+        shardingRuleConfig.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "default"));
+        shardingRuleConfig.getKeyGenerators().put("default", new AlgorithmConfiguration("UUID", new Properties()));
         return new ShardingRule(shardingRuleConfig, createDataSources(), mock(ComputeNodeInstanceContext.class), Collections.emptyList());
     }
     
@@ -780,6 +796,11 @@ class ShardingRuleTest {
     void assertIsGenerateKeyColumn() {
         ShardingRule actual = createMaximumShardingRule();
         assertTrue(actual.isGenerateKeyColumn("id", "logic_table"));
+    }
+    
+    @Test
+    void assertIsGenerateKeyColumnWithDefaultKeyGenerateStrategy() {
+        assertTrue(createDefaultKeyGenerateShardingRule().isGenerateKeyColumn("id", "logic_table"));
     }
     
     @Test

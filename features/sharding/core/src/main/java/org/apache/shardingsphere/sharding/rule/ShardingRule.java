@@ -504,7 +504,10 @@ public final class ShardingRule implements DatabaseRule {
      * @return whether given logic table column is key generated column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
-        return findColumnKeyGenerateStrategies(tableName).map(optional -> optional.getKeyGenerateColumn().equalsIgnoreCase(columnName)).orElse(false);
+        Optional<ColumnKeyGenerateStrategiesRuleConfiguration> keyGenerateStrategy = findColumnKeyGenerateStrategies(tableName);
+        return keyGenerateStrategy.map(optional -> optional.getKeyGenerateColumn().equalsIgnoreCase(columnName))
+                .orElseGet(() -> Optional.ofNullable(shardingTables.get(tableName)).flatMap(ShardingTable::getGenerateKeyColumn)
+                        .map(optional -> optional.equalsIgnoreCase(columnName)).orElse(false));
     }
     
     private Optional<ColumnKeyGenerateStrategiesRuleConfiguration> findColumnKeyGenerateStrategies(final String tableName) {
@@ -518,7 +521,10 @@ public final class ShardingRule implements DatabaseRule {
      * @return column name of generated key
      */
     public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
-        return Optional.ofNullable(columnKeyGenerateStrategies.get(logicTableName)).map(ColumnKeyGenerateStrategiesRuleConfiguration::getKeyGenerateColumn);
+        if (null != columnKeyGenerateStrategies.get(logicTableName)) {
+            return Optional.of(columnKeyGenerateStrategies.get(logicTableName).getKeyGenerateColumn());
+        }
+        return Optional.ofNullable(shardingTables.get(logicTableName)).flatMap(ShardingTable::getGenerateKeyColumn);
     }
     
     /**
