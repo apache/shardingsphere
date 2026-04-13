@@ -296,12 +296,24 @@ class MCPJdbcMetadataLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadCompatibleMySQLBranchDatabaseTypeArguments")
-    void assertLoadWithCompatibleMySQLBranchDatabaseType(final String name, final String productName) throws SQLException {
+    void assertLoadWithCompatibleMySQLBranchDatabaseType(final String name, final String configuredDatabaseType, final String productName,
+                                                         final String probeQuery, final String probeResult) throws SQLException {
         MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
-        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration =
-                createMockRuntimeDatabaseConfiguration("Doris", createConnectionWithoutSchema(productName, "jdbc:mysql://metadata-loader/test"));
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(configuredDatabaseType,
+                createConnectionWithoutSchema(productName, "jdbc:mysql://metadata-loader/test", Map.of(probeQuery, probeResult)));
         MCPDatabaseMetadata actual = metadataLoader.load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
-        assertThat(actual.getDatabaseType(), is("Doris"));
+        assertThat(actual.getDatabaseType(), is(configuredDatabaseType));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("loadRejectMySQLMismatchArguments")
+    void assertLoadRejectsMySQLMismatchForBranchDatabase(final String name, final String configuredDatabaseType, final String probeQuery,
+                                                         final String probeResult) throws SQLException {
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(configuredDatabaseType,
+                createConnectionWithoutSchema("MySQL", "jdbc:mysql://metadata-loader/test", Map.of(probeQuery, probeResult)));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> metadataLoader.load(Map.of("logic_db", runtimeDatabaseConfiguration)));
+        assertThat(actual.getMessage(), is(String.format("Configured databaseType `%s` does not match actual database type `MySQL` for database `logic_db`.", configuredDatabaseType)));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -359,8 +371,14 @@ class MCPJdbcMetadataLoaderTest {
     
     private static Stream<Arguments> loadCompatibleMySQLBranchDatabaseTypeArguments() {
         return Stream.of(
-                Arguments.of("mysql family product name", "MySQL"),
-                Arguments.of("apache doris product alias", "Apache Doris"));
+                Arguments.of("doris version comment probe", "Doris", "MySQL", "SELECT @@version_comment", "Doris version doris-3.0.3"),
+                Arguments.of("mariadb version probe", "MariaDB", "MySQL", "SELECT VERSION()", "10.4.7-MariaDB"));
+    }
+    
+    private static Stream<Arguments> loadRejectMySQLMismatchArguments() {
+        return Stream.of(
+                Arguments.of("reject mysql backend configured as doris", "Doris", "SELECT @@version_comment", "MySQL Community Server - GPL"),
+                Arguments.of("reject mysql backend configured as mariadb", "MariaDB", "SELECT VERSION()", "8.0.36"));
     }
     
     private Connection createConnectionWithoutSchema(final String databaseType) throws SQLException {
@@ -368,21 +386,33 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     private Connection createConnectionWithoutSchema(final String databaseProductName, final String jdbcUrl) throws SQLException {
+        return createConnectionWithoutSchema(databaseProductName, jdbcUrl, Map.of());
+    }
+    
+    private Connection createConnectionWithoutSchema(final String databaseProductName, final String jdbcUrl, final Map<String, String> scalarQueries) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        Statement statement = mock(Statement.class);
         ResultSet tableResultSet = mockResultSet("TABLE_NAME", "orders");
         ResultSet viewResultSet = mockResultSet("TABLE_NAME");
         ResultSet columnResultSet = mockResultSet("COLUMN_NAME", "order_id");
         ResultSet indexResultSet = mockResultSet("INDEX_NAME");
+        final ResultSet emptyQueryResultSet = mockMultiRowResultSet(List.of());
         when(result.getMetaData()).thenReturn(databaseMetaData);
+        when(result.createStatement()).thenReturn(statement);
         when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseProductName);
         when(databaseMetaData.getURL()).thenReturn(jdbcUrl);
+        when(statement.executeQuery(anyString())).thenReturn(emptyQueryResultSet);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;
         });
         when(databaseMetaData.getColumns(isNull(), isNull(), eq("orders"), eq("%"))).thenReturn(columnResultSet);
         when(databaseMetaData.getIndexInfo(isNull(), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(indexResultSet);
+        for (Entry<String, String> entry : scalarQueries.entrySet()) {
+            final ResultSet scalarResultSet = mockScalarResultSet(entry.getValue());
+            when(statement.executeQuery(entry.getKey())).thenReturn(scalarResultSet);
+        }
         return result;
     }
     
@@ -502,6 +532,13 @@ class MCPJdbcMetadataLoaderTest {
         for (Entry<String, String> entry : values.entrySet()) {
             when(result.getString(entry.getKey())).thenReturn(entry.getValue());
         }
+        return result;
+    }
+    
+    private ResultSet mockScalarResultSet(final String value) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString(1)).thenReturn(value);
         return result;
     }
     

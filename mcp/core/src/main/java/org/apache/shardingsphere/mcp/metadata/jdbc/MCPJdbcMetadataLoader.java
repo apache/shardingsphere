@@ -44,6 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -67,6 +68,10 @@ public final class MCPJdbcMetadataLoader {
     private static final String FIREBIRD_SEQUENCE_QUERY =
             "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
     
+    private static final String DORIS_VERSION_COMMENT_QUERY = "SELECT @@version_comment";
+    
+    private static final String MARIADB_VERSION_QUERY = "SELECT VERSION()";
+    
     /**
      * Load database metadata catalog.
      *
@@ -89,7 +94,7 @@ public final class MCPJdbcMetadataLoader {
     
     private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
                                                      final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
-        String actualDatabaseType = resolveActualDatabaseType(databaseName, runtimeDatabaseConfig.getDatabaseType(), databaseMetaData);
+        String actualDatabaseType = resolveActualDatabaseType(databaseName, runtimeDatabaseConfig.getDatabaseType(), connection, databaseMetaData);
         String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
         SchemaSemantics defaultSchemaSemantics = getDefaultSchemaSemantics(actualDatabaseType);
         DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, actualDatabaseType, databaseVersion);
@@ -99,15 +104,17 @@ public final class MCPJdbcMetadataLoader {
         return accumulator.build();
     }
     
-    private String resolveActualDatabaseType(final String databaseName, final String configuredDatabaseType, final DatabaseMetaData databaseMetaData) throws SQLException {
+    private String resolveActualDatabaseType(final String databaseName, final String configuredDatabaseType,
+                                             final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
         String actualDatabaseType = determineActualDatabaseType(databaseName, databaseMetaData);
         String configuredType = Objects.toString(configuredDatabaseType, "").trim();
         if (configuredType.isEmpty()) {
             return actualDatabaseType;
         }
         String expectedDatabaseType = normalizeDatabaseType(configuredType);
-        if (isCompatibleBranchDatabase(expectedDatabaseType, actualDatabaseType)) {
-            return expectedDatabaseType;
+        Optional<String> compatibleBranchDatabaseType = resolveCompatibleBranchDatabaseType(connection, expectedDatabaseType, actualDatabaseType);
+        if (compatibleBranchDatabaseType.isPresent()) {
+            return compatibleBranchDatabaseType.get();
         }
         if (!expectedDatabaseType.equalsIgnoreCase(actualDatabaseType)) {
             throw new IllegalStateException(String.format("Configured databaseType `%s` does not match actual database type `%s` for database `%s`.",
@@ -189,8 +196,28 @@ public final class MCPJdbcMetadataLoader {
         return null;
     }
     
-    private boolean isCompatibleBranchDatabase(final String configuredDatabaseType, final String actualDatabaseType) {
-        return "MYSQL".equalsIgnoreCase(actualDatabaseType) && ("DORIS".equalsIgnoreCase(configuredDatabaseType) || "MARIADB".equalsIgnoreCase(configuredDatabaseType));
+    private Optional<String> resolveCompatibleBranchDatabaseType(final Connection connection, final String configuredDatabaseType,
+                                                                 final String actualDatabaseType) throws SQLException {
+        if (!"MYSQL".equalsIgnoreCase(actualDatabaseType)) {
+            return Optional.empty();
+        }
+        if ("DORIS".equalsIgnoreCase(configuredDatabaseType) && isBranchDatabase(connection, DORIS_VERSION_COMMENT_QUERY, "DORIS")) {
+            return Optional.of("Doris");
+        }
+        if ("MARIADB".equalsIgnoreCase(configuredDatabaseType) && isBranchDatabase(connection, MARIADB_VERSION_QUERY, "MARIADB")) {
+            return Optional.of("MariaDB");
+        }
+        return Optional.empty();
+    }
+    
+    private boolean isBranchDatabase(final Connection connection, final String query, final String expectedMarker) throws SQLException {
+        return executeScalarQuery(connection, query).toUpperCase(Locale.ENGLISH).contains(expectedMarker);
+    }
+    
+    private String executeScalarQuery(final Connection connection, final String query) throws SQLException {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
+            return resultSet.next() ? Objects.toString(resultSet.getString(1), "").trim() : "";
+        }
     }
     
     private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics,
