@@ -304,7 +304,7 @@ class MCPJdbcTransactionResourceManagerTest {
     private static Stream<Arguments> assertCreateSavepointCases() {
         return Stream.of(
                 Arguments.of("create savepoint", "sp_1", null, null, null),
-                Arguments.of("empty savepoint name", " ", null, IllegalArgumentException.class, "savepointName cannot be empty."),
+                Arguments.of("empty savepoint name", " ", null, IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("savepoint creation failure", "sp_1", "savepoint failed", IllegalStateException.class, "savepoint failed"));
     }
     

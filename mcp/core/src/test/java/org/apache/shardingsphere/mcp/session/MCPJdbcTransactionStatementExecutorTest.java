@@ -17,27 +17,29 @@
 
 package org.apache.shardingsphere.mcp.session;
 
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.tool.handler.execute.MCPJdbcTransactionStatementExecutor;
-import org.apache.shardingsphere.mcp.tool.handler.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.tool.handler.execute.ClassificationResult;
+import org.apache.shardingsphere.mcp.tool.handler.execute.MCPJdbcTransactionStatementExecutor;
+import org.apache.shardingsphere.mcp.tool.handler.execute.StatementClassifier;
 import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Collections;
-import java.util.Map;
 import java.sql.Connection;
 import java.sql.Savepoint;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -118,6 +120,18 @@ class MCPJdbcTransactionStatementExecutorTest {
         assertThat(actual.getMessage(), is("No active transaction."));
     }
     
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertExecuteWithMissingSavepointNameCases")
+    void assertExecuteWithMissingSavepointName(final String name, final String statementType, final String sql) {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1");
+        MCPJdbcTransactionStatementExecutor executor = new MCPJdbcTransactionStatementExecutor(sessionManager);
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> executor.execute("session-1", "logic_db", createCapability("logic_db"),
+                        new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, sql, "", "")));
+        assertThat(actual.getMessage(), is("Savepoint name is required."));
+    }
+    
     private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
         return new MCPDatabaseCapabilityProvider(new MCPDatabaseMetadataCatalog(Map.of(
                 "logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()),
@@ -172,5 +186,12 @@ class MCPJdbcTransactionStatementExecutorTest {
             return;
         }
         verify(connection).releaseSavepoint(savepoint);
+    }
+    
+    static Stream<Arguments> assertExecuteWithMissingSavepointNameCases() {
+        return Stream.of(
+                Arguments.of("savepoint", "SAVEPOINT", "SAVEPOINT"),
+                Arguments.of("rollback to savepoint", "ROLLBACK TO SAVEPOINT", "ROLLBACK TO SAVEPOINT"),
+                Arguments.of("release savepoint", "RELEASE SAVEPOINT", "RELEASE SAVEPOINT"));
     }
 }

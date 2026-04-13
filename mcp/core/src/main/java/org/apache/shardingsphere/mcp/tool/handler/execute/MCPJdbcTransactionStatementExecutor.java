@@ -64,18 +64,26 @@ public final class MCPJdbcTransactionStatementExecutor {
             }
             String savepointName = classificationResult.getSavepointName().orElse("");
             if ("SAVEPOINT".equals(statementType)) {
-                return executeSavepoint(sessionId, databaseCapability, savepointName);
+                return executeSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
             }
             if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
-                return executeRollbackSavepoint(sessionId, databaseCapability, savepointName);
+                return executeRollbackSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
             }
             if ("RELEASE SAVEPOINT".equals(statementType)) {
-                return executeReleaseSavepoint(sessionId, databaseCapability, savepointName);
+                return executeReleaseSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
             }
             throw new MCPInvalidRequestException("Statement is not a transaction command.");
+        } catch (final IllegalArgumentException ex) {
+            throw new MCPInvalidRequestException(ex.getMessage(), ex);
         } catch (final IllegalStateException ex) {
             throw new MCPTransactionStateException(ex.getMessage(), ex);
         }
+    }
+    
+    private String getRequiredSavepointName(final String savepointName) {
+        String result = savepointName.trim();
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException("Savepoint name is required."));
+        return result;
     }
     
     private SQLExecutionResponse executeBeginTransaction(final String sessionId, final String databaseName, final MCPDatabaseCapability databaseCapability, final String statementType) {

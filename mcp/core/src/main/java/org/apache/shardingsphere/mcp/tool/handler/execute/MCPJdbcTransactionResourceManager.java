@@ -199,7 +199,7 @@ public final class MCPJdbcTransactionResourceManager {
     
     private String normalizeSavepointName(final String savepointName) {
         String result = Objects.toString(savepointName, "").trim().toUpperCase(Locale.ENGLISH);
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException("savepointName cannot be empty."));
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException("Savepoint name is required."));
         return result;
     }
     

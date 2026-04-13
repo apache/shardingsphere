@@ -51,8 +51,11 @@ public final class StatementClassifier {
             return new ClassificationResult(SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", actualSql,
                     resolveTargetObjectName(explainedStatementStructure, explainedStatementClass), "");
         }
-        if (upperLeadingSql.startsWith("ROLLBACK TO SAVEPOINT") || upperLeadingSql.startsWith("RELEASE SAVEPOINT") || upperLeadingSql.startsWith("SAVEPOINT ")) {
-            return new ClassificationResult(SupportedMCPStatement.SAVEPOINT, extractStatementType(upperLeadingSql), actualSql, "", extractSavepointName(leadingSql));
+        if (isSavepointStatement(upperLeadingSql)) {
+            String statementType = extractStatementType(upperLeadingSql);
+            String savepointName = extractSavepointName(leadingSql);
+            validateSavepointName(statementType, savepointName);
+            return new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, actualSql, "", savepointName);
         }
         if (isTransactionControlStatement(upperLeadingSql)) {
             return new ClassificationResult(SupportedMCPStatement.TRANSACTION_CONTROL, extractStatementType(upperLeadingSql), actualSql, "", "");
@@ -89,6 +92,13 @@ public final class StatementClassifier {
                 || upperSql.startsWith("START TRANSACTION")
                 || "COMMIT".equals(upperSql)
                 || "ROLLBACK".equals(upperSql);
+    }
+    
+    private boolean isSavepointStatement(final String upperSql) {
+        return "SAVEPOINT".equals(upperSql)
+                || upperSql.startsWith("SAVEPOINT ")
+                || upperSql.startsWith("ROLLBACK TO SAVEPOINT")
+                || upperSql.startsWith("RELEASE SAVEPOINT");
     }
     
     private String extractStatementType(final String upperSql) {
@@ -575,7 +585,7 @@ public final class StatementClassifier {
     
     private String extractSavepointName(final String sql) {
         String[] tokens = sql.split("\\s+");
-        if ("SAVEPOINT".equalsIgnoreCase(tokens[0])) {
+        if ("SAVEPOINT".equalsIgnoreCase(tokens[0]) && tokens.length >= 2) {
             return tokens[tokens.length - 1];
         }
         if ("RELEASE".equalsIgnoreCase(tokens[0]) && tokens.length >= 3) {
@@ -585,6 +595,15 @@ public final class StatementClassifier {
             return tokens[tokens.length - 1];
         }
         return "";
+    }
+    
+    private void validateSavepointName(final String statementType, final String savepointName) {
+        if (!savepointName.isEmpty()) {
+            return;
+        }
+        if ("SAVEPOINT".equals(statementType) || "ROLLBACK TO SAVEPOINT".equals(statementType) || "RELEASE SAVEPOINT".equals(statementType)) {
+            throw new IllegalArgumentException("Savepoint name is required.");
+        }
     }
     
     private static final class StatementStructure {

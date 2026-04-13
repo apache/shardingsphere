@@ -72,6 +72,13 @@ class MCPToolControllerTest {
     }
     
     @Test
+    void assertHandleExecuteQueryWithMissingSavepointName() throws SQLException {
+        Map<String, Object> actual = createController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "RELEASE SAVEPOINT")).toPayload();
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actual.get("message"), is("Savepoint name is required."));
+    }
+    
+    @Test
     void assertHandleWithInvalidRequest() throws SQLException {
         Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("schema", "public", "query", "orders")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
