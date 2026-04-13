@@ -25,7 +25,6 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
-import org.apache.shardingsphere.infra.exception.kernel.metadata.AmbiguousIdentifierException;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.node.StorageNode;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
@@ -59,7 +58,6 @@ import java.util.logging.Logger;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DatabaseIdentifierContextFactoryTest {
     
@@ -232,58 +230,58 @@ class DatabaseIdentifierContextFactoryTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("createWithMixedStoredCaseSchemaLookupArguments")
     void assertCreateFindMixedStoredCaseSchemaIdentifiers(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                                          final IdentifierValue lookupIdentifier, final String expectedSchemaName, final String expectedExceptionMessage) {
+                                                          final IdentifierValue lookupIdentifier, final String expectedSchemaName) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, new ConfigurationProperties(new Properties()));
         IdentifierIndex<String> schemaIndex = createIdentifierIndex(actual, IdentifierScope.SCHEMA, "foo_schema", "FOO_SCHEMA");
-        assertFindResult(schemaIndex, lookupIdentifier, expectedSchemaName, expectedExceptionMessage);
+        assertThat(schemaIndex.find(lookupIdentifier), is(getExpectedResult(expectedSchemaName)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("createWithMixedStoredCaseTableLookupArguments")
     void assertCreateFindMixedStoredCaseTableIdentifiers(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                                         final IdentifierValue lookupIdentifier, final String expectedTableName, final String expectedExceptionMessage) {
+                                                         final IdentifierValue lookupIdentifier, final String expectedTableName) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, new ConfigurationProperties(new Properties()));
         IdentifierIndex<String> tableIndex = createIdentifierIndex(actual, IdentifierScope.TABLE, "foo_tbl", "FOO_TBL");
-        assertFindResult(tableIndex, lookupIdentifier, expectedTableName, expectedExceptionMessage);
+        assertThat(tableIndex.find(lookupIdentifier), is(getExpectedResult(expectedTableName)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("createWithMixedStoredCaseColumnLookupArguments")
     void assertCreateFindMixedStoredCaseColumnIdentifiers(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                                          final IdentifierValue lookupIdentifier, final String expectedColumnName, final String expectedExceptionMessage) {
+                                                          final IdentifierValue lookupIdentifier, final String expectedColumnName) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, new ConfigurationProperties(new Properties()));
         IdentifierIndex<String> columnIndex = createIdentifierIndex(actual, IdentifierScope.COLUMN, "foo_col", "FOO_COL");
-        assertFindResult(columnIndex, lookupIdentifier, expectedColumnName, expectedExceptionMessage);
+        assertThat(columnIndex.find(lookupIdentifier), is(getExpectedResult(expectedColumnName)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("refreshWithMixedStoredCaseSchemaLookupArguments")
     void assertRefreshFindMixedStoredCaseSchemaIdentifiers(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                                           final IdentifierValue lookupIdentifier, final String expectedSchemaName, final String expectedExceptionMessage) {
+                                                           final IdentifierValue lookupIdentifier, final String expectedSchemaName) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, protocolType, resourceMetaData, new ConfigurationProperties(new Properties()));
         IdentifierIndex<String> schemaIndex = createIdentifierIndex(actual, IdentifierScope.SCHEMA, "foo_schema", "FOO_SCHEMA");
-        assertFindResult(schemaIndex, lookupIdentifier, expectedSchemaName, expectedExceptionMessage);
+        assertThat(schemaIndex.find(lookupIdentifier), is(getExpectedResult(expectedSchemaName)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("refreshWithMixedStoredCaseTableLookupArguments")
     void assertRefreshFindMixedStoredCaseTableIdentifiers(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                                          final IdentifierValue lookupIdentifier, final String expectedTableName, final String expectedExceptionMessage) {
+                                                          final IdentifierValue lookupIdentifier, final String expectedTableName) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, protocolType, resourceMetaData, new ConfigurationProperties(new Properties()));
         IdentifierIndex<String> tableIndex = createIdentifierIndex(actual, IdentifierScope.TABLE, "foo_tbl", "FOO_TBL");
-        assertFindResult(tableIndex, lookupIdentifier, expectedTableName, expectedExceptionMessage);
+        assertThat(tableIndex.find(lookupIdentifier), is(getExpectedResult(expectedTableName)));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("refreshWithMixedStoredCaseColumnLookupArguments")
     void assertRefreshFindMixedStoredCaseColumnIdentifiers(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                                           final IdentifierValue lookupIdentifier, final String expectedColumnName, final String expectedExceptionMessage) {
+                                                           final IdentifierValue lookupIdentifier, final String expectedColumnName) {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, protocolType, resourceMetaData, new ConfigurationProperties(new Properties()));
         IdentifierIndex<String> columnIndex = createIdentifierIndex(actual, IdentifierScope.COLUMN, "foo_col", "FOO_COL");
-        assertFindResult(columnIndex, lookupIdentifier, expectedColumnName, expectedExceptionMessage);
+        assertThat(columnIndex.find(lookupIdentifier), is(getExpectedResult(expectedColumnName)));
     }
     
     private static Stream<Arguments> createWithProtocolTypeAndPropsArguments() {
@@ -436,16 +434,6 @@ class DatabaseIdentifierContextFactoryTest {
         return null == expectedName ? Optional.empty() : Optional.of(expectedName);
     }
     
-    private static void assertFindResult(final IdentifierIndex<String> identifierIndex, final IdentifierValue lookupIdentifier,
-                                         final String expectedName, final String expectedExceptionMessage) {
-        if (null == expectedExceptionMessage) {
-            assertThat(identifierIndex.find(lookupIdentifier), is(getExpectedResult(expectedName)));
-            return;
-        }
-        AmbiguousIdentifierException actual = assertThrows(AmbiguousIdentifierException.class, () -> identifierIndex.find(lookupIdentifier));
-        assertThat(actual.getMessage(), is(expectedExceptionMessage));
-    }
-    
     private static Stream<Arguments> createInsensitiveQuotedExactLookupArguments(final String databaseName, final DatabaseType protocolType,
                                                                                  final ResourceMetaData resourceMetaData, final String lowerActualName,
                                                                                  final String quoteCharacter) {
@@ -540,48 +528,40 @@ class DatabaseIdentifierContextFactoryTest {
                                                                                       final String quoteCharacter) {
         String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
         return Stream.of(
-                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName, null),
-                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName, null),
-                createMixedLookupArgument(databaseName + " treats unquoted lower lookup as ambiguous", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, null,
-                        createAmbiguousIdentifierMessage(lowerActualName, lowerActualName, upperActualName)),
-                createMixedLookupArgument(databaseName + " treats unquoted upper lookup as ambiguous", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, null,
-                        createAmbiguousIdentifierMessage(upperActualName, lowerActualName, upperActualName)));
+                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName),
+                createMixedLookupArgument(databaseName + " finds lower actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, lowerActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, upperActualName));
     }
     
     private static Stream<Arguments> createNormalizedMixedLookupArguments(final String databaseName, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                                                           final String lowerActualName, final String quoteCharacter) {
         String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
         return Stream.of(
-                createMixedLookupArgument(databaseName + " treats quoted lower lookup as ambiguous", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, null,
-                        createAmbiguousIdentifierMessage(lowerActualName, lowerActualName, upperActualName)),
-                createMixedLookupArgument(databaseName + " treats quoted upper lookup as ambiguous", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, null,
-                        createAmbiguousIdentifierMessage(upperActualName, lowerActualName, upperActualName)),
-                createMixedLookupArgument(databaseName + " treats unquoted lower lookup as ambiguous", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, null,
-                        createAmbiguousIdentifierMessage(lowerActualName, lowerActualName, upperActualName)),
-                createMixedLookupArgument(databaseName + " treats unquoted upper lookup as ambiguous", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, null,
-                        createAmbiguousIdentifierMessage(upperActualName, lowerActualName, upperActualName)));
+                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName),
+                createMixedLookupArgument(databaseName + " finds lower actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, lowerActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, upperActualName));
     }
     
     private static Stream<Arguments> createLowerCaseMixedLookupArguments(final String databaseName, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                                                          final String lowerActualName, final String quoteCharacter) {
         String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
         return Stream.of(
-                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName, null),
-                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName, null),
-                createMixedLookupArgument(databaseName + " finds lower actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, lowerActualName, null),
-                createMixedLookupArgument(databaseName + " finds lower actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, lowerActualName,
-                        null));
+                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName),
+                createMixedLookupArgument(databaseName + " finds lower actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, lowerActualName),
+                createMixedLookupArgument(databaseName + " finds lower actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, lowerActualName));
     }
     
     private static Stream<Arguments> createUpperCaseMixedLookupArguments(final String databaseName, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
                                                                          final String lowerActualName, final String quoteCharacter) {
         String upperActualName = lowerActualName.toUpperCase(Locale.ENGLISH);
         return Stream.of(
-                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName, null),
-                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName, null),
-                createMixedLookupArgument(databaseName + " finds upper actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, upperActualName, null),
-                createMixedLookupArgument(databaseName + " finds upper actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, upperActualName,
-                        null));
+                createMixedLookupArgument(databaseName + " finds lower actual by quoted lower lookup", protocolType, resourceMetaData, lowerActualName, true, quoteCharacter, lowerActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by quoted upper lookup", protocolType, resourceMetaData, upperActualName, true, quoteCharacter, upperActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by unquoted lower lookup", protocolType, resourceMetaData, lowerActualName, false, quoteCharacter, upperActualName),
+                createMixedLookupArgument(databaseName + " finds upper actual by unquoted upper lookup", protocolType, resourceMetaData, upperActualName, false, quoteCharacter, upperActualName));
     }
     
     private static Arguments createLookupArgument(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final String actualName,
@@ -590,17 +570,12 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     private static Arguments createMixedLookupArgument(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                                       final String lookupName, final boolean quoted, final String quoteCharacter,
-                                                       final String expectedName, final String expectedExceptionMessage) {
-        return Arguments.of(name, protocolType, resourceMetaData, createIdentifierValue(lookupName, quoted, quoteCharacter), expectedName, expectedExceptionMessage);
+                                                       final String lookupName, final boolean quoted, final String quoteCharacter, final String expectedName) {
+        return Arguments.of(name, protocolType, resourceMetaData, createIdentifierValue(lookupName, quoted, quoteCharacter), expectedName);
     }
     
     private static IdentifierValue createIdentifierValue(final String lookupName, final boolean quoted, final String quoteCharacter) {
         return new IdentifierValue(quoted ? quoteCharacter + lookupName + quoteCharacter : lookupName);
-    }
-    
-    private static String createAmbiguousIdentifierMessage(final String identifierName, final String lowerActualName, final String upperActualName) {
-        return String.format("Identifier '%s' is ambiguous, matched actual identifiers: %s, %s.", identifierName, lowerActualName, upperActualName);
     }
     
     private static ResourceMetaData createResourceMetaDataWithFirstDataSource() {
