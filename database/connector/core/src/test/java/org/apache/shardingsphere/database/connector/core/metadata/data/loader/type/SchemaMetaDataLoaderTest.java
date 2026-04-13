@@ -88,7 +88,7 @@ class SchemaMetaDataLoaderTest {
             }
         }
     }
-
+    
     @Test
     void assertLoadSchemaTableNamesNormalizesDatabaseNameWithoutDefaultSchema() throws SQLException {
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
