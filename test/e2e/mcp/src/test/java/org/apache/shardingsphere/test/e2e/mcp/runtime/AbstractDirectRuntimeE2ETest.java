@@ -313,14 +313,15 @@ abstract class AbstractDirectRuntimeE2ETest {
     
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
-        result.put("logic_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-logic"));
-        result.put("analytics_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-analytics"));
-        result.put("warehouse", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-warehouse"));
+        result.put("logic_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-logic", "public"));
+        result.put("analytics_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-analytics", "public"));
+        result.put("warehouse", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-warehouse", "warehouse"));
         return result;
     }
     
-    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName) {
-        return new RuntimeDatabaseConfiguration("H2", H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName), "", "", "org.h2.Driver");
+    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String defaultSchema) {
+        String jdbcUrl = String.format("%s;INIT=CREATE SCHEMA IF NOT EXISTS %s\\;SET SCHEMA %s", H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName), defaultSchema, defaultSchema);
+        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
     
     private void initializeRuntimeDatabases(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws SQLException {
