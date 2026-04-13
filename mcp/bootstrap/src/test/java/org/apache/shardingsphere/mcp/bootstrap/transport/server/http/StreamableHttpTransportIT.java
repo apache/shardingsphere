@@ -80,6 +80,41 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     }
     
     @Test
+    void assertAcceptInitializeWithAccessToken() throws IOException, InterruptedException, SQLException {
+        launchJDBCRuntime("127.0.0.1", false, ACCESS_TOKEN);
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, Map.of(
+                "Authorization", getAuthorizationHeaderValue(ACCESS_TOKEN),
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        assertThat(actualResponse.statusCode(), is(200));
+        assertFalse(actualResponse.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
+    }
+    
+    @Test
+    void assertRejectInitializeWithoutAccessToken() throws IOException, InterruptedException, SQLException {
+        launchJDBCRuntime("127.0.0.1", false, ACCESS_TOKEN);
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, Map.of(
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        assertThat(actualResponse.statusCode(), is(401));
+        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
+    }
+    
+    @Test
+    void assertRejectInitializeWithWrongAccessToken() throws IOException, InterruptedException, SQLException {
+        launchJDBCRuntime("127.0.0.1", false, ACCESS_TOKEN);
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, Map.of(
+                "Authorization", getAuthorizationHeaderValue("wrong-token"),
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        assertThat(actualResponse.statusCode(), is(401));
+        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
+    }
+    
+    @Test
     void assertRejectOpenStreamAfterDelete() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntime();
         sendDeleteRequest(session.httpClient(), Map.of("MCP-Session-Id", session.sessionId(), "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
@@ -88,7 +123,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
                 "MCP-Session-Id", session.sessionId(),
                 "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
         assertThat(streamResponse.statusCode(), is(404));
-        assertTrue(streamResponse.body().contains("Session does not exist."));
+        assertThat(parseJsonBody(streamResponse.body()).get("message"), is("Session does not exist."));
     }
     
     @Test
@@ -100,7 +135,42 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
                 "Content-Type", "application/json",
                 "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
         assertThat(initializeResponse.statusCode(), is(403));
-        assertTrue(initializeResponse.body().contains("Origin is not allowed"));
+        assertThat(parseJsonBody(initializeResponse.body()).get("message"), is("Origin is not allowed for the current binding."));
+    }
+    
+    @Test
+    void assertRejectFollowUpRequestWithoutAccessTokenBeforeSessionValidation() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntimeWithAccessToken();
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream",
+                "MCP-Session-Id", "missing-session",
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
+        assertThat(actualResponse.statusCode(), is(401));
+        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
+    }
+    
+    @Test
+    void assertRejectFollowUpRequestWithWrongAccessToken() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntimeWithAccessToken();
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
+                "Authorization", getAuthorizationHeaderValue("wrong-token"),
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream",
+                "MCP-Session-Id", session.sessionId(),
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
+        assertThat(actualResponse.statusCode(), is(401));
+        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
+    }
+    
+    @Test
+    void assertCloseSessionWithAccessToken() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntimeWithAccessToken();
+        HttpResponse<String> actualResponse = sendDeleteRequest(session.httpClient(), Map.of(
+                "Authorization", getAuthorizationHeaderValue(session.accessToken()),
+                "MCP-Session-Id", session.sessionId(),
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
+        assertThat(actualResponse.statusCode(), is(200));
     }
     
     @Override

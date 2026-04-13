@@ -15,28 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-/**
- * YAML HTTP transport configuration.
- */
-@Getter
-@Setter
-public final class YamlHttpTransportConfiguration implements YamlConfiguration {
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+final class HttpTransportSecurityHeaderUtils {
     
-    private boolean enabled;
-    
-    private String bindHost;
-    
-    private boolean allowRemoteAccess;
-    
-    private String accessToken;
-    
-    private Integer port;
-    
-    private String endpointPath;
+    static String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
+        for (Entry<String, List<String>> entry : headers.entrySet()) {
+            if (headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()) {
+                return Objects.toString(entry.getValue().get(0), "").trim();
+            }
+        }
+        return "";
+    }
 }

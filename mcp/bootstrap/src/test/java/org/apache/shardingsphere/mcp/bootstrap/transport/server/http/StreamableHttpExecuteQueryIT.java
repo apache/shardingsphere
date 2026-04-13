@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -63,6 +64,16 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     }
     
     @Test
+    void assertExecuteSelectWithAccessToken() throws SQLException, IOException, InterruptedException {
+        RuntimeHttpSession session = launchRuntimeWithAccessToken();
+        Map<String, Object> payload = callToolAndGetStructuredContent(session, "execute_query",
+                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id"));
+        assertThat(payload.get("result_kind"), is("result_set"));
+        assertThat(payload.get("statement_class"), is("query"));
+        assertThat(payload.get("statement_type"), is("SELECT"));
+    }
+    
+    @Test
     void assertExecuteTransactionCommit() throws SQLException, IOException, InterruptedException {
         RuntimeHttpSession session = launchRuntime();
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
@@ -76,7 +87,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
         RuntimeHttpSession session = launchRuntime();
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-        assertThat(sendDeleteRequest(session.httpClient(), session.sessionId()).statusCode(), is(200));
+        assertThat(sendDeleteRequest(session.httpClient(), session.sessionId(), session.accessToken()).statusCode(), is(200));
         assertThat(querySingleString(jdbcUrl), is("NEW"));
     }
     
@@ -87,6 +98,15 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         stopRuntime();
         assertThat(querySingleString(jdbcUrl), is("NEW"));
+    }
+    
+    @Test
+    void assertRejectExecuteQueryWithoutAccessToken() throws SQLException, IOException, InterruptedException {
+        RuntimeHttpSession session = launchRuntimeWithAccessToken();
+        HttpResponse<String> actualResponse = sendToolCallRequest(session.httpClient(), session.sessionId(), "execute_query",
+                createExecuteQueryArguments("SELECT status FROM orders ORDER BY order_id"));
+        assertThat(actualResponse.statusCode(), is(401));
+        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
     
     private Map<String, Object> createExecuteQueryArguments(final String sql) {

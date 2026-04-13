@@ -76,12 +76,12 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final AtomicBoolean closed;
     
-    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String endpointPath) {
+    StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken, final String endpointPath) {
         delegate = HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath).securityValidator(ServerTransportSecurityValidator.NOOP).build();
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         requestValidator = new StreamableHttpMCPRequestValidator(sessionManager);
-        securityValidator = LoopbackOriginSecurityValidator.create(bindHost);
+        securityValidator = new CompositeServerTransportSecurityValidator(List.of(AccessTokenSecurityValidator.create(accessToken), LoopbackOriginSecurityValidator.create(bindHost)));
         closed = new AtomicBoolean();
     }
     
@@ -128,9 +128,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private Optional<ResponseStatus> doExecute(final HttpServletRequest request, final HttpServletResponse response, final String sessionId) throws IOException, ServletException {
-        Optional<ResponseStatus> result = requestValidator.validateSessionId(sessionId);
+        Optional<ResponseStatus> result = validateSecurity(request);
         if (result.isEmpty()) {
-            result = validateSecurity(request);
+            result = requestValidator.validateSessionId(sessionId);
         }
         if (result.isEmpty()) {
             result = requestValidator.validateSessionRequest(request, sessionId);

@@ -51,6 +51,6 @@ class MCPLaunchConfigurationTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final boolean stdioEnabled) {
-        return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, 0, "/mcp"), new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
+        return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, "", 0, "/mcp"), new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
     }
 }

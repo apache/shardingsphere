@@ -58,6 +58,7 @@ class MCPConfigurationLoaderTest {
         assertFalse(actual.getStdioTransport().isEnabled());
         assertThat(actual.getHttpTransport().getBindHost(), is("127.0.0.1"));
         assertFalse(actual.getHttpTransport().isAllowRemoteAccess());
+        assertThat(actual.getHttpTransport().getAccessToken(), is(""));
         assertThat(actual.getHttpTransport().getPort(), is(9090));
         assertThat(actual.getHttpTransport().getEndpointPath(), is("/gateway"));
         assertTrue(actual.getDatabases().isEmpty());
@@ -130,6 +131,7 @@ class MCPConfigurationLoaderTest {
         assertTrue(actual.getHttpTransport().isEnabled());
         assertFalse(actual.getStdioTransport().isEnabled());
         assertFalse(actual.getHttpTransport().isAllowRemoteAccess());
+        assertThat(actual.getHttpTransport().getAccessToken(), is(""));
         assertThat(actual.getDatabases().size(), is(2));
         assertThat(actual.getDatabases().get("orders").getUsername(), is(""));
         assertThat(actual.getDatabases().get("billing").getPassword(), is(""));
@@ -213,6 +215,7 @@ class MCPConfigurationLoaderTest {
                 + "    enabled: true\n"
                 + "    bindHost: 0.0.0.0\n"
                 + "    allowRemoteAccess: true\n"
+                + "    accessToken: foo_token\n"
                 + "    port: 18088\n"
                 + "    endpointPath: /mcp\n"
                 + "  stdio:\n"
@@ -221,6 +224,57 @@ class MCPConfigurationLoaderTest {
         MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
         assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
         assertTrue(actual.getHttpTransport().isAllowRemoteAccess());
+        assertThat(actual.getHttpTransport().getAccessToken(), is("foo_token"));
+    }
+    
+    @Test
+    void assertLoadWithAllowedRemoteAccessAndMissingAccessToken() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: true\n"
+                + "    bindHost: 0.0.0.0\n"
+                + "    allowRemoteAccess: true\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: false\n"
+                + "runtimeDatabases: {}\n");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
+    }
+    
+    @Test
+    void assertLoadWithAllowedRemoteAccessAndBlankAccessToken() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: true\n"
+                + "    bindHost: 0.0.0.0\n"
+                + "    allowRemoteAccess: true\n"
+                + "    accessToken: '   '\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: false\n"
+                + "runtimeDatabases: {}\n");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> MCPConfigurationLoader.load(configFile.toString()));
+        assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
+    }
+    
+    @Test
+    void assertLoadWithLoopbackAccessToken() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: true\n"
+                + "    bindHost: 127.0.0.1\n"
+                + "    allowRemoteAccess: false\n"
+                + "    accessToken: foo_token\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: false\n"
+                + "runtimeDatabases: {}\n");
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        assertThat(actual.getHttpTransport().getAccessToken(), is("foo_token"));
     }
     
     @Test

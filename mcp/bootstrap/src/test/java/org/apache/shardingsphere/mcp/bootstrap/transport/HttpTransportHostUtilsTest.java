@@ -15,28 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
+package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.junit.jupiter.api.Test;
 
-/**
- * YAML HTTP transport configuration.
- */
-@Getter
-@Setter
-public final class YamlHttpTransportConfiguration implements YamlConfiguration {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class HttpTransportHostUtilsTest {
     
-    private boolean enabled;
+    @Test
+    void assertIsLoopbackHostWithIpv4() {
+        assertTrue(HttpTransportHostUtils.isLoopbackHost("127.0.0.1"));
+    }
     
-    private String bindHost;
+    @Test
+    void assertIsLoopbackHostWithLocalhost() {
+        assertTrue(HttpTransportHostUtils.isLoopbackHost(" localhost "));
+    }
     
-    private boolean allowRemoteAccess;
-    
-    private String accessToken;
-    
-    private Integer port;
-    
-    private String endpointPath;
+    @Test
+    void assertIsLoopbackHostWithRemoteHost() {
+        assertFalse(HttpTransportHostUtils.isLoopbackHost("0.0.0.0"));
+    }
 }

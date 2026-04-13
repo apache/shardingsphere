@@ -21,7 +21,8 @@ Define the transport-level contract for the ShardingSphere MCP HTTP entry point 
 - Creates a new MCP HTTP session when `MCP-Session-Id` is absent.
 - Returns both `MCP-Session-Id` and the negotiated `MCP-Protocol-Version`.
 - Session-bound follow-up `POST` dispatch handles MCP tool and resource calls.
-- Follow-up `POST` requests validate session existence, negotiated protocol version, and local-mode `Origin` rules before dispatch.
+- When `transport.http.accessToken` is configured, all `POST` requests require `Authorization: Bearer <token>`.
+- Follow-up `POST` requests validate access token, session existence, negotiated protocol version, and local-mode `Origin` rules before dispatch.
 
 ### `GET /mcp`
 
@@ -37,6 +38,10 @@ Define the transport-level contract for the ShardingSphere MCP HTTP entry point 
 
 ## Session Headers
 
+- **`Authorization`**
+  - Optional in loopback local mode when no access token is configured.
+  - Mandatory on all HTTP requests when `transport.http.accessToken` is configured.
+  - Uses `Bearer <token>` and acts only as a runtime admission gate.
 - **`MCP-Session-Id`**
   - Returned by the server after successful initialization.
   - Mandatory on follow-up HTTP requests.
@@ -47,6 +52,7 @@ Define the transport-level contract for the ShardingSphere MCP HTTP entry point 
 
 ## Transport Error Contract
 
+- Missing or invalid access token: `401 Unauthorized`
 - Missing required session id on a follow-up request: `400 Bad Request`
 - Protocol version mismatch against the negotiated session version: `400 Bad Request`
 - Invalid local-mode `Origin`: `403 Forbidden`
@@ -56,8 +62,8 @@ Define the transport-level contract for the ShardingSphere MCP HTTP entry point 
 
 - Local mode defaults to binding `127.0.0.1`.
 - If a loopback-bound runtime receives an explicit `Origin`, its host must still resolve to loopback / localhost.
-- The built-in runtime boundary is limited to session / protocol validation and local-mode checks.
-- If the HTTP endpoint is exposed outside a trusted network, place it behind an external gateway or reverse proxy.
+- If `transport.http.accessToken` is configured, the built-in runtime requires a matching shared bearer token before session / protocol dispatch.
+- If the HTTP endpoint is exposed outside a trusted network, still place it behind an external gateway or reverse proxy.
 
 ## Session Ownership Contract
 

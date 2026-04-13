@@ -15,28 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
+package org.apache.shardingsphere.mcp.bootstrap.transport;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.Locale;
+import java.util.Objects;
 
 /**
- * YAML HTTP transport configuration.
+ * HTTP transport host utilities.
  */
-@Getter
-@Setter
-public final class YamlHttpTransportConfiguration implements YamlConfiguration {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class HttpTransportHostUtils {
     
-    private boolean enabled;
-    
-    private String bindHost;
-    
-    private boolean allowRemoteAccess;
-    
-    private String accessToken;
-    
-    private Integer port;
-    
-    private String endpointPath;
+    /**
+     * Check whether host is loopback.
+     *
+     * @param host host
+     * @return true if host is loopback, otherwise false
+     */
+    public static boolean isLoopbackHost(final String host) {
+        String actualHost = Objects.toString(host, "").trim().toLowerCase(Locale.ENGLISH);
+        return "127.0.0.1".equals(actualHost) || "localhost".equals(actualHost) || "::1".equals(actualHost);
+    }
 }

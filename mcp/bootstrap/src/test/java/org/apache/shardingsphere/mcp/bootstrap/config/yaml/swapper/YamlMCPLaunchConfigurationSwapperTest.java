@@ -70,7 +70,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
     
     @Test
     void assertSwapToObjectWithNullConfiguration() {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject((YamlMCPLaunchConfiguration) null));
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(null));
         assertThat(actual.getMessage(), is("MCP launch configuration cannot be null."));
     }
     
@@ -297,7 +297,7 @@ class YamlMCPLaunchConfigurationSwapperTest {
         Map<String, RuntimeDatabaseConfiguration> databases = new LinkedHashMap<>(1, 1F);
         databases.put("logic_db", new RuntimeDatabaseConfiguration("H2", "jdbc:h2:mem:logic", "", "", "org.h2.Driver"));
         MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, 18088, "/mcp"), new StdioTransportConfiguration(true), databases);
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18088, "/mcp"), new StdioTransportConfiguration(true), databases);
         YamlMCPLaunchConfiguration actual = swapper.swapToYamlConfiguration(launchConfig);
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("databaseType")), is("H2"));
         assertThat(String.valueOf(actual.getRuntimeDatabases().get("logic_db").get("username")), is(""));

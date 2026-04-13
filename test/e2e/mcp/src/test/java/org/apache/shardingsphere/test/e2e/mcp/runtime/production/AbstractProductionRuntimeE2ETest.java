@@ -253,6 +253,6 @@ public abstract class AbstractProductionRuntimeE2ETest {
     
     private String createConfigurationContent() {
         return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, 0, ENDPOINT_PATH), new StdioTransportConfiguration(false), getRuntimeDatabases())));
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false), getRuntimeDatabases())));
     }
 }

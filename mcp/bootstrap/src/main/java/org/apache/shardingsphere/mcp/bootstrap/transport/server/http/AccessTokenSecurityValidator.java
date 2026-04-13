@@ -19,36 +19,35 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
-import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-final class LoopbackOriginSecurityValidator implements ServerTransportSecurityValidator {
+final class AccessTokenSecurityValidator implements ServerTransportSecurityValidator {
     
-    private static final String ORIGIN_HEADER = "Origin";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
     
-    private static final String FORBIDDEN_MESSAGE = "Origin is not allowed for the current binding.";
+    private static final String UNAUTHORIZED_MESSAGE = "Unauthorized.";
     
-    static ServerTransportSecurityValidator create(final String bindHost) {
-        return HttpTransportHostUtils.isLoopbackHost(bindHost) ? new LoopbackOriginSecurityValidator() : NOOP;
+    private final String accessToken;
+    
+    private AccessTokenSecurityValidator(final String accessToken) {
+        this.accessToken = accessToken;
+    }
+    
+    static ServerTransportSecurityValidator create(final String accessToken) {
+        String actualAccessToken = Objects.toString(accessToken, "").trim();
+        return actualAccessToken.isEmpty() ? NOOP : new AccessTokenSecurityValidator(actualAccessToken);
     }
     
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-        String origin = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, ORIGIN_HEADER);
-        if (origin.isEmpty()) {
+        String authorization = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, AUTHORIZATION_HEADER);
+        String[] authorizationSegments = authorization.isEmpty() ? new String[0] : authorization.split("\\s+", 2);
+        if (2 == authorizationSegments.length && "Bearer".equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim())) {
             return;
         }
-        try {
-            String host = Objects.toString(URI.create(origin).getHost(), "").trim();
-            if (!HttpTransportHostUtils.isLoopbackHost(host)) {
-                throw new ServerTransportSecurityException(403, FORBIDDEN_MESSAGE);
-            }
-        } catch (final IllegalArgumentException ex) {
-            throw new ServerTransportSecurityException(403, FORBIDDEN_MESSAGE);
-        }
+        throw new ServerTransportSecurityException(401, UNAUTHORIZED_MESSAGE);
     }
 }

@@ -21,8 +21,9 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
 
-import java.util.Locale;
+import java.util.Objects;
 
 /**
  * YAML HTTP transport configuration swapper.
@@ -35,6 +36,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         result.setEnabled(data.isEnabled());
         result.setBindHost(data.getBindHost());
         result.setAllowRemoteAccess(data.isAllowRemoteAccess());
+        result.setAccessToken(data.getAccessToken());
         result.setPort(data.getPort());
         result.setEndpointPath(data.getEndpointPath());
         return result;
@@ -43,22 +45,33 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
+        String bindHost = resolveBindHost(yamlConfig.getBindHost());
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
-        return new HttpTransportConfiguration(yamlConfig.isEnabled(), resolveBindHost(yamlConfig.getBindHost(), allowRemoteAccess), allowRemoteAccess, resolvePort(yamlConfig.getPort()),
+        String accessToken = resolveAccessToken(yamlConfig.getAccessToken());
+        validateRemoteExposurePolicy(bindHost, allowRemoteAccess, accessToken);
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()),
                 resolveEndpointPath(yamlConfig.getEndpointPath()));
     }
     
-    private String resolveBindHost(final String bindHost, final boolean allowRemoteAccess) {
-        String result = resolveRequiredText(bindHost, "transport.http.bindHost");
-        ShardingSpherePreconditions.checkState(allowRemoteAccess || isLoopbackHost(result),
-                () -> new IllegalArgumentException("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
-        return result;
+    private String resolveBindHost(final String bindHost) {
+        return resolveRequiredText(bindHost, "transport.http.bindHost");
     }
     
     private String resolveRequiredText(final String value, final String propertyName) {
         ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(String.format("Property `%s` is required.", propertyName)));
         ShardingSpherePreconditions.checkState(!value.isBlank(), () -> new IllegalArgumentException(String.format("Property `%s` cannot be blank.", propertyName)));
         return value;
+    }
+    
+    private String resolveAccessToken(final String accessToken) {
+        return Objects.toString(accessToken, "").trim();
+    }
+    
+    private void validateRemoteExposurePolicy(final String bindHost, final boolean allowRemoteAccess, final String accessToken) {
+        ShardingSpherePreconditions.checkState(allowRemoteAccess || HttpTransportHostUtils.isLoopbackHost(bindHost),
+                () -> new IllegalArgumentException("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
+        ShardingSpherePreconditions.checkState(HttpTransportHostUtils.isLoopbackHost(bindHost) || !accessToken.isEmpty(),
+                () -> new IllegalArgumentException("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
     }
     
     private int resolvePort(final Integer port) {
@@ -71,10 +84,5 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         String result = resolveRequiredText(endpointPath, "transport.http.endpointPath");
         ShardingSpherePreconditions.checkState(result.startsWith("/"), () -> new IllegalArgumentException("Property `transport.http.endpointPath` must start with '/'."));
         return result;
-    }
-    
-    private boolean isLoopbackHost(final String bindHost) {
-        String actualBindHost = bindHost.trim().toLowerCase(Locale.ENGLISH);
-        return "127.0.0.1".equals(actualBindHost) || "localhost".equals(actualBindHost) || "::1".equals(actualBindHost);
     }
 }

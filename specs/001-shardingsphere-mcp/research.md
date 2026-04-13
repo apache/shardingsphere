@@ -60,8 +60,12 @@
 
 ## Decision 8: Keep the built-in runtime boundary minimal and rely on external network controls for exposed deployments
 
-- **Decision**: Keep the built-in boundary limited to loopback defaults, local-mode `Origin` checks, and session / protocol validation; leave exposed-endpoint access governance to external network controls.
-- **Rationale**: The current repository implementation and packaged README position the standalone runtime behind a trusted network, gateway, or reverse proxy when exposed externally.
+- **Decision**: Keep the built-in boundary minimal but not anonymous:
+  use loopback defaults, local-mode `Origin` checks, session / protocol validation,
+  and a shared bearer token admission gate for configured HTTP protection;
+  leave broader exposed-endpoint governance to external network controls.
+- **Rationale**: The standalone runtime still belongs behind a trusted network, gateway, or reverse proxy when exposed externally,
+  but remote HTTP should no longer remain an anonymous entry point.
 - **Alternatives considered**:
   - Introduce a new in-process enforcement SPI now: rejected because it expands the runtime contract beyond the implemented feature set and would misrepresent the shipped surface.
   - Omit boundary guidance entirely: rejected because operators still need explicit deployment expectations for exposed HTTP endpoints.

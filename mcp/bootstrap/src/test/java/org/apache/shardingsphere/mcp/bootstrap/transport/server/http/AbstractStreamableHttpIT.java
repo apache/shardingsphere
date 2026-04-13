@@ -46,6 +46,12 @@ import static org.hamcrest.Matchers.is;
 
 abstract class AbstractStreamableHttpIT {
     
+    protected static final String ACCESS_TOKEN = "test-access-token";
+    
+    private static final String LOOPBACK_BIND_HOST = "127.0.0.1";
+    
+    private static final String ENDPOINT_PATH = "/gateway";
+    
     private static final String PROTOCOL_VERSION = MCPTransportConstants.PROTOCOL_VERSION;
     
     @Getter
@@ -63,15 +69,28 @@ abstract class AbstractStreamableHttpIT {
     }
     
     protected final RuntimeHttpSession launchRuntime() throws SQLException, IOException, InterruptedException {
-        launchJDBCRuntime();
+        return launchRuntime("");
+    }
+    
+    private RuntimeHttpSession launchRuntime(final String accessToken) throws SQLException, IOException, InterruptedException {
+        launchJDBCRuntime(LOOPBACK_BIND_HOST, false, accessToken);
         HttpClient httpClient = HttpClient.newHttpClient();
-        return new RuntimeHttpSession(httpClient, initializeSession(httpClient));
+        return new RuntimeHttpSession(httpClient, initializeSession(httpClient, accessToken), accessToken);
+    }
+    
+    protected final RuntimeHttpSession launchRuntimeWithAccessToken() throws SQLException, IOException, InterruptedException {
+        return launchRuntime(ACCESS_TOKEN);
     }
     
     protected final void launchJDBCRuntime() throws SQLException, IOException {
+        launchJDBCRuntime(LOOPBACK_BIND_HOST, false, "");
+    }
+    
+    protected final void launchJDBCRuntime(final String bindHost, final boolean allowRemoteAccess, final String accessToken) throws SQLException, IOException {
         prepareRuntimeFixture();
-        httpServer = launchHttpServer(
-                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, 0, "/gateway"), new StdioTransportConfiguration(false), createRuntimeDatabases()));
+        HttpTransportConfiguration httpConfig = new HttpTransportConfiguration(true, bindHost, allowRemoteAccess, accessToken, 0, ENDPOINT_PATH);
+        MCPLaunchConfiguration launchConfig = new MCPLaunchConfiguration(httpConfig, new StdioTransportConfiguration(false), createRuntimeDatabases());
+        httpServer = launchHttpServer(launchConfig);
     }
     
     private StreamableHttpMCPServer launchHttpServer(final MCPLaunchConfiguration launchConfig) throws IOException {
@@ -83,28 +102,33 @@ abstract class AbstractStreamableHttpIT {
         throw new IllegalStateException("HTTP server must be enabled for HTTP integration tests.");
     }
     
-    private String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
-        HttpRequest initializeRequest = HttpRequest.newBuilder(createEndpointUri())
+    private String initializeSession(final HttpClient httpClient, final String accessToken) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "init-1",
                         "method", "initialize",
-                        "params", createInitializeRequestParams("jdbc-runtime-integration")))))
-                .build();
-        HttpResponse<String> actual = httpClient.send(initializeRequest, HttpResponse.BodyHandlers.ofString());
+                        "params", createInitializeRequestParams("jdbc-runtime-integration")))));
+        addAuthorizationHeader(requestBuilder, accessToken);
+        HttpResponse<String> actual = httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
     }
     
     protected final URI createEndpointUri() {
-        return URI.create(String.format("http://127.0.0.1:%d/gateway", httpServer.getLocalPort()));
+        return URI.create(String.format("http://%s:%d%s", LOOPBACK_BIND_HOST, httpServer.getLocalPort(), ENDPOINT_PATH));
     }
     
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
                                                              final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+        return sendToolCallRequest(httpClient, sessionId, "", toolName, arguments);
+    }
+    
+    protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId, final String accessToken,
+                                                             final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .header("MCP-Session-Id", sessionId)
@@ -113,13 +137,18 @@ abstract class AbstractStreamableHttpIT {
                         "jsonrpc", "2.0",
                         "id", toolName + "-1",
                         "method", "tools/call",
-                        "params", Map.of("name", toolName, "arguments", arguments)))))
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                        "params", Map.of("name", toolName, "arguments", arguments)))));
+        addAuthorizationHeader(requestBuilder, accessToken);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
     
     protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId, final String resourceUri) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+        return sendResourceReadRequest(httpClient, sessionId, "", resourceUri);
+    }
+    
+    protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId,
+                                                                 final String accessToken, final String resourceUri) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .header("MCP-Session-Id", sessionId)
@@ -128,29 +157,33 @@ abstract class AbstractStreamableHttpIT {
                         "jsonrpc", "2.0",
                         "id", "resource-read-1",
                         "method", "resources/read",
-                        "params", Map.of("uri", resourceUri)))))
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                        "params", Map.of("uri", resourceUri)))));
+        addAuthorizationHeader(requestBuilder, accessToken);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
     
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+        return sendDeleteRequest(httpClient, sessionId, "");
+    }
+    
+    protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId, final String accessToken) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", PROTOCOL_VERSION)
-                .DELETE()
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                .DELETE();
+        addAuthorizationHeader(requestBuilder, accessToken);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
     
     protected final Map<String, Object> callToolAndGetStructuredContent(final RuntimeHttpSession session, final String toolName,
                                                                         final Map<String, Object> arguments) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendToolCallRequest(session.httpClient(), session.sessionId(), toolName, arguments);
+        HttpResponse<String> actual = sendToolCallRequest(session.httpClient(), session.sessionId(), session.accessToken(), toolName, arguments);
         assertThat(actual.statusCode(), is(200));
         return getStructuredContent(actual.body());
     }
     
     protected final Map<String, Object> readResourceAndGetPayload(final RuntimeHttpSession session, final String resourceUri) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendResourceReadRequest(session.httpClient(), session.sessionId(), resourceUri);
+        HttpResponse<String> actual = sendResourceReadRequest(session.httpClient(), session.sessionId(), session.accessToken(), resourceUri);
         assertThat(actual.statusCode(), is(200));
         return getResourcePayload(actual.body());
     }
@@ -235,8 +268,18 @@ abstract class AbstractStreamableHttpIT {
     protected void prepareRuntimeFixture() throws SQLException {
     }
     
+    protected final String getAuthorizationHeaderValue(final String accessToken) {
+        return "Bearer " + accessToken;
+    }
+    
+    private void addAuthorizationHeader(final HttpRequest.Builder requestBuilder, final String accessToken) {
+        if (!accessToken.isEmpty()) {
+            requestBuilder.header("Authorization", getAuthorizationHeaderValue(accessToken));
+        }
+    }
+    
     protected abstract Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases();
     
-    protected record RuntimeHttpSession(HttpClient httpClient, String sessionId) {
+    protected record RuntimeHttpSession(HttpClient httpClient, String sessionId, String accessToken) {
     }
 }

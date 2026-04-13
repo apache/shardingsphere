@@ -43,7 +43,7 @@ Notes:
 - The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
-- `conf/mcp.yaml` is now strict: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be explicitly declared.
+- `conf/mcp.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`, `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
 - Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
 - `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `ext-lib/`, then starts from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
@@ -250,7 +250,11 @@ Reference:
 - For local-only HTTP usage, keep `transport.http.enabled: true` and `transport.stdio.enabled: false`.
 - For local MCP client integration, keep `transport.http.enabled: false` and `transport.stdio.enabled: true`.
 - `transport.http.bindHost` controls which address the HTTP service listens on: `127.0.0.1`, `localhost`, and `::1` are local-only; `0.0.0.0` or a specific intranet IP exposes the matching network interface.
-- Non-loopback `bindHost` values require `transport.http.allowRemoteAccess: true`, otherwise startup fails; this field only declares remote-exposure intent and does not provide authentication or authorization.
+- Non-loopback `bindHost` values require `transport.http.allowRemoteAccess: true`, otherwise startup fails; this field only declares remote-exposure intent.
+- When `transport.http.accessToken` is configured, every HTTP request must provide `Authorization: Bearer <token>`.
+- Non-loopback `bindHost` values also require a non-blank `transport.http.accessToken`, so remote HTTP is not exposed anonymously.
+- The built-in access token is a deployment-level shared secret, not a login or per-user credential.
+- Even with the built-in access token enabled, keep externally exposed endpoints behind a trusted network, gateway, or reverse proxy.
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.
 

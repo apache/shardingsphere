@@ -33,6 +33,8 @@ public final class HttpTransportConfiguration {
     
     private final boolean allowRemoteAccess;
     
+    private final String accessToken;
+    
     private final int port;
     
     private final String endpointPath;

@@ -50,6 +50,6 @@ class ProductionRuntimeLaunchContractTest {
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        return new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, 0, "/gateway"), new StdioTransportConfiguration(false), runtimeDatabases);
+        return new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/gateway"), new StdioTransportConfiguration(false), runtimeDatabases);
     }
 }

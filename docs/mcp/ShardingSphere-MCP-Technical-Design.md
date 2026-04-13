@@ -164,11 +164,14 @@
 ### 7.7 HTTP 服务承载
 - 最终决策：
   - 使用 embedded Tomcat 11 承载 MCP Java SDK 的 Streamable HTTP servlet
+  - 对配置了 `accessToken` 的 runtime，
+    servlet 前置阶段执行共享 Bearer token admission gate
   - loopback `Origin` 边界保持独立本地策略类，并由 servlet 前置校验
 - 原因：
   - 只在 bootstrap 层引入最小 servlet 容器
   - 与官方 Streamable HTTP servlet transport 对齐
   - 仍然不把运行时依赖扩散到主仓库其他模块
+  - 用最小改动关闭 anonymous remote HTTP，而不扩展成完整 auth 平台
 
 ### 7.8 HTTP 会话与事务状态
 - 最终决策：

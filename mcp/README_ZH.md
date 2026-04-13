@@ -43,7 +43,7 @@ bin/start.sh
 - 发行包运行时会读取 `conf/mcp.yaml` 和 `conf/logback.xml`。
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
-- `conf/mcp.yaml` 现在是严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都必须显式声明。
+- `conf/mcp.yaml` 现在对支持字段名采用严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、`transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
 - 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
 - `bin/start.sh` 启动前会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`ext-lib/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
@@ -250,7 +250,11 @@ bin/start.sh conf/mcp-stdio.yaml
 - 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并把 `transport.stdio.enabled` 设为 `false`。
 - 如果要给本地 MCP client 走 stdio，保留 `transport.http.enabled: false`，并把 `transport.stdio.enabled` 设为 `true`。
 - `transport.http.bindHost` 表示 HTTP 服务监听在哪个地址上：`127.0.0.1`、`localhost`、`::1` 只面向本机；`0.0.0.0` 或指定内网 IP 会面向对应网络接口。
-- 非 loopback `bindHost` 必须显式设置 `transport.http.allowRemoteAccess: true`，否则启动失败；该字段只表达远程暴露意图，不提供认证或权限控制。
+- 非 loopback `bindHost` 必须显式设置 `transport.http.allowRemoteAccess: true`，否则启动失败；该字段只表达远程暴露意图。
+- 配置了 `transport.http.accessToken` 后，所有 HTTP 请求都必须携带 `Authorization: Bearer <token>`。
+- 非 loopback `bindHost` 还必须配置非空的 `transport.http.accessToken`，避免 remote HTTP 以匿名方式暴露。
+- 内建 `accessToken` 是部署级共享密钥，不是登录态 token，也不是按用户划分的凭证。
+- 即使启用了内建 `accessToken`，对外暴露场景仍建议放在受信网络、上游网关或反向代理后面。
 - 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。
 

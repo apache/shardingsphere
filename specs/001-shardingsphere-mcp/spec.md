@@ -91,7 +91,8 @@
 3. **Given** 服务绑定在 loopback 地址上，
    **When** 请求显式携带非 loopback `Origin`，
    **Then** 服务端返回 `403 Forbidden`；
-   对外暴露场景应由受信网络、上游网关或反向代理承担接入边界控制。
+   对外暴露场景应通过内建 shared bearer token admission gate
+   与受信网络、上游网关或反向代理共同承担接入边界控制。
 
 ### Edge Cases
 
@@ -196,7 +197,9 @@
 - **FR-030**: 当前内置 runtime MUST 明确自身运行边界：
   本地模式默认绑定 `127.0.0.1`；
   loopback 绑定下若请求显式携带 `Origin`，其 host MUST 仍为 loopback / localhost；
-  对外暴露场景依赖受信网络、上游网关或反向代理承担接入边界控制。
+  配置了 `transport.http.accessToken` 时，请求 MUST 提供匹配的
+  `Authorization: Bearer <token>`；
+  对外暴露场景仍依赖受信网络、上游网关或反向代理承担外部接入边界控制。
 
 ### Key Entities *(include if feature involves data)*
 

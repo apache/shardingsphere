@@ -15,28 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.config.yaml.config;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
+import lombok.RequiredArgsConstructor;
 
-/**
- * YAML HTTP transport configuration.
- */
-@Getter
-@Setter
-public final class YamlHttpTransportConfiguration implements YamlConfiguration {
+import java.util.List;
+import java.util.Map;
+
+@RequiredArgsConstructor
+final class CompositeServerTransportSecurityValidator implements ServerTransportSecurityValidator {
     
-    private boolean enabled;
+    private final List<ServerTransportSecurityValidator> delegates;
     
-    private String bindHost;
-    
-    private boolean allowRemoteAccess;
-    
-    private String accessToken;
-    
-    private Integer port;
-    
-    private String endpointPath;
+    @Override
+    public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+        for (ServerTransportSecurityValidator each : delegates) {
+            each.validateHeaders(headers);
+        }
+    }
 }

@@ -67,7 +67,7 @@ Operational expectations:
 
 - Startup reads `conf/mcp.yaml` and applies server and transport settings before wiring the runtime
 - Local mode binds to `127.0.0.1` by default
-- The built-in runtime focuses on session lifecycle and local runtime boundary checks
+- The built-in runtime focuses on session lifecycle, local runtime boundary checks, and optional shared bearer token admission
 - If the HTTP endpoint is exposed outside a trusted network, place it behind an external gateway or reverse proxy
 - Streamable HTTP lifecycle endpoint is exposed at the configured path
 - The packaged runtime exposes JSON-RPC `initialize`, session-bound `tools/*` and `resources/*`, SSE stream opening, and explicit session close over the standalone HTTP listener
@@ -85,7 +85,8 @@ Validate the transport contract:
 5. Verify follow-up requests without `MCP-Session-Id` are rejected.
 6. Call `DELETE /mcp` with `MCP-Session-Id` and verify the session closes cleanly.
 7. Optionally confirm omitted `MCP-Protocol-Version` falls back to the negotiated session version.
-8. In local mode, verify a non-loopback `Origin` is rejected.
+8. If `transport.http.accessToken` is configured, verify requests without `Authorization: Bearer <token>` are rejected with `401`.
+9. In local mode, verify a non-loopback `Origin` is rejected.
 
 For local debugging, use the in-process STDIO integration path to repeat the same capability and tool smoke cases.
 

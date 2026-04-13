@@ -221,7 +221,7 @@ abstract class AbstractDirectRuntimeE2ETest {
             throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
         }
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, 0, ENDPOINT_PATH),
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH),
                 new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
         try {
             httpServer.start();

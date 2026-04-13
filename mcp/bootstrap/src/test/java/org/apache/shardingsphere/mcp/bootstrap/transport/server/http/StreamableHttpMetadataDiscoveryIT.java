@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,14 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
     @Test
     void assertReadDatabasesResource() throws SQLException, IOException, InterruptedException {
         RuntimeHttpSession session = launchRuntime();
+        List<Map<String, Object>> items = getPayloadItems(readResourceAndGetPayload(session, "shardingsphere://databases"));
+        assertThat(items.size(), is(1));
+        assertThat(items.get(0).get("database"), is("logic_db"));
+    }
+    
+    @Test
+    void assertReadDatabasesResourceWithAccessToken() throws SQLException, IOException, InterruptedException {
+        RuntimeHttpSession session = launchRuntimeWithAccessToken();
         List<Map<String, Object>> items = getPayloadItems(readResourceAndGetPayload(session, "shardingsphere://databases"));
         assertThat(items.size(), is(1));
         assertThat(items.get(0).get("database"), is("logic_db"));
@@ -86,6 +95,14 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
         assertTrue(supportedObjectTypes.contains("VIEW"));
         assertTrue(supportedObjectTypes.contains("INDEX"));
         assertTrue(supportedObjectTypes.contains("SEQUENCE"));
+    }
+    
+    @Test
+    void assertRejectMetadataReadWithoutAccessToken() throws SQLException, IOException, InterruptedException {
+        RuntimeHttpSession session = launchRuntimeWithAccessToken();
+        HttpResponse<String> actualResponse = sendResourceReadRequest(session.httpClient(), session.sessionId(), "shardingsphere://databases");
+        assertThat(actualResponse.statusCode(), is(401));
+        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
     
 }
