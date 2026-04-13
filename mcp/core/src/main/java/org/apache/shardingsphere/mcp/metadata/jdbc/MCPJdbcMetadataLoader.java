@@ -105,13 +105,19 @@ public final class MCPJdbcMetadataLoader {
         if (configuredType.isEmpty()) {
             return actualDatabaseType;
         }
-        String expectedDatabaseType = TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, configuredType)
-                .map(MCPDatabaseCapabilityOption::getType).orElse(configuredType);
+        String expectedDatabaseType = normalizeDatabaseType(configuredType);
+        if (isCompatibleBranchDatabase(expectedDatabaseType, actualDatabaseType)) {
+            return expectedDatabaseType;
+        }
         if (!expectedDatabaseType.equalsIgnoreCase(actualDatabaseType)) {
             throw new IllegalStateException(String.format("Configured databaseType `%s` does not match actual database type `%s` for database `%s`.",
                     configuredType, actualDatabaseType, databaseName));
         }
         return actualDatabaseType;
+    }
+    
+    private String normalizeDatabaseType(final String databaseType) {
+        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType).map(MCPDatabaseCapabilityOption::getType).orElse(databaseType);
     }
     
     private String determineActualDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
@@ -181,6 +187,10 @@ public final class MCPJdbcMetadataLoader {
             return "H2";
         }
         return null;
+    }
+    
+    private boolean isCompatibleBranchDatabase(final String configuredDatabaseType, final String actualDatabaseType) {
+        return "MYSQL".equalsIgnoreCase(actualDatabaseType) && ("DORIS".equalsIgnoreCase(configuredDatabaseType) || "MARIADB".equalsIgnoreCase(configuredDatabaseType));
     }
     
     private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics,

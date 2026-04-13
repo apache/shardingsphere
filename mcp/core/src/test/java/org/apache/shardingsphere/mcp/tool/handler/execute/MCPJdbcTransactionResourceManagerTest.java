@@ -43,8 +43,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -132,6 +134,19 @@ class MCPJdbcTransactionResourceManagerTest {
         verify(connection).commit();
         verify(connection).setAutoCommit(true);
         verify(connection).close();
+    }
+    
+    @Test
+    void assertCommitTransactionFailureKeepsTransactionResource() throws SQLException {
+        Connection connection = mock(Connection.class);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
+        manager.beginTransaction("session-1", "logic_db");
+        doThrow(new SQLException("commit failed")).when(connection).commit();
+        assertThat(assertThrows(IllegalStateException.class, () -> manager.commitTransaction("session-1")).getMessage(), is("commit failed"));
+        assertTrue(manager.findTransactionConnection("session-1", "logic_db").isPresent());
+        verify(connection).commit();
+        verify(connection, never()).setAutoCommit(true);
+        verify(connection, never()).close();
     }
     
     @ParameterizedTest(name = "{0}")

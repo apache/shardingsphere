@@ -295,6 +295,16 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("loadCompatibleMySQLBranchDatabaseTypeArguments")
+    void assertLoadWithCompatibleMySQLBranchDatabaseType(final String name, final String productName) throws SQLException {
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration =
+                createMockRuntimeDatabaseConfiguration("Doris", createConnectionWithoutSchema(productName, "jdbc:mysql://metadata-loader/test"));
+        MCPDatabaseMetadata actual = metadataLoader.load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
+        assertThat(actual.getDatabaseType(), is("Doris"));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("loadSequenceDialectArguments")
     void assertLoadWithDialectSequenceMetadata(final String name, final String databaseType, final String sequenceSchema,
                                                final String sequenceName, final String sequenceQuery) throws SQLException {
@@ -347,7 +357,17 @@ class MCPJdbcMetadataLoaderTest {
                 Arguments.of("unsupported database type", "MySQL"));
     }
     
+    private static Stream<Arguments> loadCompatibleMySQLBranchDatabaseTypeArguments() {
+        return Stream.of(
+                Arguments.of("mysql family product name", "MySQL"),
+                Arguments.of("apache doris product alias", "Apache Doris"));
+    }
+    
     private Connection createConnectionWithoutSchema(final String databaseType) throws SQLException {
+        return createConnectionWithoutSchema(databaseType, getMetadataJdbcUrl(databaseType));
+    }
+    
+    private Connection createConnectionWithoutSchema(final String databaseProductName, final String jdbcUrl) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
         ResultSet tableResultSet = mockResultSet("TABLE_NAME", "orders");
@@ -355,8 +375,8 @@ class MCPJdbcMetadataLoaderTest {
         ResultSet columnResultSet = mockResultSet("COLUMN_NAME", "order_id");
         ResultSet indexResultSet = mockResultSet("INDEX_NAME");
         when(result.getMetaData()).thenReturn(databaseMetaData);
-        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
-        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl(databaseType));
+        when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseProductName);
+        when(databaseMetaData.getURL()).thenReturn(jdbcUrl);
         when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
             String[] tableTypes = invocation.getArgument(3);
             return "TABLE".equals(tableTypes[0]) ? tableResultSet : viewResultSet;
@@ -498,6 +518,9 @@ class MCPJdbcMetadataLoaderTest {
     
     private String getMetadataJdbcUrl(final String databaseType) {
         if ("MySQL".equals(databaseType)) {
+            return "jdbc:mysql://metadata-loader/test";
+        }
+        if ("Doris".equals(databaseType)) {
             return "jdbc:mysql://metadata-loader/test";
         }
         if ("PostgreSQL".equals(databaseType)) {

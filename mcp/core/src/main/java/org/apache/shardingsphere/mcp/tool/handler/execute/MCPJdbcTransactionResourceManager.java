@@ -91,17 +91,15 @@ public final class MCPJdbcTransactionResourceManager {
      */
     public Optional<String> commitTransaction(final String sessionId) {
         TransactionResourceContext transactionResource = getTransactionResourceContext(sessionId);
+        Connection connection = transactionResource.getConnection();
         Optional<String> result = transactionResource.isDirtyMetadata() ? Optional.of(transactionResource.getDatabaseName()) : Optional.empty();
         try {
-            transactionResource.getConnection().commit();
-            transactionResource.getConnection().setAutoCommit(true);
-            transactionResource.getConnection().close();
-            return result;
+            connection.commit();
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
-        } finally {
-            transactionResources.remove(sessionId);
         }
+        closeCommittedTransaction(sessionId, connection);
+        return result;
     }
     
     /**
@@ -201,6 +199,17 @@ public final class MCPJdbcTransactionResourceManager {
             transactionResource.getConnection().rollback();
             transactionResource.getConnection().setAutoCommit(true);
             transactionResource.getConnection().close();
+        } catch (final SQLException ex) {
+            throw new IllegalStateException(ex.getMessage(), ex);
+        } finally {
+            transactionResources.remove(sessionId);
+        }
+    }
+    
+    private void closeCommittedTransaction(final String sessionId, final Connection connection) {
+        try {
+            connection.setAutoCommit(true);
+            connection.close();
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex.getMessage(), ex);
         } finally {

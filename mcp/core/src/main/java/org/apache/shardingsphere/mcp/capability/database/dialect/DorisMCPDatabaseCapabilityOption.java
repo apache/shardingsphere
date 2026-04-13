@@ -23,6 +23,9 @@ import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantic
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * MCP database capability option for Doris.
  */
@@ -44,6 +47,11 @@ public final class DorisMCPDatabaseCapabilityOption implements MCPDatabaseCapabi
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;
+    }
+    
+    @Override
+    public Collection<Object> getTypeAliases() {
+        return Collections.singleton("Apache Doris");
     }
     
     @Override
