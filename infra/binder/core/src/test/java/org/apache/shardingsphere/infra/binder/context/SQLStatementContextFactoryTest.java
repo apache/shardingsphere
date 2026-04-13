@@ -118,6 +118,7 @@ class SQLStatementContextFactoryTest {
         when(database.getName()).thenReturn("foo_db");
         when(database.containsSchema("foo_db")).thenReturn(true);
         when(database.containsSchema("public")).thenReturn(true);
+        when(database.getDefaultSchemaName()).thenReturn("foo_db");
         when(database.getSchema("foo_db").containsTable("tbl")).thenReturn(true);
         when(database.getSchema("public").containsTable("tbl")).thenReturn(true);
         when(database.containsSchema("dbo")).thenReturn(true);

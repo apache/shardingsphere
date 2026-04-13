@@ -566,8 +566,11 @@ class PostgreSQLComDescribeExecutorTest {
         when(result.getMetaDataContexts().getMetaData().containsDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(true);
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
+        when(database.getSchema("public")).thenReturn(schema);
         when(database.getSchema(new IdentifierValue("public"))).thenReturn(schema);
         when(schema.containsTable(TABLE_NAME)).thenReturn(true);
         when(schema.containsTable(new IdentifierValue(TABLE_NAME))).thenReturn(true);
@@ -593,6 +596,8 @@ class PostgreSQLComDescribeExecutorTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         ShardingSphereDatabase database = result.getMetaDataContexts().getMetaData().getDatabase(DATABASE_NAME);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue(DATABASE_NAME))).thenReturn(database);
+        when(database.getDefaultSchemaName()).thenReturn("public");
+        when(database.getAllSchemas()).thenReturn(Collections.singleton(schema));
         when(database.containsSchema("public")).thenReturn(true);
         when(database.containsSchema(new IdentifierValue("public"))).thenReturn(true);
         when(database.getSchema("public")).thenReturn(schema);

@@ -86,25 +86,7 @@ public final class CommandExecutorTask implements Runnable {
             // CHECKSTYLE:ON
             processException(new RuntimeException(error));
         } finally {
-            connectionSession.clearQueryContext();
-            Collection<SQLException> exceptions = Collections.emptyList();
-            try {
-                connectionSession.getDatabaseConnectionManager().closeExecutionResources();
-            } catch (final BackendConnectionException ex) {
-                exceptions = ex.getExceptions().stream().filter(SQLException.class::isInstance).map(SQLException.class::cast).collect(Collectors.toList());
-            }
-            if (isNeedFlush) {
-                context.flush();
-            }
-            processClosedExceptions(exceptions);
-            context.pipeline().fireUserEventTriggered(new WriteCompleteEvent());
-            if (sqlShowEnabled) {
-                clearLogMDC();
-            }
-            if (message instanceof CompositeByteBuf) {
-                releaseCompositeByteBuf((CompositeByteBuf) message);
-            }
-            ((ByteBuf) message).release();
+            finish(isNeedFlush, sqlShowEnabled);
         }
     }
     
@@ -149,6 +131,28 @@ public final class CommandExecutorTask implements Runnable {
         context.write(databaseProtocolFrontendEngine.getCommandExecuteEngine().getErrorPacket(cause));
         databaseProtocolFrontendEngine.getCommandExecuteEngine().getOtherPacket(connectionSession).ifPresent(context::write);
         context.flush();
+    }
+    
+    private void finish(final boolean isNeedFlush, final boolean sqlShowEnabled) {
+        connectionSession.clearQueryContext();
+        Collection<SQLException> exceptions = Collections.emptyList();
+        try {
+            connectionSession.getDatabaseConnectionManager().closeExecutionResources();
+        } catch (final BackendConnectionException ex) {
+            exceptions = ex.getExceptions().stream().filter(SQLException.class::isInstance).map(SQLException.class::cast).collect(Collectors.toList());
+        }
+        if (isNeedFlush) {
+            context.flush();
+        }
+        processClosedExceptions(exceptions);
+        context.pipeline().fireUserEventTriggered(new WriteCompleteEvent());
+        if (sqlShowEnabled) {
+            clearLogMDC();
+        }
+        if (message instanceof CompositeByteBuf) {
+            releaseCompositeByteBuf((CompositeByteBuf) message);
+        }
+        ((ByteBuf) message).release();
     }
     
     private void processClosedExceptions(final Collection<SQLException> exceptions) {

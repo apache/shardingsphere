@@ -20,6 +20,7 @@ databaseName: readwrite_splitting
 dataSources:
   write_ds:
     url: jdbc:opengauss://opengauss.readwrite_splitting.host:5432/write_ds
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -29,6 +30,7 @@ dataSources:
     minPoolSize: 2
   read_0:
     url: jdbc:opengauss://opengauss.readwrite_splitting.host:5432/read_0
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
@@ -38,6 +40,7 @@ dataSources:
     minPoolSize: 2
   read_1:
     url: jdbc:opengauss://opengauss.readwrite_splitting.host:5432/read_1
+    driverClassName: org.opengauss.Driver
     username: test_user
     password: Test@9876
     connectionTimeoutMilliseconds: 30000
