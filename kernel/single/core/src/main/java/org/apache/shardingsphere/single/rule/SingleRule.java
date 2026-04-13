@@ -201,7 +201,7 @@ public final class SingleRule implements DatabaseRule {
         }
         return result;
     }
-
+    
     /**
      * Find table data node with identifier rules.
      *

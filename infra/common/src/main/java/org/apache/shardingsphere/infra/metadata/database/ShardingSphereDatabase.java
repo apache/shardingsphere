@@ -175,7 +175,7 @@ public final class ShardingSphereDatabase {
     public ShardingSphereSchema getSchema(final IdentifierValue schemaName) {
         return findSchema(schemaName).orElse(null);
     }
-
+    
     /**
      * Get identifier case rule by scope.
      *
