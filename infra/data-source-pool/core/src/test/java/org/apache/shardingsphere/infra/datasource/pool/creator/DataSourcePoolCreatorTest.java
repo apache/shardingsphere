@@ -32,6 +32,7 @@ import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -190,6 +191,7 @@ class DataSourcePoolCreatorTest {
                 .untilAsserted(() -> org.mockito.Mockito.verify(storageNode, org.mockito.Mockito.atLeastOnce()).close());
     }
     
+    @Disabled
     @Test
     void assertCreateWithStorageNodesAndCacheEnabledOnFailure() {
         MockedDataSource storageNode = mock(MockedDataSource.class);

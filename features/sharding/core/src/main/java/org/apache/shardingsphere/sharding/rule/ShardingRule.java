@@ -194,7 +194,8 @@ public final class ShardingRule implements DatabaseRule {
     private ShardingTable createShardingTable(final ShardingTableRuleConfiguration tableRuleConfig, final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         Optional.ofNullable(tableRuleConfig.getDatabaseShardingStrategy()).ifPresent(optional -> checkManualShardingAlgorithm(optional.getShardingAlgorithmName(), tableRuleConfig.getLogicTable()));
         Optional.ofNullable(tableRuleConfig.getTableShardingStrategy()).ifPresent(optional -> checkManualShardingAlgorithm(optional.getShardingAlgorithmName(), tableRuleConfig.getLogicTable()));
-        return new ShardingTable(tableRuleConfig, dataSourceNames, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
+        return new ShardingTable(tableRuleConfig, dataSourceNames, getKeyGenerateStrategyConfiguration(configuration, tableRuleConfig.getLogicTable()),
+                getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
     }
     
     private void checkManualShardingAlgorithm(final String shardingAlgorithmName, final String logicTable) {
@@ -212,7 +213,8 @@ public final class ShardingRule implements DatabaseRule {
     private ShardingTable createShardingAutoTable(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig, final ShardingAutoTableRuleConfiguration autoTableRuleConfig) {
         checkAutoShardingAlgorithm(autoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName(), autoTableRuleConfig.getLogicTable());
         ShardingAlgorithm shardingAlgorithm = shardingAlgorithms.get(autoTableRuleConfig.getShardingStrategy().getShardingAlgorithmName());
-        return new ShardingTable(autoTableRuleConfig, dataSourceNames, (ShardingAutoTableAlgorithm) shardingAlgorithm, getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
+        return new ShardingTable(autoTableRuleConfig, dataSourceNames, (ShardingAutoTableAlgorithm) shardingAlgorithm,
+                getKeyGenerateStrategyConfiguration(configuration, autoTableRuleConfig.getLogicTable()), getDefaultGenerateKeyColumn(defaultKeyGenerateStrategyConfig));
     }
     
     private void checkAutoShardingAlgorithm(final String shardingAlgorithmName, final String logicTable) {
@@ -223,6 +225,12 @@ public final class ShardingRule implements DatabaseRule {
     
     private String getDefaultGenerateKeyColumn(final KeyGenerateStrategyConfiguration defaultKeyGenerateStrategyConfig) {
         return Optional.ofNullable(defaultKeyGenerateStrategyConfig).map(KeyGenerateStrategyConfiguration::getColumn).orElse(null);
+    }
+    
+    private KeyGenerateStrategyConfiguration getKeyGenerateStrategyConfiguration(final ShardingRuleConfiguration ruleConfig, final String logicTable) {
+        return ruleConfig.getKeyGenerateStrategies().values().stream().filter(ColumnKeyGenerateStrategiesRuleConfiguration.class::isInstance)
+                .map(ColumnKeyGenerateStrategiesRuleConfiguration.class::cast).filter(each -> logicTable.equalsIgnoreCase(each.getLogicTable())).findFirst()
+                .map(each -> new KeyGenerateStrategyConfiguration(each.getKeyGenerateColumn(), each.getKeyGeneratorName())).orElse(null);
     }
     
     private Map<String, BindingTableRule> createBindingTableRules(final Collection<ShardingTableReferenceRuleConfiguration> bindingTableGroups) {
@@ -496,16 +504,10 @@ public final class ShardingRule implements DatabaseRule {
      * @return whether given logic table column is key generated column or not
      */
     public boolean isGenerateKeyColumn(final String columnName, final String tableName) {
-        if (!columnKeyGenerateStrategies.isEmpty()) {
-            return findColumnKeyGenerateStrategies(tableName).map(optional -> optional.getKeyGenerateColumn().equalsIgnoreCase(columnName)).orElse(false);
-        }
-        // TODO Remove this when #38178 finished.
-        return Optional.ofNullable(shardingTables.get(tableName)).filter(each -> isGenerateKeyColumn(each, columnName)).isPresent();
-    }
-    
-    private boolean isGenerateKeyColumn(final ShardingTable shardingTable, final String columnName) {
-        Optional<String> generateKeyColumn = shardingTable.getGenerateKeyColumn();
-        return generateKeyColumn.isPresent() && generateKeyColumn.get().equalsIgnoreCase(columnName);
+        Optional<ColumnKeyGenerateStrategiesRuleConfiguration> keyGenerateStrategy = findColumnKeyGenerateStrategies(tableName);
+        return keyGenerateStrategy.map(optional -> optional.getKeyGenerateColumn().equalsIgnoreCase(columnName))
+                .orElseGet(() -> Optional.ofNullable(shardingTables.get(tableName)).flatMap(ShardingTable::getGenerateKeyColumn)
+                        .map(optional -> optional.equalsIgnoreCase(columnName)).orElse(false));
     }
     
     private Optional<ColumnKeyGenerateStrategiesRuleConfiguration> findColumnKeyGenerateStrategies(final String tableName) {
@@ -519,11 +521,10 @@ public final class ShardingRule implements DatabaseRule {
      * @return column name of generated key
      */
     public Optional<String> findGenerateKeyColumnName(final String logicTableName) {
-        if (!columnKeyGenerateStrategies.isEmpty()) {
-            return Optional.ofNullable(columnKeyGenerateStrategies.get(logicTableName)).map(ColumnKeyGenerateStrategiesRuleConfiguration::getKeyGenerateColumn);
+        if (null != columnKeyGenerateStrategies.get(logicTableName)) {
+            return Optional.of(columnKeyGenerateStrategies.get(logicTableName).getKeyGenerateColumn());
         }
-        // TODO Remove this when #38178 finished.
-        return Optional.ofNullable(shardingTables.get(logicTableName)).filter(each -> each.getGenerateKeyColumn().isPresent()).flatMap(ShardingTable::getGenerateKeyColumn);
+        return Optional.ofNullable(shardingTables.get(logicTableName)).flatMap(ShardingTable::getGenerateKeyColumn);
     }
     
     /**
@@ -548,12 +549,7 @@ public final class ShardingRule implements DatabaseRule {
     }
     
     private KeyGenerateAlgorithm getKeyGenerateAlgorithm(final String logicTableName) {
-        if (!columnKeyGenerateStrategies.isEmpty()) {
-            return findColumnKeyGenerateStrategies(logicTableName).map(optional -> keyGenerators.get(optional.getKeyGeneratorName())).orElse(defaultKeyGenerateAlgorithm);
-        }
-        // TODO Remove this when #38178 finished.
-        ShardingTable shardingTable = getShardingTable(logicTableName);
-        return null == shardingTable.getKeyGeneratorName() ? defaultKeyGenerateAlgorithm : keyGenerators.get(shardingTable.getKeyGeneratorName());
+        return findColumnKeyGenerateStrategies(logicTableName).map(optional -> keyGenerators.get(optional.getKeyGeneratorName())).orElse(defaultKeyGenerateAlgorithm);
     }
     
     /**

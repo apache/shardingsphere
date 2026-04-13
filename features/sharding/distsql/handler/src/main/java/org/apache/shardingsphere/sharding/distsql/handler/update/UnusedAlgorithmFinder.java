@@ -20,10 +20,10 @@ package org.apache.shardingsphere.sharding.distsql.handler.update;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.keygen.KeyGenerateStrategiesConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
 import java.util.Arrays;
@@ -79,10 +79,8 @@ public final class UnusedAlgorithmFinder {
      * @return found in used key generators
      */
     public static Collection<String> findInUsedKeyGenerator(final ShardingRuleConfiguration ruleConfig) {
-        Collection<String> result = ruleConfig.getTables().stream().map(ShardingTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
-                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
-        result.addAll(ruleConfig.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getKeyGenerateStrategy).filter(Objects::nonNull)
-                .map(KeyGenerateStrategyConfiguration::getKeyGeneratorName).collect(Collectors.toSet()));
+        Collection<String> result = ruleConfig.getKeyGenerateStrategies().values().stream().filter(ColumnKeyGenerateStrategiesRuleConfiguration.class::isInstance)
+                .map(KeyGenerateStrategiesConfiguration::getKeyGeneratorName).collect(Collectors.toSet());
         result.addAll(ruleConfig.getKeyGenerateStrategies().values().stream().map(KeyGenerateStrategiesConfiguration::getKeyGeneratorName).collect(Collectors.toSet()));
         if (null != ruleConfig.getDefaultKeyGenerateStrategy()) {
             result.add(ruleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName());

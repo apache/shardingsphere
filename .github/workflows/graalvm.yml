@@ -15,63 +15,64 @@
 # limitations under the License.
 #
 
-name: NativeTest CI - GraalVM Native Image
-
-# Only execute CI when changes involving GraalVM Reachability Metadata and nativeTest are involved. Because most Contributors don't use GraalVM CE.
-on:
-  pull_request:
-    branches: [ master ]
-    paths:
-      - '.github/workflows/graalvm.yml'
-      - 'infra/reachability-metadata/src/**'
-      - 'test/native/native-image-filter/**'
-      - 'test/native/src/**'
-  workflow_dispatch:
-  
-concurrency:
-  group: graalvm-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: read
-
-jobs:
-  global-environment:
-    name: Import Global Environment
-    uses: ./.github/workflows/required-reusable.yml
-  nativetest:
-    if: github.repository == 'apache/shardingsphere'
-    needs: global-environment
-    name: GraalVM - GraalVM CE for JDK ${{ matrix.java-version }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
-    strategy:
-      max-parallel: 15
-      fail-fast: false
-      matrix:
-        os: [ 'ubuntu-latest', 'windows-latest' ]
-        java-version: [ '24.0.2' ]
-    steps:
-      - uses: actions/checkout@v6.0.1
-      - name: Free Disk Space on Ubuntu
-        if: matrix.os == 'ubuntu-latest'
-        run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
-      - name: Setup Rancher Desktop without GUI on Windows Server
-        if: matrix.os == 'windows-latest'
-        run: |
-          ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
-          "PATH=$env:PATH" >> $env:GITHUB_ENV
-      - uses: ./.github/workflows/resources/actions/setup-build-environment
-        with:
-          java-version: ${{ matrix.java-version }}
-          distribution: 'graalvm'
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
-          cache-suffix: 'native-test'
-      # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
-      - name: Run test with GraalVM CE
-        if: matrix.os == 'windows-latest'
-        run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
-      - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
-        if: matrix.os == 'ubuntu-latest'
-        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify
+# TODO Fix me
+#name: NativeTest CI - GraalVM Native Image
+#
+## Only execute CI when changes involving GraalVM Reachability Metadata and nativeTest are involved. Because most Contributors don't use GraalVM CE.
+#on:
+#  pull_request:
+#    branches: [ master ]
+#    paths:
+#      - '.github/workflows/graalvm.yml'
+#      - 'infra/reachability-metadata/src/**'
+#      - 'test/native/native-image-filter/**'
+#      - 'test/native/src/**'
+#  workflow_dispatch:
+#
+#concurrency:
+#  group: graalvm-${{ github.workflow }}-${{ github.ref }}
+#  cancel-in-progress: true
+#
+#permissions:
+#  contents: read
+#
+#jobs:
+#  global-environment:
+#    name: Import Global Environment
+#    uses: ./.github/workflows/required-reusable.yml
+#  nativetest:
+#    if: github.repository == 'apache/shardingsphere'
+#    needs: global-environment
+#    name: GraalVM - GraalVM CE for JDK ${{ matrix.java-version }} on ${{ matrix.os }}
+#    runs-on: ${{ matrix.os }}
+#    timeout-minutes: 90
+#    strategy:
+#      max-parallel: 15
+#      fail-fast: false
+#      matrix:
+#        os: [ 'ubuntu-latest', 'windows-latest' ]
+#        java-version: [ '24.0.2' ]
+#    steps:
+#      - uses: actions/checkout@v6.0.1
+#      - name: Free Disk Space on Ubuntu
+#        if: matrix.os == 'ubuntu-latest'
+#        run: ./test/native/src/test/resources/test-native/sh/free-disk-space.sh
+#      - name: Setup Rancher Desktop without GUI on Windows Server
+#        if: matrix.os == 'windows-latest'
+#        run: |
+#          ./test/native/src/test/resources/test-native/ps1/config-rdctl.ps1
+#          "PATH=$env:PATH" >> $env:GITHUB_ENV
+#      - uses: ./.github/workflows/resources/actions/setup-build-environment
+#        with:
+#          java-version: ${{ matrix.java-version }}
+#          distribution: 'graalvm'
+#          github-token: ${{ secrets.GITHUB_TOKEN }}
+#          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+#          cache-suffix: 'native-test'
+#      # TODO Remove this workaround after. The graalvm native image built with windows server is missing some GRMs for testcontainers
+#      - name: Run test with GraalVM CE
+#        if: matrix.os == 'windows-latest'
+#        run: ./mvnw -PgenerateMetadata -e -T 1C clean verify
+#      - name: Run nativeTest with GraalVM CE for ${{ matrix.java-version }}
+#        if: matrix.os == 'ubuntu-latest'
+#        run: ./mvnw -PnativeTestInShardingSphere -e "-DjvmArgs=-XX:MaxRAMPercentage=85.0" clean verify

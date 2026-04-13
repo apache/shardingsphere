@@ -37,6 +37,12 @@ rules:
       shardingColumn: order_id
   defaultTableStrategy:
     none: ''
+  keyGenerateStrategies:
+    t_order_order_id:
+      keyGenerateColumn: order_id
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
@@ -48,7 +54,4 @@ rules:
   tables:
     t_order:
       actualDataNodes: ds_${0..1}.t_order_${0..1}
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
       logicTable: t_order

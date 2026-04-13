@@ -22,24 +22,29 @@
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: t_order_inline
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake_generator
       t_order_item:
         actualDataNodes: ds_$->{0..1}.t_order_item_$->{0..1}
         tableStrategy:
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: t_order_item_inline
-        keyGenerateStrategy:
-          column: order_item_id
-          keyGeneratorName: snowflake_generator
     bindingTables:
       - t_order,t_order_item
     defaultDatabaseStrategy:
       standard:
         shardingColumn: user_id
         shardingAlgorithmName: database_inline
+    keyGenerateStrategies:
+      t_order_order_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake_generator
+        logicTable: t_order
+        keyGenerateColumn: order_id
+      t_order_item_order_item_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake_generator
+        logicTable: t_order_item
+        keyGenerateColumn: order_item_id
 
     shardingAlgorithms:
       database_inline:

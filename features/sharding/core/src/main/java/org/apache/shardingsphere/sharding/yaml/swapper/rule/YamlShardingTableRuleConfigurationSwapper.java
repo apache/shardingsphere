@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.exception.metadata.MissingRequiredShardingConfigurationException;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlKeyGenerateStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 
@@ -32,8 +31,6 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStra
 public final class YamlShardingTableRuleConfigurationSwapper implements YamlConfigurationSwapper<YamlTableRuleConfiguration, ShardingTableRuleConfiguration> {
     
     private final YamlShardingStrategyConfigurationSwapper shardingStrategySwapper = new YamlShardingStrategyConfigurationSwapper();
-    
-    private final YamlKeyGenerateStrategyConfigurationSwapper keyGenerateStrategySwapper = new YamlKeyGenerateStrategyConfigurationSwapper();
     
     private final YamlShardingAuditStrategyConfigurationSwapper auditStrategySwapper = new YamlShardingAuditStrategyConfigurationSwapper();
     
@@ -47,9 +44,6 @@ public final class YamlShardingTableRuleConfigurationSwapper implements YamlConf
         }
         if (null != data.getTableShardingStrategy()) {
             result.setTableStrategy(shardingStrategySwapper.swapToYamlConfiguration(data.getTableShardingStrategy()));
-        }
-        if (null != data.getKeyGenerateStrategy()) {
-            result.setKeyGenerateStrategy(keyGenerateStrategySwapper.swapToYamlConfiguration(data.getKeyGenerateStrategy()));
         }
         if (null != data.getAuditStrategy()) {
             result.setAuditStrategy(auditStrategySwapper.swapToYamlConfiguration(data.getAuditStrategy()));
@@ -66,9 +60,6 @@ public final class YamlShardingTableRuleConfigurationSwapper implements YamlConf
         }
         if (null != yamlConfig.getTableStrategy()) {
             result.setTableShardingStrategy(shardingStrategySwapper.swapToObject(yamlConfig.getTableStrategy()));
-        }
-        if (null != yamlConfig.getKeyGenerateStrategy()) {
-            result.setKeyGenerateStrategy(keyGenerateStrategySwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
         }
         if (null != yamlConfig.getAuditStrategy()) {
             result.setAuditStrategy(auditStrategySwapper.swapToObject(yamlConfig.getAuditStrategy()));
