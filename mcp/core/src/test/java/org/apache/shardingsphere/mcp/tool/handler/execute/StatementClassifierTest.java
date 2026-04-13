@@ -54,6 +54,11 @@ class StatementClassifierTest {
     private static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("trim trailing semicolon query", "  SELECT * FROM foo_orders ;  ", SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM foo_orders", "foo_orders", ""),
+                Arguments.of("query with semicolon literal", "SELECT ';' AS foo_literal", SupportedMCPStatement.QUERY, "SELECT", "SELECT ';' AS foo_literal", "", ""),
+                Arguments.of("query with semicolon block comment", "SELECT * FROM foo_orders /* source; */", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT * FROM foo_orders /* source; */", "foo_orders", ""),
+                Arguments.of("trim trailing semicolon query with comment", "SELECT * FROM foo_orders; -- trailing;", SupportedMCPStatement.QUERY, "SELECT",
+                        "SELECT * FROM foo_orders", "foo_orders", ""),
                 Arguments.of("with query", "WITH foo_result AS (SELECT * FROM foo_orders) SELECT * FROM foo_result", SupportedMCPStatement.QUERY, "SELECT",
                         "WITH foo_result AS (SELECT * FROM foo_orders) SELECT * FROM foo_result", "foo_orders", ""),
                 Arguments.of("with recursive query", "WITH RECURSIVE foo_result AS (SELECT * FROM foo_orders) SELECT * FROM foo_result", SupportedMCPStatement.QUERY, "SELECT",

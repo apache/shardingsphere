@@ -49,7 +49,17 @@ public final class MCPSessionManager {
      * @param sessionId session id
      */
     public void createSession(final String sessionId) {
-        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new SessionContext()), () -> new IllegalStateException("Session already exists."));
+        createSession(sessionId, "");
+    }
+    
+    /**
+     * Create a new session with negotiated protocol version.
+     *
+     * @param sessionId session id
+     * @param protocolVersion negotiated protocol version
+     */
+    public void createSession(final String sessionId, final String protocolVersion) {
+        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new SessionContext(protocolVersion)), () -> new IllegalStateException("Session already exists."));
     }
     
     /**
@@ -60,6 +70,16 @@ public final class MCPSessionManager {
      */
     public boolean hasSession(final String sessionId) {
         return sessions.containsKey(sessionId);
+    }
+    
+    /**
+     * Find negotiated protocol version for session.
+     *
+     * @param sessionId session id
+     * @return negotiated protocol version
+     */
+    public Optional<String> findProtocolVersion(final String sessionId) {
+        return findSessionContext(sessionId).map(SessionContext::getProtocolVersion).filter(each -> !each.isEmpty());
     }
     
     /**
@@ -102,7 +122,14 @@ public final class MCPSessionManager {
     
     static final class SessionContext {
         
+        @Getter
+        private final String protocolVersion;
+        
         private final ReentrantLock executionLock = new ReentrantLock(true);
+        
+        private SessionContext(final String protocolVersion) {
+            this.protocolVersion = protocolVersion;
+        }
         
         ReentrantLock getExecutionLock() {
             return executionLock;

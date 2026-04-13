@@ -50,6 +50,12 @@ class LoopbackOriginSecurityValidatorTest {
     }
     
     @Test
+    void assertValidateHeadersWithBracketedIpv6LoopbackOrigin() {
+        ServerTransportSecurityValidator validator = LoopbackOriginSecurityValidator.create("127.0.0.1");
+        assertDoesNotThrow(() -> validator.validateHeaders(Map.of("Origin", List.of("http://[::1]:8080"))));
+    }
+    
+    @Test
     void assertValidateHeadersWithRemoteOrigin() {
         ServerTransportSecurityValidator validator = LoopbackOriginSecurityValidator.create("127.0.0.1");
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class,

@@ -35,6 +35,11 @@ class HttpTransportHostUtilsTest {
     }
     
     @Test
+    void assertIsLoopbackHostWithBracketedIpv6() {
+        assertTrue(HttpTransportHostUtils.isLoopbackHost("[::1]"));
+    }
+    
+    @Test
     void assertIsLoopbackHostWithRemoteHost() {
         assertFalse(HttpTransportHostUtils.isLoopbackHost("0.0.0.0"));
     }

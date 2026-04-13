@@ -36,7 +36,12 @@ public final class HttpTransportHostUtils {
      * @return true if host is loopback, otherwise false
      */
     public static boolean isLoopbackHost(final String host) {
-        String actualHost = Objects.toString(host, "").trim().toLowerCase(Locale.ENGLISH);
+        String actualHost = normalizeHost(host);
         return "127.0.0.1".equals(actualHost) || "localhost".equals(actualHost) || "::1".equals(actualHost);
+    }
+    
+    private static String normalizeHost(final String host) {
+        String result = Objects.toString(host, "").trim().toLowerCase(Locale.ENGLISH);
+        return result.length() > 1 && '[' == result.charAt(0) && ']' == result.charAt(result.length() - 1) ? result.substring(1, result.length() - 1) : result;
     }
 }

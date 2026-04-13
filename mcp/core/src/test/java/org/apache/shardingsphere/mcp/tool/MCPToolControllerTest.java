@@ -72,6 +72,13 @@ class MCPToolControllerTest {
     }
     
     @Test
+    void assertHandleExecuteQueryWithSemicolonLiteral() throws SQLException {
+        Map<String, Object> actual = createController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "SELECT ';'")).toPayload();
+        assertThat(actual.get("result_kind"), is("result_set"));
+        assertThat(((List<?>) actual.get("rows")).get(0), is(List.of(";")));
+    }
+    
+    @Test
     void assertHandleExecuteQueryWithMissingSavepointName() throws SQLException {
         Map<String, Object> actual = createController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "RELEASE SAVEPOINT")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));

@@ -44,6 +44,13 @@ class MCPSessionManagerTest {
     }
     
     @Test
+    void assertCreateSessionWithProtocolVersion() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        sessionManager.createSession("session-1", "2025-06-18");
+        assertThat(sessionManager.findProtocolVersion("session-1").orElse(""), is("2025-06-18"));
+    }
+    
+    @Test
     void assertCreateSessionWithDuplicateSessionId() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
         sessionManager.createSession("session-1");

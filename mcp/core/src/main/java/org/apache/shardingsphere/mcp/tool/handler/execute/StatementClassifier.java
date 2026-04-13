@@ -70,13 +70,42 @@ public final class StatementClassifier {
         if (result.isEmpty()) {
             throw new IllegalArgumentException("sql cannot be empty.");
         }
-        if (result.endsWith(";")) {
-            result = result.substring(0, result.length() - 1).trim();
+        int statementDelimiterIndex = findStatementDelimiter(result);
+        if (-1 == statementDelimiterIndex) {
+            return result;
         }
-        if (result.contains(";")) {
+        if (skipInsignificant(result, statementDelimiterIndex + 1) < result.length()) {
             throw new IllegalArgumentException("Only one SQL statement is allowed.");
         }
+        result = result.substring(0, statementDelimiterIndex).trim();
+        if (result.isEmpty()) {
+            throw new IllegalArgumentException("sql cannot be empty.");
+        }
         return result;
+    }
+    
+    private int findStatementDelimiter(final String sql) {
+        int result = 0;
+        while (result < sql.length()) {
+            char currentChar = sql.charAt(result);
+            if (isLineCommentStart(sql, result)) {
+                result = skipLineComment(sql, result) + 1;
+                continue;
+            }
+            if (isBlockCommentStart(sql, result)) {
+                result = skipBlockComment(sql, result) + 1;
+                continue;
+            }
+            if (isQuotedTextStart(currentChar)) {
+                result = skipQuotedText(sql, result) + 1;
+                continue;
+            }
+            if (';' == currentChar) {
+                return result;
+            }
+            result++;
+        }
+        return -1;
     }
     
     private boolean isBannedCommand(final String upperSql) {

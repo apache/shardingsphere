@@ -57,9 +57,10 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequestWithProtocolMismatch() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
+        when(sessionManager.findProtocolVersion("session-id")).thenReturn(Optional.of("2025-06-18"));
         StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(sessionManager);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getHeader(PROTOCOL_HEADER)).thenReturn("2024-11-05");
+        when(request.getHeader(PROTOCOL_HEADER)).thenReturn("2025-03-26");
         StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionRequest(request, "session-id").orElseThrow();
         assertThat(actual.getStatusCode(), is(400));
         assertThat(actual.getMessage(), is("Protocol version mismatch."));
@@ -69,6 +70,7 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequest() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
+        when(sessionManager.findProtocolVersion("session-id")).thenReturn(Optional.of(MCPTransportConstants.PROTOCOL_VERSION));
         StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(sessionManager);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getHeader(PROTOCOL_HEADER)).thenReturn(MCPTransportConstants.PROTOCOL_VERSION);
@@ -80,9 +82,11 @@ class StreamableHttpMCPRequestValidatorTest {
     void assertValidateSessionRequestWithoutProtocolHeader() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
+        when(sessionManager.findProtocolVersion("session-id")).thenReturn(Optional.of(MCPTransportConstants.PROTOCOL_VERSION));
         StreamableHttpMCPRequestValidator validator = new StreamableHttpMCPRequestValidator(sessionManager);
         HttpServletRequest request = mock(HttpServletRequest.class);
-        Optional<StreamableHttpMCPRequestValidator.ResponseStatus> actual = validator.validateSessionRequest(request, "session-id");
-        assertTrue(actual.isEmpty());
+        StreamableHttpMCPRequestValidator.ResponseStatus actual = validator.validateSessionRequest(request, "session-id").orElseThrow();
+        assertThat(actual.getStatusCode(), is(400));
+        assertThat(actual.getMessage(), is("MCP-Protocol-Version header is required."));
     }
 }

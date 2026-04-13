@@ -93,8 +93,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     @Override
     public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
         delegate.setSessionFactory(initializeRequest -> {
-            McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(normalizeInitializeRequest(initializeRequest));
-            sessionManager.createSession(result.session().getId());
+            McpSchema.InitializeRequest actualInitializeRequest = normalizeInitializeRequest(initializeRequest);
+            McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(actualInitializeRequest);
+            sessionManager.createSession(result.session().getId(), actualInitializeRequest.protocolVersion());
             return result;
         });
     }

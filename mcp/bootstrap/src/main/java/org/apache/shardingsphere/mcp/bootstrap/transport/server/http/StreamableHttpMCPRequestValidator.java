@@ -41,16 +41,15 @@ final class StreamableHttpMCPRequestValidator {
         if (!sessionManager.hasSession(sessionId)) {
             return Optional.of(new ResponseStatus(404, "Session does not exist."));
         }
-        String actualProtocolVersion = normalizeProtocolVersion(request.getHeader(PROTOCOL_HEADER));
-        if (!MCPTransportConstants.PROTOCOL_VERSION.equals(actualProtocolVersion)) {
+        String actualProtocolVersion = Objects.toString(request.getHeader(PROTOCOL_HEADER), "").trim();
+        if (actualProtocolVersion.isEmpty()) {
+            return Optional.of(new ResponseStatus(400, "MCP-Protocol-Version header is required."));
+        }
+        String expectedProtocolVersion = sessionManager.findProtocolVersion(sessionId).orElse(MCPTransportConstants.PROTOCOL_VERSION);
+        if (!expectedProtocolVersion.equals(actualProtocolVersion)) {
             return Optional.of(new ResponseStatus(400, "Protocol version mismatch."));
         }
         return Optional.empty();
-    }
-    
-    private String normalizeProtocolVersion(final String rawProtocolVersion) {
-        String protocolVersion = Objects.toString(rawProtocolVersion, "").trim();
-        return protocolVersion.isEmpty() ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
     }
     
     @RequiredArgsConstructor
