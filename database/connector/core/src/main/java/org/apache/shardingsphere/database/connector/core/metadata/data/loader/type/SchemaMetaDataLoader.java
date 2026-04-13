@@ -78,7 +78,7 @@ public final class SchemaMetaDataLoader {
             Collection<String> schemaNames = loadSchemaNames(connection);
             Map<String, Collection<String>> result = new LinkedHashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
-                String schemaName = schemaOption.getDefaultSchema().isPresent() ? each : databaseName;
+                String schemaName = schemaOption.getDefaultSchema().isPresent() ? each : new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
                 result.put(schemaName, loadTableNames(connection, each, excludedTables));
             }
             return result;
