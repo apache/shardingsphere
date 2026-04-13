@@ -19,6 +19,10 @@ package org.apache.shardingsphere.mcp.bootstrap.config;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
+
+import java.util.Objects;
 
 /**
  * HTTP transport configuration.
@@ -38,4 +42,26 @@ public final class HttpTransportConfiguration {
     private final int port;
     
     private final String endpointPath;
+    
+    /**
+     * Validate HTTP transport configuration.
+     */
+    public void validate() {
+        if (!enabled) {
+            return;
+        }
+        boolean loopbackBinding = isLoopbackBinding();
+        ShardingSpherePreconditions.checkState(allowRemoteAccess || loopbackBinding,
+                () -> new IllegalArgumentException("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
+        ShardingSpherePreconditions.checkState(loopbackBinding || hasAccessToken(),
+                () -> new IllegalArgumentException("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
+    }
+    
+    private boolean isLoopbackBinding() {
+        return HttpTransportHostUtils.isLoopbackHost(bindHost);
+    }
+    
+    private boolean hasAccessToken() {
+        return !Objects.toString(accessToken, "").trim().isEmpty();
+    }
 }

@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
 
 import java.util.Objects;
 
@@ -48,7 +47,6 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         String bindHost = resolveBindHost(yamlConfig.getBindHost());
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
         String accessToken = resolveAccessToken(yamlConfig.getAccessToken());
-        validateRemoteExposurePolicy(bindHost, allowRemoteAccess, accessToken);
         return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()),
                 resolveEndpointPath(yamlConfig.getEndpointPath()));
     }
@@ -65,13 +63,6 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     private String resolveAccessToken(final String accessToken) {
         return Objects.toString(accessToken, "").trim();
-    }
-    
-    private void validateRemoteExposurePolicy(final String bindHost, final boolean allowRemoteAccess, final String accessToken) {
-        ShardingSpherePreconditions.checkState(allowRemoteAccess || HttpTransportHostUtils.isLoopbackHost(bindHost),
-                () -> new IllegalArgumentException("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
-        ShardingSpherePreconditions.checkState(HttpTransportHostUtils.isLoopbackHost(bindHost) || !accessToken.isEmpty(),
-                () -> new IllegalArgumentException("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
     }
     
     private int resolvePort(final Integer port) {

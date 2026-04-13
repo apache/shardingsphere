@@ -116,6 +116,17 @@ class MCPRuntimeLauncherTest {
         }
     }
     
+    @Test
+    void assertLaunchWithRemoteHttpWithoutAccessToken() throws SQLException {
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "launcher-remote-http");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
+        MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeLauncher.launch(
+                new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "0.0.0.0", true, "", 0, "/mcp"), new StdioTransportConfiguration(false),
+                        H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl))));
+        assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
+    }
+    
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }

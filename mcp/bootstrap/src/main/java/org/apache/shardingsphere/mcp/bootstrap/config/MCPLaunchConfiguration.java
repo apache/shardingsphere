@@ -45,5 +45,6 @@ public final class MCPLaunchConfiguration {
                 () -> new IllegalArgumentException("HTTP and STDIO transports cannot be enabled at the same time. Choose exactly one transport."));
         ShardingSpherePreconditions.checkState(httpTransport.isEnabled() || stdioTransport.isEnabled(),
                 () -> new IllegalArgumentException("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
+        httpTransport.validate();
     }
 }

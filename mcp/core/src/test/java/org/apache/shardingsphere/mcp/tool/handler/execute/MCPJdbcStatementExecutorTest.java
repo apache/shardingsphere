@@ -192,11 +192,13 @@ class MCPJdbcStatementExecutorTest {
         RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
         when(databaseConfig.openConnection(anyString())).thenReturn(connection);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
-        SQLExecutionResponse actual = statementExecutor.execute(new SQLExecutionRequest("session-1",
+        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "UPDATE orders SET status = 'DONE'", 10, 1000),
-                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("H2"));
-        assertThat(actual.getAffectedRows(), is(1));
+                new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'DONE'", "", ""), createDatabaseCapability("H2")));
+        assertThat(actual.getMessage(), is("schema"));
         verify(connection).setSchema("public");
+        verify(connection, never()).createStatement();
+        verify(connection).close();
     }
     
     @Test

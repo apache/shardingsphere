@@ -56,10 +56,15 @@ public final class StreamableHttpMCPServer implements MCPRuntimeServer {
     private Path baseDirectory;
     
     public StreamableHttpMCPServer(final HttpTransportConfiguration config, final MCPRuntimeContext runtimeContext) {
-        this.config = config;
+        this.config = requireValidConfig(config);
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
         syncServerFactory = new MCPSyncServerFactory(runtimeContext, jsonMapper);
         transportServlet = new StreamableHttpMCPServlet(runtimeContext.getSessionManager(), jsonMapper, config.getBindHost(), config.getAccessToken(), config.getEndpointPath());
+    }
+    
+    private static HttpTransportConfiguration requireValidConfig(final HttpTransportConfiguration config) {
+        config.validate();
+        return config;
     }
     
     @Override

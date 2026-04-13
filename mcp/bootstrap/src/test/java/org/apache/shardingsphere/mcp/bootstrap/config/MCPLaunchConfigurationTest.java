@@ -50,7 +50,30 @@ class MCPLaunchConfigurationTest {
         assertThat(actual.getMessage(), is("Exactly one transport must be explicitly enabled. Set either `transport.http.enabled` or `transport.stdio.enabled` to true."));
     }
     
+    @Test
+    void assertValidateWhenRemoteHttpIsNotExplicitlyAllowed() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, createLaunchConfiguration(true, false, "0.0.0.0", false, "")::validate);
+        assertThat(actual.getMessage(), is("Property `transport.http.allowRemoteAccess` must be true when `transport.http.bindHost` is not loopback."));
+    }
+    
+    @Test
+    void assertValidateWhenRemoteHttpAccessTokenIsMissing() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, createLaunchConfiguration(true, false, "0.0.0.0", true, "")::validate);
+        assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
+    }
+    
+    @Test
+    void assertValidateWhenDisabledRemoteHttpDoesNotRequireAccessToken() {
+        assertDoesNotThrow(createLaunchConfiguration(false, true, "0.0.0.0", false, "")::validate);
+    }
+    
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final boolean stdioEnabled) {
-        return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, "127.0.0.1", false, "", 0, "/mcp"), new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
+        return createLaunchConfiguration(httpEnabled, stdioEnabled, "127.0.0.1", false, "");
+    }
+    
+    private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled, final boolean stdioEnabled,
+                                                             final String bindHost, final boolean allowRemoteAccess, final String accessToken) {
+        return new MCPLaunchConfiguration(new HttpTransportConfiguration(httpEnabled, bindHost, allowRemoteAccess, accessToken, 0, "/mcp"),
+                new StdioTransportConfiguration(stdioEnabled), Collections.emptyMap());
     }
 }

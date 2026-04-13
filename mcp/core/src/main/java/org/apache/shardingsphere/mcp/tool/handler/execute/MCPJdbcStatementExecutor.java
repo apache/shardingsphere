@@ -86,33 +86,7 @@ public final class MCPJdbcStatementExecutor {
             } catch (final IllegalStateException ex) {
                 throw new MCPTransactionStateException(ex.getMessage(), ex);
             }
-            applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
-            try (Statement statement = connection.createStatement()) {
-                if (0 < executionRequest.getMaxRows()) {
-                    statement.setMaxRows(resolveStatementMaxRows(executionRequest.getMaxRows()));
-                }
-                if (0 < executionRequest.getTimeoutMs()) {
-                    statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
-                }
-                boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
-                switch (classificationResult.getStatementClass()) {
-                    case QUERY:
-                    case EXPLAIN_ANALYZE:
-                        if (!hasResultSet) {
-                            throw new QueryDidNotReturnResultSetException();
-                        }
-                        return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult);
-                    case DML:
-                        return hasResultSet
-                                ? createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult)
-                                : SQLExecutionResponse.updateCount(classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount());
-                    case DDL:
-                    case DCL:
-                        return SQLExecutionResponse.statementAck(classificationResult.getStatementClass(), classificationResult.getStatementType(), "Statement executed.");
-                    default:
-                        throw new StatementClassNotSupportedException();
-                }
-            }
+            return executeWithConnection(connection, executionRequest, classificationResult, databaseCapability);
         } catch (final SQLTimeoutException ex) {
             throw new MCPTimeoutException(ex.getMessage(), ex);
         } catch (final SQLFeatureNotSupportedException ex) {
@@ -128,6 +102,46 @@ public final class MCPJdbcStatementExecutor {
                 } catch (final SQLException ignored) {
                 }
             }
+        }
+    }
+    
+    private SQLExecutionResponse executeWithConnection(final Connection connection, final SQLExecutionRequest executionRequest,
+                                                       final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
+        applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
+        try (Statement statement = connection.createStatement()) {
+            configureStatement(statement, executionRequest);
+            return executeStatement(statement, executionRequest, classificationResult);
+        }
+    }
+    
+    private void configureStatement(final Statement statement, final SQLExecutionRequest executionRequest) throws SQLException {
+        if (0 < executionRequest.getMaxRows()) {
+            statement.setMaxRows(resolveStatementMaxRows(executionRequest.getMaxRows()));
+        }
+        if (0 < executionRequest.getTimeoutMs()) {
+            statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
+        }
+    }
+    
+    private SQLExecutionResponse executeStatement(final Statement statement, final SQLExecutionRequest executionRequest,
+                                                  final ClassificationResult classificationResult) throws SQLException {
+        boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
+        switch (classificationResult.getStatementClass()) {
+            case QUERY:
+            case EXPLAIN_ANALYZE:
+                if (!hasResultSet) {
+                    throw new QueryDidNotReturnResultSetException();
+                }
+                return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult);
+            case DML:
+                return hasResultSet
+                        ? createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult)
+                        : SQLExecutionResponse.updateCount(classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount());
+            case DDL:
+            case DCL:
+                return SQLExecutionResponse.statementAck(classificationResult.getStatementClass(), classificationResult.getStatementType(), "Statement executed.");
+            default:
+                throw new StatementClassNotSupportedException();
         }
     }
     
@@ -170,9 +184,6 @@ public final class MCPJdbcStatementExecutor {
         if (actualSchema.isEmpty() || SchemaExecutionSemantics.FIXED_TO_DATABASE == schemaExecutionSemantics) {
             return;
         }
-        try {
-            connection.setSchema(actualSchema);
-        } catch (final SQLFeatureNotSupportedException ignored) {
-        }
+        connection.setSchema(actualSchema);
     }
 }

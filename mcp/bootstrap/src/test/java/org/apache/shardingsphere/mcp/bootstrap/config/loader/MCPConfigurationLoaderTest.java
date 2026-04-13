@@ -293,6 +293,25 @@ class MCPConfigurationLoaderTest {
         assertThat(actual.getMessage(), is("Property `transport.http.port` cannot be negative."));
     }
     
+    @Test
+    void assertLoadWithDisabledRemoteHttpWithoutAccessToken() throws IOException {
+        Path configFile = createConfigFile("transport:\n"
+                + "  http:\n"
+                + "    enabled: false\n"
+                + "    bindHost: 0.0.0.0\n"
+                + "    allowRemoteAccess: false\n"
+                + "    port: 18088\n"
+                + "    endpointPath: /mcp\n"
+                + "  stdio:\n"
+                + "    enabled: true\n"
+                + "runtimeDatabases: {}\n");
+        MCPLaunchConfiguration actual = MCPConfigurationLoader.load(configFile.toString());
+        assertFalse(actual.getHttpTransport().isEnabled());
+        assertThat(actual.getHttpTransport().getBindHost(), is("0.0.0.0"));
+        assertFalse(actual.getHttpTransport().isAllowRemoteAccess());
+        assertThat(actual.getHttpTransport().getAccessToken(), is(""));
+    }
+    
     private Path createConfigFile(final String yamlContent) throws IOException {
         Path result = tempDir.resolve("mcp.yaml");
         Files.writeString(result, yamlContent);
