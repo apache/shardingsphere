@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.transport;
+package org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client;
+
+import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionResponse;
 
 import java.io.IOException;
 import java.util.Map;
@@ -65,7 +67,7 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws InterruptedException interrupted exception
      * @throws UnsupportedOperationException unsupported operation exception
      */
-    MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException;
+    MCPInteractionResponse readResource(String resourceUri) throws IOException, InterruptedException;
     
     @Override
     void close() throws IOException, InterruptedException;

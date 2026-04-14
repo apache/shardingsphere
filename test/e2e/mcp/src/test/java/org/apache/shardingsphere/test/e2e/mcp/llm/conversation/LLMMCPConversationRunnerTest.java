@@ -27,9 +27,9 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
 import org.apache.shardingsphere.test.e2e.mcp.llm.stub.StubLLMChatClient;
-import org.apache.shardingsphere.test.e2e.mcp.llm.stub.StubMCPInteractionClient;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionClient;
+import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionResponse;
+import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.StubMCPInteractionClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -367,12 +367,13 @@ class LLMMCPConversationRunnerTest {
                 Arguments.of("mcp tool call io exception",
                         new StubLLMChatClient(createToolCallCompletion(new LLMToolCall("call-1", "execute_query",
                                 "{\"database\":\"logic_db\",\"schema\":\"public\",\"sql\":\"SELECT COUNT(*) AS total_orders FROM orders\"}"))),
-                        createFailingMCPInteractionClient("execute_query", new IOException("socket closed")),
+                        StubMCPInteractionClient.createWithToolFailure("execute_query", new IOException("socket closed")),
                         "mcp_runtime_unavailable", "MCP action `execute_query` failed: socket closed", true, false),
                 Arguments.of("mcp resource read failure",
                         new StubLLMChatClient(createToolCallCompletion(new LLMToolCall("call-1", "mcp_read_resource",
                                 "{\"uri\":\"shardingsphere://capabilities\"}"))),
-                        createFailingMCPInteractionClient("mcp_read_resource", new IllegalStateException("Failed to parse MCP resource payload.")),
+                        StubMCPInteractionClient.createWithResourceFailure("shardingsphere://capabilities",
+                                new IllegalStateException("Failed to parse MCP resource payload.")),
                         "mcp_runtime_unavailable", "MCP action `mcp_read_resource` failed: Failed to parse MCP resource payload.", true, false),
                 Arguments.of("interrupted conversation",
                         createInterruptedChatClient(),
@@ -516,40 +517,4 @@ class LLMMCPConversationRunnerTest {
         };
     }
     
-    private static MCPInteractionClient createFailingMCPInteractionClient(final String actionName, final Exception failure) {
-        // CHECKSTYLE:OFF
-        return new MCPInteractionClient() {
-            
-            @Override
-            public void open() {
-            }
-            
-            @Override
-            public MCPInteractionResponse call(final String toolName, final Map<String, Object> arguments) throws IOException {
-                if (actionName.equals(toolName) && failure instanceof IOException) {
-                    throw (IOException) failure;
-                }
-                if (actionName.equals(toolName) && failure instanceof IllegalStateException) {
-                    throw (IllegalStateException) failure;
-                }
-                throw new IOException("Unexpected tool invocation: " + toolName);
-            }
-            
-            @Override
-            public MCPInteractionResponse readResource(final String resourceUri) throws IOException {
-                if ("mcp_read_resource".equals(actionName) && failure instanceof IOException) {
-                    throw (IOException) failure;
-                }
-                if ("mcp_read_resource".equals(actionName) && failure instanceof IllegalStateException) {
-                    throw (IllegalStateException) failure;
-                }
-                throw new IOException("Unexpected resource read: " + resourceUri);
-            }
-            
-            @Override
-            public void close() {
-            }
-        };
-        // CHECKSTYLE:ON
-    }
 }

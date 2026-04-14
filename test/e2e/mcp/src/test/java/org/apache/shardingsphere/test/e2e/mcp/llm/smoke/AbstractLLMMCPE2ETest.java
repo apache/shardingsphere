@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMMCPConversationRunner;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPHttpInteractionClient;
+import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPHttpInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.production.AbstractProductionRuntimeE2ETest;
 import org.junit.jupiter.api.Assumptions;
 

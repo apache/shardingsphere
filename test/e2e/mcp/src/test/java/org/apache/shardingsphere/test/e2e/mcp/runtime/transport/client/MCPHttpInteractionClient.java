@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.transport;
+package org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionResponse;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,6 +35,7 @@ import java.util.Map;
 /**
  * HTTP MCP tool client.
  */
+@RequiredArgsConstructor
 public final class MCPHttpInteractionClient implements MCPInteractionClient {
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -46,11 +49,6 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
     private String sessionId;
     
     private String actualProtocolVersion;
-    
-    public MCPHttpInteractionClient(final URI endpointUri, final HttpClient httpClient) {
-        this.endpointUri = endpointUri;
-        this.httpClient = httpClient;
-    }
     
     @Override
     public void open() throws IOException, InterruptedException {
