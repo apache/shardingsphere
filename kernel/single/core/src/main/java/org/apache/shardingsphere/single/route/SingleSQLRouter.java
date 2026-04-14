@@ -59,7 +59,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         if (singleTables.isEmpty()) {
             return isAllowedToRouteWithSingleLogicalDataSource(database, rule) ? createSingleLogicalDataSourceRouteContext(rule, queryContext) : routeContext;
         }
-        return new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule);
+        return new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule, database);
     }
     
     private boolean isAllowedToRouteWithSingleLogicalDataSource(final ShardingSphereDatabase database, final SingleRule rule) {
@@ -79,7 +79,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
         if (singleTables.isEmpty()) {
             return;
         }
-        new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule);
+        new SingleRouteEngine(singleTables, sqlStatementContext.getSqlStatement(), queryContext.getHintValueContext()).route(routeContext, rule, database);
     }
     
     private RouteContext createSingleDataSourceRouteContext(final SingleRule rule, final ShardingSphereDatabase database, final QueryContext queryContext) {
@@ -116,7 +116,7 @@ public final class SingleSQLRouter implements EntranceSQLRouter<SingleRule>, Dec
                 result.add(each);
             }
         }
-        return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTables(result);
+        return sqlStatementContext.getSqlStatement() instanceof CreateTableStatement ? result : rule.getSingleTables(result, database);
     }
     
     private Collection<String> getDistributedTableNames(final ShardingSphereDatabase database) {

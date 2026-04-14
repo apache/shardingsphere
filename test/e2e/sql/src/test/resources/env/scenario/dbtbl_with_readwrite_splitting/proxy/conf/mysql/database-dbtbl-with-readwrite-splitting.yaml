@@ -245,9 +245,6 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: e2e_standard_fixture
-      keyGenerateStrategy:
-        column: item_id
-        keyGeneratorName: auto_increment
       auditStrategy:
         auditorNames:
           - auditor_constant
@@ -262,6 +259,13 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: e2e_standard_fixture
+  keyGenerateStrategies:
+    t_order_item_item_id:
+      keyGenerateType: column
+      keyGeneratorName: auto_increment
+      logicTable: t_order_item
+      keyGenerateColumn: item_id
+
   bindingTables:
     - ref_0:t_order,t_order_item,t_order_details
   shardingAlgorithms:

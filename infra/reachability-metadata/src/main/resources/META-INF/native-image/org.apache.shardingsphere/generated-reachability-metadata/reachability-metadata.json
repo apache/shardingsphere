@@ -335,13 +335,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade"
-      },
-      "type": "java.lang.Object",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService"
       },
       "type": "java.lang.Object"
@@ -4123,13 +4116,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade"
-      },
-      "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.service.TableMetaDataPersistEnabledService"
       },
       "type": "org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable",
@@ -5440,12 +5426,6 @@
     {
       "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService"
-      },
-      "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade"
       },
       "type": "org.apache.shardingsphere.mode.node.path.type.database.metadata.schema.TableMetaDataNodePath"
     },
@@ -8888,10 +8868,6 @@
           "parameterTypes": []
         },
         {
-          "name": "getKeyGenerateStrategy",
-          "parameterTypes": []
-        },
-        {
           "name": "getLogicTable",
           "parameterTypes": []
         },
@@ -8953,7 +8929,33 @@
     },
     {
       "condition": {
+        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration",
+      "allDeclaredFields": true
+    },
+    {
+      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade"
+      },
+      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration"
+    },
+    {
+      "condition": {
+        "typeReached": "org.apache.shardingsphere.mode.node.rule.tuple.YamlRuleNodeTupleSwapperEngine"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyRuleConfiguration",
       "methods": [
@@ -9031,23 +9033,10 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource"
-      },
-      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.mode.manager.cluster.ClusterContextManagerBuilder"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
-      "allDeclaredFields": true
-    },
-    {
-      "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService"
-      },
-      "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
+      "allDeclaredFields": true,
       "methods": [
         {
           "name": "getComplex",
@@ -9069,7 +9058,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade"
+        "typeReached": "org.apache.shardingsphere.mode.manager.standalone.persist.service.StandaloneMetaDataManagerPersistService"
       },
       "type": "org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration",
       "methods": [
@@ -11565,7 +11554,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"
+        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook"
     },

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import lombok.Setter;
 import org.apache.shardingsphere.distsql.handler.aware.DistSQLExecutorRuleAware;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.distsql.statement.ShowShardingTableRulesUsedKeyGeneratorStatement;
@@ -50,16 +51,22 @@ public final class ShowShardingTableRulesUsedKeyGeneratorExecutor implements Dis
         }
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         rule.getConfiguration().getTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && sqlStatement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+            if (isMatchedKeyGenerator(each.getLogicTable(), sqlStatement.getKeyGeneratorName().get())) {
                 result.add(new LocalDataQueryResultRow("table", each.getLogicTable()));
             }
         });
         rule.getConfiguration().getAutoTables().forEach(each -> {
-            if (null != each.getKeyGenerateStrategy() && sqlStatement.getKeyGeneratorName().get().equals(each.getKeyGenerateStrategy().getKeyGeneratorName())) {
+            if (isMatchedKeyGenerator(each.getLogicTable(), sqlStatement.getKeyGeneratorName().get())) {
                 result.add(new LocalDataQueryResultRow("auto_table", each.getLogicTable()));
             }
         });
         return result;
+    }
+    
+    private boolean isMatchedKeyGenerator(final String logicTable, final String keyGeneratorName) {
+        return rule.getConfiguration().getKeyGenerateStrategies().values().stream().filter(ColumnKeyGenerateStrategiesRuleConfiguration.class::isInstance)
+                .map(ColumnKeyGenerateStrategiesRuleConfiguration.class::cast)
+                .anyMatch(each -> logicTable.equalsIgnoreCase(each.getLogicTable()) && keyGeneratorName.equals(each.getKeyGeneratorName()));
     }
     
     @Override

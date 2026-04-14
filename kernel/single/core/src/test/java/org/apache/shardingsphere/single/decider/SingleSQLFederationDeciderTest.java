@@ -26,8 +26,6 @@ import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperation
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
-import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.spi.type.ordered.OrderedSPILoader;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -82,7 +80,7 @@ class SingleSQLFederationDeciderTest {
         Collection<QualifiedTable> qualifiedTables = Collections.singletonList(new QualifiedTable("foo_db", "foo_tbl"));
         SelectStatementContext selectStatementContext = createSelectStatementContext(SelectStatement.builder().databaseType(DATABASE_TYPE).build());
         SingleRule rule = createSingleRule(qualifiedTables, hasOrderDataNode);
-        when(rule.isAllTablesInSameComputeNode(any(), any())).thenReturn(allTablesInSameComputeNode);
+        when(rule.isAllTablesInSameComputeNode(any(), any(), any())).thenReturn(allTablesInSameComputeNode);
         Collection<DataNode> includedDataNodes = new HashSet<>();
         assertThat(name, decider.decide(selectStatementContext, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(false), rule, includedDataNodes), is(expectedDecideResult));
         assertThat(includedDataNodes.size(), is(expectedIncludedDataNodeSize));
@@ -93,7 +91,7 @@ class SingleSQLFederationDeciderTest {
     void assertDecideWithIncludedDataNodesAndJoinType(final String name, final SelectStatement sqlStatement, final boolean expectedDecideResult, final int expectedIncludedDataNodeSize) {
         Collection<QualifiedTable> qualifiedTables = Collections.singletonList(new QualifiedTable("foo_db", "foo_tbl"));
         SingleRule rule = createSingleRule(qualifiedTables, true);
-        when(rule.isAllTablesInSameComputeNode(any(), any())).thenReturn(true);
+        when(rule.isAllTablesInSameComputeNode(any(), any(), any())).thenReturn(true);
         SelectStatementContext selectStatementContext = createSelectStatementContext(sqlStatement);
         Collection<DataNode> includedDataNodes = new HashSet<>(Collections.singleton(new DataNode("ds_1", (String) null, "t_user")));
         assertThat(name, decider.decide(selectStatementContext, Collections.emptyList(), mock(RuleMetaData.class), createDatabase(false), rule, includedDataNodes), is(expectedDecideResult));
@@ -122,11 +120,9 @@ class SingleSQLFederationDeciderTest {
     
     private SingleRule createSingleRule(final Collection<QualifiedTable> qualifiedTables, final boolean hasOrderDataNode) {
         SingleRule result = mock(SingleRule.class);
-        when(result.getSingleTables(anyCollection())).thenReturn(qualifiedTables);
+        when(result.getSingleTables(anyCollection(), any())).thenReturn(qualifiedTables);
         when(result.getQualifiedTables(any(), any())).thenReturn(qualifiedTables);
-        MutableDataNodeRuleAttribute ruleAttribute = mock(MutableDataNodeRuleAttribute.class);
-        when(ruleAttribute.findTableDataNode("foo_db", "foo_tbl")).thenReturn(hasOrderDataNode ? Optional.of(new DataNode("ds_0", (String) null, "foo_tbl")) : Optional.empty());
-        when(result.getAttributes()).thenReturn(new RuleAttributes(ruleAttribute));
+        when(result.findTableDataNode(any(), any())).thenReturn(hasOrderDataNode ? Optional.of(new DataNode("ds_0", (String) null, "foo_tbl")) : Optional.empty());
         return result;
     }
     

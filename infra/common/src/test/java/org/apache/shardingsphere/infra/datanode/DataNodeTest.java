@@ -40,6 +40,8 @@ class DataNodeTest {
     
     private static final DatabaseType POSTGRESQL_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
     
+    private static final DatabaseType ORACLE_DATABASE_TYPE = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("dataNodeWithoutSchemaArguments")
     void assertNewDataNodeWithoutSchema(final String name, final String dataNodeText, final String expectedDataSourceName, final String expectedTableName) {
@@ -148,7 +150,8 @@ class DataNodeTest {
                 Arguments.of("postgresql_without_schema_segment", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.tbl", "ds", "*", "tbl"),
                 Arguments.of("mysql_without_schema_support", "test_db", MYSQL_DATABASE_TYPE, "ds.tbl", "ds", "test_db", "tbl"),
                 Arguments.of("mysql_three_segments_kept_as_table_suffix", "test_db", MYSQL_DATABASE_TYPE, "ds.schema.tbl", "ds", "test_db", "schema.tbl"),
-                Arguments.of("postgresql_preserves_table_case", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.TABLE", "ds", "schema", "TABLE"));
+                Arguments.of("postgresql_preserves_table_case", "test_db", POSTGRESQL_DATABASE_TYPE, "ds.schema.TABLE", "ds", "schema", "TABLE"),
+                Arguments.of("oracle_normalizes_database_schema", "logic_db", ORACLE_DATABASE_TYPE, "ds.tbl", "ds", "LOGIC_DB", "tbl"));
     }
     
     private static Stream<Arguments> formatArguments() {

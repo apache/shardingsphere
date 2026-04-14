@@ -42,7 +42,6 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ShardingTableRuleStatementConverterTest {
@@ -56,18 +55,13 @@ class ShardingTableRuleStatementConverterTest {
         assertThat(tableRule.getActualDataNodes(), is("ds0,ds1"));
         assertThat(tableRule.getDatabaseShardingStrategy().getShardingAlgorithmName(), is("t_order_database_inline"));
         assertThat(tableRule.getTableShardingStrategy().getShardingAlgorithmName(), is("t_order_table_order_id_algorithm"));
-        assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
-        assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         assertThat(config.getAutoTables().size(), is(2));
         Iterator<ShardingAutoTableRuleConfiguration> autoTableConfigs = config.getAutoTables().iterator();
         ShardingAutoTableRuleConfiguration autoTableRule = autoTableConfigs.next();
         assertThat(autoTableRule.getLogicTable(), is("t_order"));
         assertThat(autoTableRule.getActualDataSources(), is("ds0,ds1"));
         assertThat(autoTableRule.getShardingStrategy().getShardingAlgorithmName(), is("t_order_mod"));
-        assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
-        assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         autoTableRule = autoTableConfigs.next();
-        assertThat(autoTableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_2_snowflake"));
         assertThat(config.getShardingAlgorithms().size(), is(4));
         assertThat(config.getShardingAlgorithms().get("t_order_mod").getType(), is("mod"));
         assertThat(config.getShardingAlgorithms().get("t_order_mod").getProps().getProperty("sharding_count"), is("2"));
@@ -92,16 +86,12 @@ class ShardingTableRuleStatementConverterTest {
         assertThat(tableRule.getLogicTable(), is("t_order"));
         assertThat(tableRule.getActualDataNodes(), is("ds0,ds1"));
         assertThat(tableRule.getDatabaseShardingStrategy().getType(), is(""));
-        assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("t_order_snowflake"));
-        assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
         assertThat(config.getKeyGenerateStrategies().get("t_order_order_id").getKeyGeneratorName(), is("t_order_snowflake"));
     }
     
     @Test
     void assertConvertWithoutKeyGenerateStrategy() {
         ShardingRuleConfiguration config = ShardingTableRuleStatementConverter.convert(createTableRuleSegmentWithoutKeyGenerateStrategy());
-        ShardingTableRuleConfiguration tableRule = config.getTables().iterator().next();
-        assertNull(tableRule.getKeyGenerateStrategy());
         assertTrue(config.getKeyGenerators().isEmpty());
         assertTrue(config.getKeyGenerateStrategies().isEmpty());
     }
@@ -109,9 +99,6 @@ class ShardingTableRuleStatementConverterTest {
     @Test
     void assertConvertWithReferencedKeyGenerator() {
         ShardingRuleConfiguration config = ShardingTableRuleStatementConverter.convert(createTableRuleSegmentWithReferencedKeyGenerator());
-        ShardingTableRuleConfiguration tableRule = config.getTables().iterator().next();
-        assertThat(tableRule.getKeyGenerateStrategy().getColumn(), is("order_id"));
-        assertThat(tableRule.getKeyGenerateStrategy().getKeyGeneratorName(), is("existing_snowflake"));
         assertTrue(config.getKeyGenerators().isEmpty());
         assertThat(config.getKeyGenerateStrategies().get("t_order_order_id").getKeyGeneratorName(), is("existing_snowflake"));
     }

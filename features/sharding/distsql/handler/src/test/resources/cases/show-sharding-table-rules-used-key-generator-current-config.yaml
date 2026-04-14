@@ -24,9 +24,12 @@ rules:
           standard:
             shardingColumn: order_id
             shardingAlgorithmName: table_inline
-        keyGenerateStrategy:
-          column: order_id
-          keyGeneratorName: snowflake_key_generator
+    keyGenerateStrategies:
+      t_order_order_id:
+        keyGenerateType: column
+        keyGeneratorName: snowflake_key_generator
+        logicTable: t_order
+        keyGenerateColumn: order_id
 
     keyGenerators:
       snowflake_key_generator:

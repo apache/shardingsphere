@@ -71,16 +71,19 @@ public final class DataNode {
      */
     public DataNode(final String databaseName, final DatabaseType databaseType, final String dataNode) {
         ShardingSpherePreconditions.checkState(dataNode.contains(DELIMITER), () -> new InvalidDataNodeFormatException(dataNode));
-        DialectDatabaseMetaData dialectDatabaseMetaData = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData();
+        DatabaseTypeRegistry registry = new DatabaseTypeRegistry(databaseType);
+        DialectDatabaseMetaData dialectDatabaseMetaData = registry.getDialectDatabaseMetaData();
         boolean containsSchema = dialectDatabaseMetaData.getSchemaOption().isSchemaAvailable() && isValidDataNode(dataNode, 3);
+        String defaultSchemaName = registry.getDefaultSchemaName(databaseName);
         List<String> segments = Splitter.on(DELIMITER).limit(containsSchema ? 3 : 2).splitToList(dataNode);
         dataSourceName = segments.get(0);
-        schemaName = getSchemaName(databaseName, dialectDatabaseMetaData, containsSchema, segments);
+        schemaName = getSchemaName(dialectDatabaseMetaData, containsSchema, segments, defaultSchemaName);
         tableName = containsSchema ? segments.get(2) : segments.get(1);
     }
     
-    private String getSchemaName(final String databaseName, final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments) {
-        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(databaseName);
+    private String getSchemaName(final DialectDatabaseMetaData dialectDatabaseMetaData, final boolean containsSchema, final List<String> segments,
+                                 final String defaultSchemaName) {
+        return dialectDatabaseMetaData.getSchemaOption().getDefaultSchema().map(optional -> containsSchema ? segments.get(1) : ASTERISK).orElse(defaultSchemaName);
     }
     
     private boolean isValidDataNode(final String dataNodeStr, final int tier) {

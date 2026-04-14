@@ -19,13 +19,13 @@ package org.apache.shardingsphere.sharding.distsql.handler.converter;
 
 import org.apache.shardingsphere.distsql.handler.engine.query.ral.convert.RuleConfigurationToDistSQLConverter;
 import org.apache.shardingsphere.infra.algorithm.core.config.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.keygen.impl.ColumnKeyGenerateStrategiesRuleConfiguration;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
 import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.junit.jupiter.api.Test;
@@ -60,6 +60,7 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
         shardingRuleConfig.getShardingAlgorithms().put("database_inline", createShardingInlineAlgorithmConfiguration("ds_${user_id % 2}"));
         shardingRuleConfig.getShardingAlgorithms().put("t_order_inline", createShardingInlineAlgorithmConfiguration("t_order_${order_id % 2}"));
         shardingRuleConfig.getKeyGenerators().put("snowflake", createKeyGeneratorConfiguration());
+        shardingRuleConfig.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
         shardingRuleConfig.getAuditors().put("sharding_key_required_auditor", createAuditorConfiguration());
         assertThat(converter.convert(shardingRuleConfig),
                 is("CREATE SHARDING TABLE RULE t_order (" + System.lineSeparator() + "DATANODES('ds_${0..1}.t_order_${0..1}')," + System.lineSeparator()
@@ -74,7 +75,6 @@ class ShardingRuleConfigurationToDistSQLConverterTest {
     private ShardingTableRuleConfiguration createShardingTableRuleConfiguration() {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         result.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_inline"));
-        result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
         result.setAuditStrategy(new ShardingAuditStrategyConfiguration(Collections.singleton("sharding_key_required_auditor"), true));
         return result;
     }
