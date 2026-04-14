@@ -165,7 +165,7 @@ ds_0:
 
 ### /metadata/${databaseName}/rules/sharding/tables/t_order/versions/0
 
-分片规则配置。
+分片表元数据节点持久化内容，不是用户直接编写的规则 YAML 格式。
 
 ```yaml
 actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -177,14 +177,22 @@ databaseStrategy:
   standard:
     shardingAlgorithmName: t_order_database_inline
     shardingColumn: user_id
-keyGenerateStrategy:
-  column: another_id
-  keyGeneratorName: t_order_snowflake
 logicTable: t_order
 tableStrategy:
   standard:
     shardingAlgorithmName: t_order_table_inline
     shardingColumn: order_id
+```
+
+### /metadata/${databaseName}/rules/sharding/key_generate_strategies/t_order_another_id/versions/0
+
+分布式序列策略元数据节点持久化内容。
+
+```yaml
+keyGenerateType: column
+keyGeneratorName: t_order_snowflake
+logicTable: t_order
+keyGenerateColumn: another_id
 ```
 
 ### /metadata/${databaseName}/schemas/${schemaName}/tables/t_order/versions/0

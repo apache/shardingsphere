@@ -269,9 +269,12 @@ The same applies to `actualDataNodes` for the `Sharding` feature.
    tables:
       t_order:
          actualDataNodes: <LITERAL>ds_0.t_order_0, ds_0.t_order_1, ds_1.t_order_0, ds_1.t_order_1
-         keyGenerateStrategy:
-            column: order_id
-            keyGeneratorName: snowflake
+   keyGenerateStrategies:
+      t_order_order_id:
+         keyGenerateType: column
+         keyGeneratorName: snowflake
+         logicTable: t_order
+         keyGenerateColumn: order_id
 ```
 
 3. Users still need to configure GraalVM Reachability Metadata for independent files in the `src/main/resources/META-INF/native-image` 

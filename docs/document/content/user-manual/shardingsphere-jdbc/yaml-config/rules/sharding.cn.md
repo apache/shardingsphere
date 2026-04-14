@@ -26,9 +26,6 @@ rules:
           shardingAlgorithmName: # 分片算法名称
         none: # 不分片
       tableStrategy: # 分表策略，同分库策略
-      keyGenerateStrategy: # 分布式序列策略
-        column: # 自增列名称，缺省表示不使用自增主键生成器
-        keyGeneratorName: # 分布式序列算法名称
       auditStrategy: # 分片审计策略
         auditorNames: # 分片审计算法名称
           - <auditor_name>
@@ -48,6 +45,13 @@ rules:
   defaultTableStrategy: # 默认表分片策略
   defaultKeyGenerateStrategy: # 默认的分布式序列策略
   defaultShardingColumn: # 默认分片列名称
+  keyGenerateStrategies:
+    <key_generate_strategy_name> (+): # 分布式序列策略名称
+      keyGenerateType: # 分布式序列策略类型
+      keyGeneratorName: # 分布式序列算法名称
+      logicTable: # 逻辑表名称，keyGenerateType 为 column 时需要配置
+      keyGenerateColumn: # 自增列名称，keyGenerateType 为 column 时需要配置
+      keyGenerateSequence: # 序列名称，keyGenerateType 为 sequence 时需要配置
   
   # 分片算法配置
   shardingAlgorithms:
@@ -108,9 +112,6 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_inline
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
       auditStrategy:
         auditorNames:
           - sharding_key_required_auditor
@@ -121,17 +122,11 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_item_inline
-      keyGenerateStrategy:
-        column: order_item_id
-        keyGeneratorName: snowflake
     t_account:
       actualDataNodes: ds_${0..1}.t_account_${0..1}
       tableStrategy:
         standard:
           shardingAlgorithmName: t_account_inline
-      keyGenerateStrategy:
-        column: account_id
-        keyGeneratorName: snowflake
   defaultShardingColumn: account_id
   bindingTables:
     - t_order,t_order_item
@@ -141,6 +136,22 @@ rules:
       shardingAlgorithmName: database_inline
   defaultTableStrategy:
     none:
+  keyGenerateStrategies:
+    t_order_order_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order
+      keyGenerateColumn: order_id
+    t_order_item_order_item_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order_item
+      keyGenerateColumn: order_item_id
+    t_account_account_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_account
+      keyGenerateColumn: account_id
   
   shardingAlgorithms:
     database_inline:

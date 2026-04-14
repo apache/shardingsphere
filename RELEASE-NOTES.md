@@ -4,6 +4,7 @@
 
 1. DistSQL: Add DistSQL to manage sharding key generate strategies - [#38572](https://github.com/apache/shardingsphere/pull/38572)
 1. DistSQL: Add DistSQL to manage sharding key generators - [#38576](https://github.com/apache/shardingsphere/pull/38576)
+1. SHARDING: Adjustment sharding api to support column-level auto-increment and global auto-increment for key generate strategy -[#38528](https://github.com/apache/shardingsphere/pull/38528)
 
 ### Bug Fixes
 

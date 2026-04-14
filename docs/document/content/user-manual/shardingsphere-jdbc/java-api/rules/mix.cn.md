@@ -21,12 +21,12 @@ private ShardingRuleConfiguration createShardingRuleConfiguration() {
     result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
     result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
     result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
+    result.getKeyGenerateStrategies().put("t_order_order_id", new ColumnKeyGenerateStrategiesRuleConfiguration("snowflake", "t_order", "order_id"));
     return result;
 }
 
 private ShardingTableRuleConfiguration getOrderTableRuleConfiguration() {
     ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("t_order", "demo_ds_${0..1}.t_order_${[0, 1]}");
-    result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake"));
     return result;
 }
 
