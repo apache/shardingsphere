@@ -69,14 +69,9 @@ public final class SingleTableDataNodeLoader {
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return load(databaseName, dataSourceMap, Collections.emptySet(), excludedTables);
         }
-        Collection<String> configuredDataSources = new HashSet<>();
-        Collection<String> includedTables = new CaseInsensitiveSet<>(splitTables.size(), 1F);
-        for (String each : splitTables) {
-            DataNode configuredDataNode = new DataNode(each);
-            configuredDataSources.add(configuredDataNode.getDataSourceName());
-            includedTables.add(configuredDataNode.getTableName());
-        }
-        includedTables.addAll(featureRequiredSingleTables);
+        Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(splitTables);
+        Collection<String> configuredDataSources = getConfiguredDataSources(configuredDataNodes);
+        Collection<String> includedTables = getIncludedTables(configuredDataNodes, featureRequiredSingleTables);
         Map<String, DataSource> validDataSources = dataSourceMap.entrySet().stream().filter(entry -> configuredDataSources.contains(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, validDataSources, includedTables, excludedTables);
@@ -121,6 +116,38 @@ public final class SingleTableDataNodeLoader {
             }
         }
         return result;
+    }
+    
+    private static Collection<DataNode> getConfiguredDataNodes(final Collection<String> splitTables) {
+        return splitTables.stream().map(DataNode::new).collect(Collectors.toList());
+    }
+    
+    private static Collection<String> getConfiguredDataSources(final Collection<DataNode> configuredDataNodes) {
+        Collection<String> result = new HashSet<>(configuredDataNodes.size(), 1F);
+        for (DataNode each : configuredDataNodes) {
+            result.add(each.getDataSourceName());
+        }
+        return result;
+    }
+    
+    private static Collection<String> getIncludedTables(final Collection<DataNode> configuredDataNodes, final Collection<String> featureRequiredSingleTables) {
+        if (!featureRequiredSingleTables.isEmpty() || !isSafeToFilterBeforeLoad(configuredDataNodes)) {
+            return Collections.emptySet();
+        }
+        Collection<String> result = new CaseInsensitiveSet<>(configuredDataNodes.size(), 1F);
+        for (DataNode each : configuredDataNodes) {
+            result.add(each.getTableName());
+        }
+        return result;
+    }
+    
+    private static boolean isSafeToFilterBeforeLoad(final Collection<DataNode> configuredDataNodes) {
+        for (DataNode each : configuredDataNodes) {
+            if (null != each.getSchemaName() && !SingleTableConstants.ASTERISK.equals(each.getSchemaName())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     private static Map<String, Collection<DataNode>> loadSpecifiedDataNodes(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<String> featureRequiredSingleTables,

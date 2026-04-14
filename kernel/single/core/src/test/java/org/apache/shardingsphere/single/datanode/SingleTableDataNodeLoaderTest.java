@@ -104,12 +104,12 @@ class SingleTableDataNodeLoaderTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadWithConfiguredTableMapRuleArguments")
-    void assertLoadWithConfiguredTableMapRules(final String name, final Collection<String> splitTables,
+    void assertLoadWithConfiguredTableMapRules(final String name, final Collection<String> configuredTables, final Collection<String> splitTables,
                                                final Collection<DataNode> configuredDataNodes, final Map<String, Collection<String>> expectedTableDataSources) {
         try (MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS)) {
-            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(Collections.singleton("foo_ds.foo_tbl2"))).thenReturn(splitTables);
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.splitTableLines(configuredTables)).thenReturn(splitTables);
             mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, splitTables)).thenReturn(configuredDataNodes);
-            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), Collections.singleton("foo_ds.foo_tbl2"));
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), configuredTables);
             assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(expectedTableDataSources.keySet())));
             assertTableDataSources(actual, expectedTableDataSources);
         }
@@ -213,19 +213,26 @@ class SingleTableDataNodeLoaderTest {
     }
     
     private static Stream<Arguments> loadWithConfiguredTableMapRuleArguments() {
-        Map<String, Collection<String>> wildcardExpectedDataSources = new LinkedHashMap<>(1, 1F);
-        wildcardExpectedDataSources.put("foo_tbl2", Collections.singleton("foo_ds"));
+        Map<String, Collection<String>> schemaWildcardExpectedDataSources = new LinkedHashMap<>(1, 1F);
+        schemaWildcardExpectedDataSources.put("foo_tbl2", Collections.singleton("foo_ds"));
+        Map<String, Collection<String>> tableWildcardExpectedDataSources = new LinkedHashMap<>(2, 1F);
+        tableWildcardExpectedDataSources.put("foo_tbl1", Collections.singleton("foo_ds"));
+        tableWildcardExpectedDataSources.put("foo_tbl2", Collections.singleton("foo_ds"));
         return Stream.of(
-                Arguments.arguments("configured data source not found", new LinkedHashSet<>(Collections.singleton("other_ds.foo_tbl2")),
+                Arguments.arguments("configured data source not found", Collections.singleton("other_ds.foo_tbl2"),
+                        new LinkedHashSet<>(Collections.singleton("other_ds.foo_tbl2")),
                         Collections.singleton(new DataNode("other_ds", "foo_db", "foo_tbl2")), Collections.emptyMap()),
-                Arguments.arguments("configured wildcard schema", new LinkedHashSet<>(Collections.singleton("foo_ds.*.foo_tbl2")),
+                Arguments.arguments("configured wildcard schema", Collections.singleton("foo_ds.*.foo_tbl2"),
+                        new LinkedHashSet<>(Collections.singleton("foo_ds.*.foo_tbl2")),
                         Collections.singleton(new DataNode("foo_ds", "*", "foo_tbl2")),
-                        createExpectedTableDataSources(wildcardExpectedDataSources)),
-                Arguments.arguments("configured schema not matched", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),
+                        createExpectedTableDataSources(schemaWildcardExpectedDataSources)),
+                Arguments.arguments("configured schema not matched", Collections.singleton("foo_ds.other_schema.foo_tbl2"),
+                        new LinkedHashSet<>(Collections.singleton("foo_ds.other_schema.foo_tbl2")),
                         Collections.singleton(new DataNode("foo_ds", "other_schema", "foo_tbl2")), Collections.emptyMap()),
-                Arguments.arguments("configured table wildcard", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),
+                Arguments.arguments("configured table wildcard", Collections.singleton("foo_ds.foo_db.*"),
+                        new LinkedHashSet<>(Collections.singleton("foo_ds.foo_db.*")),
                         Collections.singleton(new DataNode("foo_ds", "foo_db", "*")),
-                        createExpectedTableDataSources(wildcardExpectedDataSources)));
+                        createExpectedTableDataSources(tableWildcardExpectedDataSources)));
     }
     
     private static Map<String, Collection<String>> createExpectedTableDataSources(final Map<String, Collection<String>> tableDataSources) {
