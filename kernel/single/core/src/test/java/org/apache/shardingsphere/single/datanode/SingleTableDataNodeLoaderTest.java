@@ -141,7 +141,7 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadWithDataSourceMap() {
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", dataSourceMap, Collections.singleton("foo_tbl2"));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", dataSourceMap, Collections.emptySet(), Collections.singleton("foo_tbl2"));
         assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Arrays.asList("foo_tbl1", "bar_tbl1", "bar_tbl2"))));
         assertThat(new TreeSet<>(actual.get("bar_tbl1").stream().map(DataNode::getDataSourceName).collect(Collectors.toList())), is(new TreeSet<>(Collections.singleton("bar_ds"))));
     }
@@ -150,7 +150,7 @@ class SingleTableDataNodeLoaderTest {
     void assertLoadWithDataSourceMapPreservesCaseSensitiveTableNames() throws SQLException {
         Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(1, 1F);
         localDataSourceMap.put("foo_ds", mockDataSource("foo_ds", Arrays.asList("Test3", "test3")));
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", localDataSourceMap, Collections.emptyList());
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", localDataSourceMap, Collections.emptySet(), Collections.emptySet());
         assertTrue(actual.containsKey("Test3"));
         assertTrue(actual.containsKey("test3"));
         assertThat(actual.get("Test3").iterator().next().getTableName(), is("Test3"));
@@ -162,7 +162,7 @@ class SingleTableDataNodeLoaderTest {
         Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(2, 1F);
         localDataSourceMap.put("foo_ds", mockDataSource("foo_ds", Collections.singletonList("foo_tbl")));
         localDataSourceMap.put("FOO_DS", mockDataSource("FOO_DS", Collections.singletonList("foo_tbl")));
-        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", localDataSourceMap, Collections.emptyList());
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", localDataSourceMap, Collections.emptySet(), Collections.emptySet());
         assertThat(actual.get("foo_tbl").size(), is(2));
         assertThat(actual.get("foo_tbl").stream().map(DataNode::getDataSourceName).collect(Collectors.toCollection(LinkedHashSet::new)),
                 is(new LinkedHashSet<>(Arrays.asList("foo_ds", "FOO_DS"))));
@@ -170,7 +170,8 @@ class SingleTableDataNodeLoaderTest {
     
     @Test
     void assertLoadSchemaTableNames() {
-        Map<String, Collection<String>> actual = SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSourceMap.get("foo_ds"), "foo_ds", Collections.singleton("foo_tbl2"));
+        Map<String, Collection<String>> actual = SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSourceMap.get("foo_ds"), "foo_ds",
+                Collections.emptySet(), Collections.singleton("foo_tbl2"));
         assertThat(new TreeSet<>(actual.keySet()), is(new TreeSet<>(Collections.singleton("foo_db"))));
         assertThat(new TreeSet<>(actual.get("foo_db")), is(new TreeSet<>(Collections.singleton("foo_tbl1"))));
     }
@@ -181,7 +182,7 @@ class SingleTableDataNodeLoaderTest {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(expected);
         SingleTablesLoadingException actual = assertThrows(SingleTablesLoadingException.class,
-                () -> SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSource, "foo_ds", Collections.emptyList()));
+                () -> SingleTableDataNodeLoader.loadSchemaTableNames("foo_db", databaseType, dataSource, "foo_ds", Collections.emptySet(), Collections.emptySet()));
         assertThat(actual.getCause(), is(expected));
     }
     
@@ -212,13 +213,12 @@ class SingleTableDataNodeLoaderTest {
     }
     
     private static Stream<Arguments> loadWithConfiguredTableMapRuleArguments() {
-        Map<String, Collection<String>> wildcardExpectedDataSources = new LinkedHashMap<>(2, 1F);
-        wildcardExpectedDataSources.put("foo_tbl1", Collections.singleton("foo_ds"));
+        Map<String, Collection<String>> wildcardExpectedDataSources = new LinkedHashMap<>(1, 1F);
         wildcardExpectedDataSources.put("foo_tbl2", Collections.singleton("foo_ds"));
         return Stream.of(
                 Arguments.arguments("configured data source not found", new LinkedHashSet<>(Collections.singleton("other_ds.foo_tbl2")),
                         Collections.singleton(new DataNode("other_ds", "foo_db", "foo_tbl2")), Collections.emptyMap()),
-                Arguments.arguments("configured wildcard schema", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),
+                Arguments.arguments("configured wildcard schema", new LinkedHashSet<>(Collections.singleton("foo_ds.*.foo_tbl2")),
                         Collections.singleton(new DataNode("foo_ds", "*", "foo_tbl2")),
                         createExpectedTableDataSources(wildcardExpectedDataSources)),
                 Arguments.arguments("configured schema not matched", new LinkedHashSet<>(Collections.singleton("foo_ds.foo_tbl2")),

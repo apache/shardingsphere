@@ -40,6 +40,8 @@ import java.util.Map;
  */
 public final class SchemaMetaDataLoader {
     
+    private static final String WILDCARD = "*";
+    
     private static final String TABLE_TYPE = "TABLE";
     
     private static final String PARTITIONED_TABLE_TYPE = "PARTITIONED TABLE";
@@ -69,17 +71,19 @@ public final class SchemaMetaDataLoader {
      *
      * @param databaseName database name
      * @param dataSource data source
+     * @param includedTables included tables
      * @param excludedTables excluded tables
      * @return loaded schema table names
      * @throws SQLException SQL exception
      */
-    public Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DataSource dataSource, final Collection<String> excludedTables) throws SQLException {
+    public Map<String, Collection<String>> loadSchemaTableNames(final String databaseName, final DataSource dataSource, final Collection<String> includedTables,
+                                                                final Collection<String> excludedTables) throws SQLException {
         try (MetaDataLoaderConnection connection = new MetaDataLoaderConnection(databaseType, dataSource.getConnection())) {
             Collection<String> schemaNames = loadSchemaNames(connection);
             Map<String, Collection<String>> result = new LinkedHashMap<>(schemaNames.size(), 1F);
             for (String each : schemaNames) {
                 String schemaName = schemaOption.getDefaultSchema().isPresent() ? each : new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(databaseName);
-                result.put(schemaName, loadTableNames(connection, each, excludedTables));
+                result.put(schemaName, loadTableNames(connection, each, includedTables, excludedTables));
             }
             return result;
         }
@@ -109,18 +113,27 @@ public final class SchemaMetaDataLoader {
         return result.isEmpty() ? Collections.singletonList(connection.getSchema()) : result;
     }
     
-    private Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> excludedTables) throws SQLException {
+    private Collection<String> loadTableNames(final Connection connection, final String schemaName, final Collection<String> includedTables,
+                                              final Collection<String> excludedTables) throws SQLException {
         Collection<String> result = new LinkedHashSet<>();
         String[] tableTypes = new String[]{TABLE_TYPE, PARTITIONED_TABLE_TYPE, VIEW_TYPE, SYSTEM_TABLE_TYPE, SYSTEM_VIEW_TYPE};
         try (ResultSet resultSet = connection.getMetaData().getTables(connection.getCatalog(), schemaName, null, tableTypes)) {
             while (resultSet.next()) {
-                String table = resultSet.getString(TABLE_NAME);
-                if (!isSystemTable(table) && !excludedTables.contains(table)) {
-                    result.add(table);
+                String tableName = resultSet.getString(TABLE_NAME);
+                if (isSystemTable(tableName) || excludedTables.contains(tableName)) {
+                    continue;
                 }
+                if (!includedTables.isEmpty() && !isIncludedTable(tableName, includedTables)) {
+                    continue;
+                }
+                result.add(tableName);
             }
         }
         return result;
+    }
+    
+    private boolean isIncludedTable(final String tableName, final Collection<String> includedTables) {
+        return includedTables.contains(WILDCARD) || includedTables.contains(tableName);
     }
     
     private boolean isSystemTable(final String table) {

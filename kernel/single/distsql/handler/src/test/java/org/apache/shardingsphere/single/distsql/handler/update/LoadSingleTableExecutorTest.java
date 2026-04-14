@@ -177,7 +177,7 @@ class LoadSingleTableExecutorTest {
         prepareSchema(false, "foo_db");
         when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(aggregatedDataSources);
         if (aggregatedDataSources.containsKey("foo_ds")) {
-            when(SingleTableDataNodeLoader.loadSchemaTableNames(eq("foo_db"), any(), any(), eq("foo_ds"), eq(Collections.emptyList()))).thenReturn(schemaTableNames);
+            when(SingleTableDataNodeLoader.loadSchemaTableNames(eq("foo_db"), any(), any(), eq("foo_ds"), eq(Collections.emptySet()), eq(Collections.emptySet()))).thenReturn(schemaTableNames);
         }
     }
     

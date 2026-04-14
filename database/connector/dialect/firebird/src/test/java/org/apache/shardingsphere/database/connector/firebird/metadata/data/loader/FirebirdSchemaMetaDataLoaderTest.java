@@ -81,7 +81,7 @@ class FirebirdSchemaMetaDataLoaderTest {
     @Test
     void assertLoadSchemaTableNames() throws SQLException {
         Map<String, Collection<String>> schemaTableNames = Collections.singletonMap("FOO_DB", new CaseInsensitiveSet<>(Arrays.asList("tbl", "partitioned_tbl")));
-        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptyList()), is(schemaTableNames));
+        assertThat(new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("foo_db", dataSource, Collections.emptySet(), Collections.emptySet()), is(schemaTableNames));
     }
     
     @Test

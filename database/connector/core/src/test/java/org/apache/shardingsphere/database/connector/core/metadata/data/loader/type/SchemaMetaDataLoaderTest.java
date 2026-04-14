@@ -82,7 +82,7 @@ class SchemaMetaDataLoaderTest {
                 when(tableResultSet.getString("TABLE_NAME")).thenReturn("tbl", "$tbl", "/tbl", "##tbl", "excluded_tbl");
                 when(connection.getMetaData().getTables("catalog", "public", null, TABLE_TYPES)).thenReturn(tableResultSet);
                 Map<String, Collection<String>> actual = new SchemaMetaDataLoader(databaseType)
-                        .loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.singleton("excluded_tbl"));
+                        .loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.emptySet(), Collections.singleton("excluded_tbl"));
                 Map<String, Collection<String>> expected = Collections.singletonMap("logic_db", new LinkedHashSet<>(Collections.singleton("tbl")));
                 assertThat(actual, is(expected));
             }
@@ -108,7 +108,7 @@ class SchemaMetaDataLoaderTest {
                 when(tableResultSet.getString("TABLE_NAME")).thenReturn("tbl");
                 when(connection.getMetaData().getTables("catalog", "public", null, TABLE_TYPES)).thenReturn(tableResultSet);
                 Map<String, Collection<String>> actual = new SchemaMetaDataLoader(databaseType)
-                        .loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.emptyList());
+                        .loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.emptySet(), Collections.emptySet());
                 Map<String, Collection<String>> expected = Collections.singletonMap("LOGIC_DB", new LinkedHashSet<>(Collections.singleton("tbl")));
                 assertThat(actual, is(expected));
             }
@@ -138,7 +138,8 @@ class SchemaMetaDataLoaderTest {
                 when(tableResultSet.next()).thenReturn(true, false);
                 when(tableResultSet.getString("TABLE_NAME")).thenReturn("tbl_visible");
                 when(connection.getMetaData().getTables("catalog_2", "user_schema", null, TABLE_TYPES)).thenReturn(tableResultSet);
-                Map<String, Collection<String>> actual = new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db_2", dataSourceWithDefaultSchema, Collections.emptyList());
+                Map<String, Collection<String>> actual =
+                        new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db_2", dataSourceWithDefaultSchema, Collections.emptySet(), Collections.emptySet());
                 Map<String, Collection<String>> expected = Collections.singletonMap("user_schema", new LinkedHashSet<>(Collections.singleton("tbl_visible")));
                 assertThat(actual, is(expected));
             }
@@ -168,7 +169,8 @@ class SchemaMetaDataLoaderTest {
                 when(tableResultSet.next()).thenReturn(true, true, false);
                 when(tableResultSet.getString("TABLE_NAME")).thenReturn("Test3", "test3");
                 when(connection.getMetaData().getTables("catalog_3", "public", null, TABLE_TYPES)).thenReturn(tableResultSet);
-                Map<String, Collection<String>> actual = new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db_3", dataSourceWithDefaultSchema, Collections.emptyList());
+                Map<String, Collection<String>> actual =
+                        new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db_3", dataSourceWithDefaultSchema, Collections.emptySet(), Collections.emptySet());
                 assertThat(actual.get("public"), is(new LinkedHashSet<>(Arrays.asList("Test3", "test3"))));
             }
         }
