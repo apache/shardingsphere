@@ -134,6 +134,18 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @Test
+    void assertLoadWithFeatureRequiredSingleTablesAndSingleDataSource() {
+        Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(1, 1F);
+        localDataSourceMap.put("foo_ds", dataSourceMap.get("foo_ds"));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                "foo_db", databaseType, localDataSourceMap, Collections.singleton(createRule(Collections.emptyList(), Collections.singleton("foo_tbl1"))), Collections.singleton("foo_ds.foo_tbl2"));
+        assertTrue(actual.containsKey("foo_tbl1"));
+        assertTrue(actual.containsKey("foo_tbl2"));
+        assertThat(actual.get("foo_tbl1").iterator().next().getDataSourceName(), is("foo_ds"));
+        assertThat(actual.get("foo_tbl2").iterator().next().getDataSourceName(), is("foo_ds"));
+    }
+    
+    @Test
     void assertLoadWithEmptyConfiguredTablesAndFeatureRequiredSingleTables() {
         assertTrue(SingleTableDataNodeLoader.load(
                 "foo_db", databaseType, dataSourceMap, Collections.singleton(createRule(Collections.emptyList(), Collections.singleton("foo_tbl1"))), Collections.emptyList()).isEmpty());

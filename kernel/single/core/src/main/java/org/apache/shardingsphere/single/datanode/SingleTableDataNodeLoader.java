@@ -71,7 +71,7 @@ public final class SingleTableDataNodeLoader {
         }
         Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(splitTables);
         Collection<String> configuredDataSources = getConfiguredDataSources(configuredDataNodes);
-        Collection<String> includedTables = getIncludedTables(configuredDataNodes, featureRequiredSingleTables);
+        Collection<String> includedTables = getIncludedTables(dataSourceMap, configuredDataNodes, featureRequiredSingleTables);
         Map<String, DataSource> validDataSources = dataSourceMap.entrySet().stream().filter(entry -> configuredDataSources.contains(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
         Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, validDataSources, includedTables, excludedTables);
@@ -130,14 +130,16 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Collection<String> getIncludedTables(final Collection<DataNode> configuredDataNodes, final Collection<String> featureRequiredSingleTables) {
-        if (!featureRequiredSingleTables.isEmpty() || !isSafeToFilterBeforeLoad(configuredDataNodes)) {
+    private static Collection<String> getIncludedTables(final Map<String, DataSource> dataSourceMap, final Collection<DataNode> configuredDataNodes,
+                                                        final Collection<String> featureRequiredSingleTables) {
+        if (!isSafeToFilterBeforeLoad(configuredDataNodes) || !isSingleDataSource(dataSourceMap) && !featureRequiredSingleTables.isEmpty()) {
             return Collections.emptySet();
         }
-        Collection<String> result = new CaseInsensitiveSet<>(configuredDataNodes.size(), 1F);
+        Collection<String> result = new CaseInsensitiveSet<>(configuredDataNodes.size() + featureRequiredSingleTables.size(), 1F);
         for (DataNode each : configuredDataNodes) {
             result.add(each.getTableName());
         }
+        result.addAll(featureRequiredSingleTables);
         return result;
     }
     
@@ -148,6 +150,10 @@ public final class SingleTableDataNodeLoader {
             }
         }
         return true;
+    }
+    
+    private static boolean isSingleDataSource(final Map<String, DataSource> dataSourceMap) {
+        return 1 == dataSourceMap.size();
     }
     
     private static Map<String, Collection<DataNode>> loadSpecifiedDataNodes(final Map<String, Collection<DataNode>> actualDataNodes, final Collection<String> featureRequiredSingleTables,
