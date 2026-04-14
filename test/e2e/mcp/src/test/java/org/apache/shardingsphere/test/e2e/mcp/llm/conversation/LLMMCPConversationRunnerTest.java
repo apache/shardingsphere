@@ -380,7 +380,7 @@ class LLMMCPConversationRunnerTest {
                         new StubMCPInteractionClient(Map.of()),
                         "model_service_unavailable", "Conversation was interrupted.", true, true),
                 Arguments.of("model illegal state",
-                        createIllegalStateChatClient("Model quota exceeded."),
+                        createIllegalStateChatClient(),
                         new StubMCPInteractionClient(Map.of()),
                         "model_service_unavailable", "Model quota exceeded.", true, false));
     }
@@ -501,17 +501,16 @@ class LLMMCPConversationRunnerTest {
         };
     }
     
-    private static LLMChatClient createIllegalStateChatClient(final String message) {
+    private static LLMChatClient createIllegalStateChatClient() {
         return new LLMChatClient() {
             
             @Override
             public void waitUntilReady() {
-                throw new IllegalStateException(message);
+                throw new IllegalStateException("Model quota exceeded.");
             }
             
             @Override
-            public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
-                                              final String toolChoice, final boolean jsonResponse) {
+            public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools, final String toolChoice, final boolean jsonResponse) {
                 throw new UnsupportedOperationException("Should not reach complete.");
             }
         };
