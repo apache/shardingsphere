@@ -65,9 +65,7 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws InterruptedException interrupted exception
      * @throws UnsupportedOperationException unsupported operation exception
      */
-    default MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException {
-        throw new UnsupportedOperationException("resources/read is not supported.");
-    }
+    MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException;
     
     @Override
     void close() throws IOException, InterruptedException;
