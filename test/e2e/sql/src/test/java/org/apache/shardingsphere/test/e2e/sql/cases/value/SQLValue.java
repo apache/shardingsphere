@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.util.datetime.DateTimeFormatterFactory;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -40,7 +39,10 @@ public final class SQLValue {
     
     private final int index;
     
+    private final String literalValue;
+    
     public SQLValue(final String value, final String type, final int index) {
+        literalValue = value;
         this.value = null == type ? value : getValue(value, type.toLowerCase());
         this.index = index;
     }
@@ -102,10 +104,7 @@ public final class SQLValue {
             case "timestamp":
                 return getDatetimeValue(value);
             case "time":
-                if (value.length() > 8) {
-                    return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getFullTimeFormatter()));
-                }
-                return Time.valueOf(LocalTime.parse(value, DateTimeFormatterFactory.getTimeFormatter()));
+                return LocalTime.parse(value);
             case "tinyblob":
             case "blob":
             case "longblob":
@@ -152,8 +151,8 @@ public final class SQLValue {
         if (value instanceof Date) {
             return formatString(DateTimeFormatterFactory.getDateFormatter().format(((Date) value).toLocalDate()));
         }
-        if (value instanceof Time) {
-            return formatString(DateTimeFormatterFactory.getTimeFormatter().format(((Time) value).toLocalTime()));
+        if (value instanceof LocalTime) {
+            return formatString(literalValue);
         }
         if (value instanceof Timestamp) {
             return formatString(DateTimeFormatterFactory.getLongMillisDatetimeFormatter().format(((Timestamp) value).toLocalDateTime()));
