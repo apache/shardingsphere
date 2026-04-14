@@ -189,13 +189,16 @@ rules:
         standard:
           shardingColumn: order_id
           shardingAlgorithmName: t_order_inline
-      keyGenerateStrategy:
-        column: order_id
-        keyGeneratorName: snowflake
   defaultDatabaseStrategy:
     standard:
       shardingColumn: user_id
       shardingAlgorithmName: database_inline
+  keyGenerateStrategies:
+    t_order_order_id:
+      keyGenerateType: column
+      keyGeneratorName: snowflake
+      logicTable: t_order
+      keyGenerateColumn: order_id
   shardingAlgorithms:
     database_inline:
       type: INLINE

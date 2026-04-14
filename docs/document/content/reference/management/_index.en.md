@@ -167,7 +167,7 @@ ds_0:
 
 ### /metadata/${databaseName}/rules/sharding/tables/t_order/versions/0
 
-Sharding configuration。
+Persisted content of the sharding table metadata node, not the user-facing rule YAML format.
 
 ```yaml
 actualDataNodes: ds_${0..1}.t_order_${0..1}
@@ -179,14 +179,22 @@ databaseStrategy:
   standard:
     shardingAlgorithmName: t_order_database_inline
     shardingColumn: user_id
-keyGenerateStrategy:
-  column: another_id
-  keyGeneratorName: t_order_snowflake
 logicTable: t_order
 tableStrategy:
   standard:
     shardingAlgorithmName: t_order_table_inline
     shardingColumn: order_id
+```
+
+### /metadata/${databaseName}/rules/sharding/key_generate_strategies/t_order_another_id/versions/0
+
+Persisted content of the sharding key generate strategy metadata node.
+
+```yaml
+keyGenerateType: column
+keyGeneratorName: t_order_snowflake
+logicTable: t_order
+keyGenerateColumn: another_id
 ```
 
 ### /metadata/${databaseName}/schemas/${schemaName}/tables/t_order/versions/0
