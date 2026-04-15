@@ -67,15 +67,17 @@ public final class SingleTableDataNodeLoader {
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
         Collection<String> splitTables = SingleTableLoadUtils.splitTableLines(configuredTables);
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
-            return load(databaseName, dataSourceMap, Collections.emptySet(), excludedTables);
+            Map<String, DatabaseType> storageTypes = dataSourceMap.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
+            return load(databaseName, dataSourceMap, Collections.emptySet(), excludedTables, storageTypes);
         }
         Collection<DataNode> configuredDataNodes = getConfiguredDataNodes(splitTables);
         Collection<String> configuredDataSources = getConfiguredDataSources(configuredDataNodes);
         Collection<String> includedTables = getIncludedTables(dataSourceMap, configuredDataNodes, featureRequiredSingleTables);
         Map<String, DataSource> validDataSources = dataSourceMap.entrySet().stream().filter(entry -> configuredDataSources.contains(entry.getKey()))
                 .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, validDataSources, includedTables, excludedTables);
-        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables);
+        Map<String, DatabaseType> validStorageTypes = validDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
+        Map<String, Collection<DataNode>> actualDataNodes = load(databaseName, validDataSources, includedTables, excludedTables, validStorageTypes);
+        Map<String, Map<String, Collection<String>>> configuredTableMap = getConfiguredTableMap(databaseName, protocolType, splitTables, validStorageTypes);
         return loadSpecifiedDataNodes(actualDataNodes, featureRequiredSingleTables, configuredTableMap);
     }
     
@@ -86,14 +88,15 @@ public final class SingleTableDataNodeLoader {
      * @param dataSourceMap data source map
      * @param includedTables included tables
      * @param excludedTables excluded tables
+     * @param validStorageTypes valid storage types
      * @return single table data node map
      */
     public static Map<String, Collection<DataNode>> load(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> includedTables,
-                                                         final Collection<String> excludedTables) {
+                                                         final Collection<String> excludedTables, final Map<String, DatabaseType> validStorageTypes) {
         Map<String, Collection<DataNode>> result = new LinkedHashMap<>(dataSourceMap.size(), 1F);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, Collection<DataNode>> dataNodeMap =
-                    load(databaseName, DatabaseTypeEngine.getStorageType(entry.getValue()), entry.getKey(), entry.getValue(), includedTables, excludedTables);
+                    load(databaseName, validStorageTypes.get(entry.getKey()), entry.getKey(), entry.getValue(), includedTables, excludedTables);
             for (Entry<String, Collection<DataNode>> each : dataNodeMap.entrySet()) {
                 Collection<DataNode> addedDataNodes = each.getValue();
                 Collection<DataNode> existDataNodes = result.getOrDefault(each.getKey(), new LinkedHashSet<>(addedDataNodes.size(), 1F));
@@ -195,18 +198,21 @@ public final class SingleTableDataNodeLoader {
         return result;
     }
     
-    private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final String databaseName, final DatabaseType protocolType, final Collection<String> configuredTables) {
+    private static Map<String, Map<String, Collection<String>>> getConfiguredTableMap(final String databaseName, final DatabaseType protocolType, final Collection<String> configuredTables,
+                                                                                      final Map<String, DatabaseType> validStorageTypes) {
         if (configuredTables.isEmpty()) {
             return Collections.emptyMap();
         }
-        Collection<DataNode> dataNodes = SingleTableLoadUtils.convertToDataNodes(databaseName, protocolType, configuredTables);
-        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(dataNodes.size(), 1F);
-        for (DataNode each : dataNodes) {
-            Map<String, Collection<String>> schemaTables = result.getOrDefault(each.getDataSourceName(), new LinkedHashMap<>());
-            Collection<String> tables = schemaTables.getOrDefault(each.getSchemaName(), new LinkedList<>());
-            tables.add(each.getTableName());
-            schemaTables.putIfAbsent(each.getSchemaName(), tables);
-            result.putIfAbsent(each.getDataSourceName(), schemaTables);
+        Map<String, Map<String, Collection<String>>> result = new LinkedHashMap<>(configuredTables.size(), 1F);
+        for (String each : configuredTables) {
+            DataNode parsedDataNode = new DataNode(each);
+            DatabaseType databaseType = validStorageTypes.getOrDefault(parsedDataNode.getDataSourceName(), protocolType);
+            DataNode dataNode = new DataNode(databaseName, databaseType, each);
+            Map<String, Collection<String>> schemaTables = result.getOrDefault(dataNode.getDataSourceName(), new LinkedHashMap<>());
+            Collection<String> tables = schemaTables.getOrDefault(dataNode.getSchemaName(), new LinkedList<>());
+            tables.add(dataNode.getTableName());
+            schemaTables.putIfAbsent(dataNode.getSchemaName(), tables);
+            result.putIfAbsent(dataNode.getDataSourceName(), schemaTables);
         }
         return result;
     }

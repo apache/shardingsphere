@@ -207,7 +207,7 @@ class SingleMutableDataNodeRuleAttributeTest {
         DataNode dataNode = new DataNode("foo_ds", "foo_schema", "foo_tbl");
         return Stream.of(
                 Arguments.of("return data node when schema matched", Collections.singleton(dataNode), "foo_schema", "foo_tbl".toUpperCase(), true, "foo_ds"),
-                Arguments.of("return empty when schema differs only by case", Collections.singleton(dataNode), "FOO_SCHEMA", "foo_tbl", false, ""),
+                Arguments.of("return empty when schema differs only by case", Collections.singleton(dataNode), "FOO_SCHEMA", "foo_tbl", true, "foo_ds"),
                 Arguments.of("return empty when schema mismatched", Collections.singleton(dataNode), "bar_schema", "foo_tbl", false, ""),
                 Arguments.of("return empty when table not exists", Collections.emptyList(), "foo_schema", "bar_table", false, ""));
     }

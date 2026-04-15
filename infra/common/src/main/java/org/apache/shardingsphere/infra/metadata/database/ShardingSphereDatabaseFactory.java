@@ -31,6 +31,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterial;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
+import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 
@@ -81,9 +83,10 @@ public final class ShardingSphereDatabaseFactory {
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final ComputeNodeInstanceContext computeNodeInstanceContext) throws SQLException {
         ResourceMetaData resourceMetaData = new ResourceMetaData(databaseConfig.getDataSources(), databaseConfig.getStorageUnits());
+        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(protocolType, resourceMetaData, props);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, protocolType, databaseConfig, computeNodeInstanceContext, resourceMetaData);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>(GenericSchemaBuilder.build(protocolType,
-                new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name))));
+                new GenericSchemaBuilderMaterial(resourceMetaData.getStorageUnits(), databaseRules, props, new DatabaseTypeRegistry(protocolType).getDefaultSchemaName(name), identifierContext)));
         SystemSchemaBuilder.build(name, protocolType, props).forEach(schemas::putIfAbsent);
         return new ShardingSphereDatabase(name, protocolType, resourceMetaData, new RuleMetaData(databaseRules), schemas.values(), props);
     }

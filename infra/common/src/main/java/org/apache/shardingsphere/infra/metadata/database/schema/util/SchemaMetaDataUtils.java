@@ -22,6 +22,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.connector.core.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.database.connector.core.metadata.data.loader.MetaDataLoaderMaterial;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -83,8 +85,9 @@ public final class SchemaMetaDataUtils {
                                                                      final DatabaseType storageType, final String defaultSchemaName, final int loadTableMetadataBatchSize) {
         Collection<MetaDataLoaderMaterial> result = new LinkedList<>();
         DataSource dataSource = getDataSource(material, dataSourceName);
+        IdentifierCaseRule tableIdentifierRule = material.getIdentifierContext().getRule(IdentifierScope.TABLE);
         for (List<String> each : Lists.partition(new ArrayList<>(actualTableNames), loadTableMetadataBatchSize)) {
-            result.add(new MetaDataLoaderMaterial(each, dataSourceName, dataSource, storageType, defaultSchemaName));
+            result.add(new MetaDataLoaderMaterial(each.stream().map(tableIdentifierRule::normalize).collect(Collectors.toList()), dataSourceName, dataSource, storageType, defaultSchemaName));
         }
         return result;
     }

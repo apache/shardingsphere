@@ -105,7 +105,7 @@ class TableRefreshUtilsIdentifierTest {
         Properties props = new Properties();
         props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
         assertThat(TableRefreshUtils.getTableLoadCandidateName(createDatabase(), new IdentifierValue("Foo_Tbl"),
-                new ConfigurationProperties(props)), is("Foo_Tbl"));
+                new ConfigurationProperties(props)), is("foo_tbl"));
     }
     
     @Test
@@ -119,7 +119,7 @@ class TableRefreshUtilsIdentifierTest {
         Properties props = new Properties();
         props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
         assertThat(TableRefreshUtils.getViewLoadCandidateName(createDatabase(), new IdentifierValue("Foo_View"),
-                new ConfigurationProperties(props)), is("Foo_View"));
+                new ConfigurationProperties(props)), is("foo_view"));
     }
     
     private ShardingSphereDatabase createDatabase() {

@@ -202,7 +202,7 @@ public final class ContextManager implements AutoCloseable {
     private ShardingSphereSchema loadSchema(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName) throws SQLException {
         database.reloadRules();
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(Collections.singletonMap(dataSourceName, database.getResourceMetaData().getStorageUnits().get(dataSourceName)),
-                database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
+                database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName, database.getIdentifierContext());
         ShardingSphereSchema result = GenericSchemaBuilder.build(database.getProtocolType(), material).get(schemaName);
         persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getView().load(database.getName(), schemaName).forEach(result::putView);
         return result;
@@ -217,7 +217,8 @@ public final class ContextManager implements AutoCloseable {
      */
     public void reloadTable(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
+                database.getResourceMetaData().getStorageUnits(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName,
+                database.getIdentifierContext());
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {
@@ -236,7 +237,8 @@ public final class ContextManager implements AutoCloseable {
     public void reloadTable(final ShardingSphereDatabase database, final String schemaName, final String dataSourceName, final String tableName) {
         StorageUnit storageUnit = database.getResourceMetaData().getStorageUnits().get(dataSourceName);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(
-                Collections.singletonMap(dataSourceName, storageUnit), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
+                Collections.singletonMap(dataSourceName, storageUnit), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName,
+                database.getIdentifierContext());
         try {
             persistTable(database, schemaName, tableName, material);
         } catch (final SQLException ex) {

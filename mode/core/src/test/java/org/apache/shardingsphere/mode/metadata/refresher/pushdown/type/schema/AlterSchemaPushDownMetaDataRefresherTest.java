@@ -62,7 +62,7 @@ class AlterSchemaPushDownMetaDataRefresherTest {
         props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
         refresher.refresh(persistService, createDatabase(), "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));
         assertThat(persistService.getSourceSchemaName(), is("FOO_SCHEMA"));
-        assertThat(persistService.getRenamedSchemaName(), is("BAR_SCHEMA"));
+        assertThat(persistService.getRenamedSchemaName(), is("bar_schema"));
     }
     
     @Test

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.database.connector.core.metadata.database.metad
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -61,6 +62,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -68,7 +70,7 @@ import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(AutoMockExtension.class)
-@StaticMockSettings({SingleTableDataNodeLoader.class, SingleTableLoadUtils.class, PhysicalDataSourceAggregator.class})
+@StaticMockSettings({SingleTableDataNodeLoader.class, SingleTableLoadUtils.class, PhysicalDataSourceAggregator.class, DatabaseTypeEngine.class})
 class ShowUnloadedSingleTablesExecutorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
@@ -138,7 +140,8 @@ class ShowUnloadedSingleTablesExecutorTest {
         when(storageUnit.getDataSource()).thenReturn(dataSource);
         when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(Collections.singletonMap("ds_0", dataSource));
         when(SingleTableLoadUtils.getExcludedTables(Collections.emptyList())).thenReturn(Collections.emptySet());
-        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(DatabaseTypeEngine.getStorageType(dataSource)).thenReturn(databaseType);
+        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
     }
     
     private void assertRows(final List<List<String>> expectedRows) {

@@ -24,12 +24,10 @@ import org.apache.shardingsphere.database.connector.core.metadata.identifier.Ide
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
@@ -74,8 +72,7 @@ public final class SchemaRefreshUtils {
      * @return actual schema name
      */
     public static String getActualSchemaName(final ShardingSphereDatabase database, final IdentifierValue schemaIdentifier, final ConfigurationProperties props) {
-        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
-        IdentifierCaseRule rule = identifierContext.getRule(IdentifierScope.SCHEMA);
+        IdentifierCaseRule rule = database.getIdentifierContext().getRule(IdentifierScope.SCHEMA);
         Optional<String> matchedSchemaName = database.getAllSchemas().stream().map(ShardingSphereSchema::getName)
                 .filter(each -> rule.matches(each, schemaIdentifier.getValue(), schemaIdentifier.getQuoteCharacter())).findFirst();
         return matchedSchemaName.orElseGet(() -> QuoteCharacter.NONE == schemaIdentifier.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(schemaIdentifier.getQuoteCharacter())
