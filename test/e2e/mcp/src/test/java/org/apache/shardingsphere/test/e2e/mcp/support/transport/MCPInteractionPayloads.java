@@ -19,6 +19,8 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,12 +29,10 @@ import java.util.Map;
 /**
  * JSON-RPC payload helpers for MCP E2E tests.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPInteractionPayloads {
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    
-    private MCPInteractionPayloads() {
-    }
     
     /**
      * Parse one MCP HTTP or STDIO JSON payload.

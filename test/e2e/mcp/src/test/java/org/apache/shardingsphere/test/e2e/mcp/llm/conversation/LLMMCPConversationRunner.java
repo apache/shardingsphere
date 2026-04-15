@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
@@ -33,9 +34,9 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatMessage;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -51,6 +52,7 @@ import java.util.Set;
 /**
  * LLM MCP conversation runner.
  */
+@RequiredArgsConstructor
 public final class LLMMCPConversationRunner {
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -64,12 +66,6 @@ public final class LLMMCPConversationRunner {
     private final LLMChatClient llmChatClient;
     
     private final MCPInteractionClient mcpInteractionClient;
-    
-    public LLMMCPConversationRunner(final int maxTurns, final LLMChatClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
-        this.maxTurns = maxTurns;
-        this.llmChatClient = llmChatClient;
-        this.mcpInteractionClient = mcpInteractionClient;
-    }
     
     /**
      * Run.
