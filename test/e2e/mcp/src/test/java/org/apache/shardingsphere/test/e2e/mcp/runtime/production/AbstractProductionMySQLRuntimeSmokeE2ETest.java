@@ -19,21 +19,20 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
-import java.net.http.HttpClient;
-import java.net.http.HttpResponse;
 import java.sql.SQLException;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ProductionMySQLRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
+abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private GenericContainer<?> container;
     
@@ -64,11 +63,8 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETes
     
     @Test
     void assertReadCapabilitiesWithActualMySQLBackend() throws IOException, InterruptedException {
-        launchProductionRuntime();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/capabilities");
-        assertThat(actual.statusCode(), is(200));
-        assertThat(String.valueOf(getResourcePayload(actual.body()).get("databaseType")), is("MySQL"));
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            assertThat(String.valueOf(interactionClient.readResource("shardingsphere://databases/logic_db/capabilities").getStructuredContent().get("databaseType")), is("MySQL"));
+        }
     }
 }

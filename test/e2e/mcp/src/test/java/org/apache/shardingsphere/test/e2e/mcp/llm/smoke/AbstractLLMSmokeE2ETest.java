@@ -17,30 +17,22 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
 
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EArtifactBundle;
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EArtifactWriter;
+import org.apache.shardingsphere.test.e2e.mcp.llm.AbstractLLMRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EAssertionReport;
-import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatModelClient;
-import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMMCPConversationRunner;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
 import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class AbstractLLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
+abstract class AbstractLLMSmokeE2ETest extends AbstractLLMRuntimeE2ETest {
     
     private static final String SYSTEM_PROMPT_RESOURCE = "llm/minimal-smoke-system-prompt.md";
     
@@ -48,22 +40,15 @@ abstract class AbstractLLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETes
     
     private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("search_metadata", "mcp_read_resource", "execute_query");
     
-    private final LLME2EConfiguration llmConfiguration = LLME2EConfiguration.load();
-    
-    private final LLME2EArtifactWriter artifactWriter = new LLME2EArtifactWriter();
-    
     protected final void assertLLMSmoke(final Supplier<LLME2EScenario> scenarioSupplier) throws IOException {
-        Assumptions.assumeTrue(isLLMSmokeEnabled(),
+        Assumptions.assumeTrue(isLLMEnabled(),
                 "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM MCP smoke tests.");
-        launchRuntime();
         LLME2EScenario scenario = scenarioSupplier.get();
-        LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.getMaxTurns(),
-                new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()), new MCPHttpInteractionClient(getEndpointUri(), HttpClient.newHttpClient())).run(scenario);
-        Path artifactDirectory = llmConfiguration.createArtifactDirectory(scenario.getScenarioId());
-        artifactWriter.write(artifactDirectory, artifactBundle);
-        LLME2EAssertionReport assertionReport = artifactBundle.getAssertionReport();
+        LLME2EConversationResult actual = runConversation(scenario.getScenarioId(), scenario);
+        LLME2EAssertionReport assertionReport = actual.artifactBundle().getAssertionReport();
         assertTrue(assertionReport.isSuccess(),
-                () -> String.format(Locale.ENGLISH, "%s: %s (artifacts: %s)", assertionReport.getFailureType(), assertionReport.getMessage(), artifactDirectory));
+                () -> String.format(Locale.ENGLISH, "%s: %s (artifacts: %s)",
+                        assertionReport.getFailureType(), assertionReport.getMessage(), actual.artifactDirectory()));
     }
     
     protected final LLME2EScenario createMinimalSmokeScenario(final String scenarioId, final String databaseName,
@@ -76,10 +61,6 @@ abstract class AbstractLLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETes
                 databaseName, schemaName, tableName, query, totalOrders);
         LLMStructuredAnswer expectedAnswer = new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, SMOKE_INTERACTION_SEQUENCE);
         return new LLME2EScenario(scenarioId, systemPrompt, userPrompt, expectedAnswer, SMOKE_INTERACTION_SEQUENCE, SMOKE_INTERACTION_SEQUENCE);
-    }
-    
-    protected final boolean isLLMSmokeEnabled() {
-        return llmConfiguration.isEnabled();
     }
     
     private String loadResource(final String resourcePath) {

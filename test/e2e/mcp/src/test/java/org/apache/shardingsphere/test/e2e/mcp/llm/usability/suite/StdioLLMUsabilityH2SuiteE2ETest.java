@@ -18,34 +18,24 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
-class LLMUsabilityMySQLSuiteE2ETest extends AbstractLLMUsabilityE2ETest {
+class StdioLLMUsabilityH2SuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
     
-    private MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture runtimeFixture;
-    
-    @AfterEach
-    void closeRuntimeFixture() {
-        if (null != runtimeFixture) {
-            runtimeFixture.close();
-            runtimeFixture = null;
-        }
-    }
+    private H2RuntimeTestSupport.LLMH2RuntimeFixture runtimeFixture;
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the MySQL-backed usability suite.");
         try {
-            runtimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture("logic_db");
+            runtimeFixture = H2RuntimeTestSupport.createLLMRuntimeFixture(getTempDir(), "llm-usability-h2-stdio", "logic_db", getTransport());
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
@@ -53,13 +43,17 @@ class LLMUsabilityMySQLSuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return runtimeFixture.getRuntimeDatabases();
+        return runtimeFixture.runtimeDatabases();
+    }
+    
+    @Override
+    protected RuntimeTransport getTransport() {
+        return RuntimeTransport.STDIO;
     }
     
     @Test
     void assertMinimalBaseline() throws IOException {
-        assertAdvisoryUsabilitySuite("minimal-usability-mysql",
-                () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("mysql", "logic_db", runtimeFixture.getSchemaName(),
-                        "orders", COUNT_ORDERS_SQL, runtimeFixture.getTotalOrders()));
+        assertAdvisoryUsabilitySuite("minimal-usability-h2-stdio",
+                () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("h2", "logic_db", "public", "orders", COUNT_ORDERS_SQL, runtimeFixture.totalOrders()));
     }
 }

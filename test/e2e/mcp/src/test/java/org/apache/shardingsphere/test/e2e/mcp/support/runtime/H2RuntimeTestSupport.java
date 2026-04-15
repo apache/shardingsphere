@@ -38,14 +38,31 @@ public final class H2RuntimeTestSupport {
     private static final String COUNT_ORDERS_JDBC_SQL = "SELECT COUNT(*) AS total_orders FROM public.orders";
     
     /**
+     * Create one file-backed H2 JDBC URL for the given runtime transport.
+     *
+     * @param tempDir temp directory
+     * @param databaseName database name
+     * @param transport runtime transport
+     * @return JDBC URL
+     */
+    public static String createJdbcUrl(final Path tempDir, final String databaseName, final RuntimeTransport transport) {
+        return createJdbcUrl(tempDir, databaseName, getAccessMode(transport));
+    }
+    
+    /**
      * Create one file-backed H2 JDBC URL in MySQL compatibility mode.
      *
      * @param tempDir temp directory
      * @param databaseName database name
+     * @param accessMode access mode
      * @return JDBC URL
      */
-    public static String createJdbcUrl(final Path tempDir, final String databaseName) {
-        return String.format("jdbc:h2:file:%s;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", tempDir.resolve(databaseName).toAbsolutePath());
+    public static String createJdbcUrl(final Path tempDir, final String databaseName, final H2AccessMode accessMode) {
+        return String.format("jdbc:h2:file:%s;MODE=MySQL%s;DATABASE_TO_UPPER=false", tempDir.resolve(databaseName).toAbsolutePath(), accessMode.getJdbcParameter());
+    }
+    
+    private static H2AccessMode getAccessMode(final RuntimeTransport transport) {
+        return RuntimeTransport.STDIO == transport ? H2AccessMode.MULTI_PROCESS : H2AccessMode.SINGLE_PROCESS;
     }
     
     /**
@@ -63,13 +80,29 @@ public final class H2RuntimeTestSupport {
      * Create LLM runtime fixture.
      *
      * @param tempDir temp dir
-     * @param databaseName database name 
+     * @param databaseName database name
      * @param logicalDatabase logical database
+     * @param transport runtime transport
      * @return fixture
      * @throws SQLException SQL exception
      */
-    public static LLMH2RuntimeFixture createLLMRuntimeFixture(final Path tempDir, final String databaseName, final String logicalDatabase) throws SQLException {
-        String jdbcUrl = createJdbcUrl(tempDir, databaseName);
+    public static LLMH2RuntimeFixture createLLMRuntimeFixture(final Path tempDir, final String databaseName,
+                                                              final String logicalDatabase, final RuntimeTransport transport) throws SQLException {
+        return createLLMRuntimeFixture(tempDir, databaseName, logicalDatabase, getAccessMode(transport));
+    }
+    
+    /**
+     * Create LLM runtime fixture.
+     *
+     * @param tempDir temp dir
+     * @param databaseName database name
+     * @param logicalDatabase logical database
+     * @param accessMode access mode
+     * @return fixture
+     * @throws SQLException SQL exception
+     */
+    public static LLMH2RuntimeFixture createLLMRuntimeFixture(final Path tempDir, final String databaseName, final String logicalDatabase, final H2AccessMode accessMode) throws SQLException {
+        String jdbcUrl = createJdbcUrl(tempDir, databaseName, accessMode);
         initializeDatabase(jdbcUrl);
         return new LLMH2RuntimeFixture(jdbcUrl, querySingleInt(jdbcUrl, COUNT_ORDERS_JDBC_SQL), createRuntimeDatabases(logicalDatabase, jdbcUrl));
     }
@@ -148,5 +181,22 @@ public final class H2RuntimeTestSupport {
     }
     
     public record LLMH2RuntimeFixture(String jdbcUrl, int totalOrders, Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+    }
+    
+    public enum H2AccessMode {
+        
+        SINGLE_PROCESS(";DB_CLOSE_DELAY=-1"),
+        
+        MULTI_PROCESS(";AUTO_SERVER=TRUE");
+        
+        private final String jdbcParameter;
+        
+        H2AccessMode(final String jdbcParameter) {
+            this.jdbcParameter = jdbcParameter;
+        }
+        
+        private String getJdbcParameter() {
+            return jdbcParameter;
+        }
     }
 }

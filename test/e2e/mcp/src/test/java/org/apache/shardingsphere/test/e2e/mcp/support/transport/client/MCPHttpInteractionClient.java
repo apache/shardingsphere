@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,7 +28,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,9 +36,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MCPHttpInteractionClient implements MCPInteractionClient {
     
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    
     private static final String PROTOCOL_VERSION = "2025-11-25";
+    
+    private static final String INITIALIZE_REQUEST_ID = "init-1";
+    
+    private static final String CLIENT_NAME = "mcp-e2e-http";
     
     private final URI endpointUri;
     
@@ -52,18 +52,26 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
     
     @Override
     public void open() throws IOException, InterruptedException {
+        if (null != sessionId) {
+            return;
+        }
         final HttpRequest request = HttpRequest.newBuilder(endpointUri)
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
-                        "id", "llm-init-1",
+                        "id", INITIALIZE_REQUEST_ID,
                         "method", "initialize",
                         "params", createInitializeRequestParams()))))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (200 != response.statusCode()) {
             throw new IllegalStateException("Failed to initialize MCP session.");
+        }
+        Map<String, Object> initializePayload = MCPInteractionPayloads.parseJsonPayload(response.body());
+        if (MCPInteractionPayloads.hasJsonRpcError(initializePayload)) {
+            throw new IllegalStateException("Failed to initialize MCP session: "
+                    + MCPInteractionPayloads.getJsonRpcErrorPayload(initializePayload).get("message"));
         }
         sessionId = response.headers().firstValue("MCP-Session-Id")
                 .orElseThrow(() -> new IllegalStateException("MCP initialize response does not contain MCP-Session-Id header."));
@@ -74,21 +82,21 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
     public MCPInteractionResponse call(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
-        return new MCPInteractionResponse(getStructuredContent(response.body()), response.body());
+        return new MCPInteractionResponse(MCPInteractionPayloads.getStructuredContent(MCPInteractionPayloads.parseJsonPayload(response.body())), response.body());
     }
     
     @Override
     public MCPInteractionResponse listResources() throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest("resources-list-1", "resources/list", Map.of());
-        return new MCPInteractionResponse(getJsonRpcResult(response.body()), response.body());
+        return new MCPInteractionResponse(MCPInteractionPayloads.getListResourcesPayload(MCPInteractionPayloads.parseJsonPayload(response.body())), response.body());
     }
     
     @Override
     public MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));
-        return new MCPInteractionResponse(getFirstResourcePayload(response.body()), response.body());
+        return new MCPInteractionResponse(MCPInteractionPayloads.getFirstResourcePayload(MCPInteractionPayloads.parseJsonPayload(response.body())), response.body());
     }
     
     @Override
@@ -103,6 +111,7 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
                 .build();
         httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         sessionId = null;
+        actualProtocolVersion = null;
     }
     
     private HttpRequest.Builder createJsonRequestBuilder() {
@@ -132,7 +141,7 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("protocolVersion", PROTOCOL_VERSION);
         result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", "llm-e2e", "version", "1.0.0"));
+        result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
         return result;
     }
     
@@ -140,92 +149,5 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
         if (null == sessionId) {
             throw new IllegalStateException("MCP session is not initialized.");
         }
-    }
-    
-    private Map<String, Object> getStructuredContent(final String responseBody) {
-        Map<String, Object> payload = parseJsonPayload(responseBody);
-        Map<String, Object> result = payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
-        if (result.containsKey("structuredContent")) {
-            return castToMap(result.get("structuredContent"));
-        }
-        if (payload.containsKey("error")) {
-            return createJsonRpcErrorPayload(payload.get("error"));
-        }
-        return Map.of();
-    }
-    
-    private Map<String, Object> getJsonRpcResult(final String responseBody) {
-        Map<String, Object> payload = parseJsonPayload(responseBody);
-        if (payload.containsKey("error")) {
-            return createJsonRpcErrorPayload(payload.get("error"));
-        }
-        return payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
-    }
-    
-    private Map<String, Object> getFirstResourcePayload(final String responseBody) {
-        Map<String, Object> payload = parseJsonPayload(responseBody);
-        if (payload.containsKey("error")) {
-            return createJsonRpcErrorPayload(payload.get("error"));
-        }
-        Map<String, Object> result = payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
-        Object contents = result.get("contents");
-        List<Map<String, Object>> parsedContents = castToList(contents);
-        if (null == parsedContents || parsedContents.isEmpty()) {
-            return Map.of();
-        }
-        Map<String, Object> firstContent = parsedContents.get(0);
-        try {
-            return OBJECT_MAPPER.readValue(String.valueOf(firstContent.get("text")), new TypeReference<>() {
-            });
-        } catch (final IOException ex) {
-            throw new IllegalStateException("Failed to parse MCP resource payload.", ex);
-        }
-    }
-    
-    private String normalizeJsonBody(final String responseBody) {
-        String result = responseBody.trim();
-        if (result.startsWith("{") || result.startsWith("[")) {
-            return result;
-        }
-        final StringBuilder stringBuilder = new StringBuilder();
-        boolean hasDataLine = false;
-        for (String each : result.split("\\R")) {
-            String line = each.trim();
-            if (!line.startsWith("data:")) {
-                continue;
-            }
-            if (hasDataLine) {
-                stringBuilder.append(System.lineSeparator());
-            }
-            stringBuilder.append(line.substring("data:".length()).trim());
-            hasDataLine = true;
-        }
-        return hasDataLine ? stringBuilder.toString() : result;
-    }
-    
-    private Map<String, Object> castToMap(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
-    }
-    
-    private Map<String, Object> parseJsonPayload(final String responseBody) {
-        try {
-            return OBJECT_MAPPER.readValue(normalizeJsonBody(responseBody), new TypeReference<>() {
-            });
-        } catch (final IOException ex) {
-            throw new IllegalStateException("Failed to parse MCP response body.", ex);
-        }
-    }
-    
-    private Map<String, Object> createJsonRpcErrorPayload(final Object rawError) {
-        Map<String, Object> error = castToMap(rawError);
-        return Map.of(
-                "error_code", "json_rpc_error",
-                "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
-    }
-    
-    private List<Map<String, Object>> castToList(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
     }
 }

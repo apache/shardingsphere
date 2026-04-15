@@ -18,23 +18,35 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
-class ProductionLLMH2SmokeE2ETest extends AbstractLLMSmokeE2ETest {
+class HttpProductionLLMMySQLSmokeE2ETest extends AbstractLLMSmokeE2ETest {
     
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
     
-    private H2RuntimeTestSupport.LLMH2RuntimeFixture runtimeFixture;
+    private MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture runtimeFixture;
+    
+    @AfterEach
+    void closeRuntimeFixture() {
+        if (null != runtimeFixture) {
+            runtimeFixture.close();
+            runtimeFixture = null;
+        }
+    }
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
+        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the MySQL-backed LLM MCP smoke test.");
         try {
-            runtimeFixture = H2RuntimeTestSupport.createLLMRuntimeFixture(getTempDir(), "production-llm-h2-smoke", "logic_db");
+            runtimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture("logic_db");
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
@@ -42,11 +54,17 @@ class ProductionLLMH2SmokeE2ETest extends AbstractLLMSmokeE2ETest {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return runtimeFixture.runtimeDatabases();
+        return runtimeFixture.getRuntimeDatabases();
+    }
+    
+    @Override
+    protected RuntimeTransport getTransport() {
+        return RuntimeTransport.HTTP;
     }
     
     @Test
     void assertSmoke() throws IOException {
-        assertLLMSmoke(() -> createMinimalSmokeScenario("minimal-smoke-h2", "logic_db", "public", "orders", COUNT_ORDERS_SQL, runtimeFixture.totalOrders()));
+        assertLLMSmoke(() -> createMinimalSmokeScenario("minimal-smoke-mysql", "logic_db", runtimeFixture.getSchemaName(),
+                "orders", COUNT_ORDERS_SQL, runtimeFixture.getTotalOrders()));
     }
 }

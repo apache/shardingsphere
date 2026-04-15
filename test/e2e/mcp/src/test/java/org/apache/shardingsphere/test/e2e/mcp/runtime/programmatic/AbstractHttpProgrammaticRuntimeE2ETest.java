@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
@@ -33,6 +32,8 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -51,9 +52,11 @@ import java.util.Map.Entry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractProgrammaticRuntimeE2ETest {
+abstract class AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static final String PROTOCOL_VERSION = "2025-11-25";
+    
+    private static final String CLIENT_NAME = "mcp-e2e-programmatic";
     
     private static final String ENDPOINT_PATH = "/gateway";
     
@@ -70,7 +73,7 @@ abstract class AbstractProgrammaticRuntimeE2ETest {
         }
     }
     
-    protected final void launchProgrammaticRuntime() {
+    protected final void launchHttpProgrammaticRuntime() {
         launchProgrammaticRuntimeInternal();
     }
     
@@ -128,47 +131,25 @@ abstract class AbstractProgrammaticRuntimeE2ETest {
     }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {
-        return JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
-        });
-    }
-    
-    protected final Map<String, Object> getJsonRpcResult(final String responseBody) {
-        Map<String, Object> payload = parseJsonBody(responseBody);
-        return payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
+        return MCPInteractionPayloads.parseJsonPayload(responseBody);
     }
     
     private Map<String, Object> getJsonRpcError(final String responseBody) {
-        Map<String, Object> payload = parseJsonBody(responseBody);
-        if (!payload.containsKey("error")) {
-            return Map.of();
-        }
-        Map<String, Object> error = castToMap(payload.get("error"));
-        return Map.of(
-                "error_code", "json_rpc_error",
-                "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
+        return MCPInteractionPayloads.getJsonRpcErrorPayload(parseJsonBody(responseBody));
     }
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
-        Map<String, Object> result = getJsonRpcResult(responseBody);
-        if (result.containsKey("structuredContent")) {
-            return castToMap(result.get("structuredContent"));
-        }
-        List<Map<String, Object>> content = getResultContents(responseBody);
-        return content.isEmpty() ? getJsonRpcError(responseBody) : parseJsonBody(String.valueOf(content.get(0).get("text")));
-    }
-    
-    protected final List<Map<String, Object>> getResultContents(final String responseBody) {
-        List<Map<String, Object>> result = castToList(getJsonRpcResult(responseBody).get("content"));
-        return null == result ? List.of() : result;
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(responseBody) : MCPInteractionPayloads.getStructuredContent(payload);
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
-        List<Map<String, Object>> contents = castToList(getJsonRpcResult(responseBody).get("contents"));
-        return null == contents || contents.isEmpty() ? getJsonRpcError(responseBody) : parseJsonBody(String.valueOf(contents.get(0).get("text")));
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(responseBody) : MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
-        return castToList(payload.get("items"));
+        return MCPInteractionPayloads.castToList(payload.get("items"));
     }
     
     protected final MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
@@ -269,46 +250,15 @@ abstract class AbstractProgrammaticRuntimeE2ETest {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("protocolVersion", PROTOCOL_VERSION);
         result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", "e2e-test", "version", "1.0.0"));
+        result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
         return result;
     }
     
     private Map<String, Object> createInitializeRequestParamsWithoutProtocolVersion() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", "e2e-test", "version", "1.0.0"));
+        result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
         return result;
-    }
-    
-    private Map<String, Object> castToMap(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
-    }
-    
-    private List<Map<String, Object>> castToList(final Object value) {
-        return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
-        });
-    }
-    
-    private String normalizeJsonBody(final String responseBody) {
-        String trimmedResponseBody = responseBody.trim();
-        if (trimmedResponseBody.startsWith("{") || trimmedResponseBody.startsWith("[")) {
-            return trimmedResponseBody;
-        }
-        StringBuilder result = new StringBuilder();
-        boolean hasDataLine = false;
-        for (String each : trimmedResponseBody.split("\\R")) {
-            String currentLine = each.trim();
-            if (!currentLine.startsWith("data:")) {
-                continue;
-            }
-            if (hasDataLine) {
-                result.append(System.lineSeparator());
-            }
-            result.append(currentLine.substring("data:".length()).trim());
-            hasDataLine = true;
-        }
-        return hasDataLine ? result.toString() : trimmedResponseBody;
     }
     
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
@@ -320,7 +270,8 @@ abstract class AbstractProgrammaticRuntimeE2ETest {
     }
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String defaultSchema) {
-        String jdbcUrl = String.format("%s;INIT=CREATE SCHEMA IF NOT EXISTS %s\\;SET SCHEMA %s", H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName), defaultSchema, defaultSchema);
+        String jdbcUrl = String.format("%s;INIT=CREATE SCHEMA IF NOT EXISTS %s\\;SET SCHEMA %s",
+                H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName, RuntimeTransport.HTTP), defaultSchema, defaultSchema);
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
     
