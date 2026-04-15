@@ -6495,11 +6495,7 @@
                     <literal-expression value="1" start-index="7" stop-index="7" />
                 </expr>
             </expression-projection>
-            <expression-projection text="OK" start-index="16" stop-index="26" literal-stop-index="29" alias="status">
-                <expr>
-                    <literal-expression value="OK" start-index="16" stop-index="19" />
-                </expr>
-            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="16" stop-index="26" literal-stop-index="29" />
             <column-projection name="SYSDATE" start-index="29" stop-index="50" literal-start-index="32" literal-stop-index="53" alias="create_time" />
             <expression-projection text="TRUNC(SYSDATE)" start-index="53" stop-index="81" literal-start-index="56" literal-stop-index="84" alias="create_date">
                 <expr>
@@ -13218,12 +13214,7 @@
 
     <select sql-case-id="select_all_param_alias_schema_sql92" parameters="1">
         <projections start-index="11" stop-index="20">
-            <expression-projection text="1" start-index="11" stop-index="20" alias="aid">
-                <expr>
-                    <literal-expression value="1" start-index="11" stop-index="11" />
-                    <parameter-marker-expression parameter-index="0" start-index="11" stop-index="11" />
-                </expr>
-            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="11" stop-index="20" />
         </projections>
         <from>
             <simple-table name="t_order" start-index="27" stop-index="41">

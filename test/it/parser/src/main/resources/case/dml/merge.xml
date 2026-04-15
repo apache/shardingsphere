@@ -342,14 +342,8 @@
                 <subquery>
                     <select>
                         <projections start-index="92" stop-index="116">
-                            <expression-projection text="1" start-index="92" stop-index="102" alias="userId">
-                                <parameter-marker-expression parameter-index="0" start-index="92" stop-index="92" />
-                                <literal-expression value="1" start-index="92" stop-index="92" />
-                            </expression-projection>
-                            <expression-projection text="1" start-index="105" stop-index="116" alias="orderId">
-                                <parameter-marker-expression parameter-index="1" start-index="105" stop-index="105" />
-                                <literal-expression value="1" start-index="105" stop-index="105" />
-                            </expression-projection>
+                            <parameter-marker-expression parameter-index="0" start-index="92" stop-index="102" />
+                            <parameter-marker-expression parameter-index="1" start-index="105" stop-index="116" />
                         </projections>
                         <from>
                             <simple-table name="DUAL" start-index="186" stop-index="189" />
