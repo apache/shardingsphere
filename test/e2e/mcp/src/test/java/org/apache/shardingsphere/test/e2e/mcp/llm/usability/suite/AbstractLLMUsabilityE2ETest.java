@@ -27,8 +27,8 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilitySc
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScorecard;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.report.LLMUsabilityReportWriter;
+import org.apache.shardingsphere.test.e2e.mcp.runtime.AbstractProductionRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPHttpInteractionClient;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.production.AbstractProductionRuntimeE2ETest;
 import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
