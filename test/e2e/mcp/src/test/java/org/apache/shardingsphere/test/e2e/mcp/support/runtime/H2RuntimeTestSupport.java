@@ -104,7 +104,7 @@ public final class H2RuntimeTestSupport {
     public static LLMH2RuntimeFixture createLLMRuntimeFixture(final Path tempDir, final String databaseName, final String logicalDatabase, final H2AccessMode accessMode) throws SQLException {
         String jdbcUrl = createJdbcUrl(tempDir, databaseName, accessMode);
         initializeDatabase(jdbcUrl);
-        return new LLMH2RuntimeFixture(jdbcUrl, querySingleInt(jdbcUrl, COUNT_ORDERS_JDBC_SQL), createRuntimeDatabases(logicalDatabase, jdbcUrl));
+        return new LLMH2RuntimeFixture(querySingleInt(jdbcUrl, COUNT_ORDERS_JDBC_SQL), createRuntimeDatabases(logicalDatabase, jdbcUrl));
     }
     
     /**
@@ -180,7 +180,7 @@ public final class H2RuntimeTestSupport {
         }
     }
     
-    public record LLMH2RuntimeFixture(String jdbcUrl, int totalOrders, Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+    public record LLMH2RuntimeFixture(int totalOrders, Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
     }
     
     public enum H2AccessMode {

@@ -42,7 +42,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpProgrammaticRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId, resourceUri);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, resourceUri);
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getFirstResourcePayload(actual.body());
         List<Map<String, Object>> items = getPayloadItems(payload);
@@ -64,7 +64,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpProgrammaticRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "search_metadata",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
                 Map.of("database", databaseName, "schema", "public", "query", query, "object_types", objectTypes));
         assertThat(actual.statusCode(), is(200));
         assertThat(getPayloadItems(getStructuredContent(actual.body())).stream().map(each -> String.valueOf(each.get("name"))).toList(), is(expectedNames));
@@ -89,10 +89,10 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpResponse<String> actual;
         Map<String, Object> actualPayload;
         if (resourceUri.isEmpty()) {
-            actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "search_metadata", toolArguments);
+            actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", toolArguments);
             actualPayload = getStructuredContent(actual.body());
         } else {
-            actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId, resourceUri);
+            actual = sendResourceReadRequest(httpClient, sessionId, resourceUri);
             actualPayload = getFirstResourcePayload(actual.body());
         }
         assertThat(actual.statusCode(), is(200));
@@ -123,7 +123,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpProgrammaticRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId, "shardingsphere://capabilities");
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
         assertThat(actual.statusCode(), is(200));
         assertThat(getFirstResourcePayload(actual.body()).get("supportedTools"), is(List.of("search_metadata", "execute_query")));
     }
@@ -133,7 +133,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         launchHttpProgrammaticRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId,
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
                 "shardingsphere://databases/logic_db/schemas/public/tables/orders");
         assertThat(actual.statusCode(), is(200));
         List<Map<String, Object>> items = getPayloadItems(getFirstResourcePayload(actual.body()));

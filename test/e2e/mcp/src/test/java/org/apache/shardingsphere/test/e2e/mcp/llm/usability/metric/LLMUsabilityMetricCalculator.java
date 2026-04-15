@@ -69,10 +69,9 @@ public final class LLMUsabilityMetricCalculator {
         }
         boolean recoveredAfterError = success && errorInteractionObserved;
         double queryAnswerFidelity = scenario.isQueryScenario() ? success ? 1.0D : 0.0D : 0.0D;
-        boolean degradedSuccess = success && (invalidCallCount > 0 || boundaryConfusion || interactionTrace.size() > scenario.getLlmScenario().getRequiredToolNames().size());
         return new LLMUsabilityScenarioResult(scenario.getScenarioId(), scenario.getDimension(), scenario.getRuntimeKind(), success, failureType, message,
                 firstCorrectAction, invalidCallCount, interactionTrace.size(), resourceHit, recoveredAfterError, queryAnswerFidelity,
-                boundaryConfusion, degradedSuccess, interactionTrace);
+                boundaryConfusion, interactionTrace);
     }
     
     /**
@@ -136,7 +135,7 @@ public final class LLMUsabilityMetricCalculator {
     private double getQueryAnswerFidelity(final List<LLMUsabilityScenarioResult> scenarioResults) {
         List<LLMUsabilityScenarioResult> queryResults = new LinkedList<>();
         for (LLMUsabilityScenarioResult each : scenarioResults) {
-            if (LLMUsabilityDimension.QUERY == each.getDimension() || LLMUsabilityDimension.RECOVERY == each.getDimension() || LLMUsabilityDimension.RESOURCE == each.getDimension()) {
+            if (LLMUsabilityDimension.TOOL == each.getDimension() || LLMUsabilityDimension.RECOVERY == each.getDimension() || LLMUsabilityDimension.RESOURCE == each.getDimension()) {
                 queryResults.add(each);
             }
         }

@@ -41,14 +41,14 @@ class RuntimeAuditE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        HttpResponse<String> executeResponse = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> executeResponse = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "CREATE TABLE orders_archive"));
-        HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, createRequestHeaders(), sessionId);
+        HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, sessionId);
         
         assertThat(executeResponse.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(executeResponse.body()).get("result_kind")), is("statement_ack"));
         assertThat(deleteResponse.statusCode(), is(200));
-        HttpResponse<String> missingSessionResponse = sendDeleteRequest(httpClient, createRequestHeaders(), sessionId);
+        HttpResponse<String> missingSessionResponse = sendDeleteRequest(httpClient, sessionId);
         assertThat(missingSessionResponse.statusCode(), is(404));
         assertTrue(missingSessionResponse.body().contains("Session does not exist."));
     }
@@ -62,7 +62,7 @@ class RuntimeAuditE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpClient httpClient = createHttpClient();
         
         String sessionId = protocolVersionIncluded ? initializeSession(httpClient) : initializeSessionWithoutProtocolVersion(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, toolName, arguments);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, toolName, arguments);
         
         assertThat(actual.statusCode(), is(200));
         if ("item_count".equals(expectedKey)) {

@@ -30,6 +30,4 @@ import java.util.Map;
 public final class MCPInteractionResponse {
     
     private final Map<String, Object> structuredContent;
-    
-    private final String rawResponse;
 }

@@ -53,7 +53,5 @@ public final class LLMUsabilityScenarioResult {
     
     private final boolean boundaryConfusion;
     
-    private final boolean degradedSuccess;
-    
     private final List<MCPInteractionTraceRecord> interactionTrace;
 }

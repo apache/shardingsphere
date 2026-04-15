@@ -49,6 +49,6 @@ public final class LLMUsabilityScenario {
      * @return query scenario
      */
     public boolean isQueryScenario() {
-        return LLMUsabilityDimension.QUERY == dimension || LLMUsabilityDimension.RECOVERY == dimension || LLMUsabilityDimension.RESOURCE == dimension;
+        return LLMUsabilityDimension.TOOL == dimension || LLMUsabilityDimension.RECOVERY == dimension || LLMUsabilityDimension.RESOURCE == dimension;
     }
 }

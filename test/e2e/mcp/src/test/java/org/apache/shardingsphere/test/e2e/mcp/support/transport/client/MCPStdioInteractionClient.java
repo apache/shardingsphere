@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
@@ -103,21 +102,21 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
     public MCPInteractionResponse call(final String actionName, final Map<String, Object> arguments) throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getStructuredContent(response), JsonUtils.toJsonString(response));
+        return new MCPInteractionResponse(MCPInteractionPayloads.getStructuredContent(response));
     }
     
     @Override
     public MCPInteractionResponse listResources() throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest("resources-list-1", "resources/list", Map.of());
-        return new MCPInteractionResponse(MCPInteractionPayloads.getListResourcesPayload(response), JsonUtils.toJsonString(response));
+        return new MCPInteractionResponse(MCPInteractionPayloads.getListResourcesPayload(response));
     }
     
     @Override
     public MCPInteractionResponse readResource(final String resourceUri) throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getFirstResourcePayload(response), JsonUtils.toJsonString(response));
+        return new MCPInteractionResponse(MCPInteractionPayloads.getFirstResourcePayload(response));
     }
     
     @Override

@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -82,22 +81,22 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
     }
     
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createRequestHeaders(), createInitializeRequestParams());
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, createInitializeRequestParams());
         
         assertThat(actual.statusCode(), is(200));
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
     }
     
     protected final String initializeSessionWithoutProtocolVersion(final HttpClient httpClient) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createRequestHeaders(), createInitializeRequestParamsWithoutProtocolVersion());
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, createInitializeRequestParamsWithoutProtocolVersion());
         
         assertThat(actual.statusCode(), is(200));
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
     }
     
-    protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final Map<String, String> requestHeaders, final String sessionId,
+    protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
                                                              final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        HttpRequest request = createJsonRequestBuilder(requestHeaders, sessionId)
+        HttpRequest request = createJsonRequestBuilder(sessionId)
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", toolName + "-1",
@@ -107,9 +106,9 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final Map<String, String> requestHeaders, final String sessionId,
+    protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId,
                                                                  final String resourceUri) throws IOException, InterruptedException {
-        HttpRequest request = createJsonRequestBuilder(requestHeaders, sessionId)
+        HttpRequest request = createJsonRequestBuilder(sessionId)
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "resource-1",
@@ -119,33 +118,31 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> requestHeaders, final String sessionId) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
+    protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", PROTOCOL_VERSION)
-                .DELETE();
-        for (Entry<String, String> entry : requestHeaders.entrySet()) {
-            requestBuilder.header(entry.getKey(), entry.getValue());
-        }
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+                .DELETE()
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {
         return MCPInteractionPayloads.parseJsonPayload(responseBody);
     }
     
-    private Map<String, Object> getJsonRpcError(final String responseBody) {
-        return MCPInteractionPayloads.getJsonRpcErrorPayload(parseJsonBody(responseBody));
+    private Map<String, Object> getJsonRpcError(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.getJsonRpcErrorPayload(payload);
     }
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> payload = parseJsonBody(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(responseBody) : MCPInteractionPayloads.getStructuredContent(payload);
+        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(payload) : MCPInteractionPayloads.getStructuredContent(payload);
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
         Map<String, Object> payload = parseJsonBody(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(responseBody) : MCPInteractionPayloads.getFirstResourcePayload(payload);
+        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
@@ -189,10 +186,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
                         List.of())));
     }
     
-    protected final Map<String, String> createRequestHeaders() {
-        return Map.of();
-    }
-    
     private void launchProgrammaticRuntimeInternal() {
         MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
@@ -213,32 +206,26 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         this.httpServer = httpServer;
     }
     
-    private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
+    private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient,
                                                        final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
                         "jsonrpc", "2.0",
                         "id", "init-1",
                         "method", "initialize",
-                        "params", initializeRequestParams))));
-        for (Entry<String, String> entry : requestHeaders.entrySet()) {
-            requestBuilder.header(entry.getKey(), entry.getValue());
-        }
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
+                        "params", initializeRequestParams))))
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    private HttpRequest.Builder createJsonRequestBuilder(final Map<String, String> requestHeaders, final String sessionId) {
-        HttpRequest.Builder result = HttpRequest.newBuilder(createEndpointUri())
+    private HttpRequest.Builder createJsonRequestBuilder(final String sessionId) {
+        return HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", PROTOCOL_VERSION);
-        for (Entry<String, String> entry : requestHeaders.entrySet()) {
-            result.header(entry.getKey(), entry.getValue());
-        }
-        return result;
     }
     
     private URI createEndpointUri() {

@@ -23,7 +23,5 @@ public enum LLMUsabilityDimension {
     
     TOOL,
     
-    QUERY,
-    
     RECOVERY
 }

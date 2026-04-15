@@ -30,7 +30,6 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EAssertionReport
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatCompletion;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatMessage;
-import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
@@ -66,11 +65,7 @@ public final class LLMMCPConversationRunner {
     
     private final MCPInteractionClient mcpInteractionClient;
     
-    public LLMMCPConversationRunner(final int maxTurns, final LLMChatModelClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
-        this(maxTurns, (LLMChatClient) llmChatClient, mcpInteractionClient);
-    }
-    
-    LLMMCPConversationRunner(final int maxTurns, final LLMChatClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
+    public LLMMCPConversationRunner(final int maxTurns, final LLMChatClient llmChatClient, final MCPInteractionClient mcpInteractionClient) {
         this.maxTurns = maxTurns;
         this.llmChatClient = llmChatClient;
         this.mcpInteractionClient = mcpInteractionClient;

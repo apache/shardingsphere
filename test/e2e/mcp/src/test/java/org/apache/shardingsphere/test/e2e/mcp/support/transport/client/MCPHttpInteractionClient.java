@@ -82,21 +82,21 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
     public MCPInteractionResponse call(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getStructuredContent(MCPInteractionPayloads.parseJsonPayload(response.body())), response.body());
+        return new MCPInteractionResponse(MCPInteractionPayloads.getStructuredContent(MCPInteractionPayloads.parseJsonPayload(response.body())));
     }
     
     @Override
     public MCPInteractionResponse listResources() throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest("resources-list-1", "resources/list", Map.of());
-        return new MCPInteractionResponse(MCPInteractionPayloads.getListResourcesPayload(MCPInteractionPayloads.parseJsonPayload(response.body())), response.body());
+        return new MCPInteractionResponse(MCPInteractionPayloads.getListResourcesPayload(MCPInteractionPayloads.parseJsonPayload(response.body())));
     }
     
     @Override
     public MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getFirstResourcePayload(MCPInteractionPayloads.parseJsonPayload(response.body())), response.body());
+        return new MCPInteractionResponse(MCPInteractionPayloads.getFirstResourcePayload(MCPInteractionPayloads.parseJsonPayload(response.body())));
     }
     
     @Override

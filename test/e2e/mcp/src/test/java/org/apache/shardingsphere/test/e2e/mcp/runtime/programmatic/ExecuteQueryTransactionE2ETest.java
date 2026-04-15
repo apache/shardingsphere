@@ -41,10 +41,10 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
-            sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+            sendToolCallRequest(httpClient, sessionId, "execute_query",
                     Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
         }
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", sql));
         assertThat(actual.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(actual.body()).get("message")), is(expectedMessage));
@@ -66,14 +66,14 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
-            sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+            sendToolCallRequest(httpClient, sessionId, "execute_query",
                     Map.of("database", databaseName, "schema", schemaName, "sql", "BEGIN"));
         }
         if (requiresExistingSavepoint) {
-            sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+            sendToolCallRequest(httpClient, sessionId, "execute_query",
                     Map.of("database", databaseName, "schema", schemaName, "sql", "SAVEPOINT sp_1"));
         }
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", databaseName, "schema", schemaName, "sql", sql));
         assertThat(actual.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(actual.body()).get(expectedKey)), is(expectedValue));
@@ -95,14 +95,14 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         if (createActiveTransaction) {
-            sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+            sendToolCallRequest(httpClient, sessionId, "execute_query",
                     Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
         }
         if (createExistingSavepoint) {
-            sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+            sendToolCallRequest(httpClient, sessionId, "execute_query",
                     Map.of("database", "logic_db", "schema", "public", "sql", "SAVEPOINT sp_1"));
         }
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", sql));
         
         assertThat(actual.statusCode(), is(200));
@@ -125,9 +125,9 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpProgrammaticRuntime();
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
-        sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "analytics_db", "schema", "public", "sql", "BEGIN"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
@@ -140,7 +140,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "max_rows", 10));
         
         assertThat(actual.statusCode(), is(200));
@@ -154,7 +154,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         HttpClient httpClient = createHttpClient();
         String sessionId = initializeSession(httpClient);
         
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1; SELECT 2"));
         
         assertThat(actual.statusCode(), is(200));
