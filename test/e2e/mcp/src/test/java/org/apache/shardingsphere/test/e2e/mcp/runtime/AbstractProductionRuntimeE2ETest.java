@@ -19,26 +19,11 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoader;
-import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
-import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,34 +32,12 @@ import java.util.Map.Entry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-public abstract class AbstractProductionRuntimeE2ETest {
+public abstract class AbstractProductionRuntimeE2ETest extends AbstractLaunchedRuntimeE2ETest {
     
     private static final String PROTOCOL_VERSION = "2025-11-25";
     
-    private static final String ENDPOINT_PATH = "/gateway";
-    
-    @TempDir
-    private Path tempDir;
-    
-    private StreamableHttpMCPServer httpServer;
-    
-    @AfterEach
-    protected void tearDown() {
-        if (null != httpServer) {
-            httpServer.stop();
-            httpServer = null;
-        }
-    }
-    
     protected final void launchProductionRuntime() throws IOException {
-        prepareRuntimeFixture();
-        Path configFile = tempDir.resolve("mcp.yaml");
-        Files.writeString(configFile, createConfigurationContent());
-        httpServer = createStartedHttpServer(configFile);
-    }
-    
-    protected final HttpClient createHttpClient() {
-        return HttpClient.newHttpClient();
+        launchRuntime();
     }
     
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
@@ -109,33 +72,12 @@ public abstract class AbstractProductionRuntimeE2ETest {
     }
     
     protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+        HttpRequest request = HttpRequest.newBuilder(getEndpointUri())
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", PROTOCOL_VERSION)
                 .DELETE()
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-    
-    private Map<String, Object> parseJsonBody(final String responseBody) {
-        return JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
-        });
-    }
-    
-    private Map<String, Object> getJsonRpcResult(final String responseBody) {
-        Map<String, Object> payload = parseJsonBody(responseBody);
-        return payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
-    }
-    
-    private Map<String, Object> getJsonRpcError(final String responseBody) {
-        Map<String, Object> payload = parseJsonBody(responseBody);
-        if (!payload.containsKey("error")) {
-            return Map.of();
-        }
-        Map<String, Object> error = castToMap(payload.get("error"));
-        return Map.of(
-                "error_code", "json_rpc_error",
-                "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
     }
     
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
@@ -162,20 +104,8 @@ public abstract class AbstractProductionRuntimeE2ETest {
         return castToList(payload.get("items"));
     }
     
-    protected abstract Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases();
-    
-    protected abstract void prepareRuntimeFixture() throws IOException;
-    
-    protected final Path getTempDir() {
-        return tempDir;
-    }
-    
-    protected final URI getEndpointUri() {
-        return createEndpointUri();
-    }
-    
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
@@ -190,26 +120,32 @@ public abstract class AbstractProductionRuntimeE2ETest {
     }
     
     private HttpRequest.Builder createJsonRequestBuilder(final String sessionId) {
-        return HttpRequest.newBuilder(createEndpointUri())
+        return HttpRequest.newBuilder(getEndpointUri())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json, text/event-stream")
                 .header("MCP-Session-Id", sessionId)
                 .header("MCP-Protocol-Version", PROTOCOL_VERSION);
     }
     
-    private URI createEndpointUri() {
-        int localPort = httpServer.getLocalPort();
-        return URI.create(String.format("http://127.0.0.1:%d%s", localPort, ENDPOINT_PATH));
+    private Map<String, Object> parseJsonBody(final String responseBody) {
+        return JsonUtils.fromJsonString(normalizeJsonBody(responseBody), new TypeReference<>() {
+        });
     }
     
-    private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
-        MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
-        MCPRuntimeServer server = new MCPRuntimeLauncher().launch(launchConfiguration);
-        if (!(server instanceof StreamableHttpMCPServer)) {
-            server.stop();
-            throw new IllegalStateException("HTTP transport must be enabled for production runtime E2E tests.");
+    private Map<String, Object> getJsonRpcResult(final String responseBody) {
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        return payload.containsKey("result") ? castToMap(payload.get("result")) : Map.of();
+    }
+    
+    private Map<String, Object> getJsonRpcError(final String responseBody) {
+        Map<String, Object> payload = parseJsonBody(responseBody);
+        if (!payload.containsKey("error")) {
+            return Map.of();
         }
-        return (StreamableHttpMCPServer) server;
+        Map<String, Object> error = castToMap(payload.get("error"));
+        return Map.of(
+                "error_code", "json_rpc_error",
+                "message", String.valueOf(error.getOrDefault("message", "Unknown JSON-RPC error.")));
     }
     
     private Map<String, Object> createInitializeRequestParams() {
@@ -249,10 +185,5 @@ public abstract class AbstractProductionRuntimeE2ETest {
             hasDataLine = true;
         }
         return hasDataLine ? result.toString() : trimmedResponseBody;
-    }
-    
-    private String createConfigurationContent() {
-        return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH), new StdioTransportConfiguration(false), getRuntimeDatabases())));
     }
 }

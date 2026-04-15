@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilitySc
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScorecard;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.report.LLMUsabilityReportWriter;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.AbstractProductionRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.runtime.AbstractLaunchedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPHttpInteractionClient;
 import org.junit.jupiter.api.Assumptions;
 
@@ -42,7 +42,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class AbstractLLMUsabilityE2ETest extends AbstractProductionRuntimeE2ETest {
+abstract class AbstractLLMUsabilityE2ETest extends AbstractLaunchedRuntimeE2ETest {
     
     private final LLME2EConfiguration llmConfiguration = LLME2EConfiguration.load();
     
@@ -55,7 +55,7 @@ abstract class AbstractLLMUsabilityE2ETest extends AbstractProductionRuntimeE2ET
     protected final void assertAdvisoryUsabilitySuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier) throws IOException {
         Assumptions.assumeTrue(llmConfiguration.isEnabled(),
                 "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM usability suite.");
-        launchProductionRuntime();
+        launchRuntime();
         List<LLMUsabilityScenario> scenarios = scenarioSupplier.get();
         List<LLMUsabilityScenarioResult> scenarioResults = new LinkedList<>();
         for (LLMUsabilityScenario each : scenarios) {

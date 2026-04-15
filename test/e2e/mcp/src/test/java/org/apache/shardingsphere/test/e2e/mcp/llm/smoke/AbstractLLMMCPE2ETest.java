@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMMCPConversationRunner;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.AbstractProductionRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.runtime.AbstractLaunchedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPHttpInteractionClient;
 import org.junit.jupiter.api.Assumptions;
 
@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class AbstractLLMMCPE2ETest extends AbstractProductionRuntimeE2ETest {
+abstract class AbstractLLMMCPE2ETest extends AbstractLaunchedRuntimeE2ETest {
     
     private static final String SYSTEM_PROMPT_RESOURCE = "llm/minimal-smoke-system-prompt.md";
     
@@ -55,7 +55,7 @@ abstract class AbstractLLMMCPE2ETest extends AbstractProductionRuntimeE2ETest {
     protected final void assertLLMSmoke(final Supplier<LLME2EScenario> scenarioSupplier) throws IOException {
         Assumptions.assumeTrue(isLLMSmokeEnabled(),
                 "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM MCP smoke tests.");
-        launchProductionRuntime();
+        launchRuntime();
         LLME2EScenario scenario = scenarioSupplier.get();
         LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.getMaxTurns(),
                 new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()), new MCPHttpInteractionClient(getEndpointUri(), createHttpClient())).run(scenario);
