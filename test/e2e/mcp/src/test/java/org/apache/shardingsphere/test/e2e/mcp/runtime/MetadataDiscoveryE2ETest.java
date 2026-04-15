@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,7 +33,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class MetadataDiscoveryE2ETest extends AbstractDirectRuntimeE2ETest implements MetadataResourceContractTest {
+class MetadataDiscoveryE2ETest extends AbstractDirectRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertMetadataResourcesCases")
@@ -117,38 +118,33 @@ class MetadataDiscoveryE2ETest extends AbstractDirectRuntimeE2ETest implements M
                         Map.of("error_code", "unsupported")));
     }
     
-    @Override
-    public void launchContractRuntime() {
+    @Test
+    void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         launchDirectRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId, "shardingsphere://capabilities");
+        assertThat(actual.statusCode(), is(200));
+        assertThat(getFirstResourcePayload(actual.body()).get("supportedTools"), is(List.of("search_metadata", "execute_query")));
     }
     
-    @Override
-    public HttpClient createContractHttpClient() {
-        return createHttpClient();
+    @Test
+    void assertTableDetailResource() throws IOException, InterruptedException {
+        launchDirectRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId,
+                "shardingsphere://databases/logic_db/schemas/public/tables/orders");
+        assertThat(actual.statusCode(), is(200));
+        List<Map<String, Object>> items = getPayloadItems(getFirstResourcePayload(actual.body()));
+        assertThat(items.size(), is(1));
+        Map<String, Object> actualItem = items.get(0);
+        assertThat(String.valueOf(actualItem.get("table")), is("orders"));
+        assertThat(getNestedNames(actualItem, "columns", "column"), is(List.of("order_id", "status")));
+        assertThat(getNestedNames(actualItem, "indexes", "index"), is(List.of("idx_orders_status")));
     }
     
-    @Override
-    public String initializeContractSession(final HttpClient httpClient) throws IOException, InterruptedException {
-        return initializeSession(httpClient);
-    }
-    
-    @Override
-    public HttpResponse<String> readContractResource(final HttpClient httpClient, final String sessionId, final String resourceUri) throws IOException, InterruptedException {
-        return sendResourceReadRequest(httpClient, createRequestHeaders(), sessionId, resourceUri);
-    }
-    
-    @Override
-    public Map<String, Object> getContractResourcePayload(final String responseBody) {
-        return getFirstResourcePayload(responseBody);
-    }
-    
-    @Override
-    public List<String> getExpectedTableColumns() {
-        return List.of("order_id", "status");
-    }
-    
-    @Override
-    public List<String> getExpectedTableIndexes() {
-        return List.of("idx_orders_status");
+    private static List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
+        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }
 }

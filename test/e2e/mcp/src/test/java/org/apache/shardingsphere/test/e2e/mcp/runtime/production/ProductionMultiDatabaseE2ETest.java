@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.CrossDatabaseTransactionContractTest;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.support.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest implements CrossDatabaseTransactionContractTest {
+class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private static final String LOGIC_DATABASE_NAME = "logic_db";
     
@@ -106,6 +105,21 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest im
     }
     
     @Test
+    void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        sendToolCallRequest(httpClient, sessionId, "execute_query",
+                Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "BEGIN"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+                Map.of("database", ANALYTICS_DATABASE_NAME, "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
+        assertFalse(Boolean.parseBoolean(String.valueOf(payload.get("ok"))));
+    }
+    
+    @Test
     void assertRejectMismatchedDatabaseType() {
         firstDatabaseType = "MySQL";
         IllegalStateException actual = assertThrows(IllegalStateException.class, this::launchProductionRuntime);
@@ -120,51 +134,5 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest im
         HttpResponse<String> response = sendResourceReadRequest(httpClient, sessionId,
                 String.format("shardingsphere://databases/%s/schemas/public/tables", databaseName));
         return getPayloadItems(getResourcePayload(response.body())).stream().map(each -> String.valueOf(each.get("table"))).toList();
-    }
-    
-    @Override
-    public void launchContractRuntime() throws IOException {
-        launchProductionRuntime();
-    }
-    
-    @Override
-    public HttpClient createContractHttpClient() {
-        return createHttpClient();
-    }
-    
-    @Override
-    public String initializeContractSession(final HttpClient httpClient) throws IOException, InterruptedException {
-        return initializeSession(httpClient);
-    }
-    
-    @Override
-    public HttpResponse<String> callContractTool(final HttpClient httpClient, final String sessionId,
-                                                 final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        return sendToolCallRequest(httpClient, sessionId, toolName, arguments);
-    }
-    
-    @Override
-    public Map<String, Object> getContractStructuredContent(final String responseBody) {
-        return getStructuredContent(responseBody);
-    }
-    
-    @Override
-    public String getPrimaryDatabaseName() {
-        return LOGIC_DATABASE_NAME;
-    }
-    
-    @Override
-    public String getSecondaryDatabaseName() {
-        return ANALYTICS_DATABASE_NAME;
-    }
-    
-    @Override
-    public String getSecondaryDatabaseSwitchSql() {
-        return "SELECT status FROM orders ORDER BY order_id";
-    }
-    
-    @Override
-    public void assertCrossDatabaseTransactionPayload(final Map<String, Object> payload) {
-        assertFalse(Boolean.parseBoolean(String.valueOf(payload.get("ok"))));
     }
 }

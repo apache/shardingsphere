@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.support.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPHttpInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionResponse;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.MetadataResourceContractTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -35,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest implements MetadataResourceContractTest {
+class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private String jdbcUrl;
     
@@ -64,6 +63,32 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
         assertThat(items.size(), is(1));
         assertThat(String.valueOf(items.get(0).get("database")), is("logic_db"));
+    }
+    
+    @Test
+    void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
+        assertThat(actual.statusCode(), is(200));
+        assertThat(getResourcePayload(actual.body()).get("supportedTools"), is(List.of("search_metadata", "execute_query")));
+    }
+    
+    @Test
+    void assertTableDetailResource() throws IOException, InterruptedException {
+        launchProductionRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
+                "shardingsphere://databases/logic_db/schemas/public/tables/orders");
+        assertThat(actual.statusCode(), is(200));
+        List<Map<String, Object>> items = getPayloadItems(getResourcePayload(actual.body()));
+        assertThat(items.size(), is(1));
+        Map<String, Object> actualItem = items.get(0);
+        assertThat(String.valueOf(actualItem.get("table")), is("orders"));
+        assertThat(getNestedNames(actualItem, "columns", "column"), is(List.of("amount", "order_id", "status")));
+        assertThat(getNestedNames(actualItem, "indexes", "index"), is(List.of("PRIMARY_KEY_C", "idx_orders_status")));
     }
     
     @Test
@@ -162,38 +187,7 @@ class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest imp
         assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
     }
     
-    @Override
-    public void launchContractRuntime() throws IOException {
-        launchProductionRuntime();
-    }
-    
-    @Override
-    public HttpClient createContractHttpClient() {
-        return createHttpClient();
-    }
-    
-    @Override
-    public String initializeContractSession(final HttpClient httpClient) throws IOException, InterruptedException {
-        return initializeSession(httpClient);
-    }
-    
-    @Override
-    public HttpResponse<String> readContractResource(final HttpClient httpClient, final String sessionId, final String resourceUri) throws IOException, InterruptedException {
-        return sendResourceReadRequest(httpClient, sessionId, resourceUri);
-    }
-    
-    @Override
-    public Map<String, Object> getContractResourcePayload(final String responseBody) {
-        return getResourcePayload(responseBody);
-    }
-    
-    @Override
-    public List<String> getExpectedTableColumns() {
-        return List.of("amount", "order_id", "status");
-    }
-    
-    @Override
-    public List<String> getExpectedTableIndexes() {
-        return List.of("PRIMARY_KEY_C", "idx_orders_status");
+    private static List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
+        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }
 }

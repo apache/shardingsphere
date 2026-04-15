@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class ExecuteQueryTransactionE2ETest extends AbstractDirectRuntimeE2ETest implements CrossDatabaseTransactionContractTest {
+class ExecuteQueryTransactionE2ETest extends AbstractDirectRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteTransactionControlCases")
@@ -121,6 +121,20 @@ class ExecuteQueryTransactionE2ETest extends AbstractDirectRuntimeE2ETest implem
     }
     
     @Test
+    void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
+        launchDirectRuntime();
+        HttpClient httpClient = createHttpClient();
+        String sessionId = initializeSession(httpClient);
+        sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+                Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, "execute_query",
+                Map.of("database", "analytics_db", "schema", "public", "sql", "BEGIN"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
+    }
+    
+    @Test
     void assertExecuteSelectOverHttpSession() throws IOException, InterruptedException {
         launchDirectRuntime();
         HttpClient httpClient = createHttpClient();
@@ -146,46 +160,5 @@ class ExecuteQueryTransactionE2ETest extends AbstractDirectRuntimeE2ETest implem
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
-    }
-    
-    @Override
-    public void launchContractRuntime() {
-        launchDirectRuntime();
-    }
-    
-    @Override
-    public HttpClient createContractHttpClient() {
-        return createHttpClient();
-    }
-    
-    @Override
-    public String initializeContractSession(final HttpClient httpClient) throws IOException, InterruptedException {
-        return initializeSession(httpClient);
-    }
-    
-    @Override
-    public HttpResponse<String> callContractTool(final HttpClient httpClient, final String sessionId,
-                                                 final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        return sendToolCallRequest(httpClient, createRequestHeaders(), sessionId, toolName, arguments);
-    }
-    
-    @Override
-    public Map<String, Object> getContractStructuredContent(final String responseBody) {
-        return getStructuredContent(responseBody);
-    }
-    
-    @Override
-    public String getPrimaryDatabaseName() {
-        return "logic_db";
-    }
-    
-    @Override
-    public String getSecondaryDatabaseName() {
-        return "analytics_db";
-    }
-    
-    @Override
-    public String getSecondaryDatabaseSwitchSql() {
-        return "BEGIN";
     }
 }
