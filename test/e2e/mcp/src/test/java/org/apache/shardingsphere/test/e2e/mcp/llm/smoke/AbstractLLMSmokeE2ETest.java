@@ -40,7 +40,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class AbstractLLMMCPE2ETest extends AbstractLaunchedRuntimeE2ETest {
+abstract class AbstractLLMSmokeE2ETest extends AbstractLaunchedRuntimeE2ETest {
     
     private static final String SYSTEM_PROMPT_RESOURCE = "llm/minimal-smoke-system-prompt.md";
     

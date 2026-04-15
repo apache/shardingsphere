@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.AbstractProductionRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.runtime.support.MySQLRuntimeTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;

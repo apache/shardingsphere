@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 
-class ProductionLLMMySQLSmokeE2ETest extends AbstractLLMMCPE2ETest {
+class ProductionLLMMySQLSmokeE2ETest extends AbstractLLMSmokeE2ETest {
     
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
     

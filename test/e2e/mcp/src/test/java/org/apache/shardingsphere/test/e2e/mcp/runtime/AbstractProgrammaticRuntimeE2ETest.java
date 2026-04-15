@@ -51,7 +51,7 @@ import java.util.Map.Entry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractDirectRuntimeE2ETest {
+abstract class AbstractProgrammaticRuntimeE2ETest {
     
     private static final String PROTOCOL_VERSION = "2025-11-25";
     
@@ -70,8 +70,8 @@ abstract class AbstractDirectRuntimeE2ETest {
         }
     }
     
-    protected final void launchDirectRuntime() {
-        launchDirectRuntimeInternal();
+    protected final void launchProgrammaticRuntime() {
+        launchProgrammaticRuntimeInternal();
     }
     
     protected final HttpClient createHttpClient() {
@@ -212,7 +212,7 @@ abstract class AbstractDirectRuntimeE2ETest {
         return Map.of();
     }
     
-    private void launchDirectRuntimeInternal() {
+    private void launchProgrammaticRuntimeInternal() {
         MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
         try {
