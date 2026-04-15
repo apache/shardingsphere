@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.single.datanode;
 
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.RuleAttributes;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -52,6 +54,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,6 +62,10 @@ import static org.mockito.Mockito.when;
 class SingleTableDataNodeLoaderTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final DatabaseType protocolDatabaseType = TypedSPILoader.getService(DatabaseType.class, "Oracle");
+    
+    private final DatabaseType storageDatabaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
     
     private Map<String, DataSource> dataSourceMap;
     
@@ -70,11 +77,24 @@ class SingleTableDataNodeLoaderTest {
     }
     
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
+        return mockDataSource(dataSourceName, null, "jdbc:mock://127.0.0.1/" + dataSourceName, tableNames);
+    }
+    
+    private DataSource mockDataSource(final String dataSourceName, final String schemaName, final String url, final List<String> tableNames) throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getCatalog()).thenReturn(dataSourceName);
-        ResultSet resultSet = mockResultSet(tableNames);
-        when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"})).thenReturn(resultSet);
-        when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
+        when(connection.getMetaData().getURL()).thenReturn(url);
+        if (null == schemaName) {
+            ResultSet tableResultSet = mockResultSet(tableNames);
+            when(connection.getMetaData().getTables(dataSourceName, null, null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"}))
+                    .thenReturn(tableResultSet);
+        } else {
+            ResultSet schemaResultSet = mockSchemaResultSet(schemaName);
+            ResultSet tableResultSet = mockResultSet(tableNames);
+            when(connection.getMetaData().getSchemas()).thenReturn(schemaResultSet);
+            when(connection.getMetaData().getTables(dataSourceName, schemaName, null, new String[]{"TABLE", "PARTITIONED TABLE", "VIEW", "SYSTEM TABLE", "SYSTEM VIEW"}))
+                    .thenReturn(tableResultSet);
+        }
         return new MockedDataSource(connection);
     }
     
@@ -86,6 +106,13 @@ class SingleTableDataNodeLoaderTest {
         remainNextResults.add(false);
         when(result.next()).thenReturn(true, remainNextResults.toArray(new Boolean[tableNames.size()]));
         when(result.getString("TABLE_NAME")).thenReturn(firstTableName, remainTableNames.toArray(new String[tableNames.size() - 1]));
+        return result;
+    }
+    
+    private ResultSet mockSchemaResultSet(final String schemaName) throws SQLException {
+        ResultSet result = mock(ResultSet.class);
+        when(result.next()).thenReturn(true, false);
+        when(result.getString("TABLE_SCHEM")).thenReturn(schemaName);
         return result;
     }
     
@@ -176,6 +203,19 @@ class SingleTableDataNodeLoaderTest {
         assertThat(actual.get("foo_tbl").size(), is(2));
         assertThat(actual.get("foo_tbl").stream().map(DataNode::getDataSourceName).collect(Collectors.toCollection(LinkedHashSet::new)),
                 is(new LinkedHashSet<>(Arrays.asList("foo_ds", "FOO_DS"))));
+    }
+    
+    @Test
+    void assertLoadWithDifferentProtocolAndStorageTypes() throws SQLException {
+        Map<String, DataSource> localDataSourceMap = new LinkedHashMap<>(1, 1F);
+        localDataSourceMap.put("foo_ds", mockDataSource("foo_ds", Collections.singletonList("foo_tbl1")));
+        try (MockedStatic<DatabaseTypeEngine> databaseTypeEngine = mockStatic(DatabaseTypeEngine.class)) {
+            databaseTypeEngine.when(() -> DatabaseTypeEngine.getStorageType(localDataSourceMap.get("foo_ds"))).thenReturn(storageDatabaseType);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(
+                    "foo_db", protocolDatabaseType, localDataSourceMap, Collections.emptyList(), Collections.singleton("foo_ds.foo_tbl1"));
+            assertTrue(actual.containsKey("foo_tbl1"));
+            assertThat(actual.get("foo_tbl1"), is(Collections.singletonList(new DataNode("foo_ds", "foo_db", "foo_tbl1"))));
+        }
     }
     
     @Test
