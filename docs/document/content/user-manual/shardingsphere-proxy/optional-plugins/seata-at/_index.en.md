@@ -19,7 +19,7 @@ but there are some differences,
 If users have such needs, they should consider submitting a PR for ShardingSphere
 5. The assumptions made by ShardingSphere JDBC on Seata's TCC mode are invalid on ShardingSphere Proxy
 
-The following discussion takes ShardingSphere Proxy using Seata Client 2.5.0 as an example.
+The following discussion takes ShardingSphere Proxy using Seata Client 2.6.0 as an example.
 
 ## Operation steps
 
@@ -43,22 +43,22 @@ For `Ubuntu 24.04.3` or `Windows 11 Home 24H2` with `OpenJDK 23` and `Maven 3.9.
 1. If using Bash,
 
 ```shell
-mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.5.0"
-mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.pom" dependency:tree | grep -v ':provided' | grep -v ':runtime'
+mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.6.0"
+mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.6.0/seata-all-2.6.0.pom" dependency:tree | grep -v ':provided' | grep -v ':runtime'
 ```
 
 2. If using PowerShell 7,
 
 ```shell
-mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.5.0"
-mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.pom" dependency:tree | Where-Object { $_ -notmatch ':provided' -and $_ -notmatch ':runtime' }
+mvn dependency:get "-Dartifact=org.apache.seata:seata-all:2.6.0"
+mvn -f "${HOME}/.m2/repository/org/apache/seata/seata-all/2.6.0/seata-all-2.6.0.pom" dependency:tree | Where-Object { $_ -notmatch ':provided' -and $_ -notmatch ':runtime' }
 ```
 
 Compared with the `pom.xml` of `org.apache.shardingsphere:shardingsphere-proxy-distribution`, 
 it is not difficult to find the differences listed as follows:
 
 ```
-org.apache.seata:seata-all:jar:2.5.0
+org.apache.seata:seata-all:jar:2.6.0
 org.springframework:spring-context:jar:5.3.39
 org.springframework:spring-expression:jar:5.3.39
 org.springframework:spring-core:jar:5.3.39
@@ -91,7 +91,7 @@ org.abego.treelayout:org.abego.treelayout.core:jar:1.0.3
 org.glassfish:javax.json:jar:1.0.4
 com.ibm.icu:icu4j:jar:61.1
 com.alibaba:fastjson:jar:1.2.83
-com.alibaba:druid:jar:1.2.20
+com.alibaba:druid:jar:1.2.25
 com.typesafe:config:jar:1.2.1
 commons-pool:commons-pool:jar:1.6
 org.apache.dubbo.extensions:dubbo-filter-seata:jar:1.0.2
@@ -116,7 +116,7 @@ services:
       volumes:
          - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
    apache-seata-server:
-      image: apache/seata-server:2.5.0
+      image: apache/seata-server:2.6.0
       healthcheck:
          test: [ "CMD", "sh", "-c", "curl -s apache-seata-server:8091/health | grep -q '\"ok\"'" ]
    shardingsphere-proxy-custom:
@@ -127,7 +127,7 @@ services:
          dockerfile_inline: |
             FROM apache/shardingsphere-proxy:latest
             RUN cp /opt/shardingsphere-proxy/opt-lib/seata-at/*.jar /opt/shardingsphere-proxy/ext-lib/
-            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.5.0/seata-all-2.5.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/org/apache/seata/seata-all/2.6.0/seata-all-2.6.0.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-context/5.3.39/spring-context-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-expression/5.3.39/spring-expression-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/springframework/spring-core/5.3.39/spring-core-5.3.39.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
@@ -160,7 +160,7 @@ services:
             RUN wget https://repo1.maven.org/maven2/org/glassfish/javax.json/1.0.4/javax.json-1.0.4.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/com/ibm/icu/icu4j/61.1/icu4j-61.1.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/com/alibaba/fastjson/1.2.83/fastjson-1.2.83.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
-            RUN wget https://repo1.maven.org/maven2/com/alibaba/druid/1.2.20/druid-1.2.20.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
+            RUN wget https://repo1.maven.org/maven2/com/alibaba/druid/1.2.25/druid-1.2.25.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo.akka.io/maven/com/typesafe/config/1.2.1/config-1.2.1.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/commons-pool/commons-pool/1.6/commons-pool-1.6.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib
             RUN wget https://repo1.maven.org/maven2/org/apache/dubbo/extensions/dubbo-filter-seata/1.0.2/dubbo-filter-seata-1.0.2.jar --directory-prefix=/opt/shardingsphere-proxy/ext-lib

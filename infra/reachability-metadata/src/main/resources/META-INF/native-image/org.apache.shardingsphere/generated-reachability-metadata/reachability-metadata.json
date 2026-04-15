@@ -642,12 +642,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
-      },
-      "type": "java.nio.channels.spi.SelectorProvider"
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.infra.expr.groovy.GroovyInlineExpressionParser"
       },
       "type": "java.nio.charset.Charset"
@@ -11102,20 +11096,6 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager"
-      },
-      "type": "sun.nio.ch.SelectorImpl",
-      "fields": [
-        {
-          "name": "publicSelectedKeys"
-        },
-        {
-          "name": "selectedKeys"
-        }
-      ]
-    },
-    {
-      "condition": {
         "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
       },
       "type": {
@@ -11554,7 +11534,7 @@
     },
     {
       "condition": {
-        "typeReached": "org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.query.MySQLComQueryPacketExecutor"
+        "typeReached": "org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine"
       },
       "glob": "META-INF/services/org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook"
     },

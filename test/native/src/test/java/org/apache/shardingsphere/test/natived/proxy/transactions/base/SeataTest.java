@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class SeataTest {
     
     @Container
-    private final GenericContainer<?> container = new GenericContainer<>("apache/seata-server:2.5.0")
+    private final GenericContainer<?> container = new GenericContainer<>("apache/seata-server:2.6.0")
             .withExposedPorts(8091)
             .waitingFor(Wait.forHttp("/health").forPort(8091).forStatusCode(HttpStatus.SC_OK).forResponsePredicate("\"ok\""::equals));
     
@@ -86,7 +86,7 @@ class SeataTest {
     }
     
     /**
-     * TODO Apparently there is a real connection leak on Seata Client 2.5.0.
+     * TODO Apparently there is a real connection leak on Seata Client 2.6.0.
      */
     @AfterEach
     void afterEach() {

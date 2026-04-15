@@ -105,6 +105,12 @@
         "typeReached": "com.alibaba.druid.util.JdbcUtils"
       },
       "glob": "META-INF/druid-driver.properties"
+    },
+    {
+      "condition": {
+        "typeReached": "com.alibaba.druid.sql.dialect.postgresql.visitor.PGOutputVisitor"
+      },
+      "glob": "META-INF/druid/parser/postgresql/*"
     }
   ]
 }
