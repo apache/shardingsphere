@@ -174,6 +174,29 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     }
     
     @Test
+    void assertAcceptInitializeWithoutProtocolVersion() throws IOException, InterruptedException, SQLException {
+        launchJDBCRuntime();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        Map<String, Object> requestParams = createInitializeRequestParams("integration-test");
+        requestParams.remove("protocolVersion");
+        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream"), requestParams);
+        String sessionId = initializeResponse.headers().firstValue("MCP-Session-Id").orElse("");
+        String protocolVersion = initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse("");
+        assertThat(initializeResponse.statusCode(), is(200));
+        assertFalse(sessionId.isEmpty());
+        assertThat(protocolVersion, is(MCPTransportConstants.PROTOCOL_VERSION));
+        assertThat(castToMap(parseJsonBody(initializeResponse.body()).get("result")).get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(httpClient, Map.of(
+                "Content-Type", "application/json",
+                "Accept", "application/json, text/event-stream",
+                "MCP-Session-Id", sessionId,
+                "MCP-Protocol-Version", protocolVersion));
+        assertSuccessfulCapabilitiesResponse(actualResponse);
+    }
+    
+    @Test
     void assertRejectFollowUpRequestWithoutAccessTokenBeforeSessionValidation() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntimeWithAccessToken();
         HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
@@ -207,6 +230,16 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
                 "MCP-Session-Id", session.sessionId()));
         assertThat(actualResponse.statusCode(), is(400));
         assertThat(parseJsonBody(actualResponse.body()).get("message"), is("MCP-Protocol-Version header is required."));
+    }
+    
+    @Test
+    void assertRejectDeleteForClosedSession() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntime();
+        HttpResponse<String> deleteResponse = sendDeleteRequest(session.httpClient(), session.sessionId());
+        HttpResponse<String> actualResponse = sendDeleteRequest(session.httpClient(), session.sessionId());
+        assertThat(deleteResponse.statusCode(), is(200));
+        assertThat(actualResponse.statusCode(), is(404));
+        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Session does not exist."));
     }
     
     @Test
