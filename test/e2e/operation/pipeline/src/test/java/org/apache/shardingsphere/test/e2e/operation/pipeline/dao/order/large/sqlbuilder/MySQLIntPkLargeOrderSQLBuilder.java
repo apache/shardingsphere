@@ -103,7 +103,7 @@ public final class MySQLIntPkLargeOrderSQLBuilder implements IntPkLargeOrderSQLB
                     "1", "t", "e", "s", "t",
                     PipelineCaseHelper.generateString(2), "☠️x☺️x✋x☹️", PipelineCaseHelper.generateString(1),
                     "1", "2",
-                    PipelineCaseHelper.generateJsonString(32, false)
+                    PipelineCaseHelper.generateJsonLiteralNull()
             };
             result.add(params);
         }

@@ -29,7 +29,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.mockito.Mockito.mock;
@@ -37,8 +36,6 @@ import static org.mockito.Mockito.mock;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PipelineCaseHelper {
-    
-    private static final AtomicInteger GENERATED_JSON_LITERAL_NULL_COUNT = new AtomicInteger();
     
     /**
      * Generate a pseudorandom integer in the specified range.
@@ -69,9 +66,6 @@ public final class PipelineCaseHelper {
      * @return json string
      */
     public static String generateJsonString(final int length, final boolean useUnicodeCharacter) {
-        if (shouldGenerateTopLevelJsonLiteralNull(length)) {
-            return "null";
-        }
         String value;
         if (useUnicodeCharacter) {
             value = Strings.repeat("{''中 } A'", Math.max(1, length / 10));
@@ -81,8 +75,13 @@ public final class PipelineCaseHelper {
         return String.format("{\"test\":\"%s\"}", value);
     }
     
-    private static boolean shouldGenerateTopLevelJsonLiteralNull(final int length) {
-        return 32 == length && GENERATED_JSON_LITERAL_NULL_COUNT.getAndIncrement() < 2;
+    /**
+     * Generate json literal null.
+     *
+     * @return json literal null
+     */
+    public static String generateJsonLiteralNull() {
+        return "null";
     }
     
     /**
