@@ -75,7 +75,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertListDatabasesWithMultipleRuntimeDatabases() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases");
@@ -88,7 +88,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertRefreshMetadataVisibleAcrossSessionsForTargetDatabaseOnly() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String firstSessionId = initializeSession(httpClient);
         
         sendToolCallRequest(httpClient, firstSessionId, "execute_query",
@@ -107,7 +107,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "BEGIN"));

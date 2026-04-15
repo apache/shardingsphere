@@ -61,7 +61,7 @@ abstract class AbstractLLMUsabilityE2ETest extends AbstractConfigBackedRuntimeE2
         for (LLMUsabilityScenario each : scenarios) {
             LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.getMaxTurns(),
                     new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()),
-                    new MCPHttpInteractionClient(getEndpointUri(), createHttpClient())).run(each.getLlmScenario());
+                    new MCPHttpInteractionClient(getEndpointUri(), HttpClient.newHttpClient())).run(each.getLlmScenario());
             Path artifactDirectory = llmConfiguration.createArtifactDirectory(each.getScenarioId());
             artifactWriter.write(artifactDirectory, artifactBundle);
             scenarioResults.add(metricCalculator.evaluateScenario(each, artifactBundle));

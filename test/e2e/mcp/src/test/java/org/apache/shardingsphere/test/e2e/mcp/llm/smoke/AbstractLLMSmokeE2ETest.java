@@ -58,7 +58,7 @@ abstract class AbstractLLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETes
         launchRuntime();
         LLME2EScenario scenario = scenarioSupplier.get();
         LLME2EArtifactBundle artifactBundle = new LLMMCPConversationRunner(llmConfiguration.getMaxTurns(),
-                new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()), new MCPHttpInteractionClient(getEndpointUri(), createHttpClient())).run(scenario);
+                new LLMChatModelClient(llmConfiguration, HttpClient.newHttpClient()), new MCPHttpInteractionClient(getEndpointUri(), HttpClient.newHttpClient())).run(scenario);
         Path artifactDirectory = llmConfiguration.createArtifactDirectory(scenario.getScenarioId());
         artifactWriter.write(artifactDirectory, artifactBundle);
         LLME2EAssertionReport assertionReport = artifactBundle.getAssertionReport();

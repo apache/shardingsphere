@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -41,6 +41,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     
     private static final String ENDPOINT_PATH = "/gateway";
     
+    @Getter
     @TempDir
     private Path tempDir;
     
@@ -61,30 +62,18 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
         httpServer = createStartedHttpServer(configFile);
     }
     
-    protected final HttpClient createHttpClient() {
-        return HttpClient.newHttpClient();
-    }
-    
     protected abstract Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases();
     
     protected abstract void prepareRuntimeFixture() throws IOException;
     
-    protected final Path getTempDir() {
-        return tempDir;
-    }
-    
     protected final URI getEndpointUri() {
-        return createEndpointUri();
-    }
-    
-    private URI createEndpointUri() {
         int localPort = httpServer.getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, ENDPOINT_PATH));
     }
     
     private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
-        MCPLaunchConfiguration launchConfiguration = MCPConfigurationLoader.load(configFile.toString());
-        MCPRuntimeServer server = new MCPRuntimeLauncher().launch(launchConfiguration);
+        MCPLaunchConfiguration launchConfig = MCPConfigurationLoader.load(configFile.toString());
+        MCPRuntimeServer server = new MCPRuntimeLauncher().launch(launchConfig);
         if (!(server instanceof StreamableHttpMCPServer)) {
             server.stop();
             throw new IllegalStateException("HTTP transport must be enabled for launched runtime E2E tests.");

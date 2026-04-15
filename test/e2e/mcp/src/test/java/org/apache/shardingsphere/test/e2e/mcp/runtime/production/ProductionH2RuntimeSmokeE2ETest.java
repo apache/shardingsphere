@@ -56,7 +56,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertReadDatabasesResource() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases");
         assertThat(actual.statusCode(), is(200));
@@ -68,7 +68,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
         assertThat(actual.statusCode(), is(200));
@@ -78,7 +78,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertTableDetailResource() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
                 "shardingsphere://databases/logic_db/schemas/public/tables/orders");
@@ -94,7 +94,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertListResources() throws IOException, InterruptedException {
         launchProductionRuntime();
-        MCPHttpInteractionClient actual = new MCPHttpInteractionClient(getEndpointUri(), createHttpClient());
+        MCPHttpInteractionClient actual = new MCPHttpInteractionClient(getEndpointUri(), HttpClient.newHttpClient());
         actual.open();
         MCPInteractionResponse response = actual.listResources();
         actual.close();
@@ -104,7 +104,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertExecuteSelect() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
@@ -115,7 +115,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertExecuteUpdate() throws SQLException, IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
@@ -129,7 +129,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertReadSequencesResource() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/schemas/public/sequences");
         assertThat(actual.statusCode(), is(200));
@@ -141,7 +141,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertSearchSequence() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("SEQUENCE")));
@@ -154,7 +154,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertExecuteSavepointFlow() throws SQLException, IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
         sendToolCallRequest(httpClient, sessionId, "execute_query",
@@ -178,7 +178,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     @Test
     void assertDeleteRollsBackPendingTransaction() throws SQLException, IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
         sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));

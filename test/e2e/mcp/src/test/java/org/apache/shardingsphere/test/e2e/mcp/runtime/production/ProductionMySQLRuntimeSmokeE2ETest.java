@@ -65,7 +65,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETes
     @Test
     void assertReadCapabilitiesWithActualMySQLBackend() throws IOException, InterruptedException {
         launchProductionRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://databases/logic_db/capabilities");
         assertThat(actual.statusCode(), is(200));
