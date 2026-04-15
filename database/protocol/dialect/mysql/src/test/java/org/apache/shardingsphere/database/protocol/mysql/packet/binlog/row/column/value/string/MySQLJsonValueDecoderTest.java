@@ -275,6 +275,9 @@ class MySQLJsonValueDecoderTest {
     
     private static Stream<Arguments> decodeTopLevelScalarArguments() {
         return Stream.of(
+                Arguments.of("decode top-level literal null", mockTopLevelLiteralByteBuf(JsonValueTypes.LITERAL_NULL), "null"),
+                Arguments.of("decode top-level literal true", mockTopLevelLiteralByteBuf(JsonValueTypes.LITERAL_TRUE), "true"),
+                Arguments.of("decode top-level literal false", mockTopLevelLiteralByteBuf(JsonValueTypes.LITERAL_FALSE), "false"),
                 Arguments.of("decode int16 top-level", mockTopLevelInt16ByteBuf(), "-32768"),
                 Arguments.of("decode uint16 top-level", mockTopLevelUInt16ByteBuf(), "65535"),
                 Arguments.of("decode string with escaped chars", mockTopLevelStringByteBuf(), "\"a\\\"\\\\b\""));
@@ -333,7 +336,14 @@ class MySQLJsonValueDecoderTest {
         result.writeShortLE(32768);
         return result;
     }
-    
+
+    private static ByteBuf mockTopLevelLiteralByteBuf(final byte value) {
+        ByteBuf result = Unpooled.buffer();
+        result.writeByte(JsonValueTypes.LITERAL);
+        result.writeByte(value);
+        return result;
+    }
+
     private static ByteBuf mockTopLevelUInt16ByteBuf() {
         ByteBuf result = Unpooled.buffer();
         result.writeByte(JsonValueTypes.UINT16);
