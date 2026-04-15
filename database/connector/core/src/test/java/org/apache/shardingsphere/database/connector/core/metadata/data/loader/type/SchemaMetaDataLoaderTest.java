@@ -116,6 +116,58 @@ class SchemaMetaDataLoaderTest {
     }
     
     @Test
+    void assertLoadSchemaTableNamesWithIncludedTables() throws SQLException {
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.empty());
+        when(schemaOption.getSchema(any())).thenReturn("public");
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
+        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
+        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+            try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+                typedSPILoader.when(() -> TypedSPILoader.getService(DialectDatabaseMetaData.class, null)).thenReturn(dialectDatabaseMetaData);
+                Connection connection = dataSourceWithoutDefaultSchema.getConnection();
+                when(connection.getCatalog()).thenReturn("catalog");
+                ResultSet tableResultSet = mock(ResultSet.class);
+                when(tableResultSet.next()).thenReturn(true, true, false);
+                when(tableResultSet.getString("TABLE_NAME")).thenReturn("tbl_1", "tbl_2");
+                when(connection.getMetaData().getTables("catalog", "public", null, TABLE_TYPES)).thenReturn(tableResultSet);
+                Map<String, Collection<String>> actual =
+                        new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.singleton("tbl_1"), Collections.emptySet());
+                Map<String, Collection<String>> expected = Collections.singletonMap("logic_db", new LinkedHashSet<>(Collections.singleton("tbl_1")));
+                assertThat(actual, is(expected));
+            }
+        }
+    }
+    
+    @Test
+    void assertLoadSchemaTableNamesWithWildcardIncludedTables() throws SQLException {
+        DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
+        when(schemaOption.getDefaultSchema()).thenReturn(Optional.empty());
+        when(schemaOption.getSchema(any())).thenReturn("public");
+        DialectDatabaseMetaData dialectDatabaseMetaData = mock(DialectDatabaseMetaData.class);
+        when(dialectDatabaseMetaData.getSchemaOption()).thenReturn(schemaOption);
+        when(dialectDatabaseMetaData.getIdentifierPatternType()).thenReturn(IdentifierPatternType.KEEP_ORIGIN);
+        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.getService(DialectDatabaseMetaData.class, databaseType)).thenReturn(dialectDatabaseMetaData);
+            try (MockedStatic<TypedSPILoader> typedSPILoader = mockStatic(TypedSPILoader.class)) {
+                typedSPILoader.when(() -> TypedSPILoader.getService(DialectDatabaseMetaData.class, null)).thenReturn(dialectDatabaseMetaData);
+                Connection connection = dataSourceWithoutDefaultSchema.getConnection();
+                when(connection.getCatalog()).thenReturn("catalog");
+                ResultSet tableResultSet = mock(ResultSet.class);
+                when(tableResultSet.next()).thenReturn(true, true, false);
+                when(tableResultSet.getString("TABLE_NAME")).thenReturn("tbl_1", "tbl_2");
+                when(connection.getMetaData().getTables("catalog", "public", null, TABLE_TYPES)).thenReturn(tableResultSet);
+                Map<String, Collection<String>> actual =
+                        new SchemaMetaDataLoader(databaseType).loadSchemaTableNames("logic_db", dataSourceWithoutDefaultSchema, Collections.singleton("*"), Collections.singleton("tbl_2"));
+                Map<String, Collection<String>> expected = Collections.singletonMap("logic_db", new LinkedHashSet<>(Collections.singleton("tbl_1")));
+                assertThat(actual, is(expected));
+            }
+        }
+    }
+    
+    @Test
     void assertLoadSchemaTableNamesWithDefaultSchema() throws SQLException {
         DialectSchemaOption schemaOption = mock(DialectSchemaOption.class);
         when(schemaOption.getDefaultSchema()).thenReturn(Optional.of("public"));

@@ -146,6 +146,26 @@ class SingleTableDataNodeLoaderTest {
     }
     
     @Test
+    void assertLoadWithSameTableInDifferentSchemas() {
+        Map<String, Collection<String>> schemaTableNames = new LinkedHashMap<>(2, 1F);
+        schemaTableNames.put("target_schema", Collections.singleton("same_tbl"));
+        schemaTableNames.put("other_schema", Collections.singleton("same_tbl"));
+        Collection<String> configuredTables = Collections.singleton("foo_ds.target_schema.same_tbl");
+        Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "target_schema", "same_tbl"));
+        try (
+                MockedStatic<SingleTableLoadUtils> mockedSingleTableLoadUtils = mockStatic(SingleTableLoadUtils.class, Answers.CALLS_REAL_METHODS);
+                MockedStatic<SingleTableDataNodeLoader> mockedSingleTableDataNodeLoader = mockStatic(SingleTableDataNodeLoader.class, Answers.CALLS_REAL_METHODS)) {
+            mockedSingleTableLoadUtils.when(() -> SingleTableLoadUtils.convertToDataNodes("foo_db", databaseType, configuredTables)).thenReturn(configuredDataNodes);
+            mockedSingleTableDataNodeLoader.when(() -> SingleTableDataNodeLoader.loadSchemaTableNames(
+                    "foo_db", databaseType, dataSourceMap.get("foo_ds"), "foo_ds", Collections.emptySet(), Collections.emptySet())).thenReturn(schemaTableNames);
+            Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load("foo_db", databaseType, dataSourceMap, Collections.emptyList(), configuredTables);
+            assertThat(actual.keySet(), is(Collections.singleton("same_tbl")));
+            assertThat(actual.get("same_tbl").size(), is(1));
+            assertThat(actual.get("same_tbl").iterator().next(), is(new DataNode("foo_ds", "target_schema", "same_tbl")));
+        }
+    }
+    
+    @Test
     void assertLoadWithEmptyConfiguredTablesAndFeatureRequiredSingleTables() {
         assertTrue(SingleTableDataNodeLoader.load(
                 "foo_db", databaseType, dataSourceMap, Collections.singleton(createRule(Collections.emptyList(), Collections.singleton("foo_tbl1"))), Collections.emptyList()).isEmpty());
