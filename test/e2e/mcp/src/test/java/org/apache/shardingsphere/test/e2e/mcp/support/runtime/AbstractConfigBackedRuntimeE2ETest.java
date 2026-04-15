@@ -72,9 +72,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     protected final MCPInteractionClient createInteractionClient() throws IOException {
         RuntimeTransport transport = getTransport();
         prepareRuntime();
-        return RuntimeTransport.HTTP == transport
-                ? new MCPHttpInteractionClient(getEndpointUri(), HttpClient.newHttpClient())
-                : new MCPStdioInteractionClient(configFile);
+        return RuntimeTransport.HTTP == transport ? new MCPHttpInteractionClient(getEndpointUri(), HttpClient.newHttpClient()) : new MCPStdioInteractionClient(configFile);
     }
     
     protected final MCPInteractionClient createOpenedInteractionClient() throws IOException, InterruptedException {
@@ -101,11 +99,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     }
     
     private URI getEndpointUri() {
-        if (null == httpServer) {
-            throw new IllegalStateException("HTTP transport is not active for the current runtime test.");
-        }
-        int localPort = httpServer.getLocalPort();
-        return URI.create(String.format("http://%s:%d%s", LOOPBACK_BIND_HOST, localPort, ENDPOINT_PATH));
+        return URI.create(String.format("http://%s:%d%s", LOOPBACK_BIND_HOST, httpServer.getLocalPort(), ENDPOINT_PATH));
     }
     
     private StreamableHttpMCPServer createStartedHttpServer(final Path configFile) throws IOException {
