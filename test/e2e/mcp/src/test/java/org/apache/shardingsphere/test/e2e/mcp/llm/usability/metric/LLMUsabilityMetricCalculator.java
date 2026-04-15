@@ -24,7 +24,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityDi
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScorecard;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionTraceRecord;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.LinkedList;
 import java.util.List;

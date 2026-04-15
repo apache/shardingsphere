@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.support.MySQLRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;

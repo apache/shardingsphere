@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.support;
+package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

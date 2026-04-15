@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.transport;
+package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +42,6 @@ public final class MCPInteractionTraceRecord {
     private final boolean valid;
     
     private final long latencyMillis;
-    
-    public MCPInteractionTraceRecord(final int sequence, final String targetName, final Map<String, Object> arguments,
-                                     final Map<String, Object> structuredContent) {
-        this(sequence, "tool_call", targetName, arguments, structuredContent, true, 0L);
-    }
     
     /**
      * Create resource list.

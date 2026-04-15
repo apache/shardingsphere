@@ -34,9 +34,9 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPInteractionClient;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionResponse;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionTraceRecord;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.io.IOException;
 import java.util.Collection;

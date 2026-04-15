@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.artifact;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionTraceRecord;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.List;
 

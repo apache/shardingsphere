@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime;
+package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mcp.bootstrap.MCPRuntimeLauncher;
@@ -37,7 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-public abstract class AbstractLaunchedRuntimeE2ETest {
+public abstract class AbstractConfigBackedRuntimeE2ETest {
     
     private static final String ENDPOINT_PATH = "/gateway";
     

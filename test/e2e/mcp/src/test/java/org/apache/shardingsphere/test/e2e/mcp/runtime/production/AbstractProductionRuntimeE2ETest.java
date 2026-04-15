@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.AbstractLaunchedRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -33,7 +33,7 @@ import java.util.Map.Entry;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractProductionRuntimeE2ETest extends AbstractLaunchedRuntimeE2ETest {
+abstract class AbstractProductionRuntimeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String PROTOCOL_VERSION = "2025-11-25";
     

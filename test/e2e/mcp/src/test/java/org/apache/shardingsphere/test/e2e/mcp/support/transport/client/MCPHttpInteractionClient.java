@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client;
+package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionResponse;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
 
 import java.io.IOException;
 import java.net.URI;

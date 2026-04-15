@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.runtime.transport;
+package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

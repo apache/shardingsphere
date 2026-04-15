@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.support.H2RuntimeTestSupport;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.client.MCPHttpInteractionClient;
-import org.apache.shardingsphere.test.e2e.mcp.runtime.transport.MCPInteractionResponse;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
