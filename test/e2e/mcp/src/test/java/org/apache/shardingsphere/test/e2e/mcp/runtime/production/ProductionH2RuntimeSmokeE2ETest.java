@@ -34,7 +34,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 
-class ProductionRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
+class ProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private String jdbcUrl;
     
