@@ -60,6 +60,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -137,7 +138,7 @@ class ShowUnloadedSingleTablesExecutorTest {
         when(storageUnit.getDataSource()).thenReturn(dataSource);
         when(PhysicalDataSourceAggregator.getAggregatedDataSources(any(), any())).thenReturn(Collections.singletonMap("ds_0", dataSource));
         when(SingleTableLoadUtils.getExcludedTables(Collections.emptyList())).thenReturn(Collections.emptySet());
-        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), any())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(eq("foo_db"), any(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
     }
     
     private void assertRows(final List<List<String>> expectedRows) {
