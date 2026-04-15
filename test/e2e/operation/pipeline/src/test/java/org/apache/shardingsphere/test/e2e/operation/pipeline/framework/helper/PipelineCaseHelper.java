@@ -29,6 +29,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.mockito.Mockito.mock;
@@ -36,6 +37,12 @@ import static org.mockito.Mockito.mock;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
 public final class PipelineCaseHelper {
+
+    private static final int MYSQL_JSON_LITERAL_LENGTH = 32;
+
+    private static final AtomicBoolean GENERATED_ASCII_JSON_LITERAL_NULL = new AtomicBoolean(false);
+
+    private static final AtomicBoolean GENERATED_UNICODE_JSON_LITERAL_NULL = new AtomicBoolean(false);
     
     /**
      * Generate a pseudorandom integer in the specified range.
@@ -66,6 +73,9 @@ public final class PipelineCaseHelper {
      * @return json string
      */
     public static String generateJsonString(final int length, final boolean useUnicodeCharacter) {
+        if (shouldGenerateTopLevelJsonLiteralNull(length, useUnicodeCharacter)) {
+            return "null";
+        }
         String value;
         if (useUnicodeCharacter) {
             value = Strings.repeat("{''中 } A'", Math.max(1, length / 10));
@@ -73,6 +83,13 @@ public final class PipelineCaseHelper {
             value = generateString(length);
         }
         return String.format("{\"test\":\"%s\"}", value);
+    }
+
+    private static boolean shouldGenerateTopLevelJsonLiteralNull(final int length, final boolean useUnicodeCharacter) {
+        if (MYSQL_JSON_LITERAL_LENGTH != length) {
+            return false;
+        }
+        return useUnicodeCharacter ? GENERATED_UNICODE_JSON_LITERAL_NULL.compareAndSet(false, true) : GENERATED_ASCII_JSON_LITERAL_NULL.compareAndSet(false, true);
     }
     
     /**
