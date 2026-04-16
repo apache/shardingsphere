@@ -42,8 +42,8 @@ import static org.hamcrest.Matchers.is;
 /**
  * E2E IT for time types of MySQL, includes.
  * 1) timestamp, datetime, date, year zero values
- * 2) datetime(4) zero default value in incremental migration
- * 3) trailing date default value after datetime(4)
+ * 2) explicit timestamp(4), datetime(4) and time(4) values in incremental migration
+ * 3) explicit trailing date value after temporal columns with fractional precision
  */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL"))
 class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
@@ -54,17 +54,17 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
     void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, "
-                    + "`t_year` year DEFAULT NULL, `t_datetime_4` datetime(4) DEFAULT '0000-00-00 00:00:00.0000', "
-                    + "`t_date_tail` date NOT NULL DEFAULT '2024-01-01', PRIMARY KEY (`id`)) ENGINE=InnoDB;";
+                    + "`t_year` year DEFAULT NULL, `t_timestamp_4` timestamp(4) NULL, `t_datetime_4` datetime(4) NULL, "
+                    + "`t_time_4` time(4) NULL, `t_date_tail` date NOT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
-            insertInventoryRecordWithZeroValue(containerComposer, 1);
+            insertInventoryRecord(containerComposer, 1);
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             String jobId = distSQLFacade.listJobIds().get(0);
             distSQLFacade.waitJobIncrementalStageStarted(jobId);
-            insertIncrementalRecordWithZeroDefaultValue(containerComposer, 2);
+            insertIncrementalRecord(containerComposer, 2);
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             distSQLFacade.loadAllSingleTables();
             assertTargetRowCount(containerComposer, 2);
@@ -72,27 +72,36 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
         }
     }
     
-    private void insertInventoryRecordWithZeroValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
+    private void insertInventoryRecord(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year, t_datetime_4) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year, t_timestamp_4, t_datetime_4, t_time_4, t_date_tail) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             preparedStatement.setObject(1, id);
             preparedStatement.setObject(2, "0000-00-00 00:00:00");
             preparedStatement.setObject(3, "0000-00-00 00:00:00");
             preparedStatement.setObject(4, "0000-00-00");
             preparedStatement.setObject(5, "0000");
             preparedStatement.setObject(6, null);
+            preparedStatement.setObject(7, null);
+            preparedStatement.setObject(8, null);
+            preparedStatement.setObject(9, "2024-01-01");
             preparedStatement.execute();
         }
     }
     
-    private void insertIncrementalRecordWithZeroDefaultValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
+    private void insertIncrementalRecord(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year, t_timestamp_4, t_datetime_4, t_time_4, t_date_tail) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             preparedStatement.setObject(1, id);
             preparedStatement.setObject(2, "0000-00-00 00:00:00");
             preparedStatement.setObject(3, "0000-00-00 00:00:00");
             preparedStatement.setObject(4, "0000-00-00");
             preparedStatement.setObject(5, "0000");
+            preparedStatement.setObject(6, "2020-01-02 03:04:05.6789");
+            preparedStatement.setObject(7, "0000-00-00 00:00:00.0000");
+            preparedStatement.setObject(8, "00:00:00.0000");
+            preparedStatement.setObject(9, "2024-01-01");
             preparedStatement.execute();
         }
     }
