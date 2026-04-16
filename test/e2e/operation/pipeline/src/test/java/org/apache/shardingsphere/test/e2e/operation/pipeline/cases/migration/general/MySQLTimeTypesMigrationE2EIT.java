@@ -36,7 +36,8 @@ import java.sql.SQLException;
 
 /**
  * E2E IT for time types of MySQL, includes.
- * 1) datetime,timestamp,date default null
+ * 1) timestamp, datetime, date, year zero values
+ * 2) datetime(4) zero default value
  */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL"))
 class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
@@ -47,7 +48,7 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
     void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, "
-                    + "`t_year` year DEFAULT NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
+                    + "`t_year` year DEFAULT NULL, `t_datetime_4` datetime(4) NOT NULL DEFAULT '0000-00-00 00:00:00.0000', PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
             insertOneRecordWithZeroValue(containerComposer, 1);
             addMigrationSourceResource(containerComposer);
