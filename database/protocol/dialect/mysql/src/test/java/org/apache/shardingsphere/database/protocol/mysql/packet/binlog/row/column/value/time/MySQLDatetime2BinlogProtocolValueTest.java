@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -89,9 +90,29 @@ class MySQLDatetime2BinlogProtocolValueTest {
     }
     
     @Test
+    void assertReadWithZeroDatetimeAndFraction() {
+        columnDef.setColumnMeta(4);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(payload.readInt1()).thenReturn(0x00, 0x00, 0x00, 0x00, 0x00);
+        when(byteBuf.readUnsignedShort()).thenReturn(0);
+        assertThat(protocolValue.read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
+        verify(byteBuf).readUnsignedShort();
+    }
+    
+    @Test
     void assertReadWithSignedZeroDatetime() {
         when(payload.readInt1()).thenReturn(0x80, 0x00, 0x00, 0x00, 0x00);
         assertThat(protocolValue.read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
+    }
+    
+    @Test
+    void assertReadWithSignedZeroDatetimeAndFraction() {
+        columnDef.setColumnMeta(4);
+        when(payload.getByteBuf()).thenReturn(byteBuf);
+        when(payload.readInt1()).thenReturn(0x80, 0x00, 0x00, 0x00, 0x00);
+        when(byteBuf.readUnsignedShort()).thenReturn(0);
+        assertThat(protocolValue.read(columnDef, payload), is(MySQLTimeValueUtils.DATETIME_OF_ZERO));
+        verify(byteBuf).readUnsignedShort();
     }
     
     private static Stream<Arguments> readCases() {
