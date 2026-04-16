@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
@@ -33,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * LLM chat client.
@@ -119,13 +121,9 @@ public final class LLMChatModelClient {
         }
         Map<String, Object> payload = parseJsonObject(response.body(), "Failed to parse model completion response.");
         List<Map<String, Object>> choices = castToList(payload.get("choices"));
-        if (choices.isEmpty()) {
-            throw new IllegalStateException("Model completion response does not contain choices.");
-        }
+        Preconditions.checkState(!choices.isEmpty(), "Model completion response does not contain choices.");
         Map<String, Object> message = castToMap(choices.get(0).get("message"));
-        if (message.isEmpty()) {
-            throw new IllegalStateException("Model completion response does not contain one assistant message.");
-        }
+        Preconditions.checkState(!message.isEmpty(), "Model completion response does not contain one assistant message.");
         return new LLMChatCompletion(Objects.toString(message.get("content"), "").trim(), createToolCalls(message.get("tool_calls")), response.body());
     }
     
@@ -140,13 +138,7 @@ public final class LLMChatModelClient {
     
     private boolean containsModel(final String responseBody) {
         Map<String, Object> payload = parseJsonObject(responseBody, "Failed to parse model-list response.");
-        List<Map<String, Object>> data = castToList(payload.get("data"));
-        for (Map<String, Object> each : data) {
-            if (config.getModelName().equals(Objects.toString(each.get("id"), "").trim())) {
-                return true;
-            }
-        }
-        return false;
+        return castToList(payload.get("data")).stream().anyMatch(each -> config.getModelName().equals(Objects.toString(each.get("id"), "").trim()));
     }
     
     private List<Map<String, Object>> createMessages(final List<LLMChatMessage> messages) {
@@ -171,20 +163,16 @@ public final class LLMChatModelClient {
     }
     
     private List<Map<String, Object>> createToolCalls(final List<LLMToolCall> toolCalls) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (LLMToolCall each : toolCalls) {
-            result.add(Map.of("id", each.getId(), "type", "function",
-                    "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson())));
-        }
-        return result;
+        return toolCalls.stream()
+                .map(each -> Map.of("id", each.getId(), "type", "function", "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson()))).collect(Collectors.toList());
     }
     
     private List<LLMToolCall> createToolCalls(final Object rawValue) {
         List<LLMToolCall> result = new LinkedList<>();
         for (Map<String, Object> each : castToList(rawValue)) {
             Map<String, Object> function = castToMap(each.get("function"));
-            result.add(new LLMToolCall(Objects.toString(each.get("id"), "").trim(), Objects.toString(function.get("name"), "").trim(),
-                    Objects.toString(function.get("arguments"), "").trim()));
+            result.add(new LLMToolCall(
+                    Objects.toString(each.get("id"), "").trim(), Objects.toString(function.get("name"), "").trim(), Objects.toString(function.get("arguments"), "").trim()));
         }
         return result;
     }
