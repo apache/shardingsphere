@@ -17,42 +17,22 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
 
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Map;
-
-class StdioProductionLLMH2SmokeE2ETest extends AbstractLLMSmokeE2ETest {
-    
-    private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
-    
-    private H2RuntimeTestSupport.LLMH2RuntimeFixture runtimeFixture;
-    
-    @Override
-    protected void prepareRuntimeFixture() throws IOException {
-        try {
-            runtimeFixture = H2RuntimeTestSupport.createLLMRuntimeFixture(getTempDir(), "production-llm-h2-smoke-stdio", "logic_db", getTransport());
-        } catch (final SQLException ex) {
-            throw new IOException(ex);
-        }
-    }
-    
-    @Override
-    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return runtimeFixture.runtimeDatabases();
-    }
+class StdioProductionLLMH2SmokeE2ETest extends AbstractDatabaseBackedLLMSmokeE2ETest {
     
     @Override
     protected RuntimeTransport getTransport() {
         return RuntimeTransport.STDIO;
     }
     
-    @Test
-    void assertSmoke() throws IOException {
-        assertLLMSmoke(() -> createMinimalSmokeScenario("minimal-smoke-h2-stdio", "logic_db", "public", "orders", COUNT_ORDERS_SQL, runtimeFixture.totalOrders()));
+    @Override
+    protected LLMRuntimeBackend getRuntimeBackend() {
+        return LLMRuntimeBackend.H2;
+    }
+    
+    @Override
+    protected String getScenarioId() {
+        return "minimal-smoke-h2-stdio";
     }
 }

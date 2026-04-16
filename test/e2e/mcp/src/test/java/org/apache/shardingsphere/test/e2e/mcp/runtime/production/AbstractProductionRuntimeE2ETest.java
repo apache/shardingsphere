@@ -33,6 +33,10 @@ abstract class AbstractProductionRuntimeE2ETest extends AbstractConfigBackedRunt
         return MCPInteractionPayloads.castToList(payload.get("resources"));
     }
     
+    protected final List<Map<String, Object>> getResourceTemplates(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.castToList(payload.get("resourceTemplates"));
+    }
+    
     protected final List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
         return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }

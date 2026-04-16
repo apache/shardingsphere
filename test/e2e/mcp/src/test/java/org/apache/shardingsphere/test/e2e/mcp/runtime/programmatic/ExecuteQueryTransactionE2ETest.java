@@ -26,6 +26,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
@@ -64,6 +65,30 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
+    }
+    
+    @Test
+    void assertRejectMissingRequiredSqlArgument() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
+        assertThat(String.valueOf(payload.get("message")), is("sql is required."));
+    }
+    
+    @Test
+    void assertRejectUnsupportedTool() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "unsupported_tool", Map.of());
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
+        assertFalse(String.valueOf(payload.get("message")).isEmpty());
     }
     
     private Map<String, Object> createExecuteQueryArguments(final String databaseName, final String schemaName, final String sql) {

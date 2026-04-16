@@ -17,43 +17,22 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
 
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Map;
-
-class HttpLLMUsabilityH2SuiteE2ETest extends AbstractLLMUsabilityE2ETest {
-    
-    private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
-    
-    private H2RuntimeTestSupport.LLMH2RuntimeFixture runtimeFixture;
-    
-    @Override
-    protected void prepareRuntimeFixture() throws IOException {
-        try {
-            runtimeFixture = H2RuntimeTestSupport.createMultiDatabaseLLMRuntimeFixture(getTempDir(), "logic_db", "analytics_db", getTransport());
-        } catch (final SQLException ex) {
-            throw new IOException(ex);
-        }
-    }
-    
-    @Override
-    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return runtimeFixture.runtimeDatabases();
-    }
+class HttpLLMUsabilityH2SuiteE2ETest extends AbstractDatabaseBackedLLMUsabilityE2ETest {
     
     @Override
     protected RuntimeTransport getTransport() {
         return RuntimeTransport.HTTP;
     }
     
-    @Test
-    void assertMinimalBaseline() throws IOException {
-        assertUsabilitySuite("minimal-usability-h2",
-                () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("h2", "logic_db", "public", "orders", COUNT_ORDERS_SQL, runtimeFixture.totalOrders()));
+    @Override
+    protected LLMRuntimeBackend getRuntimeBackend() {
+        return LLMRuntimeBackend.H2;
+    }
+    
+    @Override
+    protected String getSuiteId() {
+        return "minimal-usability-h2";
     }
 }

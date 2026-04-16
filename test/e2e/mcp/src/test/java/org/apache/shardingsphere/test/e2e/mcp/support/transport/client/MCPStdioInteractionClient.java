@@ -100,6 +100,13 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
     }
     
     @Override
+    public Map<String, Object> listResourceTemplates() throws IOException {
+        ensureOpened();
+        Map<String, Object> response = sendRequest("resources-templates-list-1", "resources/templates/list", Map.of());
+        return MCPInteractionPayloads.getJsonRpcResult(response);
+    }
+    
+    @Override
     public Map<String, Object> readResource(final String resourceUri) throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));

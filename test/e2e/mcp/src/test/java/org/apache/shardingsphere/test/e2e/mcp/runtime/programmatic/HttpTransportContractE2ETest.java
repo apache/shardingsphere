@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,34 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> actualResult = castToMap(actualPayload.get("result"));
         assertThat(String.valueOf(actualPayload.get("jsonrpc")), is("2.0"));
         assertThat(String.valueOf(actualResult.get("protocolVersion")), is(getProtocolVersion()));
+    }
+    
+    @Test
+    void assertAcceptInitializeWithoutAcceptHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder(getEndpointUri())
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                        "init-1", "initialize", MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"))))
+                .build();
+        HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        assertThat(actual.statusCode(), is(200));
+        assertTrue(actual.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
+        assertFalse(actual.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
+    }
+    
+    @Test
+    void assertAcceptInitializeWithUnsupportedProtocolVersion() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        Map<String, Object> initializeRequestParams = new LinkedHashMap<>(MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+        initializeRequestParams.put("protocolVersion", "2024-11-05");
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, initializeRequestParams);
+        assertThat(actual.statusCode(), is(200));
+        assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
+        Map<String, Object> actualPayload = parseJsonBody(actual.body());
+        assertThat(String.valueOf(castToMap(actualPayload.get("result")).get("protocolVersion")), is(getProtocolVersion()));
     }
     
     @Test
@@ -78,6 +107,16 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Test
+    void assertRejectFollowUpRequestWithProtocolMismatch() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId, "MCP-Protocol-Version", "2024-11-05"));
+        assertThat(actual.statusCode(), is(400));
+        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Protocol version mismatch."));
+    }
+    
+    @Test
     void assertRejectFollowUpRequestWithMissingSession() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -88,8 +127,37 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session does not exist."));
     }
     
+    @Test
+    void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendDeleteRequest(httpClient, Map.of("MCP-Protocol-Version", getProtocolVersion()));
+        assertThat(actual.statusCode(), is(400));
+        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session ID required in mcp-session-id header"));
+    }
+    
+    @Test
+    void assertCloseSessionOnDelete() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        Map<String, String> sessionHeaders = Map.of("MCP-Session-Id", sessionId, "MCP-Protocol-Version", getProtocolVersion());
+        HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, sessionHeaders);
+        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, sessionHeaders);
+        assertThat(deleteResponse.statusCode(), is(200));
+        assertThat(actual.statusCode(), is(404));
+        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session does not exist."));
+    }
+    
     private Map<String, Object> parseJsonBody(final String responseBody) {
         return MCPInteractionPayloads.parseJsonPayload(responseBody);
+    }
+    
+    private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
+        HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
+                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody("init-1", "initialize", initializeRequestParams)))
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
     private HttpResponse<String> sendCapabilitiesRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
@@ -100,6 +168,12 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                         "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"))))
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+    
+    private HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri()).DELETE();
+        headers.forEach(requestBuilder::header);
+        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }
     
     @SuppressWarnings("unchecked")

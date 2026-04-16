@@ -57,6 +57,18 @@ public interface MCPInteractionClient extends AutoCloseable {
     }
     
     /**
+     * List resource templates.
+     *
+     * @return MCP resource templates payload
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     * @throws UnsupportedOperationException unsupported operation exception
+     */
+    default Map<String, Object> listResourceTemplates() throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("resources/templates/list is not supported.");
+    }
+    
+    /**
      * Read resource.
      *
      * @param resourceUri resource URI

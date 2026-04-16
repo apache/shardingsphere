@@ -17,55 +17,22 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
 
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Map;
-
-class HttpLLMUsabilityMySQLSuiteE2ETest extends AbstractLLMUsabilityE2ETest {
-    
-    private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
-    
-    private MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture runtimeFixture;
-    
-    @AfterEach
-    void closeRuntimeFixture() {
-        if (null != runtimeFixture) {
-            runtimeFixture.close();
-            runtimeFixture = null;
-        }
-    }
-    
-    @Override
-    protected void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the MySQL-backed usability suite.");
-        try {
-            runtimeFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture("logic_db");
-        } catch (final SQLException ex) {
-            throw new IOException(ex);
-        }
-    }
-    
-    @Override
-    protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return runtimeFixture.getRuntimeDatabases();
-    }
+class HttpLLMUsabilityMySQLSuiteE2ETest extends AbstractDatabaseBackedLLMUsabilityE2ETest {
     
     @Override
     protected RuntimeTransport getTransport() {
         return RuntimeTransport.HTTP;
     }
     
-    @Test
-    void assertMinimalBaseline() throws IOException {
-        assertUsabilitySuite("minimal-usability-mysql",
-                () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("mysql", "logic_db", runtimeFixture.getSchemaName(),
-                        "orders", COUNT_ORDERS_SQL, runtimeFixture.getTotalOrders()));
+    @Override
+    protected LLMRuntimeBackend getRuntimeBackend() {
+        return LLMRuntimeBackend.MYSQL;
+    }
+    
+    @Override
+    protected String getSuiteId() {
+        return "minimal-usability-mysql";
     }
 }

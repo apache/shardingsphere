@@ -17,22 +17,28 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.junit.jupiter.api.Test;
 
-class HttpProductionLLMMySQLSmokeE2ETest extends AbstractDatabaseBackedLLMSmokeE2ETest {
+import java.io.IOException;
+
+abstract class AbstractDatabaseBackedLLMSmokeE2ETest extends AbstractLLMSmokeE2ETest {
     
-    @Override
-    protected RuntimeTransport getTransport() {
-        return RuntimeTransport.HTTP;
+    private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
+    
+    @Test
+    void assertSmoke() throws IOException {
+        assertLLMSmoke(() -> createMinimalSmokeScenario(getScenarioId(), "logic_db", getRuntimeSchemaName(), "orders", COUNT_ORDERS_SQL, getRuntimeTotalOrders()));
     }
     
     @Override
-    protected LLMRuntimeBackend getRuntimeBackend() {
-        return LLMRuntimeBackend.MYSQL;
+    protected final RuntimeFixture createH2RuntimeFixture() throws IOException {
+        return createSingleDatabaseH2RuntimeFixture(getScenarioId());
     }
     
     @Override
-    protected String getScenarioId() {
-        return "minimal-smoke-mysql";
+    protected final RuntimeFixture createMySQLRuntimeFixture() throws IOException {
+        return createMySQLDatabaseRuntimeFixture("logic_db", "Docker is required for the MySQL-backed LLM MCP smoke test.");
     }
+    
+    protected abstract String getScenarioId();
 }

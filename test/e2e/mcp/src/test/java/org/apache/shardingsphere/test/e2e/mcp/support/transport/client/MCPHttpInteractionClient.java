@@ -83,6 +83,13 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
     }
     
     @Override
+    public Map<String, Object> listResourceTemplates() throws IOException, InterruptedException {
+        ensureOpened();
+        HttpResponse<String> response = sendPostRequest("resources-templates-list-1", "resources/templates/list", Map.of());
+        return MCPInteractionPayloads.getJsonRpcResult(MCPInteractionPayloads.parseJsonPayload(response.body()));
+    }
+    
+    @Override
     public Map<String, Object> readResource(final String resourceUri) throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));

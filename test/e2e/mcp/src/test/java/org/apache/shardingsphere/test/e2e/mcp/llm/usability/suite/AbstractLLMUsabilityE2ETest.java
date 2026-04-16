@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
 
-import org.apache.shardingsphere.test.e2e.mcp.llm.AbstractLLMRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.llm.AbstractDatabaseBackedLLMRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.metric.LLMUsabilityMetricCalculator;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
@@ -34,7 +34,7 @@ import java.util.function.Supplier;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractLLMUsabilityE2ETest extends AbstractLLMRuntimeE2ETest {
+abstract class AbstractLLMUsabilityE2ETest extends AbstractDatabaseBackedLLMRuntimeE2ETest {
     
     private final LLMUsabilityMetricCalculator metricCalculator = new LLMUsabilityMetricCalculator();
     

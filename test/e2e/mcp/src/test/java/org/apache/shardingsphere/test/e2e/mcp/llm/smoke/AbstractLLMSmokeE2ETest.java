@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
 
-import org.apache.shardingsphere.test.e2e.mcp.llm.AbstractLLMRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.llm.AbstractDatabaseBackedLLMRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
@@ -32,7 +32,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class AbstractLLMSmokeE2ETest extends AbstractLLMRuntimeE2ETest {
+abstract class AbstractLLMSmokeE2ETest extends AbstractDatabaseBackedLLMRuntimeE2ETest {
     
     private static final String SYSTEM_PROMPT_RESOURCE = "llm/minimal-smoke-system-prompt.md";
     
