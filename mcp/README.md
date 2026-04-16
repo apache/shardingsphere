@@ -292,7 +292,7 @@ Notes:
 - `test/e2e/mcp` also includes a real-model smoke lane for MCP:
   - default stack: `Ollama + qwen3:1.7b`
   - runtime coverage: file-backed H2 runtime plus a Testcontainers MySQL runtime
-  - runtime shape: the tests launch the production bootstrap runtime in-process over HTTP
+  - runtime shape: the tests launch the production bootstrap runtime in-process over HTTP and STDIO
   - final assertion: structured JSON plus MCP tool trace
 - Local reproduction for the LLM smoke lane:
 
@@ -303,7 +303,7 @@ MCP_LLM_E2E_ENABLED=true \
 MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
 MCP_LLM_MODEL=qwen3:1.7b \
 ./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true \
-  -Dtest=ProductionLLMH2SmokeE2ETest,ProductionLLMMySQLSmokeE2ETest \
+  '-Dtest=*ProductionLLMH2SmokeE2ETest,*ProductionLLMMySQLSmokeE2ETest' \
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 

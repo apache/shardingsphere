@@ -292,7 +292,7 @@ docker run --rm -p 18088:18088 \
 - `test/e2e/mcp` 现在也包含一条真实模型驱动的 MCP smoke：
   - 默认模型栈：`Ollama + qwen3:1.7b`
   - runtime 覆盖：file-backed H2 runtime，加上一条 Testcontainers 拉起的 MySQL runtime
-  - runtime 形态：测试会在进程内拉起 production bootstrap HTTP runtime
+  - runtime 形态：测试会在进程内拉起 production bootstrap HTTP 和 STDIO runtime
   - 最终判定：结构化 JSON 和 MCP tool trace
 - 本地复现这条 LLM smoke：
 
@@ -303,7 +303,7 @@ MCP_LLM_E2E_ENABLED=true \
 MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
 MCP_LLM_MODEL=qwen3:1.7b \
 ./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true \
-  -Dtest=ProductionLLMH2SmokeE2ETest,ProductionLLMMySQLSmokeE2ETest \
+  '-Dtest=*ProductionLLMH2SmokeE2ETest,*ProductionLLMMySQLSmokeE2ETest' \
   -Dsurefire.failIfNoSpecifiedTests=false
 ```
 

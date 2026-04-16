@@ -35,7 +35,7 @@ class HttpLLMUsabilityH2SuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
-            runtimeFixture = H2RuntimeTestSupport.createLLMRuntimeFixture(getTempDir(), "llm-usability-h2", "logic_db", getTransport());
+            runtimeFixture = H2RuntimeTestSupport.createMultiDatabaseLLMRuntimeFixture(getTempDir(), "logic_db", "analytics_db", getTransport());
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }

@@ -161,6 +161,27 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
     }
     
     @Test
+    void assertRejectUnsupportedObjectType() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.call("search_metadata",
+                    Map.of("database", "logic_db", "schema", "public", "query", "order",
+                            "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
+            assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
+            assertThat(String.valueOf(actual.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
+        }
+    }
+    
+    @Test
+    void assertRejectExecuteMultiStatement() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.call("execute_query",
+                    Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1; SELECT 2"));
+            assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
+            assertThat(String.valueOf(actual.get("message")), is("Only one SQL statement is allowed."));
+        }
+    }
+    
+    @Test
     void assertExecuteSavepointFlow() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
@@ -189,9 +210,5 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             interactionClient.close();
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
         }
-    }
-    
-    private static List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
-        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }
 }

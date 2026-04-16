@@ -27,6 +27,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -105,6 +106,46 @@ public final class H2RuntimeTestSupport {
         String jdbcUrl = createJdbcUrl(tempDir, databaseName, accessMode);
         initializeDatabase(jdbcUrl);
         return new LLMH2RuntimeFixture(querySingleInt(jdbcUrl, COUNT_ORDERS_JDBC_SQL), createRuntimeDatabases(logicalDatabase, jdbcUrl));
+    }
+    
+    /**
+     * Create one multi-database LLM runtime fixture.
+     *
+     * @param tempDir temp dir
+     * @param logicalDatabase logical database
+     * @param analyticsDatabase analytics database
+     * @param transport runtime transport
+     * @return fixture
+     * @throws SQLException SQL exception
+     */
+    public static LLMH2RuntimeFixture createMultiDatabaseLLMRuntimeFixture(final Path tempDir, final String logicalDatabase,
+                                                                           final String analyticsDatabase, final RuntimeTransport transport) throws SQLException {
+        return createMultiDatabaseLLMRuntimeFixture(tempDir, logicalDatabase, analyticsDatabase, getAccessMode(transport));
+    }
+    
+    /**
+     * Create one multi-database LLM runtime fixture.
+     *
+     * @param tempDir temp dir
+     * @param logicalDatabase logical database
+     * @param analyticsDatabase analytics database
+     * @param accessMode access mode
+     * @return fixture
+     * @throws SQLException SQL exception
+     */
+    public static LLMH2RuntimeFixture createMultiDatabaseLLMRuntimeFixture(final Path tempDir, final String logicalDatabase,
+                                                                           final String analyticsDatabase, final H2AccessMode accessMode) throws SQLException {
+        String logicalJdbcUrl = createJdbcUrl(tempDir, logicalDatabase + "-llm", accessMode);
+        String analyticsJdbcUrl = createJdbcUrl(tempDir, analyticsDatabase + "-llm", accessMode);
+        initializeDatabase(logicalJdbcUrl);
+        initializeDatabase(analyticsJdbcUrl);
+        executeStatements(analyticsJdbcUrl,
+                "MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (3, 'ARCHIVED', 30)",
+                "MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (4, 'ARCHIVED', 40)");
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(2, 1F);
+        runtimeDatabases.put(logicalDatabase, new RuntimeDatabaseConfiguration("H2", logicalJdbcUrl, "", "", "org.h2.Driver"));
+        runtimeDatabases.put(analyticsDatabase, new RuntimeDatabaseConfiguration("H2", analyticsJdbcUrl, "", "", "org.h2.Driver"));
+        return new LLMH2RuntimeFixture(querySingleInt(logicalJdbcUrl, COUNT_ORDERS_JDBC_SQL), runtimeDatabases);
     }
     
     /**

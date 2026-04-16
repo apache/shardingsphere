@@ -91,6 +91,28 @@ final class LLMUsabilityScenarioCatalog {
                         List.of(RESOURCE_READ_BRIDGE_NAME, "execute_query"),
                         List.of(RESOURCE_READ_BRIDGE_NAME, "execute_query")),
                 List.of(RESOURCE_READ_BRIDGE_NAME), List.of(tableResourceUri), true, true));
+        if ("h2".equals(runtimeKind)) {
+            result.add(createScenario("resource-database-disambiguation-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
+                    new LLME2EScenario("resource-database-disambiguation-" + runtimeKind, SYSTEM_PROMPT,
+                            "First call " + RESOURCE_READ_BRIDGE_NAME + " with uri `shardingsphere://databases` to inspect the available databases. "
+                                    + "Choose the live transactional database instead of the analytics snapshot, locate `" + tableName + "` in "
+                                    + databaseName + "." + schemaName + ", and then verify `" + query + "`.",
+                            new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+                            List.of(RESOURCE_READ_BRIDGE_NAME, "search_metadata", "execute_query"),
+                            List.of(RESOURCE_READ_BRIDGE_NAME, "search_metadata", "execute_query")),
+                    List.of(RESOURCE_READ_BRIDGE_NAME), List.of("shardingsphere://databases"), true, false));
+        }
+        if ("mysql".equals(runtimeKind)) {
+            result.add(createScenario("recovery-unsupported-sequence-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
+                    new LLME2EScenario("recovery-unsupported-sequence-" + runtimeKind, SYSTEM_PROMPT,
+                            "First call " + RESOURCE_READ_BRIDGE_NAME + " with uri `shardingsphere://databases/" + databaseName + "/schemas/" + schemaName + "/sequences`. "
+                                    + "After the server rejects it because sequences are unsupported, recover by reading `" + tableResourceUri + "` and finish by verifying `"
+                                    + query + "`.",
+                            new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+                            List.of(RESOURCE_READ_BRIDGE_NAME, "execute_query"),
+                            List.of(RESOURCE_READ_BRIDGE_NAME, "execute_query")),
+                    List.of(RESOURCE_READ_BRIDGE_NAME), List.of(tableResourceUri), true, true));
+        }
         return result;
     }
     

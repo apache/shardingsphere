@@ -88,7 +88,7 @@ jobs:
       - name: Pull qwen3:1.7b
         run: docker exec "${OLLAMA_CONTAINER_NAME}" ollama pull qwen3:1.7b
       - name: Run MCP LLM Smoke
-        run: ./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true -Dtest=ProductionLLMH2SmokeE2ETest,ProductionLLMMySQLSmokeE2ETest -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+        run: ./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true '-Dtest=*ProductionLLMH2SmokeE2ETest,*ProductionLLMMySQLSmokeE2ETest' -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Collect Ollama Logs
         if: always()
         shell: bash

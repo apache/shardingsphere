@@ -31,7 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     
@@ -79,6 +81,13 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
     }
     
     @Test
+    void assertListResourcesWithActualMySQLBackend() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
+        }
+    }
+    
+    @Test
     void assertReadTableDetailWithActualMySQLBackend() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
@@ -96,6 +105,26 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
             List<Map<String, Object>> items = getPayloadItems(interactionClient.call("search_metadata",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order", "object_types", List.of("TABLE", "VIEW"))));
             assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders", "active_orders")));
+        }
+    }
+    
+    @Test
+    void assertReadViewsWithActualMySQLBackend() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
+                    String.format("shardingsphere://databases/%s/schemas/%s/views", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
+            assertThat(items.size(), is(1));
+            assertThat(String.valueOf(items.get(0).get("view")), is("active_orders"));
+        }
+    }
+    
+    @Test
+    void assertReadIndexesWithActualMySQLBackend() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            List<String> actualIndexNames = getPayloadItems(interactionClient.readResource(
+                    String.format("shardingsphere://databases/%s/schemas/%s/tables/orders/indexes", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)))
+                    .stream().map(each -> String.valueOf(each.get("index"))).toList();
+            assertThat(actualIndexNames, hasItems("PRIMARY", "idx_orders_status"));
         }
     }
     
@@ -142,7 +171,14 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    private static List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
-        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
+    @Test
+    void assertCloseRollsBackPendingTransactionWithActualMySQLBackend() throws SQLException, IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            interactionClient.call("execute_query", Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "BEGIN"));
+            interactionClient.call("execute_query",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+            interactionClient.close();
+            assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("NEW"));
+        }
     }
 }
