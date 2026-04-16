@@ -20,10 +20,10 @@ package org.apache.shardingsphere.mode.metadata.refresher.util;
 import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.LookupMode;
-import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -36,8 +36,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSp
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereView;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
-import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContextFactory;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.attribute.datanode.MutableDataNodeRuleAttribute;
 import org.apache.shardingsphere.infra.rule.attribute.table.TableMapperRuleAttribute;
@@ -215,8 +213,7 @@ public final class TableRefreshUtils {
      */
     public static Optional<String> findActualTableNameByIndex(final ShardingSphereDatabase database, final String schemaName,
                                                               final IdentifierValue indexIdentifierValue, final ConfigurationProperties props) {
-        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
-        IdentifierCaseRule rule = identifierContext.getRule(IdentifierScope.INDEX);
+        IdentifierCaseRule rule = database.getIdentifierContext().getRule(IdentifierScope.INDEX);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null == schema) {
@@ -292,8 +289,7 @@ public final class TableRefreshUtils {
     }
     
     private static String getLoadCandidateName(final ShardingSphereDatabase database, final IdentifierValue identifierValue, final IdentifierScope scope, final ConfigurationProperties props) {
-        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
-        IdentifierCaseRule rule = identifierContext.getRule(scope);
+        IdentifierCaseRule rule = database.getIdentifierContext().getRule(scope);
         return QuoteCharacter.NONE == identifierValue.getQuoteCharacter() && LookupMode.NORMALIZED == rule.getLookupMode(identifierValue.getQuoteCharacter())
                 ? rule.normalize(identifierValue.getValue())
                 : identifierValue.getValue();
@@ -302,8 +298,7 @@ public final class TableRefreshUtils {
     private static String getActualObjectName(final ShardingSphereDatabase database, final String schemaName,
                                               final IdentifierValue objectIdentifierValue, final ConfigurationProperties props,
                                               final IdentifierScope scope, final Function<ShardingSphereSchema, java.util.stream.Stream<String>> actualNameStream) {
-        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
-        IdentifierCaseRule rule = identifierContext.getRule(scope);
+        IdentifierCaseRule rule = database.getIdentifierContext().getRule(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {
@@ -321,8 +316,7 @@ public final class TableRefreshUtils {
     private static <T> String getActualObjectName(final ShardingSphereDatabase database, final String schemaName, final String tableName,
                                                   final IdentifierValue objectIdentifierValue, final ConfigurationProperties props, final IdentifierScope scope,
                                                   final Function<ShardingSphereTable, Collection<T>> actualObjects, final Function<T, String> actualNameMapper) {
-        DatabaseIdentifierContext identifierContext = DatabaseIdentifierContextFactory.create(database.getProtocolType(), database.getResourceMetaData(), props);
-        IdentifierCaseRule rule = identifierContext.getRule(scope);
+        IdentifierCaseRule rule = database.getIdentifierContext().getRule(scope);
         String actualSchemaName = SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue(schemaName), props);
         ShardingSphereSchema schema = database.getSchema(actualSchemaName);
         if (null != schema) {

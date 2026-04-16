@@ -64,7 +64,6 @@ public final class ShardingSphereDatabase {
     
     private final RuleMetaData ruleMetaData;
     
-    @Getter(AccessLevel.NONE)
     private final DatabaseIdentifierContext identifierContext;
     
     @Getter(AccessLevel.NONE)

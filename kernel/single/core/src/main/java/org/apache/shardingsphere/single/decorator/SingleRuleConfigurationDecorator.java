@@ -69,7 +69,8 @@ public final class SingleRuleConfigurationDecorator implements RuleConfiguration
         Map<String, DataSource> aggregatedDataSources = PhysicalDataSourceAggregator.getAggregatedDataSources(dataSources, builtRules);
         DatabaseType databaseType = dataSources.isEmpty() ? DatabaseTypeEngine.getDefaultStorageType() : DatabaseTypeEngine.getStorageType(dataSources.values().iterator().next());
         Collection<String> excludedTables = SingleTableLoadUtils.getExcludedTables(builtRules);
-        Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, aggregatedDataSources, Collections.emptySet(), excludedTables);
+        Map<String, DatabaseType> storageTypes = aggregatedDataSources.entrySet().stream().collect(Collectors.toMap(Entry::getKey, each -> DatabaseTypeEngine.getStorageType(each.getValue())));
+        Map<String, Collection<DataNode>> actualDataNodes = SingleTableDataNodeLoader.load(databaseName, aggregatedDataSources, Collections.emptySet(), excludedTables, storageTypes);
         boolean isSchemaAvailable = new DatabaseTypeRegistry(databaseType).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable();
         if (splitTables.contains(SingleTableConstants.ALL_TABLES) || splitTables.contains(SingleTableConstants.ALL_SCHEMA_TABLES)) {
             return loadAllTables(isSchemaAvailable, actualDataNodes);

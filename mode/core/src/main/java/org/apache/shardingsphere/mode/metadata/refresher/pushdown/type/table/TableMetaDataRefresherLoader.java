@@ -79,7 +79,8 @@ public final class TableMetaDataRefresherLoader {
         if (singleTable) {
             ruleMetaData.getAttributes(MutableDataNodeRuleAttribute.class).forEach(each -> each.put(logicDataSourceName, schemaName, candidateTableName));
         }
-        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName);
+        GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(database.getResourceMetaData().getStorageUnits(), ruleMetaData.getRules(), props, schemaName,
+                database.getIdentifierContext());
         Map<String, ShardingSphereSchema> schemas = GenericSchemaBuilder.build(Collections.singletonList(candidateTableName), database.getProtocolType(), material);
         ShardingSphereTable result = Optional.ofNullable(schemas.get(schemaName)).map(optional -> optional.getTable(candidateTableName))
                 .orElseGet(() -> fallbackWhenMissing ? new ShardingSphereTable(candidateTableName, Collections.emptyList(), Collections.emptyList(), Collections.emptyList()) : null);

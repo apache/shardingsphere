@@ -89,7 +89,7 @@ class SingleRuleConfigurationDecoratorTest {
     @Test
     void assertDecorateLoadsTablesWhenRulesPresentButConfigEmpty() {
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap("t_order", Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order")));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         mockSplitAndConvert(Collections.singleton(SingleTableConstants.ALL_TABLES), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.emptyList(), null);
@@ -107,7 +107,7 @@ class SingleRuleConfigurationDecoratorTest {
     @Test
     void assertDecorateLoadsAllSchemaTablesWhenSchemaSupported() {
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap("t_order", Collections.singleton(new DataNode("foo_ds", "public", "t_order")));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         mockSplitAndConvert(Collections.singleton(SingleTableConstants.ALL_SCHEMA_TABLES), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton(SingleTableConstants.ALL_SCHEMA_TABLES), null);
@@ -122,7 +122,7 @@ class SingleRuleConfigurationDecoratorTest {
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         Collection<String> splitTables = Collections.singleton("*.foo_schema.t_order");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order"));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton("*.foo_schema.t_order"), null);
         try (MockedConstruction<DatabaseTypeRegistry> ignored = mockSchemaRegistry(true)) {
@@ -137,7 +137,7 @@ class SingleRuleConfigurationDecoratorTest {
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         Collection<String> splitTables = Arrays.asList("*.foo_schema.t_order");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "t_order"));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Arrays.asList("*.foo_schema.t_order"), null);
@@ -151,7 +151,7 @@ class SingleRuleConfigurationDecoratorTest {
         actualDataNodes.put("feature_tbl", Collections.singleton(new DataNode("skip_ds", "foo_schema", "feature_tbl")));
         actualDataNodes.put("expanded_tbl", Collections.singleton(new DataNode("expand_ds", "foo_schema", "expanded_tbl")));
         actualDataNodes.put("matched_tbl", Collections.singleton(new DataNode("bar_ds", "foo_schema", "matched_tbl")));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Arrays.asList("expand_ds.*", "bar_ds.bar_tbl");
         Collection<DataNode> configuredDataNodes = Arrays.asList(
                 new DataNode("expand_ds", "foo_schema", SingleTableConstants.ASTERISK),
@@ -169,7 +169,7 @@ class SingleRuleConfigurationDecoratorTest {
         actualDataNodes.put("expanded_tbl", Collections.singleton(new DataNode("expand_ds", "foo_schema", "expanded_tbl")));
         actualDataNodes.put("ignored_tbl", Collections.singleton(new DataNode("ignored_ds", "foo_schema", "ignored_tbl")));
         actualDataNodes.put("matched_tbl", Collections.singleton(new DataNode("bar_ds", "foo_schema", "matched_tbl")));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Arrays.asList("expand_ds.*", "bar_ds.bar_tbl");
         Collection<DataNode> configuredDataNodes = Arrays.asList(
                 new DataNode("expand_ds", "foo_schema", SingleTableConstants.ASTERISK),
@@ -185,7 +185,7 @@ class SingleRuleConfigurationDecoratorTest {
     void assertDecorateThrowsWhenExpandedNodeMismatch() {
         Collection<String> emptyTables = Collections.emptySet();
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap("t_order", Collections.singleton(new DataNode("other_ds", "foo_schema", "t_order")));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Arrays.asList("expand_ds.*", "expand_ds.t_order");
         Collection<DataNode> configuredDataNodes = Arrays.asList(
                 new DataNode("expand_ds", "foo_schema", SingleTableConstants.ASTERISK),
@@ -203,7 +203,7 @@ class SingleRuleConfigurationDecoratorTest {
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
         Collection<String> splitTables = Collections.singleton("expand_ds.*.*");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("expand_ds", SingleTableConstants.ASTERISK, SingleTableConstants.ASTERISK));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration(Collections.singleton("expand_ds.*.*"), null);
         Map<String, DataSource> dataSources = Collections.singletonMap("foo_ds", mock(DataSource.class));
@@ -217,7 +217,7 @@ class SingleRuleConfigurationDecoratorTest {
     void assertDecorateSkipsSchemaExpandWhenSchemaNotMatched() {
         final DataNode dataNode = new DataNode("schema_ds", "bar_schema", "ignored_tbl");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Collections.singleton("schema_ds.foo_schema.*");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("schema_ds", "foo_schema", SingleTableConstants.ASTERISK));
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
@@ -230,7 +230,7 @@ class SingleRuleConfigurationDecoratorTest {
     void assertDecorateThrowsWhenSpecifiedTableNotFound() {
         final DataNode dataNode = new DataNode("foo_ds", "foo_schema", "t_order");
         Map<String, Collection<DataNode>> actualDataNodes = Collections.singletonMap(dataNode.getTableName(), Collections.singleton(dataNode));
-        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection())).thenReturn(actualDataNodes);
+        when(SingleTableDataNodeLoader.load(anyString(), anyMap(), anyCollection(), anyCollection(), anyMap())).thenReturn(actualDataNodes);
         Collection<String> splitTables = Collections.singleton("*.foo_schema.missing_tbl");
         Collection<DataNode> configuredDataNodes = Collections.singleton(new DataNode("foo_ds", "foo_schema", "missing_tbl"));
         mockSplitAndConvert(splitTables, configuredDataNodes, Collections.emptyList(), Collections.emptyList());
