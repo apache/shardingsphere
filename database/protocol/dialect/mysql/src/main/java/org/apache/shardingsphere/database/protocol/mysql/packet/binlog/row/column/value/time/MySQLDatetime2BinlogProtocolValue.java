@@ -37,11 +37,7 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
         long datetime = readDatetimeV2FromPayload(payload);
-        if (0L == datetime) {
-            skipFractionalSeconds(columnDef, payload);
-            return MySQLTimeValueUtils.DATETIME_OF_ZERO;
-        }
-        return readDatetime(columnDef, datetime, payload);
+        return 0L == datetime ? MySQLTimeValueUtils.DATETIME_OF_ZERO : readDatetime(columnDef, datetime, payload);
     }
     
     private long readDatetimeV2FromPayload(final MySQLPacketPayload payload) {
@@ -55,7 +51,6 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
     private Serializable readDatetime(final MySQLBinlogColumnDef columnDef, final long datetime, final MySQLPacketPayload payload) {
         long datetimeWithoutSign = datetime & (0x8000000000L - 1L);
         if (0 == datetimeWithoutSign) {
-            skipFractionalSeconds(columnDef, payload);
             return MySQLTimeValueUtils.DATETIME_OF_ZERO;
         }
         long date = datetimeWithoutSign >> 17;
@@ -69,11 +64,5 @@ public final class MySQLDatetime2BinlogProtocolValue implements MySQLBinlogProto
         int second = (int) (time % (1L << 6L));
         MySQLFractionalSeconds fractionalSeconds = new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
         return Timestamp.valueOf(LocalDateTime.of(year, month, day, hour, minute, second, fractionalSeconds.getNanos()));
-    }
-    
-    private void skipFractionalSeconds(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        if (columnDef.getColumnMeta() > 0) {
-            new MySQLFractionalSeconds(columnDef.getColumnMeta(), payload);
-        }
     }
 }
