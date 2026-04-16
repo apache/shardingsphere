@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -45,7 +46,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, resourceUri);
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getFirstResourcePayload(actual.body());
-        List<Map<String, Object>> items = getPayloadItems(payload);
+        List<Map<String, Object>> items = MCPInteractionPayloads.castToList(payload.get("items"));
         assertThat(items.stream().map(each -> String.valueOf(each.get(itemKey))).toList(), is(expectedNames));
     }
     
@@ -67,7 +68,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
                 Map.of("database", databaseName, "schema", "public", "query", query, "object_types", objectTypes));
         assertThat(actual.statusCode(), is(200));
-        assertThat(getPayloadItems(getStructuredContent(actual.body())).stream().map(each -> String.valueOf(each.get("name"))).toList(), is(expectedNames));
+        assertThat(MCPInteractionPayloads.castToList(getStructuredContent(actual.body()).get("items")).stream().map(each -> String.valueOf(each.get("name"))).toList(), is(expectedNames));
     }
     
     static Stream<Arguments> assertSearchMetadataCases() {
@@ -136,7 +137,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
                 "shardingsphere://databases/logic_db/schemas/public/tables/orders");
         assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = getPayloadItems(getFirstResourcePayload(actual.body()));
+        List<Map<String, Object>> items = MCPInteractionPayloads.castToList(getFirstResourcePayload(actual.body()).get("items"));
         assertThat(items.size(), is(1));
         Map<String, Object> actualItem = items.get(0);
         assertThat(String.valueOf(actualItem.get("table")), is("orders"));

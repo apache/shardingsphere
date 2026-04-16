@@ -127,30 +127,17 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    
-    protected final Map<String, Object> parseJsonBody(final String responseBody) {
-        return MCPInteractionPayloads.parseJsonPayload(responseBody);
-    }
-    
-    private Map<String, Object> getJsonRpcError(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.getJsonRpcErrorPayload(payload);
-    }
-    
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
-        Map<String, Object> payload = parseJsonBody(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(payload) : MCPInteractionPayloads.getStructuredContent(payload);
+        Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
+        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getStructuredContent(payload);
     }
     
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
-        Map<String, Object> payload = parseJsonBody(responseBody);
-        return MCPInteractionPayloads.hasJsonRpcError(payload) ? getJsonRpcError(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
+        Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
+        return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
-    protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("items"));
-    }
-    
-    protected final MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
+    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
         Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
         databaseMetadataMap.put("logic_db", createLogicDatabaseMetadata());
         databaseMetadataMap.put("analytics_db", createAnalyticsDatabaseMetadata());
