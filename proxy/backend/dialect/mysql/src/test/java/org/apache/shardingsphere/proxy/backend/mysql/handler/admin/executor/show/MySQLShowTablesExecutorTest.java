@@ -173,7 +173,7 @@ class MySQLShowTablesExecutorTest {
         when(database.getProtocolType()).thenReturn(databaseType);
         when(database.isComplete()).thenReturn(true);
         when(database.getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
-        return Arrays.asList(database, new ShardingSphereDatabase("uncompleted", mock(), mock(), mock(), Collections.emptyList()));
+        return Arrays.asList(database, new ShardingSphereDatabase("uncompleted", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
     }
     
     private ConnectionSession mockConnectionSession() {

@@ -150,7 +150,10 @@ class SQLFederationEngineTest {
         when(selectStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
-        when(queryContext.getUsedDatabase()).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, mock(), new RuleMetaData(databaseRules), Collections.emptyList()));
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(databaseRules), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        when(queryContext.getUsedDatabase()).thenReturn(database);
         try (SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules)) {
             assertFalse(engine.decide(queryContext, new RuleMetaData(globalRules)));
         }
@@ -164,7 +167,10 @@ class SQLFederationEngineTest {
         when(selectStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.singleton("foo_db"));
         QueryContext queryContext = mock(QueryContext.class);
         when(queryContext.getSqlStatementContext()).thenReturn(selectStatementContext);
-        when(queryContext.getUsedDatabase()).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, mock(), new RuleMetaData(databaseRules), Collections.emptyList()));
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(databaseRules), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        when(queryContext.getUsedDatabase()).thenReturn(database);
         try (SQLFederationEngine engine = createSQLFederationEngine(globalRules, databaseRules)) {
             assertTrue(engine.decide(queryContext, new RuleMetaData(globalRules)));
         }
@@ -492,7 +498,8 @@ class SQLFederationEngineTest {
     private ShardingSphereMetaData createMetaData(final Collection<ShardingSphereTable> tables, final Properties props) {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, tables, Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
         SQLFederationRuleConfiguration ruleConfig = new SQLFederationRuleConfiguration(true, false, cacheOption);
         Collection<ShardingSphereRule> globalRules = Collections.singleton(new SQLFederationRule(ruleConfig, Collections.singleton(database)));
         return new ShardingSphereMetaData(Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(globalRules), new ConfigurationProperties(props));

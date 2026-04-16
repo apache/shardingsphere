@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.checker.SQLExecutionChecker;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.session.connection.ConnectionContext;
@@ -135,9 +136,16 @@ class ProxyBackendHandlerFactoryTest {
     
     private ContextManager mockContextManager() {
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(new ShardingSphereDatabase("db", mock(), mock(), new RuleMetaData(Collections.emptyList()), Collections.emptyList()));
-        when(metaDataContexts.getMetaData().getDatabase("information_schema"))
-                .thenReturn(new ShardingSphereDatabase("information_schema", mock(), mock(), new RuleMetaData(Collections.emptyList()), Collections.emptyList()));
+        DatabaseType dbProtocolType = mock(DatabaseType.class);
+        ResourceMetaData dbResourceMetaData = mock(ResourceMetaData.class);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("db", dbProtocolType, dbResourceMetaData,
+                new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        DatabaseType informationSchemaProtocolType = mock(DatabaseType.class);
+        ResourceMetaData informationSchemaResourceMetaData = mock(ResourceMetaData.class);
+        ShardingSphereDatabase informationSchemaDatabase = new ShardingSphereDatabase("information_schema", informationSchemaProtocolType, informationSchemaResourceMetaData,
+                new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase("information_schema")).thenReturn(informationSchemaDatabase);
         when(metaDataContexts.getMetaData().containsDatabase("db")).thenReturn(true);
         when(metaDataContexts.getMetaData().containsDatabase("information_schema")).thenReturn(true);
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);

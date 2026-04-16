@@ -220,7 +220,7 @@ class DatabaseMetaDataPersistFacadeTest {
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final Collection<ShardingSphereSchema> schemas) {
         return new ShardingSphereDatabase(databaseName, databaseType,
-                new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas);
+                new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), schemas, new ConfigurationProperties(new Properties()));
     }
     
     private DialectDatabaseMetaData createDialectDatabaseMetaData() {

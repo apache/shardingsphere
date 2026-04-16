@@ -115,9 +115,9 @@ class ShardingSphereDatabaseIdentifierTest {
     }
     
     @Test
-    void assertLegacyConstructorUsesInsensitiveLookup() {
+    void assertDefaultPropsUseInsensitiveLookup() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", postgreSQLDatabaseType, createResourceMetaData(),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)));
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema("foo_schema", postgreSQLDatabaseType)), new ConfigurationProperties(new Properties()));
         assertTrue(database.containsSchema("FOO_SCHEMA"));
     }
     

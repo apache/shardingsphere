@@ -58,7 +58,7 @@ class SchemaRefreshUtilsTest {
     @Test
     void assertGetActualSchemaNameWithSensitiveProps() {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("Foo_Schema", databaseType)));
+                new RuleMetaData(Collections.emptyList()), Collections.singletonList(new ShardingSphereSchema("Foo_Schema", databaseType)), new ConfigurationProperties(new Properties()));
         Properties props = new Properties();
         props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
         assertThat(SchemaRefreshUtils.getActualSchemaName(database, new IdentifierValue("Foo_Schema", QuoteCharacter.QUOTE), new ConfigurationProperties(props)), is("Foo_Schema"));
@@ -70,7 +70,8 @@ class SchemaRefreshUtilsTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        return new ShardingSphereDatabase("FOO_DB", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        return new ShardingSphereDatabase("FOO_DB", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
     }
     
     private SQLStatementContext createSQLStatementContextWithSchema(final String schemaName) {

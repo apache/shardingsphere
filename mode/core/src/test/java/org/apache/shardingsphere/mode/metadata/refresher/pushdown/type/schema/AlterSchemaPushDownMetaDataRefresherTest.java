@@ -77,6 +77,6 @@ class AlterSchemaPushDownMetaDataRefresherTest {
     
     private ShardingSphereDatabase createDatabase() {
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
-                Collections.singletonList(new ShardingSphereSchema("FOO_SCHEMA", databaseType)));
+                Collections.singletonList(new ShardingSphereSchema("FOO_SCHEMA", databaseType)), new ConfigurationProperties(new Properties()));
     }
 }

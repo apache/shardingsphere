@@ -22,6 +22,8 @@ import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.infra.binder.engine.SQLBindEngine;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.config.props.MetadataIdentifierCaseSensitivity;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.hint.SQLHintUtils;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
@@ -46,6 +48,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.SQLPar
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.SQLCases;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.sql.type.SQLCaseType;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder;
+import org.apache.shardingsphere.infra.util.props.PropertiesBuilder.Property;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -60,7 +64,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -71,6 +74,9 @@ public abstract class SQLBinderIT {
     private static final SQLCases SQL_CASES = SQLBinderCasesRegistry.getInstance().getCases();
     
     private static final SQLParserTestCases SQL_BINDER_TEST_CASES = SQLBinderTestCasesRegistry.getInstance().getCases();
+    
+    private static final ConfigurationProperties IDENTIFIER_INSENSITIVE_PROPS = new ConfigurationProperties(
+            PropertiesBuilder.build(new Property(ConfigurationPropertyKey.METADATA_IDENTIFIER_CASE_SENSITIVITY.getKey(), MetadataIdentifierCaseSensitivity.INSENSITIVE.name())));
     
     @ParameterizedTest(name = "{0} ({1}) -> {2}")
     @ArgumentsSource(TestCaseArgumentsProvider.class)
@@ -89,9 +95,11 @@ public abstract class SQLBinderIT {
     
     private ShardingSphereMetaData mockMetaData(final DatabaseType databaseType) {
         Collection<ShardingSphereDatabase> databases = new LinkedList<>();
-        databases.add(new ShardingSphereDatabase("foo_db_1", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_1")));
-        databases.add(new ShardingSphereDatabase("foo_db_2", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_2")));
-        return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), new ConfigurationProperties(new Properties()));
+        databases.add(new ShardingSphereDatabase("foo_db_1", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_1"),
+                IDENTIFIER_INSENSITIVE_PROPS));
+        databases.add(new ShardingSphereDatabase("foo_db_2", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), mockSchemas(databaseType, "foo_db_2"),
+                IDENTIFIER_INSENSITIVE_PROPS));
+        return new ShardingSphereMetaData(databases, mock(ResourceMetaData.class), mock(RuleMetaData.class), IDENTIFIER_INSENSITIVE_PROPS);
     }
     
     private Collection<ShardingSphereSchema> mockSchemas(final DatabaseType databaseType, final String databaseName) {

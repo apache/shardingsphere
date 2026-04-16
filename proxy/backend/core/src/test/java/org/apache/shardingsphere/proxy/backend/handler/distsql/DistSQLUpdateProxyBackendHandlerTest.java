@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.distsql.statement.type.ral.updatable.RefreshTableMetaDataStatement;
 import org.apache.shardingsphere.infra.exception.kernel.metadata.SchemaNotFoundException;
@@ -26,6 +28,7 @@ import org.apache.shardingsphere.infra.exception.kernel.metadata.resource.storag
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUnit;
+import org.apache.shardingsphere.infra.metadata.database.rule.RuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.session.query.QueryContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
@@ -40,6 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -59,7 +63,11 @@ class DistSQLUpdateProxyBackendHandlerTest {
     
     @Test
     void assertEmptyStorageUnit() {
-        when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, mock(), mock(), Collections.emptyList()));
+        ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, ruleMetaData,
+                Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement();
         DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession(), contextManager);
         assertThrows(EmptyStorageUnitException.class, backendHandler::execute);
@@ -68,8 +76,13 @@ class DistSQLUpdateProxyBackendHandlerTest {
     @Test
     void assertMissingRequiredStorageUnit() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
-        when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, ruleMetaData,
+                Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("t_order", "ds_1", null);
         DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession(), contextManager);
         assertThrows(MissingRequiredStorageUnitsException.class, backendHandler::execute);
@@ -78,8 +91,13 @@ class DistSQLUpdateProxyBackendHandlerTest {
     @Test
     void assertSchemaNotFound() {
         ResourceMetaData resourceMetaData = mock(ResourceMetaData.class);
-        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", mock(StorageUnit.class)));
-        when(contextManager.getDatabase("foo_db")).thenReturn(new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, mock(), Collections.emptyList()));
+        StorageUnit storageUnit = mock(StorageUnit.class);
+        when(storageUnit.getStorageType()).thenReturn(databaseType);
+        when(resourceMetaData.getStorageUnits()).thenReturn(Collections.singletonMap("ds_0", storageUnit));
+        RuleMetaData ruleMetaData = mock(RuleMetaData.class);
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, ruleMetaData,
+                Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        when(contextManager.getDatabase("foo_db")).thenReturn(database);
         RefreshTableMetaDataStatement sqlStatement = new RefreshTableMetaDataStatement("t_order", "ds_0", "bar_db");
         DistSQLUpdateProxyBackendHandler backendHandler = new DistSQLUpdateProxyBackendHandler(sqlStatement, mockQueryContext(), mockConnectionSession(), contextManager);
         assertThrows(SchemaNotFoundException.class, backendHandler::execute);

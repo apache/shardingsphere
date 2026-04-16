@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.agent.plugin.metrics.core.exporter.impl.jdbc;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.agent.plugin.core.context.ShardingSphereDataSourceContext;
 import org.apache.shardingsphere.agent.plugin.core.holder.ShardingSphereDataSourceContextHolder;
 import org.apache.shardingsphere.agent.plugin.metrics.core.collector.MetricsCollectorRegistry;
@@ -34,6 +36,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -58,7 +61,7 @@ class JDBCStateExporterTest {
     
     private ContextManager mockContextManager(final String instanceId, final String databaseName) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, mock(), mock(), mock(), Collections.emptyList());
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(result.getDatabase(databaseName)).thenReturn(database);
         when(result.getComputeNodeInstanceContext().getInstance().getMetaData().getId()).thenReturn(instanceId);
         when(result.getComputeNodeInstanceContext().getInstance().getState().getCurrentState().ordinal()).thenReturn(InstanceState.OK.ordinal());

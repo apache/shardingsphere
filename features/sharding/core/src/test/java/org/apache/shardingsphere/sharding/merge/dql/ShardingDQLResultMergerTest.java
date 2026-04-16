@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sharding.merge.dql;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.metadata.database.enums.NullsOrderType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.SelectStatementContext;
@@ -66,6 +68,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
@@ -491,13 +494,15 @@ class ShardingDQLResultMergerTest {
     
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_db", mysqlDatabaseType, Collections.singleton(createTable()), Collections.emptyList());
-        return new ShardingSphereDatabase("foo_db", mysqlDatabaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
+        return new ShardingSphereDatabase("foo_db", mysqlDatabaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereDatabase createSQLServerDatabase() {
         ShardingSphereSchema schema = new ShardingSphereSchema("dbo", sqlserverDatabaseType, Collections.singleton(createTable()), Collections.emptyList());
         return new ShardingSphereDatabase(
-                "foo_db", TypedSPILoader.getService(DatabaseType.class, "SQLServer"), mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema));
+                "foo_db", TypedSPILoader.getService(DatabaseType.class, "SQLServer"), mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereTable createTable() {

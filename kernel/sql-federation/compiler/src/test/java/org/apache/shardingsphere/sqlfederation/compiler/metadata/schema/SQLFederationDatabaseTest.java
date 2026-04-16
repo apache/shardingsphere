@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sqlfederation.compiler.metadata.schema;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ResourceMetaData;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -42,7 +45,8 @@ class SQLFederationDatabaseTest {
     @Test
     void assertNew() {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(createTable()), Collections.emptyList());
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema));
+        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), new RuleMetaData(Collections.emptyList()), Collections.singleton(schema),
+                new ConfigurationProperties(new Properties()));
         SQLFederationDatabase actual = new SQLFederationDatabase(database, databaseType);
         assertThat(actual.getName(), is("foo_db"));
         assertNotNull(actual.getSubSchemaMap().get("foo_schema"));

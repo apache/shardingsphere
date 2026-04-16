@@ -104,7 +104,8 @@ class MetaDataContextsFactoryTest {
     @BeforeEach
     void setUp() throws SQLException {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         when(ShardingSphereDatabasesFactory.create(anyMap(), anyMap(), any(), any(), any())).thenReturn(Collections.singleton(database));
         when(ShardingSphereDatabasesFactory.create(anyMap(), any(ConfigurationProperties.class), any(ComputeNodeInstanceContext.class),
                 any(DatabaseType.class))).thenReturn(Collections.singleton(database));
@@ -122,7 +123,8 @@ class MetaDataContextsFactoryTest {
     private ShardingSphereDatabase createDatabaseFromConfiguration(final String databaseName, final DatabaseType protocolType,
                                                                    final DatabaseConfiguration databaseConfiguration, final Collection<ShardingSphereSchema> schemas) {
         return new ShardingSphereDatabase(databaseName, protocolType,
-                new ResourceMetaData(databaseConfiguration.getDataSources(), databaseConfiguration.getStorageUnits()), new RuleMetaData(Collections.emptyList()), schemas);
+                new ResourceMetaData(databaseConfiguration.getDataSources(), databaseConfiguration.getStorageUnits()), new RuleMetaData(Collections.emptyList()), schemas,
+                new ConfigurationProperties(new Properties()));
     }
     
     @Test
@@ -160,7 +162,8 @@ class MetaDataContextsFactoryTest {
         currentStorageUnits.put("stale_ds", createStorageUnit("stale_ds"));
         currentStorageUnits.put("active_ds", createStorageUnit("active_ds"));
         ResourceMetaData resourceMetaData = new ResourceMetaData(currentStorageNodes, currentStorageUnits);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
@@ -180,7 +183,8 @@ class MetaDataContextsFactoryTest {
     @Test
     void assertCreateBySwitchResourceKeepsExistingNodesWhenNoNewDataSources() throws SQLException {
         ResourceMetaData resourceMetaData = createResourceMetaDataWithSingleUnit();
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, resourceMetaData, new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database),
                 new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaData, new ShardingSphereStatistics());
@@ -197,7 +201,7 @@ class MetaDataContextsFactoryTest {
         when(metaDataPersistFacade.getDatabaseMetaDataFacade().getSchema().load(eq("foo_db"), any())).thenReturn(loadedSchemas);
         ShardingSphereSchema originSchema = createSchemaWithTable("foo_schema", "origin_table");
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, createResourceMetaDataWithSingleUnit(),
-                new RuleMetaData(Collections.emptyList()), Collections.singleton(originSchema));
+                new RuleMetaData(Collections.emptyList()), Collections.singleton(originSchema), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.FALSE.toString()))));
@@ -214,7 +218,7 @@ class MetaDataContextsFactoryTest {
     @Test
     void assertCreateByAlterRuleKeepsPersistedSchemasWhenEnabled() throws SQLException {
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                "foo_db", databaseType, createResourceMetaDataWithSingleUnit(), new RuleMetaData(Collections.emptyList()), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
                 new ConfigurationProperties(PropertiesBuilder.build(new Property(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), Boolean.TRUE.toString()))));

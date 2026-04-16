@@ -169,7 +169,7 @@ class SelectInformationSchemataExecutorTest {
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final ResourceMetaData resourceMetaData) {
-        return new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
+        return new ShardingSphereDatabase(databaseName, databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereDatabase createDatabase(final String databaseName) {

@@ -57,7 +57,8 @@ class EncryptInsertValuesTokenGeneratorTest {
     
     @BeforeEach
     void setup() {
-        generator = new EncryptInsertValuesTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(), new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList()));
+        generator = new EncryptInsertValuesTokenGenerator(EncryptGeneratorFixtureBuilder.createEncryptRule(),
+                new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
     }
     
     @Test
