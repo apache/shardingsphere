@@ -17,22 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
 
-import org.apache.shardingsphere.test.e2e.mcp.llm.AbstractDatabaseBackedLLMRuntimeE2ETest;
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
-import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-abstract class AbstractLLMSmokeE2ETest extends AbstractDatabaseBackedLLMRuntimeE2ETest {
+final class LLMSmokeScenarioFactory {
     
     private static final String SYSTEM_PROMPT_RESOURCE = "llm/minimal-smoke-system-prompt.md";
     
@@ -40,20 +34,8 @@ abstract class AbstractLLMSmokeE2ETest extends AbstractDatabaseBackedLLMRuntimeE
     
     private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("search_metadata", "mcp_read_resource", "execute_query");
     
-    protected final void assertLLMSmoke(final Supplier<LLME2EScenario> scenarioSupplier) throws IOException {
-        Assumptions.assumeTrue(isLLMEnabled(),
-                "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM MCP smoke tests.");
-        LLME2EScenario scenario = scenarioSupplier.get();
-        LLME2EConversationResult actual = runConversation(scenario.getScenarioId(), scenario);
-        LLME2EAssertionReport assertionReport = actual.artifactBundle().getAssertionReport();
-        assertTrue(assertionReport.isSuccess(),
-                () -> String.format(Locale.ENGLISH, "%s: %s (artifacts: %s)",
-                        assertionReport.getFailureType(), assertionReport.getMessage(), actual.artifactDirectory()));
-    }
-    
-    protected final LLME2EScenario createMinimalSmokeScenario(final String scenarioId, final String databaseName,
-                                                              final String schemaName, final String tableName,
-                                                              final String query, final int totalOrders) {
+    LLME2EScenario createMinimalSmokeScenario(final String scenarioId, final String databaseName, final String schemaName,
+                                              final String tableName, final String query, final int totalOrders) {
         String tableResourceUri = String.format(Locale.ENGLISH, "shardingsphere://databases/%s/schemas/%s/tables/%s", databaseName, schemaName, tableName);
         String systemPrompt = loadResource(SYSTEM_PROMPT_RESOURCE);
         String userPrompt = String.format(Locale.ENGLISH, loadResource(USER_PROMPT_RESOURCE),

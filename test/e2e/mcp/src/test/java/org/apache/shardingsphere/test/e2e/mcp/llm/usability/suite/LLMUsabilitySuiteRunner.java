@@ -17,39 +17,39 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
 
-import org.apache.shardingsphere.test.e2e.mcp.llm.AbstractDatabaseBackedLLMRuntimeE2ETest;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMConversationExecutor;
+import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.metric.LLMUsabilityMetricCalculator;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScorecard;
 import org.apache.shardingsphere.test.e2e.mcp.llm.usability.report.LLMUsabilityReportWriter;
-import org.junit.jupiter.api.Assumptions;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractLLMUsabilityE2ETest extends AbstractDatabaseBackedLLMRuntimeE2ETest {
+final class LLMUsabilitySuiteRunner {
     
     private final LLMUsabilityMetricCalculator metricCalculator = new LLMUsabilityMetricCalculator();
     
     private final LLMUsabilityReportWriter reportWriter = new LLMUsabilityReportWriter();
     
-    protected final void assertUsabilitySuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier) throws IOException {
-        Assumptions.assumeTrue(isLLMEnabled(),
-                "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM usability suite.");
+    void assertUsabilitySuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
+                              final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
         List<LLMUsabilityScenario> scenarios = scenarioSupplier.get();
-        List<LLMUsabilityScenarioResult> scenarioResults = new ArrayList<>(scenarios.size());
+        List<LLMUsabilityScenarioResult> scenarioResults = new LinkedList<>();
         for (LLMUsabilityScenario each : scenarios) {
-            scenarioResults.add(metricCalculator.evaluateScenario(each, runConversation(each.getScenarioId(), each.getLlmScenario()).artifactBundle()));
+            scenarioResults.add(metricCalculator.evaluateScenario(each, conversationRunner.run(each.getLlmScenario()).artifactBundle()));
         }
-        LLMUsabilityScorecard scorecard = metricCalculator.createScorecard(suiteId, getLLMConfiguration().getRunId(), scenarioResults);
-        Path suiteDirectory = getLLMConfiguration().getArtifactRoot().resolve(getLLMConfiguration().getRunId()).resolve(suiteId);
+        LLMUsabilityScorecard scorecard = metricCalculator.createScorecard(suiteId, configuration.getRunId(), scenarioResults);
+        Path suiteDirectory = configuration.getArtifactRoot().resolve(configuration.getRunId()).resolve(suiteId);
         reportWriter.writeScorecard(suiteDirectory, scorecard);
         String actualFailureSummary = createFailureSummary(scorecard);
         assertThat(actualFailureSummary, scorecard.getScenarioResults().size(), is(scenarios.size()));
@@ -98,5 +98,11 @@ abstract class AbstractLLMUsabilityE2ETest extends AbstractDatabaseBackedLLMRunt
             result.append(']');
         }
         return result.toString();
+    }
+    
+    @FunctionalInterface
+    interface ConversationRunner {
+        
+        LLMConversationExecutor.ConversationResult run(LLME2EScenario scenario) throws IOException;
     }
 }
