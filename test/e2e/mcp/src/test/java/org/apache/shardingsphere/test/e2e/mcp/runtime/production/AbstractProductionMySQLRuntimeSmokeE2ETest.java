@@ -64,7 +64,7 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
     @Test
     void assertReadCapabilitiesWithActualMySQLBackend() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertThat(String.valueOf(interactionClient.readResource("shardingsphere://databases/logic_db/capabilities").getStructuredContent().get("databaseType")), is("MySQL"));
+            assertThat(String.valueOf(interactionClient.readResource("shardingsphere://databases/logic_db/capabilities").get("databaseType")), is("MySQL"));
         }
     }
 }

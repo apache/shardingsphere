@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 
 import java.util.List;
@@ -26,15 +25,11 @@ import java.util.Map;
 
 abstract class AbstractProductionRuntimeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
-    protected final Map<String, Object> getStructuredContent(final MCPInteractionResponse response) {
-        return response.getStructuredContent();
-    }
-    
     protected final List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
         return MCPInteractionPayloads.castToList(payload.get("items"));
     }
     
-    protected final List<Map<String, Object>> getResources(final MCPInteractionResponse response) {
-        return MCPInteractionPayloads.castToList(response.getStructuredContent().get("resources"));
+    protected final List<Map<String, Object>> getResources(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.castToList(payload.get("resources"));
     }
 }

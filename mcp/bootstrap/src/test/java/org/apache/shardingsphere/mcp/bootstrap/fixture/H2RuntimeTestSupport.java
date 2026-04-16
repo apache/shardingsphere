@@ -30,7 +30,7 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class H2RuntimeTestSupport {
-    
+
     /**
      * Create one file-backed H2 JDBC URL in MySQL compatibility mode.
      *
@@ -39,9 +39,21 @@ public final class H2RuntimeTestSupport {
      * @return JDBC URL
      */
     public static String createJdbcUrl(final Path tempDir, final String databaseName) {
-        return String.format("jdbc:h2:file:%s;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", tempDir.resolve(databaseName).toAbsolutePath());
+        return createJdbcUrl(tempDir, databaseName, H2AccessMode.SINGLE_PROCESS);
     }
-    
+
+    /**
+     * Create one file-backed H2 JDBC URL in MySQL compatibility mode.
+     *
+     * @param tempDir temp directory
+     * @param databaseName database name
+     * @param accessMode access mode
+     * @return JDBC URL
+     */
+    public static String createJdbcUrl(final Path tempDir, final String databaseName, final H2AccessMode accessMode) {
+        return String.format("jdbc:h2:file:%s;MODE=MySQL%s;DATABASE_TO_UPPER=false", tempDir.resolve(databaseName).toAbsolutePath(), accessMode.getJdbcParameter());
+    }
+
     /**
      * Create runtime databases for the H2-backed runtime.
      *
@@ -52,7 +64,7 @@ public final class H2RuntimeTestSupport {
     public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String databaseName, final String jdbcUrl) {
         return Map.of(databaseName, new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
     }
-    
+
     /**
      * Initialize the shared H2 runtime schema.
      *
@@ -72,7 +84,7 @@ public final class H2RuntimeTestSupport {
                 "CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status)",
                 "CREATE SEQUENCE IF NOT EXISTS order_seq START WITH 1000");
     }
-    
+
     private static void executeStatements(final String jdbcUrl, final String... sqls) throws SQLException {
         try (
                 Connection connection = DriverManager.getConnection(jdbcUrl);
@@ -80,6 +92,26 @@ public final class H2RuntimeTestSupport {
             for (String each : sqls) {
                 statement.execute(each);
             }
+        }
+    }
+
+    /**
+     * H2 access mode for bootstrap transport tests.
+     */
+    public enum H2AccessMode {
+
+        SINGLE_PROCESS(";DB_CLOSE_DELAY=-1"),
+
+        MULTI_PROCESS(";AUTO_SERVER=TRUE");
+
+        private final String jdbcParameter;
+
+        H2AccessMode(final String jdbcParameter) {
+            this.jdbcParameter = jdbcParameter;
+        }
+
+        private String getJdbcParameter() {
+            return jdbcParameter;
         }
     }
 }

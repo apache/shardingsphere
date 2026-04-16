@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 
 import java.io.IOException;
@@ -27,7 +25,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -35,8 +32,6 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class MCPHttpInteractionClient implements MCPInteractionClient {
-    
-    private static final String PROTOCOL_VERSION = "2025-11-25";
     
     private static final String INITIALIZE_REQUEST_ID = "init-1";
     
@@ -55,14 +50,9 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
         if (null != sessionId) {
             return;
         }
-        final HttpRequest request = HttpRequest.newBuilder(endpointUri)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json, text/event-stream")
-                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
-                        "jsonrpc", "2.0",
-                        "id", INITIALIZE_REQUEST_ID,
-                        "method", "initialize",
-                        "params", createInitializeRequestParams()))))
+        HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(endpointUri)
+                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                        INITIALIZE_REQUEST_ID, "initialize", MCPHttpTransportTestSupport.createInitializeRequestParams(CLIENT_NAME))))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (200 != response.statusCode()) {
@@ -75,28 +65,28 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
         }
         sessionId = response.headers().firstValue("MCP-Session-Id")
                 .orElseThrow(() -> new IllegalStateException("MCP initialize response does not contain MCP-Session-Id header."));
-        actualProtocolVersion = response.headers().firstValue("MCP-Protocol-Version").orElse(PROTOCOL_VERSION);
+        actualProtocolVersion = response.headers().firstValue("MCP-Protocol-Version").orElse(MCPHttpTransportTestSupport.PROTOCOL_VERSION);
     }
     
     @Override
-    public MCPInteractionResponse call(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
+    public Map<String, Object> call(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getStructuredContent(MCPInteractionPayloads.parseJsonPayload(response.body())));
+        return MCPInteractionPayloads.getStructuredContent(MCPInteractionPayloads.parseJsonPayload(response.body()));
     }
     
     @Override
-    public MCPInteractionResponse listResources() throws IOException, InterruptedException {
+    public Map<String, Object> listResources() throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest("resources-list-1", "resources/list", Map.of());
-        return new MCPInteractionResponse(MCPInteractionPayloads.getListResourcesPayload(MCPInteractionPayloads.parseJsonPayload(response.body())));
+        return MCPInteractionPayloads.getListResourcesPayload(MCPInteractionPayloads.parseJsonPayload(response.body()));
     }
     
     @Override
-    public MCPInteractionResponse readResource(final String resourceUri) throws IOException, InterruptedException {
+    public Map<String, Object> readResource(final String resourceUri) throws IOException, InterruptedException {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getFirstResourcePayload(MCPInteractionPayloads.parseJsonPayload(response.body())));
+        return MCPInteractionPayloads.getFirstResourcePayload(MCPInteractionPayloads.parseJsonPayload(response.body()));
     }
     
     @Override
@@ -114,35 +104,19 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
         actualProtocolVersion = null;
     }
     
-    private HttpRequest.Builder createJsonRequestBuilder() {
-        return HttpRequest.newBuilder(endpointUri)
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json, text/event-stream")
-                .header("MCP-Session-Id", sessionId)
-                .header("MCP-Protocol-Version", actualProtocolVersion);
+    private HttpRequest.Builder createSessionRequestBuilder() {
+        return MCPHttpTransportTestSupport.createSessionRequestBuilder(endpointUri, sessionId, actualProtocolVersion);
     }
     
     private HttpResponse<String> sendPostRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException, InterruptedException {
-        HttpRequest request = createJsonRequestBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
-                        "jsonrpc", "2.0",
-                        "id", requestId,
-                        "method", method,
-                        "params", params))))
+        HttpRequest request = createSessionRequestBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(requestId, method, params)))
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         if (200 != response.statusCode()) {
             throw new IllegalStateException("MCP request failed with status " + response.statusCode() + ".");
         }
         return response;
-    }
-    
-    private Map<String, Object> createInitializeRequestParams() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("protocolVersion", PROTOCOL_VERSION);
-        result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
-        return result;
     }
     
     private void ensureOpened() {

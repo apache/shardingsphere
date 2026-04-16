@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -40,21 +38,21 @@ public interface MCPInteractionClient extends AutoCloseable {
      *
      * @param actionName action name
      * @param arguments arguments
-     * @return MCP interaction response
+     * @return MCP structured content payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
      */
-    MCPInteractionResponse call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
+    Map<String, Object> call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
     
     /**
      * List resources.
      *
-     * @return MCP interaction response
+     * @return MCP resources payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
      * @throws UnsupportedOperationException unsupported operation exception
      */
-    default MCPInteractionResponse listResources() throws IOException, InterruptedException {
+    default Map<String, Object> listResources() throws IOException, InterruptedException {
         throw new UnsupportedOperationException("resources/list is not supported.");
     }
     
@@ -62,12 +60,12 @@ public interface MCPInteractionClient extends AutoCloseable {
      * Read resource.
      *
      * @param resourceUri resource URI
-     * @return MCP interaction response
+     * @return MCP resource payload
      * @throws IOException IO exception
      * @throws InterruptedException interrupted exception
      * @throws UnsupportedOperationException unsupported operation exception
      */
-    MCPInteractionResponse readResource(String resourceUri) throws IOException, InterruptedException;
+    Map<String, Object> readResource(String resourceUri) throws IOException, InterruptedException;
     
     @Override
     void close() throws IOException, InterruptedException;

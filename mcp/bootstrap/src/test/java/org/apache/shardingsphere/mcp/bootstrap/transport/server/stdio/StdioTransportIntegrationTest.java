@@ -62,7 +62,7 @@ class StdioTransportIntegrationTest {
     }
     
     private Path createRuntimeDatabasesConfigFile() throws IOException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "stdio-transport").replace(";DB_CLOSE_DELAY=-1", "");
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "stdio-transport", H2RuntimeTestSupport.H2AccessMode.MULTI_PROCESS);
         initializeDatabase(jdbcUrl);
         Path result = tempDir.resolve("mcp-runtime-databases.yaml");
         Files.writeString(result, "transport:\n"

@@ -34,7 +34,6 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatMessage;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
@@ -125,12 +124,12 @@ public final class LLMMCPConversationRunner {
                                     LLME2EAssertionReport.failure("unsafe_sql_attempted", "Model attempted a non-read-only SQL statement."));
                         }
                         long startTime = System.currentTimeMillis();
-                        MCPInteractionResponse response = executeActionSafely(each.getName(), arguments);
+                        Map<String, Object> response = executeActionSafely(each.getName(), arguments);
                         long latencyMillis = System.currentTimeMillis() - startTime;
                         mcpRuntimeLogLines.add("action=" + each.getName() + " args=" + JsonUtils.toJsonString(arguments));
-                        mcpRuntimeLogLines.add("response=" + JsonUtils.toJsonString(response.getStructuredContent()));
-                        interactionTrace.add(createTraceRecord(interactionTrace.size() + 1, each.getName(), arguments, response.getStructuredContent(), latencyMillis));
-                        messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(response.getStructuredContent())));
+                        mcpRuntimeLogLines.add("response=" + JsonUtils.toJsonString(response));
+                        interactionTrace.add(createTraceRecord(interactionTrace.size() + 1, each.getName(), arguments, response, latencyMillis));
+                        messages.add(LLMChatMessage.tool(each.getId(), JsonUtils.toJsonString(response)));
                     }
                     continue;
                 }
@@ -348,7 +347,7 @@ public final class LLMMCPConversationRunner {
         throw new IllegalArgumentException("Unsupported tool descriptor: " + toolName);
     }
     
-    private MCPInteractionResponse executeActionSafely(final String actionName, final Map<String, Object> arguments) throws InterruptedException {
+    private Map<String, Object> executeActionSafely(final String actionName, final Map<String, Object> arguments) throws InterruptedException {
         try {
             return executeAction(actionName, arguments);
         } catch (final IOException | IllegalStateException ex) {
@@ -356,7 +355,7 @@ public final class LLMMCPConversationRunner {
         }
     }
     
-    private MCPInteractionResponse executeAction(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
+    private Map<String, Object> executeAction(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         if (RESOURCE_LIST_BRIDGE_NAME.equals(actionName)) {
             return mcpInteractionClient.listResources();
         }

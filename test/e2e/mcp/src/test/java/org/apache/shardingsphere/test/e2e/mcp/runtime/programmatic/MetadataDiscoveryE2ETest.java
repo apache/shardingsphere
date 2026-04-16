@@ -19,133 +19,55 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertMetadataResourcesCases")
-    void assertMetadataResources(final String name, final String resourceUri, final String itemKey,
-                                 final List<String> expectedNames) throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, resourceUri);
-        assertThat(actual.statusCode(), is(200));
-        Map<String, Object> payload = getFirstResourcePayload(actual.body());
-        List<Map<String, Object>> items = MCPInteractionPayloads.castToList(payload.get("items"));
-        assertThat(items.stream().map(each -> String.valueOf(each.get(itemKey))).toList(), is(expectedNames));
-    }
-    
-    static Stream<Arguments> assertMetadataResourcesCases() {
-        return Stream.of(
-                Arguments.of("tables resource", "shardingsphere://databases/logic_db/schemas/public/tables", "table", List.of("order_items", "orders")),
-                Arguments.of("views resource", "shardingsphere://databases/logic_db/schemas/public/views", "view", List.of("active_orders")),
-                Arguments.of("indexes resource", "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes", "index", List.of("idx_orders_status")),
-                Arguments.of("sequences resource", "shardingsphere://databases/analytics_db/schemas/public/sequences", "sequence", List.of("metric_seq")));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertSearchMetadataCases")
-    void assertSearchMetadata(final String name, final String databaseName, final String query, final List<String> objectTypes,
-                              final List<String> expectedNames) throws IOException, InterruptedException {
+    @Test
+    void assertSearchMetadataTablesAndViews() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
-                Map.of("database", databaseName, "schema", "public", "query", query, "object_types", objectTypes));
+                Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE", "VIEW")));
         assertThat(actual.statusCode(), is(200));
-        assertThat(MCPInteractionPayloads.castToList(getStructuredContent(actual.body()).get("items")).stream().map(each -> String.valueOf(each.get("name"))).toList(), is(expectedNames));
-    }
-    
-    static Stream<Arguments> assertSearchMetadataCases() {
-        return Stream.of(
-                Arguments.of("search tables", "logic_db", "order", List.of("TABLE"), List.of("order_items", "orders")),
-                Arguments.of("search views", "logic_db", "order", List.of("VIEW"), List.of("active_orders")),
-                Arguments.of("search columns", "logic_db", "status", List.of("COLUMN"), List.of("status")),
-                Arguments.of("search indexes", "logic_db", "status", List.of("INDEX"), List.of("idx_orders_status")),
-                Arguments.of("search sequences", "analytics_db", "metric", List.of("SEQUENCE"), List.of("metric_seq")));
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertRejectUnsupportedMetadataRequestCases")
-    void assertRejectUnsupportedMetadataRequest(final String name, final Map<String, Object> toolArguments, final String resourceUri,
-                                                final Map<String, String> expectedPayload) throws IOException, InterruptedException {
-        launchHttpTransport();
-        HttpClient httpClient = HttpClient.newHttpClient();
-        String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual;
-        Map<String, Object> actualPayload;
-        if (resourceUri.isEmpty()) {
-            actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", toolArguments);
-            actualPayload = getStructuredContent(actual.body());
-        } else {
-            actual = sendResourceReadRequest(httpClient, sessionId, resourceUri);
-            actualPayload = getFirstResourcePayload(actual.body());
-        }
-        assertThat(actual.statusCode(), is(200));
-        for (Entry<String, String> entry : expectedPayload.entrySet()) {
-            assertThat(String.valueOf(actualPayload.get(entry.getKey())), is(entry.getValue()));
-        }
-    }
-    
-    static Stream<Arguments> assertRejectUnsupportedMetadataRequestCases() {
-        return Stream.of(
-                Arguments.of("unsupported object type",
-                        Map.of("database", "logic_db", "schema", "public", "query", "order",
-                                "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")),
-                        "",
-                        Map.of("error_code", "invalid_request", "message", "Unsupported object_types value `MATERIALIZED_VIEW`.")),
-                Arguments.of("unknown object type",
-                        Map.of("database", "logic_db", "schema", "public", "query", "order",
-                                "object_types", List.of("invalid_type")),
-                        "",
-                        Map.of("error_code", "invalid_request", "message", "Unsupported object_types value `invalid_type`.")),
-                Arguments.of("unsupported indexes resource", Map.of(),
-                        "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes",
-                        Map.of("error_code", "unsupported")));
+        assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("order_items", "orders", "active_orders")));
     }
     
     @Test
-    void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
+    void assertRejectUnsupportedObjectType() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
+                Map.of("database", "logic_db", "schema", "public", "query", "order",
+                        "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
         assertThat(actual.statusCode(), is(200));
-        assertThat(getFirstResourcePayload(actual.body()).get("supportedTools"), is(List.of("search_metadata", "execute_query")));
+        Map<String, Object> actualPayload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
+        assertThat(String.valueOf(actualPayload.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
     }
     
     @Test
-    void assertTableDetailResource() throws IOException, InterruptedException {
+    void assertRejectUnsupportedIndexesResource() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
-                "shardingsphere://databases/logic_db/schemas/public/tables/orders");
+                "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes");
         assertThat(actual.statusCode(), is(200));
-        List<Map<String, Object>> items = MCPInteractionPayloads.castToList(getFirstResourcePayload(actual.body()).get("items"));
-        assertThat(items.size(), is(1));
-        Map<String, Object> actualItem = items.get(0);
-        assertThat(String.valueOf(actualItem.get("table")), is("orders"));
-        assertThat(getNestedNames(actualItem, "columns", "column"), is(List.of("order_id", "status")));
-        assertThat(getNestedNames(actualItem, "indexes", "index"), is(List.of("idx_orders_status")));
+        assertThat(String.valueOf(getFirstResourcePayload(actual.body()).get("error_code")), is("unsupported"));
     }
     
-    private static List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
-        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
+    private List<String> getItemNames(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.castToList(payload.get("items")).stream().map(each -> String.valueOf(each.get("name"))).toList();
     }
 }

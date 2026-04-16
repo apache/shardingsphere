@@ -42,8 +42,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     void assertLaunchHttpServerWithConfiguredEndpoint() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of("Content-Type", "application/json", "Accept", "application/json, text/event-stream"),
-                createInitializeRequestParams("integration-test"));
+        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, createJsonRequestHeaders(), createInitializeRequestParams("integration-test"));
         assertThat(initializeResponse.statusCode(), is(200));
         assertTrue(initializeResponse.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
         assertThat(initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse(""), is(MCPTransportConstants.PROTOCOL_VERSION));
@@ -57,11 +56,9 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
                 Map.of("database", "logic_db", "query", "order", "object_types", List.of("table")));
         assertThat(toolCallResponse.statusCode(), is(200));
         assertTrue(getPayloadItems(getStructuredContent(toolCallResponse.body())).stream().anyMatch(each -> "orders".equals(each.get("name"))));
-        HttpResponse<String> resourceReadResponse = sendCapabilitiesRequest(httpClient, Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
+        HttpResponse<String> resourceReadResponse = sendCapabilitiesRequest(httpClient, createJsonRequestHeaders(Map.of(
                 "MCP-Session-Id", sessionId,
-                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)));
         assertThat(resourceReadResponse.statusCode(), is(200));
         assertTrue(getResourcePayload(resourceReadResponse.body()).containsKey("supportedResources"));
         HttpResponse<String> deleteResponse = sendDeleteRequest(httpClient, Map.of("MCP-Session-Id", sessionId, "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
@@ -71,11 +68,9 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     @Test
     void assertAcceptFollowUpRequestWithLowercaseHeaders() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntime();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders(Map.of(
                 "mcp-session-id", session.sessionId(),
-                "mcp-protocol-version", MCPTransportConstants.PROTOCOL_VERSION));
+                "mcp-protocol-version", MCPTransportConstants.PROTOCOL_VERSION)));
         assertSuccessfulCapabilitiesResponse(actualResponse);
     }
     
@@ -83,10 +78,8 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     void assertAcceptInitializeWithAccessToken() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime("127.0.0.1", false, ACCESS_TOKEN);
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, Map.of(
-                "Authorization", getAuthorizationHeaderValue(ACCESS_TOKEN),
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient,
+                createJsonRequestHeaders(Map.of("Authorization", getAuthorizationHeaderValue(ACCESS_TOKEN))), createInitializeRequestParams("integration-test"));
         assertThat(actualResponse.statusCode(), is(200));
         assertFalse(actualResponse.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
     }
@@ -95,9 +88,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     void assertRejectInitializeWithoutAccessToken() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime("127.0.0.1", false, ACCESS_TOKEN);
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, createJsonRequestHeaders(), createInitializeRequestParams("integration-test"));
         assertThat(actualResponse.statusCode(), is(401));
         assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
@@ -106,10 +97,8 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     void assertRejectInitializeWithWrongAccessToken() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime("127.0.0.1", false, ACCESS_TOKEN);
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, Map.of(
-                "Authorization", getAuthorizationHeaderValue("wrong-token"),
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient,
+                createJsonRequestHeaders(Map.of("Authorization", getAuthorizationHeaderValue("wrong-token"))), createInitializeRequestParams("integration-test"));
         assertThat(actualResponse.statusCode(), is(401));
         assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
@@ -130,10 +119,8 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     void assertAcceptInitializeWithIpv6LoopbackOrigin() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
-                "Origin", "http://[::1]:8080",
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient,
+                createJsonRequestHeaders(Map.of("Origin", "http://[::1]:8080")), createInitializeRequestParams("integration-test"));
         assertThat(initializeResponse.statusCode(), is(200));
         assertFalse(initializeResponse.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
     }
@@ -142,10 +129,8 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException, SQLException {
         launchJDBCRuntime();
         HttpClient httpClient = HttpClient.newHttpClient();
-        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
-                "Origin", "https://evil.example.com",
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream"), createInitializeRequestParams("integration-test"));
+        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient,
+                createJsonRequestHeaders(Map.of("Origin", "https://evil.example.com")), createInitializeRequestParams("integration-test"));
         assertThat(initializeResponse.statusCode(), is(403));
         assertThat(parseJsonBody(initializeResponse.body()).get("message"), is("Origin is not allowed for the current binding."));
     }
@@ -156,20 +141,16 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
         HttpClient httpClient = HttpClient.newHttpClient();
         Map<String, Object> requestParams = createInitializeRequestParams("integration-test");
         requestParams.put("protocolVersion", "2024-11-05");
-        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream"), requestParams);
+        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, createJsonRequestHeaders(), requestParams);
         String sessionId = initializeResponse.headers().firstValue("MCP-Session-Id").orElse("");
         String protocolVersion = initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse("");
         assertThat(initializeResponse.statusCode(), is(200));
         assertFalse(sessionId.isEmpty());
         assertThat(protocolVersion, is(MCPTransportConstants.PROTOCOL_VERSION));
         assertThat(castToMap(parseJsonBody(initializeResponse.body()).get("result")).get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(httpClient, Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(httpClient, createJsonRequestHeaders(Map.of(
                 "MCP-Session-Id", sessionId,
-                "MCP-Protocol-Version", protocolVersion));
+                "MCP-Protocol-Version", protocolVersion)));
         assertSuccessfulCapabilitiesResponse(actualResponse);
     }
     
@@ -179,31 +160,25 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
         HttpClient httpClient = HttpClient.newHttpClient();
         Map<String, Object> requestParams = createInitializeRequestParams("integration-test");
         requestParams.remove("protocolVersion");
-        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream"), requestParams);
+        HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient, createJsonRequestHeaders(), requestParams);
         String sessionId = initializeResponse.headers().firstValue("MCP-Session-Id").orElse("");
         String protocolVersion = initializeResponse.headers().firstValue("MCP-Protocol-Version").orElse("");
         assertThat(initializeResponse.statusCode(), is(200));
         assertFalse(sessionId.isEmpty());
         assertThat(protocolVersion, is(MCPTransportConstants.PROTOCOL_VERSION));
         assertThat(castToMap(parseJsonBody(initializeResponse.body()).get("result")).get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(httpClient, Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(httpClient, createJsonRequestHeaders(Map.of(
                 "MCP-Session-Id", sessionId,
-                "MCP-Protocol-Version", protocolVersion));
+                "MCP-Protocol-Version", protocolVersion)));
         assertSuccessfulCapabilitiesResponse(actualResponse);
     }
     
     @Test
     void assertRejectFollowUpRequestWithoutAccessTokenBeforeSessionValidation() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntimeWithAccessToken();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders(Map.of(
                 "MCP-Session-Id", "missing-session",
-                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)));
         assertThat(actualResponse.statusCode(), is(401));
         assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
@@ -211,12 +186,10 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     @Test
     void assertRejectFollowUpRequestWithWrongAccessToken() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntimeWithAccessToken();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders(Map.of(
                 "Authorization", getAuthorizationHeaderValue("wrong-token"),
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
                 "MCP-Session-Id", session.sessionId(),
-                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)));
         assertThat(actualResponse.statusCode(), is(401));
         assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
@@ -224,10 +197,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     @Test
     void assertRejectFollowUpRequestWithoutProtocolHeader() throws IOException, InterruptedException, SQLException {
         RuntimeHttpSession session = launchRuntime();
-        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), Map.of(
-                "Content-Type", "application/json",
-                "Accept", "application/json, text/event-stream",
-                "MCP-Session-Id", session.sessionId()));
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders(Map.of("MCP-Session-Id", session.sessionId())));
         assertThat(actualResponse.statusCode(), is(400));
         assertThat(parseJsonBody(actualResponse.body()).get("message"), is("MCP-Protocol-Version header is required."));
     }

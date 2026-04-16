@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,21 +36,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
-    
+
     private static final String LOGIC_DATABASE_NAME = "logic_db";
-    
+
     private static final String ANALYTICS_DATABASE_NAME = "analytics_db";
-    
+
     private static final String H2_DRIVER_CLASS_NAME = "org.h2.Driver";
-    
+
     private String firstJdbcUrl;
-    
+
     private String secondJdbcUrl;
-    
-    private String firstDatabaseType = "H2";
-    
-    private String secondDatabaseType = "H2";
-    
+
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
@@ -63,23 +58,20 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
             throw new IOException(ex);
         }
     }
-    
+
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
-        result.put(LOGIC_DATABASE_NAME, createRuntimeDatabaseConfiguration(firstDatabaseType, firstJdbcUrl));
-        result.put(ANALYTICS_DATABASE_NAME, createRuntimeDatabaseConfiguration(secondDatabaseType, secondJdbcUrl));
-        return result;
+        return createRuntimeDatabases("H2", "H2");
     }
-    
+
     @Test
     void assertListDatabasesWithMultipleRuntimeDatabases() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases").getStructuredContent());
+            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases"));
             assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems(LOGIC_DATABASE_NAME, ANALYTICS_DATABASE_NAME));
         }
     }
-    
+
     @Test
     void assertRefreshMetadataVisibleForSubsequentClientSessionsInTargetDatabaseOnly() throws IOException, InterruptedException {
         try (MCPInteractionClient firstInteractionClient = createOpenedInteractionClient()) {
@@ -96,38 +88,58 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
             }
         }
     }
-    
+
     @Test
     void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("execute_query",
                     Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "BEGIN"));
-            Map<String, Object> actual = getStructuredContent(interactionClient.call("execute_query",
-                    Map.of("database", ANALYTICS_DATABASE_NAME, "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id")));
+            Map<String, Object> actual = interactionClient.call("execute_query",
+                    Map.of("database", ANALYTICS_DATABASE_NAME, "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id"));
             assertThat(String.valueOf(actual.get("error_code")), is("transaction_state_error"));
             assertFalse(Boolean.parseBoolean(String.valueOf(actual.get("ok"))));
         }
     }
-    
+
     @Test
     void assertRejectMismatchedDatabaseType() {
-        firstDatabaseType = "MySQL";
-        IllegalStateException actual = assertThrows(IllegalStateException.class, this::openAndCloseInteractionClient);
-        assertThat(actual.getMessage(), containsString("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
+        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> openAndCloseInteractionClient("MySQL", "H2"));
+        assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
-    
+
+    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String firstDatabaseType, final String secondDatabaseType) {
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(2, 1F);
+        result.put(LOGIC_DATABASE_NAME, createRuntimeDatabaseConfiguration(firstDatabaseType, firstJdbcUrl));
+        result.put(ANALYTICS_DATABASE_NAME, createRuntimeDatabaseConfiguration(secondDatabaseType, secondJdbcUrl));
+        return result;
+    }
+
+    private List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
+        return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/public/tables", databaseName)))
+                .stream().map(each -> String.valueOf(each.get("table"))).toList();
+    }
+
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", H2_DRIVER_CLASS_NAME);
     }
-    
-    private List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
-        return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/public/tables", databaseName)).getStructuredContent())
-                .stream().map(each -> String.valueOf(each.get("table"))).toList();
-    }
-    
-    private void openAndCloseInteractionClient() {
+
+    private void openAndCloseInteractionClient(final String firstDatabaseType, final String secondDatabaseType) {
+        ensureRuntimeDatabasesPrepared();
         try {
-            createOpenedInteractionClient().close();
+            MCPInteractionClient interactionClient = createOpenedInteractionClient(createRuntimeDatabases(firstDatabaseType, secondDatabaseType));
+            interactionClient.close();
+        } catch (final IOException | InterruptedException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    private void ensureRuntimeDatabasesPrepared() {
+        if (null != firstJdbcUrl && null != secondJdbcUrl) {
+            return;
+        }
+        try {
+            MCPInteractionClient interactionClient = createOpenedInteractionClient();
+            interactionClient.close();
         } catch (final IOException | InterruptedException ex) {
             throw new IllegalStateException(ex);
         }

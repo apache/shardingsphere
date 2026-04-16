@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shardingsphere.mcp.bootstrap.MCPBootstrap;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionResponse;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 
 import java.io.BufferedReader;
@@ -33,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,83 +42,70 @@ import java.util.concurrent.TimeUnit;
  * STDIO MCP interaction client backed by one child process.
  */
 public final class MCPStdioInteractionClient implements MCPInteractionClient {
-    
+
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
-    
+
     private static final String INITIALIZE_REQUEST_ID = "init-1";
-    
+
     private static final String CLIENT_NAME = "mcp-e2e-stdio";
-    
+
     private static final String LOGBACK_CONFIG_FILE_NAME = "mcp-e2e-stdio-logback.xml";
-    
+
     private static final String STDERR_COLLECTOR_THREAD_NAME = "mcp-e2e-stdio-stderr";
-    
+
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    
+
     private final Path configFile;
-    
+
     private final List<String> stdErrorMessages = new CopyOnWriteArrayList<>();
-    
+
     private Process process;
-    
+
     private Thread stdErrorCollector;
-    
+
     private BufferedWriter writer;
-    
+
     private BufferedReader reader;
-    
+
     public MCPStdioInteractionClient(final Path configFile) {
         this.configFile = configFile;
     }
-    
+
     @Override
     public void open() throws IOException {
         if (null != process) {
             return;
         }
         try {
-            Path logbackConfigFile = createLogbackConfigurationFile();
-            process = createProcessBuilder(logbackConfigFile).start();
-            stdErrorCollector = startStdErrorCollector(process, stdErrorMessages);
-            writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
-            reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
-            Map<String, Object> initializeResponse = sendRequest(INITIALIZE_REQUEST_ID, "initialize", Map.of(
-                    "protocolVersion", MCPTransportConstants.PROTOCOL_VERSION,
-                    "capabilities", Map.of(),
-                    "clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0")));
-            if (MCPInteractionPayloads.hasJsonRpcError(initializeResponse)) {
-                throw new IllegalStateException("Failed to initialize STDIO MCP session: "
-                        + MCPInteractionPayloads.getJsonRpcErrorPayload(initializeResponse).get("message")
-                        + ". stderr: " + getStdErrorOutput());
-            }
-            notifyServer("notifications/initialized", Map.of());
+            startProcess();
+            initializeSession();
         } catch (final IOException | IllegalStateException ex) {
             closeQuietly();
             throw ex;
         }
     }
-    
+
     @Override
-    public MCPInteractionResponse call(final String actionName, final Map<String, Object> arguments) throws IOException {
+    public Map<String, Object> call(final String actionName, final Map<String, Object> arguments) throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getStructuredContent(response));
+        return MCPInteractionPayloads.getStructuredContent(response);
     }
-    
+
     @Override
-    public MCPInteractionResponse listResources() throws IOException {
+    public Map<String, Object> listResources() throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest("resources-list-1", "resources/list", Map.of());
-        return new MCPInteractionResponse(MCPInteractionPayloads.getListResourcesPayload(response));
+        return MCPInteractionPayloads.getListResourcesPayload(response);
     }
-    
+
     @Override
-    public MCPInteractionResponse readResource(final String resourceUri) throws IOException {
+    public Map<String, Object> readResource(final String resourceUri) throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));
-        return new MCPInteractionResponse(MCPInteractionPayloads.getFirstResourcePayload(response));
+        return MCPInteractionPayloads.getFirstResourcePayload(response);
     }
-    
+
     @Override
     public void close() throws IOException {
         if (null == process) {
@@ -134,12 +121,30 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
             closeQuietly();
         }
     }
-    
+
     private ProcessBuilder createProcessBuilder(final Path logbackConfigFile) {
         return new ProcessBuilder(Paths.get(System.getProperty("java.home"), "bin", "java").toString(),
                 "-Dlogback.configurationFile=" + logbackConfigFile, "-cp", System.getProperty("java.class.path"), MCPBootstrap.class.getName(), configFile.toString());
     }
-    
+
+    private void startProcess() throws IOException {
+        Path logbackConfigFile = createLogbackConfigurationFile();
+        process = createProcessBuilder(logbackConfigFile).start();
+        stdErrorCollector = startStdErrorCollector(process, stdErrorMessages);
+        writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
+        reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
+    }
+
+    private void initializeSession() throws IOException {
+        Map<String, Object> initializeResponse = sendRequest(INITIALIZE_REQUEST_ID, "initialize", createInitializeRequestParams());
+        if (MCPInteractionPayloads.hasJsonRpcError(initializeResponse)) {
+            throw new IllegalStateException("Failed to initialize STDIO MCP session: "
+                    + MCPInteractionPayloads.getJsonRpcErrorPayload(initializeResponse).get("message")
+                    + ". stderr: " + getStdErrorOutput());
+        }
+        notifyServer("notifications/initialized", Map.of());
+    }
+
     private Path createLogbackConfigurationFile() throws IOException {
         Path result = configFile.resolveSibling(LOGBACK_CONFIG_FILE_NAME);
         Files.writeString(result, "<configuration>\n"
@@ -155,14 +160,14 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
                 + "</configuration>\n");
         return result;
     }
-    
+
     private Thread startStdErrorCollector(final Process process, final List<String> stdErrorMessages) {
         Thread result = new Thread(() -> collectStdError(process, stdErrorMessages), STDERR_COLLECTOR_THREAD_NAME);
         result.setDaemon(true);
         result.start();
         return result;
     }
-    
+
     private void collectStdError(final Process process, final List<String> stdErrorMessages) {
         try (BufferedReader actualReader = new BufferedReader(new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8))) {
             String line;
@@ -172,20 +177,22 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
         } catch (final IOException ignored) {
         }
     }
-    
+
     private Map<String, Object> sendRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException {
-        writer.write(OBJECT_MAPPER.writeValueAsString(Map.of("jsonrpc", "2.0", "id", requestId, "method", method, "params", params)));
-        writer.newLine();
-        writer.flush();
+        writeJsonRpcMessage(createJsonRpcRequest(requestId, method, params));
         return readResponse(requestId);
     }
-    
+
     private void notifyServer(final String method, final Map<String, Object> params) throws IOException {
-        writer.write(OBJECT_MAPPER.writeValueAsString(Map.of("jsonrpc", "2.0", "method", method, "params", params)));
+        writeJsonRpcMessage(createJsonRpcNotification(method, params));
+    }
+
+    private void writeJsonRpcMessage(final Map<String, Object> payload) throws IOException {
+        writer.write(OBJECT_MAPPER.writeValueAsString(payload));
         writer.newLine();
         writer.flush();
     }
-    
+
     private Map<String, Object> readResponse(final String requestId) throws IOException {
         String line;
         while (null != (line = reader.readLine())) {
@@ -198,19 +205,19 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
                 return result;
             }
         }
-        throw new IllegalStateException("STDIO MCP runtime did not return a response. stderr: " + getStdErrorOutput());
+        throw createRuntimeFailureException("STDIO MCP runtime did not return a response. stderr: " + getStdErrorOutput());
     }
-    
+
     private void waitForNormalExit() throws InterruptedException {
         if (!process.waitFor(PROCESS_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             destroyProcess();
-            throw new IllegalStateException("STDIO MCP process did not exit after stdin closed. stderr: " + getStdErrorOutput());
+            throw createRuntimeFailureException("STDIO MCP process did not exit after stdin closed. stderr: " + getStdErrorOutput());
         }
         if (0 != process.exitValue()) {
-            throw new IllegalStateException("STDIO MCP process exited with code " + process.exitValue() + ". stderr: " + getStdErrorOutput());
+            throw createRuntimeFailureException("STDIO MCP process exited with code " + process.exitValue() + ". stderr: " + getStdErrorOutput());
         }
     }
-    
+
     private void destroyProcess() throws InterruptedException {
         if (!process.isAlive()) {
             return;
@@ -222,17 +229,57 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
         process.destroyForcibly();
         process.waitFor(PROCESS_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
     }
-    
+
     private String getStdErrorOutput() {
         return String.join(System.lineSeparator(), stdErrorMessages);
     }
-    
+
+    private IllegalStateException createRuntimeFailureException(final String defaultMessage) {
+        String actualMessage = getRuntimeFailureMessage();
+        return new IllegalStateException(null == actualMessage ? defaultMessage : actualMessage);
+    }
+
+    private String getRuntimeFailureMessage() {
+        return stdErrorMessages.stream().filter(each -> each.startsWith("Exception in thread "))
+                .map(this::extractFailureMessage).findFirst().orElse(null);
+    }
+
+    private String extractFailureMessage(final String errorLine) {
+        int separatorIndex = errorLine.lastIndexOf(": ");
+        return -1 == separatorIndex ? errorLine : errorLine.substring(separatorIndex + 2);
+    }
+
+    private Map<String, Object> createInitializeRequestParams() {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("protocolVersion", MCPTransportConstants.PROTOCOL_VERSION);
+        result.put("capabilities", Map.of());
+        result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
+        return result;
+    }
+
+    private Map<String, Object> createJsonRpcRequest(final String requestId, final String method, final Map<String, Object> params) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("jsonrpc", "2.0");
+        result.put("id", requestId);
+        result.put("method", method);
+        result.put("params", params);
+        return result;
+    }
+
+    private Map<String, Object> createJsonRpcNotification(final String method, final Map<String, Object> params) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("jsonrpc", "2.0");
+        result.put("method", method);
+        result.put("params", params);
+        return result;
+    }
+
     private void ensureOpened() {
         if (null == process) {
             throw new IllegalStateException("MCP session is not initialized.");
         }
     }
-    
+
     private void closeQuietly() {
         closeReaderQuietly();
         closeWriterQuietly();
@@ -250,7 +297,7 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
         stdErrorCollector = null;
         stdErrorMessages.clear();
     }
-    
+
     private void closeReaderQuietly() {
         try {
             if (null != reader) {
@@ -259,7 +306,7 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
         } catch (final IOException ignored) {
         }
     }
-    
+
     private void closeWriterQuietly() {
         try {
             if (null != writer) {
@@ -268,7 +315,7 @@ public final class MCPStdioInteractionClient implements MCPInteractionClient {
         } catch (final IOException ignored) {
         }
     }
-    
+
     private void destroyProcessQuietly() {
         if (null == process || !process.isAlive()) {
             return;
