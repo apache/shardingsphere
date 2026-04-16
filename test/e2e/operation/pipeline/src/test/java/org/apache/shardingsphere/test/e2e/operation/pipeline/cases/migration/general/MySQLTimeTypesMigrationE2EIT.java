@@ -42,8 +42,8 @@ import static org.hamcrest.Matchers.is;
 /**
  * E2E IT for time types of MySQL, includes.
  * 1) timestamp, datetime, date, year zero values
- * 2) datetime(4) zero default value in incremental migration
- * 3) trailing date default value after datetime(4)
+ * 2) timestamp(4) fractional default value, datetime(4) and time(4) zero default values in incremental migration
+ * 3) trailing date default value after temporal columns with fractional precision
  */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL"))
 class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
@@ -54,7 +54,8 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
     void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, "
-                    + "`t_year` year DEFAULT NULL, `t_datetime_4` datetime(4) DEFAULT '0000-00-00 00:00:00.0000', "
+                    + "`t_year` year DEFAULT NULL, `t_timestamp_4` timestamp(4) NULL DEFAULT '2020-01-02 03:04:05.6789', "
+                    + "`t_datetime_4` datetime(4) DEFAULT '0000-00-00 00:00:00.0000', `t_time_4` time(4) DEFAULT '00:00:00.0000', "
                     + "`t_date_tail` date NOT NULL DEFAULT '2024-01-01', PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
             insertInventoryRecordWithZeroValue(containerComposer, 1);
@@ -74,13 +75,16 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
     
     private void insertInventoryRecordWithZeroValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year, t_datetime_4) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year, t_timestamp_4, t_datetime_4, t_time_4) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             preparedStatement.setObject(1, id);
             preparedStatement.setObject(2, "0000-00-00 00:00:00");
             preparedStatement.setObject(3, "0000-00-00 00:00:00");
             preparedStatement.setObject(4, "0000-00-00");
             preparedStatement.setObject(5, "0000");
             preparedStatement.setObject(6, null);
+            preparedStatement.setObject(7, null);
+            preparedStatement.setObject(8, null);
             preparedStatement.execute();
         }
     }
