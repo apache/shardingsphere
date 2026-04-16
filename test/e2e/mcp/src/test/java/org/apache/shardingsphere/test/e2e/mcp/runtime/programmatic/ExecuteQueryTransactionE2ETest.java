@@ -35,26 +35,16 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteTransactionControlCases")
-    void assertExecuteTransactionControl(final String name, final String sql, final boolean requiresActiveTransaction,
-                                         final String expectedMessage) throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+    void assertExecuteTransactionControl(final String name, final String sql, final boolean requiresActiveTransaction, final String expectedMessage) throws IOException, InterruptedException {
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
-            sendToolCallRequest(httpClient, sessionId, "execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+            sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
         }
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", sql));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", sql));
         assertThat(actual.statusCode(), is(200));
         assertThat(String.valueOf(getStructuredContent(actual.body()).get("message")), is(expectedMessage));
-    }
-    
-    static Stream<Arguments> assertExecuteTransactionControlCases() {
-        return Stream.of(
-                Arguments.of("begin", "BEGIN", false, "Transaction started."),
-                Arguments.of("commit", "COMMIT", true, "Transaction committed."),
-                Arguments.of("rollback", "ROLLBACK", true, "Transaction rolled back."));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -62,7 +52,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     void assertExecuteSavepoint(final String name, final String databaseName, final String schemaName, final String sql,
                                 final boolean requiresActiveTransaction, final boolean requiresExistingSavepoint,
                                 final String expectedKey, final String expectedValue) throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
@@ -79,56 +69,33 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(getStructuredContent(actual.body()).get(expectedKey)), is(expectedValue));
     }
     
-    static Stream<Arguments> assertExecuteSavepointCases() {
-        return Stream.of(
-                Arguments.of("create savepoint", "logic_db", "public", "SAVEPOINT sp_1", true, false, "message", "Savepoint created."),
-                Arguments.of("rollback to savepoint", "logic_db", "public", "ROLLBACK TO SAVEPOINT sp_1", true, true, "message", "Savepoint rolled back."),
-                Arguments.of("release savepoint", "logic_db", "public", "RELEASE SAVEPOINT sp_1", true, true, "message", "Savepoint released."),
-                Arguments.of("unsupported savepoint", "warehouse", "warehouse", "SAVEPOINT sp_1", false, false, "error_code", "unsupported"));
-    }
-    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertRejectInvalidTransactionStateCases")
     void assertRejectInvalidTransactionState(final String name, final String sql, final boolean createActiveTransaction,
                                              final boolean createExistingSavepoint, final String expectedMessage) throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         if (createActiveTransaction) {
-            sendToolCallRequest(httpClient, sessionId, "execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+            sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
         }
         if (createExistingSavepoint) {
-            sendToolCallRequest(httpClient, sessionId, "execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql", "SAVEPOINT sp_1"));
+            sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "SAVEPOINT sp_1"));
         }
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", sql));
-        
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", sql));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
         assertThat(String.valueOf(payload.get("message")), is(expectedMessage));
     }
     
-    static Stream<Arguments> assertRejectInvalidTransactionStateCases() {
-        return Stream.of(
-                Arguments.of("commit without transaction", "COMMIT", false, false, "No active transaction."),
-                Arguments.of("rollback without transaction", "ROLLBACK", false, false, "No active transaction."),
-                Arguments.of("savepoint without transaction", "SAVEPOINT sp_1", false, false, "No active transaction."),
-                Arguments.of("rollback to missing savepoint", "ROLLBACK TO SAVEPOINT sp_1", true, false, "Savepoint does not exist."),
-                Arguments.of("release missing savepoint", "RELEASE SAVEPOINT sp_1", true, false, "Savepoint does not exist."));
-    }
-    
     @Test
     void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "analytics_db", "schema", "public", "sql", "BEGIN"));
+        sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "analytics_db", "schema", "public", "sql", "BEGIN"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
@@ -136,13 +103,10 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     
     @Test
     void assertExecuteSelectOverHttpSession() throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "max_rows", 10));
-        
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "max_rows", 10));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
@@ -150,15 +114,36 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     
     @Test
     void assertExecuteSingleStatementValidation() throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1; SELECT 2"));
-        
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1; SELECT 2"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
+    }
+    
+    private static Stream<Arguments> assertExecuteTransactionControlCases() {
+        return java.util.stream.Stream.of(
+                Arguments.of("begin", "BEGIN", false, "Transaction started."),
+                Arguments.of("commit", "COMMIT", true, "Transaction committed."),
+                Arguments.of("rollback", "ROLLBACK", true, "Transaction rolled back."));
+    }
+    
+    private static Stream<Arguments> assertExecuteSavepointCases() {
+        return Stream.of(
+                Arguments.of("create savepoint", "logic_db", "public", "SAVEPOINT sp_1", true, false, "message", "Savepoint created."),
+                Arguments.of("rollback to savepoint", "logic_db", "public", "ROLLBACK TO SAVEPOINT sp_1", true, true, "message", "Savepoint rolled back."),
+                Arguments.of("release savepoint", "logic_db", "public", "RELEASE SAVEPOINT sp_1", true, true, "message", "Savepoint released."),
+                Arguments.of("unsupported savepoint", "warehouse", "warehouse", "SAVEPOINT sp_1", false, false, "error_code", "unsupported"));
+    }
+    
+    private static Stream<Arguments> assertRejectInvalidTransactionStateCases() {
+        return Stream.of(
+                Arguments.of("commit without transaction", "COMMIT", false, false, "No active transaction."),
+                Arguments.of("rollback without transaction", "ROLLBACK", false, false, "No active transaction."),
+                Arguments.of("savepoint without transaction", "SAVEPOINT sp_1", false, false, "No active transaction."),
+                Arguments.of("rollback to missing savepoint", "ROLLBACK TO SAVEPOINT sp_1", true, false, "Savepoint does not exist."),
+                Arguments.of("release missing savepoint", "RELEASE SAVEPOINT sp_1", true, false, "Savepoint does not exist."));
     }
 }

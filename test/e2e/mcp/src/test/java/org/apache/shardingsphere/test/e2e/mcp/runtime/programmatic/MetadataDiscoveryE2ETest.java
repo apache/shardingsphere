@@ -40,7 +40,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     @MethodSource("assertMetadataResourcesCases")
     void assertMetadataResources(final String name, final String resourceUri, final String itemKey,
                                  final List<String> expectedNames) throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, resourceUri);
@@ -62,7 +62,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     @MethodSource("assertSearchMetadataCases")
     void assertSearchMetadata(final String name, final String databaseName, final String query, final List<String> objectTypes,
                               final List<String> expectedNames) throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
@@ -84,7 +84,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     @MethodSource("assertRejectUnsupportedMetadataRequestCases")
     void assertRejectUnsupportedMetadataRequest(final String name, final Map<String, Object> toolArguments, final String resourceUri,
                                                 final Map<String, String> expectedPayload) throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual;
@@ -121,7 +121,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     @Test
     void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
@@ -131,7 +131,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     @Test
     void assertTableDetailResource() throws IOException, InterruptedException {
-        launchHttpProgrammaticRuntime();
+        launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,

@@ -72,7 +72,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         }
     }
     
-    protected final void launchHttpProgrammaticRuntime() {
+    protected final void launchHttpTransport() {
         MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
         try {
@@ -80,16 +80,16 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         } catch (final SQLException ex) {
             throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
         }
-        StreamableHttpMCPServer httpServer1 = new StreamableHttpMCPServer(
+        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(
                 new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH),
                 new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
         try {
-            httpServer1.start();
+            httpServer.start();
         } catch (final IOException ex) {
-            httpServer1.stop();
+            httpServer.stop();
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
-        this.httpServer = httpServer1;
+        this.httpServer = httpServer;
     }
     
     private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
