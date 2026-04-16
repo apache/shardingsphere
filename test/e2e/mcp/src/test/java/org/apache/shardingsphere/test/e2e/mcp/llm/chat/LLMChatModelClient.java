@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 
@@ -34,20 +35,21 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * OpenAI-compatible LLM chat client.
+ * LLM chat client.
  */
-public final class LLMChatModelClient implements LLMChatClient {
+@RequiredArgsConstructor
+public final class LLMChatModelClient {
     
     private final LLME2EConfiguration config;
     
     private final HttpClient httpClient;
     
-    public LLMChatModelClient(final LLME2EConfiguration config, final HttpClient httpClient) {
-        this.config = config;
-        this.httpClient = httpClient;
-    }
-    
-    @Override
+    /**
+     * Wait until ready.
+     *
+     * @throws InterruptedException interrupted exception
+     * @throws IllegalStateException model service is not ready
+     */
     public void waitUntilReady() throws InterruptedException {
         long deadline = System.currentTimeMillis() + config.getReadyTimeoutSeconds() * 1000L;
         IOException lastException = null;
@@ -74,7 +76,18 @@ public final class LLMChatModelClient implements LLMChatClient {
         throw result;
     }
     
-    @Override
+    /**
+     * Complete.
+     *
+     * @param messages messages
+     * @param tools tools
+     * @param toolChoice tool choice
+     * @param jsonResponse json response
+     * @return LLM chat completion
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     * @throws IllegalStateException model completion response is invalid
+     */
     public LLMChatCompletion complete(final List<LLMChatMessage> messages, final List<Map<String, Object>> tools,
                                       final String toolChoice, final boolean jsonResponse) throws IOException, InterruptedException {
         Map<String, Object> requestPayload = new LinkedHashMap<>(16, 1F);

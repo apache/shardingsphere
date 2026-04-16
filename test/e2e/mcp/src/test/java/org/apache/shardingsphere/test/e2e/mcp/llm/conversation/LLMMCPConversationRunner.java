@@ -28,9 +28,9 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EAssertionReport;
-import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatCompletion;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatMessage;
+import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
@@ -62,7 +62,7 @@ public final class LLMMCPConversationRunner {
     
     private final int maxTurns;
     
-    private final LLMChatClient llmChatClient;
+    private final LLMChatModelClient llmChatClient;
     
     private final MCPInteractionClient mcpInteractionClient;
     
