@@ -87,13 +87,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
     }
     
-    protected final String initializeSessionWithoutProtocolVersion(final HttpClient httpClient) throws IOException, InterruptedException {
-        HttpResponse<String> actual = sendInitializeRequest(httpClient, createInitializeRequestParamsWithoutProtocolVersion());
-        
-        assertThat(actual.statusCode(), is(200));
-        return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
-    }
-    
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
                                                              final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         HttpRequest request = createJsonRequestBuilder(sessionId)
