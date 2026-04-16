@@ -111,14 +111,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
-    protected final HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
-                .header("MCP-Session-Id", sessionId)
-                .header("MCP-Protocol-Version", PROTOCOL_VERSION)
-                .DELETE()
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
     
     protected final Map<String, Object> parseJsonBody(final String responseBody) {
         return MCPInteractionPayloads.parseJsonPayload(responseBody);
@@ -229,13 +221,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
     private Map<String, Object> createInitializeRequestParams() {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("protocolVersion", PROTOCOL_VERSION);
-        result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
-        return result;
-    }
-    
-    private Map<String, Object> createInitializeRequestParamsWithoutProtocolVersion() {
-        Map<String, Object> result = new LinkedHashMap<>();
         result.put("capabilities", Map.of());
         result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
         return result;
