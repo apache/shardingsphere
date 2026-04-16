@@ -41,7 +41,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     void assertMetadataResources(final String name, final String resourceUri, final String itemKey,
                                  final List<String> expectedNames) throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, resourceUri);
         assertThat(actual.statusCode(), is(200));
@@ -63,7 +63,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     void assertSearchMetadata(final String name, final String databaseName, final String query, final List<String> objectTypes,
                               final List<String> expectedNames) throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
                 Map.of("database", databaseName, "schema", "public", "query", query, "object_types", objectTypes));
@@ -85,7 +85,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     void assertRejectUnsupportedMetadataRequest(final String name, final Map<String, Object> toolArguments, final String resourceUri,
                                                 final Map<String, String> expectedPayload) throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual;
         Map<String, Object> actualPayload;
@@ -122,7 +122,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     @Test
     void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://capabilities");
         assertThat(actual.statusCode(), is(200));
@@ -132,7 +132,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     @Test
     void assertTableDetailResource() throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
                 "shardingsphere://databases/logic_db/schemas/public/tables/orders");

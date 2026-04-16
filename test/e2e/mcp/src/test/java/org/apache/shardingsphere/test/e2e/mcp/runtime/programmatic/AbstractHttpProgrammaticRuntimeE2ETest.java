@@ -92,15 +92,59 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         this.httpServer = httpServer1;
     }
     
-    protected final HttpClient createHttpClient() {
-        return HttpClient.newHttpClient();
+    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
+        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
+        databaseMetadataMap.put("logic_db", createLogicDatabaseMetadata());
+        databaseMetadataMap.put("analytics_db", createAnalyticsDatabaseMetadata());
+        databaseMetadataMap.put("warehouse", createWarehouseDatabaseMetadata());
+        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
+    }
+    
+    private MCPDatabaseMetadata createLogicDatabaseMetadata() {
+        return new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
+                new MCPSchemaMetadata("logic_db", "public", List.of(
+                        new MCPTableMetadata("logic_db", "public", "orders", List.of(
+                                new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id"),
+                                new MCPColumnMetadata("logic_db", "public", "orders", "", "status")),
+                                List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
+                        new MCPTableMetadata("logic_db", "public", "order_items", List.of(
+                                new MCPColumnMetadata("logic_db", "public", "order_items", "", "order_id")), List.of())),
+                        List.of(new MCPViewMetadata("logic_db", "public", "active_orders",
+                                List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id")))))));
+    }
+    
+    private MCPDatabaseMetadata createAnalyticsDatabaseMetadata() {
+        return new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
+                new MCPSchemaMetadata("analytics_db", "public", List.of(
+                        new MCPTableMetadata("analytics_db", "public", "metrics", List.of(
+                                new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
+                        List.of(), List.of(new MCPSequenceMetadata("analytics_db", "public", "metric_seq")))));
+    }
+    
+    private MCPDatabaseMetadata createWarehouseDatabaseMetadata() {
+        return new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
+                new MCPSchemaMetadata("warehouse", "warehouse", List.of(
+                        new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(
+                                new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())), List.of())));
     }
     
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendInitializeRequest(httpClient, createInitializeRequestParams());
-        
         assertThat(actual.statusCode(), is(200));
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
+    }
+    
+    private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
+        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json, text/event-stream")
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
+                        "jsonrpc", "2.0",
+                        "id", "init-1",
+                        "method", "initialize",
+                        "params", initializeRequestParams))))
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
@@ -137,57 +181,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
-    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
-        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
-        databaseMetadataMap.put("logic_db", createLogicDatabaseMetadata());
-        databaseMetadataMap.put("analytics_db", createAnalyticsDatabaseMetadata());
-        databaseMetadataMap.put("warehouse", createWarehouseDatabaseMetadata());
-        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
-    }
-    
-    private MCPDatabaseMetadata createLogicDatabaseMetadata() {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
-                new MCPSchemaMetadata("logic_db", "public", List.of(
-                        new MCPTableMetadata("logic_db", "public", "orders", List.of(
-                                new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id"),
-                                new MCPColumnMetadata("logic_db", "public", "orders", "", "status")),
-                                List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
-                        new MCPTableMetadata("logic_db", "public", "order_items", List.of(
-                                new MCPColumnMetadata("logic_db", "public", "order_items", "", "order_id")), List.of())),
-                        List.of(new MCPViewMetadata("logic_db", "public", "active_orders",
-                                List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id")))))));
-    }
-    
-    private MCPDatabaseMetadata createAnalyticsDatabaseMetadata() {
-        return new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
-                new MCPSchemaMetadata("analytics_db", "public", List.of(
-                        new MCPTableMetadata("analytics_db", "public", "metrics", List.of(
-                                new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
-                        List.of(), List.of(new MCPSequenceMetadata("analytics_db", "public", "metric_seq")))));
-    }
-    
-    private MCPDatabaseMetadata createWarehouseDatabaseMetadata() {
-        return new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
-                new MCPSchemaMetadata("warehouse", "warehouse", List.of(
-                        new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(
-                                new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
-                        List.of())));
-    }
-    
-    private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient,
-                                                       final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder(createEndpointUri())
-                .header("Content-Type", "application/json")
-                .header("Accept", "application/json, text/event-stream")
-                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(Map.of(
-                        "jsonrpc", "2.0",
-                        "id", "init-1",
-                        "method", "initialize",
-                        "params", initializeRequestParams))))
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-    
     private HttpRequest.Builder createJsonRequestBuilder(final String sessionId) {
         return HttpRequest.newBuilder(createEndpointUri())
                 .header("Content-Type", "application/json")
@@ -202,7 +195,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
     }
     
     private Map<String, Object> createInitializeRequestParams() {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("protocolVersion", PROTOCOL_VERSION);
         result.put("capabilities", Map.of());
         result.put("clientInfo", Map.of("name", CLIENT_NAME, "version", "1.0.0"));
@@ -210,7 +203,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
     }
     
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>();
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(3, 1F);
         result.put("logic_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-logic", "public"));
         result.put("analytics_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-analytics", "public"));
         result.put("warehouse", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-warehouse", "warehouse"));

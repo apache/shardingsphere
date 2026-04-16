@@ -38,7 +38,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     void assertExecuteTransactionControl(final String name, final String sql, final boolean requiresActiveTransaction,
                                          final String expectedMessage) throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
             sendToolCallRequest(httpClient, sessionId, "execute_query",
@@ -63,7 +63,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
                                 final boolean requiresActiveTransaction, final boolean requiresExistingSavepoint,
                                 final String expectedKey, final String expectedValue) throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         if (requiresActiveTransaction) {
             sendToolCallRequest(httpClient, sessionId, "execute_query",
@@ -92,7 +92,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     void assertRejectInvalidTransactionState(final String name, final String sql, final boolean createActiveTransaction,
                                              final boolean createExistingSavepoint, final String expectedMessage) throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         if (createActiveTransaction) {
             sendToolCallRequest(httpClient, sessionId, "execute_query",
@@ -123,7 +123,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     @Test
     void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         sendToolCallRequest(httpClient, sessionId, "execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
@@ -137,7 +137,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     @Test
     void assertExecuteSelectOverHttpSession() throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
@@ -151,7 +151,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
     @Test
     void assertExecuteSingleStatementValidation() throws IOException, InterruptedException {
         launchHttpProgrammaticRuntime();
-        HttpClient httpClient = createHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
