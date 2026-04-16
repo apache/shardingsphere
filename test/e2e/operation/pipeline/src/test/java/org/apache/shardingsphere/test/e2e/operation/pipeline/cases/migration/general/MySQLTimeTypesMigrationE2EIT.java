@@ -33,11 +33,17 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * E2E IT for time types of MySQL, includes.
  * 1) timestamp, datetime, date, year zero values
- * 2) datetime(4) zero default value
+ * 2) datetime(4) zero default value in incremental migration
+ * 3) trailing date default value after datetime(4)
  */
 @PipelineE2ESettings(fetchSingle = true, database = @PipelineE2ESettings.PipelineE2EDatabaseSettings(type = "MySQL"))
 class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
@@ -48,23 +54,38 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
     void assertIllegalTimeTypesValueMigrationSuccess(final PipelineTestParameter testParam) throws Exception {
         try (PipelineContainerComposer containerComposer = new PipelineContainerComposer(testParam)) {
             String sql = "CREATE TABLE `time_e2e` ( `id` int NOT NULL, `t_timestamp` timestamp NULL DEFAULT NULL, `t_datetime` datetime DEFAULT NULL, `t_date` date DEFAULT NULL, "
-                    + "`t_year` year DEFAULT NULL, `t_datetime_4` datetime(4) NOT NULL DEFAULT '0000-00-00 00:00:00.0000', PRIMARY KEY (`id`)) ENGINE=InnoDB;";
+                    + "`t_year` year DEFAULT NULL, `t_datetime_4` datetime(4) DEFAULT '0000-00-00 00:00:00.0000', "
+                    + "`t_date_tail` date NOT NULL DEFAULT '2024-01-01', PRIMARY KEY (`id`)) ENGINE=InnoDB;";
             containerComposer.sourceExecuteWithLog(sql);
-            insertOneRecordWithZeroValue(containerComposer, 1);
+            insertInventoryRecordWithZeroValue(containerComposer, 1);
             addMigrationSourceResource(containerComposer);
             addMigrationTargetResource(containerComposer);
             startMigration(containerComposer, "time_e2e", "time_e2e");
             PipelineE2EDistSQLFacade distSQLFacade = new PipelineE2EDistSQLFacade(containerComposer, new MigrationJobType());
             String jobId = distSQLFacade.listJobIds().get(0);
-            distSQLFacade.waitJobPreparingStageFinished(jobId);
-            insertOneRecordWithZeroValue(containerComposer, 2);
+            distSQLFacade.waitJobIncrementalStageStarted(jobId);
+            insertIncrementalRecordWithZeroDefaultValue(containerComposer, 2);
             distSQLFacade.waitJobIncrementalStageFinished(jobId);
             distSQLFacade.loadAllSingleTables();
+            assertTargetRowCount(containerComposer, 2);
             distSQLFacade.startCheckAndVerify(jobId, "DATA_MATCH");
         }
     }
     
-    private void insertOneRecordWithZeroValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
+    private void insertInventoryRecordWithZeroValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
+        try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year, t_datetime_4) VALUES (?, ?, ?, ?, ?, ?)");
+            preparedStatement.setObject(1, id);
+            preparedStatement.setObject(2, "0000-00-00 00:00:00");
+            preparedStatement.setObject(3, "0000-00-00 00:00:00");
+            preparedStatement.setObject(4, "0000-00-00");
+            preparedStatement.setObject(5, "0000");
+            preparedStatement.setObject(6, null);
+            preparedStatement.execute();
+        }
+    }
+    
+    private void insertIncrementalRecordWithZeroDefaultValue(final PipelineContainerComposer containerComposer, final int id) throws SQLException {
         try (Connection connection = containerComposer.getSourceDataSource().getConnection()) {
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `time_e2e`(id, t_timestamp, t_datetime, t_date, t_year) VALUES (?, ?, ?, ?, ?)");
             preparedStatement.setObject(1, id);
@@ -74,6 +95,12 @@ class MySQLTimeTypesMigrationE2EIT extends AbstractMigrationE2EIT {
             preparedStatement.setObject(5, "0000");
             preparedStatement.execute();
         }
+    }
+    
+    private void assertTargetRowCount(final PipelineContainerComposer containerComposer, final int expectedRowCount) {
+        List<Map<String, Object>> result = containerComposer.queryForListWithLog("SELECT COUNT(1) AS count FROM time_e2e");
+        int actualRowCount = ((Number) result.get(0).get("count")).intValue();
+        assertThat(actualRowCount, is(expectedRowCount));
     }
     
     private static boolean isEnabled(final ExtensionContext context) {
