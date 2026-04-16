@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.ExpectedProjection;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -27,7 +28,7 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 @Getter
 @Setter
-public final class ExpectedParameterMarkerExpression extends ExpectedBaseSimpleExpression {
+public final class ExpectedParameterMarkerExpression extends ExpectedBaseSimpleExpression implements ExpectedProjection {
     
     @XmlAttribute(name = "parameter-index")
     private int parameterIndex;

@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedSQLSegment;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.ExpectedSQLSegment;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.aggregation.ExpectedAggregationDistinctProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.projection.impl.column.ExpectedColumnProjection;
@@ -64,6 +65,9 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
     @XmlElement(name = "subquery-projection")
     private final Collection<ExpectedSubqueryProjection> subqueryProjections = new LinkedList<>();
     
+    @XmlElement(name = "parameter-marker-expression")
+    private final Collection<ExpectedParameterMarkerExpression> parameterMarkerExpressions = new LinkedList<>();
+    
     /**
      * Get size.
      *
@@ -71,7 +75,7 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
      */
     public int getSize() {
         return shorthandProjections.size() + columnProjections.size() + aggregationProjections.size() + aggregationDistinctProjections.size()
-                + expressionProjections.size() + topProjections.size() + subqueryProjections.size();
+                + expressionProjections.size() + topProjections.size() + subqueryProjections.size() + parameterMarkerExpressions.size();
     }
     
     /**
@@ -88,6 +92,7 @@ public final class ExpectedProjections extends AbstractExpectedSQLSegment {
         result.addAll(expressionProjections);
         result.addAll(topProjections);
         result.addAll(subqueryProjections);
+        result.addAll(parameterMarkerExpressions);
         result.sort(Comparator.comparingInt(ExpectedSQLSegment::getStartIndex));
         return result;
     }

@@ -1125,12 +1125,7 @@
 
     <select sql-case-id="presto_select_parameter_marker" parameters="1">
         <projections start-index="7" stop-index="7">
-            <expression-projection text="1" start-index="7" stop-index="7">
-                <expr>
-                    <literal-expression value="1" start-index="7" stop-index="7" />
-                    <parameter-marker-expression parameter-index="0" start-index="7" stop-index="7" />
-                </expr>
-            </expression-projection>
+            <parameter-marker-expression parameter-index="0" start-index="7" stop-index="7" />
         </projections>
     </select>
 
