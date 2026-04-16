@@ -73,7 +73,23 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
     }
     
     protected final void launchHttpProgrammaticRuntime() {
-        launchProgrammaticRuntimeInternal();
+        MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
+        try {
+            initializeRuntimeDatabases(runtimeDatabases);
+        } catch (final SQLException ex) {
+            throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
+        }
+        StreamableHttpMCPServer httpServer1 = new StreamableHttpMCPServer(
+                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH),
+                new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
+        try {
+            httpServer1.start();
+        } catch (final IOException ex) {
+            httpServer1.stop();
+            throw new IllegalStateException("Failed to start HTTP transport.", ex);
+        }
+        this.httpServer = httpServer1;
     }
     
     protected final HttpClient createHttpClient() {
@@ -169,26 +185,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
                         new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(
                                 new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
                         List.of())));
-    }
-    
-    private void launchProgrammaticRuntimeInternal() {
-        MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
-        try {
-            initializeRuntimeDatabases(runtimeDatabases);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
-        }
-        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH),
-                new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
-        try {
-            httpServer.start();
-        } catch (final IOException ex) {
-            httpServer.stop();
-            throw new IllegalStateException("Failed to start HTTP transport.", ex);
-        }
-        this.httpServer = httpServer;
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient,
