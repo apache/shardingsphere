@@ -189,7 +189,7 @@ class SingleSQLRouterTest {
         SingleRule rule = new SingleRule(new SingleRuleConfiguration(),
                 "foo_db", databaseType, Collections.singletonMap("readwrite_ds", new MockedDataSource()), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+                databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         singleSQLRouter.decorateRouteContext(routeContext, createQueryContext(), database, rule, Collections.singletonList("foo_tbl"), new ConfigurationProperties(new Properties()));
         assertThat(routeContext.getActualDataSourceNames().size(), is(1));
         assertTrue(Arrays.asList("write_ds", "readwrite_ds").contains(routeContext.getActualDataSourceNames().iterator().next()));

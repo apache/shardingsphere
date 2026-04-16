@@ -113,7 +113,7 @@ class CreateViewPushDownMetaDataRefresherTest {
     
     private ShardingSphereDatabase createDatabase(final JdbcDataSource dataSource, final RuleMetaData ruleMetaData) {
         return new ShardingSphereDatabase("foo_db", databaseType,
-                new ResourceMetaData(Collections.singletonMap(LOGIC_DATA_SOURCE_NAME, dataSource)), ruleMetaData, Collections.emptyList());
+                new ResourceMetaData(Collections.singletonMap(LOGIC_DATA_SOURCE_NAME, dataSource)), ruleMetaData, Collections.emptyList(), new ConfigurationProperties(new Properties()));
     }
     
     private JdbcDataSource createDataSource(final String databaseName) {

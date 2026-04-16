@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
@@ -47,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -86,7 +89,8 @@ class DatabaseMetaDataExecutorTest {
         expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
         String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
         ShardingSphereDatabase database = new ShardingSphereDatabase("auth_db", databaseType,
-                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(), Collections.emptyList());
+                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         DatabaseMetaDataExecutor executor = new DatabaseMetaDataExecutor(sql, Collections.emptyList());
         executor.execute(connectionSession, mockMetaData(database, Collections.singleton("auth_db")));
         assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
@@ -97,7 +101,8 @@ class DatabaseMetaDataExecutorTest {
     void assertExecuteWithDefaultValue() throws SQLException {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
         ShardingSphereDatabase database = new ShardingSphereDatabase("auth_db", databaseType,
-                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(Collections.singletonMap("support_ndb", "0"))))), mock(), Collections.emptyList());
+                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(Collections.singletonMap("support_ndb", "0"))))), mock(), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         DatabaseMetaDataExecutor executor = new DatabaseMetaDataExecutor(sql, Collections.emptyList());
         executor.execute(connectionSession, mockMetaData(database, Collections.singleton("auth_db")));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -110,7 +115,8 @@ class DatabaseMetaDataExecutorTest {
     void assertExecuteWithPreparedStatement() throws SQLException {
         String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = ?";
         ShardingSphereDatabase database = new ShardingSphereDatabase("auth_db", databaseType,
-                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(Collections.singletonMap("support_ndb", "0"))))), mock(), Collections.emptyList());
+                new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(Collections.singletonMap("support_ndb", "0"))))), mock(), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         DatabaseMetaDataExecutor executor = new DatabaseMetaDataExecutor(sql, Collections.singletonList("ndbcluster"));
         executor.execute(connectionSession, mockMetaData(database, Collections.singleton("auth_db")));
         assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
@@ -123,7 +129,8 @@ class DatabaseMetaDataExecutorTest {
     void assertGetDatabasesWithAuthorizedFromAllDatabases() {
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "auth_db", databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())), mock(), Collections.emptyList());
+                "auth_db", databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())), mock(), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         DatabaseMetaDataExecutor executor = new DatabaseMetaDataExecutor("SELECT 1", Collections.emptyList());
         Collection<ShardingSphereDatabase> actual = executor.getDatabases(connectionSession, mockMetaData(database, Collections.singleton("auth_db")));
         assertFalse(actual.isEmpty());
@@ -134,7 +141,8 @@ class DatabaseMetaDataExecutorTest {
     void assertGetDatabasesReturnEmptyWhenUnauthorized() {
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "auth_db", databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())), mock(), Collections.emptyList());
+                "auth_db", databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource())), mock(), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         DatabaseMetaDataExecutor executor = new DatabaseMetaDataExecutor("SELECT 1", Collections.emptyList());
         assertTrue(executor.getDatabases(connectionSession, mockMetaData(database, Collections.emptySet())).isEmpty());
     }
@@ -142,7 +150,8 @@ class DatabaseMetaDataExecutorTest {
     @Test
     void assertExecuteSkipLoadMetaDataWithoutStorageUnit() throws SQLException {
         ShardingSphereDatabase database =
-                new ShardingSphereDatabase("empty_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), mock(RuleMetaData.class), Collections.emptyList());
+                new ShardingSphereDatabase("empty_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), mock(RuleMetaData.class), Collections.emptyList(),
+                        new ConfigurationProperties(new Properties()));
         DatabaseMetaDataExecutor executor = mock(DatabaseMetaDataExecutor.class, withSettings().useConstructor("SELECT 1", Collections.emptyList()).defaultAnswer(CALLS_REAL_METHODS));
         doReturn(Collections.singleton(database)).when(executor).getDatabases(any(ConnectionSession.class), any(ShardingSphereMetaData.class));
         assertThat(connectionSession.getCurrentDatabaseName(), is("auth_db"));
@@ -156,7 +165,8 @@ class DatabaseMetaDataExecutorTest {
     void assertExecuteFillLabelsWhenRowsFilteredOut() throws SQLException {
         Map<String, String> expectedResultSetMap = Collections.singletonMap("foo_column", "foo_value");
         ShardingSphereDatabase database = new ShardingSphereDatabase("auth_db",
-                databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(), Collections.emptyList());
+                databaseType, new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))), mock(), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         DatabaseMetaDataExecutor executor = mock(DatabaseMetaDataExecutor.class, withSettings().useConstructor(
                 "SELECT foo_column FROM foo_table", Collections.emptyList()).defaultAnswer(CALLS_REAL_METHODS));
         doAnswer(invocation -> {

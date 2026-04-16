@@ -129,7 +129,8 @@ class MetaDataContextManagerTest {
         props.setProperty(ConfigurationPropertyKey.PERSIST_SCHEMAS_TO_REPOSITORY_ENABLED.getKey(), "true");
         ConfigurationProperties configurationProps = new ConfigurationProperties(props);
         ShardingSphereDatabase database = new ShardingSphereDatabase(
-                "test_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList());
+                "test_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(
                 Collections.singleton(database), new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), configurationProps);
         return new MetaDataContexts(metaData, new ShardingSphereStatistics());

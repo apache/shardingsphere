@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.merge.dql;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.encrypt.exception.data.DecryptFailedException;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.column.EncryptColumn;
@@ -48,6 +50,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.apache.shardingsphere.test.infra.framework.matcher.ShardingSphereArgumentVerifyMatchers.deepEq;
 import static org.hamcrest.Matchers.is;
@@ -87,7 +90,8 @@ class EncryptMergedResultTest {
         ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("foo_col"));
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
         assertThat(new EncryptMergedResult(database, mock(), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_value"));
     }
@@ -97,7 +101,8 @@ class EncryptMergedResultTest {
         ColumnSegmentBoundInfo columnSegmentBoundInfo = new ColumnSegmentBoundInfo(new IdentifierValue("bar_col"));
         when(selectStatementContext.findColumnBoundInfo(1)).thenReturn(Optional.of(columnSegmentBoundInfo));
         EncryptRule rule = mockRule(mock(EncryptAlgorithm.class));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(mergedResult.getValue(1, String.class)).thenReturn("foo_value");
         assertThat(new EncryptMergedResult(database, mock(), selectStatementContext, mergedResult).getValue(1, String.class), is("foo_value"));
     }
@@ -112,7 +117,8 @@ class EncryptMergedResultTest {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenReturn("foo_decrypted_value");
         EncryptRule rule = mockRule(encryptAlgorithm);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
         when(mergedResult.getValue(1, Object.class)).thenReturn("foo_value");
         assertThat(new EncryptMergedResult(database, metaData, selectStatementContext, mergedResult).getValue(1, String.class), is("foo_decrypted_value"));
@@ -128,7 +134,8 @@ class EncryptMergedResultTest {
         EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class);
         when(encryptAlgorithm.decrypt(eq("foo_value"), deepEq(new AlgorithmSQLContext("foo_db", "foo_schema", "foo_tbl", "foo_col")))).thenThrow(new RuntimeException("Test failed"));
         EncryptRule rule = mockRule(encryptAlgorithm);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
         when(mergedResult.getValue(1, Object.class)).thenReturn("foo_value");
         assertThrows(DecryptFailedException.class, () -> new EncryptMergedResult(database, metaData, selectStatementContext, mergedResult).getValue(1, String.class));

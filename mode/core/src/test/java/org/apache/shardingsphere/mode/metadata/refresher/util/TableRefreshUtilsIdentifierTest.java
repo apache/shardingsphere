@@ -136,6 +136,6 @@ class TableRefreshUtilsIdentifierTest {
                         new ShardingSphereTable("Bar_Tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())),
                 Arrays.asList(new ShardingSphereView("Foo_View", "SELECT 1"), new ShardingSphereView("Bar_View", "SELECT 1")));
         return new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()),
-                new RuleMetaData(Collections.emptyList()), Collections.singletonList(schema));
+                new RuleMetaData(Collections.emptyList()), Collections.singletonList(schema), new ConfigurationProperties(new Properties()));
     }
 }

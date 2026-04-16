@@ -136,7 +136,8 @@ class LocalConfigurationMetaDataContextsInitFactoryTest {
     
     private ShardingSphereDatabase createDatabase(final String databaseName, final Collection<ShardingSphereSchema> schemas,
                                                   final Map<String, StorageUnit> storageUnits, final Collection<ShardingSphereRule> rules) {
-        return new ShardingSphereDatabase(databaseName, mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(rules), schemas);
+        return new ShardingSphereDatabase(databaseName, mock(DatabaseType.class), new ResourceMetaData(Collections.emptyMap(), storageUnits), new RuleMetaData(rules), schemas,
+                new ConfigurationProperties(new Properties()));
     }
     
     private ShardingSphereStatistics createStatistics(final String databaseName, final String schemaName) {

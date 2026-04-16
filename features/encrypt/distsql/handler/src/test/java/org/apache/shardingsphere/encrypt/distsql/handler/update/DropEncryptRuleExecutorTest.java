@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.update;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.distsql.handler.engine.update.DistSQLUpdateExecuteEngine;
 import org.apache.shardingsphere.encrypt.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.config.rule.EncryptColumnItemRuleConfiguration;
@@ -138,7 +140,8 @@ class DropEncryptRuleExecutorTest {
     
     private ContextManager mockContextManager(final EncryptRule rule) {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(), mock(), new RuleMetaData(Collections.singleton(rule)), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(result.getDatabase("foo_db")).thenReturn(database);
         return result;
     }

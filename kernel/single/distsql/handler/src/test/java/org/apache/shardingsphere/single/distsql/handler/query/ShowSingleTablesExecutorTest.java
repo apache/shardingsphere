@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.single.distsql.handler.query;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.distsql.handler.engine.query.DistSQLQueryExecutor;
@@ -41,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -58,7 +61,8 @@ class ShowSingleTablesExecutorTest {
     @Test
     void assertGetColumnNamesWithoutSchema() {
         executor.setDatabase(new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList()));
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties())));
         assertThat(executor.getColumnNames(new ShowSingleTablesStatement(null, null)), is(Arrays.asList("table_name", "storage_unit_name")));
     }
     
@@ -68,7 +72,8 @@ class ShowSingleTablesExecutorTest {
                 MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(Answers.RETURNS_DEEP_STUBS),
                         (mock, context) -> when(mock.getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()).thenReturn(true))) {
             executor.setDatabase(new ShardingSphereDatabase(
-                    "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList()));
+                    "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                    new ConfigurationProperties(new Properties())));
             assertThat(executor.getColumnNames(new ShowSingleTablesStatement(null, null)), is(Arrays.asList("table_name", "storage_unit_name", "schema_name")));
         }
     }
@@ -76,7 +81,8 @@ class ShowSingleTablesExecutorTest {
     @Test
     void assertGetRowsWithoutLikePattern() {
         executor.setDatabase(new ShardingSphereDatabase(
-                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList()));
+                "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                new ConfigurationProperties(new Properties())));
         Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>(2, 1F);
         singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", (String) null, "t_order_item")));
         singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", (String) null, "t_order")));
@@ -95,7 +101,8 @@ class ShowSingleTablesExecutorTest {
                 MockedConstruction<DatabaseTypeRegistry> ignored = mockConstruction(DatabaseTypeRegistry.class, withSettings().defaultAnswer(Answers.RETURNS_DEEP_STUBS),
                         (mock, context) -> when(mock.getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()).thenReturn(true))) {
             executor.setDatabase(new ShardingSphereDatabase(
-                    "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList()));
+                    "foo_db", databaseType, new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.emptyList(),
+                    new ConfigurationProperties(new Properties())));
             Map<String, Collection<DataNode>> singleTableDataNodeMap = new HashMap<>(2, 1F);
             singleTableDataNodeMap.put("t_order", Collections.singleton(new DataNode("ds_1", "public", "t_order")));
             singleTableDataNodeMap.put("t_order_item", Collections.singleton(new DataNode("ds_2", "public", "t_order_item")));

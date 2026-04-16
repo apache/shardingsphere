@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.parse;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.PostgreSQLBinaryColumnType;
@@ -59,6 +61,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -191,7 +194,8 @@ class PostgreSQLComParseExecutorTest {
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new RuleMetaData(Collections.singleton(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()))));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db",
-                databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema()));
+                databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()), Collections.singleton(createSchema()),
+                new ConfigurationProperties(new Properties()));
         when(result.getMetaDataContexts().getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().getDatabase(new IdentifierValue("foo_db"))).thenReturn(database);
         when(result.getMetaDataContexts().getMetaData().containsDatabase("foo_db")).thenReturn(true);

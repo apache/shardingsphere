@@ -70,24 +70,6 @@ public final class ShardingSphereDatabase {
     private final IdentifierIndex<ShardingSphereSchema> schemaIndex;
     
     /**
-     * Construct database through the legacy compatibility path.
-     *
-     * <p>This constructor keeps existing callers and tests working until all database creation paths pass protocol-aware identifier rules explicitly.</p>
-     *
-     * <p>TODO(haoran): Remove this constructor after all metadata builders and tests migrate to the protocol-aware constructor.</p>
-     *
-     * @param name database name
-     * @param protocolType protocol type
-     * @param resourceMetaData resource meta data
-     * @param ruleMetaData rule meta data
-     * @param schemas schemas
-     */
-    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ResourceMetaData resourceMetaData,
-                                  final RuleMetaData ruleMetaData, final Collection<ShardingSphereSchema> schemas) {
-        this(name, protocolType, resourceMetaData, ruleMetaData, schemas, DatabaseIdentifierContextFactory.createDefault());
-    }
-    
-    /**
      * Construct database with protocol-aware identifier rules.
      *
      * @param name database name

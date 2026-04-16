@@ -48,7 +48,7 @@ class DropSchemaPushDownMetaDataRefresherTest {
         DropSchemaStatement sqlStatement = new DropSchemaStatement(databaseType);
         sqlStatement.getSchemaNames().addAll(Arrays.asList(new IdentifierValue("FOO_SCHEMA"), new IdentifierValue("BAR_SCHEMA")));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
-                Arrays.asList(new ShardingSphereSchema("foo_schema", databaseType), new ShardingSphereSchema("bar_schema", databaseType)));
+                Arrays.asList(new ShardingSphereSchema("foo_schema", databaseType), new ShardingSphereSchema("bar_schema", databaseType)), new ConfigurationProperties(new Properties()));
         refresher.refresh(persistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(new Properties()));
         assertThat(persistService.getDroppedSchemaNames(), contains("foo_schema", "bar_schema"));
     }
@@ -59,7 +59,7 @@ class DropSchemaPushDownMetaDataRefresherTest {
         DropSchemaStatement sqlStatement = new DropSchemaStatement(databaseType);
         sqlStatement.getSchemaNames().addAll(Arrays.asList(new IdentifierValue("Foo_Schema"), new IdentifierValue("Bar_Schema")));
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, new ResourceMetaData(Collections.emptyMap()), new RuleMetaData(Collections.emptyList()),
-                Arrays.asList(new ShardingSphereSchema("Foo_Schema", databaseType), new ShardingSphereSchema("Bar_Schema", databaseType)));
+                Arrays.asList(new ShardingSphereSchema("Foo_Schema", databaseType), new ShardingSphereSchema("Bar_Schema", databaseType)), new ConfigurationProperties(new Properties()));
         Properties props = new Properties();
         props.setProperty("metadata-identifier-case-sensitivity", "SENSITIVE");
         refresher.refresh(persistService, database, "logic_ds", "foo_schema", databaseType, sqlStatement, new ConfigurationProperties(props));

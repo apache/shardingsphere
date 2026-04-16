@@ -149,7 +149,8 @@ class ContextManagerTest {
     @Test
     void assertGetDatabaseType() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.emptyMap(), Collections.emptyMap());
-        ShardingSphereDatabase emptyDatabase = new ShardingSphereDatabase("bar_db", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
+        ShardingSphereDatabase emptyDatabase =
+                new ShardingSphereDatabase("bar_db", databaseType, resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(emptyDatabase));
         assertThat(contextManager.getDatabaseType(), is(DatabaseTypeEngine.getDefaultStorageType()));
     }
@@ -177,7 +178,8 @@ class ContextManagerTest {
     @Test
     void assertGetStorageUnits() {
         ResourceMetaData resourceMetaData = new ResourceMetaData(Collections.singletonMap("foo_ds", new MockedDataSource()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resourceMetaData, mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         assertThat(contextManager.getStorageUnits("foo_db").size(), is(1));
@@ -310,7 +312,8 @@ class ContextManagerTest {
     @Test
     void assertGetPreSelectedDatabaseNameWithJDBC() {
         when(computeNodeInstanceContext.getInstance()).thenReturn(new ComputeNodeInstance(new JDBCInstanceMetaData("foo_id", "foo_db"), Collections.emptyList()));
-        ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.emptyList());
+        ShardingSphereDatabase database =
+                new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class), mock(RuleMetaData.class), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getAllDatabases()).thenReturn(Collections.singleton(database));
         assertThat(contextManager.getPreSelectedDatabaseName(), is("foo_db"));
     }

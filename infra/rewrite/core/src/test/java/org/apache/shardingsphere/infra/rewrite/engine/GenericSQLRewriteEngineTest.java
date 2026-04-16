@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.rewrite.engine;
 
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
@@ -34,6 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -73,7 +76,7 @@ class GenericSQLRewriteEngineTest {
     void assertRewriteStorageTypeIsEmpty() {
         SQLTranslatorRule rule = new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build());
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(), new ResourceMetaData(Collections.emptyMap()), mock(),
-                Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))));
+                Collections.singleton(new ShardingSphereSchema("test", mock(DatabaseType.class))), new ConfigurationProperties(new Properties()));
         SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
         DatabaseType databaseType = mock(DatabaseType.class);
