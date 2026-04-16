@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
+package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

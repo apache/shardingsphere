@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMConversationExecutor;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMRuntimeFixtureFactory;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMRuntimeFixtureFactory.Backend;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMRuntimeFixtureFactory.Fixture;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Backend;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenarioCatalog;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterEach;

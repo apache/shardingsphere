@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.framework;
+package org.apache.shardingsphere.test.e2e.mcp.llm.fixture;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;

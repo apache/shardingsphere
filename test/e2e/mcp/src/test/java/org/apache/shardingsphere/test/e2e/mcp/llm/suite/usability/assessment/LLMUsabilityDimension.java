@@ -15,23 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
-/**
- * LLM chat completion.
- */
-@RequiredArgsConstructor
-@Getter
-public final class LLMChatCompletion {
+public enum LLMUsabilityDimension {
     
-    private final String content;
+    RESOURCE,
     
-    private final List<LLMToolCall> toolCalls;
+    TOOL,
     
-    private final String rawResponse;
+    RECOVERY
 }

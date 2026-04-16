@@ -15,13 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
-public enum LLMUsabilityDimension {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
+public final class LLMUsabilityDimensionScore {
     
-    RESOURCE,
+    private final LLMUsabilityDimension dimension;
     
-    TOOL,
+    private final int scenarioCount;
     
-    RECOVERY
+    private final double successRate;
+    
+    private final double firstCorrectActionRate;
+    
+    private final double invalidCallRate;
+    
+    private final double averageRoundTrips;
+    
+    private final double resourceHitRate;
+    
+    private final double recoveryRate;
+    
+    private final double queryAnswerFidelity;
+    
+    private final double boundaryConfusionRate;
 }

@@ -15,32 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Getter
-public final class LLMUsabilityDimensionScore {
+public final class LLMUsabilityScenarioResult {
+    
+    private final String scenarioId;
     
     private final LLMUsabilityDimension dimension;
     
-    private final int scenarioCount;
+    private final String runtimeKind;
     
-    private final double successRate;
+    private final boolean success;
     
-    private final double firstCorrectActionRate;
+    private final String failureType;
     
-    private final double invalidCallRate;
+    private final String message;
     
-    private final double averageRoundTrips;
+    private final boolean firstCorrectAction;
     
-    private final double resourceHitRate;
+    private final int invalidCallCount;
     
-    private final double recoveryRate;
+    private final int roundTripCount;
+    
+    private final boolean resourceHit;
+    
+    private final boolean recoveredAfterError;
     
     private final double queryAnswerFidelity;
     
-    private final double boundaryConfusionRate;
+    private final boolean boundaryConfusion;
+    
+    private final List<MCPInteractionTraceRecord> interactionTrace;
 }

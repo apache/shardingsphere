@@ -15,12 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.report;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScorecard;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

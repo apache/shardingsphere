@@ -15,15 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.metric;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EArtifactBundle;
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EAssertionReport;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityDimension;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityDimensionScore;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenario;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScorecard;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.LinkedList;

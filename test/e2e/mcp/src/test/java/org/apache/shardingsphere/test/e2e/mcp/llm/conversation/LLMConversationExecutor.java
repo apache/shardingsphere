@@ -15,14 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.framework;
+package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EArtifactBundle;
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EArtifactWriter;
-import org.apache.shardingsphere.test.e2e.mcp.llm.chat.LLMChatModelClient;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactWriter;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMMCPConversationRunner;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 

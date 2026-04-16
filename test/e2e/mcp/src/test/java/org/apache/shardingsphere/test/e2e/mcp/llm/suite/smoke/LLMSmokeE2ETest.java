@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.llm.artifact.LLME2EAssertionReport;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMConversationExecutor;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMRuntimeFixtureFactory;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMRuntimeFixtureFactory.Backend;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMRuntimeFixtureFactory.Fixture;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Backend;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;

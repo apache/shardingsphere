@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityDimension;
 
 import java.util.List;
 

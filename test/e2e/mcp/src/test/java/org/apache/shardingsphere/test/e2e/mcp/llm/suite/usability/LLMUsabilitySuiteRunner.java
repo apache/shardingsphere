@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability;
 
 import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.llm.framework.LLMConversationExecutor;
+import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.metric.LLMUsabilityMetricCalculator;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenario;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenarioResult;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScorecard;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.report.LLMUsabilityReportWriter;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityMetricCalculator;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityReportWriter;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityScenarioResult;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityScorecard;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
 
 import java.io.IOException;
 import java.nio.file.Path;

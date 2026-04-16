@@ -15,21 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.chat;
+package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
-/**
- * LLM tool call.
- */
+import java.util.List;
+
 @RequiredArgsConstructor
 @Getter
-public final class LLMToolCall {
+public final class LLME2EArtifactBundle {
     
-    private final String id;
+    private final String scenarioId;
     
-    private final String name;
+    private final String systemPrompt;
     
-    private final String argumentsJson;
+    private final String userPrompt;
+    
+    private final String finalAnswerJson;
+    
+    private final List<String> rawModelOutputs;
+    
+    private final List<MCPInteractionTraceRecord> interactionTrace;
+    
+    private final List<String> mcpRuntimeLogLines;
+    
+    private final LLME2EAssertionReport assertionReport;
 }

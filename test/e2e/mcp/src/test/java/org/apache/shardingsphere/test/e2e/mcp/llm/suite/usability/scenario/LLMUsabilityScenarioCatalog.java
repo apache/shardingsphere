@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.suite;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario;
 
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityDimension;
-import org.apache.shardingsphere.test.e2e.mcp.llm.usability.model.LLMUsabilityScenario;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment.LLMUsabilityDimension;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-final class LLMUsabilityScenarioCatalog {
+public final class LLMUsabilityScenarioCatalog {
     
     private static final String SYSTEM_PROMPT = """
             You are evaluating an MCP server.
@@ -39,8 +38,19 @@ final class LLMUsabilityScenarioCatalog {
     
     private static final String RESOURCE_READ_BRIDGE_NAME = "mcp_read_resource";
     
-    List<LLMUsabilityScenario> createMinimalBaseline(final String runtimeKind, final String databaseName, final String schemaName,
-                                                     final String tableName, final String query, final int totalOrders) {
+    /**
+     * Create the minimal usability baseline scenarios for one runtime kind.
+     *
+     * @param runtimeKind runtime kind
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param query query
+     * @param totalOrders total orders
+     * @return minimal usability baseline scenarios
+     */
+    public List<LLMUsabilityScenario> createMinimalBaseline(final String runtimeKind, final String databaseName, final String schemaName,
+                                                            final String tableName, final String query, final int totalOrders) {
         List<LLMUsabilityScenario> result = new LinkedList<>();
         String tableResourceUri = String.format(Locale.ENGLISH, "shardingsphere://databases/%s/schemas/%s/tables/%s", databaseName, schemaName, tableName);
         result.add(createScenario("resource-capabilities-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,

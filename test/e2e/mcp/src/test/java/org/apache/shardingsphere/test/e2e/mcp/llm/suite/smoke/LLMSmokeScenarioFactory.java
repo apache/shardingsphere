@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.smoke;
+package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
@@ -28,9 +28,9 @@ import java.util.Locale;
 
 final class LLMSmokeScenarioFactory {
     
-    private static final String SYSTEM_PROMPT_RESOURCE = "llm/minimal-smoke-system-prompt.md";
+    private static final String SYSTEM_PROMPT_RESOURCE = "llm/suite/smoke/minimal-smoke-system-prompt.md";
     
-    private static final String USER_PROMPT_RESOURCE = "llm/minimal-smoke-user-prompt.md";
+    private static final String USER_PROMPT_RESOURCE = "llm/suite/smoke/minimal-smoke-user-prompt.md";
     
     private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("search_metadata", "mcp_read_resource", "execute_query");
     

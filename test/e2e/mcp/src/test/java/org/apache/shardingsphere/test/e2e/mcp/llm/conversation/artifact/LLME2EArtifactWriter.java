@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.artifact;
+package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 

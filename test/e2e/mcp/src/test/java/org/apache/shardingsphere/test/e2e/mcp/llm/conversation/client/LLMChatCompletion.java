@@ -15,43 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
+package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.List;
 
+/**
+ * LLM chat completion.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class LLMUsabilityScenarioResult {
+public final class LLMChatCompletion {
     
-    private final String scenarioId;
+    private final String content;
     
-    private final LLMUsabilityDimension dimension;
+    private final List<LLMToolCall> toolCalls;
     
-    private final String runtimeKind;
-    
-    private final boolean success;
-    
-    private final String failureType;
-    
-    private final String message;
-    
-    private final boolean firstCorrectAction;
-    
-    private final int invalidCallCount;
-    
-    private final int roundTripCount;
-    
-    private final boolean resourceHit;
-    
-    private final boolean recoveredAfterError;
-    
-    private final double queryAnswerFidelity;
-    
-    private final boolean boundaryConfusion;
-    
-    private final List<MCPInteractionTraceRecord> interactionTrace;
+    private final String rawResponse;
 }

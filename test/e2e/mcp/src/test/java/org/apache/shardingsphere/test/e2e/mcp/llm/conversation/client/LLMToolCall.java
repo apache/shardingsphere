@@ -15,38 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.usability.model;
+package org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
+/**
+ * LLM tool call.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class LLMUsabilityScorecard {
+public final class LLMToolCall {
     
-    private final String suiteId;
+    private final String id;
     
-    private final String runId;
+    private final String name;
     
-    private final double taskSuccessRate;
-    
-    private final double firstCorrectActionRate;
-    
-    private final double invalidCallRate;
-    
-    private final double averageRoundTrips;
-    
-    private final double queryAnswerFidelity;
-    
-    private final double boundaryConfusionRate;
-    
-    private final double resourceHitRate;
-    
-    private final double recoveryRate;
-    
-    private final List<LLMUsabilityDimensionScore> dimensionScores;
-    
-    private final List<LLMUsabilityScenarioResult> scenarioResults;
+    private final String argumentsJson;
 }
