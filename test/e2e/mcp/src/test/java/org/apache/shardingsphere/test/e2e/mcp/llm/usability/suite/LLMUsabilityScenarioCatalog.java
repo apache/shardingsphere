@@ -35,6 +35,8 @@ final class LLMUsabilityScenarioCatalog {
             Return JSON only when asked for the final answer.
             """.trim();
     
+    private static final String RESOURCE_LIST_BRIDGE_NAME = "mcp_list_resources";
+    
     private static final String RESOURCE_READ_BRIDGE_NAME = "mcp_read_resource";
     
     List<LLMUsabilityScenario> createMinimalBaseline(final String runtimeKind, final String databaseName, final String schemaName,
@@ -65,14 +67,14 @@ final class LLMUsabilityScenarioCatalog {
                         List.of("search_metadata", "execute_query"),
                         List.of("search_metadata", "execute_query")),
                 List.of("search_metadata"), List.of(), false, false));
-        result.add(createScenario("tool-search-metadata-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
-                new LLME2EScenario("tool-search-metadata-" + runtimeKind, SYSTEM_PROMPT,
-                        "Use search_metadata first to locate the orders table in " + databaseName + "." + schemaName
-                                + ", then read `" + tableResourceUri + "` and verify `" + query + "`.",
+        result.add(createScenario("resource-list-discovery-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
+                new LLME2EScenario("resource-list-discovery-" + runtimeKind, SYSTEM_PROMPT,
+                        "First call " + RESOURCE_LIST_BRIDGE_NAME + " to discover the available metadata resources. "
+                                + "Then read `" + tableResourceUri + "` and verify `" + query + "`.",
                         new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
-                        List.of("search_metadata", RESOURCE_READ_BRIDGE_NAME, "execute_query"),
-                        List.of("search_metadata", RESOURCE_READ_BRIDGE_NAME, "execute_query")),
-                List.of("search_metadata"), List.of(), false, false));
+                        List.of(RESOURCE_LIST_BRIDGE_NAME, RESOURCE_READ_BRIDGE_NAME, "execute_query"),
+                        List.of(RESOURCE_LIST_BRIDGE_NAME, RESOURCE_READ_BRIDGE_NAME, "execute_query")),
+                List.of(RESOURCE_LIST_BRIDGE_NAME), List.of(tableResourceUri), true, false));
         result.add(createScenario("recovery-missing-database-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
                 new LLME2EScenario("recovery-missing-database-" + runtimeKind, SYSTEM_PROMPT,
                         "First call search_metadata with only schema `" + schemaName + "` and query `" + tableName + "`. "

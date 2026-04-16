@@ -107,9 +107,9 @@ public final class MySQLRuntimeTestSupport {
         container.start();
         initializeDatabase(container);
         String schemaName = detectSchema(container);
-        String actualSchemaName = schemaName.isEmpty() ? DATABASE_NAME : schemaName;
-        int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, actualSchemaName));
-        return new LLMMySQLRuntimeFixture(container, actualSchemaName, totalOrders, createRuntimeDatabases(container, logicalDatabase));
+        String physicalSchemaName = schemaName.isEmpty() ? DATABASE_NAME : schemaName;
+        int totalOrders = querySingleInt(container, String.format(COUNT_ORDERS_SQL, physicalSchemaName));
+        return new LLMMySQLRuntimeFixture(container, logicalDatabase, totalOrders, createRuntimeDatabases(container, logicalDatabase));
     }
     
     /**
@@ -167,6 +167,24 @@ public final class MySQLRuntimeTestSupport {
                 ResultSet resultSet = statement.executeQuery(sql)) {
             resultSet.next();
             return resultSet.getInt(1);
+        }
+    }
+    
+    /**
+     * Query one single string value.
+     *
+     * @param container running container
+     * @param sql SQL
+     * @return queried value
+     * @throws SQLException SQL exception
+     */
+    public static String querySingleString(final GenericContainer<?> container, final String sql) throws SQLException {
+        try (
+                Connection connection = getConnection(container);
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(sql)) {
+            resultSet.next();
+            return resultSet.getString(1);
         }
     }
     

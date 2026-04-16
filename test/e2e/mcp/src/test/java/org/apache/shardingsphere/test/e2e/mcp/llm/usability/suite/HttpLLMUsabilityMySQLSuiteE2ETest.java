@@ -64,7 +64,7 @@ class HttpLLMUsabilityMySQLSuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     
     @Test
     void assertMinimalBaseline() throws IOException {
-        assertAdvisoryUsabilitySuite("minimal-usability-mysql",
+        assertUsabilitySuite("minimal-usability-mysql",
                 () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("mysql", "logic_db", runtimeFixture.getSchemaName(),
                         "orders", COUNT_ORDERS_SQL, runtimeFixture.getTotalOrders()));
     }

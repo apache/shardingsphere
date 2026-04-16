@@ -36,17 +36,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
-
+    
     private static final String LOGIC_DATABASE_NAME = "logic_db";
-
+    
     private static final String ANALYTICS_DATABASE_NAME = "analytics_db";
-
+    
     private static final String H2_DRIVER_CLASS_NAME = "org.h2.Driver";
-
+    
     private String firstJdbcUrl;
-
+    
     private String secondJdbcUrl;
-
+    
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
@@ -58,12 +58,12 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
             throw new IOException(ex);
         }
     }
-
+    
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return createRuntimeDatabases("H2", "H2");
     }
-
+    
     @Test
     void assertListDatabasesWithMultipleRuntimeDatabases() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -71,7 +71,7 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
             assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems(LOGIC_DATABASE_NAME, ANALYTICS_DATABASE_NAME));
         }
     }
-
+    
     @Test
     void assertRefreshMetadataVisibleForSubsequentClientSessionsInTargetDatabaseOnly() throws IOException, InterruptedException {
         try (MCPInteractionClient firstInteractionClient = createOpenedInteractionClient()) {
@@ -88,7 +88,7 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
             }
         }
     }
-
+    
     @Test
     void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -100,29 +100,29 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
             assertFalse(Boolean.parseBoolean(String.valueOf(actual.get("ok"))));
         }
     }
-
+    
     @Test
     void assertRejectMismatchedDatabaseType() {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> openAndCloseInteractionClient("MySQL", "H2"));
         assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
-
+    
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String firstDatabaseType, final String secondDatabaseType) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(2, 1F);
         result.put(LOGIC_DATABASE_NAME, createRuntimeDatabaseConfiguration(firstDatabaseType, firstJdbcUrl));
         result.put(ANALYTICS_DATABASE_NAME, createRuntimeDatabaseConfiguration(secondDatabaseType, secondJdbcUrl));
         return result;
     }
-
+    
     private List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
         return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/public/tables", databaseName)))
                 .stream().map(each -> String.valueOf(each.get("table"))).toList();
     }
-
+    
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl) {
         return new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", H2_DRIVER_CLASS_NAME);
     }
-
+    
     private void openAndCloseInteractionClient(final String firstDatabaseType, final String secondDatabaseType) {
         ensureRuntimeDatabasesPrepared();
         try {
@@ -132,7 +132,7 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
             throw new IllegalStateException(ex);
         }
     }
-
+    
     private void ensureRuntimeDatabasesPrepared() {
         if (null != firstJdbcUrl && null != secondJdbcUrl) {
             return;

@@ -72,18 +72,34 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
-                .header("MCP-Session-Id", sessionId)
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
-                        "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"))))
-                .build();
-        HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId));
         assertThat(actual.statusCode(), is(400));
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("MCP-Protocol-Version header is required."));
     }
     
+    @Test
+    void assertRejectFollowUpRequestWithMissingSession() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        initializeSession(httpClient);
+        HttpResponse<String> actual = sendCapabilitiesRequest(httpClient,
+                Map.of("MCP-Session-Id", "missing-session", "MCP-Protocol-Version", getProtocolVersion()));
+        assertThat(actual.statusCode(), is(404));
+        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session does not exist."));
+    }
+    
     private Map<String, Object> parseJsonBody(final String responseBody) {
         return MCPInteractionPayloads.parseJsonPayload(responseBody);
+    }
+    
+    private HttpResponse<String> sendCapabilitiesRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
+        HttpRequest.Builder requestBuilder = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri());
+        headers.forEach(requestBuilder::header);
+        HttpRequest request = requestBuilder
+                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                        "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"))))
+                .build();
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
     
     @SuppressWarnings("unchecked")

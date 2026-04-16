@@ -52,16 +52,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 abstract class AbstractHttpProgrammaticRuntimeE2ETest {
-
+    
     private static final String CLIENT_NAME = "mcp-e2e-programmatic";
-
+    
     private static final String ENDPOINT_PATH = "/gateway";
-
+    
     @TempDir
     private Path tempDir;
-
+    
     private StreamableHttpMCPServer httpServer;
-
+    
     @AfterEach
     void tearDown() {
         if (null != httpServer) {
@@ -69,7 +69,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
             httpServer = null;
         }
     }
-
+    
     protected final void launchHttpTransport() {
         MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
@@ -89,7 +89,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         }
         this.httpServer = httpServer;
     }
-
+    
     private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
         Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
         databaseMetadataMap.put("logic_db", createLogicDatabaseMetadata());
@@ -97,7 +97,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         databaseMetadataMap.put("warehouse", createWarehouseDatabaseMetadata());
         return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
-
+    
     private MCPDatabaseMetadata createLogicDatabaseMetadata() {
         return new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
                 new MCPSchemaMetadata("logic_db", "public", List.of(
@@ -110,7 +110,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
                         List.of(new MCPViewMetadata("logic_db", "public", "active_orders",
                                 List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id")))))));
     }
-
+    
     private MCPDatabaseMetadata createAnalyticsDatabaseMetadata() {
         return new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
                 new MCPSchemaMetadata("analytics_db", "public", List.of(
@@ -118,31 +118,32 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
                                 new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
                         List.of(), List.of(new MCPSequenceMetadata("analytics_db", "public", "metric_seq")))));
     }
-
+    
     private MCPDatabaseMetadata createWarehouseDatabaseMetadata() {
         return new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
                 new MCPSchemaMetadata("warehouse", "warehouse", List.of(
                         new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(
-                                new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())), List.of())));
+                                new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
+                        List.of())));
     }
-
+    
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
         HttpResponse<String> actual = sendInitializeRequest(httpClient);
         assertThat(actual.statusCode(), is(200));
         return actual.headers().firstValue("MCP-Session-Id").orElseThrow();
     }
-
+    
     protected final HttpResponse<String> sendInitializeRequest(final HttpClient httpClient) throws IOException, InterruptedException {
         return sendInitializeRequest(httpClient, MCPHttpTransportTestSupport.createInitializeRequestParams(CLIENT_NAME));
     }
-
+    
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
         HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
                 .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody("init-1", "initialize", initializeRequestParams)))
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
+    
     protected final HttpResponse<String> sendToolCallRequest(final HttpClient httpClient, final String sessionId,
                                                              final String toolName, final Map<String, Object> arguments) throws IOException, InterruptedException {
         HttpRequest request = createJsonRequestBuilder(sessionId)
@@ -151,7 +152,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
+    
     protected final HttpResponse<String> sendResourceReadRequest(final HttpClient httpClient, final String sessionId,
                                                                  final String resourceUri) throws IOException, InterruptedException {
         HttpRequest request = createJsonRequestBuilder(sessionId)
@@ -160,30 +161,30 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
+    
     protected final Map<String, Object> getStructuredContent(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
         return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getStructuredContent(payload);
     }
-
+    
     protected final Map<String, Object> getFirstResourcePayload(final String responseBody) {
         Map<String, Object> payload = MCPInteractionPayloads.parseJsonPayload(responseBody);
         return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
-
+    
     private HttpRequest.Builder createJsonRequestBuilder(final String sessionId) {
         return MCPHttpTransportTestSupport.createSessionRequestBuilder(getEndpointUri(), sessionId, getProtocolVersion());
     }
-
+    
     protected final URI getEndpointUri() {
         int localPort = httpServer.getLocalPort();
         return URI.create(String.format("http://127.0.0.1:%d%s", localPort, ENDPOINT_PATH));
     }
-
+    
     protected final String getProtocolVersion() {
         return MCPHttpTransportTestSupport.PROTOCOL_VERSION;
     }
-
+    
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(3, 1F);
         result.put("logic_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-logic", "public"));
@@ -191,13 +192,13 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         result.put("warehouse", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-warehouse", "warehouse"));
         return result;
     }
-
+    
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String defaultSchema) {
         String jdbcUrl = String.format("%s;INIT=CREATE SCHEMA IF NOT EXISTS %s\\;SET SCHEMA %s",
                 H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName, RuntimeTransport.HTTP), defaultSchema, defaultSchema);
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
-
+    
     private void initializeRuntimeDatabases(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws SQLException {
         H2RuntimeTestSupport.initializeDatabase(runtimeDatabases.get("logic_db").getJdbcUrl());
         H2RuntimeTestSupport.executeStatements(runtimeDatabases.get("analytics_db").getJdbcUrl(),

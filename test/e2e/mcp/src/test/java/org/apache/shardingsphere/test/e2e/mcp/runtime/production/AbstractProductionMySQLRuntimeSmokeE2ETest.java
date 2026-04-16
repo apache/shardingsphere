@@ -27,6 +27,7 @@ import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -34,7 +35,13 @@ import static org.hamcrest.Matchers.is;
 
 abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     
+    private static final String LOGICAL_DATABASE_NAME = "logic_db";
+    
+    private static final String PHYSICAL_DATABASE_NAME = "orders";
+    
     private GenericContainer<?> container;
+    
+    private String physicalSchemaName;
     
     @AfterEach
     void tearDownContainer() {
@@ -42,6 +49,7 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
             container.stop();
             container = null;
         }
+        physicalSchemaName = null;
     }
     
     @Override
@@ -51,6 +59,8 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         container.start();
         try {
             MySQLRuntimeTestSupport.initializeDatabase(container);
+            String detectedSchemaName = MySQLRuntimeTestSupport.detectSchema(container);
+            physicalSchemaName = detectedSchemaName.isEmpty() ? PHYSICAL_DATABASE_NAME : detectedSchemaName;
         } catch (final SQLException ex) {
             throw new IOException(ex);
         }
@@ -58,7 +68,7 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return MySQLRuntimeTestSupport.createRuntimeDatabases(container, "logic_db");
+        return MySQLRuntimeTestSupport.createRuntimeDatabases(container, LOGICAL_DATABASE_NAME);
     }
     
     @Test
@@ -66,5 +76,73 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertThat(String.valueOf(interactionClient.readResource("shardingsphere://databases/logic_db/capabilities").get("databaseType")), is("MySQL"));
         }
+    }
+    
+    @Test
+    void assertReadTableDetailWithActualMySQLBackend() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
+                    String.format("shardingsphere://databases/%s/schemas/%s/tables/orders", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
+            assertThat(items.size(), is(1));
+            Map<String, Object> actualItem = items.get(0);
+            assertThat(String.valueOf(actualItem.get("table")), is("orders"));
+            assertThat(getNestedNames(actualItem, "columns", "column"), is(List.of("amount", "order_id", "status")));
+        }
+    }
+    
+    @Test
+    void assertSearchMetadataTablesAndViewsWithActualMySQLBackend() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            List<Map<String, Object>> items = getPayloadItems(interactionClient.call("search_metadata",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order", "object_types", List.of("TABLE", "VIEW"))));
+            assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders", "active_orders")));
+        }
+    }
+    
+    @Test
+    void assertExecuteSelectWithActualMySQLBackend() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.call("execute_query",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
+            assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
+        }
+    }
+    
+    @Test
+    void assertExecuteUpdateWithActualMySQLBackend() throws SQLException, IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.call("execute_query",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+            assertThat(String.valueOf(actual.get("result_kind")), is("update_count"));
+            assertThat(String.valueOf(actual.get("affected_rows")), is("1"));
+            assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("PENDING"));
+        }
+    }
+    
+    @Test
+    void assertRejectSequenceResourceWithActualMySQLBackend() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.readResource(
+                    String.format("shardingsphere://databases/%s/schemas/%s/sequences", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME));
+            assertThat(String.valueOf(actual.get("error_code")), is("unsupported"));
+            assertThat(String.valueOf(actual.get("message")), is("Sequence resources are not supported for the current database."));
+        }
+    }
+    
+    @Test
+    void assertExecuteRollbackWithActualMySQLBackend() throws SQLException, IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> beginResponse = interactionClient.call("execute_query", Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "BEGIN"));
+            interactionClient.call("execute_query",
+                    Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+            Map<String, Object> rollbackResponse = interactionClient.call("execute_query", Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "ROLLBACK"));
+            assertThat(String.valueOf(beginResponse.get("message")), is("Transaction started."));
+            assertThat(String.valueOf(rollbackResponse.get("message")), is("Transaction rolled back."));
+            assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("NEW"));
+        }
+    }
+    
+    private static List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
+        return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }
 }

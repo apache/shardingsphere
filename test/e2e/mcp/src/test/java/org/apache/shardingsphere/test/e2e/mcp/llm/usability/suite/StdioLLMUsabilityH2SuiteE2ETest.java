@@ -53,7 +53,7 @@ class StdioLLMUsabilityH2SuiteE2ETest extends AbstractLLMUsabilityE2ETest {
     
     @Test
     void assertMinimalBaseline() throws IOException {
-        assertAdvisoryUsabilitySuite("minimal-usability-h2-stdio",
+        assertUsabilitySuite("minimal-usability-h2-stdio",
                 () -> new LLMUsabilityScenarioCatalog().createMinimalBaseline("h2", "logic_db", "public", "orders", COUNT_ORDERS_SQL, runtimeFixture.totalOrders()));
     }
 }

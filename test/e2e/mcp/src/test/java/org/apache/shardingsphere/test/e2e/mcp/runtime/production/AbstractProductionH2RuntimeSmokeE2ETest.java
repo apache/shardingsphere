@@ -32,9 +32,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
-
+    
     private String jdbcUrl;
-
+    
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
@@ -44,12 +44,12 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             throw new IOException(ex);
         }
     }
-
+    
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
-
+    
     @Test
     void assertReadDatabasesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -58,14 +58,14 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(String.valueOf(items.get(0).get("database")), is("logic_db"));
         }
     }
-
+    
     @Test
     void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(List.of("search_metadata", "execute_query")));
         }
     }
-
+    
     @Test
     void assertTableDetailResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -77,7 +77,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(getNestedNames(actualItem, "indexes", "index"), is(List.of("PRIMARY_KEY_C", "idx_orders_status")));
         }
     }
-
+    
     @Test
     void assertReadViewsResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -86,7 +86,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(String.valueOf(items.get(0).get("view")), is("active_orders"));
         }
     }
-
+    
     @Test
     void assertReadIndexesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -94,7 +94,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(items.stream().map(each -> String.valueOf(each.get("index"))).toList(), is(List.of("PRIMARY_KEY_C", "idx_orders_status")));
         }
     }
-
+    
     @Test
     void assertListResources() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -102,7 +102,16 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertTrue(getResources(actual).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
         }
     }
-
+    
+    @Test
+    void assertRejectUnsupportedResourceUri() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            Map<String, Object> actual = interactionClient.readResource("unsupported://resource");
+            assertThat(String.valueOf(actual.get("error_code")), is("json_rpc_error"));
+            assertThat(String.valueOf(actual.get("message")), is("Resource not found"));
+        }
+    }
+    
     @Test
     void assertExecuteSelect() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -111,7 +120,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
         }
     }
-
+    
     @Test
     void assertExecuteUpdate() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -122,7 +131,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
         }
     }
-
+    
     @Test
     void assertReadSequencesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -131,7 +140,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(String.valueOf(items.get(0).get("sequence")), is("order_seq"));
         }
     }
-
+    
     @Test
     void assertSearchSequence() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -141,7 +150,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(String.valueOf(items.get(0).get("name")), is("order_seq"));
         }
     }
-
+    
     @Test
     void assertSearchTableAndViewMetadata() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -150,7 +159,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders", "active_orders")));
         }
     }
-
+    
     @Test
     void assertExecuteSavepointFlow() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -171,7 +180,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
         }
     }
-
+    
     @Test
     void assertCloseRollsBackPendingTransaction() throws SQLException, IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -181,7 +190,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
         }
     }
-
+    
     private static List<String> getNestedNames(final Map<String, Object> item, final String nestedKey, final String nameKey) {
         return ((List<?>) item.get(nestedKey)).stream().map(each -> String.valueOf(((Map<?, ?>) each).get(nameKey))).toList();
     }
