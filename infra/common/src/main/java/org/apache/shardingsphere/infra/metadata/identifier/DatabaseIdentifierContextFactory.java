@@ -116,10 +116,6 @@ public final class DatabaseIdentifierContextFactory {
     
     private static IdentifierCaseRuleSet createRuleSet(final DatabaseType protocolType, final ResourceMetaData resourceMetaData, final ConfigurationProperties props) {
         IdentifierCaseRuleResolver resolver = new IdentifierCaseRuleResolver();
-        if (hasMixedIdentifierRuleDatabaseTypes(resourceMetaData)) {
-            IdentifierCaseRuleSet insensitiveRuleSet = IdentifierCaseRuleSets.newInsensitiveRuleSet();
-            return createScopeAwareRuleSet(resolver.resolve(protocolType, props, null), insensitiveRuleSet);
-        }
         DatabaseType resolvedDatabaseType = getIdentifierRuleDatabaseType(resourceMetaData).orElse(protocolType);
         return createScopeAwareRuleSet(resolver.resolve(protocolType, props, null), resolver.resolve(resolvedDatabaseType, props, getFirstDataSource(resourceMetaData)));
     }
@@ -146,19 +142,5 @@ public final class DatabaseIdentifierContextFactory {
             storageDatabaseTypes.add(each.getStorageType());
         }
         return storageDatabaseTypes.stream().findFirst();
-    }
-    
-    private static boolean hasMixedIdentifierRuleDatabaseTypes(final ResourceMetaData resourceMetaData) {
-        if (null == resourceMetaData || null == resourceMetaData.getStorageUnits() || resourceMetaData.getStorageUnits().isEmpty()) {
-            return false;
-        }
-        Collection<DatabaseType> storageDatabaseTypes = new LinkedHashSet<>(resourceMetaData.getStorageUnits().size(), 1F);
-        for (StorageUnit each : resourceMetaData.getStorageUnits().values()) {
-            storageDatabaseTypes.add(each.getStorageType());
-            if (1 < storageDatabaseTypes.size()) {
-                return true;
-            }
-        }
-        return false;
     }
 }
