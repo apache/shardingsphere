@@ -78,8 +78,12 @@ jobs:
           exit 1
       - name: Pull qwen3:1.7b
         run: docker exec "${OLLAMA_CONTAINER_NAME}" ollama pull qwen3:1.7b
+      - name: Build MCP E2E Test Dependencies
+        run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+      - name: Verify MCP LLM Usability Selector
+        run: test -f test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java
       - name: Run MCP LLM Usability Suite
-        run: ./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true '-Dtest=*LLMUsabilityH2SuiteE2ETest,*LLMUsabilityMySQLSuiteE2ETest' -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+        run: ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true -Dtest=LLMUsabilitySuiteE2ETest -Dsurefire.failIfNoSpecifiedTests=true -B -ntp
       - name: Collect Ollama Logs
         if: always()
         shell: bash

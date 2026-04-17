@@ -294,6 +294,12 @@ docker run --rm -p 18088:18088 \
   - runtime 覆盖：file-backed H2 runtime，加上一条 Testcontainers 拉起的 MySQL runtime
   - runtime 形态：测试会在进程内拉起 production bootstrap HTTP 和 STDIO runtime
   - 最终判定：结构化 JSON 和 MCP tool trace
+- 在做定向本地复现前，先把模块依赖装到本地仓库一次：
+
+```bash
+./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+```
+
 - 本地复现这条 LLM smoke：
 
 ```bash
@@ -302,9 +308,20 @@ docker exec ollama-mcp-llm-e2e ollama pull qwen3:1.7b
 MCP_LLM_E2E_ENABLED=true \
 MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
 MCP_LLM_MODEL=qwen3:1.7b \
-./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true \
-  '-Dtest=*ProductionLLMH2SmokeE2ETest,*ProductionLLMMySQLSmokeE2ETest' \
-  -Dsurefire.failIfNoSpecifiedTests=false
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMSmokeE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=true
+```
+
+- LLM usability 这条 lane 可以复用同一个 Ollama 进程：
+
+```bash
+MCP_LLM_E2E_ENABLED=true \
+MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
+MCP_LLM_MODEL=qwen3:1.7b \
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMUsabilitySuiteE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
 - LLM smoke 的 artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。

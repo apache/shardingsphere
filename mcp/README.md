@@ -294,6 +294,12 @@ Notes:
   - runtime coverage: file-backed H2 runtime plus a Testcontainers MySQL runtime
   - runtime shape: the tests launch the production bootstrap runtime in-process over HTTP and STDIO
   - final assertion: structured JSON plus MCP tool trace
+- Prepare the module dependencies once before targeted local reproduction:
+
+```bash
+./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+```
+
 - Local reproduction for the LLM smoke lane:
 
 ```bash
@@ -302,9 +308,20 @@ docker exec ollama-mcp-llm-e2e ollama pull qwen3:1.7b
 MCP_LLM_E2E_ENABLED=true \
 MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
 MCP_LLM_MODEL=qwen3:1.7b \
-./mvnw -pl test/e2e/mcp -am test -DskipITs -Dspotless.skip=true \
-  '-Dtest=*ProductionLLMH2SmokeE2ETest,*ProductionLLMMySQLSmokeE2ETest' \
-  -Dsurefire.failIfNoSpecifiedTests=false
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMSmokeE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=true
+```
+
+- Local reproduction for the LLM usability lane uses the same Ollama process:
+
+```bash
+MCP_LLM_E2E_ENABLED=true \
+MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
+MCP_LLM_MODEL=qwen3:1.7b \
+./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+  -Dtest=LLMUsabilitySuiteE2ETest \
+  -Dsurefire.failIfNoSpecifiedTests=true
 ```
 
 - The LLM smoke artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
