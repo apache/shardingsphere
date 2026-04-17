@@ -177,6 +177,11 @@
 - `alter`
 - `drop`
 
+V1 约束：
+
+- `encrypt` 仅允许 `create` / `alter`
+- `mask` 允许 `create` / `alter` / `drop`
+
 ### 3.3 DeliveryMode
 
 - `all-at-once`
@@ -262,3 +267,4 @@
 
 V1 不要求审计落库，也不要求持久化保存工作流状态。
 因此上述对象默认是一次会话内的运行态模型，而不是新引入的持久化表结构。
+对一步一步模式，建议以 `sessionId + planId` 维持服务端上下文快照。

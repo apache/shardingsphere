@@ -164,19 +164,64 @@
   - 只提示文本建议，不生成索引工件。
   - 否决原因：对 review-first 和 manual-only 两种模式不够实用。
 
-## R12. 删除流程支持“仅删规则”与“规则 + 可选物理清理”两种路径
+## R12. V1 删除生命周期仅覆盖 `mask drop`
 
 - **结论**
-  - `drop` 必须支持，但不强制清理物理列与索引。
-  - 若用户选择清理物理对象，则同样走审批模式。
+  - V1 的删除生命周期仅覆盖 `mask drop`。
+  - `mask drop` 采用 rule-only 删除路径，不引入物理清理分支。
+  - `encrypt drop` 延后到后续版本。
 - **依据**
-  - 用户明确要求支持新建、修改、删除。
-  - 用户确认 DDL 可自动生成并执行，但必须让用户选择。
+  - 用户最新确认 `encrypt drop` 先不做。
+  - `mask` 在 V1 中本就采用 rule-first 路径，不依赖物理 DDL。
 - **为什么这样定**
-  - 规则删除和物理清理是两个风险等级不同的动作，应该解耦。
+  - 这样能把删除语义收敛在低风险、可验证的范围内。
+  - 也避免在没有历史数据处理和回滚能力的前提下提前承诺 encrypt drop。
 - **备选方案**
-  - 删除规则时一律删物理列。
-  - 否决原因：风险过高，且不符合显式控制原则。
+  - 继续支持 encrypt drop。
+  - 否决原因：当前版本既不做历史数据处理，也不做回滚，风险边界不清晰。
+
+## R13. `SHOW ... ALGORITHM PLUGINS` 只适合作为发现入口，不足以单独完成 encrypt 能力推荐
+
+- **结论**
+  - `SHOW ENCRYPT ALGORITHM PLUGINS` / `SHOW MASK ALGORITHM PLUGINS` 适合作为推荐池发现入口。
+  - 对 encrypt 来说，最终能力判断还需要补充 SPI 元数据或实例探测。
+- **依据**
+  - `ShowPluginsExecutor.java` 当前只返回 `type`、`type_aliases`、`description` 以及少数场景下的 `supported_database_types`。
+  - `PluginMetaDataQueryResultRow.java` 的行构建也只覆盖类型、别名、数据库范围和描述。
+  - 但 `EncryptAlgorithmMetaData` 实际上还定义了 `supportDecrypt`、`supportEquivalentFilter`、`supportLike` 三个能力位。
+- **为什么这样定**
+  - 只靠 plugin 列表，无法直接知道某个 encrypt 算法能否满足“可解密 / 等值查询 / 模糊查询”。
+- **备选方案**
+  - 仅基于 `show plugins` 结果做最终推荐。
+  - 否决原因：缺少关键能力位，推荐结果不可靠。
+
+## R14. 算法参数采集应采用“先选算法，再采参数”的两段式模型
+
+- **结论**
+  - 先完成算法族推荐与选择，再采集算法参数。
+  - 参数分为 `required`、`optional`、`secret` 三类。
+  - `secret` 参数保存在会话上下文中，review 时打码。
+- **依据**
+  - 内置 encrypt 与 mask 算法都存在稳定的属性键模式，但 SPI 公共层并没有统一的参数 schema 自描述。
+- **为什么这样定**
+  - 这能兼顾操作简洁性和敏感信息保护。
+- **备选方案**
+  - 让用户在自然语言阶段一次性给全量参数。
+  - 否决原因：体验差，也更容易泄露敏感值。
+
+## R15. 运行拓扑必须显式收敛到 Proxy 逻辑视角
+
+- **结论**
+  - 后续实现必须以“连接 Proxy、按 Proxy 逻辑视角执行和校验”为准。
+- **依据**
+  - 用户已明确确认 MCP 最终连的是 Proxy。
+  - 用户已明确确认逻辑元数据验证基于 Proxy。
+  - 当前 `mcp/core` 里的 SQL 执行和元数据装载仍然是 JDBC 直连范式。
+- **为什么这样定**
+  - 否则规格中的“逻辑视图”“规则验证”“Proxy 已安装 SPI 算法池”都可能和实际运行态脱节。
+- **备选方案**
+  - 延续现有 JDBC 直连物理库范式。
+  - 否决原因：会与这次产品边界直接冲突。
 
 ## 最终设计约束
 
@@ -184,10 +229,13 @@
 - 必须显式 `database`。
 - 必须先给全局步骤清单。
 - 必须支持一起做和一步一步做。
-- 规则生命周期统一支持 create / alter / drop。
+- 一步一步模式的已确认上下文由服务端保存。
+- encrypt 仅支持 create / alter。
+- mask 支持 create / alter / drop。
 - 加密默认可能带物理 DDL，脱敏默认规则优先。
 - 不做历史数据处理。
 - 不做回滚与审计落库。
 - 不自动复用同名物理列。
 - 冲突使用数字后缀。
 - 推荐池覆盖内置算法与当前 Proxy 可见的自定义 SPI 算法。
+- `show plugins` 负责发现，encrypt 能力推荐还要补 SPI 元数据或实例探测。

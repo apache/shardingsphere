@@ -25,10 +25,13 @@ Work is not complete when SQL or DistSQL has been emitted. A completed flow MUST
 ## Product Boundaries
 
 - Scope is limited to ShardingSphere-Proxy.
+- MCP runtime MUST connect to ShardingSphere-Proxy, and logical metadata validation MUST be based on Proxy's logical view.
 - V1 focuses on single database, single table, single column scenarios first.
 - Database context MUST be explicit; the workflow cannot depend on session `USE`.
-- V1 must support create, alter, and drop flows for encrypt and mask rules.
+- V1 must support create and alter flows for encrypt rules.
+- V1 must support create, alter, and drop flows for mask rules.
 - Data migration, historical data backfill, rollback orchestration, and audit persistence are out of scope for V1.
+- Encrypt drop workflows are out of scope for V1.
 
 ## Delivery Standards
 
@@ -41,4 +44,4 @@ Work is not complete when SQL or DistSQL has been emitted. A completed flow MUST
 - Repository-level instructions take precedence over this constitution if conflicts arise.
 - Changes to this constitution MUST preserve Proxy-first scope, explicit operator control, and the V1 no-data-migration boundary unless stakeholders explicitly revise them.
 
-**Version**: 1.0.0 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-04-17
+**Version**: 1.0.1 | **Ratified**: 2026-04-17 | **Last Amended**: 2026-04-17

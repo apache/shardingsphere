@@ -6,6 +6,7 @@
 - Resource 负责“当前状态只读查看”。
 - 规则与算法的真实语义尽量复用现有 DistSQL 能力，不复制一套平行协议。
 - 所有 Tool 都必须显式接收 `database`。
+- 所有 Tool 都运行在连接 Proxy 的 MCP 拓扑上。
 
 ## 2. Resource Contracts
 
@@ -59,6 +60,7 @@
 **用途**
 
 - 返回当前 Proxy 可见的加密算法插件列表。
+- 这是 MCP 富化后的算法视图，不等同于原始 `SHOW ENCRYPT ALGORITHM PLUGINS` 结果集。
 
 **最小返回字段**
 
@@ -75,6 +77,7 @@
 **用途**
 
 - 返回当前 Proxy 可见的脱敏算法插件列表。
+- 这是 MCP 富化后的算法视图，不等同于原始 `SHOW MASK ALGORITHM PLUGINS` 结果集。
 
 **最小返回字段**
 
@@ -135,6 +138,8 @@
 - 缺失关键信息时必须返回 `pending_questions`，不能直接产出可执行工件。
 - 必须先返回 `global_steps`。
 - 必须把最终命名方案回传给用户。
+- `encrypt` 在 V1 仅允许 `create` / `alter`。
+- `mask` 在 V1 允许 `create` / `alter` / `drop`。
 
 ## 3.2 `apply_encrypt_mask_rule`
 
@@ -174,6 +179,7 @@
 - `manual-only` 模式下不得自动执行任何工件。
 - 每一步必须返回可读进度。
 - 当某一步失败时必须给出已完成、未完成和建议后续动作。
+- `encrypt drop` 请求在 V1 中必须被明确拒绝或标记为 deferred。
 
 ## 3.3 `validate_encrypt_mask_rule`
 
@@ -217,6 +223,7 @@
 - 不要求做数据正确性验证。
 - 不要求做历史数据迁移校验。
 - 必须明确区分 `passed`、`failed`、`skipped`。
+- 逻辑元数据校验必须基于 Proxy 逻辑视图。
 
 ## 4. 推荐的 Tool 与 Resource 分工
 

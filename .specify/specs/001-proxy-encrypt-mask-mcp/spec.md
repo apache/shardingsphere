@@ -10,17 +10,21 @@
 ### Session 2026-04-17
 
 - Scope is limited to `ShardingSphere-Proxy`.
+- MCP runtime connects to `ShardingSphere-Proxy` rather than directly to underlying physical storage.
 - V1 delivers encryption and masking together rather than staging masking into a later release.
 - The user-facing model is always a logical view. Before encryption, logical view may equal physical view; after encryption, logical view remains primary and may differ from physical storage.
+- Logical metadata validation is based on Proxy's logical view rather than direct physical metadata scanning.
 - Every run MUST start with a global step list for confirmation.
 - The workflow MUST support two execution styles: do everything in one guided flow, or advance one step at a time.
+- Step-by-step mode should remain simple for operators; confirmed workflow context is retained server-side rather than requiring users to resend it every turn.
 - Default derived physical column names are `*_cipher`, `*_assisted_query`, and `*_like_query`.
 - Algorithm recommendation MUST come from natural language intent plus follow-up questions; if critical inputs are missing, the system MUST keep asking.
 - Sample data is optional and should only be used after user approval when metadata and naming are insufficient.
 - Rule resources and algorithm resources should be queryable from MCP.
 - Rollback is not required in V1.
 - Audit persistence is not required in V1.
-- V1 supports create, alter, and drop flows for both encrypt and mask rules.
+- V1 supports create and alter flows for encrypt rules.
+- V1 supports create, alter, and drop flows for mask rules.
 - Physical DDL generation is allowed, but execution mode is operator-selected:
   - auto-generate and auto-execute,
   - auto-generate, review, then AI executes after approval,
@@ -30,10 +34,12 @@
 - Existing physical columns are not automatically reused; the default strategy is to generate a new set and resolve conflicts safely.
 - If generated names conflict, the system should auto-rename using numeric suffixes and return the final names to the user.
 - Recommendation should include built-in algorithms and currently installed custom SPI algorithms available in Proxy.
+- `SHOW ... ALGORITHM PLUGINS` is the discovery baseline, but encrypt capability recommendation may be enriched by SPI metadata and instance probing because plugin rows do not expose decrypt/equality/like capability flags.
+- Secret algorithm properties should be collected after algorithm selection, retained in session context, and masked in review output.
 - The workflow should generate index recommendations or DDL when derived query-supporting columns need them.
 - Validation must cover DDL, rules, logical metadata, and SQL executability.
-- Drop flows default to rule-only removal; physical column or index cleanup is optional and requires explicit operator selection.
 - Mask workflows are rule-first in V1 and do not require physical DDL unless the approved plan explicitly includes it.
+- Encrypt drop workflows are deferred and not included in V1.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -59,7 +65,7 @@ As a database operator, I want control over whether generated physical DDL is ex
 
 **Why this priority**: DDL and rule changes can affect production-like environments; operator control is mandatory.
 
-**Independent Test**: Run create, alter, and drop requests through each execution mode and verify that the workflow respects the selected mode, shows generated SQL and DistSQL, and never processes data migration.
+**Independent Test**: Run encrypt create/alter requests and mask create/alter/drop requests through each execution mode and verify that the workflow respects the selected mode, shows generated SQL and DistSQL, and never processes data migration.
 
 **Acceptance Scenarios**:
 
@@ -67,8 +73,8 @@ As a database operator, I want control over whether generated physical DDL is ex
 2. **Given** the same request, **When** the operator selects review-first mode, **Then** the workflow displays the generated SQL and DistSQL for review and only executes after explicit approval.
 3. **Given** the same request, **When** the operator selects manual mode, **Then** the workflow generates SQL and DistSQL, stops before execution, and returns what the operator must run manually.
 4. **Given** a V1 workflow, **When** schema and rules are applied, **Then** no existing data is backfilled, migrated, or transformed automatically.
-5. **Given** an existing encrypt or mask rule, **When** the operator requests modification or deletion, **Then** the workflow generates the appropriate DistSQL, follows the selected execution mode, and reports the lifecycle action explicitly.
-6. **Given** a drop request, **When** the operator has not explicitly approved physical cleanup, **Then** the workflow removes the rule only and leaves physical columns or indexes untouched.
+5. **Given** an existing encrypt rule, **When** the operator requests modification, **Then** the workflow generates the appropriate DistSQL, follows the selected execution mode, and reports the lifecycle action explicitly.
+6. **Given** an existing mask rule, **When** the operator requests modification or deletion, **Then** the workflow generates the appropriate DistSQL, follows the selected execution mode, and reports the lifecycle action explicitly.
 
 ---
 
@@ -128,17 +134,20 @@ As a database operator, I want the workflow to generate index recommendations or
 - What happens when default derived names collide with multiple existing physical objects?
 - What happens when generated names must avoid existing columns that appear reusable but are intentionally not reused?
 - What happens when the chosen algorithm does not support the required decrypt, equality-filter, or like-query capability?
+- What happens when a custom encrypt SPI algorithm is discoverable from plugins but capability probing is incomplete or unavailable?
 - What happens when the operator chooses manual DDL mode but expects the workflow to continue with automatic validation?
 - What happens when metadata is ambiguous and the operator refuses sample data access?
 - What happens when storage units or physical DDL permissions are unavailable?
-- What happens when the request is a rule deletion that does not require DDL but still requires validation and summary?
+- What happens when the request is a mask-rule deletion that does not require DDL but still requires validation and summary?
 - What happens when index creation is recommended but the operator declines index DDL execution?
+- What happens when the user requests encrypt-rule deletion in V1 even though that lifecycle action is deferred?
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
 - **FR-001**: The system MUST only target ShardingSphere-Proxy in V1.
+- **FR-001A**: The system MUST execute workflow planning, rule inspection, rule application, and validation against ShardingSphere-Proxy rather than directly against underlying physical storage.
 - **FR-002**: The system MUST require explicit logical database context before planning or execution.
 - **FR-003**: The system MUST present a logical view to the operator before and after encryption changes.
 - **FR-004**: The system MUST support both encryption intents and masking intents from natural language input.
@@ -153,6 +162,7 @@ As a database operator, I want the workflow to generate index recommendations or
 - **FR-013**: The system MUST expose available encrypt algorithm plugins, including installed custom SPI implementations visible to Proxy.
 - **FR-014**: The system MUST expose available mask algorithm plugins, including installed custom SPI implementations visible to Proxy.
 - **FR-015**: The system MUST use built-in and currently installed custom SPI algorithms as the recommendation pool for encrypt and mask planning.
+- **FR-015A**: The system MUST treat `SHOW ... ALGORITHM PLUGINS` as the discovery baseline and MUST allow encrypt capability recommendation to be enriched by SPI metadata or instance probing when available.
 - **FR-016**: The system MUST default derived physical column names to `*_cipher`, `*_assisted_query`, and `*_like_query`.
 - **FR-017**: The system MUST NOT automatically reuse pre-existing physical columns merely because they match generated naming patterns.
 - **FR-018**: The system MUST auto-resolve naming conflicts with numeric suffixes and MUST report the final names back to the operator.
@@ -161,14 +171,15 @@ As a database operator, I want the workflow to generate index recommendations or
 - **FR-021**: The system MUST support three DDL execution modes: auto-execute, review-then-execute, and manual-only.
 - **FR-022**: The system MUST preview generated SQL and DistSQL before execution in any mode that includes operator review.
 - **FR-023**: The system MUST allow rule-only workflows when no physical DDL is needed.
-- **FR-024**: The system MUST support create, alter, and drop flows for encrypt and mask rules after operator confirmation.
+- **FR-024**: The system MUST support create and alter flows for encrypt rules after operator confirmation.
+- **FR-024A**: The system MUST support create, alter, and drop flows for mask rules after operator confirmation.
 - **FR-025**: The system MUST NOT backfill, migrate, or transform existing data in V1.
 - **FR-026**: The system MUST NOT require rollback support in V1.
 - **FR-027**: The system MUST NOT require audit persistence in V1.
 - **FR-028**: The system MUST report progress at each step during guided execution.
 - **FR-029**: The system MUST validate physical DDL state after execution when DDL is in scope.
 - **FR-030**: The system MUST validate rule state after execution.
-- **FR-031**: The system MUST validate logical metadata state after execution.
+- **FR-031**: The system MUST validate logical metadata state after execution based on Proxy's logical view.
 - **FR-032**: The system MUST validate SQL executability from the logical view without requiring migrated data or result-correctness checks against real payloads.
 - **FR-033**: The system MUST generate index recommendations or index DDL for derived query-supporting columns when appropriate.
 - **FR-034**: The system MUST return an execution summary that includes target objects, algorithms, final generated names, chosen execution mode, executed or generated SQL/DistSQL, index recommendations or index DDL, and validation results.
@@ -177,8 +188,11 @@ As a database operator, I want the workflow to generate index recommendations or
 - **FR-037**: The system MUST allow the operator to review and override proposed names before execution where such override is compatible with safety checks.
 - **FR-038**: The system MUST surface rule or algorithm conflicts explicitly instead of silently falling back to unsupported behavior.
 - **FR-039**: The system MUST keep the logical column as the primary user-facing identifier even when physical derived columns are introduced.
-- **FR-040**: The system MUST support rule-only deletion for encrypt and mask drop flows, and MUST only generate physical cleanup DDL when the operator explicitly chooses that path.
+- **FR-040**: The system MUST support rule-only deletion for mask drop flows in V1.
 - **FR-041**: The system MUST allow mask workflows to complete without physical DDL when the approved plan is rule-only.
+- **FR-042**: The system MUST retain confirmed workflow context server-side for step-by-step mode so operators do not need to resend previously confirmed inputs each turn.
+- **FR-043**: The system MUST collect secret algorithm properties after algorithm selection, keep them in runtime context, and mask them in review or summary output.
+- **FR-044**: The system MUST reject or clearly defer encrypt drop requests in V1 instead of silently generating unsupported workflows.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -200,7 +214,7 @@ As a database operator, I want the workflow to generate index recommendations or
 - **SC-004**: In execution-enabled modes, post-run validation covers DDL state, rule state, logical metadata state, and logical-SQL executability.
 - **SC-005**: Every automatic naming conflict resolution returns the final generated names in the operator-visible output.
 - **SC-006**: No V1 workflow performs historical data migration or backfill.
-- **SC-007**: Requests for create, alter, and drop flows can each be planned and executed through the same review-first interaction model.
+- **SC-007**: Encrypt create/alter flows and mask create/alter/drop flows can each be planned and executed through the same review-first interaction model.
 - **SC-008**: Physical derived column definitions always follow ShardingSphere default type strategy rather than MCP-specific type inference.
 
 ## Assumptions
@@ -218,6 +232,6 @@ As a database operator, I want the workflow to generate index recommendations or
 - Historical data migration or backfill.
 - Rollback orchestration.
 - Audit persistence.
+- Encrypt drop workflows.
 - Bulk multi-database or multi-column workflows in a single request.
 - Silent execution without operator awareness of the generated SQL and DistSQL.
-- Implicit physical cleanup during rule deletion without explicit operator approval.

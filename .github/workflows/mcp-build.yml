@@ -86,6 +86,21 @@ jobs:
         run: ./mvnw -pl mcp,test/e2e/mcp -am test -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Package JDK 17 Subchain Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
+      - name: Run MCP Distribution Smoke
+        shell: bash
+        run: |
+          set -euo pipefail
+          DISTRIBUTION_HOME=$(find distribution/mcp/target -maxdepth 1 -type d -name 'apache-shardingsphere-mcp-*' | head -n 1)
+          if [[ -z "${DISTRIBUTION_HOME}" ]]; then
+            echo "Packaged MCP distribution was not found." 1>&2
+            exit 1
+          fi
+          ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
+            -Dtest=PackagedDistributionSmokeE2ETest \
+            -Dsurefire.failIfNoSpecifiedTests=true \
+            -Dmcp.distribution.smoke.enabled=true \
+            -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
+            -B -ntp
       - name: Prepare MCP Registry Metadata
         shell: bash
         run: |

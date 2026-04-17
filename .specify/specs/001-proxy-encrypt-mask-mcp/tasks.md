@@ -34,6 +34,7 @@
 - [ ] T005 [P] 实现插件资源层：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/handler/plugin/EncryptAlgorithmsHandler.java`
   `MaskAlgorithmsHandler.java`
+  并补齐 encrypt 能力位富化
 - [ ] T006 [P] 实现统一的 DistSQL 读取服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/RuleInspectionService.java`
 - [ ] T007 建立工作流请求与计划模型：
@@ -41,6 +42,8 @@
   `ClarifiedIntent.java`
   `InteractionPlan.java`
   `ValidationReport.java`
+- [ ] T007A [P] 建立一步一步模式的服务端上下文存储：
+  `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowContextStore.java`
 - [ ] T008 建立命名、DDL、DistSQL、索引工件模型：
   `DerivedColumnPlan.java`
   `RulePlan.java`
@@ -68,6 +71,9 @@
 
 - [ ] T011 [P] [US1] 实现算法推荐服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/AlgorithmRecommendationService.java`
+  接入 plugin discovery、SPI 元数据与实例探测
+- [ ] T011A [P] [US1] 实现算法参数模板与敏感参数打码服务：
+  `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/AlgorithmPropertyTemplateService.java`
 - [ ] T012 [P] [US1] 实现命名与冲突规避服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/DerivedColumnNamingService.java`
 - [ ] T013 [US1] 实现计划编排服务：
@@ -81,8 +87,8 @@
 
 ## Phase 4: User Story 2 - 按执行模式应用 DDL 与规则生命周期变更 (Priority: P1)
 
-**Goal**: 支持自动执行、审阅后执行、仅生成不执行三种模式，并统一支持 create / alter / drop。
-**Independent Test**: 对 create / alter / drop 分别验证三种执行模式，确保 `manual-only` 不自动执行任何工件。
+**Goal**: 支持自动执行、审阅后执行、仅生成不执行三种模式，并覆盖 encrypt 的 create / alter 与 mask 的 create / alter / drop。
+**Independent Test**: 对 encrypt create / alter 和 mask create / alter / drop 分别验证三种执行模式，确保 `manual-only` 不自动执行任何工件。
 
 ### Tests for User Story 2
 
@@ -100,7 +106,7 @@
 - [ ] T019 [US2] 实现 MCP tool：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/ApplyEncryptMaskRuleToolHandler.java`
 
-**Checkpoint**: create / alter / drop 已可按审批模式执行或仅生成工件。
+**Checkpoint**: encrypt create / alter 与 mask create / alter / drop 已可按审批模式执行或仅生成工件。
 
 ---
 
