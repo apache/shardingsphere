@@ -90,6 +90,13 @@ specs/001-proxy-encrypt-mask-mcp/
 |-- plan.md
 |-- research.md
 |-- data-model.md
+|-- interaction-design.md
+|-- algorithm-parameter-design.md
+|-- validation-matrix.md
+|-- error-codes.md
+|-- conversation-examples.md
+|-- implementation-slices.md
+|-- acceptance-checklist.md
 |-- quickstart.md
 |-- contracts/
 |   `-- mcp-tools.md

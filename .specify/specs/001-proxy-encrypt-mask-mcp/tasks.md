@@ -1,7 +1,7 @@
 # Tasks: ShardingSphere-Proxy Encrypt and Mask MCP V1
 
 **Input**: Design documents from `/.specify/specs/001-proxy-encrypt-mask-mcp/`
-**Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `contracts/mcp-tools.md`
+**Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `interaction-design.md`, `algorithm-parameter-design.md`, `validation-matrix.md`, `error-codes.md`, `conversation-examples.md`, `implementation-slices.md`, `acceptance-checklist.md`, `contracts/mcp-tools.md`
 **Tests**: `mcp/core` 模块单测必需；必要时补充 Proxy 侧集成验证。
 
 ## Format: `[ID] [P?] [Story] Description`
@@ -41,6 +41,8 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/model/workflow/WorkflowRequest.java`
   `ClarifiedIntent.java`
   `InteractionPlan.java`
+  `AlgorithmPropertyRequirement.java`
+  `WorkflowContextSnapshot.java`
   `ValidationReport.java`
 - [ ] T007A [P] 建立一步一步模式的服务端上下文存储：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowContextStore.java`
@@ -52,6 +54,9 @@
 - [ ] T009 实现统一校验与错误语义：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowValidationService.java`
   与对应异常类
+- [ ] T009A [P] 建立统一问题模型与错误码目录：
+  `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/model/workflow/WorkflowIssue.java`
+  `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/model/workflow/WorkflowIssueCode.java`
 
 **Checkpoint**: 已能读取现状、表达计划模型，并具备统一错误与校验骨架。
 
@@ -78,6 +83,7 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/DerivedColumnNamingService.java`
 - [ ] T013 [US1] 实现计划编排服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowPlanningService.java`
+- [ ] T013A [US1] 在 `WorkflowPlanningService.java` 中接入全局步骤清单、追问收敛与参数采集状态推进
 - [ ] T014 [US1] 实现 MCP tool：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/PlanEncryptMaskRuleToolHandler.java`
 
@@ -103,6 +109,7 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/RuleDistSQLPlanningService.java`
 - [ ] T018 [US2] 实现执行编排服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowExecutionService.java`
+- [ ] T018A [US2] 在 `WorkflowExecutionService.java` 中实现 `manual-only` 的 review-safe preview 与可执行工件包分离
 - [ ] T019 [US2] 实现 MCP tool：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/ApplyEncryptMaskRuleToolHandler.java`
 
@@ -149,6 +156,7 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/SQLExecutabilityValidationService.java`
 - [ ] T027 [US4] 实现 MCP tool：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/ValidateEncryptMaskRuleToolHandler.java`
+- [ ] T027A [US4] 统一 `passed` / `failed` / `skipped` 输出与 mismatch 证据结构
 
 **Checkpoint**: 四层验证已形成统一报告。
 
@@ -181,6 +189,7 @@
   `mcp/README.md`
   `mcp/README_ZH.md`
 - [ ] T033 [P] 补充 `mcp/core` 模块内的工具 / 资源契约说明与错误码说明
+- [ ] T033A [P] 基于 `conversation-examples.md` 补充工作流对话验收样例或 e2e 说明
 - [ ] T034 跑通 `./mvnw -pl mcp/core -am test`，修复单测与 Checkstyle 问题
 - [ ] T035 必要时补充 Proxy 端到端验收脚本或文档化验收步骤
 

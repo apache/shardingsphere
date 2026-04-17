@@ -114,10 +114,9 @@ public final class LLMRuntimeFixtureFactory {
      */
     public record Fixture(String schemaName, int totalOrders, Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
                           Runnable closeAction) implements AutoCloseable {
-        
-        @Override
-        public void close() {
-            closeAction.run();
-        }
+    
+    @Override
+    public void close() {
+        closeAction.run();
     }
-}
+}}

@@ -32,7 +32,9 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
@@ -76,6 +78,16 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
     void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(List.of("search_metadata", "execute_query")));
+        }
+    }
+    
+    @Test
+    void assertListTools() throws IOException, InterruptedException {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            List<Map<String, Object>> actual = interactionClient.listTools();
+            assertThat(actual.stream().map(each -> String.valueOf(each.get("name"))).toList(), containsInAnyOrder("search_metadata", "execute_query"));
+            assertToolDefinition(actual, "search_metadata", "Search Metadata", "query", "object_types", "array");
+            assertToolDefinition(actual, "execute_query", "Execute Query", "sql", "timeout_ms", "integer");
         }
     }
     
@@ -212,7 +224,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
                     Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN ANALYZE SELECT * FROM orders ORDER BY order_id", "max_rows", 10));
             assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
             assertThat(String.valueOf(actual.get("statement_type")), is("EXPLAIN ANALYZE"));
-            assertTrue(!((List<?>) actual.get("rows")).isEmpty());
+            assertFalse(((List<?>) actual.get("rows")).isEmpty());
         }
     }
     
@@ -346,5 +358,18 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
             interactionClient.close();
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void assertToolDefinition(final List<Map<String, Object>> tools, final String toolName, final String expectedTitle,
+                                      final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {
+        Map<String, Object> actualTool = tools.stream().filter(each -> toolName.equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
+        assertThat(String.valueOf(actualTool.get("title")), is(expectedTitle));
+        Map<String, Object> actualInputSchema = (Map<String, Object>) actualTool.get("inputSchema");
+        List<String> actualRequiredFields = ((List<?>) actualInputSchema.get("required")).stream().map(String::valueOf).toList();
+        Map<String, Object> actualProperties = (Map<String, Object>) actualInputSchema.get("properties");
+        Map<String, Object> actualProperty = (Map<String, Object>) actualProperties.get(expectedPropertyField);
+        assertTrue(actualRequiredFields.contains(expectedRequiredField));
+        assertThat(String.valueOf(actualProperty.get("type")), is(expectedPropertyType));
     }
 }

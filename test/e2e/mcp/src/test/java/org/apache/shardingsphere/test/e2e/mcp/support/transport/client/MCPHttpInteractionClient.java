@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,6 +74,13 @@ public final class MCPHttpInteractionClient implements MCPInteractionClient {
         ensureOpened();
         HttpResponse<String> response = sendPostRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
         return MCPInteractionPayloads.getStructuredContent(MCPInteractionPayloads.parseJsonPayload(response.body()));
+    }
+    
+    @Override
+    public List<Map<String, Object>> listTools() throws IOException, InterruptedException {
+        ensureOpened();
+        HttpResponse<String> response = sendPostRequest("tools-list-1", "tools/list", Map.of());
+        return MCPInteractionPayloads.castToList(MCPInteractionPayloads.getJsonRpcResult(MCPInteractionPayloads.parseJsonPayload(response.body())).get("tools"));
     }
     
     @Override

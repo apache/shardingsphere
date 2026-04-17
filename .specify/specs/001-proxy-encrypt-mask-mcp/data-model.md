@@ -80,7 +80,18 @@
 - `recommendationReason`
 - `riskNotes`
 
-### 2.5 DerivedColumnPlan
+### 2.5 AlgorithmPropertyRequirement
+
+算法参数模板的统一表示。
+
+- `propertyKey`
+- `required`
+- `secret`
+- `defaultValue`
+- `description`
+- `validationHint`
+
+### 2.6 DerivedColumnPlan
 
 仅在加密场景出现，表示逻辑列到物理派生列的规划结果。
 
@@ -96,7 +107,7 @@
 - `nameCollisions`: 冲突详情
 - `namingSource`: `default` / `user-override` / `auto-renamed`
 
-### 2.6 IndexPlan
+### 2.7 IndexPlan
 
 面向查询型派生列的索引规划。
 
@@ -108,7 +119,7 @@
 - `ddl`
 - `selected`: 用户是否同意纳入执行
 
-### 2.7 RulePlan
+### 2.8 RulePlan
 
 一条将要创建、修改或删除的规则定义。
 
@@ -121,7 +132,7 @@
 - `distSQL`
 - `dependsOnDDL`: 是否依赖物理 DDL 先完成
 
-### 2.8 DDLArtifact
+### 2.9 DDLArtifact
 
 工作流生成的物理 SQL 工件。
 
@@ -133,7 +144,22 @@
 - `executionOrder`
 - `targetObjects`
 
-### 2.9 ValidationReport
+### 2.10 WorkflowContextSnapshot
+
+一步一步模式下保存在服务端的上下文快照。
+
+- `planId`
+- `workflowStatus`
+- `confirmedRequest`
+- `clarifiedIntent`
+- `selectedAlgorithm`
+- `confirmedProperties`
+- `maskedSecretPropertySummary`
+- `derivedColumnPlan`
+- `pendingQuestions`
+- `currentStep`
+
+### 2.11 ValidationReport
 
 工作流完成后的四层验证结果。
 
@@ -151,7 +177,20 @@
 - `evidence`
 - `details`
 
-### 2.10 ExecutionSummary
+### 2.12 WorkflowIssue
+
+工作流中的统一问题对象。
+
+- `code`
+- `severity`
+- `stage`
+- `message`
+- `userAction`
+- `retryable`
+- `details`
+- `relatedArtifacts`
+
+### 2.13 ExecutionSummary
 
 一次工作流最终返回给用户的汇总对象。
 
@@ -162,6 +201,7 @@
 - `generatedDDLArtifacts`
 - `generatedRuleArtifacts`
 - `validationReport`
+- `issues`
 - `manualFollowUps`
 
 ## 3. 关键枚举

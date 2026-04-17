@@ -123,8 +123,11 @@
   "plan_id": "plan-001",
   "status": "planned",
   "pending_questions": [],
+  "issues": [],
   "global_steps": [],
   "algorithm_recommendations": [],
+  "property_requirements": [],
+  "masked_property_preview": {},
   "derived_column_plan": {},
   "ddl_artifacts": [],
   "distsql_artifacts": [],
@@ -136,7 +139,10 @@
 **行为约束**
 
 - 缺失关键信息时必须返回 `pending_questions`，不能直接产出可执行工件。
+- `issues` 中的 warning / error 必须携带稳定错误码。
 - 必须先返回 `global_steps`。
+- 算法确定后，如仍缺少必填属性，`pending_questions` 必须转入属性采集，而不是直接生成最终工件。
+- review 默认只返回 `masked_property_preview`，不默认明文回显敏感参数。
 - 必须把最终命名方案回传给用户。
 - `encrypt` 在 V1 仅允许 `create` / `alter`。
 - `mask` 在 V1 允许 `create` / `alter` / `drop`。
@@ -167,16 +173,20 @@
 ```json
 {
   "status": "executing",
+  "issues": [],
   "step_results": [],
   "executed_ddl": [],
   "executed_distsql": [],
-  "skipped_artifacts": []
+  "skipped_artifacts": [],
+  "manual_artifact_package": {}
 }
 ```
 
 **行为约束**
 
 - `manual-only` 模式下不得自动执行任何工件。
+- `manual-only` 模式下必须允许返回可执行工件包，同时默认 review 视图继续对敏感参数打码。
+- 任何执行失败都必须通过 `issues` 返回阶段、建议动作与是否可重试。
 - 每一步必须返回可读进度。
 - 当某一步失败时必须给出已完成、未完成和建议后续动作。
 - `encrypt drop` 请求在 V1 中必须被明确拒绝或标记为 deferred。
@@ -209,6 +219,7 @@
 ```json
 {
   "status": "completed",
+  "issues": [],
   "ddl_validation": {},
   "rule_validation": {},
   "logical_metadata_validation": {},
@@ -223,6 +234,7 @@
 - 不要求做数据正确性验证。
 - 不要求做历史数据迁移校验。
 - 必须明确区分 `passed`、`failed`、`skipped`。
+- mismatch 必须能映射到稳定错误码。
 - 逻辑元数据校验必须基于 Proxy 逻辑视图。
 
 ## 4. 推荐的 Tool 与 Resource 分工

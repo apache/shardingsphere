@@ -68,6 +68,7 @@ class PackagedDistributionSmokeE2ETest {
             assertBootstrapDirectoriesCreated(distribution.home());
             assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
             assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(List.of("search_metadata", "execute_query")));
+            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(), containsInAnyOrder("search_metadata", "execute_query"));
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE", "VIEW"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items", "active_orders"));
@@ -85,6 +86,7 @@ class PackagedDistributionSmokeE2ETest {
             assertBootstrapDirectoriesCreated(distribution.home());
             assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
             assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(List.of("search_metadata", "execute_query")));
+            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(), containsInAnyOrder("search_metadata", "execute_query"));
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items"));

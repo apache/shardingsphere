@@ -80,6 +80,13 @@ abstract class AbstractProcessMCPStdioInteractionClient implements MCPInteractio
     }
     
     @Override
+    public final List<Map<String, Object>> listTools() throws IOException {
+        ensureOpened();
+        Map<String, Object> response = sendRequest("tools-list-1", "tools/list", Map.of());
+        return MCPInteractionPayloads.castToList(MCPInteractionPayloads.getJsonRpcResult(response).get("tools"));
+    }
+    
+    @Override
     public final Map<String, Object> listResources() throws IOException {
         ensureOpened();
         Map<String, Object> response = sendRequest("resources-list-1", "resources/list", Map.of());

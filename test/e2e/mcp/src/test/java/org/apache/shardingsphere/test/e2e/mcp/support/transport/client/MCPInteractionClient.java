@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,6 +44,18 @@ public interface MCPInteractionClient extends AutoCloseable {
      * @throws InterruptedException interrupted exception
      */
     Map<String, Object> call(String actionName, Map<String, Object> arguments) throws IOException, InterruptedException;
+    
+    /**
+     * List tools.
+     *
+     * @return MCP tool list payload
+     * @throws IOException IO exception
+     * @throws InterruptedException interrupted exception
+     * @throws UnsupportedOperationException unsupported operation exception
+     */
+    default List<Map<String, Object>> listTools() throws IOException, InterruptedException {
+        throw new UnsupportedOperationException("tools/list is not supported.");
+    }
     
     /**
      * List resources.

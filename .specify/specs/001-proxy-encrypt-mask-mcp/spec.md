@@ -193,6 +193,8 @@ As a database operator, I want the workflow to generate index recommendations or
 - **FR-042**: The system MUST retain confirmed workflow context server-side for step-by-step mode so operators do not need to resend previously confirmed inputs each turn.
 - **FR-043**: The system MUST collect secret algorithm properties after algorithm selection, keep them in runtime context, and mask them in review or summary output.
 - **FR-044**: The system MUST reject or clearly defer encrypt drop requests in V1 instead of silently generating unsupported workflows.
+- **FR-045**: The system MUST return stable, machine-readable workflow issue codes and indicate stage, retryability, and suggested next action for warnings and errors.
+- **FR-046**: In manual-only mode, the system MUST separate review-safe preview output from executable artifacts when sensitive properties are involved.
 
 ### Key Entities *(include if feature involves data)*
 
