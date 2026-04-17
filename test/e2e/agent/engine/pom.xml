@@ -161,13 +161,34 @@
                                 </goals>
                                 <phase>validate</phase>
                                 <configuration>
+                                    <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app/lib</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${project.basedir}/../fixture/jdbc-fixture/target</directory>
+                                            <includes>
+                                                <include>agent-test-app-${project.version}.jar</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-agent-and-start-shell</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>validate</phase>
+                                <configuration>
                                     <outputDirectory>${docker.jdbc.context.directory}/shardingsphere-jdbc-app</outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>${project.basedir}/../fixture/jdbc-fixture/target/app</directory>
+                                            <directory>${project.basedir}/../../../../distribution/agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
                                         </resource>
                                         <resource>
-                                            <directory>${project.basedir}/../../../../distribution/agent/target/apache-shardingsphere-${project.version}-shardingsphere-agent-bin/</directory>
+                                            <directory>${project.basedir}/../fixture/jdbc-fixture/src/main/resources/bin</directory>
+                                            <includes>
+                                                <include>*.sh</include>
+                                            </includes>
                                         </resource>
                                     </resources>
                                 </configuration>
