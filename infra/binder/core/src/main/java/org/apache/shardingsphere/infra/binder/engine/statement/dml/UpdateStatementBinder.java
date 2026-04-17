@@ -52,7 +52,7 @@ public final class UpdateStatementBinder implements SQLStatementBinder<UpdateSta
                 .map(optional -> AssignmentSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
-                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, outerTableBinderContexts)).orElse(null);
+                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         return copy(sqlStatement, boundWith, boundTable, boundFrom, boundSetAssignment, boundWhere, boundOrderBy);
     }
     

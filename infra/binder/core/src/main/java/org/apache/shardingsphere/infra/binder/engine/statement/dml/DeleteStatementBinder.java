@@ -47,7 +47,7 @@ public final class DeleteStatementBinder implements SQLStatementBinder<DeleteSta
         TableSegment boundTable = TableSegmentBinder.bind(sqlStatement.getTable(), binderContext, tableBinderContexts, LinkedHashMultimap.create());
         WhereSegment boundWhere = sqlStatement.getWhere().map(optional -> WhereSegmentBinder.bind(optional, binderContext, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         OrderBySegment boundOrderBy = sqlStatement.getOrderBy()
-                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, LinkedHashMultimap.create(), tableBinderContexts, outerTableBinderContexts)).orElse(null);
+                .map(optional -> OrderBySegmentBinder.bind(optional, binderContext, tableBinderContexts, tableBinderContexts, outerTableBinderContexts)).orElse(null);
         return copy(sqlStatement, boundWith, boundTable, boundWhere, boundOrderBy);
     }
     
