@@ -41,6 +41,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -146,9 +150,9 @@ class SchemaMetaDataUtilsTest {
     }
     
     @Test
-    void assertGetMetaDataLoaderMaterialsNormalizeActualTableNamesByStorageTypeWithMixedStorageUnits() {
+    void assertGetMetaDataLoaderMaterialsNormalizeActualTableNamesByStorageTypeWithMixedStorageUnits() throws SQLException {
         Map<String, StorageUnit> storageUnits = new LinkedHashMap<>(2, 1F);
-        storageUnits.put("ds_mysql", mockStorageUnit(MYSQL_DATABASE_TYPE, mock(DataSource.class)));
+        storageUnits.put("ds_mysql", mockStorageUnit(MYSQL_DATABASE_TYPE, mockMySQLDataSource(1)));
         storageUnits.put("ds_oracle", mockStorageUnit(ORACLE_DATABASE_TYPE, mock(DataSource.class)));
         ConfigurationProperties props = createProperties(Boolean.TRUE, null);
         GenericSchemaBuilderMaterial material = new GenericSchemaBuilderMaterial(storageUnits, Collections.singleton(
@@ -216,6 +220,19 @@ class SchemaMetaDataUtilsTest {
         StorageUnit result = mock(StorageUnit.class);
         when(result.getStorageType()).thenReturn(storageType);
         when(result.getDataSource()).thenReturn(dataSource);
+        return result;
+    }
+    
+    private static DataSource mockMySQLDataSource(final int lowerCaseTableNames) throws SQLException {
+        DataSource result = mock(DataSource.class);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        ResultSet resultSet = mock(ResultSet.class);
+        when(result.getConnection()).thenReturn(connection);
+        when(connection.prepareStatement("SELECT @@lower_case_table_names")).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt(1)).thenReturn(lowerCaseTableNames);
         return result;
     }
 }

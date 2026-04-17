@@ -304,9 +304,9 @@ class DatabaseIdentifierContextFactoryTest {
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("storage type overrides protocol type for oracle backend", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
                         new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
-                Arguments.of("mixed storage trunk types fallback to insensitive rules", MYSQL_DATABASE_TYPE,
+                Arguments.of("mixed storage trunk types use first data source rules", MYSQL_DATABASE_TYPE,
                         createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
     }
     
     private static Stream<Arguments> refreshWithProtocolTypeAndPropsArguments() {
@@ -358,9 +358,9 @@ class DatabaseIdentifierContextFactoryTest {
                         createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false),
                 Arguments.of("refresh uses oracle storage type when protocol type is mysql", MYSQL_DATABASE_TYPE, createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe"),
                         new ConfigurationProperties(new Properties()), LookupMode.NORMALIZED, "T_ORDER", "t_order", true),
-                Arguments.of("refresh falls back to insensitive rules for mixed storage types", MYSQL_DATABASE_TYPE,
+                Arguments.of("refresh uses first data source rules for mixed storage types", MYSQL_DATABASE_TYPE,
                         createResourceMetaDataWithStorageUrls("jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe"),
-                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.NORMALIZED, "Foo", "foo", true));
+                        createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE), LookupMode.EXACT, "Foo", "foo", false));
     }
     
     private static Stream<Arguments> refreshWithSupportedDatabaseSchemaLookupArguments() {
