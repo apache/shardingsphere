@@ -24,8 +24,12 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestExcepti
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -113,5 +117,84 @@ public final class MCPToolArguments {
         } catch (final NumberFormatException ignored) {
             return defaultValue;
         }
+    }
+    
+    /**
+     * Get boolean argument.
+     *
+     * @param name argument name
+     * @param defaultValue default value
+     * @return argument value
+     */
+    public boolean getBooleanArgument(final String name, final boolean defaultValue) {
+        Object result = arguments.get(name);
+        if (null == result) {
+            return defaultValue;
+        }
+        if (result instanceof Boolean) {
+            return (Boolean) result;
+        }
+        String actualValue = result.toString().trim();
+        if (actualValue.isEmpty()) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(actualValue);
+    }
+    
+    /**
+     * Get string collection argument.
+     *
+     * @param name argument name
+     * @return string collection
+     */
+    public List<String> getStringCollectionArgument(final String name) {
+        Object rawValue = arguments.get(name);
+        if (!(rawValue instanceof Collection)) {
+            return Collections.emptyList();
+        }
+        List<String> result = new LinkedList<>();
+        for (Object each : (Collection<?>) rawValue) {
+            String actualValue = Objects.toString(each, "").trim();
+            if (!actualValue.isEmpty()) {
+                result.add(actualValue);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Get string map argument.
+     *
+     * @param name argument name
+     * @return string map
+     */
+    public Map<String, String> getMapArgument(final String name) {
+        Object rawValue = arguments.get(name);
+        if (rawValue instanceof Map) {
+            Map<String, String> result = new LinkedHashMap<>();
+            for (Entry<?, ?> entry : ((Map<?, ?>) rawValue).entrySet()) {
+                String actualKey = Objects.toString(entry.getKey(), "").trim();
+                if (!actualKey.isEmpty()) {
+                    result.put(actualKey, Objects.toString(entry.getValue(), "").trim());
+                }
+            }
+            return result;
+        }
+        if (rawValue instanceof Collection) {
+            Map<String, String> result = new LinkedHashMap<>();
+            for (String each : getStringCollectionArgument(name)) {
+                int separatorIndex = each.indexOf('=');
+                if (-1 == separatorIndex) {
+                    continue;
+                }
+                String actualKey = each.substring(0, separatorIndex).trim();
+                String actualValue = each.substring(separatorIndex + 1).trim();
+                if (!actualKey.isEmpty()) {
+                    result.put(actualKey, actualValue);
+                }
+            }
+            return result;
+        }
+        return Collections.emptyMap();
     }
 }

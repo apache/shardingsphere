@@ -404,16 +404,6 @@ public final class LLMMCPConversationRunner {
     }
     
     private Map<String, Object> createValueSchema(final MCPToolValueDefinition valueDefinition) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("type", switch (valueDefinition.getType()) {
-            case STRING -> "string";
-            case INTEGER -> "integer";
-            case ARRAY -> "array";
-        });
-        result.put("description", valueDefinition.getDescription());
-        if (MCPToolValueDefinition.Type.ARRAY == valueDefinition.getType()) {
-            result.put("items", createValueSchema(valueDefinition.getItemDefinition()));
-        }
-        return result;
+        return valueDefinition.toSchemaFragment();
     }
 }

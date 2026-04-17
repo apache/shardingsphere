@@ -64,6 +64,10 @@ class MCPToolValueDefinitionTest {
                         Map.of("type", "integer", "description", "bar description")),
                 Arguments.of("array", new MCPToolValueDefinition(MCPToolValueDefinition.Type.ARRAY, "baz description",
                         new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "item description", null)),
-                        Map.of("type", "array", "description", "baz description", "items", Map.of("type", "string", "description", "item description"))));
+                        Map.of("type", "array", "description", "baz description", "items", Map.of("type", "string", "description", "item description"))),
+                Arguments.of("boolean", new MCPToolValueDefinition(MCPToolValueDefinition.Type.BOOLEAN, "qux description", null),
+                        Map.of("type", "boolean", "description", "qux description")),
+                Arguments.of("object", new MCPToolValueDefinition(MCPToolValueDefinition.Type.OBJECT, "quux description", null),
+                        Map.of("type", "object", "description", "quux description", "additionalProperties", true)));
     }
 }

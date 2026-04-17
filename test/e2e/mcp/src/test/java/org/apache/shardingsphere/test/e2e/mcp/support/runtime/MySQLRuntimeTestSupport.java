@@ -233,7 +233,7 @@ public final class MySQLRuntimeTestSupport {
     }
     
     private static String createJdbcUrl(final GenericContainer<?> container) {
-        return String.format("jdbc:mysql://%s:%d/%s?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
+        return String.format("jdbc:mysql://%s:%d/%s?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&connectTimeout=3000&socketTimeout=3000",
                 container.getHost(), container.getMappedPort(3306), DATABASE_NAME);
     }
     

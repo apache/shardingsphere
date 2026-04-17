@@ -52,6 +52,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIfSystemProperty(named = "mcp.distribution.smoke.enabled", matches = "true")
 class PackagedDistributionSmokeE2ETest {
     
+    private static final List<String> EXPECTED_TOOL_NAMES = List.of(
+            "search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule");
+    
     private static final long STARTUP_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(20L);
     
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
@@ -67,8 +70,9 @@ class PackagedDistributionSmokeE2ETest {
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
             assertBootstrapDirectoriesCreated(distribution.home());
             assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
-            assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(List.of("search_metadata", "execute_query")));
-            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(), containsInAnyOrder("search_metadata", "execute_query"));
+            assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(EXPECTED_TOOL_NAMES));
+            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(),
+                    containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule"));
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE", "VIEW"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items", "active_orders"));
@@ -85,8 +89,9 @@ class PackagedDistributionSmokeE2ETest {
             interactionClient.open();
             assertBootstrapDirectoriesCreated(distribution.home());
             assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
-            assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(List.of("search_metadata", "execute_query")));
-            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(), containsInAnyOrder("search_metadata", "execute_query"));
+            assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(EXPECTED_TOOL_NAMES));
+            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(),
+                    containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule"));
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items"));

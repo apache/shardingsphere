@@ -52,7 +52,7 @@ import java.util.Set;
  */
 public final class MCPJdbcMetadataLoader {
     
-    private static final Set<String> SYSTEM_SCHEMAS = Set.of("INFORMATION_SCHEMA", "PG_CATALOG", "SYSTEM_LOBS");
+    private static final Set<String> SYSTEM_SCHEMAS = Set.of("INFORMATION_SCHEMA", "MYSQL", "PERFORMANCE_SCHEMA", "PG_CATALOG", "SHARDINGSPHERE", "SYS", "SYSTEM_LOBS");
     
     private static final String INFORMATION_SCHEMA_SEQUENCE_QUERY =
             "SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences";
@@ -225,7 +225,8 @@ public final class MCPJdbcMetadataLoader {
         try (ResultSet tables = databaseMetaData.getTables(null, null, "%", new String[]{"TABLE"})) {
             while (tables.next()) {
                 String schemaName = Objects.toString(tables.getString("TABLE_SCHEM"), "").trim();
-                if (isSystemSchema(schemaName)) {
+                String catalogName = Objects.toString(tables.getString("TABLE_CAT"), "").trim();
+                if (isSystemSchema(defaultSchemaSemantics, schemaName, catalogName)) {
                     continue;
                 }
                 String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
@@ -234,10 +235,10 @@ public final class MCPJdbcMetadataLoader {
                     continue;
                 }
                 TableMetadataAccumulator tableMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getTableAccumulator(tableName);
-                for (String each : loadColumns(databaseMetaData, schemaName, tableName)) {
+                for (String each : loadColumns(databaseMetaData, catalogName, schemaName, tableName)) {
                     tableMetadata.addColumn(each);
                 }
-                for (String each : loadIndexes(databaseMetaData, schemaName, tableName)) {
+                for (String each : loadIndexes(databaseMetaData, catalogName, schemaName, tableName)) {
                     tableMetadata.addIndex(each);
                 }
             }
@@ -249,7 +250,8 @@ public final class MCPJdbcMetadataLoader {
         try (ResultSet views = databaseMetaData.getTables(null, null, "%", new String[]{"VIEW"})) {
             while (views.next()) {
                 String schemaName = Objects.toString(views.getString("TABLE_SCHEM"), "").trim();
-                if (isSystemSchema(schemaName)) {
+                String catalogName = Objects.toString(views.getString("TABLE_CAT"), "").trim();
+                if (isSystemSchema(defaultSchemaSemantics, schemaName, catalogName)) {
                     continue;
                 }
                 String normalizedSchemaName = normalizeSchemaName(databaseName, defaultSchemaSemantics, schemaName);
@@ -258,7 +260,7 @@ public final class MCPJdbcMetadataLoader {
                     continue;
                 }
                 ViewMetadataAccumulator viewMetadata = accumulator.getSchemaAccumulator(normalizedSchemaName).getViewAccumulator(viewName);
-                for (String each : loadColumns(databaseMetaData, schemaName, viewName)) {
+                for (String each : loadColumns(databaseMetaData, catalogName, schemaName, viewName)) {
                     viewMetadata.addColumn(each);
                 }
             }
@@ -313,9 +315,13 @@ public final class MCPJdbcMetadataLoader {
         return SYSTEM_SCHEMAS.contains(schemaName.toUpperCase(Locale.ENGLISH));
     }
     
-    private List<String> loadColumns(final DatabaseMetaData databaseMetaData, final String schemaName, final String objectName) throws SQLException {
+    private boolean isSystemSchema(final SchemaSemantics defaultSchemaSemantics, final String schemaName, final String catalogName) {
+        return isSystemSchema(schemaName) || SchemaSemantics.DATABASE_AS_SCHEMA == defaultSchemaSemantics && isSystemSchema(catalogName);
+    }
+    
+    private List<String> loadColumns(final DatabaseMetaData databaseMetaData, final String catalogName, final String schemaName, final String objectName) throws SQLException {
         List<String> result = new LinkedList<>();
-        try (ResultSet columns = databaseMetaData.getColumns(null, getSchemaPattern(schemaName), objectName, "%")) {
+        try (ResultSet columns = databaseMetaData.getColumns(getPattern(catalogName), getPattern(schemaName), objectName, "%")) {
             while (columns.next()) {
                 String columnName = Objects.toString(columns.getString("COLUMN_NAME"), "").trim();
                 if (!columnName.isEmpty()) {
@@ -326,10 +332,10 @@ public final class MCPJdbcMetadataLoader {
         return result;
     }
     
-    private List<String> loadIndexes(final DatabaseMetaData databaseMetaData, final String schemaName, final String tableName) throws SQLException {
+    private List<String> loadIndexes(final DatabaseMetaData databaseMetaData, final String catalogName, final String schemaName, final String tableName) throws SQLException {
         List<String> result = new LinkedList<>();
         Set<String> loadedIndexNames = new LinkedHashSet<>();
-        try (ResultSet indexes = databaseMetaData.getIndexInfo(null, getSchemaPattern(schemaName), tableName, false, false)) {
+        try (ResultSet indexes = databaseMetaData.getIndexInfo(getPattern(catalogName), getPattern(schemaName), tableName, false, false)) {
             while (indexes.next()) {
                 String indexName = Objects.toString(indexes.getString("INDEX_NAME"), "").trim();
                 if (!indexName.isEmpty() && loadedIndexNames.add(indexName)) {
@@ -340,8 +346,8 @@ public final class MCPJdbcMetadataLoader {
         return result;
     }
     
-    private String getSchemaPattern(final String schemaName) {
-        String result = Objects.toString(schemaName, "").trim();
+    private String getPattern(final String value) {
+        String result = Objects.toString(value, "").trim();
         return result.isEmpty() ? null : result;
     }
     

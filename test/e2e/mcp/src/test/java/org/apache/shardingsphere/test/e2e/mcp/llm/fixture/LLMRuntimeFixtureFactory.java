@@ -106,17 +106,54 @@ public final class LLMRuntimeFixtureFactory {
     
     /**
      * Runtime fixture.
-     *
-     * @param schemaName schema name
-     * @param totalOrders total orders
-     * @param runtimeDatabases runtime databases
-     * @param closeAction close action
      */
-    public record Fixture(String schemaName, int totalOrders, Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
-                          Runnable closeAction) implements AutoCloseable {
-    
-    @Override
-    public void close() {
-        closeAction.run();
+    public static final class Fixture implements AutoCloseable {
+        
+        private final String schemaName;
+        
+        private final int totalOrders;
+        
+        private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
+        
+        private final Runnable closeAction;
+        
+        private Fixture(final String schemaName, final int totalOrders, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases, final Runnable closeAction) {
+            this.schemaName = schemaName;
+            this.totalOrders = totalOrders;
+            this.runtimeDatabases = runtimeDatabases;
+            this.closeAction = closeAction;
+        }
+        
+        /**
+         * Get schema name.
+         *
+         * @return schema name
+         */
+        public String schemaName() {
+            return schemaName;
+        }
+        
+        /**
+         * Get total orders.
+         *
+         * @return total orders
+         */
+        public int totalOrders() {
+            return totalOrders;
+        }
+        
+        /**
+         * Get runtime databases.
+         *
+         * @return runtime databases
+         */
+        public Map<String, RuntimeDatabaseConfiguration> runtimeDatabases() {
+            return runtimeDatabases;
+        }
+        
+        @Override
+        public void close() {
+            closeAction.run();
+        }
     }
-}}
+}

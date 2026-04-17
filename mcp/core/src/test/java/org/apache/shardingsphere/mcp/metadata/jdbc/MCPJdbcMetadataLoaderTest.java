@@ -123,6 +123,62 @@ class MCPJdbcMetadataLoaderTest {
     }
     
     @Test
+    void assertLoadWithoutSystemCatalogForDatabaseAsSchema() throws SQLException {
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        ResultSet orderColumns = mockResultSet("COLUMN_NAME", "order_id");
+        ResultSet orderIndexes = mockResultSet("INDEX_NAME", "idx_orders_status");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
+        when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
+        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl("MySQL"));
+        when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
+            String[] tableTypes = invocation.getArgument(3);
+            return mockMultiRowResultSet("TABLE".equals(tableTypes[0])
+                    ? List.of(
+                            Map.of("TABLE_CAT", "information_schema", "TABLE_SCHEM", "", "TABLE_NAME", "GLOBAL_STATUS"),
+                            Map.of("TABLE_CAT", "logic_db", "TABLE_SCHEM", "", "TABLE_NAME", "orders"))
+                    : List.of());
+        });
+        when(databaseMetaData.getColumns(eq("logic_db"), isNull(), eq("orders"), eq("%"))).thenReturn(orderColumns);
+        when(databaseMetaData.getIndexInfo(eq("logic_db"), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(orderIndexes);
+        when(databaseMetaData.getColumns(eq("information_schema"), isNull(), eq("GLOBAL_STATUS"), eq("%")))
+                .thenThrow(new SQLException("system catalog should be skipped"));
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", connection);
+        MCPDatabaseMetadata actual = metadataLoader.load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
+        assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
+        assertFalse(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "GLOBAL_STATUS"));
+        assertThat(actual.getSchemas().get(0).getSchema(), is("logic_db"));
+    }
+    
+    @Test
+    void assertLoadWithCatalogBackedMetadataUsingLogicalSchemaName() throws SQLException {
+        MCPJdbcMetadataLoader metadataLoader = new MCPJdbcMetadataLoader();
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        ResultSet orderColumns = mockResultSet("COLUMN_NAME", "order_id");
+        ResultSet orderIndexes = mockResultSet("INDEX_NAME", "idx_orders_status");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn("MySQL");
+        when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
+        when(databaseMetaData.getURL()).thenReturn(getMetadataJdbcUrl("MySQL"));
+        when(databaseMetaData.getTables(isNull(), isNull(), eq("%"), any(String[].class))).thenAnswer(invocation -> {
+            String[] tableTypes = invocation.getArgument(3);
+            return mockMultiRowResultSet("TABLE".equals(tableTypes[0])
+                    ? List.of(Map.of("TABLE_CAT", "orders", "TABLE_SCHEM", "", "TABLE_NAME", "orders"))
+                    : List.of());
+        });
+        when(databaseMetaData.getColumns(eq("orders"), isNull(), eq("orders"), eq("%"))).thenReturn(orderColumns);
+        when(databaseMetaData.getIndexInfo(eq("orders"), isNull(), eq("orders"), eq(false), eq(false))).thenReturn(orderIndexes);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", connection);
+        MCPDatabaseMetadata actual = metadataLoader.load(Map.of("logic_db", runtimeDatabaseConfiguration)).findMetadata("logic_db").orElseThrow();
+        assertThat(actual.getSchemas().get(0).getSchema(), is("logic_db"));
+        assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.TABLE, "orders"));
+        assertTrue(containsMetadata(actual, SupportedMCPMetadataObjectType.INDEX, "idx_orders_status"));
+    }
+    
+    @Test
     void assertLoadWithSchemaRegisteredOnce() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-shared-schema");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);

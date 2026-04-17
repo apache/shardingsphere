@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -129,6 +130,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private Optional<ResponseStatus> doExecute(final HttpServletRequest request, final HttpServletResponse response, final String sessionId) throws IOException, ServletException {
+        setUtf8Encoding(request, response);
         Optional<ResponseStatus> result = validateSecurity(request);
         if (result.isEmpty()) {
             result = requestValidator.validateSessionId(sessionId);
@@ -190,6 +192,7 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     }
     
     private void doInit(final HttpServletRequest request, final HttpServletResponse response) throws IOException, ServletException {
+        setUtf8Encoding(request, response);
         Optional<ResponseStatus> validationFailure = validateSecurity(request);
         if (validationFailure.isPresent()) {
             writeResponse(response, validationFailure.get());
@@ -205,6 +208,11 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         if (validationFailure.isEmpty() && 200 == response.getStatus()) {
             sessionExecutionCoordinator.closeSession(sessionId);
         }
+    }
+    
+    private void setUtf8Encoding(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+        request.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
     }
     
     @Override

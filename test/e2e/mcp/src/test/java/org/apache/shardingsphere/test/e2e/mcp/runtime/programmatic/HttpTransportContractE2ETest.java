@@ -36,6 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
+    private static final List<String> EXPECTED_TOOL_NAMES = List.of(
+            "search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule");
+    
     @Test
     void assertInitializeSessionAndProtocolHeaders() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -93,7 +96,20 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 .build();
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
-        assertThat(getFirstResourcePayload(actual.body()).get("supportedTools"), is(List.of("search_metadata", "execute_query")));
+        assertThat(getFirstResourcePayload(actual.body()).get("supportedTools"), is(EXPECTED_TOOL_NAMES));
+    }
+    
+    @Test
+    void assertPreserveUtf8ToolArgumentsForChineseWorkflowIntent() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "plan_encrypt_mask_rule",
+                Map.of("table", "orders", "column", "status", "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> structuredContent = getStructuredContent(actual.body());
+        assertThat(String.valueOf(structuredContent.get("status")), is("clarifying"));
+        assertThat(((List<?>) structuredContent.get("pending_questions")).stream().map(String::valueOf).toList(), is(List.of("请先提供 logical database。")));
     }
     
     @Test

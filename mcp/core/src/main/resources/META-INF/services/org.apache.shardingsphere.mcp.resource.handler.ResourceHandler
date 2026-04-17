@@ -33,3 +33,9 @@ org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnsHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler
 org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler
+org.apache.shardingsphere.mcp.resource.handler.rule.EncryptRulesHandler
+org.apache.shardingsphere.mcp.resource.handler.rule.EncryptRuleHandler
+org.apache.shardingsphere.mcp.resource.handler.rule.MaskRulesHandler
+org.apache.shardingsphere.mcp.resource.handler.rule.MaskRuleHandler
+org.apache.shardingsphere.mcp.resource.handler.plugin.EncryptAlgorithmsHandler
+org.apache.shardingsphere.mcp.resource.handler.plugin.MaskAlgorithmsHandler

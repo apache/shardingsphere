@@ -17,3 +17,6 @@
 
 org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler
 org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler
+org.apache.shardingsphere.mcp.tool.handler.workflow.PlanEncryptMaskRuleToolHandler
+org.apache.shardingsphere.mcp.tool.handler.workflow.ApplyEncryptMaskRuleToolHandler
+org.apache.shardingsphere.mcp.tool.handler.workflow.ValidateEncryptMaskRuleToolHandler

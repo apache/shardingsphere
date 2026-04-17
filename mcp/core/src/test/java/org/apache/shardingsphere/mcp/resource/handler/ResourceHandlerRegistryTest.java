@@ -45,7 +45,7 @@ class ResourceHandlerRegistryTest {
     
     @Test
     void assertGetRegisteredHandlers() {
-        assertThat(ResourceHandlerRegistry.getRegisteredHandlers().size(), is(18));
+        assertThat(ResourceHandlerRegistry.getRegisteredHandlers().size(), is(24));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -67,10 +67,12 @@ class ResourceHandlerRegistryTest {
     @Test
     void assertGetSupportedResources() {
         List<String> actual = ResourceHandlerRegistry.getSupportedResources();
-        assertThat(actual.size(), is(18));
+        assertThat(actual.size(), is(24));
         assertTrue(actual.contains("shardingsphere://capabilities"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
+        assertTrue(actual.contains("shardingsphere://databases/{database}/encrypt-rules"));
+        assertTrue(actual.contains("shardingsphere://plugins/encrypt-algorithms"));
     }
     
     private static Stream<Arguments> getRegisteredHandlersFailureCases() {
