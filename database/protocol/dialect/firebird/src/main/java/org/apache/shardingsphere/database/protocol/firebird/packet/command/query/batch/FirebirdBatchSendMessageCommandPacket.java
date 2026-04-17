@@ -151,6 +151,19 @@ public final class FirebirdBatchSendMessageCommandPacket extends FirebirdCommand
     }
     
     /**
+     * Reset batch message header context after execute_batch so the next batch_msg re-reads its header.
+     *
+     * @param connectionId connection ID
+     */
+    public static void resetBatchMessageHeader(final int connectionId) {
+        BatchMessageHeaderContext ctx = BATCH_MSG_HEADER_CONTEXT_CACHE.get(connectionId);
+        if (ctx != null) {
+            ctx.setStatementHandle(0);
+            ctx.setBatchMessageCount(0);
+        }
+    }
+    
+    /**
      * Unregister connection metadata cache.
      *
      * @param connectionId connection ID

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch;
 
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchSendMessageCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchStatement;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdBatchCompletionStateResponse;
 import org.apache.shardingsphere.database.protocol.packet.DatabasePacket;
@@ -78,6 +79,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
         when(batchRegistry.getBatchStatement(CONNECTION_ID, STATEMENT_ID)).thenReturn(batchStatement);
         try (
                 MockedStatic<FirebirdBatchRegistry> mockedRegistry = mockStatic(FirebirdBatchRegistry.class);
+                MockedStatic<FirebirdBatchSendMessageCommandPacket> mockedPacket = mockStatic(FirebirdBatchSendMessageCommandPacket.class);
                 MockedConstruction<FirebirdBatchedStatementsExecutor> ignored = mockConstruction(FirebirdBatchedStatementsExecutor.class,
                         (mock, context) -> when(mock.executeBatch()).thenReturn(new int[]{1, 0, -2, 3}))) {
             mockedRegistry.when(FirebirdBatchRegistry::getInstance).thenReturn(batchRegistry);
@@ -87,6 +89,7 @@ class FirebirdBatchExecuteCommandExecutorTest {
             verify(batchRegistry).getBatchStatement(CONNECTION_ID, STATEMENT_ID);
             verify(connectionSession.getServerPreparedStatementRegistry()).getPreparedStatement(STATEMENT_ID);
             verify(batchStatement).clearParameterValues();
+            mockedPacket.verify(() -> FirebirdBatchSendMessageCommandPacket.resetBatchMessageHeader(CONNECTION_ID));
         }
     }
     
