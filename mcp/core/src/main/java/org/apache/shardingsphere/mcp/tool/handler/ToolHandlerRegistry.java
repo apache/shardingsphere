@@ -21,6 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.feature.MCPFeatureProviderRegistry;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 
 import java.util.ArrayList;
@@ -49,7 +51,14 @@ public final class ToolHandlerRegistry {
     }
     
     private static Map<String, ToolHandler> createRegisteredHandlers() {
-        Collection<ToolHandler> handlers = ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class);
+        Collection<ToolHandler> handlers = new ArrayList<>(ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class));
+        for (MCPFeatureProvider each : MCPFeatureProviderRegistry.getRegisteredProviders()) {
+            handlers.addAll(each.getToolHandlers());
+        }
+        return createRegisteredHandlers(handlers);
+    }
+    
+    static Map<String, ToolHandler> createRegisteredHandlers(final Collection<ToolHandler> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No tool handlers are registered."));
         Map<String, ToolHandler> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (ToolHandler each : handlers) {

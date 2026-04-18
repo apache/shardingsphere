@@ -117,7 +117,7 @@ Expected result:
 Notes:
 
 - Metadata list/detail/capability discovery is unified through `resources/read`.
-- The current public tools are `search_metadata`, `execute_query`, `plan_encrypt_mask_rule`, `apply_encrypt_mask_rule`, and `validate_encrypt_mask_rule`.
+- The current public tools are `search_metadata`, `execute_query`, `plan_encrypt_rule`, `apply_encrypt_rule`, `validate_encrypt_rule`, `plan_mask_rule`, `apply_mask_rule`, and `validate_mask_rule`.
 - The encrypt and mask workflow targets logical databases exposed by ShardingSphere-Proxy; the dedicated usage notes appear below.
 - `search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence` only.
 
@@ -273,32 +273,41 @@ The goal is not to re-implement encryption inside MCP. Instead, MCP translates u
 
 ### Related tools and resources
 
-The workflow exposes 3 tools:
+The encrypt feature exposes 3 tools:
 
-- `plan_encrypt_mask_rule`
-  - resolves user intent, asks follow-up questions when required, and produces derived-column plans, DDL, DistSQL, index plans, and validation strategy
-- `apply_encrypt_mask_rule`
-  - executes the generated artifacts, or exports them without execution in `manual-only` mode
-- `validate_encrypt_mask_rule`
-  - validates the result across DDL state, rule state, logical metadata, and SQL executability
+- `plan_encrypt_rule`
+  - resolves encrypt intent, asks follow-up questions when required, and produces derived-column plans, DDL, DistSQL, index plans, and validation strategy
+- `apply_encrypt_rule`
+  - executes the generated encrypt artifacts, or exports them without execution in `manual-only` mode
+- `validate_encrypt_rule`
+  - validates the encrypt result across DDL state, rule state, logical metadata, and SQL executability
 
-The workflow also adds these resources:
+The mask feature exposes 3 tools:
 
-- `shardingsphere://databases/{database}/encrypt-rules`
-- `shardingsphere://databases/{database}/encrypt-rules/{table}`
-- `shardingsphere://databases/{database}/mask-rules`
-- `shardingsphere://databases/{database}/mask-rules/{table}`
-- `shardingsphere://plugins/encrypt-algorithms`
-- `shardingsphere://plugins/mask-algorithms`
+- `plan_mask_rule`
+  - resolves mask intent, asks follow-up questions when required, and produces DistSQL plus validation strategy
+- `apply_mask_rule`
+  - executes the generated mask artifacts, or exports them without execution in `manual-only` mode
+- `validate_mask_rule`
+  - validates the mask result across rule state, logical metadata, and SQL executability
 
-The `plugins/*-algorithms` resources include both built-in algorithms and custom SPI algorithms visible from the current Proxy instance, so a model can recommend from the actual runtime pool.
+The workflow also adds these feature resources:
+
+- `shardingsphere://features/encrypt/algorithms`
+- `shardingsphere://features/encrypt/databases/{database}/rules`
+- `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules`
+- `shardingsphere://features/mask/algorithms`
+- `shardingsphere://features/mask/databases/{database}/rules`
+- `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
+
+The `features/*/algorithms` resources include both built-in algorithms and custom SPI algorithms visible from the current Proxy instance, so a model can recommend from the actual runtime pool.
 
 ### Keep these rules in mind before you start
 
 - Reuse the same `MCP-Session-Id` for the whole workflow. If `plan`, `apply`, and `validate` switch to another session, later calls fail because the plan belongs to a different MCP session.
-- The first `plan_encrypt_mask_rule` call does not need `plan_id`; after the first response returns `plan_id`, reuse that same `plan_id` for every follow-up planning call, apply call, and validation call.
-- `plan_encrypt_mask_rule` only plans. It does not execute DDL or DistSQL.
-- `apply_encrypt_mask_rule` is the only step that executes artifacts. `validate_encrypt_mask_rule` only checks the current state.
+- The first `plan_encrypt_rule` or `plan_mask_rule` call does not need `plan_id`; after the first response returns `plan_id`, reuse that same `plan_id` for every follow-up planning call, apply call, and validation call inside the same feature workflow.
+- `plan_encrypt_rule` and `plan_mask_rule` only plan. They do not execute DDL or DistSQL.
+- `apply_encrypt_rule` and `apply_mask_rule` execute artifacts. `validate_encrypt_rule` and `validate_mask_rule` only check the current state.
 - Users always target logical databases, logical tables, and logical columns. In encrypt workflows MCP may plan and create physical derived columns, but the user-facing target is still the logical object exposed by Proxy.
 - `schema` is optional. MCP auto-fills it when the logical database contains a single schema. If the schema cannot be resolved uniquely, MCP asks for it explicitly.
 - `delivery_mode` only affects how the client presents the workflow. It does not change the generated artifacts. The execution behavior is controlled by `execution_mode`.
@@ -309,17 +318,17 @@ The `plugins/*-algorithms` resources include both built-in algorithms and custom
 
 If you want one encrypt or mask workflow to run end to end without ambiguity, use this order:
 
-1. Call `plan_encrypt_mask_rule` first. Do not start from `apply_encrypt_mask_rule`.
-2. If the response is `status = clarifying`, read `pending_questions` and call `plan_encrypt_mask_rule` again with the same `plan_id`.
+1. Start with the feature-specific planner: `plan_encrypt_rule` for encrypt or `plan_mask_rule` for mask. Do not start from `apply`.
+2. If the response is `status = clarifying`, read `pending_questions` and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
 3. If the response is `status = planned`, review `derived_column_plan`, `ddl_artifacts`, `distsql_artifacts`, and `index_plan`.
-4. Call `apply_encrypt_mask_rule`. If you want manual execution, set `execution_mode` to `manual-only`.
+4. Call the matching `apply_*_rule`. If you want manual execution, set `execution_mode` to `manual-only`.
 5. If apply returns `awaiting-manual-execution`, execute the returned `manual_artifact_package` against ShardingSphere-Proxy first, then continue.
-6. Call `validate_encrypt_mask_rule` and make sure the four validation layers pass.
+6. Call the matching `validate_*_rule` and make sure the returned validation layers pass.
 7. If validation fails, inspect `issues` and `mismatches`, then either finish the remaining apply steps or re-plan after fixing the environment.
 
 ### Interaction model
 
-Every `plan_encrypt_mask_rule` call returns a global step list and the current step. The default workflow is:
+Every `plan_encrypt_rule` and `plan_mask_rule` call returns a global step list and the current step. The default workflow is:
 
 1. Confirm database, table, column, and target lifecycle
 2. Inspect existing rules, plugins, and logical metadata
@@ -337,11 +346,11 @@ Common status values are:
 - `planned`
   - artifacts are ready and the workflow can move to apply
 - `completed`
-  - `apply_encrypt_mask_rule` finished its execution path
+  - `apply_encrypt_rule` or `apply_mask_rule` finished its execution path
 - `awaiting-manual-execution`
   - `manual-only` was selected, so MCP exported artifacts without executing them
 - `validated`
-  - `validate_encrypt_mask_rule` passed
+  - `validate_encrypt_rule` or `validate_mask_rule` passed
 
 In addition:
 
@@ -353,11 +362,11 @@ In addition:
 ### What to do next for each status
 
 - `clarifying`
-  - more input is required, so read `pending_questions` and call `plan_encrypt_mask_rule` again with the same `plan_id`
+  - more input is required, so read `pending_questions` and call the same feature-specific `plan_*_rule` again with the same `plan_id`
 - `planned`
-  - the execution package is ready, so review the artifacts and continue with `apply_encrypt_mask_rule`
+  - the execution package is ready, so review the artifacts and continue with the matching `apply_*_rule`
 - `completed`
-  - automatic execution finished, so the next step is `validate_encrypt_mask_rule`
+  - automatic execution finished, so the next step is the matching `validate_*_rule`
 - `awaiting-manual-execution`
   - `manual-only` was selected, so execute the returned artifacts manually first and then run validation
 - `validated`
@@ -367,7 +376,7 @@ In addition:
 
 ### The response fields you will read most often
 
-In `plan_encrypt_mask_rule`, the most important fields are:
+In `plan_encrypt_rule` and `plan_mask_rule`, the most important fields are:
 
 - `plan_id`
   - the workflow identifier reused by every follow-up step
@@ -378,15 +387,15 @@ In `plan_encrypt_mask_rule`, the most important fields are:
 - `algorithm_recommendations`
   - the recommended algorithm pool when natural language did not provide enough detail
 - `derived_column_plan`
-  - most important for encrypt, because it contains the final `*_cipher`, `*_assisted_query`, and `*_like_query` names
+  - encrypt only, because it contains the final `*_cipher`, `*_assisted_query`, and `*_like_query` names
 - `ddl_artifacts`
-  - physical DDL such as `ALTER TABLE ... ADD COLUMN ...`
+  - physical DDL such as `ALTER TABLE ... ADD COLUMN ...`; encrypt may produce it, mask normally does not
 - `distsql_artifacts`
   - the `CREATE/ALTER/DROP ENCRYPT RULE` or `MASK RULE` statements that will be applied on Proxy
 - `index_plan`
-  - appears when equality or like-query capabilities require derived indexes
+  - encrypt only, when equality or like-query capabilities require derived indexes
 
-In `apply_encrypt_mask_rule`, the most important fields are:
+In `apply_encrypt_rule` and `apply_mask_rule`, the most important fields are:
 
 - `status`
 - `issues`
@@ -396,7 +405,7 @@ In `apply_encrypt_mask_rule`, the most important fields are:
 - `skipped_artifacts`
 - `manual_artifact_package`
 
-In `validate_encrypt_mask_rule`, the most important fields are:
+In `validate_encrypt_rule` and `validate_mask_rule`, the most important fields are:
 
 - `status`
 - `overall_status`
@@ -417,8 +426,7 @@ For encrypt `create` or `alter`, the recommended minimum input is:
 - `table`
 - `column`
 - `natural_language_intent`
-  - or explicit `feature_type=encrypt` plus `operation_type=create|alter`
-  - legacy `intent_type=encrypt` is still accepted as a compatibility alias
+  - or explicit `operation_type=create|alter` when the caller already knows the target lifecycle
 - `algorithm_type`
   - if natural language already makes the algorithm clear, MCP can infer it; if you already know the target algorithm, send it directly
 - `primary_algorithm_properties`
@@ -441,7 +449,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_encrypt_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -479,7 +487,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-clarifying-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_encrypt_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -512,9 +520,9 @@ PLAN_ID='plan-xxx'
 
 This means:
 
-- do not call `apply_encrypt_mask_rule` yet
+- do not call `apply_encrypt_rule` yet
 - keep using the same `plan_id`
-- send the missing `aes-key-value` back to `plan_encrypt_mask_rule`
+- send the missing `aes-key-value` back to `plan_encrypt_rule`
 
 Step 2: continue the same plan and provide the missing property
 
@@ -529,7 +537,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-clarifying-2",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_encrypt_rule",
       "arguments":{
         "plan_id":"'"${PLAN_ID}"'",
         "primary_algorithm_properties":{"aes-key-value":"123456abc"}
@@ -577,7 +585,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 Typical response snippet:
@@ -603,7 +611,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 Typical response snippet:
@@ -623,14 +631,14 @@ When all four validation layers are `passed`, the encrypt workflow is complete.
 
 #### When algorithms or properties are missing
 
-If natural language does not make the algorithm clear, or if a required property such as `aes-key-value` is missing, `plan_encrypt_mask_rule` returns:
+If natural language does not make the algorithm clear, or if a required property such as `aes-key-value` is missing, `plan_encrypt_rule` returns:
 
 - `status = clarifying`
 - `pending_questions`
 - `algorithm_recommendations`
 - `property_requirements`
 
-Continue with the same `plan_id` and send the missing fields back to `plan_encrypt_mask_rule` instead of creating a new plan.
+Continue with the same `plan_id` and send the missing fields back to `plan_encrypt_rule` instead of creating a new plan.
 
 #### Default derived-column conventions
 
@@ -649,7 +657,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 If you want MCP to export the artifacts without executing them, switch to `manual-only`:
@@ -660,7 +668,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
 ```
 
 `manual-only` returns `manual_artifact_package` with:
@@ -670,7 +678,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `distsql_artifacts`
 
 If you need partial execution, `approved_steps` can be used to limit execution to `ddl`, `index_ddl`, or `rule_distsql`.
-Partial execution is mainly for reviewed or staged rollouts. Until every required step has been executed, `validate_encrypt_mask_rule` may fail as expected.
+Partial execution is mainly for reviewed or staged rollouts. Until every required step has been executed, `validate_encrypt_rule` may fail as expected.
 
 After execution, validate immediately:
 
@@ -680,7 +688,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 Validation covers 4 layers:
@@ -705,12 +713,11 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"encrypt-plan-drop-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_encrypt_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
         "column":"status",
-        "feature_type":"encrypt",
         "operation_type":"drop"
       }
     }
@@ -735,18 +742,19 @@ For mask `create` or `alter`, the recommended minimum input is:
 - `database`
 - `table`
 - `column`
-- `feature_type=mask`
-- `operation_type=create|alter`
+- `natural_language_intent`
+  - or explicit `operation_type=create|alter` when the caller already knows the target lifecycle
+- `operation_type`
 - `algorithm_type`
 - `primary_algorithm_properties`
-- legacy `intent_type=mask` is still accepted as a compatibility alias
+- `schema`
+  - strongly recommended in multi-schema logical databases
 
 For mask `drop`, the minimum input is:
 
 - `database`
 - `table`
 - `column`
-- `feature_type=mask`
 - `operation_type=drop`
 
 #### Create or alter a mask rule
@@ -764,12 +772,11 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_mask_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
         "column":"phone",
-        "feature_type":"mask",
         "operation_type":"create",
         "algorithm_type":"KEEP_FIRST_N_LAST_M",
         "primary_algorithm_properties":{"first-n":"3","last-m":"4","replace-char":"*"}
@@ -803,7 +810,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-clarifying-1",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_mask_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
@@ -846,7 +853,7 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-clarifying-2",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_mask_rule",
       "arguments":{
         "plan_id":"'"${PLAN_ID}"'",
         "primary_algorithm_properties":{"from-x":"4","to-y":"7"}
@@ -881,7 +888,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 Step 4: validate the final rule state
@@ -892,7 +899,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 As long as `rule_validation`, `logical_metadata_validation`, and `sql_executability_validation` pass, the mask workflow can be considered complete.
@@ -912,12 +919,11 @@ curl -sS http://127.0.0.1:18088/mcp \
     "id":"mask-plan-2",
     "method":"tools/call",
     "params":{
-      "name":"plan_encrypt_mask_rule",
+      "name":"plan_mask_rule",
       "arguments":{
         "database":"logic_db",
         "table":"orders",
         "column":"phone",
-        "feature_type":"mask",
         "operation_type":"drop"
       }
     }
@@ -936,7 +942,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"resource-encrypt-1","method":"resources/read","params":{"uri":"shardingsphere://databases/logic_db/encrypt-rules/orders"}}'
+  --data '{"jsonrpc":"2.0","id":"resource-encrypt-1","method":"resources/read","params":{"uri":"shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"}}'
 ```
 
 Read the available encrypt and mask algorithms:
@@ -947,7 +953,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"resource-plugin-1","method":"resources/read","params":{"uri":"shardingsphere://plugins/encrypt-algorithms"}}'
+  --data '{"jsonrpc":"2.0","id":"resource-plugin-1","method":"resources/read","params":{"uri":"shardingsphere://features/encrypt/algorithms"}}'
 ```
 
 ```bash
@@ -956,7 +962,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data '{"jsonrpc":"2.0","id":"resource-plugin-2","method":"resources/read","params":{"uri":"shardingsphere://plugins/mask-algorithms"}}'
+  --data '{"jsonrpc":"2.0","id":"resource-plugin-2","method":"resources/read","params":{"uri":"shardingsphere://features/mask/algorithms"}}'
 ```
 
 ### Current scope and limitations

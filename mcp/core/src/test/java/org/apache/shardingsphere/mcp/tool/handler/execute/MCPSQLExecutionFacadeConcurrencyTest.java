@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPSQLExecutionFacadeConcurrencyTest {
-
+    
     @Test
     void assertExecuteSerializesSameSessionTransactionCommand() throws InterruptedException, ExecutionException, ReflectiveOperationException {
         CountDownLatch firstInvocationStarted = new CountDownLatch(1);
@@ -99,7 +99,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             executorService.shutdownNow();
         }
     }
-
+    
     @Test
     void assertExecuteSerializesSameSessionQuery() throws InterruptedException, ExecutionException, SQLException, ReflectiveOperationException {
         CountDownLatch firstInvocationStarted = new CountDownLatch(1);
@@ -140,7 +140,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             executorService.shutdownNow();
         }
     }
-
+    
     @Test
     void assertExecutePreservesDifferentSessionConcurrency() throws InterruptedException, ExecutionException, SQLException, ReflectiveOperationException {
         CountDownLatch concurrentEntries = new CountDownLatch(2);
@@ -173,16 +173,16 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             executorService.shutdownNow();
         }
     }
-
+    
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager) {
         return new MCPSQLExecutionFacade(createRequestContext(sessionManager));
     }
-
+    
     private MCPRequestContext createRequestContext(final MCPSessionManager sessionManager) {
         Map<String, RuntimeDatabaseConfiguration> capabilityRuntimeDatabases = Map.of("logic_db", createCapabilityRuntimeDatabaseConfiguration());
         return new MCPRequestContext(new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(capabilityRuntimeDatabases)));
     }
-
+    
     private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration() {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
@@ -199,18 +199,18 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         }
         return result;
     }
-
+    
     private SQLExecutionRequest createExecutionRequest(final String sessionId, final String sql) {
         return new SQLExecutionRequest(sessionId, "logic_db", "public", sql, 10, 1000);
     }
-
+    
     private MCPSessionManager createSessionManager(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
                                                    final MCPJdbcTransactionResourceManager transactionResourceManager) throws ReflectiveOperationException {
         MCPSessionManager result = new MCPSessionManager(runtimeDatabases);
         Plugins.getMemberAccessor().set(MCPSessionManager.class.getDeclaredField("transactionResourceManager"), result, transactionResourceManager);
         return result;
     }
-
+    
     private Connection createBlockingQueryConnection(final CountDownLatch firstInvocationStarted, final CountDownLatch releaseFirstInvocation,
                                                      final AtomicInteger currentExecutions, final AtomicInteger maxExecutions,
                                                      final AtomicInteger invocationCount) throws SQLException {
@@ -223,7 +223,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         when(statement.getResultSet()).thenReturn(resultSet);
         return result;
     }
-
+    
     private Connection createConcurrentQueryConnection(final CountDownLatch concurrentEntries, final CountDownLatch releaseQueries,
                                                        final AtomicInteger currentExecutions, final AtomicInteger maxExecutions) throws SQLException {
         Connection result = mock(Connection.class);
@@ -234,7 +234,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         when(statement.getResultSet()).thenReturn(resultSet);
         return result;
     }
-
+    
     private ResultSet createResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -248,13 +248,13 @@ class MCPSQLExecutionFacadeConcurrencyTest {
         when(resultSetMetaData.isNullable(1)).thenReturn(ResultSetMetaData.columnNoNulls);
         return result;
     }
-
+    
     private org.mockito.stubbing.Answer<Object> createBlockingBeginAnswer(final CountDownLatch firstInvocationStarted, final CountDownLatch releaseFirstInvocation,
                                                                           final AtomicInteger currentExecutions, final AtomicInteger maxExecutions,
                                                                           final AtomicInteger invocationCount) {
         return invocation -> handleBlockingBegin(firstInvocationStarted, releaseFirstInvocation, currentExecutions, maxExecutions, invocationCount);
     }
-
+    
     private Object handleBlockingBegin(final CountDownLatch firstInvocationStarted, final CountDownLatch releaseFirstInvocation, final AtomicInteger currentExecutions,
                                        final AtomicInteger maxExecutions, final AtomicInteger invocationCount) {
         int current = currentExecutions.incrementAndGet();
@@ -270,13 +270,13 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             currentExecutions.decrementAndGet();
         }
     }
-
+    
     private org.mockito.stubbing.Answer<Boolean> createBlockingQueryAnswer(final CountDownLatch firstInvocationStarted, final CountDownLatch releaseFirstInvocation,
                                                                            final AtomicInteger currentExecutions, final AtomicInteger maxExecutions,
                                                                            final AtomicInteger invocationCount) {
         return invocation -> handleBlockingQuery(firstInvocationStarted, releaseFirstInvocation, currentExecutions, maxExecutions, invocationCount);
     }
-
+    
     private Boolean handleBlockingQuery(final CountDownLatch firstInvocationStarted, final CountDownLatch releaseFirstInvocation,
                                         final AtomicInteger currentExecutions, final AtomicInteger maxExecutions, final AtomicInteger invocationCount) {
         int current = currentExecutions.incrementAndGet();
@@ -291,12 +291,12 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             currentExecutions.decrementAndGet();
         }
     }
-
+    
     private org.mockito.stubbing.Answer<Boolean> createConcurrentQueryAnswer(final CountDownLatch concurrentEntries, final CountDownLatch releaseQueries,
                                                                              final AtomicInteger currentExecutions, final AtomicInteger maxExecutions) {
         return invocation -> handleConcurrentQuery(concurrentEntries, releaseQueries, currentExecutions, maxExecutions);
     }
-
+    
     private Boolean handleConcurrentQuery(final CountDownLatch concurrentEntries, final CountDownLatch releaseQueries,
                                           final AtomicInteger currentExecutions, final AtomicInteger maxExecutions) {
         int current = currentExecutions.incrementAndGet();
@@ -309,7 +309,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
             currentExecutions.decrementAndGet();
         }
     }
-
+    
     private void awaitLatch(final CountDownLatch latch) {
         try {
             latch.await(1, TimeUnit.SECONDS);

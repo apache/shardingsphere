@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityPr
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,28 +38,39 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPToolSpecificationFactoryTest {
-    
+
     @TempDir
     private Path tempDir;
-    
+
+    @Test
+    void assertCreateToolSpecificationsWithExpectedToolNames() {
+        MCPToolSpecificationFactory factory = createFactory();
+        List<SyncToolSpecification> actual = factory.createToolSpecifications();
+        assertThat(actual.stream().map(each -> each.tool().name()).collect(Collectors.toSet()), is(Set.of(
+                "search_metadata", "execute_query", "plan_encrypt_rule", "validate_encrypt_rule",
+                "apply_encrypt_rule", "plan_mask_rule", "validate_mask_rule", "apply_mask_rule")));
+    }
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCreateToolSpecificationsArguments")
     void assertCreateToolSpecificationsWithSchema(final String name, final String toolName,
                                                   final String expectedTitle, final String fieldName, final boolean expectedRequired, final Map<String, Object> expectedProperty) {
         MCPToolSpecificationFactory factory = createFactory();
         List<SyncToolSpecification> actual = factory.createToolSpecifications();
-        assertThat(actual.size(), is(5));
         SyncToolSpecification actualSpecification = findToolSpecification(actual, toolName);
         assertThat(actualSpecification.tool().title(), is(expectedTitle));
         assertThat(actualSpecification.tool().description(), is("ShardingSphere MCP tool: " + toolName));
@@ -67,6 +79,16 @@ class MCPToolSpecificationFactoryTest {
         assertThat(actualSpecification.tool().inputSchema().required().contains(fieldName), is(expectedRequired));
         assertThat(actualSpecification.tool().inputSchema().properties().get(fieldName), is(expectedProperty));
         assertNotNull(actualSpecification.callHandler());
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertCreateToolSpecificationsWithoutRemovedFieldsArguments")
+    void assertCreateToolSpecificationsWithoutRemovedFields(final String name, final String toolName, final String fieldName) {
+        MCPToolSpecificationFactory factory = createFactory();
+        List<SyncToolSpecification> actual = factory.createToolSpecifications();
+        SyncToolSpecification actualSpecification = findToolSpecification(actual, toolName);
+        assertFalse(actualSpecification.tool().inputSchema().properties().containsKey(fieldName));
+        assertFalse(actualSpecification.tool().inputSchema().required().contains(fieldName));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -112,7 +134,11 @@ class MCPToolSpecificationFactoryTest {
                         Map.of("type", "array", "description", "Optional object-type filter. Allowed values: database, schema, table, view, column, index, sequence.",
                                 "items", Map.of("type", "string", "description", "Allowed values: database, schema, table, view, column, index, sequence."))),
                 Arguments.of("execute query timeout field", "execute_query", "Execute Query", "timeout_ms", false,
-                        Map.of("type", "integer", "description", "Optional timeout in milliseconds.")));
+                        Map.of("type", "integer", "description", "Optional timeout in milliseconds.")),
+                Arguments.of("plan encrypt rule algorithm type field", "plan_encrypt_rule", "Plan Encrypt Rule", "algorithm_type", false,
+                        Map.of("type", "string", "description", "Primary algorithm type override.")),
+                Arguments.of("plan mask rule algorithm type field", "plan_mask_rule", "Plan Mask Rule", "algorithm_type", false,
+                        Map.of("type", "string", "description", "Primary mask algorithm type override.")));
     }
     
     private static Stream<Arguments> assertCreateToolSpecificationsWithCallHandlerArguments() {
@@ -120,5 +146,13 @@ class MCPToolSpecificationFactoryTest {
                 Arguments.of("execute query call", "execute_query", Map.of("database", "logic_db", "sql", "SELECT 1"), false, "result_kind", "result_set", false, ""),
                 Arguments.of("search metadata with null arguments", "search_metadata", null, true, "error_code", "invalid_request", true, "query is required."),
                 Arguments.of("unsupported tool call", "unsupported_tool", Collections.emptyMap(), true, "error_code", "invalid_request", true, "Unsupported tool."));
+    }
+
+    private static Stream<Arguments> assertCreateToolSpecificationsWithoutRemovedFieldsArguments() {
+        return Stream.of(
+                Arguments.of("plan encrypt rule excludes raw user request", "plan_encrypt_rule", "raw_user_request"),
+                Arguments.of("plan encrypt rule excludes sample data flag", "plan_encrypt_rule", "allow_sample_data"),
+                Arguments.of("plan mask rule excludes raw user request", "plan_mask_rule", "raw_user_request"),
+                Arguments.of("plan mask rule excludes sample data flag", "plan_mask_rule", "allow_sample_data"));
     }
 }

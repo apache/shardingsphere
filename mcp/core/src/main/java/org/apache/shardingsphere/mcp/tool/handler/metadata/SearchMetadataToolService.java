@@ -26,8 +26,8 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
-import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
@@ -52,10 +52,10 @@ public final class SearchMetadataToolService {
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
             "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
     
-    private final MetadataQueryService metadataQueryService;
+    private final MCPMetadataQueryFacade metadataQueryService;
     
-    public SearchMetadataToolService(final MCPRequestContext requestContext) {
-        metadataQueryService = new MetadataQueryService(requestContext);
+    public SearchMetadataToolService(final MCPFeatureContext requestContext) {
+        metadataQueryService = requestContext.getMetadataQueryFacade();
     }
     
     /**

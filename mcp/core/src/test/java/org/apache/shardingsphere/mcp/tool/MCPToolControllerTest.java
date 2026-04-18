@@ -38,24 +38,24 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class MCPToolControllerTest {
-
+    
     @TempDir
     private Path tempDir;
-
+    
     @Test
     void assertHandleWithUnsupportedTool() {
         Map<String, Object> actual = createSearchController().handle("session-1", "unsupported_tool", Map.of()).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("Unsupported tool."));
     }
-
+    
     @Test
     void assertHandleSearchMetadata() {
         Map<String, Object> actual = createSearchController().handle("session-1", "search_metadata", Map.of("query", "order", "object_types", List.of("index"))).toPayload();
         assertThat(((List<?>) actual.get("items")).size(), is(1));
         assertThat(((MetadataSearchHit) ((List<?>) actual.get("items")).get(0)).getName(), is("order_idx"));
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithSequence() {
         Map<String, Object> actual = createSearchController().handle("session-1", "search_metadata",
@@ -63,7 +63,7 @@ class MCPToolControllerTest {
         assertThat(((List<?>) actual.get("items")).size(), is(1));
         assertThat(((MetadataSearchHit) ((List<?>) actual.get("items")).get(0)).getName(), is("order_seq"));
     }
-
+    
     @Test
     void assertHandleExecuteQuery() throws SQLException {
         Map<String, Object> actual = createExecutionController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
@@ -73,28 +73,28 @@ class MCPToolControllerTest {
         assertThat(((List<?>) actual.get("columns")).size(), is(1));
         assertThat(((List<?>) actual.get("rows")).size(), is(1));
     }
-
+    
     @Test
     void assertHandleExecuteQueryWithSemicolonLiteral() throws SQLException {
         Map<String, Object> actual = createExecutionController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "SELECT ';'")).toPayload();
         assertThat(actual.get("result_kind"), is("result_set"));
         assertThat(((List<?>) actual.get("rows")).get(0), is(List.of(";")));
     }
-
+    
     @Test
     void assertHandleExecuteQueryWithMissingSavepointName() throws SQLException {
         Map<String, Object> actual = createExecutionController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "RELEASE SAVEPOINT")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("Savepoint name is required."));
     }
-
+    
     @Test
     void assertHandleWithInvalidRequest() {
         Map<String, Object> actual = createSearchController().handle("session-1", "search_metadata", Map.of("schema", "public", "query", "orders")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("Schema cannot be provided without database."));
     }
-
+    
     @Test
     void assertHandleWithMissingQuery() {
         Map<String, Object> actual =
@@ -102,41 +102,41 @@ class MCPToolControllerTest {
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("query is required."));
     }
-
+    
     @Test
     void assertHandleWithBlankQuery() {
         Map<String, Object> actual = createSearchController().handle("session-1", "search_metadata", Map.of("query", "   ")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("query is required."));
     }
-
+    
     @Test
     void assertHandleWithInvalidObjectTypes() {
         Map<String, Object> actual = createSearchController().handle("session-1", "search_metadata", Map.of("query", "order", "object_types", List.of("invalid_type"))).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("Unsupported object_types value `invalid_type`."));
     }
-
+    
     @Test
     void assertHandleWithBlankDatabaseForExecuteQuery() throws SQLException {
         Map<String, Object> actual = createExecutionController().handle("session-1", "execute_query", Map.of("database", "   ", "sql", "SELECT 1")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("database is required."));
     }
-
+    
     @Test
     void assertHandleWithBlankSqlForExecuteQuery() throws SQLException {
         Map<String, Object> actual = createExecutionController().handle("session-1", "execute_query", Map.of("database", "logic_db", "sql", "   ")).toPayload();
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actual.get("message"), is("sql is required."));
     }
-
+    
     private MCPToolController createSearchController() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
         runtimeContext.getSessionManager().createSession("session-1");
         return new MCPToolController(runtimeContext);
     }
-
+    
     private MCPToolController createExecutionController() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "tool-controller");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.tool.handler.execute.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
@@ -38,7 +39,7 @@ import java.util.Optional;
 /**
  * MCP SQL execution facade.
  */
-public final class MCPSQLExecutionFacade {
+public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
@@ -57,8 +58,7 @@ public final class MCPSQLExecutionFacade {
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(requestContext.getSessionManager());
         transactionResourceManager = requestContext.getSessionManager().getTransactionResourceManager();
         transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(requestContext.getSessionManager());
-        statementExecutor = new MCPJdbcStatementExecutor(
-                transactionResourceManager.getRuntimeDatabases(), transactionResourceManager);
+        statementExecutor = new MCPJdbcStatementExecutor(transactionResourceManager.getRuntimeDatabases(), transactionResourceManager);
     }
     
     /**
@@ -67,6 +67,7 @@ public final class MCPSQLExecutionFacade {
      * @param executionRequest SQL execution request
      * @return execution response
      */
+    @Override
     public SQLExecutionResponse execute(final SQLExecutionRequest executionRequest) {
         try {
             return sessionExecutionCoordinator.executeWithSessionLock(executionRequest.getSessionId(), () -> executeInternal(executionRequest));

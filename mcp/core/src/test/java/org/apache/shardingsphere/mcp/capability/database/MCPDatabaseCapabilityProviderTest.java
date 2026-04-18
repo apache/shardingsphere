@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPDatabaseCapabilityProviderTest {
-
+    
     @Test
     void assertProvide() {
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider().provide("logic_db");
@@ -61,7 +61,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertFalse(actual.get().isSupportsExplainAnalyze());
     }
-
+    
     @Test
     void assertProvideWithoutIndex() {
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider().provide("warehouse");
@@ -74,7 +74,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getDefaultSchemaSemantics(), is(SchemaSemantics.DATABASE_AS_SCHEMA));
         assertThat(actual.get().getSchemaExecutionSemantics(), is(SchemaExecutionSemantics.FIXED_TO_DATABASE));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideCapabilityMatrixArguments")
     void assertProvideWithCapabilityMatrix(final String name, final String databaseType, final boolean expectedTransactionControl,
@@ -88,7 +88,7 @@ class MCPDatabaseCapabilityProviderTest {
         assertThat(actual.get().getSupportedMetadataObjectTypes().contains(SupportedMCPMetadataObjectType.SEQUENCE), is(expectedSequenceSupport));
         assertThat(actual.get().getSchemaExecutionSemantics(), is(expectedSchemaExecutionSemantics));
     }
-
+    
     @Test
     void assertProvideWithRuntimeOverlay() {
         Optional<MCPDatabaseCapability> actual = createCapabilityProvider("MySQL", "8.0.32").provide("logic_db");
@@ -98,19 +98,19 @@ class MCPDatabaseCapabilityProviderTest {
         assertFalse(actual.get().isSupportsCrossSchemaSql());
         assertTrue(actual.get().isSupportsExplainAnalyze());
     }
-
+    
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
         return new MCPDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
     }
-
+    
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType) {
         return createCapabilityProvider(databaseType, "");
     }
-
+    
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType, final String databaseVersion) {
         return new MCPDatabaseCapabilityProvider(Map.of("logic_db", createRuntimeDatabaseConfiguration("logic_db", databaseType, databaseVersion)));
     }
-
+    
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Map<String, String> databaseTypes) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(databaseTypes.size(), 1F);
         for (Entry<String, String> entry : databaseTypes.entrySet()) {
@@ -118,7 +118,7 @@ class MCPDatabaseCapabilityProviderTest {
         }
         return result;
     }
-
+    
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String databaseType, final String databaseVersion) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         try {
@@ -135,7 +135,7 @@ class MCPDatabaseCapabilityProviderTest {
         }
         return result;
     }
-
+    
     private static Stream<Arguments> provideCapabilityMatrixArguments() {
         return Stream.of(
                 Arguments.of("mysql", "MySQL", true, true, true, false, SchemaExecutionSemantics.FIXED_TO_DATABASE),

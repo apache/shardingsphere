@@ -48,17 +48,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ToolHandlerTest {
-
+    
     @TempDir
     private Path tempDir;
-
+    
     @Test
     void assertGetSearchMetadataToolDescriptor() {
         MCPToolDescriptor actual = new SearchMetadataToolHandler().getToolDescriptor();
         assertThat(actual.getName(), is("search_metadata"));
         assertThat(actual.getFields().size(), is(6));
     }
-
+    
     @Test
     void assertHandleSearchMetadata() {
         try (MCPRequestContext requestContext = new MCPRequestContext(createSearchRuntimeContext())) {
@@ -70,7 +70,7 @@ class ToolHandlerTest {
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_idx"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithSequence() {
         try (MCPRequestContext requestContext = new MCPRequestContext(createSearchRuntimeContext())) {
@@ -82,7 +82,7 @@ class ToolHandlerTest {
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_seq"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithEmptyQuery() {
         try (MCPRequestContext requestContext = new MCPRequestContext(createSearchRuntimeContext())) {
@@ -98,14 +98,14 @@ class ToolHandlerTest {
             assertTrue(actualNames.contains("order_idx"));
         }
     }
-
+    
     @Test
     void assertGetExecuteQueryToolDescriptor() {
         MCPToolDescriptor actual = new ExecuteSQLToolHandler().getToolDescriptor();
         assertThat(actual.getName(), is("execute_query"));
         assertThat(actual.getFields().size(), is(5));
     }
-
+    
     @Test
     void assertHandleExecuteQuery() throws SQLException {
         try (MCPRequestContext requestContext = new MCPRequestContext(createExecutionRuntimeContext())) {
@@ -117,7 +117,7 @@ class ToolHandlerTest {
             assertThat(((List<?>) actual.get("rows")).size(), is(1));
         }
     }
-
+    
     @Test
     void assertHandleExecuteQueryWithMissingSql() throws SQLException {
         try (MCPRequestContext requestContext = new MCPRequestContext(createExecutionRuntimeContext())) {
@@ -126,13 +126,13 @@ class ToolHandlerTest {
             assertThat(actual.getMessage(), is("sql cannot be empty."));
         }
     }
-
+    
     private MCPRuntimeContext createSearchRuntimeContext() {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext();
         result.getSessionManager().createSession("session-1");
         return result;
     }
-
+    
     private MCPRuntimeContext createExecutionRuntimeContext() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "tool-handler");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);

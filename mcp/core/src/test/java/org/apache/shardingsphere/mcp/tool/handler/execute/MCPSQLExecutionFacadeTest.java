@@ -65,7 +65,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class MCPSQLExecutionFacadeTest {
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertClassifyCases")
     void assertClassify(final String name, final String sql, final SupportedMCPStatement expectedStatementClass, final String expectedStatementType,
@@ -77,7 +77,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getTargetObjectName().orElse(""), is(expectedTargetObjectName));
         assertThat(actual.getSavepointName().orElse(""), is(expectedSavepointName));
     }
-
+    
     static Stream<Arguments> assertClassifyCases() {
         return Stream.of(
                 Arguments.of("query", "SELECT * FROM orders", SupportedMCPStatement.QUERY, "SELECT", "orders", ""),
@@ -96,14 +96,14 @@ class MCPSQLExecutionFacadeTest {
                 Arguments.of("savepoint", "SAVEPOINT sp_1", SupportedMCPStatement.SAVEPOINT, "SAVEPOINT", "", "sp_1"),
                 Arguments.of("explain analyze", "EXPLAIN ANALYZE SELECT * FROM orders", SupportedMCPStatement.EXPLAIN_ANALYZE, "EXPLAIN ANALYZE", "orders", ""));
     }
-
+    
     @Test
     void assertClassifyWithBannedCommand() {
         StatementClassifier classifier = new StatementClassifier();
         UnsupportedOperationException actual = assertThrows(UnsupportedOperationException.class, () -> classifier.classify("SET search_path public"));
         assertThat(actual.getMessage(), is("Statement is banned by the MCP contract."));
     }
-
+    
     @Test
     void assertExecuteDangerousQueryDoesNotReachJdbc() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -115,14 +115,14 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getMessage(), is("Statement is banned by the MCP contract."));
         verifyNoInteractions(runtimeDatabaseConfig);
     }
-
+    
     @Test
     void assertClassifyWithMultipleStatements() {
         StatementClassifier classifier = new StatementClassifier();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> classifier.classify("SELECT 1; SELECT 2"));
         assertThat(actual.getMessage(), is("Only one SQL statement is allowed."));
     }
-
+    
     @Test
     void assertExecuteWithMissingSession() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -132,7 +132,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getMessage(), is("Session does not exist."));
         verifyNoInteractions(runtimeDatabaseConfig);
     }
-
+    
     @Test
     void assertExecuteWithUnknownCapability() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -146,7 +146,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getMessage(), is("Database capability does not exist."));
         verifyNoInteractions(runtimeDatabaseConfig);
     }
-
+    
     @Test
     void assertExecuteQueryWithTruncation() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createQueryConnection(createResultSet(
@@ -164,7 +164,7 @@ class MCPSQLExecutionFacadeTest {
         assertTrue(actual.isTruncated());
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     @Test
     void assertExecuteUpdate() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createUpdateConnection(3));
@@ -177,7 +177,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getAffectedRows(), is(3));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     @Test
     void assertExecuteCtePrefixedUpdate() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createUpdateConnection(2));
@@ -192,7 +192,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getAffectedRows(), is(2));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     @Test
     void assertExecuteDataModifyingCteResultSet() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createQueryConnection(createResultSet(
@@ -208,7 +208,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getRows().size(), is(1));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     @Test
     void assertExecuteTransactionCommand() throws ReflectiveOperationException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -221,7 +221,7 @@ class MCPSQLExecutionFacadeTest {
         verify(transactionResourceManager).beginTransaction("session-1", "logic_db");
         verifyNoInteractions(runtimeDatabaseConfig);
     }
-
+    
     @Test
     void assertExecuteDdl() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(
@@ -234,7 +234,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getMessage(), is("Statement executed."));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     @Test
     void assertExecuteDcl() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(
@@ -247,7 +247,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getMessage(), is("Statement executed."));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     @Test
     void assertExecuteDdlInTransactionUsesTransactionConnection() throws ReflectiveOperationException, SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -261,7 +261,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getMessage(), is("Statement executed."));
         verifyNoInteractions(runtimeDatabaseConfig);
     }
-
+    
     @Test
     void assertExecuteCommitUsesTransactionManager() throws ReflectiveOperationException, SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createMetadataConnection("public", "orders_archive", List.of("order_id")));
@@ -274,7 +274,7 @@ class MCPSQLExecutionFacadeTest {
         verify(transactionResourceManager).commitTransaction("session-1");
         verifyNoInteractions(runtimeDatabaseConfig);
     }
-
+    
     @Test
     void assertExecuteExplainAnalyzeWithUnsupportedCapability() {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mock(RuntimeDatabaseConfiguration.class);
@@ -286,7 +286,7 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getMessage(), is("Statement class is not supported."));
         verifyNoInteractions(runtimeDatabaseConfig);
     }
-
+    
     @Test
     void assertExecuteExplainAnalyzeWithSupportedCapability() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = mockRuntimeDatabaseConfiguration(createQueryConnection(createResultSet(
@@ -301,19 +301,19 @@ class MCPSQLExecutionFacadeTest {
         assertThat(actual.getRows().size(), is(1));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
-
+    
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final String databaseType) {
         return createFacade(sessionManager, createCapabilityProvider(databaseType));
     }
-
+    
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider capabilityProvider) {
         return new MCPSQLExecutionFacade(new MCPRequestContext(new MCPRuntimeContext(sessionManager, capabilityProvider)));
     }
-
+    
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType) {
         return new MCPDatabaseCapabilityProvider(Map.of("logic_db", createCapabilityRuntimeDatabaseConfiguration(databaseType)));
     }
-
+    
     private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseType) {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         Connection connection = mock(Connection.class);
@@ -330,18 +330,18 @@ class MCPSQLExecutionFacadeTest {
         }
         return result;
     }
-
+    
     private MCPJdbcTransactionResourceManager createTransactionResourceManager(final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         MCPJdbcTransactionResourceManager result = mock(MCPJdbcTransactionResourceManager.class);
         when(result.getRuntimeDatabases()).thenReturn(Map.of("logic_db", runtimeDatabaseConfig));
         when(result.findTransactionConnection("session-1", "logic_db")).thenReturn(Optional.empty());
         return result;
     }
-
+    
     private SQLExecutionRequest createExecutionRequest(final String sql, final int maxRows) {
         return new SQLExecutionRequest("session-1", "logic_db", "public", sql, maxRows, 1000);
     }
-
+    
     private RuntimeDatabaseConfiguration mockRuntimeDatabaseConfiguration(final Connection... connections) throws SQLException {
         RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
         when(result.getDatabaseType()).thenReturn("H2");
@@ -354,26 +354,26 @@ class MCPSQLExecutionFacadeTest {
         }
         return result;
     }
-
+    
     private MCPSessionManager createSessionManager(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases,
                                                    final MCPJdbcTransactionResourceManager transactionResourceManager) throws ReflectiveOperationException {
         MCPSessionManager result = new MCPSessionManager(runtimeDatabases);
         Plugins.getMemberAccessor().set(MCPSessionManager.class.getDeclaredField("transactionResourceManager"), result, transactionResourceManager);
         return result;
     }
-
+    
     private Connection createQueryConnection(final ResultSet resultSet) throws SQLException {
         return createStatementConnection(true, 0, resultSet);
     }
-
+    
     private Connection createUpdateConnection(final int updateCount) throws SQLException {
         return createStatementConnection(false, updateCount, null);
     }
-
+    
     private Connection createStatementAckConnection() throws SQLException {
         return createStatementConnection(false, 0, null);
     }
-
+    
     private Connection createStatementConnection(final boolean hasResultSet, final int updateCount, final ResultSet resultSet) throws SQLException {
         Connection result = mock(Connection.class);
         Statement statement = mock(Statement.class);
@@ -386,7 +386,7 @@ class MCPSQLExecutionFacadeTest {
         }
         return result;
     }
-
+    
     private Connection createMetadataConnection(final String schemaName, final String tableName, final List<String> columnNames) throws SQLException {
         Connection result = mock(Connection.class);
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
@@ -411,7 +411,7 @@ class MCPSQLExecutionFacadeTest {
         when(statement.executeQuery("SELECT SEQUENCE_SCHEMA, SEQUENCE_NAME FROM INFORMATION_SCHEMA.SEQUENCES")).thenReturn(sequenceResultSet);
         return result;
     }
-
+    
     private ResultSet createResultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         ResultSetMetaData resultSetMetaData = mock(ResultSetMetaData.class);
@@ -429,7 +429,7 @@ class MCPSQLExecutionFacadeTest {
         }
         return result;
     }
-
+    
     private ResultSet createStringResultSet(final List<Map<String, String>> rows) throws SQLException {
         ResultSet result = mock(ResultSet.class);
         AtomicInteger rowIndex = new AtomicInteger(-1);

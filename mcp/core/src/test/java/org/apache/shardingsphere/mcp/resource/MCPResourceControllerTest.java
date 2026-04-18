@@ -43,13 +43,10 @@ class MCPResourceControllerTest {
     void assertHandleServiceCapabilities() {
         Map<String, Object> actual = createController().handle("shardingsphere://capabilities").toPayload();
         assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://databases/{database}/capabilities"));
-        assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://databases/{database}/encrypt-rules"));
-        assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://plugins/mask-algorithms"));
+        assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
+        assertTrue(((List<?>) actual.get("supportedResources")).contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
         assertTrue(((List<?>) actual.get("supportedTools")).contains("search_metadata"));
         assertTrue(((List<?>) actual.get("supportedTools")).contains("execute_query"));
-        assertTrue(((List<?>) actual.get("supportedTools")).contains("plan_encrypt_mask_rule"));
-        assertTrue(((List<?>) actual.get("supportedTools")).contains("apply_encrypt_mask_rule"));
-        assertTrue(((List<?>) actual.get("supportedTools")).contains("validate_encrypt_mask_rule"));
         assertTrue(((Set<?>) actual.get("supportedStatementClasses")).contains(SupportedMCPStatement.QUERY));
     }
     

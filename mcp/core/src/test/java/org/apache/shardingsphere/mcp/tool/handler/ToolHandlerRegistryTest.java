@@ -45,16 +45,14 @@ class ToolHandlerRegistryTest {
     
     @Test
     void assertGetSupportedTools() {
-        assertThat(ToolHandlerRegistry.getSupportedTools(), is(List.of(
-                "search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule")));
+        assertThat(ToolHandlerRegistry.getSupportedTools(), is(List.of("search_metadata", "execute_query")));
     }
     
     @Test
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
-        assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of(
-                "search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule")));
-        assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5, 24, 3, 1)));
+        assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query")));
+        assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5)));
     }
     
     @Test

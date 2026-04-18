@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
@@ -49,10 +49,9 @@ public final class ExecuteSQLToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPRequestContext requestContext, final String sessionId, final Map<String, Object> arguments) {
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(requestContext);
+    public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return sqlExecutionFacade.execute(new SQLExecutionRequest(sessionId,
+        return requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId,
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),
                 toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0)));
     }

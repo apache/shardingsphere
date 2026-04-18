@@ -44,10 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class MCPResourceSpecificationFactoryTest {
-
+    
     @TempDir
     private Path tempDir;
-
+    
     @Test
     void assertCreateResourceSpecifications() {
         MCPResourceSpecificationFactory factory = createFactory();
@@ -56,6 +56,8 @@ class MCPResourceSpecificationFactoryTest {
         assertTrue(actual.stream().noneMatch(each -> each.resource().uri().contains("{")));
         assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://capabilities"));
         assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://databases"));
+        assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://features/encrypt/algorithms"));
+        assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://features/mask/algorithms"));
         SyncResourceSpecification actualSpecification = findResourceSpecification(actual, "shardingsphere://capabilities");
         assertThat(actualSpecification.resource().name(), is("capabilities"));
         assertThat(actualSpecification.resource().description(), is("ShardingSphere MCP resource: shardingsphere://capabilities"));
@@ -68,10 +70,26 @@ class MCPResourceSpecificationFactoryTest {
         Map<String, Object> actualPayload = JsonUtils.fromJsonString(actualContent.text(), new TypeReference<>() {
         });
         assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
+        assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://features/encrypt/databases/{database}/rules"));
+        assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
         assertTrue(((List<?>) actualPayload.get("supportedTools")).contains("search_metadata"));
+        assertTrue(((List<?>) actualPayload.get("supportedTools")).contains("plan_encrypt_rule"));
+        assertTrue(((List<?>) actualPayload.get("supportedTools")).contains("plan_mask_rule"));
         assertTrue(((List<?>) actualPayload.get("supportedStatementClasses")).contains("QUERY"));
     }
-
+    
+    @Test
+    void assertCreateResourceTemplateSpecificationsContainsFeatureUris() {
+        MCPResourceSpecificationFactory factory = createFactory();
+        List<SyncResourceTemplateSpecification> actual = factory.createResourceTemplateSpecifications();
+        assertTrue(actual.stream().map(each -> each.resourceTemplate().uriTemplate()).toList().contains("shardingsphere://features/encrypt/databases/{database}/rules"));
+        assertTrue(actual.stream().map(each -> each.resourceTemplate().uriTemplate()).toList()
+                .contains("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
+        assertTrue(actual.stream().map(each -> each.resourceTemplate().uriTemplate()).toList().contains("shardingsphere://features/mask/databases/{database}/rules"));
+        assertTrue(actual.stream().map(each -> each.resourceTemplate().uriTemplate()).toList()
+                .contains("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCreateResourceTemplateSpecificationsArguments")
     void assertCreateResourceTemplateSpecifications(final String name, final String uriTemplate, final String actualUri, final String expectedName,
@@ -93,7 +111,7 @@ class MCPResourceSpecificationFactoryTest {
         assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("items")).get(0)).get(expectedItemKey), is(expectedItemValue));
     }
-
+    
     private static Stream<Arguments> assertCreateResourceTemplateSpecificationsArguments() {
         return Stream.of(
                 Arguments.of("database resource", "shardingsphere://databases/{database}", "shardingsphere://databases/logic_db", "{database}", "database", "logic_db"),
@@ -101,15 +119,15 @@ class MCPResourceSpecificationFactoryTest {
                 Arguments.of("sequence resource", "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
                         "shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq", "{sequence}", "sequence", "order_seq"));
     }
-
+    
     private SyncResourceSpecification findResourceSpecification(final List<SyncResourceSpecification> specifications, final String uri) {
         return specifications.stream().filter(each -> uri.equals(each.resource().uri())).findFirst().orElseThrow(IllegalStateException::new);
     }
-
+    
     private SyncResourceTemplateSpecification findResourceTemplateSpecification(final List<SyncResourceTemplateSpecification> specifications, final String uriTemplate) {
         return specifications.stream().filter(each -> uriTemplate.equals(each.resourceTemplate().uriTemplate())).findFirst().orElseThrow(IllegalStateException::new);
     }
-
+    
     private MCPResourceSpecificationFactory createFactory() {
         return new MCPResourceSpecificationFactory(MCPBootstrapTestDataFactory.createRuntimeContext(tempDir));
     }
