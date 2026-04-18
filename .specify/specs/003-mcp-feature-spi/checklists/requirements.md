@@ -17,20 +17,21 @@
 - [x] Requirements are testable and unambiguous at the module-boundary level.
 - [x] Success criteria are measurable.
 - [x] Success criteria stay architecture-oriented rather than code-step oriented.
-- [x] Acceptance scenarios cover core loading, feature ownership, future extensibility, and compatibility expectations.
+- [x] Acceptance scenarios cover direct handler SPI loading, feature ownership, future extensibility, and contract cleanup expectations.
 - [x] Edge cases are identified.
 - [x] Scope is clearly bounded.
 - [x] Dependencies and assumptions are identified.
 
 ## Feature Readiness
 
-- [x] Functional requirements define the target module layout and SPI boundary clearly enough for planning.
+- [x] Functional requirements define the target module layout and handler-level SPI boundary clearly enough for planning.
 - [x] User scenarios cover the primary maintainer and integrator flows affected by the refactor.
 - [x] Feature readiness outcomes are stated in measurable architectural terms.
-- [x] No tool, URI, or release-surface ambiguity is left unspecified.
+- [x] No tool, URI, or registry-source ambiguity is left unspecified.
 
 ## Notes
 
 - The specification intentionally names module paths such as `mcp/features/spi` because the feature itself is a module-boundary and SPI-contract refactor.
 - The specification intentionally treats tool names and resource URIs as first-release design decisions rather than backward-compatibility constraints because the product is not yet released.
+- The specification now treats `ToolHandler` and `ResourceHandler` SPI registration as the only accepted source of feature surface discovery; top-level feature-provider indirection is not part of the acceptance boundary.
 - No new branch was created for this specification; the requirement analysis was prepared on the existing working branch per user instruction.

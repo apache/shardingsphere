@@ -15,4 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mcp.feature.encrypt.EncryptMCPFeatureProvider
+org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptAlgorithmsHandler
+org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler
+org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRuleHandler

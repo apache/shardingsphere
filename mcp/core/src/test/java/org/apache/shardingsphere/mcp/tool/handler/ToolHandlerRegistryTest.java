@@ -22,11 +22,11 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +46,7 @@ class ToolHandlerRegistryTest {
     @Test
     void assertGetSupportedTools() {
         assertThat(ToolHandlerRegistry.getSupportedTools(), is(List.of("search_metadata", "execute_query")));
+        assertThrows(UnsupportedOperationException.class, () -> ToolHandlerRegistry.getSupportedTools().add("new_tool"));
     }
     
     @Test
@@ -53,6 +54,7 @@ class ToolHandlerRegistryTest {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query")));
         assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5)));
+        assertThrows(UnsupportedOperationException.class, () -> ToolHandlerRegistry.getSupportedToolDescriptors().clear());
     }
     
     @Test
@@ -71,29 +73,31 @@ class ToolHandlerRegistryTest {
     void assertGetSupportedToolsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class)).thenReturn(Collections.emptyList());
-            Class<?> registryClass = assertDoesNotThrow(
-                    () -> Class.forName(ToolHandlerRegistry.class.getName(), false, createIsolatedToolHandlerRegistryClassLoader()));
-            ExceptionInInitializerError actual = assertThrows(ExceptionInInitializerError.class,
-                    () -> MethodHandles.publicLookup().findStatic(registryClass, "getSupportedTools", MethodType.methodType(List.class))
-                            .invokeWithArguments());
-            assertThat(actual.getCause().getClass(), is(IllegalStateException.class));
-            assertThat(actual.getCause().getMessage(), is("No tool handlers are registered."));
+            Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolHandlerRegistry.class.getName(), false, createIsolatedToolHandlerRegistryClassLoader()));
+            InvocationTargetException actual = assertThrows(InvocationTargetException.class,
+                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedTools"), null));
+            assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
+            Throwable actualCause = actual.getCause().getCause();
+            assertThat(actualCause.getClass(), is(IllegalStateException.class));
+            assertThat(actualCause.getMessage(), is("No tool handlers are registered."));
         }
     }
     
     @Test
-    void assertGetSupportedToolsWithDuplicateToolNames() {
+    void assertCreateRegisteredHandlersWithInvalidToolHandlers() {
         ToolHandler firstHandler = createToolHandler("search_metadata");
         ToolHandler secondHandler = createToolHandler("search_metadata");
-        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class)).thenReturn(List.of(firstHandler, secondHandler));
-            Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolHandlerRegistry.class.getName(), false, createIsolatedToolHandlerRegistryClassLoader()));
-            ExceptionInInitializerError actual = assertThrows(ExceptionInInitializerError.class,
-                    () -> MethodHandles.publicLookup().findStatic(registryClass, "getSupportedTools", MethodType.methodType(List.class)).invokeWithArguments());
-            assertThat(actual.getCause().getClass(), is(IllegalArgumentException.class));
-            assertThat(actual.getCause().getMessage(),
-                    is(String.format("Duplicate tool name `search_metadata` with `%s` and `%s`.", firstHandler.getClass().getName(), secondHandler.getClass().getName())));
-        }
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredHandlers(List.of(firstHandler, secondHandler)));
+        assertThat(actual.getMessage(), is(String.format("Duplicate tool name `search_metadata` with `%s` and `%s`.", firstHandler.getClass().getName(), secondHandler.getClass().getName())));
+        ToolHandler handler = mock(ToolHandler.class);
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredHandlers(List.of(handler)));
+        assertThat(actual.getMessage(), is(String.format("Tool descriptor is required for `%s`.", handler.getClass().getName())));
+        ToolHandler nullNameHandler = createToolHandler(null);
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredHandlers(List.of(nullNameHandler)));
+        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", nullNameHandler.getClass().getName())));
+        ToolHandler blankNameHandler = createToolHandler("   ");
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredHandlers(List.of(blankNameHandler)));
+        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", blankNameHandler.getClass().getName())));
     }
     
     private static ToolHandler createToolHandler(final String toolName) {

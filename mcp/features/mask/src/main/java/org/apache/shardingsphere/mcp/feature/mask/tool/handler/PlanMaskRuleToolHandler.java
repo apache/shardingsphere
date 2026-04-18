@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
@@ -41,24 +42,15 @@ import java.util.Map;
  */
 public final class PlanMaskRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowPlanningToolDescriptorFactory.create("plan_mask_rule",
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowPlanningToolDescriptorFactory.create(MaskFeatureDefinition.PLAN_TOOL_NAME,
             List.of(
                     new MCPToolFieldDefinition("user_overrides", new MCPToolValueDefinition(Type.OBJECT, "Optional user overrides for mask algorithm fields.", null), false),
                     new MCPToolFieldDefinition("algorithm_type", new MCPToolValueDefinition(Type.STRING, "Primary mask algorithm type override.", null), false),
                     new MCPToolFieldDefinition("primary_algorithm_properties", new MCPToolValueDefinition(Type.OBJECT, "Primary algorithm properties.", null), false)));
     
-    private final MaskWorkflowPlanningService planningService;
+    private final MaskWorkflowPlanningService planningService = new MaskWorkflowPlanningService();
     
-    private final MaskAlgorithmPropertyTemplateService propertyTemplateService;
-    
-    public PlanMaskRuleToolHandler() {
-        this(new MaskWorkflowPlanningService(), new MaskAlgorithmPropertyTemplateService());
-    }
-    
-    PlanMaskRuleToolHandler(final MaskWorkflowPlanningService planningService, final MaskAlgorithmPropertyTemplateService propertyTemplateService) {
-        this.planningService = planningService;
-        this.propertyTemplateService = propertyTemplateService;
-    }
+    private final MaskAlgorithmPropertyTemplateService propertyTemplateService = new MaskAlgorithmPropertyTemplateService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

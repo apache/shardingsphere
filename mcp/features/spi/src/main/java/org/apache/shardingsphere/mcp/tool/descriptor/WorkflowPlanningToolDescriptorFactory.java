@@ -52,6 +52,6 @@ public final class WorkflowPlanningToolDescriptorFactory {
     public static MCPToolDescriptor create(final String toolName, final List<MCPToolFieldDefinition> featureFields) {
         List<MCPToolFieldDefinition> result = new LinkedList<>(COMMON_FIELDS);
         result.addAll(featureFields);
-        return new MCPToolDescriptor(toolName, result);
+        return new MCPToolDescriptor(toolName, List.copyOf(result));
     }
 }

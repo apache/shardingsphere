@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowValidationToolDescriptorFactory;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,18 +34,9 @@ import java.util.Map;
  */
 public final class ValidateMaskRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("validate_mask_rule",
-            List.of(new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Workflow plan identifier.", null), true)));
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowValidationToolDescriptorFactory.create(MaskFeatureDefinition.VALIDATE_TOOL_NAME);
     
-    private final MaskWorkflowValidationService validationService;
-    
-    public ValidateMaskRuleToolHandler() {
-        this(new MaskWorkflowValidationService());
-    }
-    
-    ValidateMaskRuleToolHandler(final MaskWorkflowValidationService validationService) {
-        this.validationService = validationService;
-    }
+    private final MaskWorkflowValidationService validationService = new MaskWorkflowValidationService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

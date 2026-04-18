@@ -37,10 +37,10 @@ mcp
 
 ## 4. Encrypt 模块验收样板
 
-### 4.1 Encrypt provider 注册
+### 4.1 Encrypt SPI 注册
 
-- `mcp/features/encrypt` 提供一个 `MCPFeatureProvider`
-- provider 暴露 encrypt 自己的 tools 与 resources
+- `mcp/features/encrypt` 自己注册 `ToolHandler`
+- `mcp/features/encrypt` 自己注册 `ResourceHandler`
 - `mcp/core` 不直接引用 encrypt 实现类
 
 ### 4.2 Encrypt 首发 tool family
@@ -74,10 +74,10 @@ mcp
 
 ## 5. Mask 模块验收样板
 
-### 5.1 Mask provider 注册
+### 5.1 Mask SPI 注册
 
-- `mcp/features/mask` 提供一个 `MCPFeatureProvider`
-- provider 暴露 mask 自己的 tools 与 resources
+- `mcp/features/mask` 自己注册 `ToolHandler`
+- `mcp/features/mask` 自己注册 `ResourceHandler`
 - `mcp/core` 不直接引用 mask 实现类
 
 ### 5.2 Mask 首发 tool family
@@ -138,12 +138,12 @@ mcp
 - registry 启动失败
 - 错误明确指出冲突 URI pattern 和两个来源
 
-### 场景 C：同一个 feature type 被注册两次
+### 场景 C：feature jar 在 classpath 中，但缺失应有的 handler SPI 注册
 
 预期结果：
 
-- provider registry 启动失败
-- 错误明确指出重复 feature type
+- 对应 feature surface 不会被静默部分发布
+- 缺失或不完整的 SPI 注册有明确错误或明确缺失结果
 
 ## 8. 新增未来 feature 的标准步骤
 
@@ -151,10 +151,11 @@ mcp
 
 1. 新建 `mcp/features/audit`
 2. 依赖 `mcp/features/spi`
-3. 实现 `MCPFeatureProvider`
-4. 暴露自己的 tool family，例如 `plan_audit_rule`
-5. 暴露自己的 resource namespace，例如 `shardingsphere://features/audit/...`
-6. 在 `META-INF/services` 注册 provider
-7. 将 jar 放入 MCP runtime classpath
+3. 实现自己的 `ToolHandler`
+4. 实现自己的 `ResourceHandler`
+5. 暴露自己的 tool family，例如 `plan_audit_rule`
+6. 暴露自己的 resource namespace，例如 `shardingsphere://features/audit/...`
+7. 在 `META-INF/services` 注册 handler
+8. 将 jar 放入 MCP runtime classpath
 
 如果以上步骤无需修改 `mcp/core` 业务分支，就说明本次 SPI 设计达到了目标。

@@ -21,12 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.feature.MCPFeatureProviderRegistry;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,27 +45,29 @@ public final class ToolHandlerRegistry {
     
     static {
         REGISTERED_HANDLERS = createRegisteredHandlers();
-        SUPPORTED_TOOLS = new ArrayList<>(REGISTERED_HANDLERS.keySet());
+        SUPPORTED_TOOLS = List.copyOf(REGISTERED_HANDLERS.keySet());
         SUPPORTED_TOOL_DESCRIPTORS = REGISTERED_HANDLERS.values().stream().map(ToolHandler::getToolDescriptor).toList();
     }
     
     private static Map<String, ToolHandler> createRegisteredHandlers() {
-        Collection<ToolHandler> handlers = new ArrayList<>(ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class));
-        for (MCPFeatureProvider each : MCPFeatureProviderRegistry.getRegisteredProviders()) {
-            handlers.addAll(each.getToolHandlers());
-        }
-        return createRegisteredHandlers(handlers);
+        return createRegisteredHandlers(new ArrayList<>(ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class)));
     }
     
     static Map<String, ToolHandler> createRegisteredHandlers(final Collection<ToolHandler> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No tool handlers are registered."));
         Map<String, ToolHandler> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (ToolHandler each : handlers) {
-            ToolHandler previousHandler = result.putIfAbsent(each.getToolDescriptor().getName(), each);
+            MCPToolDescriptor descriptor = each.getToolDescriptor();
+            ShardingSpherePreconditions.checkState(null != descriptor,
+                    () -> new IllegalArgumentException(String.format("Tool descriptor is required for `%s`.", each.getClass().getName())));
+            String toolName = descriptor.getName();
+            ShardingSpherePreconditions.checkState(null != toolName && !toolName.isBlank(),
+                    () -> new IllegalArgumentException(String.format("Tool name is required for `%s`.", each.getClass().getName())));
+            ToolHandler previousHandler = result.putIfAbsent(toolName, each);
             ShardingSpherePreconditions.checkState(null == previousHandler, () -> new IllegalArgumentException(
-                    String.format("Duplicate tool name `%s` with `%s` and `%s`.", each.getToolDescriptor().getName(), previousHandler.getClass().getName(), each.getClass().getName())));
+                    String.format("Duplicate tool name `%s` with `%s` and `%s`.", toolName, previousHandler.getClass().getName(), each.getClass().getName())));
         }
-        return result;
+        return Collections.unmodifiableMap(result);
     }
     
     /**

@@ -13,7 +13,7 @@
 - `mcp/core` 只保留 registry、dispatch、runtime facade、protocol / session / metadata / execution 等共享平台职责；
 - `mcp/bootstrap` 继续只消费聚合后的 tool / resource surface，不直接依赖具体实现类。
 
-规划后的核心技术路线不是“把类搬目录”，而是把现在只在装配层可插拔的设计，重构为 feature 级别可插拔的 SPI 架构。
+规划后的核心技术路线不是“把类搬目录”，也不是“把 provider 搬出去”，而是把当前只在 feature 模块级可插拔的设计，继续收敛成 **tool / resource 粒度直接 SPI 装配** 的架构。
 
 ## Technical Context
 
@@ -37,7 +37,7 @@
 - STDIO 与 Streamable HTTP 两种 transport
 **Project Type**: 现有仓库内的多模块 Java 后端重构
 **Performance Goals**:
-- 启动期 feature 发现与 surface 聚合保持确定性
+- 启动期 handler 发现与 surface 聚合保持确定性
 - tool / resource dispatch 不引入额外 feature 分支扫描
 - 不因插件化而增加不必要的 metadata / execution 热路径开销
 **Constraints**:
@@ -47,6 +47,7 @@
 - encrypt / mask tool family 必须拆开命名
 - URI 需要按插件化 feature ownership 重新设计
 - feature 模块只能通过 `mcp/features/spi` 与上层交互
+- 在当前固定模块结构下，不额外新增运行时聚合模块
 **Scale/Scope**:
 - 覆盖 `mcp` reactor 的模块结构、SPI 契约、registry 装配、tool / resource surface、workflow 归属与打包路径
 - 不扩展 encrypt / mask 的业务范围，只重构模块边界和首发外部契约
@@ -62,7 +63,7 @@
 - **Minimal safe automation**
   - 不借本次模块化重构引入数据迁移、回滚或额外自动化能力。
 - **Deterministic naming and transparent changes**
-  - SPI 聚合必须保持确定性，并继续对重复 tool / URI / feature registration 做显式失败。
+  - SPI 聚合必须保持确定性，并继续对重复 tool / URI 做显式失败。
 - **Complete verification before completion**
   - validate 语义继续保留在 feature 内，不因为模块拆分而降级为只做注册级检查。
 - **Behavior scope note**
@@ -100,16 +101,17 @@ mcp/
 ```
 
 **Structure Decision**:
-新增 `mcp/features` reactor，并把面向 feature 的稳定契约整体提升到 `mcp/features/spi`。`mcp/core` 只保留共享基础设施和聚合装配逻辑；encrypt / mask 的业务 surface 与 workflow 实现分别下沉到对应 feature 模块。
+新增 `mcp/features` reactor，并把面向 feature 的稳定契约整体提升到 `mcp/features/spi`。`mcp/core` 只保留共享基础设施和聚合装配逻辑；encrypt / mask 的业务 surface 与 workflow 实现分别下沉到对应 feature 模块，并通过 handler SPI 直接注册。
 
 ## Design Focus
 
 ### Architectural direction
 
-- 定义 feature 级 SPI 顶层入口，用于聚合 feature 自己暴露的 tools 与 resources。
-- 把当前位于 `mcp/core` 的扩展契约和 descriptor / response / runtime facade 中需要被 feature 实现直接依赖的部分迁移到 `mcp/features/spi`。
-- 保持 `bootstrap -> registry -> controller -> handler` 的整体调用链，但让 registry 聚合来源从“core 中硬编码的 feature handler”变成“SPI 发现的 feature contribution”。
+- 定义 feature 可直接依赖的 `ToolHandler` / `ResourceHandler` / descriptor / runtime facade / workflow seam 契约。
+- 把当前位于 `mcp/core` 的 extension-facing contract 提升到 `mcp/features/spi`。
+- 保持 `bootstrap -> registry -> controller -> handler` 的整体调用链，但让 registry 聚合来源收敛为“handler SPI 发现”。
 - encrypt / mask 各自拥有独立 tool family、resource namespace、workflow service 和 state model。
+- `MCPFeatureProvider` 不再作为 tool / resource surface assembly 的主入口；若未来需要 feature metadata，应单独建模。
 
 ### Behavior preservation
 
@@ -120,8 +122,8 @@ mcp/
 ### Cleanup expectation
 
 - 删除 `mcp/core` 中 encrypt / mask 特定的 workflow branching 与 hard-coded handler registration source。
+- 删除 feature tool / resource 仍靠顶层 provider 手工枚举的现状。
 - 删除 `plan_encrypt_mask_rule` / `apply_encrypt_mask_rule` / `validate_encrypt_mask_rule` 这一类跨 feature 共享 tool family。
-- 删除 encrypt / mask rule / plugin 资源留在 `mcp/core` 的现状。
 
 ## Implementation Slices
 
@@ -133,23 +135,25 @@ mcp/
 
 ### Slice 2 - Registry and runtime assembly refactor
 
-- 让 `mcp/core` 通过 feature SPI 聚合 encrypt / mask 的 tools 与 resources。
-- 保留 core 自己的共享 surface，同时把 feature surface 的装配来源从实现类列表切换成 SPI provider。
-- 保证 duplicate feature type、duplicate tool name、duplicate / overlapping URI 在启动期显式失败。
+- 让 `mcp/core` 通过 `ToolHandler` / `ResourceHandler` SPI 聚合 encrypt / mask 的 tools 与 resources。
+- 保留 core 自己的共享 surface，同时把 feature surface 的装配来源从 provider 枚举切换成 handler SPI。
+- 保证 duplicate tool name、duplicate / overlapping URI 在启动期显式失败。
 
 ### Slice 3 - Encrypt feature migration
 
 - 将 encrypt tools、resources、planning、artifact generation、validation、algorithm recommendation、property template 等能力迁入 `mcp/features/encrypt`。
 - 对外发布 encrypt 专属 tool family 与 URI namespace。
+- 通过 `META-INF/services` 直接注册 encrypt 的 tools 与 resources。
 
 ### Slice 4 - Mask feature migration
 
 - 将 mask tools、resources、planning、validation、algorithm recommendation、property template 等能力迁入 `mcp/features/mask`。
 - 对外发布 mask 专属 tool family 与 URI namespace。
+- 通过 `META-INF/services` 直接注册 mask 的 tools 与 resources。
 
 ### Slice 5 - Core cleanup and verification
 
-- 清理 `mcp/core` 中剩余的 encrypt / mask 分支与类路径注册。
+- 清理 `mcp/core` 中剩余的 encrypt / mask 分支与 provider-based assembly path。
 - 补齐 feature 级、registry 级、bootstrap 暴露级测试。
 - 验证只装载单个 feature 时的 discovery surface 和错误场景。
 

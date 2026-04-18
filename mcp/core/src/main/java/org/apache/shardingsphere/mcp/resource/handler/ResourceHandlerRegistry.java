@@ -21,12 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.feature.MCPFeatureProviderRegistry;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -50,22 +49,19 @@ public final class ResourceHandlerRegistry {
     }
     
     private static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers() {
-        Collection<ResourceHandler> handlers = new ArrayList<>(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class));
-        for (MCPFeatureProvider each : MCPFeatureProviderRegistry.getRegisteredProviders()) {
-            handlers.addAll(each.getResourceHandlers());
-        }
-        return createRegisteredHandlers(handlers);
+        return createRegisteredHandlers(new ArrayList<>(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class)));
     }
     
     static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers(final Collection<ResourceHandler> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, ResourceHandler> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (ResourceHandler each : handlers) {
-            ShardingSpherePreconditions.checkState(null != each.getUriPattern() && !each.getUriPattern().isEmpty(),
+            String uriPattern = each.getUriPattern();
+            ShardingSpherePreconditions.checkState(null != uriPattern && !uriPattern.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI pattern is required for `%s`.", each.getClass().getName())));
-            result.put(new MCPUriPattern(each.getUriPattern()), each);
+            result.put(new MCPUriPattern(uriPattern), each);
         }
-        return result;
+        return Collections.unmodifiableMap(result);
     }
     
     private static void validateRegisteredHandlers() {

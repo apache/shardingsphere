@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
@@ -41,7 +42,7 @@ import java.util.Map;
  */
 public final class PlanEncryptRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowPlanningToolDescriptorFactory.create("plan_encrypt_rule",
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowPlanningToolDescriptorFactory.create(EncryptFeatureDefinition.PLAN_TOOL_NAME,
             List.of(
                     new MCPToolFieldDefinition("allow_index_ddl", new MCPToolValueDefinition(Type.BOOLEAN, "Whether index DDL may be auto-generated.", null), false),
                     new MCPToolFieldDefinition("user_overrides", new MCPToolValueDefinition(Type.OBJECT, "Optional user overrides for algorithm and naming fields.", null), false),
@@ -55,18 +56,9 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
                     new MCPToolFieldDefinition("assisted_query_algorithm_properties", new MCPToolValueDefinition(Type.OBJECT, "Assisted-query algorithm properties.", null), false),
                     new MCPToolFieldDefinition("like_query_algorithm_properties", new MCPToolValueDefinition(Type.OBJECT, "LIKE-query algorithm properties.", null), false)));
     
-    private final EncryptWorkflowPlanningService planningService;
+    private final EncryptWorkflowPlanningService planningService = new EncryptWorkflowPlanningService();
     
-    private final EncryptAlgorithmPropertyTemplateService propertyTemplateService;
-    
-    public PlanEncryptRuleToolHandler() {
-        this(new EncryptWorkflowPlanningService(), new EncryptAlgorithmPropertyTemplateService());
-    }
-    
-    PlanEncryptRuleToolHandler(final EncryptWorkflowPlanningService planningService, final EncryptAlgorithmPropertyTemplateService propertyTemplateService) {
-        this.planningService = planningService;
-        this.propertyTemplateService = propertyTemplateService;
-    }
+    private final EncryptAlgorithmPropertyTemplateService propertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
@@ -82,7 +74,7 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
     
     private void bindFeatureArguments(final WorkflowRequest request, final MCPToolArguments toolArguments) {
         String allowIndexDDL = toolArguments.getStringArgument("allow_index_ddl");
-        request.setAllowIndexDDL(allowIndexDDL.isEmpty() ? true : toolArguments.getBooleanArgument("allow_index_ddl", true));
+        request.setAllowIndexDDL(allowIndexDDL.isEmpty() || toolArguments.getBooleanArgument("allow_index_ddl", true));
         request.setAlgorithmType(toolArguments.getStringArgument("algorithm_type"));
         request.setAssistedQueryAlgorithmType(toolArguments.getStringArgument("assisted_query_algorithm_type"));
         request.setLikeQueryAlgorithmType(toolArguments.getStringArgument("like_query_algorithm_type"));

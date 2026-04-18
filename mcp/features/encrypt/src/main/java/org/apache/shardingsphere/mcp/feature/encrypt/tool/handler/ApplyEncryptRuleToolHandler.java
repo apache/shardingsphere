@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowExecutionToolDescriptorFactory;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -36,24 +34,9 @@ import java.util.Map;
  */
 public final class ApplyEncryptRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("apply_encrypt_rule",
-            Arrays.asList(
-                    new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Workflow plan identifier.", null), true),
-                    new MCPToolFieldDefinition("execution_mode", new MCPToolValueDefinition(Type.STRING, "Optional execution mode override.", null), false),
-                    new MCPToolFieldDefinition("approved_steps",
-                            new MCPToolValueDefinition(Type.ARRAY, "Approved execution steps.",
-                                    new MCPToolValueDefinition(Type.STRING, "Step name.", null)),
-                            false)));
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowExecutionToolDescriptorFactory.create(EncryptFeatureDefinition.APPLY_TOOL_NAME);
     
-    private final WorkflowExecutionService executionService;
-    
-    public ApplyEncryptRuleToolHandler() {
-        this(new WorkflowExecutionService());
-    }
-    
-    ApplyEncryptRuleToolHandler(final WorkflowExecutionService executionService) {
-        this.executionService = executionService;
-    }
+    private final WorkflowExecutionService executionService = new WorkflowExecutionService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

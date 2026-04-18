@@ -18,17 +18,15 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowValidationToolDescriptorFactory;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,18 +34,9 @@ import java.util.Map;
  */
 public final class ValidateEncryptRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("validate_encrypt_rule",
-            List.of(new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Workflow plan identifier.", null), true)));
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowValidationToolDescriptorFactory.create(EncryptFeatureDefinition.VALIDATE_TOOL_NAME);
     
-    private final EncryptWorkflowValidationService validationService;
-    
-    public ValidateEncryptRuleToolHandler() {
-        this(new EncryptWorkflowValidationService());
-    }
-    
-    ValidateEncryptRuleToolHandler(final EncryptWorkflowValidationService validationService) {
-        this.validationService = validationService;
-    }
+    private final EncryptWorkflowValidationService validationService = new EncryptWorkflowValidationService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

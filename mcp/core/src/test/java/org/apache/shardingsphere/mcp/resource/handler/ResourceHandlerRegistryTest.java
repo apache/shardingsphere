@@ -46,6 +46,7 @@ class ResourceHandlerRegistryTest {
     @Test
     void assertGetRegisteredHandlers() {
         assertThat(ResourceHandlerRegistry.getRegisteredHandlers().size(), is(18));
+        assertThrows(UnsupportedOperationException.class, () -> ResourceHandlerRegistry.getRegisteredHandlers().clear());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -73,11 +74,13 @@ class ResourceHandlerRegistryTest {
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
+        assertThrows(UnsupportedOperationException.class, () -> ResourceHandlerRegistry.getSupportedResources().clear());
     }
     
     private static Stream<Arguments> getRegisteredHandlersFailureCases() {
         ResourceHandler nullPatternHandler = createResourceHandler(null);
         ResourceHandler emptyPatternHandler = createResourceHandler("");
+        ResourceHandler blankPatternHandler = createResourceHandler("   ");
         ResourceHandler duplicatePatternHandler = createResourceHandler("shardingsphere://foo/{id}");
         ResourceHandler otherDuplicatePatternHandler = createResourceHandler("shardingsphere://foo/{id}");
         ResourceHandler overlappingPatternHandler = createResourceHandler("shardingsphere://foo/{id}");
@@ -88,6 +91,8 @@ class ResourceHandlerRegistryTest {
                         getRequiredUriPatternMessage(nullPatternHandler)),
                 Arguments.of("empty resource URI pattern", List.of(emptyPatternHandler), IllegalArgumentException.class,
                         getRequiredUriPatternMessage(emptyPatternHandler)),
+                Arguments.of("blank resource URI pattern", List.of(blankPatternHandler), IllegalArgumentException.class,
+                        getRequiredUriPatternMessage(blankPatternHandler)),
                 Arguments.of("duplicate resource URI pattern",
                         List.of(duplicatePatternHandler, otherDuplicatePatternHandler), IllegalArgumentException.class,
                         getDuplicateUriPatternMessage(duplicatePatternHandler, otherDuplicatePatternHandler)),

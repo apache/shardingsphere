@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 
 /**
  * Handler for encrypt rules resource URI.
@@ -33,7 +34,7 @@ public final class EncryptRulesHandler implements ResourceHandler {
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://features/encrypt/databases/{database}/rules";
+        return EncryptFeatureDefinition.RULES_RESOURCE_URI;
     }
     
     @Override

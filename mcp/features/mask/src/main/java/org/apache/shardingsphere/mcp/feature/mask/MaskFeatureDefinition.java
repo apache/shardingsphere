@@ -15,32 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.spi;
-
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
-
-import java.util.Collection;
+package org.apache.shardingsphere.mcp.feature.mask;
 
 /**
- * MCP feature provider.
+ * Mask MCP feature definition.
  */
-@SingletonSPI
-public interface MCPFeatureProvider extends TypedSPI {
+public final class MaskFeatureDefinition {
     
-    /**
-     * Get tool handlers.
-     *
-     * @return tool handlers
-     */
-    Collection<ToolHandler> getToolHandlers();
+    public static final String PLAN_TOOL_NAME = "plan_mask_rule";
     
-    /**
-     * Get resource handlers.
-     *
-     * @return resource handlers
-     */
-    Collection<ResourceHandler> getResourceHandlers();
+    public static final String APPLY_TOOL_NAME = "apply_mask_rule";
+    
+    public static final String VALIDATE_TOOL_NAME = "validate_mask_rule";
+    
+    public static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/mask/algorithms";
+    
+    public static final String RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/{database}/rules";
+    
+    public static final String RULE_RESOURCE_URI = "shardingsphere://features/mask/databases/{database}/tables/{table}/rules";
+    
+    private MaskFeatureDefinition() {
+    }
 }
