@@ -54,7 +54,7 @@ class MCPResourceSpecificationFactoryTest {
     void assertCreateResourceSpecifications() {
         MCPResourceSpecificationFactory factory = createFactory();
         List<SyncResourceSpecification> actual = factory.createResourceSpecifications();
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(4));
         assertTrue(actual.stream().noneMatch(each -> each.resource().uri().contains("{")));
         assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://capabilities"));
         assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://databases"));

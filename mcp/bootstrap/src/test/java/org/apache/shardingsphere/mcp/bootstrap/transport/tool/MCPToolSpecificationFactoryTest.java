@@ -59,7 +59,7 @@ class MCPToolSpecificationFactoryTest {
                                                   final String expectedTitle, final String fieldName, final boolean expectedRequired, final Map<String, Object> expectedProperty) {
         MCPToolSpecificationFactory factory = createFactory();
         List<SyncToolSpecification> actual = factory.createToolSpecifications();
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(5));
         SyncToolSpecification actualSpecification = findToolSpecification(actual, toolName);
         assertThat(actualSpecification.tool().title(), is(expectedTitle));
         assertThat(actualSpecification.tool().description(), is("ShardingSphere MCP tool: " + toolName));
