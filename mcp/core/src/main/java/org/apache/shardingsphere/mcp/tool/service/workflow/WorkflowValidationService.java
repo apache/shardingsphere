@@ -170,6 +170,9 @@ public final class WorkflowValidationService {
         if (!isEncryptWorkflow(snapshot)) {
             return new ValidationSection("skipped", List.of(), "Mask workflows do not require physical derived-column validation.");
         }
+        if (isDropWorkflow(snapshot)) {
+            return new ValidationSection("skipped", List.of(), "Encrypt drop does not validate physical cleanup in V1.");
+        }
         if (null == snapshot.getDerivedColumnPlan()) {
             return new ValidationSection("skipped", List.of(), "No derived column plan is available for validation.");
         }
@@ -184,10 +187,10 @@ public final class WorkflowValidationService {
                 "Cipher column mapping does not match.");
         addDerivedColumnMismatch(mismatches, "assisted_query_column",
                 snapshot.getDerivedColumnPlan().isAssistedQueryColumnRequired() ? snapshot.getDerivedColumnPlan().getAssistedQueryColumnName() : "",
-                findRuleValue(actualRule.get(), "assisted_query_column"), "Assisted-query column mapping does not match.");
+                findRuleValue(actualRule.get(), "assisted_query_column", "assisted_query"), "Assisted-query column mapping does not match.");
         addDerivedColumnMismatch(mismatches, "like_query_column",
                 snapshot.getDerivedColumnPlan().isLikeQueryColumnRequired() ? snapshot.getDerivedColumnPlan().getLikeQueryColumnName() : "",
-                findRuleValue(actualRule.get(), "like_query_column"), "LIKE-query column mapping does not match.");
+                findRuleValue(actualRule.get(), "like_query_column", "like_query"), "LIKE-query column mapping does not match.");
         addMissingPhysicalDerivedColumnMismatches(runtimeContext, snapshot, mismatches);
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
@@ -200,28 +203,18 @@ public final class WorkflowValidationService {
                                             final List<Map<String, Object>> maskRules, final ValidationReport validationReport) {
         if (isEncryptWorkflow(snapshot)) {
             Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules);
+            if (!isDropWorkflow(snapshot)) {
+                return validateEncryptRule(snapshot, validationReport, actualRule);
+            }
             if (actualRule.isEmpty()) {
-                validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
-                        "Encrypt rule is missing.", "Create or alter the encrypt rule again."));
-                return new ValidationSection("failed", List.of(), "Encrypt rule is missing.");
+                return new ValidationSection("passed", List.of(), "Encrypt rule has been removed.");
             }
-            List<Map<String, Object>> mismatches = new LinkedList<>();
-            addAlgorithmTypeMismatch(mismatches, "encryptor_type", snapshot.getRequest().getAlgorithmType(), findRuleValue(actualRule.get(), "encryptor_type"),
-                    "Encrypt algorithm type does not match.");
-            addAlgorithmTypeMismatch(mismatches, "assisted_query_type",
-                    Boolean.TRUE.equals(snapshot.getClarifiedIntent().getRequiresEqualityFilter()) ? snapshot.getRequest().getAssistedQueryAlgorithmType() : "",
-                    findRuleValue(actualRule.get(), "assisted_query_type", "assisted_query_encryptor_type"), "Assisted-query algorithm type does not match.");
-            addAlgorithmTypeMismatch(mismatches, "like_query_type",
-                    Boolean.TRUE.equals(snapshot.getClarifiedIntent().getRequiresLikeQuery()) ? snapshot.getRequest().getLikeQueryAlgorithmType() : "",
-                    findRuleValue(actualRule.get(), "like_query_type", "like_query_encryptor_type"), "LIKE-query algorithm type does not match.");
-            if (!mismatches.isEmpty()) {
-                validationReport.getMismatches().addAll(mismatches);
-                return new ValidationSection("failed", actualRule.get(), "Encrypt algorithm configuration does not match.");
-            }
-            return new ValidationSection("passed", actualRule.get(), "Encrypt rule matches the planned algorithm and mapping.");
+            validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no encrypt rule", String.valueOf(actualRule.get()),
+                    "Encrypt rule still exists after drop.", "Drop the encrypt rule again or investigate the failure."));
+            return new ValidationSection("failed", actualRule.get(), "Encrypt rule still exists.");
         }
         Optional<Map<String, Object>> actualRule = maskRules.stream()
-                .filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(String.valueOf(each.get("column")))).findFirst();
+                .filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(findRuleValue(each, "column", "logic_column"))).findFirst();
         if ("drop".equalsIgnoreCase(resolveOperationType(snapshot))) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection("passed", List.of(), "Mask rule has been removed.");
@@ -235,13 +228,36 @@ public final class WorkflowValidationService {
                     "Mask rule is missing.", "Create or alter the mask rule again."));
             return new ValidationSection("failed", List.of(), "Mask rule is missing.");
         }
-        String actualAlgorithmType = String.valueOf(actualRule.get().get("algorithm_type"));
+        String actualAlgorithmType = findRuleValue(actualRule.get(), "algorithm_type", "mask_algorithm");
         if (!snapshot.getRequest().getAlgorithmType().equalsIgnoreCase(actualAlgorithmType)) {
             validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
                     "Mask algorithm type does not match.", "Re-apply the intended mask rule."));
             return new ValidationSection("failed", actualRule.get(), "Mask algorithm type does not match.");
         }
         return new ValidationSection("passed", actualRule.get(), "Mask rule matches the planned algorithm.");
+    }
+    
+    private ValidationSection validateEncryptRule(final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
+                                                  final Optional<Map<String, Object>> actualRule) {
+        if (actualRule.isEmpty()) {
+            validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
+                    "Encrypt rule is missing.", "Create or alter the encrypt rule again."));
+            return new ValidationSection("failed", List.of(), "Encrypt rule is missing.");
+        }
+        List<Map<String, Object>> mismatches = new LinkedList<>();
+        addAlgorithmTypeMismatch(mismatches, "encryptor_type", snapshot.getRequest().getAlgorithmType(), findRuleValue(actualRule.get(), "encryptor_type"),
+                "Encrypt algorithm type does not match.");
+        addAlgorithmTypeMismatch(mismatches, "assisted_query_type",
+                Boolean.TRUE.equals(snapshot.getClarifiedIntent().getRequiresEqualityFilter()) ? snapshot.getRequest().getAssistedQueryAlgorithmType() : "",
+                findRuleValue(actualRule.get(), "assisted_query_type", "assisted_query_encryptor_type"), "Assisted-query algorithm type does not match.");
+        addAlgorithmTypeMismatch(mismatches, "like_query_type",
+                Boolean.TRUE.equals(snapshot.getClarifiedIntent().getRequiresLikeQuery()) ? snapshot.getRequest().getLikeQueryAlgorithmType() : "",
+                findRuleValue(actualRule.get(), "like_query_type", "like_query_encryptor_type"), "LIKE-query algorithm type does not match.");
+        if (!mismatches.isEmpty()) {
+            validationReport.getMismatches().addAll(mismatches);
+            return new ValidationSection("failed", actualRule.get(), "Encrypt algorithm configuration does not match.");
+        }
+        return new ValidationSection("passed", actualRule.get(), "Encrypt rule matches the planned algorithm and mapping.");
     }
     
     private ValidationSection validateLogicalMetadata(final WorkflowContextSnapshot snapshot, final MetadataQueryService metadataQueryService, final ValidationReport validationReport) {
@@ -329,6 +345,9 @@ public final class WorkflowValidationService {
         WorkflowSqlUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
         List<String> result = new LinkedList<>();
         result.add(String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable()));
+        if (isDropWorkflow(snapshot)) {
+            return result;
+        }
         if (Boolean.TRUE.equals(snapshot.getClarifiedIntent().getRequiresEqualityFilter())) {
             result.add(String.format("SELECT %s FROM %s WHERE %s = 'sample'", snapshot.getRequest().getColumn(),
                     snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()));
@@ -341,15 +360,19 @@ public final class WorkflowValidationService {
     }
     
     private boolean isEncryptWorkflow(final WorkflowContextSnapshot snapshot) {
-        return "encrypt".equalsIgnoreCase(null == snapshot.getClarifiedIntent() ? "" : snapshot.getClarifiedIntent().getIntentType());
+        return "encrypt".equalsIgnoreCase(null == snapshot.getClarifiedIntent() ? "" : snapshot.getClarifiedIntent().getFeatureType());
     }
     
     private String resolveOperationType(final WorkflowContextSnapshot snapshot) {
         return null == snapshot.getClarifiedIntent() ? "" : WorkflowSqlUtils.trimToEmpty(snapshot.getClarifiedIntent().getOperationType());
     }
     
+    private boolean isDropWorkflow(final WorkflowContextSnapshot snapshot) {
+        return "drop".equalsIgnoreCase(resolveOperationType(snapshot));
+    }
+    
     private Optional<Map<String, Object>> findEncryptRule(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> encryptRules) {
-        return encryptRules.stream().filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(String.valueOf(each.get("logic_column")))).findFirst();
+        return encryptRules.stream().filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(findRuleValue(each, "logic_column", "column"))).findFirst();
     }
     
     private void addDerivedColumnMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {

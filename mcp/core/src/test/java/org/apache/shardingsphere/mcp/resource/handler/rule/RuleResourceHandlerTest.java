@@ -41,8 +41,9 @@ class RuleResourceHandlerTest {
     void assertHandleEncryptRules() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         List<Map<String, Object>> expectedItems = List.of(Map.of("table", "t_order"));
-        try (MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
-                (mock, context) -> when(mock.queryEncryptRules(same(runtimeContext), eq("logic_db"), eq(""))).thenReturn(expectedItems))) {
+        try (
+                MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
+                        (mock, context) -> when(mock.queryEncryptRules(same(runtimeContext), eq("logic_db"), eq(""))).thenReturn(expectedItems))) {
             EncryptRulesHandler handler = new EncryptRulesHandler();
             Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of("database", "logic_db"))).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");
@@ -57,8 +58,9 @@ class RuleResourceHandlerTest {
     void assertHandleMaskRule() {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         List<Map<String, Object>> expectedItems = List.of(Map.of("table", "t_order", "column", "phone"));
-        try (MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
-                (mock, context) -> when(mock.queryMaskRules(same(runtimeContext), eq("logic_db"), eq("t_order"))).thenReturn(expectedItems))) {
+        try (
+                MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
+                        (mock, context) -> when(mock.queryMaskRules(same(runtimeContext), eq("logic_db"), eq("t_order"))).thenReturn(expectedItems))) {
             MaskRuleHandler handler = new MaskRuleHandler();
             Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order"))).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");

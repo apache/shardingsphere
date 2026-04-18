@@ -42,11 +42,13 @@ public final class WorkflowRequest {
     
     private String column;
     
-    private String intentType;
+    private String featureType;
     
     private String operationType;
     
     private String naturalLanguageIntent;
+    
+    private String fieldSemantics;
     
     private String deliveryMode = "all-at-once";
     
@@ -55,6 +57,12 @@ public final class WorkflowRequest {
     private Boolean allowSampleData;
     
     private Boolean allowIndexDDL = true;
+    
+    private Boolean requiresDecrypt;
+    
+    private Boolean requiresEqualityFilter;
+    
+    private Boolean requiresLikeQuery;
     
     private String algorithmType;
     
@@ -75,4 +83,22 @@ public final class WorkflowRequest {
     private final Map<String, String> likeQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
     private final List<String> approvedSteps = new LinkedList<>();
+    
+    /**
+     * Get raw user request alias.
+     *
+     * @return natural-language request
+     */
+    public String getRawUserRequest() {
+        return naturalLanguageIntent;
+    }
+    
+    /**
+     * Set raw user request alias.
+     *
+     * @param rawUserRequest natural-language request
+     */
+    public void setRawUserRequest(final String rawUserRequest) {
+        naturalLanguageIntent = rawUserRequest;
+    }
 }

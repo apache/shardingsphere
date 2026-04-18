@@ -49,7 +49,7 @@ public final class RuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPRuntimeContext runtimeContext, final String databaseName, final String tableName) {
-        return queryService.query(runtimeContext, databaseName, "", buildShowEncryptRulesSql(databaseName, tableName));
+        return normalizeEncryptRuleRows(queryService.query(runtimeContext, databaseName, "", buildShowEncryptRulesSql(databaseName, tableName)));
     }
     
     /**
@@ -61,7 +61,7 @@ public final class RuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPRuntimeContext runtimeContext, final String databaseName, final String tableName) {
-        return queryService.query(runtimeContext, databaseName, "", buildShowMaskRulesSql(databaseName, tableName));
+        return normalizeMaskRuleRows(queryService.query(runtimeContext, databaseName, "", buildShowMaskRulesSql(databaseName, tableName)));
     }
     
     /**
@@ -129,7 +129,7 @@ public final class RuleInspectionService {
         WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
         return actualTableName.isEmpty()
                 ? String.format("SHOW ENCRYPT RULES FROM %s", actualDatabaseName)
-                : String.format("SHOW ENCRYPT RULE %s FROM %s", actualTableName, actualDatabaseName);
+                : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", actualTableName, actualDatabaseName);
     }
     
     private String buildShowMaskRulesSql(final String databaseName, final String tableName) {
@@ -140,5 +140,34 @@ public final class RuleInspectionService {
         return actualTableName.isEmpty()
                 ? String.format("SHOW MASK RULES FROM %s", actualDatabaseName)
                 : String.format("SHOW MASK RULE %s FROM %s", actualTableName, actualDatabaseName);
+    }
+    
+    private List<Map<String, Object>> normalizeEncryptRuleRows(final List<Map<String, Object>> rawRows) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : rawRows) {
+            Map<String, Object> actualRow = new LinkedHashMap<>(each);
+            putAliasIfAbsent(actualRow, "assisted_query_column", "assisted_query");
+            putAliasIfAbsent(actualRow, "like_query_column", "like_query");
+            result.add(actualRow);
+        }
+        return result;
+    }
+    
+    private List<Map<String, Object>> normalizeMaskRuleRows(final List<Map<String, Object>> rawRows) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : rawRows) {
+            Map<String, Object> actualRow = new LinkedHashMap<>(each);
+            putAliasIfAbsent(actualRow, "column", "logic_column");
+            putAliasIfAbsent(actualRow, "algorithm_type", "mask_algorithm");
+            putAliasIfAbsent(actualRow, "algorithm_props", "props");
+            result.add(actualRow);
+        }
+        return result;
+    }
+    
+    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
+        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
+            row.put(targetKey, row.get(sourceKey));
+        }
     }
 }

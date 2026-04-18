@@ -36,7 +36,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     void assertPlanApplyAndValidateMaskCreateAlterWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualCreatePlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "intent_type", "mask",
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "feature_type", "mask",
                             "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
             assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
@@ -48,7 +48,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(getMap(getMap(actualCreateValidationResponse.get("rule_validation")).get("evidence")).get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("KEEP_FIRST_N_LAST_M"));
             Map<String, Object> actualAlterPlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "intent_type", "mask",
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "feature_type", "mask",
                             "operation_type", "alter", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "2", "last-m", "2", "replace-char", "#")));
             assertThat(String.valueOf(actualAlterPlanResponse.get("status")), is("planned"));
@@ -67,7 +67,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createMaskRule(interactionClient);
             Map<String, Object> actualDropPlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "intent_type", "mask", "operation_type", "drop"));
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "feature_type", "mask", "operation_type", "drop"));
             assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), is("DROP MASK RULE orders"));
             String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
@@ -83,7 +83,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             createMaskRule(interactionClient);
             Map<String, Object> actualSecondCreatePlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount", "intent_type", "mask",
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount", "feature_type", "mask",
                             "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                             "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "#")));
             assertThat(String.valueOf(actualSecondCreatePlanResponse.get("status")), is("planned"));
@@ -95,7 +95,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                     interactionClient.readResource(String.format("shardingsphere://databases/%s/mask-rules/orders", getLogicalDatabaseName())));
             assertThat(actualMaskRules.size(), is(2));
             Map<String, Object> actualDropPlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount", "intent_type", "mask", "operation_type", "drop"));
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount", "feature_type", "mask", "operation_type", "drop"));
             assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER MASK RULE orders"));
             String dropPlanId = String.valueOf(actualDropPlanResponse.get("plan_id"));
@@ -136,7 +136,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     void assertPlanApplyValidateAndReadMaskResourcesWithCustomSpiAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "intent_type", "mask",
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "feature_type", "mask",
                             "operation_type", "create", "algorithm_type", "MCP_MASK_CUSTOM"));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
@@ -158,7 +158,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     
     private void createMaskRule(final MCPInteractionClient interactionClient) throws Exception {
         Map<String, Object> actualCreatePlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "intent_type", "mask",
+                Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "feature_type", "mask",
                         "operation_type", "create", "algorithm_type", "KEEP_FIRST_N_LAST_M",
                         "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
         assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));

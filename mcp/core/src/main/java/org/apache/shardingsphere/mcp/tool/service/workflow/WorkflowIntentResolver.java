@@ -29,7 +29,7 @@ final class WorkflowIntentResolver {
     
     ClarifiedIntent resolve(final WorkflowRequest request) {
         ClarifiedIntent result = new ClarifiedIntent();
-        result.setIntentType(resolveIntentType(request));
+        result.setFeatureType(resolveFeatureType(request));
         result.setOperationType(resolveOperationType(request));
         result.setFieldSemantics(resolveFieldSemantics(request));
         result.setRequiresDecrypt(resolveRequiresDecrypt(request, result));
@@ -39,10 +39,10 @@ final class WorkflowIntentResolver {
         return result;
     }
     
-    private String resolveIntentType(final WorkflowRequest request) {
-        String actualIntentType = WorkflowSqlUtils.trimToEmpty(request.getIntentType()).toLowerCase(Locale.ENGLISH);
-        if (!actualIntentType.isEmpty()) {
-            return actualIntentType;
+    private String resolveFeatureType(final WorkflowRequest request) {
+        String actualFeatureType = WorkflowSqlUtils.trimToEmpty(request.getFeatureType()).toLowerCase(Locale.ENGLISH);
+        if (!actualFeatureType.isEmpty()) {
+            return actualFeatureType;
         }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("mask") || naturalLanguageIntent.contains("脱敏")) {
@@ -70,6 +70,10 @@ final class WorkflowIntentResolver {
     }
     
     private String resolveFieldSemantics(final WorkflowRequest request) {
+        String actualFieldSemantics = WorkflowSqlUtils.trimToEmpty(request.getFieldSemantics()).toLowerCase(Locale.ENGLISH);
+        if (!actualFieldSemantics.isEmpty()) {
+            return actualFieldSemantics;
+        }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         String columnName = WorkflowSqlUtils.trimToEmpty(request.getColumn()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("手机号") || columnName.contains("phone") || columnName.contains("mobile") || columnName.contains("tel")) {
@@ -82,8 +86,11 @@ final class WorkflowIntentResolver {
     }
     
     private Boolean resolveRequiresDecrypt(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        if (!"encrypt".equalsIgnoreCase(clarifiedIntent.getIntentType())) {
+        if (!isEncryptCapabilityPlanningRequired(clarifiedIntent)) {
             return null;
+        }
+        if (null != request.getRequiresDecrypt()) {
+            return request.getRequiresDecrypt();
         }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不可逆")) {
@@ -97,8 +104,11 @@ final class WorkflowIntentResolver {
     }
     
     private Boolean resolveRequiresEqualityFilter(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        if (!"encrypt".equalsIgnoreCase(clarifiedIntent.getIntentType())) {
+        if (!isEncryptCapabilityPlanningRequired(clarifiedIntent)) {
             return null;
+        }
+        if (null != request.getRequiresEqualityFilter()) {
+            return request.getRequiresEqualityFilter();
         }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不需要等值")) {
@@ -112,8 +122,11 @@ final class WorkflowIntentResolver {
     }
     
     private Boolean resolveRequiresLikeQuery(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        if (!"encrypt".equalsIgnoreCase(clarifiedIntent.getIntentType())) {
+        if (!isEncryptCapabilityPlanningRequired(clarifiedIntent)) {
             return null;
+        }
+        if (null != request.getRequiresLikeQuery()) {
+            return request.getRequiresLikeQuery();
         }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不需要like") || naturalLanguageIntent.contains("不需要模糊")) {
@@ -124,5 +137,9 @@ final class WorkflowIntentResolver {
         }
         clarifiedIntent.getPendingQuestions().add("是否需要 LIKE 查询？");
         return null;
+    }
+    
+    private boolean isEncryptCapabilityPlanningRequired(final ClarifiedIntent clarifiedIntent) {
+        return "encrypt".equalsIgnoreCase(clarifiedIntent.getFeatureType()) && !"drop".equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
 }

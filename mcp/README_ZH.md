@@ -117,7 +117,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 说明：
 
 - metadata 的 list / detail / capability discovery 统一走 `resources/read`。
-- 当前 public tools 只保留 `search_metadata` 和 `execute_query`。
+- 当前 public tools 包括 `search_metadata`、`execute_query`、`plan_encrypt_mask_rule`、`apply_encrypt_mask_rule` 和 `validate_encrypt_mask_rule`。
+- 加密与脱敏 workflow 面向由 ShardingSphere-Proxy 暴露的逻辑库；下文会单独说明这部分的前置条件和使用方式。
 - `search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。
 
 ```bash
@@ -257,6 +258,717 @@ bin/start.sh conf/mcp-stdio.yaml
 - 即使启用了内建 `accessToken`，对外暴露场景仍建议放在受信网络、上游网关或反向代理后面。
 - 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。
+
+## 基于 ShardingSphere-Proxy 的加密与脱敏 Workflow
+
+这组 workflow tool 让 MCP client 可以通过自然语言或结构化参数，对某个逻辑表的某一列规划、执行并校验加密或脱敏规则。
+它的目标不是自己实现加密，而是帮助大模型把用户意图转换成 ShardingSphere-Proxy 可执行的 DDL、DistSQL 与校验动作。
+
+### 前置条件
+
+- 当前 V1 只支持 `ShardingSphere-Proxy`。
+- MCP runtime 应通过 JDBC 连接到 `ShardingSphere-Proxy` 的逻辑库，而不是直接连接底层存储库。
+- Quick Start 中的 demo H2 runtime 适合验证 metadata discovery 和 query；如果要使用加密与脱敏 workflow，请把 `runtimeDatabases` 改成指向 Proxy 的逻辑库。
+- 当前 workflow 只处理规则、元数据和 SQL 可执行性校验，不处理存量数据迁移或回填。
+
+### 相关 tools 与 resources
+
+Workflow 对外暴露 3 个 tools：
+
+- `plan_encrypt_mask_rule`
+  - 识别用户意图，补全缺失参数，生成派生列方案、DDL、DistSQL、索引计划和校验策略。
+- `apply_encrypt_mask_rule`
+  - 执行上一步生成的 artifacts，或在 `manual-only` 模式下导出人工执行包。
+- `validate_encrypt_mask_rule`
+  - 从 DDL、规则状态、逻辑元数据和 SQL 可执行性 4 个层面校验计划结果。
+
+Workflow 同时补充了以下 resources：
+
+- `shardingsphere://databases/{database}/encrypt-rules`
+- `shardingsphere://databases/{database}/encrypt-rules/{table}`
+- `shardingsphere://databases/{database}/mask-rules`
+- `shardingsphere://databases/{database}/mask-rules/{table}`
+- `shardingsphere://plugins/encrypt-algorithms`
+- `shardingsphere://plugins/mask-algorithms`
+
+其中 `plugins/*-algorithms` 会同时展示内建算法和当前 Proxy 可见的自定义 SPI 算法，方便大模型做算法推荐。
+
+### 使用前先记住这几条
+
+- 整个 workflow 必须复用同一个 `MCP-Session-Id`。`plan`、`apply`、`validate` 如果切换到别的 session，后续调用会因为 plan 归属不一致而失败。
+- 第一次调用 `plan_encrypt_mask_rule` 时不需要 `plan_id`；只要拿到 `plan_id`，后续所有补问、继续规划、执行和校验都继续使用这个 `plan_id`。
+- `plan_encrypt_mask_rule` 只负责规划，不会执行任何 DDL 或 DistSQL；真正执行发生在 `apply_encrypt_mask_rule`。
+- `validate_encrypt_mask_rule` 只做校验，不会修改规则，也不会补执行遗漏步骤。
+- 用户始终面向逻辑库、逻辑表、逻辑列发起请求。对加密场景，MCP 可能会自动规划并创建物理派生列，但对用户暴露的目标仍然是 Proxy 里的逻辑对象。
+- `schema` 是可选的；如果 Proxy 逻辑库下只有一个 schema，MCP 会自动补齐；如果无法唯一定位，MCP 会明确返回 `请明确 schema。`。
+- `delivery_mode` 只影响客户端如何组织对话和展示步骤，不影响最终生成的 artifacts；真正影响执行行为的是 `execution_mode`。
+- 敏感算法属性在 `plan` 和 `apply` 的返回中都只会以脱敏形式展示，不会明文回显。
+- 下面所有 `curl` 示例都默认你已经完成了 MCP `initialize`，并持有同一个 `SESSION_ID` 和对应的 `PROTOCOL_VERSION`。
+
+### 推荐操作顺序
+
+如果你想把一次加密或脱敏 workflow 稳定跑通，直接按下面顺序调用即可：
+
+1. 先调用 `plan_encrypt_mask_rule`，不要直接从 `apply` 开始。
+2. 如果返回 `status = clarifying`，读取 `pending_questions`，带上同一个 `plan_id` 再次调用 `plan_encrypt_mask_rule` 补齐缺失信息。
+3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
+4. 调用 `apply_encrypt_mask_rule` 执行 artifacts；如果要人工执行，就把 `execution_mode` 设为 `manual-only`。
+5. 如果 `apply` 返回 `awaiting-manual-execution`，先把 `manual_artifact_package` 里的 SQL / DistSQL 在 Proxy 上手工执行完，再进入下一步。
+6. 调用 `validate_encrypt_mask_rule`，确认 4 层校验都通过。
+7. 如果 `validate` 失败，优先看 `issues` 和 `mismatches`，修复后再继续补执行或重新规划。
+
+### 整体交互方式
+
+`plan_encrypt_mask_rule` 每次都会返回全局步骤列表，并告诉客户端当前走到哪一步。默认步骤如下：
+
+1. 确认 database、table、column 和目标生命周期
+2. 检查现有规则、插件和逻辑元数据
+3. 澄清缺失需求并推荐算法
+4. 收集算法属性并生成派生列命名方案
+5. 生成 DDL、DistSQL 和索引 artifacts
+6. Review artifacts 并选择执行模式
+7. 执行或导出 artifacts
+8. 校验并汇总结果
+
+常见状态包括：
+
+- `clarifying`
+  - 需要继续补充信息，例如 logical database、算法类型或密钥属性。
+- `planned`
+  - artifacts 已生成，可以进入 apply。
+- `completed`
+  - `apply_encrypt_mask_rule` 已执行完成。
+- `awaiting-manual-execution`
+  - 选择了 `manual-only`，系统只导出了 artifacts，没有自动执行。
+- `validated`
+  - `validate_encrypt_mask_rule` 已通过。
+
+另外：
+
+- `delivery_mode` 支持 `all-at-once` 和 `step-by-step`
+  - MCP 会把选定模式写回 plan 响应，便于 client 决定一次展示完整计划还是按步骤组织对话。
+- `execution_mode` 支持 `review-then-execute` 和 `manual-only`
+  - 前者自动执行已生成的 artifacts，后者只导出人工执行包。
+
+### 看到不同状态时，下一步该做什么
+
+- `clarifying`
+  - 说明信息还不够。直接读取 `pending_questions`，带上同一个 `plan_id` 继续调用 `plan_encrypt_mask_rule`。
+- `planned`
+  - 说明执行包已经生成好了。此时不要再补问，应该 review artifacts，然后进入 `apply_encrypt_mask_rule`。
+- `completed`
+  - 说明自动执行已经结束。下一步就是 `validate_encrypt_mask_rule`。
+- `awaiting-manual-execution`
+  - 说明你选择了 `manual-only`。下一步不是重新 `apply`，而是先手工执行返回的 artifacts，然后再 `validate`。
+- `validated`
+  - 说明本次 workflow 已经闭环完成。
+- `failed`
+  - 说明当前阶段没有通过。先看 `issues` 和 `mismatches`，判断是缺信息、SQL 执行失败、规则状态不一致，还是逻辑元数据校验失败，再决定是重新 `plan`、补 `apply`，还是修正环境后重新 `validate`。
+
+### 最常看的返回字段
+
+`plan_encrypt_mask_rule` 返回里，最值得优先看的字段是：
+
+- `plan_id`
+  - 本次 workflow 的唯一标识，后续所有补问、执行、校验都依赖它。
+- `status`
+  - 决定你下一步是继续补问、进入执行，还是先排错。
+- `pending_questions`
+  - 只在 `clarifying` 阶段重点处理，里面就是 MCP 还缺的关键信息。
+- `algorithm_recommendations`
+  - 当自然语言没有给全算法信息时，这里会返回推荐算法池。
+- `derived_column_plan`
+  - 只对加密最关键，会告诉你最终采用的 `*_cipher`、`*_assisted_query`、`*_like_query` 命名。
+- `ddl_artifacts`
+  - 物理列 DDL，例如 `ALTER TABLE ... ADD COLUMN ...`。
+- `distsql_artifacts`
+  - 最终提交给 Proxy 的 `CREATE/ALTER/DROP ENCRYPT RULE` 或 `MASK RULE`。
+- `index_plan`
+  - 只有等值查询或模糊查询需要派生索引时才会出现。
+
+`apply_encrypt_mask_rule` 返回里，最值得优先看的字段是：
+
+- `status`
+- `issues`
+- `step_results`
+- `executed_ddl`
+- `executed_distsql`
+- `skipped_artifacts`
+- `manual_artifact_package`
+
+`validate_encrypt_mask_rule` 返回里，最值得优先看的字段是：
+
+- `status`
+- `overall_status`
+- `issues`
+- `mismatches`
+- `ddl_validation`
+- `rule_validation`
+- `logical_metadata_validation`
+- `sql_executability_validation`
+
+### 加密 workflow
+
+#### 最小可用输入
+
+加密 `create` / `alter` 场景，推荐至少提供下面这些信息：
+
+- `database`
+- `table`
+- `column`
+- `natural_language_intent`
+  - 或者显式提供 `feature_type=encrypt`、`operation_type=create|alter`
+  - 为了兼容旧调用，仍然接受 `intent_type=encrypt`
+- `algorithm_type`
+  - 如果自然语言已经足够明确，可以先不传，让 MCP 推荐；如果你已经确定算法，建议直接传
+- `primary_algorithm_properties`
+  - 例如 `AES` 需要 `aes-key-value`
+- `schema`
+  - 多 schema 逻辑库里建议显式传，避免歧义
+
+#### 典型输入
+
+可以直接给自然语言，也可以同时补充结构化参数。下面这个例子会直接规划一个可逆加密流程：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"encrypt-plan-1",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "database":"logic_db",
+        "table":"orders",
+        "column":"status",
+        "natural_language_intent":"给 status 做可逆加密，不需要等值，不需要模糊",
+        "algorithm_type":"AES",
+        "primary_algorithm_properties":{"aes-key-value":"123456abc"}
+      }
+    }
+  }'
+```
+
+预期结果：
+
+- 返回 `plan_id`，后续 `apply` 和 `validate` 都使用这个标识继续。
+- 返回 `status = planned`。
+- `derived_column_plan` 会给出实际使用的派生列名，例如 `status_cipher`。
+- `ddl_artifacts`、`distsql_artifacts`、`index_plan` 会给出本次执行计划。
+- `masked_property_preview` 和 `distsql_artifacts` 中的敏感属性会按脱敏形式展示，不会回显明文密钥。
+
+#### 完整操作示例：从自然语言到生效
+
+下面这个例子演示一个真正完整的加密链路：第一次调用故意不传密钥，让 MCP 先进入 `clarifying`，然后用同一个 `plan_id` 继续补齐。
+
+第 1 步：先让 MCP 识别需求并推荐算法
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"encrypt-plan-clarifying-1",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "database":"logic_db",
+        "table":"orders",
+        "column":"status",
+        "natural_language_intent":"给 status 做可逆加密，需要等值，不需要模糊"
+      }
+    }
+  }'
+```
+
+典型响应片段如下：
+
+```json
+{
+  "plan_id": "plan-xxx",
+  "status": "clarifying",
+  "pending_questions": ["请提供属性 `aes-key-value`。"],
+  "algorithm_recommendations": [
+    {"algorithm_role": "primary", "algorithm_type": "AES"},
+    {"algorithm_role": "assisted_query", "algorithm_type": "MD5"}
+  ]
+}
+```
+
+实际操作时，可以先把上一步返回的 `plan_id` 暂存为 shell 变量：
+
+```bash
+PLAN_ID='plan-xxx'
+```
+
+这里的含义非常直接：
+
+- 当前不要 `apply`
+- 继续使用同一个 `plan_id`
+- 只需要把缺失的 `aes-key-value` 补回来即可
+
+第 2 步：继续同一个 plan，补齐缺失属性
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"encrypt-plan-clarifying-2",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "plan_id":"'"${PLAN_ID}"'",
+        "primary_algorithm_properties":{"aes-key-value":"123456abc"}
+      }
+    }
+  }'
+```
+
+典型响应片段如下：
+
+```json
+{
+  "plan_id": "plan-xxx",
+  "status": "planned",
+  "current_step": "review",
+  "derived_column_plan": {
+    "cipher_column_name": "status_cipher",
+    "assisted_query_column_name": "status_assisted_query",
+    "assisted_query_column_required": true,
+    "like_query_column_required": false
+  },
+  "ddl_artifacts": [
+    {"sql": "ALTER TABLE orders ADD COLUMN status_cipher VARCHAR(...) ..."}
+  ],
+  "index_plan": [
+    {"sql": "CREATE INDEX idx_orders_status_assisted_query ON orders (status_assisted_query)"}
+  ],
+  "distsql_artifacts": [
+    {"sql": "ALTER ENCRYPT RULE orders ..."}
+  ]
+}
+```
+
+走到这里时，说明已经可以执行了。你需要 review 的重点是：
+
+- 派生列名是否符合预期
+- 是否需要辅助查询列和索引
+- DistSQL 中的算法类型和逻辑列映射是否正确
+
+第 3 步：执行 plan
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+```
+
+典型响应片段如下：
+
+```json
+{
+  "status": "completed",
+  "step_results": [
+    {"artifact_type": "add-column", "status": "passed"},
+    {"artifact_type": "create-index", "status": "passed"},
+    {"artifact_type": "rule_distsql", "status": "passed"}
+  ],
+  "executed_ddl": ["ALTER TABLE ...", "CREATE INDEX ..."],
+  "executed_distsql": ["ALTER ENCRYPT RULE ..."]
+}
+```
+
+第 4 步：校验最终结果
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+```
+
+典型响应片段如下：
+
+```json
+{
+  "status": "validated",
+  "overall_status": "passed",
+  "ddl_validation": {"status": "passed"},
+  "rule_validation": {"status": "passed"},
+  "logical_metadata_validation": {"status": "passed"},
+  "sql_executability_validation": {"status": "passed"}
+}
+```
+
+只要这 4 层都 `passed`，这次加密 workflow 就算真正完成。
+
+#### 缺少算法或属性时
+
+如果自然语言没有说清算法，或者像 `AES` 这样的算法缺少 `aes-key-value` 之类的必填属性，`plan_encrypt_mask_rule` 会返回：
+
+- `status = clarifying`
+- `pending_questions`
+- `algorithm_recommendations`
+- `property_requirements`
+
+此时应带上同一个 `plan_id` 再次调用 `plan_encrypt_mask_rule`，把缺失参数补齐，而不是重新开一个计划。
+
+#### 默认派生列规则
+
+- 默认会为加密列生成 `*_cipher` 派生列。
+- 如果自然语言表达了等值查询能力，会额外生成 `*_assisted_query` 和相应索引计划。
+- 如果自然语言表达了模糊查询能力，会额外生成 `*_like_query`。
+- 如果默认列名冲突，系统会自动追加数字后缀，并把最终命名写回 `derived_column_plan`。
+
+#### 执行与校验
+
+默认执行模式是 `review-then-execute`：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+```
+
+如果只想让 MCP 生成 SQL 和 DistSQL，不自动执行，可以改为：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
+```
+
+`manual-only` 会返回 `manual_artifact_package`，里面包含：
+
+- `ddl_artifacts`
+- `index_plan`
+- `distsql_artifacts`
+
+如果要分步执行，可以通过 `approved_steps` 只执行一部分步骤，例如只执行 `ddl`、`index_ddl` 或 `rule_distsql`。
+这类分步执行主要用于 review 或灰度流程；如果只执行了一部分，`validate_encrypt_mask_rule` 很可能会先失败，直到剩余步骤也补执行完成。
+
+执行完成后，建议立刻调用：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+```
+
+校验会覆盖 4 层：
+
+- `ddl_validation`
+- `rule_validation`
+- `logical_metadata_validation`
+- `sql_executability_validation`
+
+#### 删除加密规则
+
+V1 已支持 `encrypt drop`，但它是“只删规则、不做物理清理”的 workflow：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"encrypt-plan-drop-1",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "database":"logic_db",
+        "table":"orders",
+        "column":"status",
+        "feature_type":"encrypt",
+        "operation_type":"drop"
+      }
+    }
+  }'
+```
+
+预期结果：
+
+- 返回 `status = planned`
+- `pending_questions` 为空，因为 `drop` 不需要再追问可逆、等值、LIKE 这些能力
+- `distsql_artifacts` 中会生成 `DROP ENCRYPT RULE` 或 `ALTER ENCRYPT RULE`
+- 响应里会带 warning，明确提醒物理派生列和索引仍需人工清理
+
+如果同一张表还有其他加密列，系统会生成保留 sibling rules 的 `ALTER ENCRYPT RULE`；只有当目标表不再剩余任何 encrypt 列时，才会生成 `DROP ENCRYPT RULE`。
+
+### 脱敏 workflow
+
+#### 最小可用输入
+
+脱敏 `create` / `alter` 场景，推荐至少提供：
+
+- `database`
+- `table`
+- `column`
+- `feature_type=mask`
+- `operation_type=create|alter`
+- `algorithm_type`
+- `primary_algorithm_properties`
+- 为了兼容旧调用，仍然接受 `intent_type=mask`
+
+脱敏 `drop` 场景最小输入则是：
+
+- `database`
+- `table`
+- `column`
+- `feature_type=mask`
+- `operation_type=drop`
+
+#### 创建或修改脱敏规则
+
+脱敏同样支持自然语言和结构化参数混合输入。下面这个例子直接创建一条 mask 规则：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"mask-plan-1",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "database":"logic_db",
+        "table":"orders",
+        "column":"phone",
+        "feature_type":"mask",
+        "operation_type":"create",
+        "algorithm_type":"KEEP_FIRST_N_LAST_M",
+        "primary_algorithm_properties":{"first-n":"3","last-m":"4","replace-char":"*"}
+      }
+    }
+  }'
+```
+
+预期结果：
+
+- 返回 `status = planned`
+- `distsql_artifacts` 中会生成 `CREATE MASK RULE` 或 `ALTER MASK RULE`
+- 脱敏规则不会生成物理派生列，因此不会有 encrypt 那类派生列 DDL
+
+如果自然语言表达类似“把 phone 当作手机号做脱敏，保留前 3 后 4”，系统也会尝试推荐算法；如果缺少必要属性，同样会先进入 `clarifying`。
+
+#### 完整操作示例：从自然语言到生效
+
+下面这个例子演示一个完整的脱敏链路。第一次调用只给自然语言，不直接给结构化属性，让 MCP 先推荐算法并继续补问。
+
+第 1 步：先规划
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"mask-plan-clarifying-1",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "database":"logic_db",
+        "table":"orders",
+        "column":"phone",
+        "natural_language_intent":"把 phone 当作手机号做脱敏，保留前3后4"
+      }
+    }
+  }'
+```
+
+典型响应片段如下：
+
+```json
+{
+  "plan_id": "plan-yyy",
+  "status": "clarifying",
+  "pending_questions": ["请提供属性 `from-x`。", "请提供属性 `to-y`。"],
+  "algorithm_recommendations": [
+    {"algorithm_role": "primary", "algorithm_type": "MASK_FROM_X_TO_Y"}
+  ]
+}
+```
+
+实际操作时，可以先把上一步返回的 `plan_id` 暂存为 shell 变量：
+
+```bash
+PLAN_ID='plan-yyy'
+```
+
+第 2 步：继续同一个 plan，补齐属性
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"mask-plan-clarifying-2",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "plan_id":"'"${PLAN_ID}"'",
+        "primary_algorithm_properties":{"from-x":"4","to-y":"7"}
+      }
+    }
+  }'
+```
+
+典型响应片段如下：
+
+```json
+{
+  "status": "planned",
+  "distsql_artifacts": [
+    {"sql": "CREATE MASK RULE orders ..."}
+  ],
+  "ddl_artifacts": [],
+  "index_plan": []
+}
+```
+
+这一步有两个非常重要的判断点：
+
+- 脱敏不会生成物理派生列，所以 `ddl_artifacts` 正常情况下应该为空
+- 你真正需要 review 的核心是 `distsql_artifacts`
+
+第 3 步：执行脱敏规则
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+```
+
+第 4 步：校验脱敏规则
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+```
+
+只要 `rule_validation`、`logical_metadata_validation` 和 `sql_executability_validation` 都通过，这次脱敏 workflow 就可以认为生效了。
+
+#### 删除脱敏规则
+
+V1 支持 `mask drop`。示例：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{
+    "jsonrpc":"2.0",
+    "id":"mask-plan-2",
+    "method":"tools/call",
+    "params":{
+      "name":"plan_encrypt_mask_rule",
+      "arguments":{
+        "database":"logic_db",
+        "table":"orders",
+        "column":"phone",
+        "feature_type":"mask",
+        "operation_type":"drop"
+      }
+    }
+  }'
+```
+
+如果同一张表还有其他脱敏列，系统会生成保留 sibling rules 的 `ALTER MASK RULE`；只有当目标表不再剩余任何 mask 列时，才会生成 `DROP MASK RULE`。
+
+### 查看规则与算法池
+
+查看某个逻辑库的加密规则：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"resource-encrypt-1","method":"resources/read","params":{"uri":"shardingsphere://databases/logic_db/encrypt-rules/orders"}}'
+```
+
+查看可推荐的加密算法与脱敏算法：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"resource-plugin-1","method":"resources/read","params":{"uri":"shardingsphere://plugins/encrypt-algorithms"}}'
+```
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data '{"jsonrpc":"2.0","id":"resource-plugin-2","method":"resources/read","params":{"uri":"shardingsphere://plugins/mask-algorithms"}}'
+```
+
+### 当前能力边界
+
+- 只支持 `ShardingSphere-Proxy`
+- 加密支持 `create`、`alter` 和 `drop`
+- 脱敏支持 `create`、`alter` 和 `drop`
+- `encrypt drop` 只删除规则；物理派生列和索引仍需人工清理
+- 不处理存量数据迁移或回填
+- 不提供自动回滚能力
+- 不做审计落库
+- V1 只支持未加引号的 SQL identifier
 
 ## Registry 与 OCI 发布
 

@@ -39,14 +39,15 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/RuleInspectionService.java`
 - [ ] T007 建立工作流请求与计划模型：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/model/workflow/WorkflowRequest.java`
-  `ClarifiedIntent.java`
+  `StructuredIntent.java`
   `InteractionPlan.java`
   `AlgorithmPropertyRequirement.java`
   `WorkflowContextSnapshot.java`
   `ValidationReport.java`
-- [ ] T007A [P] 建立一步一步模式的服务端上下文存储：
+- [ ] T007A [P] 建立可续做的一步一步模式上下文存储：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowContextStore.java`
-- [ ] T008 建立命名、DDL、DistSQL、索引工件模型：
+  使 `planId` 能在当前服务运行期内恢复已确认上下文与当前步骤
+- [ ] T008 建立命名、DDL、DistSQL 与索引工件模型：
   `DerivedColumnPlan.java`
   `RulePlan.java`
   `DDLArtifact.java`
@@ -58,13 +59,13 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/model/workflow/WorkflowIssue.java`
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/model/workflow/WorkflowIssueCode.java`
 
-**Checkpoint**: 已能读取现状、表达计划模型，并具备统一错误与校验骨架。
+**Checkpoint**: 已能读取现状、表达计划模型，并具备统一错误、上下文与校验骨架。
 
 ---
 
-## Phase 3: User Story 1 - 自然语言生成安全可审阅的规则计划 (Priority: P1)
+## Phase 3: User Story 1 - 基于结构化意图生成安全可审阅的规则计划 (Priority: P1)
 
-**Goal**: 根据自然语言生成可追问、可审阅的 encrypt / mask 计划。
+**Goal**: 基于上游结构化意图和必要追问生成可审阅的 encrypt / mask 计划。
 **Independent Test**: 给定缺失条件的请求，系统必须先追问；给定条件完整的请求，系统必须先返回全局步骤清单与计划工件。
 
 ### Tests for User Story 1
@@ -83,7 +84,7 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/DerivedColumnNamingService.java`
 - [ ] T013 [US1] 实现计划编排服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowPlanningService.java`
-- [ ] T013A [US1] 在 `WorkflowPlanningService.java` 中接入全局步骤清单、追问收敛与参数采集状态推进
+- [ ] T013A [US1] 在 `WorkflowPlanningService.java` 中接入结构化意图优先、缺失字段追问、全局步骤清单与参数采集状态推进
 - [ ] T014 [US1] 实现 MCP tool：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/PlanEncryptMaskRuleToolHandler.java`
 
@@ -91,10 +92,10 @@
 
 ---
 
-## Phase 4: User Story 2 - 按执行模式应用 DDL 与规则生命周期变更 (Priority: P1)
+## Phase 4: User Story 2 - 按执行模式应用 DDL 与完整规则生命周期变更 (Priority: P1)
 
-**Goal**: 支持自动执行、审阅后执行、仅生成不执行三种模式，并覆盖 encrypt 的 create / alter 与 mask 的 create / alter / drop。
-**Independent Test**: 对 encrypt create / alter 和 mask create / alter / drop 分别验证三种执行模式，确保 `manual-only` 不自动执行任何工件。
+**Goal**: 支持自动执行、审阅后执行、仅生成不执行三种模式，并覆盖 encrypt / mask 的 `create / alter / drop`。
+**Independent Test**: 对 encrypt / mask 的 `create / alter / drop` 分别验证三种执行模式，确保 `manual-only` 不自动执行任何工件。
 
 ### Tests for User Story 2
 
@@ -105,22 +106,24 @@
 
 - [ ] T016 [P] [US2] 实现 DDL 工件生成服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/PhysicalDDLPlanningService.java`
+  支持新增列 / 索引
 - [ ] T017 [P] [US2] 实现 DistSQL 工件生成服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/RuleDistSQLPlanningService.java`
+  覆盖 encrypt / mask 的 `create / alter / drop`
 - [ ] T018 [US2] 实现执行编排服务：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowExecutionService.java`
 - [ ] T018A [US2] 在 `WorkflowExecutionService.java` 中实现 `manual-only` 的 review-safe preview 与可执行工件包分离
 - [ ] T019 [US2] 实现 MCP tool：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/ApplyEncryptMaskRuleToolHandler.java`
 
-**Checkpoint**: encrypt create / alter 与 mask create / alter / drop 已可按审批模式执行或仅生成工件。
+**Checkpoint**: encrypt / mask 的 `create / alter / drop` 已可按审批模式执行或仅生成工件，cleanup 由用户自行处理。
 
 ---
 
-## Phase 5: User Story 3 - 保持逻辑视图稳定并处理物理命名冲突 (Priority: P1)
+## Phase 5: User Story 3 - 保持逻辑视图稳定并处理命名冲突 (Priority: P1)
 
 **Goal**: 逻辑列始终是用户主入口，物理冲突自动改名并回传最终结果。
-**Independent Test**: 当 `*_cipher` 等默认名称冲突时，系统必须生成数字后缀并在计划、执行摘要、验证摘要中保持一致。
+**Independent Test**: 当 `*_cipher` 等默认名称冲突时，系统必须在计划、执行摘要、验证摘要中返回最终命名并保持一致。
 
 ### Tests for User Story 3
 
@@ -156,7 +159,7 @@
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/SQLExecutabilityValidationService.java`
 - [ ] T027 [US4] 实现 MCP tool：
   `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/ValidateEncryptMaskRuleToolHandler.java`
-- [ ] T027A [US4] 统一 `passed` / `failed` / `skipped` 输出与 mismatch 证据结构
+- [ ] T027A [US4] 统一 `passed` / `failed` / `skipped` 输出与 mismatch 证据结构，覆盖 encrypt drop 场景
 
 **Checkpoint**: 四层验证已形成统一报告。
 

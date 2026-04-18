@@ -78,7 +78,7 @@ final class WorkflowSnapshotCloner {
             return null;
         }
         ClarifiedIntent result = new ClarifiedIntent();
-        result.setIntentType(original.getIntentType());
+        result.setFeatureType(original.getFeatureType());
         result.setOperationType(original.getOperationType());
         result.setFieldSemantics(original.getFieldSemantics());
         result.setReasoningNotes(original.getReasoningNotes());

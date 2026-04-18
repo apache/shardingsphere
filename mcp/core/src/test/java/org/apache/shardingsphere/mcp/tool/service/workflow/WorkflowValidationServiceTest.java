@@ -108,6 +108,28 @@ class WorkflowValidationServiceTest {
     }
     
     @Test
+    void assertValidateSkipsDdlAndPassesWhenEncryptDropAlreadyRemoved() {
+        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        contextStore.save(createEncryptDropSnapshot());
+        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
+        try (
+                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
+                MockedConstruction<MCPSQLExecutionFacade> facades = mockConstruction(MCPSQLExecutionFacade.class,
+                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
+            assertThat(actualResponse.get("status"), is("validated"));
+            assertThat(actualResponse.get("overall_status"), is("passed"));
+            assertThat(((Map<?, ?>) actualResponse.get("ddl_validation")).get("status"), is("skipped"));
+            assertThat(((Map<?, ?>) actualResponse.get("rule_validation")).get("status"), is("passed"));
+            verify(facades.constructed().get(0), times(1)).execute(any());
+        }
+    }
+    
+    @Test
     void assertValidateReportsSqlExecutabilityFailure() {
         MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
         WorkflowContextStore contextStore = new WorkflowContextStore();
@@ -150,6 +172,26 @@ class WorkflowValidationServiceTest {
             assertThat(actualIssue.get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
             Map<?, ?> actualLogicalValidation = (Map<?, ?>) actualResponse.get("logical_metadata_validation");
             assertThat(actualLogicalValidation.get("status"), is("failed"));
+        }
+    }
+    
+    @Test
+    void assertValidateSupportsMaskRuleFieldAliases() {
+        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        contextStore.save(createMaskSnapshot("create"));
+        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders"))
+                .thenReturn(List.of(Map.of("logic_column", "status", "mask_algorithm", "MASK_TYPE", "props", Map.of("replace-char", "*"))));
+        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
+        try (
+                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
+                MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
+                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
+            assertThat(actualResponse.get("status"), is("validated"));
+            assertThat(((Map<?, ?>) actualResponse.get("rule_validation")).get("status"), is("passed"));
         }
     }
     
@@ -220,7 +262,7 @@ class WorkflowValidationServiceTest {
         request.setAssistedQueryAlgorithmType("CRC32");
         result.setRequest(request);
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setIntentType("encrypt");
+        clarifiedIntent.setFeatureType("encrypt");
         clarifiedIntent.setOperationType("create");
         clarifiedIntent.setRequiresEqualityFilter(true);
         clarifiedIntent.setRequiresLikeQuery(false);
@@ -251,7 +293,7 @@ class WorkflowValidationServiceTest {
         request.setAlgorithmType("MASK_TYPE");
         result.setRequest(request);
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.setIntentType("mask");
+        clarifiedIntent.setFeatureType("mask");
         clarifiedIntent.setOperationType(operationType);
         result.setClarifiedIntent(clarifiedIntent);
         InteractionPlan interactionPlan = new InteractionPlan();
@@ -267,5 +309,12 @@ class WorkflowValidationServiceTest {
         MCPDatabaseMetadataCatalog metadataCatalog = new MCPDatabaseMetadataCatalog(Map.of("logic_db",
                 new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(schemaMetadata))));
         return new MCPRuntimeContext(new MCPSessionManager(Map.of()), metadataCatalog);
+    }
+    
+    private WorkflowContextSnapshot createEncryptDropSnapshot() {
+        WorkflowContextSnapshot result = createEncryptSnapshot();
+        result.getClarifiedIntent().setOperationType("drop");
+        result.setDerivedColumnPlan(null);
+        return result;
     }
 }

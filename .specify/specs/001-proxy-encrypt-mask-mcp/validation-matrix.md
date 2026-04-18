@@ -16,6 +16,7 @@ V1 明确不覆盖：
 - 历史数据迁移校验
 - 真实结果正确性比对
 - 数据回填完整性检查
+- encrypt drop 后的历史明文恢复正确性
 
 ## 2. 验证总原则
 
@@ -23,6 +24,7 @@ V1 明确不覆盖：
 - 每一层验证都必须输出 `passed`、`failed` 或 `skipped`。
 - `manual-only` 模式下，未执行前不能直接判定成功。
 - 校验失败时必须给出 mismatch 和建议动作。
+- encrypt drop 与收缩式 alter 不包含 cleanup 规划，仍必须继续进行规则、逻辑元数据和 SQL 可执行性验证。
 
 ## 3. 四层验证矩阵
 
@@ -57,7 +59,7 @@ V1 明确不覆盖：
 
 **适用场景**
 
-- encrypt create / alter
+- encrypt create / alter / drop
 - mask create / alter / drop
 
 **证据来源**
@@ -68,7 +70,7 @@ V1 明确不覆盖：
 
 **结果判定**
 
-- `passed`: 规则存在且字段、算法、派生列映射与计划一致
+- `passed`: 规则存在或已删除，且字段、算法、派生列映射与计划一致
 - `failed`: 规则缺失、算法不一致、drop 后仍残留
 - `skipped`: 不允许出现，规则层始终应校验
 
@@ -124,14 +126,21 @@ V1 明确不覆盖：
 - Logical Metadata: 必须校验
 - SQL Executability: 必须校验
 
-### 4.2 Mask Create / Alter
+### 4.2 Encrypt Drop
+
+- DDL: `skipped`
+- Rule: 必须校验规则已删除
+- Logical Metadata: 必须校验
+- SQL Executability: 必须校验
+
+### 4.3 Mask Create / Alter
 
 - DDL: 通常 `skipped`，除非用户批准了额外物理 DDL
 - Rule: 必须校验
 - Logical Metadata: 必须校验
 - SQL Executability: 必须校验
 
-### 4.3 Mask Drop
+### 4.4 Mask Drop
 
 - DDL: 必须 `skipped`
 - Rule: 必须校验规则已删除
@@ -178,7 +187,7 @@ V1 明确不覆盖：
 
 - 期望 `phone_cipher`，实际不存在
 - 期望 encryptor 为 `AES`，实际为 `SM4`
-- 期望 rule 已删除，实际 `mask rule` 仍存在
+- 期望 rule 已删除，实际 `encrypt rule` 或 `mask rule` 仍存在
 
 ## 8. 完成标准
 

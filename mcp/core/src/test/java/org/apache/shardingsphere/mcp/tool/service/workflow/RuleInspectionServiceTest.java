@@ -47,11 +47,27 @@ class RuleInspectionServiceTest {
     void assertQueryMaskRulesUsesSpecificTableSql() {
         WorkflowProxyQueryService queryService = mock(WorkflowProxyQueryService.class);
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
-        when(queryService.query(runtimeContext, "logic_db", "", "SHOW MASK RULE orders FROM logic_db")).thenReturn(List.of(Map.of("column", "order_id")));
+        when(queryService.query(runtimeContext, "logic_db", "", "SHOW MASK RULE orders FROM logic_db"))
+                .thenReturn(List.of(Map.of("logic_column", "order_id", "mask_algorithm", "MD5", "props", "replace-char=*")));
         RuleInspectionService service = new RuleInspectionService(queryService);
         List<Map<String, Object>> actual = service.queryMaskRules(runtimeContext, "logic_db", "orders");
         assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).get("column"), is("order_id"));
+        assertThat(actual.get(0).get("algorithm_type"), is("MD5"));
+        assertThat(actual.get(0).get("algorithm_props"), is("replace-char=*"));
         verify(queryService).query(runtimeContext, "logic_db", "", "SHOW MASK RULE orders FROM logic_db");
+    }
+    
+    @Test
+    void assertQueryEncryptRulesUsesSpecificTableSql() {
+        WorkflowProxyQueryService queryService = mock(WorkflowProxyQueryService.class);
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        when(queryService.query(runtimeContext, "logic_db", "", "SHOW ENCRYPT TABLE RULE orders FROM logic_db"))
+                .thenReturn(List.of(Map.of("logic_column", "status", "cipher_column", "status_cipher")));
+        RuleInspectionService service = new RuleInspectionService(queryService);
+        List<Map<String, Object>> actual = service.queryEncryptRules(runtimeContext, "logic_db", "orders");
+        assertThat(actual.size(), is(1));
+        verify(queryService).query(runtimeContext, "logic_db", "", "SHOW ENCRYPT TABLE RULE orders FROM logic_db");
     }
     
     @Test

@@ -36,7 +36,7 @@ public final class WorkflowIssueCode {
     
     public static final String LOGICAL_METADATA_UNAVAILABLE = "WF-META-003";
     
-    public static final String INTENT_TYPE_UNCLEAR = "WF-INTENT-001";
+    public static final String FEATURE_TYPE_UNCLEAR = "WF-INTENT-001";
     
     public static final String ALGORITHM_NOT_FOUND = "WF-ALGO-001";
     
@@ -52,9 +52,13 @@ public final class WorkflowIssueCode {
     
     public static final String AUTO_RENAMED_DUE_TO_CONFLICT = "WF-NAME-002";
     
-    public static final String ENCRYPT_DROP_UNSUPPORTED = "WF-LIFE-001";
+    public static final String DROP_TARGET_RULE_NOT_FOUND = "WF-LIFE-001";
     
     public static final String WORKFLOW_STATUS_INVALID = "WF-LIFE-002";
+    
+    public static final String ENCRYPT_DROP_SCOPE_LIMITED = "WF-LIFE-003";
+    
+    public static final String PHYSICAL_CLEANUP_REQUIRED = "WF-LIFE-004";
     
     public static final String DDL_PERMISSION_DENIED = "WF-DDL-001";
     

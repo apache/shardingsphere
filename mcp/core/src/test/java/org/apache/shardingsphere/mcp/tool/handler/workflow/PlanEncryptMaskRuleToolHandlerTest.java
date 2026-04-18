@@ -33,6 +33,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -65,5 +66,46 @@ class PlanEncryptMaskRuleToolHandlerTest {
     @Test
     void assertGetToolDescriptor() {
         assertThat(new PlanEncryptMaskRuleToolHandler().getToolDescriptor().getName(), is("plan_encrypt_mask_rule"));
+    }
+    
+    @Test
+    void assertHandlePrefersFeatureTypeAndStructuredIntentEvidence() {
+        WorkflowPlanningService planningService = mock(WorkflowPlanningService.class);
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-2");
+        snapshot.setStatus("clarifying");
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        when(planningService.plan(org.mockito.ArgumentMatchers.same(runtimeContext), org.mockito.ArgumentMatchers.anyString(),
+                argThat(request -> "encrypt".equals(request.getFeatureType())
+                        && Boolean.TRUE.equals(request.getRequiresEqualityFilter())
+                        && Boolean.FALSE.equals(request.getRequiresLikeQuery())
+                        && "phone".equals(request.getFieldSemantics())
+                        && "给手机号加密".equals(request.getRawUserRequest()))))
+                .thenReturn(snapshot);
+        PlanEncryptMaskRuleToolHandler handler = new PlanEncryptMaskRuleToolHandler(planningService, new AlgorithmPropertyTemplateService());
+        Map<String, Object> actual = handler.handle(runtimeContext, "session-1", Map.of(
+                "feature_type", "encrypt",
+                "raw_user_request", "给手机号加密",
+                "structured_intent_evidence", Map.of(
+                        "requires_equality_filter", true,
+                        "requires_like_query", false,
+                        "field_semantics", "phone")))
+                .toPayload();
+        assertThat(actual.get("plan_id"), is("plan-2"));
+    }
+    
+    @Test
+    void assertHandleAcceptsLegacyIntentTypeArgument() {
+        WorkflowPlanningService planningService = mock(WorkflowPlanningService.class);
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-3");
+        snapshot.setStatus("planned");
+        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        when(planningService.plan(org.mockito.ArgumentMatchers.same(runtimeContext), org.mockito.ArgumentMatchers.anyString(),
+                argThat(request -> "mask".equals(request.getFeatureType()) && "drop".equals(request.getOperationType()))))
+                .thenReturn(snapshot);
+        PlanEncryptMaskRuleToolHandler handler = new PlanEncryptMaskRuleToolHandler(planningService, new AlgorithmPropertyTemplateService());
+        Map<String, Object> actual = handler.handle(runtimeContext, "session-1", Map.of("intent_type", "mask", "operation_type", "drop")).toPayload();
+        assertThat(actual.get("plan_id"), is("plan-3"));
     }
 }

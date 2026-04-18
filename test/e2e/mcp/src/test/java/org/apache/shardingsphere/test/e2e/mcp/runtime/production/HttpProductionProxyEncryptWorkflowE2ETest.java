@@ -116,7 +116,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(String.valueOf(actualIndexPlan.get(0).get("sql")), containsString("status_assisted_query"));
             List<Map<String, Object>> actualDistSqlArtifacts = getMapList(actualPlannedResponse.get("distsql_artifacts"));
             assertThat(actualDistSqlArtifacts.size(), is(1));
-            assertThat(String.valueOf(actualDistSqlArtifacts.get(0).get("sql")), containsString("ASSISTED_QUERY_COLUMN=status_assisted_query"));
+            assertThat(String.valueOf(actualDistSqlArtifacts.get(0).get("sql")), containsString("ASSISTED_QUERY=status_assisted_query"));
             Map<String, Object> actualApplyResponse = interactionClient.call("apply_encrypt_mask_rule", Map.of("plan_id", planId));
             assertThat(String.valueOf(actualApplyResponse.get("status")), is("completed"));
             assertThat(getMapList(actualApplyResponse.get("step_results")).size(), is(3));
@@ -139,7 +139,6 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("clarifying"));
             List<String> actualIssueCodes = getIssueCodes(actualPlanResponse);
             assertThat(actualIssueCodes, hasItem(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
-            assertThat(actualIssueCodes, hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
             assertThat(getMap(actualPlanResponse.get("derived_column_plan")).size(), is(0));
             List<Map<String, Object>> actualRecommendations = getMapList(actualPlanResponse.get("algorithm_recommendations"));
             assertThat(actualRecommendations.size(), is(2));
@@ -282,6 +281,52 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
+    void assertPlanApplyAndValidateEncryptDropWorkflowThroughProxy() throws Exception {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            createEncryptRuleWithoutEquality(interactionClient);
+            Map<String, Object> actualDropPlanResponse = interactionClient.call("plan_encrypt_mask_rule",
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "feature_type", "encrypt", "operation_type", "drop"));
+            assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
+            assertThat(getStringList(actualDropPlanResponse.get("pending_questions")), is(List.of()));
+            assertThat(getIssueCodes(actualDropPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED));
+            assertThat(getIssueCodes(actualDropPlanResponse), hasItem(WorkflowIssueCode.PHYSICAL_CLEANUP_REQUIRED));
+            assertThat(getMapList(actualDropPlanResponse.get("ddl_artifacts")).size(), is(0));
+            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), is("DROP ENCRYPT RULE orders"));
+            String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
+            Map<String, Object> actualApplyResponse = interactionClient.call("apply_encrypt_mask_rule", Map.of("plan_id", planId));
+            assertThat(String.valueOf(actualApplyResponse.get("status")), is("completed"));
+            assertThat(getStringList(actualApplyResponse.get("executed_ddl")).size(), is(0));
+            assertThat(getStringList(actualApplyResponse.get("executed_distsql")).size(), is(1));
+            assertThat(countPhysicalColumn("status_cipher"), is(1));
+            Map<String, Object> actualValidationResponse = interactionClient.call("validate_encrypt_mask_rule", Map.of("plan_id", planId));
+            assertValidationPassed(actualValidationResponse);
+            assertThat(String.valueOf(getMap(actualValidationResponse.get("ddl_validation")).get("status")), is("skipped"));
+            assertThat(String.valueOf(getMap(actualValidationResponse.get("rule_validation")).get("status")), is("passed"));
+        }
+    }
+    
+    @Test
+    void assertPlanKeepsSiblingEncryptRulesWhenDroppingOneColumnThroughProxy() throws Exception {
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            createEncryptRuleWithoutEquality(interactionClient);
+            createEncryptRuleWithoutEquality(interactionClient, "amount", "amount-secret");
+            Map<String, Object> actualDropPlanResponse = interactionClient.call("plan_encrypt_mask_rule",
+                    Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "feature_type", "encrypt", "operation_type", "drop"));
+            assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
+            assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER ENCRYPT RULE orders"));
+            String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
+            assertThat(String.valueOf(interactionClient.call("apply_encrypt_mask_rule", Map.of("plan_id", planId)).get("status")), is("completed"));
+            assertValidationEventuallyPassed(interactionClient, planId);
+            List<Map<String, Object>> actualEncryptRules = getPayloadItems(
+                    interactionClient.readResource(String.format("shardingsphere://databases/%s/encrypt-rules/orders", getLogicalDatabaseName())));
+            assertThat(actualEncryptRules.size(), is(1));
+            assertThat(String.valueOf(actualEncryptRules.get(0).get("logic_column")), is("amount"));
+            assertThat(countPhysicalColumn("status_cipher"), is(1));
+            assertThat(countPhysicalColumn("amount_cipher"), is(1));
+        }
+    }
+    
+    @Test
     void assertPlanApplyValidateAndReadEncryptResourcesWithCustomSpiAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call("plan_encrypt_mask_rule",
@@ -307,10 +352,14 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient) throws Exception {
+        createEncryptRuleWithoutEquality(interactionClient, "status", "base-secret");
+    }
+    
+    private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient, final String columnName, final String secret) throws Exception {
         Map<String, Object> actualCreatePlanResponse = interactionClient.call("plan_encrypt_mask_rule",
-                Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                        "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊", "algorithm_type", "AES",
-                        "primary_algorithm_properties", Map.of("aes-key-value", "base-secret")));
+                Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", columnName,
+                        "natural_language_intent", String.format("给 %s 做可逆加密，不需要等值，不需要模糊", columnName), "algorithm_type", "AES",
+                        "primary_algorithm_properties", Map.of("aes-key-value", secret)));
         assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
         String planId = String.valueOf(actualCreatePlanResponse.get("plan_id"));
         assertThat(String.valueOf(interactionClient.call("apply_encrypt_mask_rule", Map.of("plan_id", planId)).get("status")), is("completed"));

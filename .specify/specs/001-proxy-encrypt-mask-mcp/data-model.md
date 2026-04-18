@@ -4,34 +4,35 @@
 
 - 模型以逻辑视图为主，不以物理列为主。
 - 模型必须区分“规划产物”和“执行结果”，避免一步一步模式下状态混淆。
-- 模型必须把审批模式、命名冲突策略、校验结果显式化。
+- 模型必须把审批模式、命名冲突策略和校验结果显式化。
+- 模型必须显式体现“上游结构化意图优先、原始自然语言仅作补充上下文”的职责边界。
 - V1 只覆盖单数据库、单表、单列，但数据结构应允许未来扩展到多列。
 
 ## 2. 核心实体
 
 ### 2.1 WorkflowRequest
 
-一次自然语言工作流请求的标准化输入。
+一次工作流请求的标准化输入。
 
 - `database`: 必填，逻辑数据库名
 - `schema`: 可选，逻辑 schema
 - `table`: 必填，逻辑表名
 - `column`: 必填，逻辑列名
-- `intentType`: 必填，`encrypt` 或 `mask`
+- `featureType`: 必填，`encrypt` 或 `mask`
 - `operationType`: 必填，`create` / `alter` / `drop`
-- `naturalLanguageIntent`: 必填，用户原始描述
+- `rawUserRequest`: 可选，用户原始描述
+- `structuredIntentEvidence`: 可选，上游模型已抽取的结构化证据
 - `deliveryMode`: 必填，`all-at-once` 或 `step-by-step`
 - `executionMode`: 必填，`auto-execute` / `review-then-execute` / `manual-only`
-- `allowSampleData`: 必填，布尔值
 - `allowIndexDDL`: 必填，布尔值
 - `allowPhysicalDDLAutoExecute`: 必填，布尔值
 - `userOverrides`: 可选，用户对算法、命名、执行顺序的覆盖项
 
-### 2.2 ClarifiedIntent
+### 2.2 StructuredIntent
 
-由追问阶段补齐后的、可直接进入规划阶段的结构化意图。
+由上游模型或追问阶段补齐后的、可直接进入规划阶段的结构化意图。
 
-- `intentType`
+- `featureType`
 - `operationType`
 - `requiresDecrypt`: 加密场景是否要求可逆
 - `requiresEqualityFilter`: 是否要求等值查询能力
@@ -59,7 +60,7 @@
 1. 上下文确认
 2. 规则与算法盘点
 3. 缺失信息追问
-4. 命名与 DDL / DistSQL 规划
+4. 命名、DDL / DistSQL 规划
 5. 审阅与确认
 6. 执行
 7. 验证
@@ -151,7 +152,7 @@
 - `planId`
 - `workflowStatus`
 - `confirmedRequest`
-- `clarifiedIntent`
+- `structuredIntent`
 - `selectedAlgorithm`
 - `confirmedProperties`
 - `maskedSecretPropertySummary`
@@ -206,7 +207,7 @@
 
 ## 3. 关键枚举
 
-### 3.1 IntentType
+### 3.1 FeatureType
 
 - `encrypt`
 - `mask`
@@ -219,7 +220,7 @@
 
 V1 约束：
 
-- `encrypt` 仅允许 `create` / `alter`
+- `encrypt` 允许 `create` / `alter` / `drop`
 - `mask` 允许 `create` / `alter` / `drop`
 
 ### 3.3 DeliveryMode
@@ -259,52 +260,21 @@ V1 约束：
 
 `clarifying -> planned -> awaiting-review -> awaiting-execution-approval -> executing -> validating -> completed`
 
-每一段之间都允许暂停，等待用户下一次确认。
+如果在任一审批点暂停：
 
-### 4.3 仅手工执行模式
+`... -> awaiting-review`
+或
+`... -> awaiting-manual-execution`
 
-`clarifying -> planned -> awaiting-review -> awaiting-manual-execution -> validating(可延后触发) -> completed`
+## 5. 建模约束
 
-## 5. 实体关系
+- 原始自然语言输入不能替代结构化规则字段成为唯一执行依据。
+- encrypt alter / drop 不要求 MCP 生成 cleanup 计划，物理清理由用户自行处理。
+- `manual-only` 模式必须区分 review-safe 预览与 executable artifacts。
+- 逻辑视图验证与 SQL 可执行性验证必须以 Proxy 逻辑视图为准。
 
-- `WorkflowRequest` 经过澄清后生成一个 `ClarifiedIntent`
-- `ClarifiedIntent` 生成一个 `InteractionPlan`
-- `InteractionPlan` 可产生零到多个 `AlgorithmCandidate`
-- `encrypt` 场景会生成一个 `DerivedColumnPlan`
-- `DerivedColumnPlan` 可产生零到多个 `DDLArtifact`
-- `RulePlan` 与 `DDLArtifact` 共同组成可执行工件
-- 执行后生成一个 `ValidationReport`
-- `ValidationReport` 与所有执行工件共同汇总成 `ExecutionSummary`
+## 6. 数据边界说明
 
-## 6. 业务约束
-
-### 6.1 通用约束
-
-- `database` 不能为空。
-- `table` 和 `column` 在规划前必须能从逻辑元数据中解析出来。
-- `manual-only` 模式下，任何 DDL / DistSQL 的 `executed` 都必须为 `false`。
-- `step-by-step` 模式下，必须保留 `currentStep` 与待确认阶段。
-
-### 6.2 加密约束
-
-- `requiresDecrypt=true` 时，候选算法必须支持解密。
-- `requiresEqualityFilter=true` 时，必须提供辅助查询能力或能证明主算法支持等值查询。
-- `requiresLikeQuery=true` 时，必须提供模糊查询能力或能证明主算法支持模糊查询。
-- `DerivedColumnPlan` 的物理列命名默认使用：
-  - `*_cipher`
-  - `*_assisted_query`
-  - `*_like_query`
-- 命名冲突时必须追加数字后缀。
-- 不默认复用现存同名列。
-
-### 6.3 脱敏约束
-
-- 脱敏规则默认不依赖物理列 DDL。
-- 算法推荐必须结合字段语义与展示诉求。
-- 修改或删除脱敏规则时，仍需做规则与逻辑 SQL 可执行性验证。
-
-## 7. 非持久化说明
-
-V1 不要求审计落库，也不要求持久化保存工作流状态。
-因此上述对象默认是一次会话内的运行态模型，而不是新引入的持久化表结构。
-对一步一步模式，建议以 `sessionId + planId` 维持服务端上下文快照。
+- V1 不新增审计落库模型。
+- V1 不建模历史数据迁移、回填或 cleanup 对象。
+- V1 不把样本数据读取建成完成标准。

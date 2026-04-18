@@ -57,7 +57,7 @@ class WorkflowPlanningServiceTest {
         request.setDatabase("logic_db");
         request.setTable("bad table");
         request.setColumn("order_id");
-        request.setIntentType("mask");
+        request.setFeatureType("mask");
         request.setOperationType("create");
         WorkflowContextSnapshot actualSnapshot = planningService.plan(createRuntimeContext(), "session-1", request);
         assertThat(actualSnapshot.getStatus(), is("failed"));
@@ -65,14 +65,14 @@ class WorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRequestsIntentClarificationWhenIntentTypeIsMissing() {
+    void assertPlanRequestsFeatureClarificationWhenFeatureTypeIsMissing() {
         WorkflowPlanningService planningService = createPlanningService(mock(RuleInspectionService.class), mock(AlgorithmRecommendationService.class),
                 mock(AlgorithmPropertyTemplateService.class), mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class),
                 mock(RuleDistSQLPlanningService.class), mock(WorkflowProxyQueryService.class));
         WorkflowRequest request = createRequest("", "create", "");
         WorkflowContextSnapshot actualSnapshot = planningService.plan(createRuntimeContext(), "session-1", request);
         assertThat(actualSnapshot.getStatus(), is("clarifying"));
-        assertThat(actualSnapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.INTENT_TYPE_UNCLEAR));
+        assertThat(actualSnapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.FEATURE_TYPE_UNCLEAR));
     }
     
     @Test
@@ -216,13 +216,111 @@ class WorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsEncryptDropWorkflow() {
-        WorkflowPlanningService planningService = createPlanningService(mock(RuleInspectionService.class), mock(AlgorithmRecommendationService.class),
+    void assertPlanCreatesEncryptDropArtifactAndWarnings() {
+        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+        AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
+        AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
+        PhysicalDDLPlanningService physicalDDLPlanningService = mock(PhysicalDDLPlanningService.class);
+        RuleDistSQLPlanningService ruleDistSQLPlanningService = mock(RuleDistSQLPlanningService.class);
+        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders"))
+                .thenReturn(List.of(Map.of("logic_column", "order_id", "cipher_column", "order_id_cipher")));
+        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        when(ruleDistSQLPlanningService.planEncryptDropRule(any(), anyList())).thenReturn(new RuleArtifact("drop", "DROP ENCRYPT RULE orders"));
+        WorkflowPlanningService planningService = createPlanningService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService,
+                physicalDDLPlanningService, mock(IndexPlanningService.class), ruleDistSQLPlanningService, mock(WorkflowProxyQueryService.class));
+        WorkflowContextSnapshot actualSnapshot = planningService.plan(runtimeContext, "session-1", createRequest("encrypt", "drop", ""));
+        assertThat(actualSnapshot.getStatus(), is("planned"));
+        assertThat(actualSnapshot.getRuleArtifacts().get(0).getSql(), is("DROP ENCRYPT RULE orders"));
+        assertThat(actualSnapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED));
+        assertThat(actualSnapshot.getIssues().get(1).getCode(), is(WorkflowIssueCode.PHYSICAL_CLEANUP_REQUIRED));
+        assertTrue(actualSnapshot.getClarifiedIntent().getPendingQuestions().isEmpty());
+        verify(algorithmRecommendationService, never()).recommendEncryptAlgorithms(any(), any(), anyList(), anyList());
+        verify(propertyTemplateService, never()).findRequirements(any(), any(), any(), any());
+        verify(physicalDDLPlanningService, never()).planAddColumnArtifacts(any(), any(), anySet(), any());
+    }
+    
+    @Test
+    void assertPlanFailsWhenEncryptDropTargetRuleIsMissing() {
+        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        WorkflowPlanningService planningService = createPlanningService(ruleInspectionService, mock(AlgorithmRecommendationService.class),
                 mock(AlgorithmPropertyTemplateService.class), mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class),
                 mock(RuleDistSQLPlanningService.class), mock(WorkflowProxyQueryService.class));
-        WorkflowContextSnapshot actualSnapshot = planningService.plan(createRuntimeContext(), "session-1", createRequest("encrypt", "drop", "可逆 不需要等值 不需要模糊"));
+        WorkflowContextSnapshot actualSnapshot = planningService.plan(runtimeContext, "session-1", createRequest("encrypt", "drop", ""));
         assertThat(actualSnapshot.getStatus(), is("failed"));
-        assertThat(actualSnapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.ENCRYPT_DROP_UNSUPPORTED));
+        assertThat(actualSnapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
+    }
+    
+    @Test
+    void assertPlanWarnsWhenEncryptAlterLeavesPhysicalCleanupToOperator() {
+        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+        AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
+        PhysicalDDLPlanningService physicalDDLPlanningService = mock(PhysicalDDLPlanningService.class);
+        RuleDistSQLPlanningService ruleDistSQLPlanningService = mock(RuleDistSQLPlanningService.class);
+        WorkflowProxyQueryService proxyQueryService = mock(WorkflowProxyQueryService.class);
+        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of(
+                Map.of("logic_column", "order_id", "cipher_column", "order_id_cipher", "assisted_query_column", "order_id_assisted_query")));
+        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(runtimeContext)).thenReturn(List.of(Map.of("type", "AES")));
+        when(ruleInspectionService.enrichEncryptAlgorithms(List.of(Map.of("type", "AES")))).thenReturn(List.of(Map.of("type", "AES")));
+        when(propertyTemplateService.findRequirements(any(), any(), any(), any())).thenReturn(List.of());
+        when(proxyQueryService.queryColumnDefinition(runtimeContext, "logic_db", "public", "orders", "order_id")).thenReturn("VARCHAR(32)");
+        when(physicalDDLPlanningService.planAddColumnArtifacts(any(), any(), anySet(), any())).thenReturn(List.of());
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any(), anyList())).thenReturn(new RuleArtifact("alter", "ALTER ENCRYPT RULE orders"));
+        WorkflowRequest request = createRequest("encrypt", "alter", "");
+        request.setRequiresDecrypt(true);
+        request.setRequiresEqualityFilter(false);
+        request.setRequiresLikeQuery(false);
+        request.setAlgorithmType("AES");
+        request.getPrimaryAlgorithmProperties().put("aes-key-value", "alter-secret");
+        WorkflowPlanningService planningService = createPlanningService(ruleInspectionService, new AlgorithmRecommendationService(), propertyTemplateService,
+                physicalDDLPlanningService, mock(IndexPlanningService.class), ruleDistSQLPlanningService, proxyQueryService);
+        WorkflowContextSnapshot actualSnapshot = planningService.plan(runtimeContext, "session-1", request);
+        assertThat(actualSnapshot.getStatus(), is("planned"));
+        assertTrue(actualSnapshot.getIssues().stream().anyMatch(each -> WorkflowIssueCode.PHYSICAL_CLEANUP_REQUIRED.equals(each.getCode())));
+    }
+    
+    @Test
+    void assertPlanReusesAliasBasedEncryptDerivedColumnsForAlter() {
+        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+        AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
+        AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
+        IndexPlanningService indexPlanningService = mock(IndexPlanningService.class);
+        RuleDistSQLPlanningService ruleDistSQLPlanningService = mock(RuleDistSQLPlanningService.class);
+        WorkflowProxyQueryService proxyQueryService = mock(WorkflowProxyQueryService.class);
+        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of(Map.of(
+                "logic_column", "order_id",
+                "cipher_column", "order_id_cipher",
+                "assisted_query", "order_id_assisted_existing",
+                "like_query", "order_id_like_existing")));
+        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(runtimeContext)).thenReturn(List.of());
+        when(ruleInspectionService.enrichEncryptAlgorithms(List.of())).thenReturn(List.of());
+        when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), anyList(), anyList())).thenReturn(List.of());
+        when(propertyTemplateService.findRequirements(any(), any(), any(), any())).thenReturn(List.of());
+        when(proxyQueryService.queryColumnDefinition(runtimeContext, "logic_db", "public", "orders", "order_id")).thenReturn("VARCHAR(32)");
+        when(indexPlanningService.planIndexes(any(), any(), anySet())).thenReturn(List.of());
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any(), anyList())).thenReturn(new RuleArtifact("alter", "ALTER ENCRYPT RULE orders"));
+        WorkflowRequest request = createRequest("encrypt", "alter", "");
+        request.setRequiresDecrypt(true);
+        request.setRequiresEqualityFilter(true);
+        request.setRequiresLikeQuery(true);
+        request.setAlgorithmType("AES");
+        request.setAssistedQueryAlgorithmType("MD5");
+        request.setLikeQueryAlgorithmType("CHAR_DIGEST_LIKE");
+        request.getPrimaryAlgorithmProperties().put("aes-key-value", "alias-secret");
+        WorkflowPlanningService planningService = createPlanningService(ruleInspectionService, algorithmRecommendationService, propertyTemplateService,
+                new PhysicalDDLPlanningService(), indexPlanningService, ruleDistSQLPlanningService, proxyQueryService);
+        WorkflowContextSnapshot actualSnapshot = planningService.plan(runtimeContext, "session-1", request);
+        assertThat(actualSnapshot.getStatus(), is("planned"));
+        assertThat(actualSnapshot.getDerivedColumnPlan().getAssistedQueryColumnName(), is("order_id_assisted_existing"));
+        assertThat(actualSnapshot.getDerivedColumnPlan().getLikeQueryColumnName(), is("order_id_like_existing"));
+        assertThat(actualSnapshot.getDdlArtifacts().size(), is(0));
     }
     
     @Test
@@ -395,7 +493,7 @@ class WorkflowPlanningServiceTest {
                 physicalDDLPlanningService, indexPlanningService, new RuleDistSQLPlanningService(), proxyQueryService);
         WorkflowContextSnapshot actualSnapshot = planningService.plan(runtimeContext, "session-1", createRequest("", "", "给 order_id 加密，修改为可逆等值，不需要模糊"));
         assertThat(actualSnapshot.getStatus(), is("planned"));
-        assertThat(actualSnapshot.getRequest().getIntentType(), is("encrypt"));
+        assertThat(actualSnapshot.getRequest().getFeatureType(), is("encrypt"));
         assertThat(actualSnapshot.getRequest().getOperationType(), is("alter"));
         assertTrue(actualSnapshot.getRuleArtifacts().get(0).getSql().startsWith("ALTER ENCRYPT RULE orders"));
     }
@@ -420,13 +518,13 @@ class WorkflowPlanningServiceTest {
         return new MCPRuntimeContext(new MCPSessionManager(Map.of()), ResourceTestDataFactory.createDatabaseMetadataCatalog());
     }
     
-    private WorkflowRequest createRequest(final String intentType, final String operationType, final String naturalLanguageIntent) {
+    private WorkflowRequest createRequest(final String featureType, final String operationType, final String naturalLanguageIntent) {
         WorkflowRequest result = new WorkflowRequest();
         result.setDatabase("logic_db");
         result.setSchema("");
         result.setTable("orders");
         result.setColumn("order_id");
-        result.setIntentType(intentType);
+        result.setFeatureType(featureType);
         result.setOperationType(operationType);
         result.setNaturalLanguageIntent(naturalLanguageIntent);
         return result;

@@ -30,7 +30,7 @@ import java.util.List;
 @Setter
 public final class ClarifiedIntent {
     
-    private String intentType;
+    private String featureType;
     
     private String operationType;
     

@@ -16,23 +16,29 @@
 - [ ] MCP 运行时连接的是 Proxy，而不是底层物理库
 - [ ] 所有工作流都要求显式 `database`
 - [ ] 工作流主视角始终是逻辑库、逻辑表、逻辑列
-- [ ] `encrypt drop` 在 V1 中被明确拒绝或 deferred
+- [ ] encrypt / mask 都支持 `create / alter / drop`
+- [ ] V1 不处理历史数据迁移或回填
+- [ ] V1 不要求回滚
+- [ ] V1 不要求审计落库
 
 ## 3. 交互流程验收
 
 - [ ] 任意请求一开始都会返回全局步骤清单
 - [ ] `all-at-once` 模式会连续推进，直到遇到补信息或审批点
 - [ ] `step-by-step` 模式会在关键步骤后暂停
-- [ ] `step-by-step` 模式下，系统能记住已确认上下文
+- [ ] `step-by-step` 模式下，系统能在当前服务运行期内记住已确认上下文
+- [ ] 服务重启后不要求恢复 `step-by-step` 上下文
 - [ ] review 前不会直接执行 SQL 或 DistSQL
+- [ ] `delivery_mode` 会真实影响暂停点与续做语义，而不是仅仅回显
 
-## 4. 自然语言理解与追问验收
+## 4. 输入职责边界与追问验收
 
-- [ ] 能从自然语言识别 `encrypt` 与 `mask`
-- [ ] 能识别 `create` / `alter` / `drop`
+- [ ] MCP 优先使用上游传入的结构化意图字段
+- [ ] 原始自然语言只作为补充上下文，而不是唯一规则输入
 - [ ] 信息不完整时会持续追问，而不是猜测执行
-- [ ] 加密场景能追问解密、等值查询、模糊查询需求
-- [ ] 脱敏场景能追问字段语义和展示要求
+- [ ] 加密场景会追问解密、等值查询、模糊查询等规则相关需求
+- [ ] 脱敏场景会追问字段语义和展示要求
+- [ ] 不会把“强语义自然语言理解”做成 MCP 的硬责任
 
 ## 5. 算法推荐与参数采集验收
 
@@ -51,6 +57,7 @@
 - [ ] 自动改名后会把最终名称回传给用户
 - [ ] 生成的物理列类型沿用 ShardingSphere 默认策略
 - [ ] 需要查询能力时会生成索引建议或索引 DDL
+- [ ] encrypt alter / drop 不会生成 cleanup DDL，物理清理由用户自行处理
 
 ## 7. 执行模式验收
 
@@ -79,13 +86,22 @@
 - [ ] 能生成 encrypt planning 工件
 - [ ] 能执行或导出对应 DDL / DistSQL
 - [ ] alter 流会先读取现有规则，不会盲改
+- [ ] 收缩式 alter 会明确说明 MCP 不处理遗留物理工件 cleanup
 
-### 8.2 Mask Create / Alter
+### 8.2 Encrypt Drop
+
+- [ ] 会先读取当前 encrypt 规则并确认目标存在
+- [ ] 能生成 `DROP ENCRYPT RULE` 工件
+- [ ] 会明确说明“不恢复历史明文数据”
+- [ ] 会明确说明遗留物理工件 cleanup 由用户自行处理
+- [ ] 删除后仍会进入验证与总结
+
+### 8.3 Mask Create / Alter
 
 - [ ] 能生成 mask rule-only planning 工件
 - [ ] alter 流会先读取现有规则，不会盲改
 
-### 8.3 Mask Drop
+### 8.4 Mask Drop
 
 - [ ] 仅删除 mask 规则
 - [ ] 不会生成物理清理 DDL
@@ -100,15 +116,17 @@
 - [ ] 列不存在时返回 `WF-META-002`
 - [ ] 算法不存在时返回 `WF-ALGO-001`
 - [ ] 算法能力冲突时返回 `WF-ALGO-002`
+- [ ] 自定义 SPI 能力不完整时返回 `WF-ALGO-003`
 - [ ] 缺少必填属性时返回 `WF-PROP-001`
 - [ ] 自动改名时返回 `WF-NAME-002`
-- [ ] `encrypt drop` 时返回 `WF-LIFE-001`
+- [ ] drop 目标规则不存在时返回 `WF-LIFE-001`
 - [ ] DDL 权限不足时返回 `WF-DDL-001`
 - [ ] 验证 mismatch 时返回 `WF-VAL-*`
 
 ## 10. 四层验证验收
 
 - [ ] encrypt create / alter 完成后会校验 DDL、Rule、Logical Metadata、SQL Executability
+- [ ] encrypt drop 完成后会校验 Rule、Logical Metadata、SQL Executability
 - [ ] mask create / alter 完成后至少校验 Rule、Logical Metadata、SQL Executability
 - [ ] mask drop 会校验规则已删除
 - [ ] `manual-only` 未执行前不会误报 `passed`
@@ -116,12 +134,10 @@
 
 ## 11. 数据边界与安全验收
 
-- [ ] V1 不处理历史数据迁移或回填
-- [ ] V1 不要求回滚
-- [ ] V1 不要求审计落库
-- [ ] 默认不读取样本数据
-- [ ] 样本数据只有在用户明确授权时才可读取
+- [ ] 完成标准不依赖样本数据
+- [ ] 默认流程不读取样本数据
 - [ ] 敏感参数不会在默认 summary 中明文出现
+- [ ] encrypt drop 只承诺规则 / 元数据 / SQL 可执行性范围内的验证
 
 ## 12. 典型会话验收矩阵
 

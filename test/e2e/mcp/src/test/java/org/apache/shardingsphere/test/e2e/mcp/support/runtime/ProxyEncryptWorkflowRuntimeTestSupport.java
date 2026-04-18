@@ -25,6 +25,8 @@ import org.apache.shardingsphere.test.e2e.env.container.adapter.config.AdaptorCo
 import org.apache.shardingsphere.test.e2e.env.container.adapter.impl.ShardingSphereProxyEmbeddedContainer;
 import org.testcontainers.containers.GenericContainer;
 
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -45,8 +47,6 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
     
     private static final String PROXY_PASSWORD = "Proxy@123";
     
-    private static final int PROXY_PORT = 3307;
-    
     private ProxyEncryptWorkflowRuntimeTestSupport() {
     }
     
@@ -57,17 +57,18 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
      * @throws SQLException SQL exception
      */
     public static ProxyEncryptWorkflowRuntimeFixture createFixture() throws SQLException {
+        int proxyPort = allocateProxyPort();
         GenericContainer<?> storageContainer = MySQLRuntimeTestSupport.createContainer().withNetworkAliases(STORAGE_NETWORK_ALIAS);
         ShardingSphereProxyEmbeddedContainer proxyContainer = null;
         boolean success = false;
         storageContainer.start();
         try {
             MySQLRuntimeTestSupport.initializeDatabase(storageContainer);
-            proxyContainer = createProxyContainer();
+            proxyContainer = createProxyContainer(proxyPort);
             proxyContainer.dependsOn(storageContainer);
             proxyContainer.start();
             success = true;
-            return new ProxyEncryptWorkflowRuntimeFixture(storageContainer, proxyContainer, createRuntimeDatabases());
+            return new ProxyEncryptWorkflowRuntimeFixture(storageContainer, proxyContainer, createRuntimeDatabases(proxyPort));
         } finally {
             if (!success) {
                 if (null != proxyContainer) {
@@ -78,17 +79,25 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
         }
     }
     
-    private static ShardingSphereProxyEmbeddedContainer createProxyContainer() {
+    private static int allocateProxyPort() {
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
+            return serverSocket.getLocalPort();
+        } catch (final IOException ex) {
+            throw new IllegalStateException("Failed to allocate Proxy port.", ex);
+        }
+    }
+    
+    private static ShardingSphereProxyEmbeddedContainer createProxyContainer(final int proxyPort) {
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "MySQL");
         Map<String, String> mountedResources = new LinkedHashMap<>(2, 1F);
         mountedResources.put("/proxy/workflow/global.yaml", "/opt/shardingsphere-proxy/conf/global.yaml");
         mountedResources.put("/proxy/workflow/database-logic-db.yaml", "/opt/shardingsphere-proxy/conf/database-logic-db.yaml");
-        return new ShardingSphereProxyEmbeddedContainer(databaseType, new AdaptorContainerConfiguration(LOGICAL_DATABASE_NAME, List.of(), mountedResources, "", ""));
+        return new ShardingSphereProxyEmbeddedContainer(databaseType, new AdaptorContainerConfiguration(LOGICAL_DATABASE_NAME, List.of(), mountedResources, "", ""), proxyPort);
     }
     
-    private static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
+    private static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final int proxyPort) {
         String jdbcUrl = String.format("jdbc:mysql://127.0.0.1:%d/%s?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8",
-                PROXY_PORT, LOGICAL_DATABASE_NAME);
+                proxyPort, LOGICAL_DATABASE_NAME);
         return Map.of(LOGICAL_DATABASE_NAME, new RuntimeDatabaseConfiguration("MySQL", jdbcUrl, PROXY_USER, PROXY_PASSWORD, "com.mysql.cj.jdbc.Driver"));
     }
     

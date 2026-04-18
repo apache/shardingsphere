@@ -87,6 +87,38 @@ public final class RuleDistSQLPlanningService {
     }
     
     /**
+     * Plan encrypt drop artifact.
+     *
+     * @param tableName table name
+     * @return rule artifact
+     */
+    public RuleArtifact planEncryptDropRule(final String tableName) {
+        WorkflowSqlUtils.checkSafeIdentifier("table", tableName);
+        return new RuleArtifact("drop", String.format("DROP ENCRYPT RULE %s", tableName));
+    }
+    
+    /**
+     * Plan encrypt drop artifact.
+     *
+     * @param request workflow request
+     * @param existingRules existing table rule rows
+     * @return rule artifact
+     */
+    public RuleArtifact planEncryptDropRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules) {
+        validateEncryptDropIdentifiers(request);
+        List<String> remainingColumnSegments = new LinkedList<>();
+        for (Map<String, Object> each : existingRules) {
+            if (!request.getColumn().equalsIgnoreCase(findRuleValue(each, "logic_column", "column"))) {
+                remainingColumnSegments.add(createExistingEncryptColumnSegment(each));
+            }
+        }
+        return remainingColumnSegments.isEmpty()
+                ? planEncryptDropRule(request.getTable())
+                : new RuleArtifact("drop", String.format("%s %s (%sCOLUMNS(%s%s%s))", "ALTER ENCRYPT RULE", request.getTable(),
+                        System.lineSeparator(), System.lineSeparator(), String.join(", " + System.lineSeparator(), remainingColumnSegments), System.lineSeparator()));
+    }
+    
+    /**
      * Plan mask drop artifact.
      *
      * @param tableName table name
@@ -108,7 +140,7 @@ public final class RuleDistSQLPlanningService {
         validateMaskIdentifiers(request);
         List<String> remainingColumnSegments = new LinkedList<>();
         for (Map<String, Object> each : existingRules) {
-            if (!request.getColumn().equalsIgnoreCase(findRuleValue(each, "column"))) {
+            if (!request.getColumn().equalsIgnoreCase(findRuleValue(each, "column", "logic_column"))) {
                 remainingColumnSegments.add(createExistingMaskColumnSegment(each));
             }
         }
@@ -125,6 +157,11 @@ public final class RuleDistSQLPlanningService {
         WorkflowSqlUtils.checkSafeIdentifier("like_query_column", derivedColumnPlan.getLikeQueryColumnName());
     }
     
+    private void validateEncryptDropIdentifiers(final WorkflowRequest request) {
+        WorkflowSqlUtils.checkSafeIdentifier("table", request.getTable());
+        WorkflowSqlUtils.checkSafeIdentifier("column", request.getColumn());
+    }
+    
     private void validateMaskIdentifiers(final WorkflowRequest request) {
         WorkflowSqlUtils.checkSafeIdentifier("table", request.getTable());
         WorkflowSqlUtils.checkSafeIdentifier("column", request.getColumn());
@@ -135,7 +172,7 @@ public final class RuleDistSQLPlanningService {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
-            if (request.getColumn().equalsIgnoreCase(findRuleValue(each, "logic_column"))) {
+            if (request.getColumn().equalsIgnoreCase(findRuleValue(each, "logic_column", "column"))) {
                 result.add(createTargetEncryptColumnSegment(request, intent, derivedColumnPlan));
                 targetColumnHandled = true;
                 continue;
@@ -152,10 +189,10 @@ public final class RuleDistSQLPlanningService {
         StringBuilder result = new StringBuilder();
         result.append(String.format("(NAME=%s, CIPHER=%s", request.getColumn(), derivedColumnPlan.getCipherColumnName()));
         if (derivedColumnPlan.isAssistedQueryColumnRequired()) {
-            result.append(String.format(", ASSISTED_QUERY_COLUMN=%s", derivedColumnPlan.getAssistedQueryColumnName()));
+            result.append(String.format(", ASSISTED_QUERY=%s", derivedColumnPlan.getAssistedQueryColumnName()));
         }
         if (derivedColumnPlan.isLikeQueryColumnRequired()) {
-            result.append(String.format(", LIKE_QUERY_COLUMN=%s", derivedColumnPlan.getLikeQueryColumnName()));
+            result.append(String.format(", LIKE_QUERY=%s", derivedColumnPlan.getLikeQueryColumnName()));
         }
         result.append(String.format(", ENCRYPT_ALGORITHM(%s)", WorkflowSqlUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties())));
         if (Boolean.TRUE.equals(intent.getRequiresEqualityFilter())) {
@@ -171,20 +208,20 @@ public final class RuleDistSQLPlanningService {
     }
     
     private String createExistingEncryptColumnSegment(final Map<String, Object> rule) {
-        String logicColumn = findRuleValue(rule, "logic_column");
+        String logicColumn = findRuleValue(rule, "logic_column", "column");
         String cipherColumn = findRuleValue(rule, "cipher_column");
-        String assistedQueryColumn = findRuleValue(rule, "assisted_query_column");
-        String likeQueryColumn = findRuleValue(rule, "like_query_column");
+        String assistedQueryColumn = findRuleValue(rule, "assisted_query_column", "assisted_query");
+        String likeQueryColumn = findRuleValue(rule, "like_query_column", "like_query");
         WorkflowSqlUtils.checkSafeIdentifier("column", logicColumn);
         WorkflowSqlUtils.checkSafeIdentifier("cipher_column", cipherColumn);
         WorkflowSqlUtils.checkSafeIdentifier("assisted_query_column", assistedQueryColumn);
         WorkflowSqlUtils.checkSafeIdentifier("like_query_column", likeQueryColumn);
         StringBuilder result = new StringBuilder(String.format("(NAME=%s, CIPHER=%s", logicColumn, cipherColumn));
         if (!assistedQueryColumn.isEmpty()) {
-            result.append(String.format(", ASSISTED_QUERY_COLUMN=%s", assistedQueryColumn));
+            result.append(String.format(", ASSISTED_QUERY=%s", assistedQueryColumn));
         }
         if (!likeQueryColumn.isEmpty()) {
-            result.append(String.format(", LIKE_QUERY_COLUMN=%s", likeQueryColumn));
+            result.append(String.format(", LIKE_QUERY=%s", likeQueryColumn));
         }
         result.append(String.format(", ENCRYPT_ALGORITHM(%s)",
                 WorkflowSqlUtils.createAlgorithmFragment(findRuleValue(rule, "encryptor_type"), WorkflowSqlUtils.createPropertyMap(rule.get("encryptor_props")))));
@@ -206,7 +243,7 @@ public final class RuleDistSQLPlanningService {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
-            if (request.getColumn().equalsIgnoreCase(findRuleValue(each, "column"))) {
+            if (request.getColumn().equalsIgnoreCase(findRuleValue(each, "column", "logic_column"))) {
                 result.add(createTargetMaskColumnSegment(request));
                 targetColumnHandled = true;
                 continue;
@@ -228,13 +265,14 @@ public final class RuleDistSQLPlanningService {
     }
     
     private String createExistingMaskColumnSegment(final Map<String, Object> rule) {
-        String columnName = findRuleValue(rule, "column");
+        String columnName = findRuleValue(rule, "column", "logic_column");
         WorkflowSqlUtils.checkSafeIdentifier("column", columnName);
-        String algorithmType = findRuleValue(rule, "algorithm_type");
-        String algorithmFragment = WorkflowSqlUtils.createPropertyMap(rule.get("algorithm_props")).isEmpty()
+        String algorithmType = findRuleValue(rule, "algorithm_type", "mask_algorithm");
+        Map<String, String> algorithmProperties = WorkflowSqlUtils.createPropertyMap(null == rule.get("algorithm_props") ? rule.get("props") : rule.get("algorithm_props"));
+        String algorithmFragment = algorithmProperties.isEmpty()
                 ? String.format("TYPE(NAME='%s')", algorithmType.toLowerCase(Locale.ENGLISH))
                 : String.format("TYPE(NAME='%s', PROPERTIES(%s))", algorithmType.toLowerCase(Locale.ENGLISH),
-                        PropertiesUtils.toString(WorkflowSqlUtils.createProperties(WorkflowSqlUtils.createPropertyMap(rule.get("algorithm_props")))));
+                        PropertiesUtils.toString(WorkflowSqlUtils.createProperties(algorithmProperties)));
         return String.format("(NAME=%s, %s)", columnName, algorithmFragment);
     }
     
@@ -244,8 +282,14 @@ public final class RuleDistSQLPlanningService {
                 String.join(", " + System.lineSeparator(), columnSegments), System.lineSeparator());
     }
     
-    private String findRuleValue(final Map<String, Object> rule, final String key) {
-        Object value = rule.get(key);
-        return null == value ? "" : WorkflowSqlUtils.trimToEmpty(String.valueOf(value));
+    private String findRuleValue(final Map<String, Object> rule, final String... keys) {
+        for (String each : keys) {
+            Object value = rule.get(each);
+            String actualValue = null == value ? "" : WorkflowSqlUtils.trimToEmpty(String.valueOf(value));
+            if (!actualValue.isEmpty()) {
+                return actualValue;
+            }
+        }
+        return "";
     }
 }

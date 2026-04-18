@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowIntentResolverTest {
@@ -34,11 +35,44 @@ class WorkflowIntentResolverTest {
         request.setColumn("phone");
         request.setNaturalLanguageIntent("给手机号加密，可逆，不需要等值，需要模糊");
         ClarifiedIntent actual = new WorkflowIntentResolver().resolve(request);
-        assertThat(actual.getIntentType(), is("encrypt"));
+        assertThat(actual.getFeatureType(), is("encrypt"));
         assertThat(actual.getOperationType(), is("create"));
         assertThat(actual.getFieldSemantics(), is("phone"));
         assertTrue(actual.getRequiresDecrypt());
         assertFalse(actual.getRequiresEqualityFilter());
         assertTrue(actual.getRequiresLikeQuery());
+    }
+    
+    @Test
+    void assertResolvePrefersStructuredEvidenceOverNaturalLanguageHints() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setFeatureType("encrypt");
+        request.setFieldSemantics("id_card");
+        request.setRequiresDecrypt(false);
+        request.setRequiresEqualityFilter(true);
+        request.setRequiresLikeQuery(false);
+        request.setNaturalLanguageIntent("给手机号加密，可逆，不需要等值，需要模糊");
+        ClarifiedIntent actual = new WorkflowIntentResolver().resolve(request);
+        assertThat(actual.getFeatureType(), is("encrypt"));
+        assertThat(actual.getFieldSemantics(), is("id_card"));
+        assertFalse(actual.getRequiresDecrypt());
+        assertTrue(actual.getRequiresEqualityFilter());
+        assertFalse(actual.getRequiresLikeQuery());
+    }
+    
+    @Test
+    void assertResolveSkipsEncryptCapabilityQuestionsForDropWorkflow() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setFeatureType("encrypt");
+        request.setOperationType("drop");
+        request.setColumn("phone");
+        ClarifiedIntent actual = new WorkflowIntentResolver().resolve(request);
+        assertThat(actual.getFeatureType(), is("encrypt"));
+        assertThat(actual.getOperationType(), is("drop"));
+        assertThat(actual.getFieldSemantics(), is("phone"));
+        assertNull(actual.getRequiresDecrypt());
+        assertNull(actual.getRequiresEqualityFilter());
+        assertNull(actual.getRequiresLikeQuery());
+        assertTrue(actual.getPendingQuestions().isEmpty());
     }
 }

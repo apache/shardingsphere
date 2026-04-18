@@ -7,6 +7,7 @@
 - 规则与算法的真实语义尽量复用现有 DistSQL 能力，不复制一套平行协议。
 - 所有 Tool 都必须显式接收 `database`。
 - 所有 Tool 都运行在连接 Proxy 的 MCP 拓扑上。
+- Tool 必须优先消费上游结构化意图；原始自然语言仅作为补充上下文。
 
 ## 2. Resource Contracts
 
@@ -92,7 +93,7 @@
 
 **用途**
 
-- 把自然语言意图转成可审阅、可分步执行的计划。
+- 把上游结构化意图和必要追问结果转成可审阅、可分步执行的计划。
 
 **输入**
 
@@ -102,12 +103,15 @@
   "schema": "public",
   "table": "t_order",
   "column": "phone",
-  "intent_type": "encrypt",
+  "feature_type": "encrypt",
   "operation_type": "create",
-  "natural_language_intent": "给手机号加密并支持等值查询",
+  "raw_user_request": "给手机号加密并支持等值查询",
+  "structured_intent_evidence": {
+    "requires_decrypt": true,
+    "requires_equality_filter": true
+  },
   "delivery_mode": "all-at-once",
   "execution_mode": "review-then-execute",
-  "allow_sample_data": false,
   "allow_index_ddl": true,
   "user_overrides": {
     "cipher_column_name": null,
@@ -144,8 +148,8 @@
 - 算法确定后，如仍缺少必填属性，`pending_questions` 必须转入属性采集，而不是直接生成最终工件。
 - review 默认只返回 `masked_property_preview`，不默认明文回显敏感参数。
 - 必须把最终命名方案回传给用户。
-- `encrypt` 在 V1 仅允许 `create` / `alter`。
-- `mask` 在 V1 允许 `create` / `alter` / `drop`。
+- `encrypt` 与 `mask` 在 V1 都允许 `create` / `alter` / `drop`。
+- encrypt alter / drop 不生成 cleanup DDL；如果存在遗留物理工件，由用户自行处理。
 
 ## 3.2 `apply_encrypt_mask_rule`
 
@@ -189,7 +193,7 @@
 - 任何执行失败都必须通过 `issues` 返回阶段、建议动作与是否可重试。
 - 每一步必须返回可读进度。
 - 当某一步失败时必须给出已完成、未完成和建议后续动作。
-- `encrypt drop` 请求在 V1 中必须被明确拒绝或标记为 deferred。
+- encrypt drop 与收缩式 alter 不生成 cleanup DDL。
 
 ## 3.3 `validate_encrypt_mask_rule`
 
@@ -205,8 +209,8 @@
   "database": "order_db",
   "table": "t_order",
   "column": "phone",
-  "intent_type": "encrypt",
-  "operation_type": "create",
+  "feature_type": "encrypt",
+  "operation_type": "drop",
   "expected_artifacts": {
     "ddl": [],
     "distsql": []
@@ -236,6 +240,7 @@
 - 必须明确区分 `passed`、`failed`、`skipped`。
 - mismatch 必须能映射到稳定错误码。
 - 逻辑元数据校验必须基于 Proxy 逻辑视图。
+- encrypt drop 必须继续验证规则删除、逻辑元数据和 SQL 可执行性。
 
 ## 4. 推荐的 Tool 与 Resource 分工
 
@@ -248,7 +253,7 @@
 - 执行后校验：
   - 走 `validate_encrypt_mask_rule`
 - 低层 SQL / DistSQL 执行：
-  - 仍可复用 `execute_query`，但不直接暴露给自然语言规划层
+  - 仍可复用 `execute_query`，但不直接暴露给规则规划层
 
 ## 5. 非目标
 
@@ -256,3 +261,5 @@
 - 不定义回滚 Tool。
 - 不定义审计落库接口。
 - 不把样本数据读取做成默认必经步骤。
+- 不把完全自由文本的强语义理解放在 MCP 内完成。
+- 不定义 cleanup DDL 规划或执行接口。

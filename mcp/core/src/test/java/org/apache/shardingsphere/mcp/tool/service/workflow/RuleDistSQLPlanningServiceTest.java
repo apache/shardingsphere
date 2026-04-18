@@ -56,7 +56,7 @@ class RuleDistSQLPlanningServiceTest {
         RuleDistSQLPlanningService service = new RuleDistSQLPlanningService();
         RuleArtifact actual = service.planEncryptRule(request, intent, derivedColumnPlan);
         String expected = "ALTER ENCRYPT RULE orders (" + System.lineSeparator() + "COLUMNS(" + System.lineSeparator()
-                + "(NAME=status, CIPHER=status_cipher, ASSISTED_QUERY_COLUMN=status_assisted_query, LIKE_QUERY_COLUMN=status_like_query, "
+                + "(NAME=status, CIPHER=status_cipher, ASSISTED_QUERY=status_assisted_query, LIKE_QUERY=status_like_query, "
                 + "ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456'))), ASSISTED_QUERY_ALGORITHM(TYPE(NAME='crc32')), "
                 + "LIKE_QUERY_ALGORITHM(TYPE(NAME='md5')))))";
         assertThat(actual.getSql(), is(expected));
@@ -125,6 +125,27 @@ class RuleDistSQLPlanningServiceTest {
     }
     
     @Test
+    void assertPlanEncryptDropRuleBuildsExpectedSql() {
+        RuleDistSQLPlanningService service = new RuleDistSQLPlanningService();
+        RuleArtifact actual = service.planEncryptDropRule("orders");
+        assertThat(actual.getSql(), is("DROP ENCRYPT RULE orders"));
+    }
+    
+    @Test
+    void assertPlanEncryptDropRuleKeepsSiblingColumns() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setTable("orders");
+        request.setColumn("status");
+        RuleDistSQLPlanningService service = new RuleDistSQLPlanningService();
+        RuleArtifact actual = service.planEncryptDropRule(request, List.of(
+                Map.of("table", "orders", "logic_column", "status", "cipher_column", "status_cipher", "encryptor_type", "AES", "encryptor_props", Map.of()),
+                Map.of("table", "orders", "logic_column", "amount", "cipher_column", "amount_cipher", "encryptor_type", "AES", "encryptor_props", Map.of())));
+        assertThat(actual.getSql(), containsString("ALTER ENCRYPT RULE orders"));
+        assertThat(actual.getSql(), containsString("NAME=amount"));
+        assertFalse(actual.getSql().contains("NAME=status"));
+    }
+    
+    @Test
     void assertPlanMaskRuleKeepsSiblingColumnsWhenTableRuleAlreadyExists() {
         WorkflowRequest request = new WorkflowRequest();
         request.setTable("orders");
@@ -135,9 +156,9 @@ class RuleDistSQLPlanningServiceTest {
         RuleDistSQLPlanningService service = new RuleDistSQLPlanningService();
         RuleArtifact actual = service.planMaskRule(request, List.of(Map.of(
                 "table", "orders",
-                "column", "amount",
-                "algorithm_type", "MD5",
-                "algorithm_props", Map.of())));
+                "logic_column", "amount",
+                "mask_algorithm", "MD5",
+                "props", Map.of())));
         assertThat(actual.getSql(), containsString("ALTER MASK RULE orders"));
         assertThat(actual.getSql(), containsString("NAME=amount"));
         assertThat(actual.getSql(), containsString("NAME=status"));
@@ -157,8 +178,8 @@ class RuleDistSQLPlanningServiceTest {
         request.setColumn("status");
         RuleDistSQLPlanningService service = new RuleDistSQLPlanningService();
         RuleArtifact actual = service.planMaskDropRule(request, List.of(
-                Map.of("table", "orders", "column", "status", "algorithm_type", "MD5", "algorithm_props", Map.of()),
-                Map.of("table", "orders", "column", "amount", "algorithm_type", "KEEP_FIRST_N_LAST_M", "algorithm_props", Map.of("first-n", "1"))));
+                Map.of("table", "orders", "logic_column", "status", "mask_algorithm", "MD5", "props", Map.of()),
+                Map.of("table", "orders", "logic_column", "amount", "mask_algorithm", "KEEP_FIRST_N_LAST_M", "props", Map.of("first-n", "1"))));
         assertThat(actual.getSql(), containsString("ALTER MASK RULE orders"));
         assertThat(actual.getSql(), containsString("NAME=amount"));
         assertFalse(actual.getSql().contains("NAME=status"));

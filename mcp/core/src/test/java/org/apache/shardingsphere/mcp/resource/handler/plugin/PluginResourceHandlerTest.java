@@ -41,11 +41,12 @@ class PluginResourceHandlerTest {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         List<Map<String, Object>> rawRows = List.of(Map.of("type", "AES"));
         List<Map<String, Object>> enrichedRows = List.of(Map.of("type", "AES", "source", "builtin"));
-        try (MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
-                (mock, context) -> {
-                    when(mock.queryEncryptAlgorithms(same(runtimeContext))).thenReturn(rawRows);
-                    when(mock.enrichEncryptAlgorithms(rawRows)).thenReturn(enrichedRows);
-                })) {
+        try (
+                MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
+                        (mock, context) -> {
+                            when(mock.queryEncryptAlgorithms(same(runtimeContext))).thenReturn(rawRows);
+                            when(mock.enrichEncryptAlgorithms(rawRows)).thenReturn(enrichedRows);
+                        })) {
             EncryptAlgorithmsHandler handler = new EncryptAlgorithmsHandler();
             Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of())).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");
@@ -62,11 +63,12 @@ class PluginResourceHandlerTest {
         MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
         List<Map<String, Object>> rawRows = List.of(Map.of("type", "MD5"));
         List<Map<String, Object>> enrichedRows = List.of(Map.of("type", "MD5", "source", "builtin"));
-        try (MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
-                (mock, context) -> {
-                    when(mock.queryMaskAlgorithms(same(runtimeContext))).thenReturn(rawRows);
-                    when(mock.enrichMaskAlgorithms(rawRows)).thenReturn(enrichedRows);
-                })) {
+        try (
+                MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
+                        (mock, context) -> {
+                            when(mock.queryMaskAlgorithms(same(runtimeContext))).thenReturn(rawRows);
+                            when(mock.enrichMaskAlgorithms(rawRows)).thenReturn(enrichedRows);
+                        })) {
             MaskAlgorithmsHandler handler = new MaskAlgorithmsHandler();
             Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of())).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");

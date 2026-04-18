@@ -60,7 +60,7 @@
 
 - 自定义 SPI 算法能力待确认
 - 自动改名已发生
-- 用户拒绝索引 DDL，可能影响查询可用性
+- encrypt drop 不会恢复历史明文数据
 
 ### 4.3 `error`
 
@@ -125,8 +125,8 @@
 
 ### 6.2 意图与算法
 
-- `WF-INTENT-001 INTENT_TYPE_UNCLEAR`
-  - 场景：无法判定是 `encrypt` 还是 `mask`
+- `WF-INTENT-001 FEATURE_TYPE_UNCLEAR`
+  - 场景：上游未给出、且当前追问后仍无法判定 `feature_type` 是 `encrypt` 还是 `mask`
   - 阶段：`clarifying`
   - 建议：明确说明是“加密”还是“脱敏”
 
@@ -169,12 +169,12 @@
   - 阶段：`planning-artifacts`
   - 建议：review 时关注最终命名结果
 
-### 6.4 执行与模式
+### 6.4 生命周期、执行与模式
 
-- `WF-LIFE-001 ENCRYPT_DROP_UNSUPPORTED`
-  - 场景：用户请求 `encrypt drop`
+- `WF-LIFE-001 DROP_TARGET_RULE_NOT_FOUND`
+  - 场景：请求 `encrypt drop` 或 `mask drop`，但目标规则不存在
   - 阶段：`planning-artifacts`
-  - 建议：告知该能力在 V1 中 deferred
+  - 建议：先核对当前规则状态，再决定是否继续
 
 - `WF-DDL-001 DDL_PERMISSION_DENIED`
   - 场景：无物理 DDL 权限
@@ -261,55 +261,9 @@
       "code": "WF-PROP-001",
       "severity": "error",
       "stage": "collecting-properties",
-      "message": "当前算法仍缺少必填属性，暂时无法生成最终可执行工件。",
-      "userAction": "补齐必填属性后继续。",
-      "retryable": true,
-      "details": {
-        "missing_properties": [
-          "aes-key-value"
-        ]
-      }
-    }
-  ]
-}
-```
-
-### 9.2 自动改名警告
-
-```json
-{
-  "status": "planned",
-  "issues": [
-    {
-      "code": "WF-NAME-002",
-      "severity": "warning",
-      "stage": "planning-artifacts",
-      "message": "默认派生列名发生冲突，系统已自动改名。",
-      "userAction": "请在 review 中确认最终列名。",
-      "retryable": false,
-      "details": {
-        "original_name": "phone_cipher",
-        "resolved_name": "phone_cipher_1"
-      }
-    }
-  ]
-}
-```
-
-### 9.3 手工执行待完成
-
-```json
-{
-  "status": "awaiting-manual-execution",
-  "issues": [
-    {
-      "code": "WF-MODE-001",
-      "severity": "warning",
-      "stage": "review",
-      "message": "工件已生成，但当前为 manual-only 模式，系统不会自动执行。",
-      "userAction": "请手工执行后再触发验证。",
-      "retryable": true,
-      "details": {}
+      "message": "当前算法所需必填参数尚未补齐。",
+      "userAction": "请补充缺少的参数后继续。",
+      "retryable": true
     }
   ]
 }
