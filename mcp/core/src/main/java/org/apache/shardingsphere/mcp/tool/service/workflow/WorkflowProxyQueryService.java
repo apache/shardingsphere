@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
@@ -30,12 +30,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -45,9 +44,9 @@ final class WorkflowProxyQueryService {
     
     private static final String DEFAULT_COLUMN_DEFINITION = "VARCHAR(4000)";
     
-    List<Map<String, Object>> query(final MCPRuntimeContext runtimeContext, final String databaseName, final String schemaName, final String sql) {
+    List<Map<String, Object>> query(final MCPRequestContext requestContext, final String databaseName, final String schemaName, final String sql) {
         try (
-                Connection connection = openConnection(runtimeContext, databaseName);
+                Connection connection = openConnection(requestContext, databaseName);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = executeQuery(connection, statement, schemaName, sql)) {
             return extractRows(resultSet);
@@ -56,13 +55,13 @@ final class WorkflowProxyQueryService {
         }
     }
     
-    List<Map<String, Object>> queryWithAnyDatabase(final MCPRuntimeContext runtimeContext, final String sql) {
-        String databaseName = runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases().keySet().stream().findFirst()
+    List<Map<String, Object>> queryWithAnyDatabase(final MCPRequestContext requestContext, final String sql) {
+        String databaseName = requestContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases().keySet().stream().findFirst()
                 .orElseThrow(() -> new MCPUnavailableException("No runtime database is configured."));
-        return query(runtimeContext, databaseName, "", sql);
+        return query(requestContext, databaseName, "", sql);
     }
     
-    String queryColumnDefinition(final MCPRuntimeContext runtimeContext, final String databaseName, final String schemaName,
+    String queryColumnDefinition(final MCPRequestContext requestContext, final String databaseName, final String schemaName,
                                  final String tableName, final String columnName) {
         WorkflowSqlUtils.checkSafeIdentifier("database", databaseName);
         WorkflowSqlUtils.checkSafeIdentifier("schema", schemaName);
@@ -70,7 +69,7 @@ final class WorkflowProxyQueryService {
         WorkflowSqlUtils.checkSafeIdentifier("column", columnName);
         String sql = String.format("SELECT %s FROM %s WHERE 1 = 0", columnName, tableName);
         try (
-                Connection connection = openConnection(runtimeContext, databaseName);
+                Connection connection = openConnection(requestContext, databaseName);
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = executeQuery(connection, statement, schemaName, sql)) {
             ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
@@ -84,7 +83,7 @@ final class WorkflowProxyQueryService {
         }
     }
     
-    Set<String> queryInformationSchemaColumnNames(final MCPRuntimeContext runtimeContext, final String databaseName, final String schemaName,
+    Set<String> queryInformationSchemaColumnNames(final MCPRequestContext requestContext, final String databaseName, final String schemaName,
                                                   final String tableName, final Collection<String> columnNames) {
         WorkflowSqlUtils.checkSafeIdentifier("database", databaseName);
         WorkflowSqlUtils.checkSafeIdentifier("schema", schemaName);
@@ -100,9 +99,9 @@ final class WorkflowProxyQueryService {
             }
             result.append('\'').append(WorkflowSqlUtils.escapeLiteral(each)).append('\'');
         }
-        String sql = createInformationSchemaColumnQuery(runtimeContext, databaseName, schemaName, tableName, result.toString());
+        String sql = createInformationSchemaColumnQuery(requestContext, databaseName, schemaName, tableName, result.toString());
         Set<String> actualResult = new LinkedHashSet<>(columnNames.size(), 1F);
-        for (Map<String, Object> each : query(runtimeContext, databaseName, "", sql)) {
+        for (Map<String, Object> each : query(requestContext, databaseName, "", sql)) {
             String actualColumnName = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("column_name")));
             if (!actualColumnName.isEmpty()) {
                 actualResult.add(actualColumnName);
@@ -111,9 +110,9 @@ final class WorkflowProxyQueryService {
         return actualResult;
     }
     
-    private String createInformationSchemaColumnQuery(final MCPRuntimeContext runtimeContext, final String databaseName,
+    private String createInformationSchemaColumnQuery(final MCPRequestContext requestContext, final String databaseName,
                                                       final String schemaName, final String tableName, final String columnList) {
-        if (!shouldFilterBySchema(runtimeContext, databaseName, schemaName)) {
+        if (!shouldFilterBySchema(requestContext, databaseName, schemaName)) {
             return String.format("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_name = '%s' AND column_name IN (%s)",
                     WorkflowSqlUtils.escapeLiteral(tableName), columnList);
         }
@@ -122,22 +121,20 @@ final class WorkflowProxyQueryService {
                 WorkflowSqlUtils.escapeLiteral(actualSchemaName), WorkflowSqlUtils.escapeLiteral(tableName), columnList);
     }
     
-    private boolean shouldFilterBySchema(final MCPRuntimeContext runtimeContext, final String databaseName, final String schemaName) {
+    private boolean shouldFilterBySchema(final MCPRequestContext requestContext, final String databaseName, final String schemaName) {
         String actualSchemaName = WorkflowSqlUtils.trimToEmpty(schemaName);
         if (actualSchemaName.isEmpty()) {
             return false;
         }
-        Optional<MCPDatabaseMetadata> databaseMetadata = runtimeContext.getMetadataCatalog().findMetadata(databaseName);
-        if (databaseMetadata.isEmpty()) {
-            return false;
-        }
-        String databaseType = WorkflowSqlUtils.trimToEmpty(databaseMetadata.get().getDatabaseType());
+        String databaseType = requestContext.getDatabaseCapabilityProvider().provide(databaseName).map(MCPDatabaseCapability::getDatabaseType).orElse("");
         return "PostgreSQL".equalsIgnoreCase(databaseType) || "openGauss".equalsIgnoreCase(databaseType) || "H2".equalsIgnoreCase(databaseType);
     }
     
-    private Connection openConnection(final MCPRuntimeContext runtimeContext, final String databaseName) throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = Optional.ofNullable(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases().get(databaseName))
-                .orElseThrow(() -> new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName)));
+    private Connection openConnection(final MCPRequestContext requestContext, final String databaseName) throws SQLException {
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = requestContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases().get(databaseName);
+        if (null == runtimeDatabaseConfig) {
+            throw new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName));
+        }
         return runtimeDatabaseConfig.openConnection(databaseName);
     }
     

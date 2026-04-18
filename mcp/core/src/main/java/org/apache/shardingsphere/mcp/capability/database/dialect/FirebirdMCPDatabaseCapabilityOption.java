@@ -39,7 +39,7 @@ public final class FirebirdMCPDatabaseCapabilityOption implements MCPDatabaseCap
     
     private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean isSequenceSupported = true;
+    private final boolean sequenceSupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.plugin;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 import org.apache.shardingsphere.mcp.tool.service.workflow.RuleInspectionService;
 import org.junit.jupiter.api.Test;
@@ -38,44 +38,44 @@ class PluginResourceHandlerTest {
     
     @Test
     void assertHandleEncryptAlgorithms() {
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
         List<Map<String, Object>> rawRows = List.of(Map.of("type", "AES"));
         List<Map<String, Object>> enrichedRows = List.of(Map.of("type", "AES", "source", "builtin"));
         try (
                 MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
                         (mock, context) -> {
-                            when(mock.queryEncryptAlgorithms(same(runtimeContext))).thenReturn(rawRows);
+                            when(mock.queryEncryptAlgorithms(same(requestContext))).thenReturn(rawRows);
                             when(mock.enrichEncryptAlgorithms(rawRows)).thenReturn(enrichedRows);
                         })) {
             EncryptAlgorithmsHandler handler = new EncryptAlgorithmsHandler();
-            Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of())).toPayload();
+            Map<String, Object> actual = handler.handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");
             assertThat(actualItems.size(), is(1));
             assertThat(actualItems.get(0), is(enrichedRows.get(0)));
             assertThat(mockedConstruction.constructed().size(), is(1));
-            verify(mockedConstruction.constructed().get(0)).queryEncryptAlgorithms(runtimeContext);
+            verify(mockedConstruction.constructed().get(0)).queryEncryptAlgorithms(requestContext);
             verify(mockedConstruction.constructed().get(0)).enrichEncryptAlgorithms(rawRows);
         }
     }
     
     @Test
     void assertHandleMaskAlgorithms() {
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
         List<Map<String, Object>> rawRows = List.of(Map.of("type", "MD5"));
         List<Map<String, Object>> enrichedRows = List.of(Map.of("type", "MD5", "source", "builtin"));
         try (
                 MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
                         (mock, context) -> {
-                            when(mock.queryMaskAlgorithms(same(runtimeContext))).thenReturn(rawRows);
+                            when(mock.queryMaskAlgorithms(same(requestContext))).thenReturn(rawRows);
                             when(mock.enrichMaskAlgorithms(rawRows)).thenReturn(enrichedRows);
                         })) {
             MaskAlgorithmsHandler handler = new MaskAlgorithmsHandler();
-            Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of())).toPayload();
+            Map<String, Object> actual = handler.handle(requestContext, new MCPUriVariables(Map.of())).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");
             assertThat(actualItems.size(), is(1));
             assertThat(actualItems.get(0), is(enrichedRows.get(0)));
             assertThat(mockedConstruction.constructed().size(), is(1));
-            verify(mockedConstruction.constructed().get(0)).queryMaskAlgorithms(runtimeContext);
+            verify(mockedConstruction.constructed().get(0)).queryMaskAlgorithms(requestContext);
             verify(mockedConstruction.constructed().get(0)).enrichMaskAlgorithms(rawRows);
         }
     }

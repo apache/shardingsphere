@@ -39,7 +39,7 @@ public final class H2MCPDatabaseCapabilityOption implements MCPDatabaseCapabilit
     
     private final boolean crossSchemaQuerySupported = true;
     
-    private final boolean isSequenceSupported = true;
+    private final boolean sequenceSupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {

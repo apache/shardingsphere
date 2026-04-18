@@ -24,19 +24,14 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.MCPBootstrapTestDataFactory;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -49,7 +44,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class MCPResourceSpecificationFactoryTest {
-    
+
+    @TempDir
+    private Path tempDir;
+
     @Test
     void assertCreateResourceSpecifications() {
         MCPResourceSpecificationFactory factory = createFactory();
@@ -73,7 +71,7 @@ class MCPResourceSpecificationFactoryTest {
         assertTrue(((List<?>) actualPayload.get("supportedTools")).contains("search_metadata"));
         assertTrue(((List<?>) actualPayload.get("supportedStatementClasses")).contains("QUERY"));
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCreateResourceTemplateSpecificationsArguments")
     void assertCreateResourceTemplateSpecifications(final String name, final String uriTemplate, final String actualUri, final String expectedName,
@@ -95,7 +93,7 @@ class MCPResourceSpecificationFactoryTest {
         assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actualPayload.get("items")).get(0)).get(expectedItemKey), is(expectedItemValue));
     }
-    
+
     private static Stream<Arguments> assertCreateResourceTemplateSpecificationsArguments() {
         return Stream.of(
                 Arguments.of("database resource", "shardingsphere://databases/{database}", "shardingsphere://databases/logic_db", "{database}", "database", "logic_db"),
@@ -103,24 +101,16 @@ class MCPResourceSpecificationFactoryTest {
                 Arguments.of("sequence resource", "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
                         "shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq", "{sequence}", "sequence", "order_seq"));
     }
-    
+
     private SyncResourceSpecification findResourceSpecification(final List<SyncResourceSpecification> specifications, final String uri) {
         return specifications.stream().filter(each -> uri.equals(each.resource().uri())).findFirst().orElseThrow(IllegalStateException::new);
     }
-    
+
     private SyncResourceTemplateSpecification findResourceTemplateSpecification(final List<SyncResourceTemplateSpecification> specifications, final String uriTemplate) {
         return specifications.stream().filter(each -> uriTemplate.equals(each.resourceTemplate().uriTemplate())).findFirst().orElseThrow(IllegalStateException::new);
     }
-    
+
     private MCPResourceSpecificationFactory createFactory() {
-        return new MCPResourceSpecificationFactory(new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), createMetadataCatalog()));
-    }
-    
-    private MCPDatabaseMetadataCatalog createMetadataCatalog() {
-        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(2, 1F);
-        databaseMetadataMap.put("logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of(), List.of()))));
-        databaseMetadataMap.put("runtime_db", new MCPDatabaseMetadata("runtime_db", "H2", "",
-                List.of(new MCPSchemaMetadata("runtime_db", "public", List.of(), List.of(), List.of(new MCPSequenceMetadata("runtime_db", "public", "order_seq"))))));
-        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
+        return new MCPResourceSpecificationFactory(MCPBootstrapTestDataFactory.createRuntimeContext(tempDir));
     }
 }

@@ -24,10 +24,9 @@ import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOp
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
+import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 
@@ -42,9 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -68,156 +65,31 @@ public final class MCPJdbcMetadataLoader {
     private static final String FIREBIRD_SEQUENCE_QUERY =
             "SELECT '' AS SEQUENCE_SCHEMA, TRIM(RDB$GENERATOR_NAME) AS SEQUENCE_NAME FROM RDB$GENERATORS WHERE COALESCE(RDB$SYSTEM_FLAG, 0) = 0";
     
-    private static final String DORIS_VERSION_COMMENT_QUERY = "SELECT @@version_comment";
-    
-    private static final String MARIADB_VERSION_QUERY = "SELECT VERSION()";
-    
     /**
-     * Load database metadata catalog.
+     * Load database metadata.
      *
-     * @param runtimeDatabases runtime database configurations
-     * @return loaded database metadata catalog
-     * @throws IllegalStateException when runtime metadata cannot be loaded from one configured database
+     * @param databaseName database name
+     * @param runtimeDatabaseConfig runtime database configuration
+     * @param databaseProfile runtime database profile
+     * @return database metadata
+     * @throws IllegalStateException when metadata loading fails
      */
-    public MCPDatabaseMetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
-        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(runtimeDatabases.size(), 1F);
-        for (Entry<String, RuntimeDatabaseConfiguration> entry : runtimeDatabases.entrySet()) {
-            String databaseName = entry.getKey();
-            try (Connection connection = entry.getValue().openConnection(databaseName)) {
-                databaseMetadataMap.put(databaseName, loadDatabaseMetadata(databaseName, entry.getValue(), connection, connection.getMetaData()));
-            } catch (final SQLException ex) {
-                throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
-            }
+    public MCPDatabaseMetadata load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig, final RuntimeDatabaseProfile databaseProfile) {
+        try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
+            return loadDatabaseMetadata(databaseName, databaseProfile, connection, connection.getMetaData());
+        } catch (final SQLException ex) {
+            throw new IllegalStateException(String.format("Failed to load metadata for database `%s`.", databaseName), ex);
         }
-        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
     }
     
-    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
+    private MCPDatabaseMetadata loadDatabaseMetadata(final String databaseName, final RuntimeDatabaseProfile databaseProfile,
                                                      final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
-        String actualDatabaseType = resolveActualDatabaseType(databaseName, runtimeDatabaseConfig.getDatabaseType(), connection, databaseMetaData);
-        String databaseVersion = Objects.toString(databaseMetaData.getDatabaseProductVersion(), "").trim();
-        SchemaSemantics defaultSchemaSemantics = getDefaultSchemaSemantics(actualDatabaseType);
-        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, actualDatabaseType, databaseVersion);
+        SchemaSemantics defaultSchemaSemantics = getDefaultSchemaSemantics(databaseProfile.getDatabaseType());
+        DatabaseMetadataAccumulator accumulator = new DatabaseMetadataAccumulator(databaseName, databaseProfile.getDatabaseType(), databaseProfile.getDatabaseVersion());
         loadTables(databaseName, defaultSchemaSemantics, accumulator, databaseMetaData);
         loadViews(databaseName, defaultSchemaSemantics, accumulator, databaseMetaData);
-        loadSequences(databaseName, defaultSchemaSemantics, actualDatabaseType, accumulator, connection);
+        loadSequences(databaseName, defaultSchemaSemantics, databaseProfile.getDatabaseType(), accumulator, connection);
         return accumulator.build();
-    }
-    
-    private String resolveActualDatabaseType(final String databaseName, final String configuredDatabaseType,
-                                             final Connection connection, final DatabaseMetaData databaseMetaData) throws SQLException {
-        String actualDatabaseType = determineActualDatabaseType(databaseName, databaseMetaData);
-        String configuredType = Objects.toString(configuredDatabaseType, "").trim();
-        if (configuredType.isEmpty()) {
-            return actualDatabaseType;
-        }
-        String expectedDatabaseType = normalizeDatabaseType(configuredType);
-        Optional<String> compatibleBranchDatabaseType = resolveCompatibleBranchDatabaseType(connection, expectedDatabaseType, actualDatabaseType);
-        if (compatibleBranchDatabaseType.isPresent()) {
-            return compatibleBranchDatabaseType.get();
-        }
-        if (!expectedDatabaseType.equalsIgnoreCase(actualDatabaseType)) {
-            throw new IllegalStateException(String.format("Configured databaseType `%s` does not match actual database type `%s` for database `%s`.",
-                    configuredType, actualDatabaseType, databaseName));
-        }
-        return actualDatabaseType;
-    }
-    
-    private String normalizeDatabaseType(final String databaseType) {
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType).map(MCPDatabaseCapabilityOption::getType).orElse(databaseType);
-    }
-    
-    private String determineActualDatabaseType(final String databaseName, final DatabaseMetaData databaseMetaData) throws SQLException {
-        String productName = Objects.toString(databaseMetaData.getDatabaseProductName(), "").trim();
-        String jdbcUrl = Objects.toString(databaseMetaData.getURL(), "").trim();
-        String result = resolveDatabaseTypeFromProductName(productName, jdbcUrl);
-        if (null == result) {
-            result = resolveDatabaseTypeFromJdbcUrl(jdbcUrl);
-        }
-        if (null == result) {
-            throw new IllegalStateException(String.format("Actual database type cannot be determined for database `%s`.", databaseName));
-        }
-        return result;
-    }
-    
-    private String resolveDatabaseTypeFromProductName(final String productName, final String jdbcUrl) {
-        if (!productName.isEmpty()) {
-            if (productName.toUpperCase(Locale.ENGLISH).contains("POSTGRESQL")) {
-                return jdbcUrl.toLowerCase(Locale.ENGLISH).startsWith("jdbc:opengauss:") ? "openGauss" : "PostgreSQL";
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("SQL SERVER")) {
-                return "SQLServer";
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("MARIADB")) {
-                return "MariaDB";
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("MYSQL")) {
-                return "MySQL";
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("ORACLE")) {
-                return "Oracle";
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("FIREBIRD")) {
-                return "Firebird";
-            }
-            if (productName.toUpperCase(Locale.ENGLISH).contains("H2")) {
-                return "H2";
-            }
-        }
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, productName).map(MCPDatabaseCapabilityOption::getType).orElse(null);
-    }
-    
-    private String resolveDatabaseTypeFromJdbcUrl(final String jdbcUrl) {
-        String actualJdbcUrl = jdbcUrl.toLowerCase(Locale.ENGLISH);
-        if (actualJdbcUrl.startsWith("jdbc:opengauss:")) {
-            return "openGauss";
-        }
-        if (actualJdbcUrl.startsWith("jdbc:postgresql:")) {
-            return "PostgreSQL";
-        }
-        if (actualJdbcUrl.startsWith("jdbc:sqlserver:")) {
-            return "SQLServer";
-        }
-        if (actualJdbcUrl.startsWith("jdbc:mariadb:")) {
-            return "MariaDB";
-        }
-        if (actualJdbcUrl.startsWith("jdbc:mysql:")) {
-            return "MySQL";
-        }
-        if (actualJdbcUrl.startsWith("jdbc:oracle:")) {
-            return "Oracle";
-        }
-        if (actualJdbcUrl.startsWith("jdbc:firebirdsql:")) {
-            return "Firebird";
-        }
-        if (actualJdbcUrl.startsWith("jdbc:h2:")) {
-            return "H2";
-        }
-        return null;
-    }
-    
-    private Optional<String> resolveCompatibleBranchDatabaseType(final Connection connection, final String configuredDatabaseType,
-                                                                 final String actualDatabaseType) throws SQLException {
-        if (!"MYSQL".equalsIgnoreCase(actualDatabaseType)) {
-            return Optional.empty();
-        }
-        if ("DORIS".equalsIgnoreCase(configuredDatabaseType) && isBranchDatabase(connection, DORIS_VERSION_COMMENT_QUERY, "DORIS")) {
-            return Optional.of("Doris");
-        }
-        if ("MARIADB".equalsIgnoreCase(configuredDatabaseType) && isBranchDatabase(connection, MARIADB_VERSION_QUERY, "MARIADB")) {
-            return Optional.of("MariaDB");
-        }
-        return Optional.empty();
-    }
-    
-    private boolean isBranchDatabase(final Connection connection, final String query, final String expectedMarker) throws SQLException {
-        return executeScalarQuery(connection, query).toUpperCase(Locale.ENGLISH).contains(expectedMarker);
-    }
-    
-    private String executeScalarQuery(final Connection connection, final String query) throws SQLException {
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(query)) {
-            return resultSet.next() ? Objects.toString(resultSet.getString(1), "").trim() : "";
-        }
     }
     
     private void loadTables(final String databaseName, final SchemaSemantics defaultSchemaSemantics,

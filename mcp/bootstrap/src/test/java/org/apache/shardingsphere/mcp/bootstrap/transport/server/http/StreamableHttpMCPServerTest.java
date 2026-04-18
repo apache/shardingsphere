@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ class StreamableHttpMCPServerTest {
     void assertConstructWithRemoteHttpWithoutAccessToken() {
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
                 () -> new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "0.0.0.0", true, "", 0, "/mcp"),
-                        new MCPRuntimeContext(mock(MCPSessionManager.class), mock(MCPDatabaseMetadataCatalog.class))));
+                        new MCPRuntimeContext(mock(MCPSessionManager.class), mock(MCPDatabaseCapabilityProvider.class))));
         assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
     }
 }

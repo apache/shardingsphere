@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -49,8 +49,8 @@ public final class ExecuteSQLToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(runtimeContext);
+    public MCPResponse handle(final MCPRequestContext requestContext, final String sessionId, final Map<String, Object> arguments) {
+        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(requestContext);
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         return sqlExecutionFacade.execute(new SQLExecutionRequest(sessionId,
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),

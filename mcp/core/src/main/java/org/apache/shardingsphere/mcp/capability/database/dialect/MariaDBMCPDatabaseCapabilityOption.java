@@ -39,7 +39,7 @@ public final class MariaDBMCPDatabaseCapabilityOption implements MCPDatabaseCapa
     
     private final boolean crossSchemaQuerySupported = false;
     
-    private final boolean isSequenceSupported = true;
+    private final boolean sequenceSupported = true;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {

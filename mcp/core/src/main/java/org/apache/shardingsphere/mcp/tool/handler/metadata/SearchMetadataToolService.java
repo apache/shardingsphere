@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mcp.tool.handler.metadata;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -54,8 +54,8 @@ public final class SearchMetadataToolService {
     
     private final MetadataQueryService metadataQueryService;
     
-    public SearchMetadataToolService(final MCPDatabaseMetadataCatalog metadataCatalog) {
-        metadataQueryService = new MetadataQueryService(metadataCatalog);
+    public SearchMetadataToolService(final MCPRequestContext requestContext) {
+        metadataQueryService = new MetadataQueryService(requestContext);
     }
     
     /**

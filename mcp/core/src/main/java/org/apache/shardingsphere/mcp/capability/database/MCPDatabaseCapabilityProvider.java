@@ -17,21 +17,31 @@
 
 package org.apache.shardingsphere.mcp.capability.database;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
+import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcDatabaseProfileLoader;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseProfile;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * MCP database capability provider.
  */
-@RequiredArgsConstructor
 public final class MCPDatabaseCapabilityProvider {
-    
-    private final MCPDatabaseMetadataCatalog metadataCatalog;
-    
+
+    private final Map<String, RuntimeDatabaseProfile> databaseProfiles;
+
+    private final Map<String, MCPDatabaseCapability> databaseCapabilities;
+
+    public MCPDatabaseCapabilityProvider(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
+        databaseProfiles = new LinkedHashMap<>(new MCPJdbcDatabaseProfileLoader().load(runtimeDatabases));
+        databaseCapabilities = createDatabaseCapabilities(databaseProfiles);
+    }
+
     /**
      * Provide the database-level capability.
      *
@@ -39,14 +49,34 @@ public final class MCPDatabaseCapabilityProvider {
      * @return database-level capability
      */
     public Optional<MCPDatabaseCapability> provide(final String databaseName) {
-        return metadataCatalog.findMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseType).flatMap(optional -> find(databaseName, optional, getDatabaseVersion(databaseName)));
+        return Optional.ofNullable(databaseCapabilities.get(databaseName));
     }
-    
-    private Optional<MCPDatabaseCapability> find(final String databaseName, final String databaseType, final String databaseVersion) {
-        return TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, databaseType).map(optional -> new MCPDatabaseCapability(databaseName, databaseVersion, optional));
+
+    /**
+     * Find runtime database profile.
+     *
+     * @param databaseName database name
+     * @return runtime database profile
+     */
+    public Optional<RuntimeDatabaseProfile> findDatabaseProfile(final String databaseName) {
+        return Optional.ofNullable(databaseProfiles.get(databaseName));
     }
-    
-    private String getDatabaseVersion(final String databaseName) {
-        return metadataCatalog.findMetadata(databaseName).map(MCPDatabaseMetadata::getDatabaseVersion).orElse("");
+
+    /**
+     * Get runtime database profiles.
+     *
+     * @return runtime database profiles
+     */
+    public List<RuntimeDatabaseProfile> getDatabaseProfiles() {
+        return new LinkedList<>(databaseProfiles.values());
+    }
+
+    private Map<String, MCPDatabaseCapability> createDatabaseCapabilities(final Map<String, RuntimeDatabaseProfile> databaseProfiles) {
+        Map<String, MCPDatabaseCapability> result = new LinkedHashMap<>(databaseProfiles.size(), 1F);
+        for (RuntimeDatabaseProfile each : databaseProfiles.values()) {
+            TypedSPILoader.findService(MCPDatabaseCapabilityOption.class, each.getDatabaseType())
+                    .ifPresent(optional -> result.put(each.getDatabase(), new MCPDatabaseCapability(each.getDatabase(), each.getDatabaseVersion(), optional)));
+        }
+        return result;
     }
 }

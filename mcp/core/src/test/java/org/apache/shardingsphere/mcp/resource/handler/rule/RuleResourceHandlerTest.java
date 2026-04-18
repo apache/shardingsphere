@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.rule;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 import org.apache.shardingsphere.mcp.tool.service.workflow.RuleInspectionService;
 import org.junit.jupiter.api.Test;
@@ -39,35 +39,35 @@ class RuleResourceHandlerTest {
     
     @Test
     void assertHandleEncryptRules() {
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
         List<Map<String, Object>> expectedItems = List.of(Map.of("table", "t_order"));
         try (
                 MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
-                        (mock, context) -> when(mock.queryEncryptRules(same(runtimeContext), eq("logic_db"), eq(""))).thenReturn(expectedItems))) {
+                        (mock, context) -> when(mock.queryEncryptRules(same(requestContext), eq("logic_db"), eq(""))).thenReturn(expectedItems))) {
             EncryptRulesHandler handler = new EncryptRulesHandler();
-            Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of("database", "logic_db"))).toPayload();
+            Map<String, Object> actual = handler.handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db"))).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");
             assertThat(actualItems.size(), is(1));
             assertThat(actualItems.get(0), is(expectedItems.get(0)));
             assertThat(mockedConstruction.constructed().size(), is(1));
-            verify(mockedConstruction.constructed().get(0)).queryEncryptRules(runtimeContext, "logic_db", "");
+            verify(mockedConstruction.constructed().get(0)).queryEncryptRules(requestContext, "logic_db", "");
         }
     }
     
     @Test
     void assertHandleMaskRule() {
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
         List<Map<String, Object>> expectedItems = List.of(Map.of("table", "t_order", "column", "phone"));
         try (
                 MockedConstruction<RuleInspectionService> mockedConstruction = mockConstruction(RuleInspectionService.class,
-                        (mock, context) -> when(mock.queryMaskRules(same(runtimeContext), eq("logic_db"), eq("t_order"))).thenReturn(expectedItems))) {
+                        (mock, context) -> when(mock.queryMaskRules(same(requestContext), eq("logic_db"), eq("t_order"))).thenReturn(expectedItems))) {
             MaskRuleHandler handler = new MaskRuleHandler();
-            Map<String, Object> actual = handler.handle(runtimeContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order"))).toPayload();
+            Map<String, Object> actual = handler.handle(requestContext, new MCPUriVariables(Map.of("database", "logic_db", "table", "t_order"))).toPayload();
             List<?> actualItems = (List<?>) actual.get("items");
             assertThat(actualItems.size(), is(1));
             assertThat(actualItems.get(0), is(expectedItems.get(0)));
             assertThat(mockedConstruction.constructed().size(), is(1));
-            verify(mockedConstruction.constructed().get(0)).queryMaskRules(runtimeContext, "logic_db", "t_order");
+            verify(mockedConstruction.constructed().get(0)).queryMaskRules(requestContext, "logic_db", "t_order");
         }
     }
 }

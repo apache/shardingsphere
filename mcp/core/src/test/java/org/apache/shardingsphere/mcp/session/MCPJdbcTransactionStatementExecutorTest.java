@@ -21,8 +21,6 @@ import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
@@ -36,6 +34,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.Savepoint;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -52,7 +51,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcTransactionStatementExecutorTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteCases")
     void assertExecute(final String name, final String sql, final String expectedStatementType, final String expectedMessage) throws SQLException {
@@ -69,7 +68,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         assertThat(actual.getMessage(), is(expectedMessage));
         assertDatabaseExecution(sql, sessionManager, runtimeDatabaseConfig, connection, savepoint);
     }
-    
+
     static Stream<Arguments> assertExecuteCases() {
         return Stream.of(
                 Arguments.of("begin", "BEGIN", "BEGIN", "Transaction started."),
@@ -80,7 +79,7 @@ class MCPJdbcTransactionStatementExecutorTest {
                 Arguments.of("rollback to savepoint", "ROLLBACK TO SAVEPOINT sp_1", "ROLLBACK TO SAVEPOINT", "Savepoint rolled back."),
                 Arguments.of("release savepoint", "RELEASE SAVEPOINT sp_1", "RELEASE SAVEPOINT", "Savepoint released."));
     }
-    
+
     @Test
     void assertExecuteWithUnsupportedSavepoint() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -90,7 +89,7 @@ class MCPJdbcTransactionStatementExecutorTest {
                 () -> executor.execute("session-1", "warehouse", createCapability("warehouse"), new StatementClassifier().classify("SAVEPOINT sp_1")));
         assertThat(actual.getMessage(), is("Savepoint is not supported."));
     }
-    
+
     @Test
     void assertExecuteWithInvalidCommand() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -100,7 +99,7 @@ class MCPJdbcTransactionStatementExecutorTest {
                 () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("SELECT 1")));
         assertThat(actual.getMessage(), is("Statement is not a transaction command."));
     }
-    
+
     @Test
     void assertExecuteWithMissingSession() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -109,7 +108,7 @@ class MCPJdbcTransactionStatementExecutorTest {
                 () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("BEGIN")));
         assertThat(actual.getMessage(), is("Session does not exist."));
     }
-    
+
     @Test
     void assertExecuteWithNoActiveTransaction() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
@@ -119,7 +118,7 @@ class MCPJdbcTransactionStatementExecutorTest {
                 () -> executor.execute("session-1", "logic_db", createCapability("logic_db"), new StatementClassifier().classify("COMMIT")));
         assertThat(actual.getMessage(), is("No active transaction."));
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithMissingSavepointNameCases")
     void assertExecuteWithMissingSavepointName(final String name, final String statementType, final String sql) {
@@ -131,17 +130,34 @@ class MCPJdbcTransactionStatementExecutorTest {
                         new ClassificationResult(SupportedMCPStatement.SAVEPOINT, statementType, sql, "", "")));
         assertThat(actual.getMessage(), is("Savepoint name is required."));
     }
-    
+
     private MCPDatabaseCapabilityProvider createDatabaseCapabilityBuilder() {
-        return new MCPDatabaseCapabilityProvider(new MCPDatabaseMetadataCatalog(Map.of(
-                "logic_db", new MCPDatabaseMetadata("logic_db", "MySQL", "", Collections.emptyList()),
-                "warehouse", new MCPDatabaseMetadata("warehouse", "Hive", "", Collections.emptyList()))));
+        return new MCPDatabaseCapabilityProvider(Map.of(
+                "logic_db", createCapabilityRuntimeDatabaseConfiguration("logic_db", "MySQL"),
+                "warehouse", createCapabilityRuntimeDatabaseConfiguration("warehouse", "Hive")));
     }
-    
+
     private MCPDatabaseCapability createCapability(final String databaseName) {
         return createDatabaseCapabilityBuilder().provide(databaseName).orElseThrow(IllegalStateException::new);
     }
-    
+
+    private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration(final String databaseName, final String databaseType) {
+        RuntimeDatabaseConfiguration result = mock(RuntimeDatabaseConfiguration.class);
+        Connection connection = mock(Connection.class);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        try {
+            when(result.getDatabaseType()).thenReturn(databaseType);
+            when(result.openConnection(databaseName)).thenReturn(connection);
+            when(connection.getMetaData()).thenReturn(databaseMetaData);
+            when(databaseMetaData.getDatabaseProductName()).thenReturn(databaseType);
+            when(databaseMetaData.getDatabaseProductVersion()).thenReturn("");
+            when(databaseMetaData.getURL()).thenReturn(String.format("jdbc:%s://transaction-executor/test", databaseType.toLowerCase(java.util.Locale.ENGLISH)));
+        } catch (final SQLException ex) {
+            throw new IllegalStateException(ex);
+        }
+        return result;
+    }
+
     private void prepareTransactionState(final String sql, final MCPSessionManager sessionManager, final Connection connection, final Savepoint savepoint) throws SQLException {
         if ("BEGIN".equals(sql) || "START TRANSACTION".equals(sql)) {
             return;
@@ -154,7 +170,7 @@ class MCPJdbcTransactionStatementExecutorTest {
             sessionManager.getTransactionResourceManager().createSavepoint("session-1", "sp_1");
         }
     }
-    
+
     private void assertDatabaseExecution(final String sql, final MCPSessionManager sessionManager, final RuntimeDatabaseConfiguration runtimeDatabaseConfig,
                                          final Connection connection, final Savepoint savepoint) throws SQLException {
         if ("BEGIN".equals(sql) || "START TRANSACTION".equals(sql)) {
@@ -187,7 +203,7 @@ class MCPJdbcTransactionStatementExecutorTest {
         }
         verify(connection).releaseSavepoint(savepoint);
     }
-    
+
     static Stream<Arguments> assertExecuteWithMissingSavepointNameCases() {
         return Stream.of(
                 Arguments.of("savepoint", "SAVEPOINT", "SAVEPOINT"),

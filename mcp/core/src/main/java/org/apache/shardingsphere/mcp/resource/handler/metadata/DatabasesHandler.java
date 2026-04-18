@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
@@ -35,8 +35,8 @@ public final class DatabasesHandler implements ResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPRuntimeContext runtimeContext, final MCPUriVariables uriVariables) {
-        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getMetadataCatalog());
+    public MCPResponse handle(final MCPRequestContext requestContext, final MCPUriVariables uriVariables) {
+        MetadataQueryService metadataQueryService = new MetadataQueryService(requestContext);
         return new MCPMetadataResponse(metadataQueryService.queryDatabases());
     }
 }

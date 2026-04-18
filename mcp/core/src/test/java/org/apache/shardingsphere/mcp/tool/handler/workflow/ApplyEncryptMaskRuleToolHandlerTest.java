@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
 import org.junit.jupiter.api.Test;
 
@@ -36,10 +36,10 @@ class ApplyEncryptMaskRuleToolHandlerTest {
     @Test
     void assertHandle() {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
-        when(executionService.apply(org.mockito.ArgumentMatchers.same(runtimeContext), anyString(), anyString(), anyList(), anyString())).thenReturn(Map.of("status", "completed"));
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
+        when(executionService.apply(org.mockito.ArgumentMatchers.same(requestContext), anyString(), anyString(), anyList(), anyString())).thenReturn(Map.of("status", "completed"));
         ApplyEncryptMaskRuleToolHandler handler = new ApplyEncryptMaskRuleToolHandler(executionService);
-        Map<String, Object> actual = handler.handle(runtimeContext, "session-1", Map.of("plan_id", "plan-1", "approved_steps", List.of("ddl"))).toPayload();
+        Map<String, Object> actual = handler.handle(requestContext, "session-1", Map.of("plan_id", "plan-1", "approved_steps", List.of("ddl"))).toPayload();
         assertThat(actual.get("status"), is("completed"));
     }
     

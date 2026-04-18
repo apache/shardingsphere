@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedResourceUriException;
@@ -46,8 +47,8 @@ public final class MCPResourceController {
      * @return MCP response
      */
     public MCPResponse handle(final String resourceUri) {
-        try {
-            return dispatch(resourceUri).orElseThrow(UnsupportedResourceUriException::new);
+        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+            return dispatch(requestContext, resourceUri).orElseThrow(UnsupportedResourceUriException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -55,11 +56,11 @@ public final class MCPResourceController {
         }
     }
     
-    private Optional<MCPResponse> dispatch(final String resourceUri) {
+    private Optional<MCPResponse> dispatch(final MCPRequestContext requestContext, final String resourceUri) {
         for (Entry<MCPUriPattern, ResourceHandler> each : ResourceHandlerRegistry.getRegisteredHandlers().entrySet()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
-                return Optional.of(each.getValue().handle(runtimeContext, matchedUriVariables.get()));
+                return Optional.of(each.getValue().handle(requestContext, matchedUriVariables.get()));
             }
         }
         return Optional.empty();

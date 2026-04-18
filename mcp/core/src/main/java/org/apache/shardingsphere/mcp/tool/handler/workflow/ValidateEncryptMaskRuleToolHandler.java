@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
@@ -55,8 +55,8 @@ public final class ValidateEncryptMaskRuleToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPRuntimeContext runtimeContext, final String sessionId, final Map<String, Object> arguments) {
+    public MCPResponse handle(final MCPRequestContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(validationService.validate(runtimeContext, sessionId, toolArguments.getStringArgument("plan_id")));
+        return new MCPMapResponse(validationService.validate(requestContext, sessionId, toolArguments.getStringArgument("plan_id")));
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -52,8 +53,8 @@ public final class MCPToolController {
      * @return MCP response
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        try {
-            return dispatch(sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
+        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+            return dispatch(requestContext, sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -61,13 +62,13 @@ public final class MCPToolController {
         }
     }
     
-    Optional<MCPResponse> dispatch(final String sessionId, final String toolName, final Map<String, Object> arguments) {
+    Optional<MCPResponse> dispatch(final MCPRequestContext requestContext, final String sessionId, final String toolName, final Map<String, Object> arguments) {
         Optional<ToolHandler> toolHandler = ToolHandlerRegistry.findRegisteredHandler(toolName);
         if (toolHandler.isEmpty()) {
             return Optional.empty();
         }
         checkRequiredArguments(arguments, toolHandler.get().getToolDescriptor());
-        return Optional.of(toolHandler.get().handle(runtimeContext, sessionId, arguments));
+        return Optional.of(toolHandler.get().handle(requestContext, sessionId, arguments));
     }
     
     private void checkRequiredArguments(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor) {

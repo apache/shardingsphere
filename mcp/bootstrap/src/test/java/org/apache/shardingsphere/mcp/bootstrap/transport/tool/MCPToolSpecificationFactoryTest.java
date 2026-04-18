@@ -22,11 +22,10 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.MCPBootstrapTestDataFactory;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -99,16 +98,10 @@ class MCPToolSpecificationFactoryTest {
     }
     
     private MCPToolSpecificationFactory createFactory() {
-        String jdbcUrl = String.format("jdbc:h2:file:%s;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", tempDir.resolve("tool-specification").toAbsolutePath());
-        MCPSessionManager sessionManager = new MCPSessionManager(Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver")));
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(MCPBootstrapTestDataFactory.createRuntimeDatabases(tempDir));
+        MCPSessionManager sessionManager = new MCPSessionManager(runtimeDatabases);
         sessionManager.createSession("session-1");
-        return new MCPToolSpecificationFactory(new MCPRuntimeContext(sessionManager, createMetadataCatalog()));
-    }
-    
-    private MCPDatabaseMetadataCatalog createMetadataCatalog() {
-        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(1, 1F);
-        databaseMetadataMap.put("logic_db", new MCPDatabaseMetadata("logic_db", "H2", "", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of(), List.of()))));
-        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
+        return new MCPToolSpecificationFactory(new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(runtimeDatabases)));
     }
     
     private static Stream<Arguments> assertCreateToolSpecificationsArguments() {

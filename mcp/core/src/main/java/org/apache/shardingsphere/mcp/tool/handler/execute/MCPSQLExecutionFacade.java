@@ -22,8 +22,7 @@ import org.apache.shardingsphere.mcp.tool.handler.execute.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
@@ -34,7 +33,6 @@ import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
-import java.sql.Connection;
 import java.util.Optional;
 
 /**
@@ -52,16 +50,13 @@ public final class MCPSQLExecutionFacade {
     
     private final MCPJdbcStatementExecutor statementExecutor;
     
-    private final MCPJdbcMetadataRefresher jdbcMetadataRefresher;
-    
     private final AuditRecorder auditRecorder = new AuditRecorder();
     
-    public MCPSQLExecutionFacade(final MCPRuntimeContext runtimeContext) {
-        databaseCapabilityProvider = new MCPDatabaseCapabilityProvider(runtimeContext.getMetadataCatalog());
-        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(runtimeContext.getSessionManager());
-        transactionResourceManager = runtimeContext.getSessionManager().getTransactionResourceManager();
-        jdbcMetadataRefresher = new MCPJdbcMetadataRefresher(transactionResourceManager.getRuntimeDatabases(), runtimeContext.getMetadataCatalog());
-        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(runtimeContext.getSessionManager(), jdbcMetadataRefresher);
+    public MCPSQLExecutionFacade(final MCPRequestContext requestContext) {
+        databaseCapabilityProvider = requestContext.getDatabaseCapabilityProvider();
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(requestContext.getSessionManager());
+        transactionResourceManager = requestContext.getSessionManager().getTransactionResourceManager();
+        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(requestContext.getSessionManager());
         statementExecutor = new MCPJdbcStatementExecutor(
                 transactionResourceManager.getRuntimeDatabases(), transactionResourceManager);
     }
@@ -83,29 +78,30 @@ public final class MCPSQLExecutionFacade {
     private SQLExecutionResponse executeInternal(final SQLExecutionRequest executionRequest) {
         Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(executionRequest.getDatabase());
         ShardingSpherePreconditions.checkState(databaseCapability.isPresent(), () -> recordFailure(executionRequest, "QUERY", new DatabaseCapabilityNotFoundException()));
+        MCPDatabaseCapability actualDatabaseCapability = databaseCapability.orElseThrow();
         ClassificationResult classificationResult;
         try {
             classificationResult = new StatementClassifier().classify(executionRequest.getSql());
         } catch (final UnsupportedOperationException | IllegalArgumentException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
-        ShardingSpherePreconditions.checkContains(databaseCapability.get().getSupportedStatementClasses(), classificationResult.getStatementClass(),
+        ShardingSpherePreconditions.checkContains(actualDatabaseCapability.getSupportedStatementClasses(), classificationResult.getStatementClass(),
                 () -> recordFailure(executionRequest, classificationResult.getAuditMarker(), new StatementClassNotSupportedException()));
         try {
             switch (classificationResult.getStatementClass()) {
                 case TRANSACTION_CONTROL:
                 case SAVEPOINT:
                     return recordSuccess(executionRequest, transactionStatementExecutor.execute(
-                            executionRequest.getSessionId(), executionRequest.getDatabase(), databaseCapability.get(), classificationResult), classificationResult.getAuditMarker());
+                            executionRequest.getSessionId(), executionRequest.getDatabase(), actualDatabaseCapability, classificationResult), classificationResult.getAuditMarker());
                 case QUERY:
                 case DML:
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getAuditMarker());
                 case DDL:
                 case DCL:
-                    return recordSuccess(executionRequest, executeAndRefreshMetadata(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getAuditMarker());
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, actualDatabaseCapability), classificationResult.getAuditMarker());
                 case EXPLAIN_ANALYZE:
-                    ShardingSpherePreconditions.checkState(databaseCapability.get().isSupportsExplainAnalyze(), () -> new MCPUnsupportedException("EXPLAIN ANALYZE is not supported."));
-                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, databaseCapability.get()), classificationResult.getAuditMarker());
+                    ShardingSpherePreconditions.checkState(actualDatabaseCapability.isSupportsExplainAnalyze(), () -> new MCPUnsupportedException("EXPLAIN ANALYZE is not supported."));
+                    return recordSuccess(executionRequest, statementExecutor.execute(executionRequest, classificationResult, actualDatabaseCapability),
+                            classificationResult.getAuditMarker());
                 default:
                     throw new StatementClassNotSupportedException();
             }
@@ -114,18 +110,6 @@ public final class MCPSQLExecutionFacade {
             // CHECKSTYLE:ON
             throw recordFailure(executionRequest, classificationResult.getAuditMarker(), ex);
         }
-    }
-    
-    private SQLExecutionResponse executeAndRefreshMetadata(final SQLExecutionRequest executionRequest, final ClassificationResult classificationResult,
-                                                           final MCPDatabaseCapability databaseCapability) {
-        SQLExecutionResponse result = statementExecutor.execute(executionRequest, classificationResult, databaseCapability);
-        Optional<Connection> transactionConnection = transactionResourceManager.findTransactionConnection(executionRequest.getSessionId(), executionRequest.getDatabase());
-        if (transactionConnection.isPresent()) {
-            transactionResourceManager.markDirtyMetadata(executionRequest.getSessionId(), executionRequest.getDatabase());
-        } else {
-            jdbcMetadataRefresher.refresh(executionRequest.getDatabase());
-        }
-        return result;
     }
     
     private SQLExecutionResponse recordSuccess(final SQLExecutionRequest executionRequest, final SQLExecutionResponse response, final String statementMarker) {

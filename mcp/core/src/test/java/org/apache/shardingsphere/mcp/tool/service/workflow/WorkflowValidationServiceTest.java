@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
@@ -52,175 +50,174 @@ class WorkflowValidationServiceTest {
     
     @Test
     void assertValidateDetectsEncryptMappingAndAlgorithmMismatches() {
-        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
-        contextStore.save(createEncryptSnapshot());
-        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
-        WorkflowProxyQueryService proxyQueryService = mock(WorkflowProxyQueryService.class);
-        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of(Map.of(
-                "logic_column", "status",
-                "cipher_column", "status_cipher",
-                "assisted_query_column", "status_assisted_query_1",
-                "encryptor_type", "AES",
-                "assisted_query_type", "MD5")));
-        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        when(proxyQueryService.queryInformationSchemaColumnNames(runtimeContext, "logic_db", "public", "orders", Set.of("status_cipher", "status_assisted_query")))
-                .thenReturn(Set.of("status_cipher", "status_assisted_query"));
-        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, proxyQueryService);
-        try (
-                MockedConstruction<MCPJdbcMetadataRefresher> refreshers = mockConstruction(MCPJdbcMetadataRefresher.class);
-                MockedConstruction<MCPSQLExecutionFacade> facades = mockConstruction(MCPSQLExecutionFacade.class,
-                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
-            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
-            List<?> actualMismatches = (List<?>) actualResponse.get("mismatches");
-            assertThat(actualResponse.get("status"), is("failed"));
-            assertThat(actualResponse.get("overall_status"), is("failed"));
-            assertThat(actualMismatches.size(), is(2));
-            Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
-            assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_STATE_MISMATCH));
-            assertThat(contextStore.getRequired("plan-1").getStatus(), is("failed"));
-            verify(refreshers.constructed().get(0)).refresh("logic_db");
-            verify(facades.constructed().get(0), times(2)).execute(any());
+        try (MCPRequestContext requestContext = createRequestContextWithColumn("status")) {
+            WorkflowContextStore contextStore = new WorkflowContextStore();
+            contextStore.save(createEncryptSnapshot());
+            RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+            WorkflowProxyQueryService proxyQueryService = mock(WorkflowProxyQueryService.class);
+            when(ruleInspectionService.queryEncryptRules(requestContext, "logic_db", "orders")).thenReturn(List.of(Map.of(
+                    "logic_column", "status",
+                    "cipher_column", "status_cipher",
+                    "assisted_query_column", "status_assisted_query_1",
+                    "encryptor_type", "AES",
+                    "assisted_query_type", "MD5")));
+            when(ruleInspectionService.queryMaskRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            when(proxyQueryService.queryInformationSchemaColumnNames(requestContext, "logic_db", "public", "orders", Set.of("status_cipher", "status_assisted_query")))
+                    .thenReturn(Set.of("status_cipher", "status_assisted_query"));
+            WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, proxyQueryService);
+            try (
+                    MockedConstruction<MCPSQLExecutionFacade> facades = mockConstruction(MCPSQLExecutionFacade.class,
+                            (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+                Map<String, Object> actualResponse = validationService.validate(requestContext, "session-1", "plan-1");
+                List<?> actualMismatches = (List<?>) actualResponse.get("mismatches");
+                assertThat(actualResponse.get("status"), is("failed"));
+                assertThat(actualResponse.get("overall_status"), is("failed"));
+                assertThat(actualMismatches.size(), is(2));
+                Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
+                assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_STATE_MISMATCH));
+                assertThat(contextStore.getRequired("plan-1").getStatus(), is("failed"));
+                verify(facades.constructed().get(0), times(2)).execute(any());
+            }
         }
     }
     
     @Test
     void assertValidatePassesWhenMaskDropAlreadyRemoved() {
-        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
-        contextStore.save(createMaskSnapshot("drop"));
-        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
-        try (
-                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
-                MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
-                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
-            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
-            assertThat(actualResponse.get("status"), is("validated"));
-            assertThat(actualResponse.get("overall_status"), is("passed"));
-            assertThat(((List<?>) actualResponse.get("issues")).size(), is(0));
-            Map<?, ?> actualRuleValidation = (Map<?, ?>) actualResponse.get("rule_validation");
-            assertThat(actualRuleValidation.get("status"), is("passed"));
-            assertThat(contextStore.getRequired("plan-1").getStatus(), is("validated"));
+        try (MCPRequestContext requestContext = createRequestContextWithColumn("status")) {
+            WorkflowContextStore contextStore = new WorkflowContextStore();
+            contextStore.save(createMaskSnapshot("drop"));
+            RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+            when(ruleInspectionService.queryEncryptRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            when(ruleInspectionService.queryMaskRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
+            try (
+                    MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
+                            (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+                Map<String, Object> actualResponse = validationService.validate(requestContext, "session-1", "plan-1");
+                assertThat(actualResponse.get("status"), is("validated"));
+                assertThat(actualResponse.get("overall_status"), is("passed"));
+                assertThat(((List<?>) actualResponse.get("issues")).size(), is(0));
+                Map<?, ?> actualRuleValidation = (Map<?, ?>) actualResponse.get("rule_validation");
+                assertThat(actualRuleValidation.get("status"), is("passed"));
+                assertThat(contextStore.getRequired("plan-1").getStatus(), is("validated"));
+            }
         }
     }
     
     @Test
     void assertValidateSkipsDdlAndPassesWhenEncryptDropAlreadyRemoved() {
-        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
-        contextStore.save(createEncryptDropSnapshot());
-        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
-        try (
-                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
-                MockedConstruction<MCPSQLExecutionFacade> facades = mockConstruction(MCPSQLExecutionFacade.class,
-                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
-            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
-            assertThat(actualResponse.get("status"), is("validated"));
-            assertThat(actualResponse.get("overall_status"), is("passed"));
-            assertThat(((Map<?, ?>) actualResponse.get("ddl_validation")).get("status"), is("skipped"));
-            assertThat(((Map<?, ?>) actualResponse.get("rule_validation")).get("status"), is("passed"));
-            verify(facades.constructed().get(0), times(1)).execute(any());
+        try (MCPRequestContext requestContext = createRequestContextWithColumn("status")) {
+            WorkflowContextStore contextStore = new WorkflowContextStore();
+            contextStore.save(createEncryptDropSnapshot());
+            RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+            when(ruleInspectionService.queryEncryptRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            when(ruleInspectionService.queryMaskRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
+            try (
+                    MockedConstruction<MCPSQLExecutionFacade> facades = mockConstruction(MCPSQLExecutionFacade.class,
+                            (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+                Map<String, Object> actualResponse = validationService.validate(requestContext, "session-1", "plan-1");
+                assertThat(actualResponse.get("status"), is("validated"));
+                assertThat(actualResponse.get("overall_status"), is("passed"));
+                assertThat(((Map<?, ?>) actualResponse.get("ddl_validation")).get("status"), is("skipped"));
+                assertThat(((Map<?, ?>) actualResponse.get("rule_validation")).get("status"), is("passed"));
+                verify(facades.constructed().get(0), times(1)).execute(any());
+            }
         }
     }
     
     @Test
     void assertValidateReportsSqlExecutabilityFailure() {
-        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
-        contextStore.save(createMaskSnapshot("create"));
-        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of(Map.of("column", "status", "algorithm_type", "MASK_TYPE")));
-        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
-        try (
-                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
-                MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
-                        (mock, context) -> when(mock.execute(any())).thenThrow(new IllegalStateException("sql failed")))) {
-            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
-            Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
-            assertThat(actualResponse.get("status"), is("failed"));
-            assertThat(actualResponse.get("overall_status"), is("failed"));
-            assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-            Map<?, ?> actualSqlValidation = (Map<?, ?>) actualResponse.get("sql_executability_validation");
-            assertThat(actualSqlValidation.get("status"), is("failed"));
+        try (MCPRequestContext requestContext = createRequestContextWithColumn("status")) {
+            WorkflowContextStore contextStore = new WorkflowContextStore();
+            contextStore.save(createMaskSnapshot("create"));
+            RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+            when(ruleInspectionService.queryEncryptRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            when(ruleInspectionService.queryMaskRules(requestContext, "logic_db", "orders")).thenReturn(List.of(Map.of("column", "status", "algorithm_type", "MASK_TYPE")));
+            WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
+            try (
+                    MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
+                            (mock, context) -> when(mock.execute(any())).thenThrow(new IllegalStateException("sql failed")))) {
+                Map<String, Object> actualResponse = validationService.validate(requestContext, "session-1", "plan-1");
+                Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
+                assertThat(actualResponse.get("status"), is("failed"));
+                assertThat(actualResponse.get("overall_status"), is("failed"));
+                assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+                Map<?, ?> actualSqlValidation = (Map<?, ?>) actualResponse.get("sql_executability_validation");
+                assertThat(actualSqlValidation.get("status"), is("failed"));
+            }
         }
     }
     
     @Test
     void assertValidateFailsWhenLogicalMetadataIsMissing() {
-        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("other_status");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
-        contextStore.save(createMaskSnapshot("create"));
-        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of(Map.of("column", "status", "algorithm_type", "MASK_TYPE")));
-        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
-        try (
-                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
-                MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
-                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
-            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
-            Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
-            assertThat(actualResponse.get("status"), is("failed"));
-            assertThat(actualResponse.get("overall_status"), is("failed"));
-            assertThat(actualIssue.get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
-            Map<?, ?> actualLogicalValidation = (Map<?, ?>) actualResponse.get("logical_metadata_validation");
-            assertThat(actualLogicalValidation.get("status"), is("failed"));
+        try (MCPRequestContext requestContext = createRequestContextWithColumn("other_status")) {
+            WorkflowContextStore contextStore = new WorkflowContextStore();
+            contextStore.save(createMaskSnapshot("create"));
+            RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+            when(ruleInspectionService.queryEncryptRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            when(ruleInspectionService.queryMaskRules(requestContext, "logic_db", "orders")).thenReturn(List.of(Map.of("column", "status", "algorithm_type", "MASK_TYPE")));
+            WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
+            try (
+                    MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
+                            (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+                Map<String, Object> actualResponse = validationService.validate(requestContext, "session-1", "plan-1");
+                Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
+                assertThat(actualResponse.get("status"), is("failed"));
+                assertThat(actualResponse.get("overall_status"), is("failed"));
+                assertThat(actualIssue.get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
+                Map<?, ?> actualLogicalValidation = (Map<?, ?>) actualResponse.get("logical_metadata_validation");
+                assertThat(actualLogicalValidation.get("status"), is("failed"));
+            }
         }
     }
     
     @Test
     void assertValidateSupportsMaskRuleFieldAliases() {
-        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
-        contextStore.save(createMaskSnapshot("create"));
-        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders"))
-                .thenReturn(List.of(Map.of("logic_column", "status", "mask_algorithm", "MASK_TYPE", "props", Map.of("replace-char", "*"))));
-        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
-        try (
-                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
-                MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
-                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
-            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
-            assertThat(actualResponse.get("status"), is("validated"));
-            assertThat(((Map<?, ?>) actualResponse.get("rule_validation")).get("status"), is("passed"));
+        try (MCPRequestContext requestContext = createRequestContextWithColumn("status")) {
+            WorkflowContextStore contextStore = new WorkflowContextStore();
+            contextStore.save(createMaskSnapshot("create"));
+            RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+            when(ruleInspectionService.queryEncryptRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            when(ruleInspectionService.queryMaskRules(requestContext, "logic_db", "orders"))
+                    .thenReturn(List.of(Map.of("logic_column", "status", "mask_algorithm", "MASK_TYPE", "props", Map.of("replace-char", "*"))));
+            WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, mock(WorkflowProxyQueryService.class));
+            try (
+                    MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
+                            (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+                Map<String, Object> actualResponse = validationService.validate(requestContext, "session-1", "plan-1");
+                assertThat(actualResponse.get("status"), is("validated"));
+                assertThat(((Map<?, ?>) actualResponse.get("rule_validation")).get("status"), is("passed"));
+            }
         }
     }
     
     @Test
     void assertValidateDetectsMissingPhysicalDerivedColumns() {
-        MCPRuntimeContext runtimeContext = createRuntimeContextWithColumn("status");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
-        contextStore.save(createEncryptSnapshot());
-        RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
-        WorkflowProxyQueryService proxyQueryService = mock(WorkflowProxyQueryService.class);
-        when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of(Map.of(
-                "logic_column", "status",
-                "cipher_column", "status_cipher",
-                "assisted_query_column", "status_assisted_query",
-                "encryptor_type", "AES",
-                "assisted_query_type", "CRC32")));
-        when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
-        when(proxyQueryService.queryInformationSchemaColumnNames(runtimeContext, "logic_db", "public", "orders", Set.of("status_cipher", "status_assisted_query")))
-                .thenReturn(Set.of("status_cipher"));
-        WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, proxyQueryService);
-        try (
-                MockedConstruction<MCPJdbcMetadataRefresher> ignoredRefresher = mockConstruction(MCPJdbcMetadataRefresher.class);
-                MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
-                        (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
-            Map<String, Object> actualResponse = validationService.validate(runtimeContext, "session-1", "plan-1");
-            Map<?, ?> actualDdlValidation = (Map<?, ?>) actualResponse.get("ddl_validation");
-            assertThat(actualResponse.get("status"), is("failed"));
-            assertThat(actualDdlValidation.get("status"), is("failed"));
-            assertThat(((List<?>) actualResponse.get("mismatches")).size(), is(1));
+        try (MCPRequestContext requestContext = createRequestContextWithColumn("status")) {
+            WorkflowContextStore contextStore = new WorkflowContextStore();
+            contextStore.save(createEncryptSnapshot());
+            RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
+            WorkflowProxyQueryService proxyQueryService = mock(WorkflowProxyQueryService.class);
+            when(ruleInspectionService.queryEncryptRules(requestContext, "logic_db", "orders")).thenReturn(List.of(Map.of(
+                    "logic_column", "status",
+                    "cipher_column", "status_cipher",
+                    "assisted_query_column", "status_assisted_query",
+                    "encryptor_type", "AES",
+                    "assisted_query_type", "CRC32")));
+            when(ruleInspectionService.queryMaskRules(requestContext, "logic_db", "orders")).thenReturn(List.of());
+            when(proxyQueryService.queryInformationSchemaColumnNames(requestContext, "logic_db", "public", "orders", Set.of("status_cipher", "status_assisted_query")))
+                    .thenReturn(Set.of("status_cipher"));
+            WorkflowValidationService validationService = new WorkflowValidationService(contextStore, ruleInspectionService, proxyQueryService);
+            try (
+                    MockedConstruction<MCPSQLExecutionFacade> ignoredFacade = mockConstruction(MCPSQLExecutionFacade.class,
+                            (mock, context) -> when(mock.execute(any())).thenReturn(null))) {
+                Map<String, Object> actualResponse = validationService.validate(requestContext, "session-1", "plan-1");
+                Map<?, ?> actualDdlValidation = (Map<?, ?>) actualResponse.get("ddl_validation");
+                assertThat(actualResponse.get("status"), is("failed"));
+                assertThat(actualDdlValidation.get("status"), is("failed"));
+                assertThat(((List<?>) actualResponse.get("mismatches")).size(), is(1));
+            }
         }
     }
     
@@ -229,7 +226,7 @@ class WorkflowValidationServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         contextStore.save(createMaskSnapshot("create"));
         WorkflowValidationService validationService = new WorkflowValidationService(contextStore, mock(RuleInspectionService.class), mock(WorkflowProxyQueryService.class));
-        Map<String, Object> actualResponse = validationService.validate(mock(MCPRuntimeContext.class), "session-2", "plan-1");
+        Map<String, Object> actualResponse = validationService.validate(mock(MCPRequestContext.class), "session-2", "plan-1");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
@@ -242,7 +239,7 @@ class WorkflowValidationServiceTest {
         snapshot.setStatus("planned");
         contextStore.save(snapshot);
         WorkflowValidationService validationService = new WorkflowValidationService(contextStore, mock(RuleInspectionService.class), mock(WorkflowProxyQueryService.class));
-        Map<String, Object> actualResponse = validationService.validate(mock(MCPRuntimeContext.class), "session-1", "plan-1");
+        Map<String, Object> actualResponse = validationService.validate(mock(MCPRequestContext.class), "session-1", "plan-1");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
@@ -302,13 +299,11 @@ class WorkflowValidationServiceTest {
         return result;
     }
     
-    private MCPRuntimeContext createRuntimeContextWithColumn(final String columnName) {
+    private MCPRequestContext createRequestContextWithColumn(final String columnName) {
         MCPTableMetadata tableMetadata = new MCPTableMetadata("logic_db", "public", "orders",
                 List.of(new MCPColumnMetadata("logic_db", "public", "orders", "", columnName)), List.of());
         MCPSchemaMetadata schemaMetadata = new MCPSchemaMetadata("logic_db", "public", List.of(tableMetadata), List.of());
-        MCPDatabaseMetadataCatalog metadataCatalog = new MCPDatabaseMetadataCatalog(Map.of("logic_db",
-                new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(schemaMetadata))));
-        return new MCPRuntimeContext(new MCPSessionManager(Map.of()), metadataCatalog);
+        return ResourceTestDataFactory.createRequestContext(List.of(new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(schemaMetadata))));
     }
     
     private WorkflowContextSnapshot createEncryptDropSnapshot() {

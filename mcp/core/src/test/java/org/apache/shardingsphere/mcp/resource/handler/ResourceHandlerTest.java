@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.resource.handler;
 
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
@@ -52,12 +52,10 @@ import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityRespo
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,12 +68,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
     
-    private final MCPRuntimeContext runtimeContext;
-    
-    {
-        final MCPDatabaseMetadataCatalog metadataCatalog = ResourceTestDataFactory.createDatabaseMetadataCatalog();
-        runtimeContext = new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), metadataCatalog);
-    }
+    private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
@@ -86,36 +79,42 @@ class ResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        MCPResponse actual = handlerCase.getHandler().handle(runtimeContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
-        Map<String, Object> actualPayload = actual.toPayload();
-        if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
-            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
-            assertThat(actualPayload.get("database"), is(handlerCase.getExpectedDatabase()));
-            return;
+        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+            MCPResponse actual = handlerCase.getHandler().handle(requestContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
+            Map<String, Object> actualPayload = actual.toPayload();
+            if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
+                assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
+                assertThat(actualPayload.get("database"), is(handlerCase.getExpectedDatabase()));
+                return;
+            }
+            if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
+                assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPServiceCapabilityResponse.class));
+                assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
+                return;
+            }
+            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMetadataResponse.class));
+            assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));
         }
-        if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
-            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPServiceCapabilityResponse.class));
-            assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
-            return;
-        }
-        assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMetadataResponse.class));
-        assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));
     }
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new IndexesHandler().handle(runtimeContext,
-                match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-                        "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
-        assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
+        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new IndexesHandler().handle(requestContext,
+                    match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                            "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
+            assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
+        }
     }
     
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
-        MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new SequencesHandler().handle(runtimeContext,
-                match("shardingsphere://databases/{database}/schemas/{schema}/sequences",
-                        "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
-        assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
+        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new SequencesHandler().handle(requestContext,
+                    match("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                            "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
+            assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
+        }
     }
     
     private MCPUriVariables match(final String uriPattern, final String resourceUri) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 
 import java.util.LinkedList;
 import java.util.LinkedHashMap;
@@ -43,45 +43,45 @@ public final class RuleInspectionService {
     /**
      * Query encrypt rules.
      *
-     * @param runtimeContext runtime context
+     * @param requestContext request context
      * @param databaseName database name
      * @param tableName table name
      * @return encrypt rules
      */
-    public List<Map<String, Object>> queryEncryptRules(final MCPRuntimeContext runtimeContext, final String databaseName, final String tableName) {
-        return normalizeEncryptRuleRows(queryService.query(runtimeContext, databaseName, "", buildShowEncryptRulesSql(databaseName, tableName)));
+    public List<Map<String, Object>> queryEncryptRules(final MCPRequestContext requestContext, final String databaseName, final String tableName) {
+        return normalizeEncryptRuleRows(queryService.query(requestContext, databaseName, "", buildShowEncryptRulesSql(databaseName, tableName)));
     }
     
     /**
      * Query mask rules.
      *
-     * @param runtimeContext runtime context
+     * @param requestContext request context
      * @param databaseName database name
      * @param tableName table name
      * @return mask rules
      */
-    public List<Map<String, Object>> queryMaskRules(final MCPRuntimeContext runtimeContext, final String databaseName, final String tableName) {
-        return normalizeMaskRuleRows(queryService.query(runtimeContext, databaseName, "", buildShowMaskRulesSql(databaseName, tableName)));
+    public List<Map<String, Object>> queryMaskRules(final MCPRequestContext requestContext, final String databaseName, final String tableName) {
+        return normalizeMaskRuleRows(queryService.query(requestContext, databaseName, "", buildShowMaskRulesSql(databaseName, tableName)));
     }
     
     /**
      * Query encrypt algorithms.
      *
-     * @param runtimeContext runtime context
+     * @param requestContext request context
      * @return encrypt algorithm plugins
      */
-    public List<Map<String, Object>> queryEncryptAlgorithms(final MCPRuntimeContext runtimeContext) {
-        return queryService.queryWithAnyDatabase(runtimeContext, "SHOW ENCRYPT ALGORITHM PLUGINS");
+    public List<Map<String, Object>> queryEncryptAlgorithms(final MCPRequestContext requestContext) {
+        return queryService.queryWithAnyDatabase(requestContext, "SHOW ENCRYPT ALGORITHM PLUGINS");
     }
     
     /**
      * Query mask algorithms.
      *
-     * @param runtimeContext runtime context
+     * @param requestContext request context
      * @return mask algorithm plugins
      */
-    public List<Map<String, Object>> queryMaskAlgorithms(final MCPRuntimeContext runtimeContext) {
-        return queryService.queryWithAnyDatabase(runtimeContext, "SHOW MASK ALGORITHM PLUGINS");
+    public List<Map<String, Object>> queryMaskAlgorithms(final MCPRequestContext requestContext) {
+        return queryService.queryWithAnyDatabase(requestContext, "SHOW MASK ALGORITHM PLUGINS");
     }
     
     /**

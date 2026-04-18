@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
@@ -33,7 +33,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,10 +53,10 @@ class PlanEncryptMaskRuleToolHandlerTest {
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES secret key.", ""));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t_order (COLUMNS((NAME=phone, ENCRYPT_ALGORITHM(TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456'))))))"));
         WorkflowPlanningService planningService = mock(WorkflowPlanningService.class);
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
-        when(planningService.plan(org.mockito.ArgumentMatchers.same(runtimeContext), org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.any())).thenReturn(snapshot);
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
+        when(planningService.plan(org.mockito.ArgumentMatchers.same(requestContext), org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.any())).thenReturn(snapshot);
         PlanEncryptMaskRuleToolHandler handler = new PlanEncryptMaskRuleToolHandler(planningService, new AlgorithmPropertyTemplateService());
-        Map<String, Object> actual = handler.handle(runtimeContext, "session-1", Map.of("database", "logic_db")).toPayload();
+        Map<String, Object> actual = handler.handle(requestContext, "session-1", Map.of("database", "logic_db")).toPayload();
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(String.valueOf(((Map<?, ?>) ((Map<?, ?>) actual.get("masked_property_preview")).get("primary")).get("aes-key-value")), is("******"));
         assertThat(String.valueOf(((Map<?, ?>) ((List<?>) actual.get("distsql_artifacts")).get(0)).get("sql")), containsString("******"));
@@ -74,16 +73,16 @@ class PlanEncryptMaskRuleToolHandlerTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-2");
         snapshot.setStatus("clarifying");
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
-        when(planningService.plan(org.mockito.ArgumentMatchers.same(runtimeContext), org.mockito.ArgumentMatchers.anyString(),
-                argThat(request -> "encrypt".equals(request.getFeatureType())
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
+        when(planningService.plan(org.mockito.ArgumentMatchers.same(requestContext), org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.argThat(request -> "encrypt".equals(request.getFeatureType())
                         && Boolean.TRUE.equals(request.getRequiresEqualityFilter())
                         && Boolean.FALSE.equals(request.getRequiresLikeQuery())
                         && "phone".equals(request.getFieldSemantics())
                         && "给手机号加密".equals(request.getRawUserRequest()))))
                 .thenReturn(snapshot);
         PlanEncryptMaskRuleToolHandler handler = new PlanEncryptMaskRuleToolHandler(planningService, new AlgorithmPropertyTemplateService());
-        Map<String, Object> actual = handler.handle(runtimeContext, "session-1", Map.of(
+        Map<String, Object> actual = handler.handle(requestContext, "session-1", Map.of(
                 "feature_type", "encrypt",
                 "raw_user_request", "给手机号加密",
                 "structured_intent_evidence", Map.of(
@@ -100,12 +99,12 @@ class PlanEncryptMaskRuleToolHandlerTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-3");
         snapshot.setStatus("planned");
-        MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class);
-        when(planningService.plan(org.mockito.ArgumentMatchers.same(runtimeContext), org.mockito.ArgumentMatchers.anyString(),
-                argThat(request -> "mask".equals(request.getFeatureType()) && "drop".equals(request.getOperationType()))))
+        MCPRequestContext requestContext = mock(MCPRequestContext.class);
+        when(planningService.plan(org.mockito.ArgumentMatchers.same(requestContext), org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.argThat(request -> "mask".equals(request.getFeatureType()) && "drop".equals(request.getOperationType()))))
                 .thenReturn(snapshot);
         PlanEncryptMaskRuleToolHandler handler = new PlanEncryptMaskRuleToolHandler(planningService, new AlgorithmPropertyTemplateService());
-        Map<String, Object> actual = handler.handle(runtimeContext, "session-1", Map.of("intent_type", "mask", "operation_type", "drop")).toPayload();
+        Map<String, Object> actual = handler.handle(requestContext, "session-1", Map.of("intent_type", "mask", "operation_type", "drop")).toPayload();
         assertThat(actual.get("plan_id"), is("plan-3"));
     }
 }

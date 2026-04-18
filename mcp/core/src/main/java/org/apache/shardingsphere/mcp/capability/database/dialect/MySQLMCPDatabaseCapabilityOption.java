@@ -40,7 +40,7 @@ public final class MySQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabi
     
     private final boolean crossSchemaQuerySupported = false;
     
-    private final boolean isSequenceSupported = false;
+    private final boolean sequenceSupported = false;
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {

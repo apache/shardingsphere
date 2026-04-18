@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.IndexPlan;
@@ -50,14 +50,14 @@ public final class WorkflowExecutionService {
     /**
      * Apply workflow artifacts.
      *
-     * @param runtimeContext runtime context
+     * @param requestContext request context
      * @param sessionId session id
      * @param planId plan identifier
      * @param approvedSteps approved steps
      * @param executionMode execution mode override
      * @return apply payload
      */
-    public Map<String, Object> apply(final MCPRuntimeContext runtimeContext, final String sessionId, final String planId,
+    public Map<String, Object> apply(final MCPRequestContext requestContext, final String sessionId, final String planId,
                                      final List<String> approvedSteps, final String executionMode) {
         WorkflowContextSnapshot snapshot = contextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = checkApplyPreconditions(sessionId, snapshot);
@@ -90,7 +90,7 @@ public final class WorkflowExecutionService {
             result.put("manual_artifact_package", createManualArtifactPackage(snapshot));
             return result;
         }
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(runtimeContext);
+        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(requestContext);
         try {
             for (DDLArtifact each : snapshot.getDdlArtifacts()) {
                 currentArtifactType = each.getArtifactType();

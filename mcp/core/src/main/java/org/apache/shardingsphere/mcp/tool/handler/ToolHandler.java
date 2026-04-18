@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 
@@ -41,10 +41,10 @@ public interface ToolHandler extends ShardingSphereSPI {
     /**
      * Handle one tool call.
      *
-     * @param runtimeContext runtime context
+     * @param requestContext request context
      * @param sessionId session identifier
      * @param arguments normalized tool arguments
      * @return tool response
      */
-    MCPResponse handle(MCPRuntimeContext runtimeContext, String sessionId, Map<String, Object> arguments);
+    MCPResponse handle(MCPRequestContext requestContext, String sessionId, Map<String, Object> arguments);
 }

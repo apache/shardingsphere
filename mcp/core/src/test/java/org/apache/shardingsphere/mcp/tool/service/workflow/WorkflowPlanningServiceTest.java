@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
@@ -89,7 +88,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanFailsWhenEncryptRuleAlreadyExistsForCreateLifecycle() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of(Map.of("logic_column", "order_id")));
         when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
@@ -104,7 +103,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanRequestsMissingRequiredProperties() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -126,7 +125,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanStopsWhenEncryptAlgorithmIsUnavailable() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
         when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
@@ -146,7 +145,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanStopsWhenMaskAlgorithmIsUnavailable() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
         when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
@@ -166,7 +165,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanStopsWhenAlgorithmSelectionProducesBlockingIssue() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
         when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
@@ -191,7 +190,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanDefersEncryptArtifactsUntilRequirementsAreClarified() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
         when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
@@ -217,7 +216,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanCreatesEncryptDropArtifactAndWarnings() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -242,7 +241,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanFailsWhenEncryptDropTargetRuleIsMissing() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
         when(ruleInspectionService.queryMaskRules(runtimeContext, "logic_db", "orders")).thenReturn(List.of());
@@ -256,7 +255,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanWarnsWhenEncryptAlterLeavesPhysicalCleanupToOperator() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
         PhysicalDDLPlanningService physicalDDLPlanningService = mock(PhysicalDDLPlanningService.class);
@@ -286,7 +285,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanReusesAliasBasedEncryptDerivedColumnsForAlter() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -325,7 +324,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanMergesPreviousSnapshotRequestWhenPlanIdIsProvided() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         WorkflowContextStore contextStore = new WorkflowContextStore();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
@@ -359,7 +358,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanCreatesMaskDropArtifact() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -380,7 +379,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanSkipsAlgorithmSelectionForMaskDropWorkflow() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -399,7 +398,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanSkipsIndexPlanningWhenIndexDdlIsDisabled() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -431,7 +430,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanCreatesEncryptArtifactsWhenInputsAreComplete() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -469,7 +468,7 @@ class WorkflowPlanningServiceTest {
     
     @Test
     void assertPlanUsesResolvedOperationTypeForInferredEncryptAlterWorkflow() {
-        MCPRuntimeContext runtimeContext = createRuntimeContext();
+        MCPRequestContext runtimeContext = createRuntimeContext();
         RuleInspectionService ruleInspectionService = mock(RuleInspectionService.class);
         AlgorithmRecommendationService algorithmRecommendationService = mock(AlgorithmRecommendationService.class);
         AlgorithmPropertyTemplateService propertyTemplateService = mock(AlgorithmPropertyTemplateService.class);
@@ -514,8 +513,8 @@ class WorkflowPlanningServiceTest {
                 new DerivedColumnNamingService(), physicalDDLPlanningService, indexPlanningService, ruleDistSQLPlanningService, proxyQueryService);
     }
     
-    private MCPRuntimeContext createRuntimeContext() {
-        return new MCPRuntimeContext(new MCPSessionManager(Map.of()), ResourceTestDataFactory.createDatabaseMetadataCatalog());
+    private MCPRequestContext createRuntimeContext() {
+        return ResourceTestDataFactory.createRequestContext(ResourceTestDataFactory.createDatabaseMetadata());
     }
     
     private WorkflowRequest createRequest(final String featureType, final String operationType, final String naturalLanguageIntent) {

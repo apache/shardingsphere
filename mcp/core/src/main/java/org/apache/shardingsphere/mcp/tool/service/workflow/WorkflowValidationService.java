@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.jdbc.MCPJdbcMetadataRefresher;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
@@ -64,27 +63,26 @@ public final class WorkflowValidationService {
     /**
      * Validate workflow artifacts.
      *
-     * @param runtimeContext runtime context
+     * @param requestContext request context
      * @param sessionId session id
      * @param planId plan identifier
      * @return validation payload
      */
-    public Map<String, Object> validate(final MCPRuntimeContext runtimeContext, final String sessionId, final String planId) {
+    public Map<String, Object> validate(final MCPRequestContext requestContext, final String sessionId, final String planId) {
         WorkflowContextSnapshot snapshot = contextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = checkValidatePreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
         }
-        refreshMetadata(runtimeContext, snapshot.getRequest().getDatabase());
         ValidationReport validationReport = new ValidationReport();
         snapshot.setValidationReport(validationReport);
-        List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(runtimeContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(runtimeContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        MetadataQueryService metadataQueryService = new MetadataQueryService(runtimeContext.getMetadataCatalog());
-        validationReport.setDdlValidation(validateDdl(runtimeContext, snapshot, encryptRules, validationReport));
+        List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
+        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
+        MetadataQueryService metadataQueryService = new MetadataQueryService(requestContext);
+        validationReport.setDdlValidation(validateDdl(requestContext, snapshot, encryptRules, validationReport));
         validationReport.setRuleValidation(validateRules(snapshot, encryptRules, maskRules, validationReport));
         validationReport.setLogicalMetadataValidation(validateLogicalMetadata(snapshot, metadataQueryService, validationReport));
-        validationReport.setSqlExecutabilityValidation(validateSqlExecutability(runtimeContext, sessionId, snapshot, validationReport));
+        validationReport.setSqlExecutabilityValidation(validateSqlExecutability(requestContext, sessionId, snapshot, validationReport));
         validationReport.setOverallStatus(resolveOverallStatus(validationReport));
         String validationStatus = resolveValidationStatus(validationReport);
         snapshot.setValidationReport(validationReport);
@@ -143,10 +141,6 @@ public final class WorkflowValidationService {
         return result;
     }
     
-    private void refreshMetadata(final MCPRuntimeContext runtimeContext, final String databaseName) {
-        new MCPJdbcMetadataRefresher(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getMetadataCatalog()).refresh(databaseName);
-    }
-    
     private List<Map<String, Object>> createValidationIssues(final ValidationReport validationReport) {
         if (!"failed".equals(validationReport.getOverallStatus())) {
             return List.of();
@@ -165,7 +159,7 @@ public final class WorkflowValidationService {
         return WorkflowIssueCode.RULE_STATE_MISMATCH;
     }
     
-    private ValidationSection validateDdl(final MCPRuntimeContext runtimeContext, final WorkflowContextSnapshot snapshot,
+    private ValidationSection validateDdl(final MCPRequestContext requestContext, final WorkflowContextSnapshot snapshot,
                                           final List<Map<String, Object>> encryptRules, final ValidationReport validationReport) {
         if (!isEncryptWorkflow(snapshot)) {
             return new ValidationSection("skipped", List.of(), "Mask workflows do not require physical derived-column validation.");
@@ -191,12 +185,12 @@ public final class WorkflowValidationService {
         addDerivedColumnMismatch(mismatches, "like_query_column",
                 snapshot.getDerivedColumnPlan().isLikeQueryColumnRequired() ? snapshot.getDerivedColumnPlan().getLikeQueryColumnName() : "",
                 findRuleValue(actualRule.get(), "like_query_column", "like_query"), "LIKE-query column mapping does not match.");
-        addMissingPhysicalDerivedColumnMismatches(runtimeContext, snapshot, mismatches);
+        addMissingPhysicalDerivedColumnMismatches(requestContext, snapshot, mismatches);
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
-            return new ValidationSection("failed", createDdlEvidence(actualRule.get(), runtimeContext, snapshot), "Derived column mappings do not match the plan.");
+            return new ValidationSection("failed", createDdlEvidence(actualRule.get(), requestContext, snapshot), "Derived column mappings do not match the plan.");
         }
-        return new ValidationSection("passed", createDdlEvidence(actualRule.get(), runtimeContext, snapshot), "Derived column mappings match the planned physical layout.");
+        return new ValidationSection("passed", createDdlEvidence(actualRule.get(), requestContext, snapshot), "Derived column mappings match the planned physical layout.");
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> encryptRules,
@@ -271,10 +265,10 @@ public final class WorkflowValidationService {
         return new ValidationSection("failed", List.of(), "Logical column is not visible from Proxy metadata.");
     }
     
-    private ValidationSection validateSqlExecutability(final MCPRuntimeContext runtimeContext, final String sessionId,
+    private ValidationSection validateSqlExecutability(final MCPRequestContext requestContext, final String sessionId,
                                                        final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
         List<String> validationSqls = createValidationSqls(snapshot);
-        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(runtimeContext);
+        MCPSQLExecutionFacade sqlExecutionFacade = new MCPSQLExecutionFacade(requestContext);
         for (String each : validationSqls) {
             try {
                 sqlExecutionFacade.execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each, 1, 0));
@@ -289,12 +283,12 @@ public final class WorkflowValidationService {
         return new ValidationSection("passed", validationSqls, "Validation SQLs are executable from the logical view.");
     }
     
-    private void addMissingPhysicalDerivedColumnMismatches(final MCPRuntimeContext runtimeContext, final WorkflowContextSnapshot snapshot,
+    private void addMissingPhysicalDerivedColumnMismatches(final MCPRequestContext requestContext, final WorkflowContextSnapshot snapshot,
                                                            final List<Map<String, Object>> mismatches) {
         Set<String> expectedColumnNames = createExpectedDerivedColumnNames(snapshot);
         try {
             Set<String> actualColumnNames = proxyQueryService.queryInformationSchemaColumnNames(
-                    runtimeContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), expectedColumnNames);
+                    requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), expectedColumnNames);
             for (String each : expectedColumnNames) {
                 if (!actualColumnNames.contains(each)) {
                     mismatches.add(createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", each, actualColumnNames.toString(),
@@ -328,11 +322,11 @@ public final class WorkflowValidationService {
         }
     }
     
-    private Map<String, Object> createDdlEvidence(final Map<String, Object> actualRule, final MCPRuntimeContext runtimeContext, final WorkflowContextSnapshot snapshot) {
+    private Map<String, Object> createDdlEvidence(final Map<String, Object> actualRule, final MCPRequestContext requestContext, final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(actualRule);
         try {
             result.put("physical_columns", proxyQueryService.queryInformationSchemaColumnNames(
-                    runtimeContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), createExpectedDerivedColumnNames(snapshot)));
+                    requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), createExpectedDerivedColumnNames(snapshot)));
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ignored) {
             // CHECKSTYLE:ON

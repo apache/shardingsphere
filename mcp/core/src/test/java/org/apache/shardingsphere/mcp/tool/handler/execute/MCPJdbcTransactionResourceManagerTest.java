@@ -41,7 +41,6 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
@@ -118,19 +117,7 @@ class MCPJdbcTransactionResourceManagerTest {
             assertThat(assertThrows(IllegalStateException.class, () -> manager.commitTransaction("session-1")).getMessage(), is(expectedMessage));
             return;
         }
-        assertFalse(manager.commitTransaction("session-1").isPresent());
-        verify(connection).commit();
-        verify(connection).setAutoCommit(true);
-        verify(connection).close();
-    }
-    
-    @Test
-    void assertCommitTransactionWithDirtyMetadata() throws SQLException {
-        Connection connection = mock(Connection.class);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
-        manager.beginTransaction("session-1", "logic_db");
-        manager.markDirtyMetadata("session-1", "logic_db");
-        assertThat(manager.commitTransaction("session-1").orElse(""), is("logic_db"));
+        manager.commitTransaction("session-1");
         verify(connection).commit();
         verify(connection).setAutoCommit(true);
         verify(connection).close();

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
@@ -52,7 +52,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
-        Map<String, Object> actualResponse = executionService.apply(mock(MCPRuntimeContext.class), "session-1", "plan-1", List.of(), "manual-only");
+        Map<String, Object> actualResponse = executionService.apply(mock(MCPRequestContext.class), "session-1", "plan-1", List.of(), "manual-only");
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
         Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).get(0);
         assertThat(actualResponse.get("status"), is("awaiting-manual-execution"));
@@ -64,7 +64,7 @@ class WorkflowExecutionServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         contextStore.save(createSnapshot());
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
-        Map<String, Object> actualResponse = executionService.apply(mock(MCPRuntimeContext.class), "session-2", "plan-1", List.of(), "");
+        Map<String, Object> actualResponse = executionService.apply(mock(MCPRequestContext.class), "session-2", "plan-1", List.of(), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
@@ -77,7 +77,7 @@ class WorkflowExecutionServiceTest {
         snapshot.setStatus("clarifying");
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
-        Map<String, Object> actualResponse = executionService.apply(mock(MCPRuntimeContext.class), "session-1", "plan-1", List.of(), "");
+        Map<String, Object> actualResponse = executionService.apply(mock(MCPRequestContext.class), "session-1", "plan-1", List.of(), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
@@ -93,7 +93,7 @@ class WorkflowExecutionServiceTest {
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         try (MockedConstruction<MCPSQLExecutionFacade> mockedConstruction = mockConstruction(MCPSQLExecutionFacade.class)) {
-            Map<String, Object> actualResponse = executionService.apply(mock(MCPRuntimeContext.class), "session-1", "plan-1", List.of("review"), "");
+            Map<String, Object> actualResponse = executionService.apply(mock(MCPRequestContext.class), "session-1", "plan-1", List.of("review"), "");
             List<?> actualStepResults = (List<?>) actualResponse.get("step_results");
             assertThat(actualResponse.get("status"), is("completed"));
             assertThat(((List<?>) actualResponse.get("skipped_artifacts")).size(), is(3));
@@ -113,7 +113,7 @@ class WorkflowExecutionServiceTest {
         try (
                 MockedConstruction<MCPSQLExecutionFacade> ignored = mockConstruction(MCPSQLExecutionFacade.class,
                         (mock, context) -> when(mock.execute(any())).thenThrow(new IllegalStateException("ddl failed")))) {
-            Map<String, Object> actualResponse = executionService.apply(mock(MCPRuntimeContext.class), "session-1", "plan-1", List.of("ddl"), "");
+            Map<String, Object> actualResponse = executionService.apply(mock(MCPRequestContext.class), "session-1", "plan-1", List.of("ddl"), "");
             Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
             Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
             assertThat(actualResponse.get("status"), is("failed"));
@@ -132,7 +132,7 @@ class WorkflowExecutionServiceTest {
         try (
                 MockedConstruction<MCPSQLExecutionFacade> ignored = mockConstruction(MCPSQLExecutionFacade.class,
                         (mock, context) -> when(mock.execute(any())).thenThrow(new IllegalStateException("rule failed")))) {
-            Map<String, Object> actualResponse = executionService.apply(mock(MCPRuntimeContext.class), "session-1", "plan-1", List.of("rule_distsql"), "");
+            Map<String, Object> actualResponse = executionService.apply(mock(MCPRequestContext.class), "session-1", "plan-1", List.of("rule_distsql"), "");
             Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
             assertThat(actualResponse.get("status"), is("failed"));
             assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));

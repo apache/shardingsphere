@@ -18,14 +18,10 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -101,7 +97,6 @@ class MCPResourceControllerTest {
     }
     
     private MCPResourceController createController() {
-        final MCPDatabaseMetadataCatalog metadataCatalog = ResourceTestDataFactory.createDatabaseMetadataCatalog();
-        return new MCPResourceController(new MCPRuntimeContext(new MCPSessionManager(Collections.emptyMap()), metadataCatalog));
+        return new MCPResourceController(ResourceTestDataFactory.createRuntimeContext());
     }
 }
