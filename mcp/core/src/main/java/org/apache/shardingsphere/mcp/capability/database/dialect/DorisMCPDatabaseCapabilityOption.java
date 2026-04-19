@@ -17,45 +17,24 @@
 
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 /**
  * MCP database capability option for Doris.
  */
-@Getter
-public final class DorisMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
+public final class DorisMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
-    
-    private final boolean indexSupported = true;
-    
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
-    
-    private final SchemaExecutionSemantics schemaExecutionSemantics = SchemaExecutionSemantics.FIXED_TO_DATABASE;
-    
-    private final boolean crossSchemaQuerySupported = false;
-    
-    private final boolean sequenceSupported = false;
+    public DorisMCPDatabaseCapabilityOption() {
+        super("Doris", List.of("Apache Doris"), TransactionCapability.LOCAL, true,
+                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
+    }
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;
-    }
-    
-    @Override
-    public Collection<Object> getTypeAliases() {
-        return Collections.singleton("Apache Doris");
-    }
-    
-    @Override
-    public String getType() {
-        return "Doris";
     }
 }

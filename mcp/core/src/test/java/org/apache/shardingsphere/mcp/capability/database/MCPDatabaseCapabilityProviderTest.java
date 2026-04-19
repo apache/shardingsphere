@@ -99,6 +99,15 @@ class MCPDatabaseCapabilityProviderTest {
         assertTrue(actual.get().isSupportsExplainAnalyze());
     }
     
+    @Test
+    void assertProvideWithTypeAlias() {
+        Optional<MCPDatabaseCapability> actual = createCapabilityProvider("Apache Doris").provide("logic_db");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getDatabaseType(), is("Doris"));
+        assertThat(actual.get().getTransactionCapability(), is(TransactionCapability.LOCAL));
+        assertFalse(actual.get().isSupportsSavepoint());
+    }
+    
     private MCPDatabaseCapabilityProvider createCapabilityProvider() {
         return new MCPDatabaseCapabilityProvider(createRuntimeDatabases(Map.of("logic_db", "MySQL", "warehouse", "Hive")));
     }

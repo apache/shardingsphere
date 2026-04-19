@@ -78,6 +78,35 @@ public final class H2RuntimeTestSupport {
     }
     
     /**
+     * Create prepared runtime databases for programmatic HTTP E2E tests.
+     *
+     * @param tempDir temp directory
+     * @param transport runtime transport
+     * @return prepared runtime databases
+     * @throws SQLException SQL exception
+     */
+    public static Map<String, RuntimeDatabaseConfiguration> createPreparedProgrammaticRuntimeDatabases(final Path tempDir, final RuntimeTransport transport) throws SQLException {
+        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(3, 1F);
+        result.put("logic_db", createRuntimeDatabaseConfiguration(tempDir, "abstract-mcp-e2e-logic", "public", transport));
+        result.put("analytics_db", createRuntimeDatabaseConfiguration(tempDir, "abstract-mcp-e2e-analytics", "public", transport));
+        result.put("warehouse", createRuntimeDatabaseConfiguration(tempDir, "abstract-mcp-e2e-warehouse", "warehouse", transport));
+        initializeDatabase(result.get("logic_db").getJdbcUrl());
+        executeStatements(result.get("analytics_db").getJdbcUrl(),
+                "CREATE SCHEMA IF NOT EXISTS public",
+                "SET SCHEMA public",
+                "CREATE TABLE IF NOT EXISTS metrics (metric_id INT PRIMARY KEY, metric_name VARCHAR(32))",
+                "MERGE INTO metrics (metric_id, metric_name) KEY (metric_id) VALUES (10, 'cpu')",
+                "MERGE INTO metrics (metric_id, metric_name) KEY (metric_id) VALUES (20, 'memory')");
+        executeStatements(result.get("warehouse").getJdbcUrl(),
+                "CREATE SCHEMA IF NOT EXISTS warehouse",
+                "SET SCHEMA warehouse",
+                "CREATE TABLE IF NOT EXISTS facts (fact_id INT PRIMARY KEY, total INT)",
+                "MERGE INTO facts (fact_id, total) KEY (fact_id) VALUES (100, 1)",
+                "MERGE INTO facts (fact_id, total) KEY (fact_id) VALUES (200, 2)");
+        return result;
+    }
+    
+    /**
      * Create LLM runtime fixture.
      *
      * @param tempDir temp dir
@@ -219,6 +248,13 @@ public final class H2RuntimeTestSupport {
             resultSet.next();
             return resultSet.getInt(1);
         }
+    }
+    
+    private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final Path tempDir, final String databaseName,
+                                                                                   final String defaultSchema, final RuntimeTransport transport) {
+        String jdbcUrl = String.format("%s;INIT=CREATE SCHEMA IF NOT EXISTS %s\\;SET SCHEMA %s",
+                createJdbcUrl(tempDir, databaseName, transport), defaultSchema, defaultSchema);
+        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
     
     public record LLMH2RuntimeFixture(int totalOrders, Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {

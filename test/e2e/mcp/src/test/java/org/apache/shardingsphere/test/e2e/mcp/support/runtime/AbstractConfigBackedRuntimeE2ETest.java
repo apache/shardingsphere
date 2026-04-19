@@ -118,11 +118,19 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
         return result;
     }
     
+    protected final URI getHttpEndpointUri() throws IOException {
+        prepareRuntime();
+        if (null == httpServer) {
+            throw new IllegalStateException("HTTP transport is not enabled for current runtime E2E test.");
+        }
+        return getEndpointUri(httpServer);
+    }
+    
     protected abstract Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases();
     
     protected abstract void prepareRuntimeFixture() throws IOException;
     
-    private void prepareRuntime() throws IOException {
+    protected final void prepareRuntime() throws IOException {
         if (runtimePrepared) {
             return;
         }

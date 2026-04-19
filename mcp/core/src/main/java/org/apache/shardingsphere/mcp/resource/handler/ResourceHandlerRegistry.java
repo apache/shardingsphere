@@ -21,7 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
+import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * Resource handler registry.
@@ -90,8 +94,25 @@ public final class ResourceHandlerRegistry {
      *
      * @return registered handlers
      */
-    public static Map<MCPUriPattern, ResourceHandler> getRegisteredHandlers() {
+    static Map<MCPUriPattern, ResourceHandler> getRegisteredHandlers() {
         return REGISTERED_HANDLERS;
+    }
+    
+    /**
+     * Dispatch resource URI to registered handler.
+     *
+     * @param requestContext feature context
+     * @param resourceUri resource URI
+     * @return handled response
+     */
+    public static Optional<MCPResponse> dispatch(final MCPFeatureContext requestContext, final String resourceUri) {
+        for (Entry<MCPUriPattern, ResourceHandler> each : REGISTERED_HANDLERS.entrySet()) {
+            Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
+            if (matchedUriVariables.isPresent()) {
+                return Optional.of(each.getValue().handle(requestContext, matchedUriVariables.get()));
+            }
+        }
+        return Optional.empty();
     }
     
     /**

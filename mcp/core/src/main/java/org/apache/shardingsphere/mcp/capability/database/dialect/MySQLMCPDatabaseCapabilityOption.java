@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
-import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.database.DatabaseVersionUtil;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
@@ -27,28 +25,15 @@ import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 /**
  * MCP database capability option for MySQL.
  */
-@Getter
-public final class MySQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
+public final class MySQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
-    
-    private final boolean indexSupported = true;
-    
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
-    
-    private final SchemaExecutionSemantics schemaExecutionSemantics = SchemaExecutionSemantics.FIXED_TO_DATABASE;
-    
-    private final boolean crossSchemaQuerySupported = false;
-    
-    private final boolean sequenceSupported = false;
+    public MySQLMCPDatabaseCapabilityOption() {
+        super("MySQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
+    }
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return DatabaseVersionUtil.isVersionAtLeast(databaseVersion, 8, 0, 18);
-    }
-    
-    @Override
-    public String getType() {
-        return "MySQL";
     }
 }

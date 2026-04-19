@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
@@ -26,28 +24,14 @@ import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 /**
  * MCP database capability option for Presto.
  */
-@Getter
-public final class PrestoMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
+public final class PrestoMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL;
-    
-    private final boolean indexSupported = false;
-    
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
-    
-    private final SchemaExecutionSemantics schemaExecutionSemantics = SchemaExecutionSemantics.BEST_EFFORT;
-    
-    private final boolean crossSchemaQuerySupported = true;
-    
-    private final boolean sequenceSupported = false;
+    public PrestoMCPDatabaseCapabilityOption() {
+        super("Presto", TransactionCapability.LOCAL, false, SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, false);
+    }
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;
-    }
-    
-    @Override
-    public String getType() {
-        return "Presto";
     }
 }

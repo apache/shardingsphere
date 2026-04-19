@@ -17,68 +17,32 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
-import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Path;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-abstract class AbstractHttpProgrammaticRuntimeE2ETest {
+abstract class AbstractHttpProgrammaticRuntimeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String CLIENT_NAME = "mcp-e2e-programmatic";
     
-    private static final String ENDPOINT_PATH = "/gateway";
+    private Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
     
-    @TempDir
-    private Path tempDir;
-    
-    private StreamableHttpMCPServer httpServer;
-    
-    @AfterEach
-    void tearDown() {
-        if (null != httpServer) {
-            httpServer.stop();
-            httpServer = null;
-        }
-    }
-    
-    protected final void launchHttpTransport() {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
-        try {
-            initializeRuntimeDatabases(runtimeDatabases);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException("Failed to initialize MCP E2E runtime databases.", ex);
-        }
-        StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(
-                new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH),
-                new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases)));
-        try {
-            httpServer.start();
-        } catch (final IOException ex) {
-            httpServer.stop();
-            throw new IllegalStateException("Failed to start HTTP transport.", ex);
-        }
-        this.httpServer = httpServer;
+    protected final void launchHttpTransport() throws IOException {
+        prepareRuntime();
     }
     
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {
@@ -126,46 +90,34 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         return MCPInteractionPayloads.hasJsonRpcError(payload) ? MCPInteractionPayloads.getJsonRpcErrorPayload(payload) : MCPInteractionPayloads.getFirstResourcePayload(payload);
     }
     
-    private HttpRequest.Builder createJsonRequestBuilder(final String sessionId) {
+    private HttpRequest.Builder createJsonRequestBuilder(final String sessionId) throws IOException {
         return MCPHttpTransportTestSupport.createSessionRequestBuilder(getEndpointUri(), sessionId, getProtocolVersion());
     }
     
-    protected final URI getEndpointUri() {
-        int localPort = httpServer.getLocalPort();
-        return URI.create(String.format("http://127.0.0.1:%d%s", localPort, ENDPOINT_PATH));
+    protected final URI getEndpointUri() throws IOException {
+        return getHttpEndpointUri();
     }
     
     protected final String getProtocolVersion() {
         return MCPHttpTransportTestSupport.PROTOCOL_VERSION;
     }
     
-    private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(3, 1F);
-        result.put("logic_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-logic", "public"));
-        result.put("analytics_db", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-analytics", "public"));
-        result.put("warehouse", createRuntimeDatabaseConfiguration("abstract-mcp-e2e-warehouse", "warehouse"));
-        return result;
+    @Override
+    protected final RuntimeTransport getTransport() {
+        return RuntimeTransport.HTTP;
     }
     
-    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseName, final String defaultSchema) {
-        String jdbcUrl = String.format("%s;INIT=CREATE SCHEMA IF NOT EXISTS %s\\;SET SCHEMA %s",
-                H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName, RuntimeTransport.HTTP), defaultSchema, defaultSchema);
-        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
+    @Override
+    protected final Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
+        return runtimeDatabases;
     }
     
-    private void initializeRuntimeDatabases(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws SQLException {
-        H2RuntimeTestSupport.initializeDatabase(runtimeDatabases.get("logic_db").getJdbcUrl());
-        H2RuntimeTestSupport.executeStatements(runtimeDatabases.get("analytics_db").getJdbcUrl(),
-                "CREATE SCHEMA IF NOT EXISTS public",
-                "SET SCHEMA public",
-                "CREATE TABLE IF NOT EXISTS metrics (metric_id INT PRIMARY KEY, metric_name VARCHAR(32))",
-                "MERGE INTO metrics (metric_id, metric_name) KEY (metric_id) VALUES (10, 'cpu')",
-                "MERGE INTO metrics (metric_id, metric_name) KEY (metric_id) VALUES (20, 'memory')");
-        H2RuntimeTestSupport.executeStatements(runtimeDatabases.get("warehouse").getJdbcUrl(),
-                "CREATE SCHEMA IF NOT EXISTS warehouse",
-                "SET SCHEMA warehouse",
-                "CREATE TABLE IF NOT EXISTS facts (fact_id INT PRIMARY KEY, total INT)",
-                "MERGE INTO facts (fact_id, total) KEY (fact_id) VALUES (100, 1)",
-                "MERGE INTO facts (fact_id, total) KEY (fact_id) VALUES (200, 2)");
+    @Override
+    protected final void prepareRuntimeFixture() throws IOException {
+        try {
+            runtimeDatabases = H2RuntimeTestSupport.createPreparedProgrammaticRuntimeDatabases(getTempDir(), getTransport());
+        } catch (final SQLException ex) {
+            throw new IOException("Failed to initialize MCP E2E runtime databases.", ex);
+        }
     }
 }

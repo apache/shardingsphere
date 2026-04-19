@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapabilityProvider;
+import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
+
+import java.util.Set;
 
 /**
  * Handler for service capabilities resource URI.
@@ -36,6 +41,10 @@ public final class ServiceCapabilitiesHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPServiceCapabilityResponse(MCPServiceCapabilityProvider.provide());
+        return new MCPServiceCapabilityResponse(createServiceCapability());
+    }
+    
+    private MCPServiceCapability createServiceCapability() {
+        return new MCPServiceCapability(ResourceHandlerRegistry.getSupportedResources(), ToolHandlerRegistry.getSupportedTools(), Set.of(SupportedMCPStatement.values()));
     }
 }

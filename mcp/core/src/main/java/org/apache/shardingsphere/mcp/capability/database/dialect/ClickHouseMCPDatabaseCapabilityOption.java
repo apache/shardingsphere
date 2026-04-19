@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
@@ -26,28 +24,9 @@ import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 /**
  * MCP database capability option for ClickHouse.
  */
-@Getter
-public final class ClickHouseMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
+public final class ClickHouseMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.NONE;
-    
-    private final boolean indexSupported = false;
-    
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.DATABASE_AS_SCHEMA;
-    
-    private final SchemaExecutionSemantics schemaExecutionSemantics = SchemaExecutionSemantics.FIXED_TO_DATABASE;
-    
-    private final boolean crossSchemaQuerySupported = false;
-    
-    private final boolean sequenceSupported = false;
-    
-    @Override
-    public boolean isExplainAnalyzeSupported(final String databaseVersion) {
-        return false;
-    }
-    
-    @Override
-    public String getType() {
-        return "ClickHouse";
+    public ClickHouseMCPDatabaseCapabilityOption() {
+        super("ClickHouse", TransactionCapability.NONE, false, SchemaSemantics.DATABASE_AS_SCHEMA, SchemaExecutionSemantics.FIXED_TO_DATABASE, false, false);
     }
 }

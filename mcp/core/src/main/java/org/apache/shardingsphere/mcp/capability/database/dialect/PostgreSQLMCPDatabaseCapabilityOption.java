@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.capability.database.dialect;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityOption;
 import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
 import org.apache.shardingsphere.mcp.capability.database.SchemaSemantics;
 import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
@@ -26,28 +24,15 @@ import org.apache.shardingsphere.mcp.capability.database.TransactionCapability;
 /**
  * MCP database capability option for PostgreSQL.
  */
-@Getter
-public final class PostgreSQLMCPDatabaseCapabilityOption implements MCPDatabaseCapabilityOption {
+public final class PostgreSQLMCPDatabaseCapabilityOption extends AbstractMCPDatabaseCapabilityOption {
     
-    private final TransactionCapability transactionCapability = TransactionCapability.LOCAL_WITH_SAVEPOINT;
-    
-    private final boolean indexSupported = true;
-    
-    private final SchemaSemantics defaultSchemaSemantics = SchemaSemantics.NATIVE_SCHEMA;
-    
-    private final SchemaExecutionSemantics schemaExecutionSemantics = SchemaExecutionSemantics.BEST_EFFORT;
-    
-    private final boolean crossSchemaQuerySupported = true;
-    
-    private final boolean sequenceSupported = true;
+    public PostgreSQLMCPDatabaseCapabilityOption() {
+        super("PostgreSQL", TransactionCapability.LOCAL_WITH_SAVEPOINT, true,
+                SchemaSemantics.NATIVE_SCHEMA, SchemaExecutionSemantics.BEST_EFFORT, true, true);
+    }
     
     @Override
     public boolean isExplainAnalyzeSupported(final String databaseVersion) {
         return true;
-    }
-    
-    @Override
-    public String getType() {
-        return "PostgreSQL";
     }
 }

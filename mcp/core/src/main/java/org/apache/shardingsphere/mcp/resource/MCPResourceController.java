@@ -24,13 +24,7 @@ import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
-
-import java.util.Map.Entry;
-import java.util.Optional;
 
 /**
  * MCP resource controller.
@@ -48,21 +42,11 @@ public final class MCPResourceController {
      */
     public MCPResponse handle(final String resourceUri) {
         try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
-            return dispatch(requestContext, resourceUri).orElseThrow(UnsupportedResourceUriException::new);
+            return ResourceHandlerRegistry.dispatch(requestContext, resourceUri).orElseThrow(UnsupportedResourceUriException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             return new MCPErrorResponse(MCPErrorConverter.convert(ex));
         }
-    }
-    
-    private Optional<MCPResponse> dispatch(final MCPRequestContext requestContext, final String resourceUri) {
-        for (Entry<MCPUriPattern, ResourceHandler> each : ResourceHandlerRegistry.getRegisteredHandlers().entrySet()) {
-            Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
-            if (matchedUriVariables.isPresent()) {
-                return Optional.of(each.getValue().handle(requestContext, matchedUriVariables.get()));
-            }
-        }
-        return Optional.empty();
     }
 }

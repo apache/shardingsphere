@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,10 +33,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -49,6 +53,18 @@ class ResourceHandlerRegistryTest {
         assertThrows(UnsupportedOperationException.class, () -> ResourceHandlerRegistry.getRegisteredHandlers().clear());
     }
     
+    @Test
+    void assertDispatch() {
+        Optional<MCPResponse> actual = ResourceHandlerRegistry.dispatch(mock(MCPFeatureContext.class), "shardingsphere://capabilities");
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get().toPayload().containsKey("supportedTools"));
+    }
+    
+    @Test
+    void assertDispatchWithoutMatchedHandler() {
+        assertFalse(ResourceHandlerRegistry.dispatch(mock(MCPFeatureContext.class), "unsupported://resource").isPresent());
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRegisteredHandlersFailureCases")
     void assertGetRegisteredHandlersFailure(final String name, final Collection<ResourceHandler> handlers,
@@ -56,8 +72,9 @@ class ResourceHandlerRegistryTest {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class)).thenReturn(handlers);
             Class<?> registryClass = Class.forName(ResourceHandlerRegistry.class.getName(), false, createIsolatedResourceHandlerRegistryClassLoader());
+            var getRegisteredHandlersMethod = registryClass.getDeclaredMethod("getRegisteredHandlers");
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
-                    () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getRegisteredHandlers"), null));
+                    () -> Plugins.getMemberAccessor().invoke(getRegisteredHandlersMethod, null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(expectedCauseType));
