@@ -98,6 +98,24 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
     }
     
     @Test
+    void assertReadGlobalCapabilitiesResourceWithFeatureEntries() throws SQLException, IOException, InterruptedException {
+        RuntimeHttpSession session = launchRuntime();
+        Map<String, Object> payload = readResourceAndGetPayload(session, "shardingsphere://capabilities");
+        List<String> supportedTools = getStringList(payload, "supportedTools");
+        assertTrue(supportedTools.contains("plan_encrypt_rule"));
+        assertTrue(supportedTools.contains("validate_encrypt_rule"));
+        assertTrue(supportedTools.contains("apply_encrypt_rule"));
+        assertTrue(supportedTools.contains("plan_mask_rule"));
+        assertTrue(supportedTools.contains("validate_mask_rule"));
+        assertTrue(supportedTools.contains("apply_mask_rule"));
+        List<String> supportedResources = getStringList(payload, "supportedResources");
+        assertTrue(supportedResources.contains("shardingsphere://features/encrypt/algorithms"));
+        assertTrue(supportedResources.contains("shardingsphere://features/encrypt/databases/{database}/rules"));
+        assertTrue(supportedResources.contains("shardingsphere://features/mask/algorithms"));
+        assertTrue(supportedResources.contains("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
+    }
+    
+    @Test
     void assertRejectMetadataReadWithoutAccessToken() throws SQLException, IOException, InterruptedException {
         RuntimeHttpSession session = launchRuntimeWithAccessToken();
         HttpResponse<String> actualResponse = sendResourceReadRequest(session.httpClient(), session.sessionId(), "shardingsphere://databases");

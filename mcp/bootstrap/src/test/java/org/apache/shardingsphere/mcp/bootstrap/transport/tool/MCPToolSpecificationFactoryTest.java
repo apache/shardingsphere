@@ -52,10 +52,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPToolSpecificationFactoryTest {
-
+    
     @TempDir
     private Path tempDir;
-
+    
     @Test
     void assertCreateToolSpecificationsWithExpectedToolNames() {
         MCPToolSpecificationFactory factory = createFactory();
@@ -64,7 +64,7 @@ class MCPToolSpecificationFactoryTest {
                 "search_metadata", "execute_query", "plan_encrypt_rule", "validate_encrypt_rule",
                 "apply_encrypt_rule", "plan_mask_rule", "validate_mask_rule", "apply_mask_rule")));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCreateToolSpecificationsArguments")
     void assertCreateToolSpecificationsWithSchema(final String name, final String toolName,
@@ -80,7 +80,7 @@ class MCPToolSpecificationFactoryTest {
         assertThat(actualSpecification.tool().inputSchema().properties().get(fieldName), is(expectedProperty));
         assertNotNull(actualSpecification.callHandler());
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertCreateToolSpecificationsWithoutRemovedFieldsArguments")
     void assertCreateToolSpecificationsWithoutRemovedFields(final String name, final String toolName, final String fieldName) {
@@ -147,7 +147,7 @@ class MCPToolSpecificationFactoryTest {
                 Arguments.of("search metadata with null arguments", "search_metadata", null, true, "error_code", "invalid_request", true, "query is required."),
                 Arguments.of("unsupported tool call", "unsupported_tool", Collections.emptyMap(), true, "error_code", "invalid_request", true, "Unsupported tool."));
     }
-
+    
     private static Stream<Arguments> assertCreateToolSpecificationsWithoutRemovedFieldsArguments() {
         return Stream.of(
                 Arguments.of("plan encrypt rule excludes raw user request", "plan_encrypt_rule", "raw_user_request"),

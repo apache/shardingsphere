@@ -48,6 +48,12 @@ class StdioTransportIntegrationTest {
             assertThat(actualInitializeResult.get("protocolVersion"), is(MCPTransportConstants.PROTOCOL_VERSION));
             assertTrue(actualTools.stream().anyMatch(each -> "search_metadata".equals(each.get("name"))));
             assertTrue(actualTools.stream().anyMatch(each -> "execute_query".equals(each.get("name"))));
+            assertTrue(actualTools.stream().anyMatch(each -> "plan_encrypt_rule".equals(each.get("name"))));
+            assertTrue(actualTools.stream().anyMatch(each -> "validate_encrypt_rule".equals(each.get("name"))));
+            assertTrue(actualTools.stream().anyMatch(each -> "apply_encrypt_rule".equals(each.get("name"))));
+            assertTrue(actualTools.stream().anyMatch(each -> "plan_mask_rule".equals(each.get("name"))));
+            assertTrue(actualTools.stream().anyMatch(each -> "validate_mask_rule".equals(each.get("name"))));
+            assertTrue(actualTools.stream().anyMatch(each -> "apply_mask_rule".equals(each.get("name"))));
             Map<String, Object> actualStructuredContent = client.callTool("search_metadata",
                     Map.of("database", "logic_db", "query", "order", "object_types", List.of("table")));
             List<Map<String, Object>> actualItems = client.getItems(actualStructuredContent);
@@ -58,6 +64,17 @@ class StdioTransportIntegrationTest {
             List<String> actualSupportedTools = client.getStringList(actualCapabilities, "supportedTools");
             assertTrue(actualSupportedTools.contains("search_metadata"));
             assertTrue(actualSupportedTools.contains("execute_query"));
+            assertTrue(actualSupportedTools.contains("plan_encrypt_rule"));
+            assertTrue(actualSupportedTools.contains("validate_encrypt_rule"));
+            assertTrue(actualSupportedTools.contains("apply_encrypt_rule"));
+            assertTrue(actualSupportedTools.contains("plan_mask_rule"));
+            assertTrue(actualSupportedTools.contains("validate_mask_rule"));
+            assertTrue(actualSupportedTools.contains("apply_mask_rule"));
+            List<String> actualSupportedResources = client.getStringList(actualCapabilities, "supportedResources");
+            assertTrue(actualSupportedResources.contains("shardingsphere://features/encrypt/algorithms"));
+            assertTrue(actualSupportedResources.contains("shardingsphere://features/encrypt/databases/{database}/rules"));
+            assertTrue(actualSupportedResources.contains("shardingsphere://features/mask/algorithms"));
+            assertTrue(actualSupportedResources.contains("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
         }
     }
     
