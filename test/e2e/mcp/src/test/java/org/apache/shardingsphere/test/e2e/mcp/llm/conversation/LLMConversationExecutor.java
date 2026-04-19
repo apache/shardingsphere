@@ -58,15 +58,6 @@ public final class LLMConversationExecutor {
     }
     
     /**
-     * Check whether LLM E2E is enabled.
-     *
-     * @return whether LLM E2E is enabled
-     */
-    public boolean isEnabled() {
-        return configuration.isEnabled();
-    }
-    
-    /**
      * Conversation result.
      *
      * @param artifactBundle artifact bundle

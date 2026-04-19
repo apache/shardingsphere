@@ -38,8 +38,6 @@ public final class LLME2EConfiguration {
     
     private static final DateTimeFormatter RUN_ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.ENGLISH);
     
-    private final boolean enabled;
-    
     private final String baseUrl;
     
     private final String modelName;
@@ -63,7 +61,6 @@ public final class LLME2EConfiguration {
      */
     public static LLME2EConfiguration load() {
         return new LLME2EConfiguration(
-                readBoolean("mcp.llm.e2e.enabled", "MCP_LLM_E2E_ENABLED", false),
                 normalizeBaseUrl(readString("mcp.llm.base-url", "MCP_LLM_BASE_URL", "http://127.0.0.1:11434/v1")),
                 readString("mcp.llm.model", "MCP_LLM_MODEL", "qwen3:1.7b"),
                 readString("mcp.llm.api-key", "MCP_LLM_API_KEY", "ollama"),
@@ -121,10 +118,6 @@ public final class LLME2EConfiguration {
         } catch (final NumberFormatException ignored) {
             return defaultValue;
         }
-    }
-    
-    private static boolean readBoolean(final String propertyName, final String environmentName, final boolean defaultValue) {
-        return Boolean.parseBoolean(readString(propertyName, environmentName, String.valueOf(defaultValue)));
     }
     
     private static String normalizeBaseUrl(final String baseUrl) {

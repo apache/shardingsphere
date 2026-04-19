@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
@@ -27,7 +28,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -38,6 +39,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@EnabledIf("isEnabled")
 class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
@@ -69,12 +71,14 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 new SmokeTestCase("minimal-smoke-mysql-stdio", RuntimeTransport.STDIO, Backend.MYSQL));
     }
     
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isLLMEnabled();
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCases")
     void assertSmoke(final SmokeTestCase testCase) throws IOException {
         currentTestCase = testCase;
-        Assumptions.assumeTrue(conversationExecutor.isEnabled(),
-                "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM MCP smoke tests.");
         prepareRuntimeFixture();
         LLME2EScenario scenario = scenarioFactory.createMinimalSmokeScenario(testCase.scenarioId(), "logic_db",
                 getRequiredRuntimeFixture().schemaName(), "orders", COUNT_ORDERS_SQL, getRequiredRuntimeFixture().totalOrders());
@@ -122,7 +126,7 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private record SmokeTestCase(String scenarioId, RuntimeTransport transport, Backend backend) {
-        
+
         @Override
         public String toString() {
             return scenarioId;

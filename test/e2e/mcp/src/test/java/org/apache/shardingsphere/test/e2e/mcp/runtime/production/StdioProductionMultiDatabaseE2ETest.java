@@ -17,9 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.junit.jupiter.api.condition.EnabledIf;
 
+@EnabledIf("isEnabled")
 class StdioProductionMultiDatabaseE2ETest extends AbstractProductionMultiDatabaseE2ETest {
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isProductionStdioEnabled();
+    }
     
     @Override
     protected RuntimeTransport getTransport() {

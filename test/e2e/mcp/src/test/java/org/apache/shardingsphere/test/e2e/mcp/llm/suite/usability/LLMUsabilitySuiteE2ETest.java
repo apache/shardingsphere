@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Backend;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUs
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -34,6 +35,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@EnabledIf("isEnabled")
 class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
@@ -67,12 +69,14 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 new UsabilitySuiteTestCase("minimal-usability-mysql-stdio", RuntimeTransport.STDIO, Backend.MYSQL));
     }
     
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isLLMEnabled();
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCases")
     void assertMinimalBaseline(final UsabilitySuiteTestCase testCase) throws IOException {
         currentTestCase = testCase;
-        Assumptions.assumeTrue(conversationExecutor.isEnabled(),
-                "Set -Dmcp.llm.e2e.enabled=true or MCP_LLM_E2E_ENABLED=true to run the LLM usability suite.");
         prepareRuntimeFixture();
         suiteRunner.assertUsabilitySuite(testCase.suiteId(),
                 () -> scenarioCatalog.createMinimalBaseline(getRuntimeKind(), "logic_db", getRequiredRuntimeFixture().schemaName(),
@@ -121,7 +125,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     }
     
     private record UsabilitySuiteTestCase(String suiteId, RuntimeTransport transport, Backend backend) {
-        
+
         @Override
         public String toString() {
             return suiteId;

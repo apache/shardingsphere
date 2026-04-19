@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -30,15 +32,21 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@EnabledIf("isEnabled")
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> EXPECTED_TOOL_NAMES = List.of(
             "search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
             "plan_mask_rule", "apply_mask_rule", "validate_mask_rule");
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isContractEnabled();
+    }
     
     @Test
     void assertInitializeSessionAndProtocolHeaders() throws IOException, InterruptedException {
@@ -97,7 +105,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 .build();
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
-        assertThat(getFirstResourcePayload(actual.body()).get("supportedTools"), is(EXPECTED_TOOL_NAMES));
+        assertThat(((List<?>) getFirstResourcePayload(actual.body()).get("supportedTools")).stream().map(String::valueOf).toList(),
+                containsInAnyOrder(EXPECTED_TOOL_NAMES.toArray()));
     }
     
     @Test

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -28,7 +30,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@EnabledIf("isEnabled")
 class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isContractEnabled();
+    }
     
     @Test
     void assertExecuteSelectOverHttpSession() throws IOException, InterruptedException {

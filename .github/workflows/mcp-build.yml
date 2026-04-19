@@ -98,7 +98,7 @@ jobs:
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
             -Dtest=PackagedDistributionSmokeE2ETest \
             -Dsurefire.failIfNoSpecifiedTests=true \
-            -Dmcp.distribution.smoke.enabled=true \
+            -Dmcp.e2e.distribution.enabled=true \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \
             -B -ntp
       - name: Prepare MCP Registry Metadata

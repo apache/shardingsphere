@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpIn
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.PackagedDistributionStdioInteractionClient;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
@@ -49,7 +50,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledOnOs({OS.LINUX, OS.MAC})
-@EnabledIfSystemProperty(named = "mcp.distribution.smoke.enabled", matches = "true")
+@EnabledIf("isEnabled")
 class PackagedDistributionSmokeE2ETest {
     
     private static final List<String> EXPECTED_TOOL_NAMES = List.of(
@@ -63,6 +64,10 @@ class PackagedDistributionSmokeE2ETest {
     @TempDir
     private Path tempDir;
     
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isDistributionEnabled();
+    }
+    
     @Test
     void assertLaunchPackagedDistributionOverHttp() throws IOException, InterruptedException {
         PreparedPackagedDistribution distribution = PackagedDistributionTestSupport.prepare(tempDir.resolve("http"), RuntimeTransport.HTTP);
@@ -71,7 +76,7 @@ class PackagedDistributionSmokeE2ETest {
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
             assertBootstrapDirectoriesCreated(distribution.home());
             assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
-            assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(EXPECTED_TOOL_NAMES));
+            assertSupportedTools(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"));
             assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(),
                     containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
                             "plan_mask_rule", "apply_mask_rule", "validate_mask_rule"));
@@ -91,7 +96,7 @@ class PackagedDistributionSmokeE2ETest {
             interactionClient.open();
             assertBootstrapDirectoriesCreated(distribution.home());
             assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
-            assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(EXPECTED_TOOL_NAMES));
+            assertSupportedTools(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"));
             assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(),
                     containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
                             "plan_mask_rule", "apply_mask_rule", "validate_mask_rule"));
@@ -113,6 +118,10 @@ class PackagedDistributionSmokeE2ETest {
     private void assertDatabaseNames(final Map<String, Object> payload, final String... expectedDatabases) {
         List<String> actualDatabaseNames = getPayloadItems(payload).stream().map(each -> String.valueOf(each.get("database"))).toList();
         assertThat(actualDatabaseNames, containsInAnyOrder(expectedDatabases));
+    }
+    
+    private void assertSupportedTools(final Object supportedTools) {
+        assertThat(((List<?>) supportedTools).stream().map(String::valueOf).toList(), containsInAnyOrder(EXPECTED_TOOL_NAMES.toArray()));
     }
     
     private List<String> getItemNames(final Map<String, Object> payload) {

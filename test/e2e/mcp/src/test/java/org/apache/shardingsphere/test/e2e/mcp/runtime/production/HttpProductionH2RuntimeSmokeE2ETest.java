@@ -17,9 +17,16 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.junit.jupiter.api.condition.EnabledIf;
 
+@EnabledIf("isEnabled")
 class HttpProductionH2RuntimeSmokeE2ETest extends AbstractProductionH2RuntimeSmokeE2ETest {
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isProductionH2Enabled();
+    }
     
     @Override
     protected RuntimeTransport getTransport() {

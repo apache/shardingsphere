@@ -27,7 +27,8 @@
   - `mcp.e2e.proxy.workflow.enabled=false`
   - `mcp.e2e.distribution.enabled=false`
   - `mcp.e2e.llm.enabled=false`
-- If the implementation needs to read an existing legacy LLM-specific switch during transition, that compatibility path should be temporary and should not become the primary documented MCP E2E naming model.
+- Existing legacy switches such as `mcp.llm.e2e.enabled` and `mcp.distribution.smoke.enabled` should be replaced by the unified MCP E2E lane-switch family in the same delivery rather than preserved through a compatibility period.
+- CI workflow commands should move to the explicit lane-enable model in the same delivery so local runs and CI runs follow one consistent selection model.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -130,8 +131,10 @@ As a CI maintainer, I want workflow jobs to opt into MCP heavy lanes through exp
 - **FR-020**: LLM validation MAY keep additional model endpoint, credential, timeout, and artifact settings, but its top-level execution gate MUST align with the same MCP E2E enablement model as other lanes.
 - **FR-021**: CI and release-oriented jobs MUST be able to enable MCP heavy lanes entirely through explicit property overrides in Maven commands.
 - **FR-022**: The lane-enable naming scheme MUST use the `mcp.e2e.<lane>.enabled` form for documented MCP E2E lane switches so reviewers can distinguish baseline defaults from opt-in lanes consistently.
-- **FR-023**: The feature MUST preserve the existence of current MCP E2E suites; lane selection changes execution defaults rather than deleting coverage.
-- **FR-024**: The feature MUST make it obvious to reviewers where new MCP E2E lanes should declare defaults and where they should attach their execution conditions.
+- **FR-023**: Existing legacy lane-selection switches such as `mcp.llm.e2e.enabled` and `mcp.distribution.smoke.enabled` MUST be removed from the documented MCP E2E execution model rather than retained through a compatibility layer.
+- **FR-024**: MCP-related CI and release workflow commands MUST adopt the same explicit lane-enable properties in the same feature delivery rather than continuing to rely on legacy always-on or legacy-property behavior.
+- **FR-025**: The feature MUST preserve the existence of current MCP E2E suites; lane selection changes execution defaults rather than deleting coverage.
+- **FR-026**: The feature MUST make it obvious to reviewers where new MCP E2E lanes should declare defaults and where they should attach their execution conditions.
 
 ### Key Entities *(include if feature involves data)*
 

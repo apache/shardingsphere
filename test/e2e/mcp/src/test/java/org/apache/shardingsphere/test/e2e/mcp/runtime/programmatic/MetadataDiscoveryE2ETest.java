@@ -17,8 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -36,7 +38,12 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@EnabledIf("isEnabled")
 class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isContractEnabled();
+    }
     
     @Test
     void assertSearchMetadataTablesAndViews() throws IOException, InterruptedException {

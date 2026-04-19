@@ -81,7 +81,8 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
     @Test
     void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertThat(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"), is(EXPECTED_TOOL_NAMES));
+            assertThat(((List<?>) interactionClient.readResource("shardingsphere://capabilities").get("supportedTools")).stream().map(String::valueOf).toList(),
+                    containsInAnyOrder(EXPECTED_TOOL_NAMES.toArray()));
         }
     }
     

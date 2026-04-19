@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +33,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
+@EnabledIf("isEnabled")
 class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
     
     private static final String PLAN_TOOL_NAME = "plan_encrypt_rule";
@@ -44,6 +47,10 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     private static final String RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/%s/rules";
     
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/%s/tables/%s/rules";
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isProxyWorkflowEnabled();
+    }
     
     @Test
     void assertPlanApplyAndValidateEncryptWorkflowThroughProxy() throws Exception {

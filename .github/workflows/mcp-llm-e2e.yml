@@ -39,7 +39,6 @@ permissions:
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
-  MCP_LLM_E2E_ENABLED: 'true'
   MCP_LLM_BASE_URL: http://127.0.0.1:11434/v1
   MCP_LLM_MODEL: qwen3:1.7b
   MCP_LLM_API_KEY: ollama
@@ -92,7 +91,7 @@ jobs:
       - name: Verify MCP LLM Smoke Selector
         run: test -f test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/smoke/LLMSmokeE2ETest.java
       - name: Run MCP LLM Smoke
-        run: ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true -Dtest=LLMSmokeE2ETest -Dsurefire.failIfNoSpecifiedTests=true -B -ntp
+        run: ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true -Dtest=LLMSmokeE2ETest -Dsurefire.failIfNoSpecifiedTests=true -Dmcp.e2e.llm.enabled=true -B -ntp
       - name: Collect Ollama Logs
         if: always()
         shell: bash
