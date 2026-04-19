@@ -259,10 +259,43 @@ bin/start.sh conf/mcp-stdio.yaml
 - 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
 - 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。
 
+## Feature SPI 结构
+
+当前 MCP 子链路按 `features + core + bootstrap` 分层组织：
+
+- `mcp/features/spi`
+  - 定义 feature SPI、workflow 公共模型、descriptor 与共享 issue / response 语义
+- `mcp/features/encrypt`
+  - 提供 encrypt MCP tools、resources 与 workflow 实现
+- `mcp/features/mask`
+  - 提供 mask MCP tools、resources 与 workflow 实现
+- `mcp/core`
+  - 提供 capability、metadata、session、execute-query 与通用 runtime 能力
+- `mcp/bootstrap`
+  - 通过 MCP Java SDK 汇总各 feature 注册结果，并暴露 HTTP / STDIO transport
+
+encrypt 和 mask 在 MCP 里不是 bootstrap 内硬编码的特殊功能，而是通过 feature SPI 注册到 MCP runtime 的可插拔 feature。
+
+## 如何新增一个 MCP Feature
+
+如果你要在现有 encrypt / mask 之外再新增一个 feature，建议保持下面这条最小路径：
+
+- 在 `mcp/features/<feature>` 新建模块，只依赖 `mcp/features/spi` 和必要的领域模块，不要依赖 `mcp/bootstrap`
+- 如果是新增 feature 模块，还要把它接入构建与运行时 classpath：先加入 `mcp/features/pom.xml`，再让当前 runtime 入口模块（现在是 `mcp/bootstrap`）依赖它，这样打包后的发行物里才会真正带上对应 jar
+- 对外新增 tool 时，实现 `ToolHandler`，并提供唯一的 `MCPToolDescriptor`
+- 对外新增 resource 时，实现 `ResourceHandler`，并提供唯一的 URI pattern
+- 在 `src/main/resources/META-INF/services/` 下分别注册 `org.apache.shardingsphere.mcp.tool.handler.ToolHandler` 和 `org.apache.shardingsphere.mcp.resource.handler.ResourceHandler`
+- feature URI 统一使用 `shardingsphere://features/<feature>/...` 命名空间，避免和公共 metadata path 混用
+- `mcp/core` 会通过 `ShardingSphereServiceLoader` 自动发现并校验这些 handler，`mcp/bootstrap` 只负责把最终结果发布到协议层
+- tool 名和 resource URI pattern 必须在全局范围内保持唯一；重复注册会在启动期校验时被拒绝
+
+encrypt 和 mask 模块本身就是最直接的参考实现。
+
 ## 基于 ShardingSphere-Proxy 的加密与脱敏 Workflow
 
 这组 workflow tool 让 MCP client 可以通过自然语言或结构化参数，对某个逻辑表的某一列规划、执行并校验加密或脱敏规则。
 它的目标不是自己实现加密，而是帮助大模型把用户意图转换成 ShardingSphere-Proxy 可执行的 DDL、DistSQL 与校验动作。
+这些 tools 与 resources 由 encrypt / mask feature 通过 SPI 注册进入 MCP，bootstrap 只负责汇总并发布到协议层。
 
 ### 前置条件
 
@@ -1044,8 +1077,11 @@ MCP_LLM_MODEL=qwen3:1.7b \
 
 - LLM smoke 的 artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。
 - 对应的 GitHub Actions 入口是 `.github/workflows/mcp-llm-e2e.yml`，第一轮按 `workflow_dispatch` 和 nightly schedule 交付，不进 PR gate。
+- `mcp/features/spi`：feature SPI、workflow 公共模型、descriptor、共享 issue / response 语义
+- `mcp/features/encrypt`：encrypt tools、resources、planning / apply / validation 与算法可见性装配
+- `mcp/features/mask`：mask tools、resources、planning / apply / validation 与算法可见性装配
 - `mcp/core`：capability、metadata、session、audit、execute-query 契约、runtime service 聚合，以及 JDBC runtime 配置模型、metadata 发现、`DatabaseRuntime` 装配与 JDBC-backed runtime context factory
-- `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP / STDIO transport、顶层配置加载与生命周期管理
+- `mcp/bootstrap`：基于 MCP Java SDK 的 bootstrap、HTTP / STDIO transport、顶层配置加载、feature SPI 汇总与生命周期管理
 - `distribution/mcp`：独立打包、启动脚本、配置、Dockerfile
 - `test/e2e/mcp`：端到端契约验证
 

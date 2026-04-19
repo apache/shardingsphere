@@ -259,10 +259,43 @@ Reference:
 - To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
 - To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.
 
+## Feature SPI Layout
+
+The current MCP subchain is organized as `features + core + bootstrap`:
+
+- `mcp/features/spi`
+  - defines feature SPI, shared workflow models, descriptors, and common issue / response semantics
+- `mcp/features/encrypt`
+  - provides encrypt MCP tools, resources, and workflow implementation
+- `mcp/features/mask`
+  - provides mask MCP tools, resources, and workflow implementation
+- `mcp/core`
+  - provides capability, metadata, session, execute-query, and shared runtime services
+- `mcp/bootstrap`
+  - aggregates registered features through the MCP Java SDK and exposes HTTP / STDIO transports
+
+Encrypt and mask are not special cases hardcoded in bootstrap. They are pluggable MCP features registered through the feature SPI layer.
+
+## How to Add a New MCP Feature
+
+If you want to add another feature beyond encrypt and mask, keep the implementation path minimal:
+
+- Create `mcp/features/<feature>` and depend on `mcp/features/spi` plus the required domain modules only; do not depend on `mcp/bootstrap`
+- If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then make the current runtime entry module (now `mcp/bootstrap`) depend on it so the packaged distribution actually carries the jar
+- For each public tool, implement `ToolHandler` and provide a unique `MCPToolDescriptor`
+- For each public resource, implement `ResourceHandler` and provide a unique URI pattern
+- Register `org.apache.shardingsphere.mcp.tool.handler.ToolHandler` and `org.apache.shardingsphere.mcp.resource.handler.ResourceHandler` under `src/main/resources/META-INF/services/`
+- Keep feature URIs under `shardingsphere://features/<feature>/...` so they do not leak into shared metadata paths
+- `mcp/core` discovers and validates these handlers through `ShardingSphereServiceLoader`; `mcp/bootstrap` only publishes the final protocol surface
+- Tool names and resource URI patterns must stay globally unique; duplicate registrations are rejected during startup validation
+
+The encrypt and mask modules are the recommended reference implementations.
+
 ## Encrypt and Mask Workflow over ShardingSphere-Proxy
 
 These workflow tools allow an MCP client to plan, execute, and validate encrypt or mask rules for one logical column by using natural language, structured arguments, or both.
 The goal is not to re-implement encryption inside MCP. Instead, MCP translates user intent into executable DDL, DistSQL, and validation steps for ShardingSphere-Proxy.
+The tools and resources described below are registered by the encrypt and mask feature modules through SPI; bootstrap only aggregates and publishes them to the protocol layer.
 
 ### Prerequisites
 
@@ -1044,8 +1077,11 @@ MCP_LLM_MODEL=qwen3:1.7b \
 
 - The LLM smoke artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
 - The dedicated GitHub Actions entry point is `.github/workflows/mcp-llm-e2e.yml`, delivered as `workflow_dispatch` plus nightly schedule instead of a PR gate.
+- `mcp/features/spi`: feature SPI, shared workflow models, descriptors, and common issue / response semantics
+- `mcp/features/encrypt`: encrypt tools, resources, planning / apply / validation, and algorithm visibility assembly
+- `mcp/features/mask`: mask tools, resources, planning / apply / validation, and algorithm visibility assembly
 - `mcp/core`: capability, metadata, session, audit, execute-query contracts, shared runtime service assembly, JDBC runtime configuration, metadata discovery, `DatabaseRuntime` assembly, and the JDBC-backed runtime context factory
-- `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP / STDIO transport, top-level config loading, and lifecycle management
+- `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP / STDIO transport, top-level config loading, feature SPI aggregation, and lifecycle management
 - `distribution/mcp`: standalone packaging, scripts, config, Dockerfile
 - `test/e2e/mcp`: end-to-end contract validation
 
