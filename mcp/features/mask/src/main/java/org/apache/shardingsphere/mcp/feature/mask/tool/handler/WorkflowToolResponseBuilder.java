@@ -24,6 +24,8 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactMaskUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySource;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySources;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +40,7 @@ final class WorkflowToolResponseBuilder {
     }
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
+        WorkflowPropertySource propertySource = WorkflowPropertySources.compose(snapshot.getRequest(), snapshot.getFeatureData());
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("plan_id", snapshot.getPlanId());
         result.put("status", snapshot.getStatus());
@@ -47,10 +50,10 @@ final class WorkflowToolResponseBuilder {
         result.put("current_step", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getCurrentStep());
         result.put("algorithm_recommendations", snapshot.getAlgorithmCandidates().stream().map(AlgorithmCandidate::toMap).toList());
         result.put("property_requirements", snapshot.getPropertyRequirements().stream().map(AlgorithmPropertyRequirement::toMap).toList());
-        result.put("masked_property_preview", createMaskedPropertyPreview(snapshot));
+        result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
         result.put("derived_column_plan", null);
         result.put("ddl_artifacts", List.of());
-        result.put("distsql_artifacts", snapshot.getRuleArtifacts().stream().map(each -> createMaskedRuleArtifact(each, snapshot)).toList());
+        result.put("distsql_artifacts", snapshot.getRuleArtifacts().stream().map(each -> createMaskedRuleArtifact(each, propertySource, snapshot)).toList());
         result.put("index_plan", List.of());
         result.put("validation_strategy", null == snapshot.getInteractionPlan() ? Map.of() : snapshot.getInteractionPlan().getValidationStrategy());
         result.put("delivery_mode", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getDeliveryMode());
@@ -58,18 +61,19 @@ final class WorkflowToolResponseBuilder {
         return result;
     }
     
-    private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot) {
+    private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
         if (null == snapshot.getRequest()) {
             return Map.of();
         }
-        return Map.of("primary", propertyTemplateService.maskProperties(filterRequirements(snapshot), snapshot.getRequest().getPrimaryAlgorithmProperties()));
+        return Map.of("primary", propertyTemplateService.maskProperties(filterRequirements(snapshot), propertySource.getAlgorithmProperties("primary")));
     }
     
     private List<AlgorithmPropertyRequirement> filterRequirements(final WorkflowContextSnapshot snapshot) {
         return snapshot.getPropertyRequirements().stream().filter(each -> "primary".equals(each.getAlgorithmRole())).toList();
     }
     
-    private Map<String, Object> createMaskedRuleArtifact(final RuleArtifact ruleArtifact, final WorkflowContextSnapshot snapshot) {
-        return WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(ruleArtifact, snapshot.getRequest(), snapshot.getPropertyRequirements());
+    private Map<String, Object> createMaskedRuleArtifact(final RuleArtifact ruleArtifact, final WorkflowPropertySource propertySource,
+                                                         final WorkflowContextSnapshot snapshot) {
+        return WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(ruleArtifact, propertySource, snapshot.getPropertyRequirements());
     }
 }

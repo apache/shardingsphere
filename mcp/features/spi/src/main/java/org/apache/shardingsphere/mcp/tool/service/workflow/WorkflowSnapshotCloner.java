@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.IndexPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
@@ -57,6 +56,7 @@ final class WorkflowSnapshotCloner {
         result.setUpdateTime(copyInstant(original.getUpdateTime()));
         result.setRequest(REQUEST_MERGER.copy(original.getRequest()));
         result.setClarifiedIntent(cloneClarifiedIntent(original.getClarifiedIntent()));
+        result.setFeatureData(null == original.getFeatureData() ? null : original.getFeatureData().copy());
         result.setInteractionPlan(cloneInteractionPlan(original.getInteractionPlan()));
         original.getIssues().forEach(each -> result.getIssues().add(cloneIssue(each)));
         original.getAlgorithmCandidates().forEach(each -> result.getAlgorithmCandidates().add(cloneAlgorithmCandidate(each)));
@@ -64,7 +64,6 @@ final class WorkflowSnapshotCloner {
         original.getDdlArtifacts().forEach(each -> result.getDdlArtifacts().add(new DDLArtifact(each.getArtifactType(), each.getSql(), each.getExecutionOrder())));
         original.getRuleArtifacts().forEach(each -> result.getRuleArtifacts().add(new RuleArtifact(each.getOperationType(), each.getSql())));
         original.getIndexPlans().forEach(each -> result.getIndexPlans().add(new IndexPlan(each.getIndexName(), each.getColumnName(), each.getReason(), each.getSql())));
-        result.setDerivedColumnPlan(cloneDerivedColumnPlan(original.getDerivedColumnPlan()));
         result.setValidationReport(cloneValidationReport(original.getValidationReport()));
         return result;
     }
@@ -81,9 +80,6 @@ final class WorkflowSnapshotCloner {
         result.setOperationType(original.getOperationType());
         result.setFieldSemantics(original.getFieldSemantics());
         result.setReasoningNotes(original.getReasoningNotes());
-        result.setRequiresDecrypt(original.getRequiresDecrypt());
-        result.setRequiresEqualityFilter(original.getRequiresEqualityFilter());
-        result.setRequiresLikeQuery(original.getRequiresLikeQuery());
         result.getPendingQuestions().addAll(original.getPendingQuestions());
         return result;
     }
@@ -119,23 +115,6 @@ final class WorkflowSnapshotCloner {
                 original.isSecret(), original.getDescription(), original.getDefaultValue());
     }
     
-    private static DerivedColumnPlan cloneDerivedColumnPlan(final DerivedColumnPlan original) {
-        if (null == original) {
-            return null;
-        }
-        DerivedColumnPlan result = new DerivedColumnPlan();
-        result.setLogicalColumn(original.getLogicalColumn());
-        result.setCipherColumnName(original.getCipherColumnName());
-        result.setAssistedQueryColumnName(original.getAssistedQueryColumnName());
-        result.setLikeQueryColumnName(original.getLikeQueryColumnName());
-        result.setCipherColumnRequired(original.isCipherColumnRequired());
-        result.setAssistedQueryColumnRequired(original.isAssistedQueryColumnRequired());
-        result.setLikeQueryColumnRequired(original.isLikeQueryColumnRequired());
-        result.setDataTypeStrategy(original.getDataTypeStrategy());
-        original.getNameCollisions().forEach(each -> result.getNameCollisions().add(copyStringMap(each)));
-        return result;
-    }
-    
     private static ValidationReport cloneValidationReport(final ValidationReport original) {
         if (null == original) {
             return null;
@@ -163,10 +142,6 @@ final class WorkflowSnapshotCloner {
             result.put(String.valueOf(entry.getKey()), cloneObject(entry.getValue()));
         }
         return result;
-    }
-    
-    private static Map<String, String> copyStringMap(final Map<String, String> original) {
-        return new LinkedHashMap<>(original);
     }
     
     private static Object cloneObject(final Object original) {

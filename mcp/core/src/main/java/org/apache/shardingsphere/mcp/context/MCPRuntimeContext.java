@@ -18,18 +18,29 @@
 package org.apache.shardingsphere.mcp.context;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 
 /**
  * MCP runtime context.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPRuntimeContext {
     
     private final MCPSessionManager sessionManager;
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
+    
+    private final WorkflowContextStore workflowContextStore;
+    
+    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
+        this(sessionManager, databaseCapabilityProvider, new WorkflowContextStore());
+    }
+    
+    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowContextStore workflowContextStore) {
+        this.sessionManager = sessionManager;
+        this.databaseCapabilityProvider = databaseCapabilityProvider;
+        this.workflowContextStore = workflowContextStore;
+    }
 }

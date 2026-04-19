@@ -19,6 +19,9 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
@@ -28,11 +31,8 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type
 import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowPlanningToolDescriptorFactory;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRequestBinder;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 
 import java.util.List;
 import java.util.Map;
@@ -67,14 +67,17 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
-        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(arguments, this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, arguments,
+                this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.plan(requestContext, sessionId, request);
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
-    private void bindFeatureArguments(final WorkflowRequest request, final MCPToolArguments toolArguments) {
+    private void bindFeatureArguments(final EncryptWorkflowRequest request, final MCPToolArguments toolArguments) {
         String allowIndexDDL = toolArguments.getStringArgument("allow_index_ddl");
-        request.setAllowIndexDDL(allowIndexDDL.isEmpty() || toolArguments.getBooleanArgument("allow_index_ddl", true));
+        if (!allowIndexDDL.isEmpty()) {
+            request.setAllowIndexDDL(toolArguments.getBooleanArgument("allow_index_ddl", true));
+        }
         request.setAlgorithmType(toolArguments.getStringArgument("algorithm_type"));
         request.setAssistedQueryAlgorithmType(toolArguments.getStringArgument("assisted_query_algorithm_type"));
         request.setLikeQueryAlgorithmType(toolArguments.getStringArgument("like_query_algorithm_type"));
@@ -86,7 +89,7 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
         request.getLikeQueryAlgorithmProperties().putAll(toolArguments.getMapArgument("like_query_algorithm_properties"));
     }
     
-    private void applyStructuredIntentEvidence(final WorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
+    private void applyStructuredIntentEvidence(final EncryptWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
         request.setRequiresDecrypt(getNullableBoolean(structuredIntentEvidence, "requires_decrypt"));
         request.setRequiresEqualityFilter(getNullableBoolean(structuredIntentEvidence, "requires_equality_filter"));
         request.setRequiresLikeQuery(getNullableBoolean(structuredIntentEvidence, "requires_like_query"));
@@ -96,7 +99,7 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
         }
     }
     
-    private void applyUserOverrides(final WorkflowRequest request, final Map<String, Object> userOverrides) {
+    private void applyUserOverrides(final EncryptWorkflowRequest request, final Map<String, Object> userOverrides) {
         request.setAlgorithmType(resolveOverrideValue(request.getAlgorithmType(), userOverrides.get("algorithm_type")));
         request.setAssistedQueryAlgorithmType(resolveOverrideValue(request.getAssistedQueryAlgorithmType(), userOverrides.get("assisted_query_algorithm_type")));
         request.setLikeQueryAlgorithmType(resolveOverrideValue(request.getLikeQueryAlgorithmType(), userOverrides.get("like_query_algorithm_type")));

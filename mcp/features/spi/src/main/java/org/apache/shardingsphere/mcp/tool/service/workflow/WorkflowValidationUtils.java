@@ -99,6 +99,30 @@ public final class WorkflowValidationUtils {
     }
     
     /**
+     * Persist validation result and create response payload.
+     *
+     * @param contextStore workflow context store
+     * @param snapshot workflow snapshot
+     * @param validationReport validation report
+     * @return validation response
+     */
+    public static Map<String, Object> finalizeValidation(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot,
+                                                         final ValidationReport validationReport) {
+        String validationStatus = resolveValidationStatus(validationReport);
+        snapshot.setValidationReport(validationReport);
+        if (null != snapshot.getInteractionPlan()) {
+            snapshot.getInteractionPlan().setCurrentStep("validated");
+        }
+        snapshot.setStatus(validationStatus);
+        contextStore.save(snapshot);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        result.put("status", validationStatus);
+        result.put("issues", createValidationIssues(validationReport));
+        result.putAll(validationReport.toMap());
+        return result;
+    }
+    
+    /**
      * Create one validation mismatch entry.
      *
      * @param code mismatch code

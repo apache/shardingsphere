@@ -43,6 +43,8 @@ public final class WorkflowContextSnapshot {
     
     private ClarifiedIntent clarifiedIntent;
     
+    private WorkflowFeatureData featureData;
+    
     private InteractionPlan interactionPlan;
     
     private final List<WorkflowIssue> issues = new LinkedList<>();
@@ -56,8 +58,6 @@ public final class WorkflowContextSnapshot {
     private final List<RuleArtifact> ruleArtifacts = new LinkedList<>();
     
     private final List<IndexPlan> indexPlans = new LinkedList<>();
-    
-    private DerivedColumnPlan derivedColumnPlan;
     
     private ValidationReport validationReport;
 }

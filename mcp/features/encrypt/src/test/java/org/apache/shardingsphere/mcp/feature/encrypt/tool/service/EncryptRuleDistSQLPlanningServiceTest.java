@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
@@ -37,8 +37,8 @@ class EncryptRuleDistSQLPlanningServiceTest {
     @Test
     void assertPlanEncryptRuleWithCreate() {
         WorkflowRequest request = createRequest("create");
-        ClarifiedIntent clarifiedIntent = createIntent(true, true);
-        RuleArtifact actual = service.planEncryptRule(request, clarifiedIntent, createDerivedColumnPlan(), List.of());
+        EncryptWorkflowState workflowState = createWorkflowState(true, true);
+        RuleArtifact actual = service.planEncryptRule(request, workflowState, List.of());
         assertThat(actual.getOperationType(), is("create"));
         assertTrue(actual.getSql().startsWith("CREATE ENCRYPT RULE orders"));
         assertTrue(actual.getSql().contains("NAME=phone"));
@@ -49,8 +49,8 @@ class EncryptRuleDistSQLPlanningServiceTest {
     @Test
     void assertPlanEncryptRuleWithExistingRules() {
         WorkflowRequest request = createRequest("alter");
-        ClarifiedIntent clarifiedIntent = createIntent(true, false);
-        RuleArtifact actual = service.planEncryptRule(request, clarifiedIntent, createDerivedColumnPlan(), List.of(
+        EncryptWorkflowState workflowState = createWorkflowState(true, false);
+        RuleArtifact actual = service.planEncryptRule(request, workflowState, List.of(
                 Map.of("logic_column", "phone", "cipher_column", "old_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old"),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
         assertThat(actual.getOperationType(), is("alter"));
@@ -87,17 +87,18 @@ class EncryptRuleDistSQLPlanningServiceTest {
         result.setColumn("phone");
         result.setAlgorithmType("AES");
         result.getPrimaryAlgorithmProperties().put("aes-key-value", "secret");
+        return result;
+    }
+    
+    private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
+        EncryptWorkflowState result = new EncryptWorkflowState();
+        result.setRequiresEqualityFilter(equalityFilter);
+        result.setRequiresLikeQuery(likeQuery);
         result.setAssistedQueryAlgorithmType("MD5");
         result.getAssistedQueryAlgorithmProperties().put("salt", "salt");
         result.setLikeQueryAlgorithmType("FPE");
         result.getLikeQueryAlgorithmProperties().put("salt", "salt");
-        return result;
-    }
-    
-    private ClarifiedIntent createIntent(final boolean equalityFilter, final boolean likeQuery) {
-        ClarifiedIntent result = new ClarifiedIntent();
-        result.setRequiresEqualityFilter(equalityFilter);
-        result.setRequiresLikeQuery(likeQuery);
+        result.setDerivedColumnPlan(createDerivedColumnPlan());
         return result;
     }
     

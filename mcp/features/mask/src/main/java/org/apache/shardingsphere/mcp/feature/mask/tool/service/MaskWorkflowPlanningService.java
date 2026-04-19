@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.InteractionPlanFactory;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningContextUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRequestMerger;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
@@ -68,7 +69,7 @@ public final class MaskWorkflowPlanningService {
     private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService;
     
     public MaskWorkflowPlanningService() {
-        this(WorkflowContextStore.getInstance(), new MaskRuleInspectionService(), new MaskAlgorithmRecommendationService(),
+        this(null, new MaskRuleInspectionService(), new MaskAlgorithmRecommendationService(),
                 new MaskAlgorithmPropertyTemplateService(), new MaskRuleDistSQLPlanningService());
     }
     
@@ -92,34 +93,39 @@ public final class MaskWorkflowPlanningService {
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot plan(final MCPFeatureContext requestContext, final String sessionId, final WorkflowRequest request) {
-        WorkflowContextSnapshot result = WorkflowPlanningContextUtils.getOrCreateSnapshot(contextStore, sessionId, request.getPlanId());
+        WorkflowContextStore actualContextStore = resolveContextStore(requestContext);
+        WorkflowContextSnapshot result = WorkflowPlanningContextUtils.getOrCreateSnapshot(actualContextStore, sessionId, request.getPlanId());
         WorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         applyResolvedIntent(mergedRequest, clarifiedIntent);
         MCPMetadataQueryFacade metadataQueryService = requestContext.getMetadataQueryFacade();
         if (!WorkflowPlanningContextUtils.ensurePlanningContext(metadataQueryService, mergedRequest, clarifiedIntent, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(contextStore, result, "failed".equals(result.getStatus()) ? "failed" : "clarifying", result.getStatus());
+            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, "failed".equals(result.getStatus()) ? "failed" : "clarifying", result.getStatus());
         }
         List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(requestContext, mergedRequest.getDatabase(), mergedRequest.getTable());
         if (!ensureLifecycleState(clarifiedIntent, mergedRequest, maskRules, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(contextStore, result, "failed", "failed");
+            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, "failed", "failed");
         }
         if (isDropWorkflow(clarifiedIntent)) {
             planArtifacts(clarifiedIntent, mergedRequest, maskRules, result);
-            return WorkflowPlanningContextUtils.persistSnapshot(contextStore, result, "review", "planned");
+            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, "review", "planned");
         }
         planAlgorithms(requestContext, clarifiedIntent, mergedRequest, result);
         if (hasBlockingAlgorithmIssues(clarifiedIntent, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(contextStore, result, "clarifying", "clarifying");
+            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, "clarifying", "clarifying");
         }
         if (!clarifiedIntent.getPendingQuestions().isEmpty()) {
-            return WorkflowPlanningContextUtils.persistSnapshot(contextStore, result, "clarifying", "clarifying");
+            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, "clarifying", "clarifying");
         }
         if (!collectPropertyRequirements(mergedRequest, clarifiedIntent, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(contextStore, result, "clarifying", "clarifying");
+            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, "clarifying", "clarifying");
         }
         planArtifacts(clarifiedIntent, mergedRequest, maskRules, result);
-        return WorkflowPlanningContextUtils.persistSnapshot(contextStore, result, "review", "planned");
+        return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, "review", "planned");
+    }
+    
+    private WorkflowContextStore resolveContextStore(final MCPFeatureContext requestContext) {
+        return null == contextStore ? requestContext.getWorkflowContextStore() : contextStore;
     }
     
     private void applyResolvedIntent(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
@@ -138,7 +144,7 @@ public final class MaskWorkflowPlanningService {
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                          final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
-        boolean ruleExists = maskRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(findRuleValue(each, "column", "logic_column")));
+        boolean ruleExists = maskRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column", "logic_column")));
         if ("create".equalsIgnoreCase(clarifiedIntent.getOperationType()) && ruleExists) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
                     "Mask rule already exists for the target column.", "Use alter instead of create.", false, Map.of()));
@@ -219,16 +225,5 @@ public final class MaskWorkflowPlanningService {
         snapshot.getRuleArtifacts().add(isDropWorkflow(clarifiedIntent)
                 ? ruleDistSQLPlanningService.planMaskDropRule(request, maskRules)
                 : ruleDistSQLPlanningService.planMaskRule(request, maskRules));
-    }
-    
-    private String findRuleValue(final Map<String, Object> rule, final String... keys) {
-        for (String each : keys) {
-            Object value = rule.get(each);
-            String actualValue = null == value ? "" : WorkflowSqlUtils.trimToEmpty(String.valueOf(value));
-            if (!actualValue.isEmpty()) {
-                return actualValue;
-            }
-        }
-        return "";
     }
 }

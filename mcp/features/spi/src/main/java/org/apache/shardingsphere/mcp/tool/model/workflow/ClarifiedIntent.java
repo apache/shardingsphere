@@ -36,11 +36,5 @@ public final class ClarifiedIntent {
     
     private String reasoningNotes;
     
-    private Boolean requiresDecrypt;
-    
-    private Boolean requiresEqualityFilter;
-    
-    private Boolean requiresLikeQuery;
-    
     private final List<String> pendingQuestions = new LinkedList<>();
 }

@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
@@ -74,9 +76,9 @@ class EncryptToolHandlerTest {
                 "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true),
                 "user_overrides", Map.of("cipher_column_name", "phone_cipher")));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
-        ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
+        ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
         verify(planningService).plan(any(), eq("session-1"), requestCaptor.capture());
-        WorkflowRequest actualRequest = requestCaptor.getValue();
+        EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
         assertFalse(actualRequest.getAllowIndexDDL());
         assertThat(actualRequest.getAlgorithmType(), is("AES"));
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
@@ -151,11 +153,13 @@ class EncryptToolHandlerTest {
         WorkflowRequest request = new WorkflowRequest();
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         result.setRequest(request);
+        EncryptWorkflowState workflowState = new EncryptWorkflowState();
+        workflowState.setDerivedColumnPlan(createDerivedColumnPlan());
+        result.setFeatureData(workflowState);
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", ""));
         result.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(32)", 10));
         result.getIndexPlans().add(new IndexPlan("idx_phone_assisted", "phone_assisted_query", "assist", "CREATE INDEX idx_phone_assisted ON orders(phone_assisted_query)"));
         result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
-        result.setDerivedColumnPlan(createDerivedColumnPlan());
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }

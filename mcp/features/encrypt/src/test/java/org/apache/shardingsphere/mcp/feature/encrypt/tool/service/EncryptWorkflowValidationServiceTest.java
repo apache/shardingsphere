@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
@@ -61,11 +62,11 @@ class EncryptWorkflowValidationServiceTest {
     void assertValidateHappyPath() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("AES");
-        snapshot.getRequest().setAssistedQueryAlgorithmType("MD5");
-        snapshot.getRequest().setLikeQueryAlgorithmType("FPE");
-        snapshot.getClarifiedIntent().setRequiresEqualityFilter(true);
-        snapshot.getClarifiedIntent().setRequiresLikeQuery(true);
-        snapshot.setDerivedColumnPlan(createDerivedColumnPlan(true, true));
+        EncryptWorkflowState workflowState = createWorkflowState(true, true);
+        workflowState.setAssistedQueryAlgorithmType("MD5");
+        workflowState.setLikeQueryAlgorithmType("FPE");
+        workflowState.setDerivedColumnPlan(createDerivedColumnPlan(true, true));
+        snapshot.setFeatureData(workflowState);
         WorkflowContextStore contextStore = new WorkflowContextStore();
         contextStore.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -113,7 +114,9 @@ class EncryptWorkflowValidationServiceTest {
     void assertValidateWhenRuleMissing() {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
+        EncryptWorkflowState workflowState = createWorkflowState(false, false);
+        workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
+        snapshot.setFeatureData(workflowState);
         contextStore.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
@@ -129,10 +132,12 @@ class EncryptWorkflowValidationServiceTest {
     
     @Test
     void assertValidateWhenSqlExecutionFails() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
         snapshot.getRequest().setAlgorithmType("AES");
+        EncryptWorkflowState workflowState = createWorkflowState(false, false);
+        workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
+        snapshot.setFeatureData(workflowState);
+        WorkflowContextStore contextStore = new WorkflowContextStore();
         contextStore.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
@@ -176,9 +181,14 @@ class EncryptWorkflowValidationServiceTest {
         result.setRequest(request);
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         clarifiedIntent.setOperationType(operationType);
-        clarifiedIntent.setRequiresEqualityFilter(false);
-        clarifiedIntent.setRequiresLikeQuery(false);
         result.setClarifiedIntent(clarifiedIntent);
+        return result;
+    }
+    
+    private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
+        EncryptWorkflowState result = new EncryptWorkflowState();
+        result.setRequiresEqualityFilter(equalityFilter);
+        result.setRequiresLikeQuery(likeQuery);
         return result;
     }
     

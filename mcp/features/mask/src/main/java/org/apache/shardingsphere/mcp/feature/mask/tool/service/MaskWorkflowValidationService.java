@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationUtils;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,7 +43,7 @@ public final class MaskWorkflowValidationService {
     private final MaskRuleInspectionService ruleInspectionService;
     
     public MaskWorkflowValidationService() {
-        this(WorkflowContextStore.getInstance(), new MaskRuleInspectionService());
+        this(null, new MaskRuleInspectionService());
     }
     
     MaskWorkflowValidationService(final WorkflowContextStore contextStore, final MaskRuleInspectionService ruleInspectionService) {
@@ -60,7 +60,8 @@ public final class MaskWorkflowValidationService {
      * @return validation payload
      */
     public Map<String, Object> validate(final MCPFeatureContext requestContext, final String sessionId, final String planId) {
-        WorkflowContextSnapshot snapshot = contextStore.getRequired(planId);
+        WorkflowContextStore actualContextStore = resolveContextStore(requestContext);
+        WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = WorkflowValidationUtils.checkValidatePreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
@@ -75,24 +76,16 @@ public final class MaskWorkflowValidationService {
         validationReport.setSqlExecutabilityValidation(validateSqlExecutability(requestContext, sessionId, snapshot, validationReport));
         validationReport.setOverallStatus(WorkflowValidationUtils.resolveOverallStatus(validationReport.getRuleValidation(),
                 validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
-        String validationStatus = WorkflowValidationUtils.resolveValidationStatus(validationReport);
-        snapshot.setValidationReport(validationReport);
-        if (null != snapshot.getInteractionPlan()) {
-            snapshot.getInteractionPlan().setCurrentStep("validated");
-        }
-        snapshot.setStatus(validationStatus);
-        contextStore.save(snapshot);
-        List<Map<String, Object>> issues = WorkflowValidationUtils.createValidationIssues(validationReport);
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("status", validationStatus);
-        result.put("issues", issues);
-        result.putAll(validationReport.toMap());
-        return result;
+        return WorkflowValidationUtils.finalizeValidation(actualContextStore, snapshot, validationReport);
+    }
+    
+    private WorkflowContextStore resolveContextStore(final MCPFeatureContext requestContext) {
+        return null == contextStore ? requestContext.getWorkflowContextStore() : contextStore;
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules, final ValidationReport validationReport) {
         Optional<Map<String, Object>> actualRule = maskRules.stream()
-                .filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(findRuleValue(each, "column", "logic_column"))).findFirst();
+                .filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column", "logic_column"))).findFirst();
         if (isDropWorkflow(snapshot)) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection("passed", List.of(), "Mask rule has been removed.");
@@ -106,7 +99,7 @@ public final class MaskWorkflowValidationService {
                     "Mask rule is missing.", "Create or alter the mask rule again."));
             return new ValidationSection("failed", List.of(), "Mask rule is missing.");
         }
-        String actualAlgorithmType = findRuleValue(actualRule.get(), "algorithm_type", "mask_algorithm");
+        String actualAlgorithmType = WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "algorithm_type", "mask_algorithm");
         if (!WorkflowSqlUtils.trimToEmpty(snapshot.getRequest().getAlgorithmType()).equalsIgnoreCase(actualAlgorithmType)) {
             validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
                     "Mask algorithm type does not match.", "Re-apply the intended mask rule."));
@@ -154,17 +147,6 @@ public final class MaskWorkflowValidationService {
     
     private String resolveOperationType(final WorkflowContextSnapshot snapshot) {
         return null == snapshot.getClarifiedIntent() ? "" : WorkflowSqlUtils.trimToEmpty(snapshot.getClarifiedIntent().getOperationType());
-    }
-    
-    private String findRuleValue(final Map<String, Object> rule, final String... keys) {
-        for (String each : keys) {
-            Object value = rule.get(each);
-            String actualValue = null == value ? "" : WorkflowSqlUtils.trimToEmpty(String.valueOf(value));
-            if (!actualValue.isEmpty()) {
-                return actualValue;
-            }
-        }
-        return "";
     }
     
 }

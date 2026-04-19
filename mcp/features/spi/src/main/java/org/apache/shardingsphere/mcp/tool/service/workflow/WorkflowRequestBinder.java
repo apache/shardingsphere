@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * Workflow request binder.
@@ -31,6 +32,35 @@ import java.util.function.Consumer;
 public final class WorkflowRequestBinder {
     
     private WorkflowRequestBinder() {
+    }
+    
+    /**
+     * Bind workflow planning request from MCP arguments.
+     *
+     * @param requestSupplier request supplier
+     * @param arguments raw MCP arguments
+     * @param featureArgumentBinder feature-specific argument binder
+     * @param structuredIntentBinder structured intent binder
+     * @param userOverrideBinder user override binder
+     * @param <T> request type
+     * @return bound workflow request
+     */
+    public static <T extends WorkflowRequest> T bindPlanningRequest(final Supplier<T> requestSupplier, final Map<String, Object> arguments,
+                                                                    final BiConsumer<T, MCPToolArguments> featureArgumentBinder,
+                                                                    final BiConsumer<T, Map<String, Object>> structuredIntentBinder,
+                                                                    final BiConsumer<T, Map<String, Object>> userOverrideBinder) {
+        Objects.requireNonNull(requestSupplier);
+        Objects.requireNonNull(arguments);
+        Objects.requireNonNull(featureArgumentBinder);
+        Objects.requireNonNull(structuredIntentBinder);
+        Objects.requireNonNull(userOverrideBinder);
+        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
+        T result = requestSupplier.get();
+        bindCommonPlanningFields(result, toolArguments);
+        applyObjectMap(arguments.get("structured_intent_evidence"), actualValue -> structuredIntentBinder.accept(result, actualValue));
+        featureArgumentBinder.accept(result, toolArguments);
+        applyObjectMap(arguments.get("user_overrides"), actualValue -> userOverrideBinder.accept(result, actualValue));
+        return result;
     }
     
     /**
@@ -46,17 +76,7 @@ public final class WorkflowRequestBinder {
                                                       final BiConsumer<WorkflowRequest, MCPToolArguments> featureArgumentBinder,
                                                       final BiConsumer<WorkflowRequest, Map<String, Object>> structuredIntentBinder,
                                                       final BiConsumer<WorkflowRequest, Map<String, Object>> userOverrideBinder) {
-        Objects.requireNonNull(arguments);
-        Objects.requireNonNull(featureArgumentBinder);
-        Objects.requireNonNull(structuredIntentBinder);
-        Objects.requireNonNull(userOverrideBinder);
-        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        WorkflowRequest result = new WorkflowRequest();
-        bindCommonPlanningFields(result, toolArguments);
-        applyObjectMap(arguments.get("structured_intent_evidence"), actualValue -> structuredIntentBinder.accept(result, actualValue));
-        featureArgumentBinder.accept(result, toolArguments);
-        applyObjectMap(arguments.get("user_overrides"), actualValue -> userOverrideBinder.accept(result, actualValue));
-        return result;
+        return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder, userOverrideBinder);
     }
     
     private static void bindCommonPlanningFields(final WorkflowRequest request, final MCPToolArguments toolArguments) {

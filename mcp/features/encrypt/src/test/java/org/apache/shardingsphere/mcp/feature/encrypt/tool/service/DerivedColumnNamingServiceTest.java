@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
@@ -40,8 +41,9 @@ class DerivedColumnNamingServiceTest {
     void assertCreatePlanWithDefaultNames() {
         WorkflowRequest request = new WorkflowRequest();
         request.setColumn("phone");
+        EncryptWorkflowState workflowState = createWorkflowState(true, true);
         List<WorkflowIssue> issues = new LinkedList<>();
-        DerivedColumnPlan actual = service.createPlan(request, true, true, new LinkedHashSet<>(), issues);
+        DerivedColumnPlan actual = service.createPlan(request, workflowState, new LinkedHashSet<>(), issues);
         assertThat(actual.getCipherColumnName(), is("phone_cipher"));
         assertThat(actual.getAssistedQueryColumnName(), is("phone_assisted_query"));
         assertThat(actual.getLikeQueryColumnName(), is("phone_like_query"));
@@ -53,9 +55,10 @@ class DerivedColumnNamingServiceTest {
     void assertCreatePlanWithUnsafeOverride() {
         WorkflowRequest request = new WorkflowRequest();
         request.setColumn("phone");
-        request.setCipherColumnName("phone-cipher");
+        EncryptWorkflowState workflowState = createWorkflowState(false, false);
+        workflowState.setCipherColumnName("phone-cipher");
         List<WorkflowIssue> issues = new LinkedList<>();
-        DerivedColumnPlan actual = service.createPlan(request, false, false, new LinkedHashSet<>(), issues);
+        DerivedColumnPlan actual = service.createPlan(request, workflowState, new LinkedHashSet<>(), issues);
         assertThat(actual.getCipherColumnName(), is("phone_cipher"));
         assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.USER_OVERRIDE_NAME_UNSAFE));
     }
@@ -64,12 +67,20 @@ class DerivedColumnNamingServiceTest {
     void assertCreatePlanWithNameCollision() {
         WorkflowRequest request = new WorkflowRequest();
         request.setColumn("phone");
+        EncryptWorkflowState workflowState = createWorkflowState(false, false);
         Set<String> existingNames = new LinkedHashSet<>(List.of("phone_cipher", "phone_cipher_1"));
         List<WorkflowIssue> issues = new LinkedList<>();
-        DerivedColumnPlan actual = service.createPlan(request, false, false, existingNames, issues);
+        DerivedColumnPlan actual = service.createPlan(request, workflowState, existingNames, issues);
         assertThat(actual.getCipherColumnName(), is("phone_cipher_2"));
         assertThat(actual.getNameCollisions().size(), is(1));
         assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
         assertFalse(existingNames.isEmpty());
+    }
+    
+    private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
+        EncryptWorkflowState result = new EncryptWorkflowState();
+        result.setRequiresEqualityFilter(equalityFilter);
+        result.setRequiresLikeQuery(likeQuery);
+        return result;
     }
 }

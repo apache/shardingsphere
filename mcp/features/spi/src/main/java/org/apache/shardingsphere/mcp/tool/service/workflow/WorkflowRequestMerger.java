@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 
+import java.util.function.Supplier;
+
 /**
  * Workflow request merger.
  */
@@ -32,10 +34,23 @@ public final class WorkflowRequestMerger {
      * @return merged workflow request
      */
     public WorkflowRequest merge(final WorkflowRequest previous, final WorkflowRequest current) {
+        return merge(previous, current, WorkflowRequest::new);
+    }
+    
+    /**
+     * Merge the current workflow request into the previous snapshot.
+     *
+     * @param previous previous request
+     * @param current current request
+     * @param requestSupplier request supplier
+     * @param <T> request type
+     * @return merged workflow request
+     */
+    public <T extends WorkflowRequest> T merge(final WorkflowRequest previous, final WorkflowRequest current, final Supplier<T> requestSupplier) {
         if (null == previous) {
-            return copy(current);
+            return copy(current, requestSupplier);
         }
-        WorkflowRequest result = new WorkflowRequest();
+        T result = requestSupplier.get();
         result.setPlanId(WorkflowSqlUtils.trimToEmpty(current.getPlanId()).isEmpty() ? previous.getPlanId() : current.getPlanId());
         result.setDatabase(mergeString(previous.getDatabase(), current.getDatabase()));
         result.setSchema(mergeString(previous.getSchema(), current.getSchema()));
@@ -46,22 +61,9 @@ public final class WorkflowRequestMerger {
         result.setFieldSemantics(mergeString(previous.getFieldSemantics(), current.getFieldSemantics()));
         result.setDeliveryMode(mergeString(previous.getDeliveryMode(), current.getDeliveryMode()));
         result.setExecutionMode(mergeString(previous.getExecutionMode(), current.getExecutionMode()));
-        result.setAllowIndexDDL(null == current.getAllowIndexDDL() ? previous.getAllowIndexDDL() : current.getAllowIndexDDL());
-        result.setRequiresDecrypt(null == current.getRequiresDecrypt() ? previous.getRequiresDecrypt() : current.getRequiresDecrypt());
-        result.setRequiresEqualityFilter(null == current.getRequiresEqualityFilter() ? previous.getRequiresEqualityFilter() : current.getRequiresEqualityFilter());
-        result.setRequiresLikeQuery(null == current.getRequiresLikeQuery() ? previous.getRequiresLikeQuery() : current.getRequiresLikeQuery());
         result.setAlgorithmType(mergeString(previous.getAlgorithmType(), current.getAlgorithmType()));
-        result.setAssistedQueryAlgorithmType(mergeString(previous.getAssistedQueryAlgorithmType(), current.getAssistedQueryAlgorithmType()));
-        result.setLikeQueryAlgorithmType(mergeString(previous.getLikeQueryAlgorithmType(), current.getLikeQueryAlgorithmType()));
-        result.setCipherColumnName(mergeString(previous.getCipherColumnName(), current.getCipherColumnName()));
-        result.setAssistedQueryColumnName(mergeString(previous.getAssistedQueryColumnName(), current.getAssistedQueryColumnName()));
-        result.setLikeQueryColumnName(mergeString(previous.getLikeQueryColumnName(), current.getLikeQueryColumnName()));
         result.getPrimaryAlgorithmProperties().putAll(previous.getPrimaryAlgorithmProperties());
         result.getPrimaryAlgorithmProperties().putAll(current.getPrimaryAlgorithmProperties());
-        result.getAssistedQueryAlgorithmProperties().putAll(previous.getAssistedQueryAlgorithmProperties());
-        result.getAssistedQueryAlgorithmProperties().putAll(current.getAssistedQueryAlgorithmProperties());
-        result.getLikeQueryAlgorithmProperties().putAll(previous.getLikeQueryAlgorithmProperties());
-        result.getLikeQueryAlgorithmProperties().putAll(current.getLikeQueryAlgorithmProperties());
         result.getApprovedSteps().addAll(current.getApprovedSteps().isEmpty() ? previous.getApprovedSteps() : current.getApprovedSteps());
         return result;
     }
@@ -73,10 +75,22 @@ public final class WorkflowRequestMerger {
      * @return copied workflow request
      */
     public WorkflowRequest copy(final WorkflowRequest original) {
+        return copy(original, WorkflowRequest::new);
+    }
+    
+    /**
+     * Create a defensive copy of a workflow request.
+     *
+     * @param original original request
+     * @param requestSupplier request supplier
+     * @param <T> request type
+     * @return copied workflow request
+     */
+    public <T extends WorkflowRequest> T copy(final WorkflowRequest original, final Supplier<T> requestSupplier) {
         if (null == original) {
             return null;
         }
-        WorkflowRequest result = new WorkflowRequest();
+        T result = requestSupplier.get();
         result.setPlanId(original.getPlanId());
         result.setDatabase(original.getDatabase());
         result.setSchema(original.getSchema());
@@ -87,19 +101,8 @@ public final class WorkflowRequestMerger {
         result.setFieldSemantics(original.getFieldSemantics());
         result.setDeliveryMode(original.getDeliveryMode());
         result.setExecutionMode(original.getExecutionMode());
-        result.setAllowIndexDDL(original.getAllowIndexDDL());
-        result.setRequiresDecrypt(original.getRequiresDecrypt());
-        result.setRequiresEqualityFilter(original.getRequiresEqualityFilter());
-        result.setRequiresLikeQuery(original.getRequiresLikeQuery());
         result.setAlgorithmType(original.getAlgorithmType());
-        result.setAssistedQueryAlgorithmType(original.getAssistedQueryAlgorithmType());
-        result.setLikeQueryAlgorithmType(original.getLikeQueryAlgorithmType());
-        result.setCipherColumnName(original.getCipherColumnName());
-        result.setAssistedQueryColumnName(original.getAssistedQueryColumnName());
-        result.setLikeQueryColumnName(original.getLikeQueryColumnName());
         result.getPrimaryAlgorithmProperties().putAll(original.getPrimaryAlgorithmProperties());
-        result.getAssistedQueryAlgorithmProperties().putAll(original.getAssistedQueryAlgorithmProperties());
-        result.getLikeQueryAlgorithmProperties().putAll(original.getLikeQueryAlgorithmProperties());
         result.getApprovedSteps().addAll(original.getApprovedSteps());
         return result;
     }

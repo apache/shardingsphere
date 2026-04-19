@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
+import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowFeatureData;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
@@ -34,10 +35,26 @@ class WorkflowArtifactMaskUtilsTest {
     void assertCreateMaskedRuleArtifactMapMasksSecretPropertiesAcrossRoles() {
         WorkflowRequest request = new WorkflowRequest();
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "primary-secret");
-        request.getAssistedQueryAlgorithmProperties().put("salt", "assist-secret");
-        request.getLikeQueryAlgorithmProperties().put("token", "like-secret");
+        WorkflowFeatureData featureData = new WorkflowFeatureData() {
+            
+            @Override
+            public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+                if ("assisted_query".equals(algorithmRole)) {
+                    return Map.of("salt", "assist-secret");
+                }
+                if ("like_query".equals(algorithmRole)) {
+                    return Map.of("token", "like-secret");
+                }
+                return Map.of();
+            }
+            
+            @Override
+            public WorkflowFeatureData copy() {
+                return this;
+            }
+        };
         RuleArtifact ruleArtifact = new RuleArtifact("create", "SQL primary-secret 'assist-secret' like-secret");
-        Map<String, Object> actualRuleArtifact = WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(ruleArtifact, request, List.of(
+        Map<String, Object> actualRuleArtifact = WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(ruleArtifact, WorkflowPropertySources.compose(request, featureData), List.of(
                 new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary", ""),
                 new AlgorithmPropertyRequirement("assisted_query", "salt", true, true, "assist", ""),
                 new AlgorithmPropertyRequirement("like_query", "token", true, true, "like", "")));

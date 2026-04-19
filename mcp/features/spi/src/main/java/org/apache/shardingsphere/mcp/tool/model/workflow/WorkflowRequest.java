@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool.model.workflow;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySource;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -30,7 +31,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public final class WorkflowRequest {
+public class WorkflowRequest implements WorkflowPropertySource {
     
     private String planId;
     
@@ -52,31 +53,14 @@ public final class WorkflowRequest {
     
     private String executionMode = "review-then-execute";
     
-    private Boolean allowIndexDDL = true;
-    
-    private Boolean requiresDecrypt;
-    
-    private Boolean requiresEqualityFilter;
-    
-    private Boolean requiresLikeQuery;
-    
     private String algorithmType;
-    
-    private String assistedQueryAlgorithmType;
-    
-    private String likeQueryAlgorithmType;
-    
-    private String cipherColumnName;
-    
-    private String assistedQueryColumnName;
-    
-    private String likeQueryColumnName;
     
     private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
-    private final Map<String, String> assistedQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
-    
-    private final Map<String, String> likeQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
-    
     private final List<String> approvedSteps = new LinkedList<>();
+    
+    @Override
+    public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+        return "primary".equals(algorithmRole) ? primaryAlgorithmProperties : Map.of();
+    }
 }

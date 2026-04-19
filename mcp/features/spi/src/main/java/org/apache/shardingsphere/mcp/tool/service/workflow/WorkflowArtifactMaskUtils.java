@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -39,15 +38,15 @@ public final class WorkflowArtifactMaskUtils {
      * Create masked rule artifact map.
      *
      * @param ruleArtifact rule artifact
-     * @param request workflow request
+     * @param propertySource workflow property source
      * @param propertyRequirements property requirements
      * @return masked rule artifact map
      */
-    public static Map<String, Object> createMaskedRuleArtifactMap(final RuleArtifact ruleArtifact, final WorkflowRequest request,
+    public static Map<String, Object> createMaskedRuleArtifactMap(final RuleArtifact ruleArtifact, final WorkflowPropertySource propertySource,
                                                                   final List<AlgorithmPropertyRequirement> propertyRequirements) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("operation_type", ruleArtifact.getOperationType());
-        result.put("sql", maskSensitiveSql(ruleArtifact.getSql(), request, propertyRequirements));
+        result.put("sql", maskSensitiveSql(ruleArtifact.getSql(), propertySource, propertyRequirements));
         return result;
     }
     
@@ -55,13 +54,13 @@ public final class WorkflowArtifactMaskUtils {
      * Mask sensitive values inside SQL text.
      *
      * @param sql SQL text
-     * @param request workflow request
+     * @param propertySource workflow property source
      * @param propertyRequirements property requirements
      * @return masked SQL text
      */
-    public static String maskSensitiveSql(final String sql, final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+    public static String maskSensitiveSql(final String sql, final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         String result = sql;
-        for (String each : collectSecretValues(request, propertyRequirements)) {
+        for (String each : collectSecretValues(propertySource, propertyRequirements)) {
             if (each.isEmpty()) {
                 continue;
             }
@@ -71,8 +70,8 @@ public final class WorkflowArtifactMaskUtils {
         return result;
     }
     
-    private static Set<String> collectSecretValues(final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        if (null == request) {
+    private static Set<String> collectSecretValues(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        if (null == propertySource) {
             return Set.of();
         }
         Set<String> result = new LinkedHashSet<>();
@@ -80,7 +79,7 @@ public final class WorkflowArtifactMaskUtils {
             if (!each.isSecret()) {
                 continue;
             }
-            String actualValue = WorkflowSqlUtils.trimToEmpty(getPropertyValue(request, each));
+            String actualValue = WorkflowSqlUtils.trimToEmpty(getPropertyValue(propertySource, each));
             if (!actualValue.isEmpty()) {
                 result.add(actualValue);
             }
@@ -88,13 +87,7 @@ public final class WorkflowArtifactMaskUtils {
         return result;
     }
     
-    private static String getPropertyValue(final WorkflowRequest request, final AlgorithmPropertyRequirement propertyRequirement) {
-        if ("assisted_query".equals(propertyRequirement.getAlgorithmRole())) {
-            return request.getAssistedQueryAlgorithmProperties().get(propertyRequirement.getPropertyKey());
-        }
-        if ("like_query".equals(propertyRequirement.getAlgorithmRole())) {
-            return request.getLikeQueryAlgorithmProperties().get(propertyRequirement.getPropertyKey());
-        }
-        return request.getPrimaryAlgorithmProperties().get(propertyRequirement.getPropertyKey());
+    private static String getPropertyValue(final WorkflowPropertySource propertySource, final AlgorithmPropertyRequirement propertyRequirement) {
+        return propertySource.getAlgorithmProperties(propertyRequirement.getAlgorithmRole()).get(propertyRequirement.getPropertyKey());
     }
 }

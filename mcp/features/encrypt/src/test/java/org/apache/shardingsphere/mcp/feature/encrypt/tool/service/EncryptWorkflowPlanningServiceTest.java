@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
@@ -32,7 +34,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,7 +50,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -64,7 +64,7 @@ class EncryptWorkflowPlanningServiceTest {
                 mock(EncryptAlgorithmRecommendationService.class), mock(EncryptAlgorithmPropertyTemplateService.class),
                 mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class),
                 mock(EncryptRuleDistSQLPlanningService.class));
-        WorkflowContextSnapshot actual = service.plan(createRequestContext(mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class)), "session-1", new WorkflowRequest());
+        WorkflowContextSnapshot actual = service.plan(createRequestContext(mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class)), "session-1", new EncryptWorkflowRequest());
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
@@ -151,23 +151,24 @@ class EncryptWorkflowPlanningServiceTest {
                 Map.of("type", "AES", "supports_like", false),
                 Map.of("type", "MD5", "supports_like", false)));
         DerivedColumnNamingService derivedColumnNamingService = mock(DerivedColumnNamingService.class);
-        when(derivedColumnNamingService.createPlan(any(), anyBoolean(), anyBoolean(), any(), any())).thenReturn(createDerivedColumnPlan());
+        when(derivedColumnNamingService.createPlan(any(), any(), any(), any())).thenReturn(createDerivedColumnPlan());
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
-        WorkflowRequest request = createNaturalLanguageRequest("给手机号加密，需要可逆和等值查询，不需要like");
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
+        EncryptWorkflowRequest request = createNaturalLanguageRequest("给手机号加密，需要可逆和等值查询，不需要like");
         request.setAlgorithmType("AES");
         request.setAssistedQueryAlgorithmType("MD5");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         request.setAllowIndexDDL(false);
-        final EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(new WorkflowContextStore(), ruleInspectionService,
+        EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(new WorkflowContextStore(), ruleInspectionService,
                 new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(), derivedColumnNamingService,
                 mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class), ruleDistSQLPlanningService);
         WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", request);
+        EncryptWorkflowState actualState = (EncryptWorkflowState) actual.getFeatureData();
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getClarifiedIntent().getOperationType(), is("create"));
-        assertTrue(actual.getClarifiedIntent().getRequiresDecrypt());
-        assertTrue(actual.getClarifiedIntent().getRequiresEqualityFilter());
-        assertFalse(actual.getClarifiedIntent().getRequiresLikeQuery());
+        assertTrue(actualState.getRequiresDecrypt());
+        assertTrue(actualState.getRequiresEqualityFilter());
+        assertFalse(actualState.getRequiresLikeQuery());
     }
     
     @Test
@@ -204,18 +205,17 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of());
         DerivedColumnNamingService derivedColumnNamingService = mock(DerivedColumnNamingService.class);
-        when(derivedColumnNamingService.createPlan(any(), anyBoolean(), anyBoolean(), any(), any()))
-                .thenReturn(createDerivedColumnPlan());
+        when(derivedColumnNamingService.createPlan(any(), any(), any(), any())).thenReturn(createDerivedColumnPlan());
         PhysicalDDLPlanningService physicalDDLPlanningService = mock(PhysicalDDLPlanningService.class);
         when(physicalDDLPlanningService.planAddColumnArtifacts(any(), any(), any(), any()))
                 .thenReturn(List.of(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN phone_cipher VARCHAR(32)", 10)));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
-        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
+        when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
         IndexPlanningService indexPlanningService = mock(IndexPlanningService.class);
         WorkflowContextStore contextStore = new WorkflowContextStore();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, derivedColumnNamingService, physicalDDLPlanningService, indexPlanningService, ruleDistSQLPlanningService);
-        WorkflowRequest request = createRequest("create");
+        EncryptWorkflowRequest request = createRequest("create");
         request.setAllowIndexDDL(false);
         WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", request);
         assertThat(actual.getStatus(), is("planned"));
@@ -243,8 +243,8 @@ class EncryptWorkflowPlanningServiceTest {
         return result;
     }
     
-    private WorkflowRequest createRequest(final String operationType) {
-        WorkflowRequest result = new WorkflowRequest();
+    private EncryptWorkflowRequest createRequest(final String operationType) {
+        EncryptWorkflowRequest result = new EncryptWorkflowRequest();
         result.setDatabase("logic_db");
         result.setTable("orders");
         result.setColumn("phone");
@@ -255,8 +255,8 @@ class EncryptWorkflowPlanningServiceTest {
         return result;
     }
     
-    private WorkflowRequest createNaturalLanguageRequest(final String naturalLanguageIntent) {
-        WorkflowRequest result = new WorkflowRequest();
+    private EncryptWorkflowRequest createNaturalLanguageRequest(final String naturalLanguageIntent) {
+        EncryptWorkflowRequest result = new EncryptWorkflowRequest();
         result.setDatabase("logic_db");
         result.setTable("orders");
         result.setColumn("phone");

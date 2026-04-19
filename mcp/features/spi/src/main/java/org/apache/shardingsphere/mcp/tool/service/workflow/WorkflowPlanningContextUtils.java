@@ -71,7 +71,6 @@ public final class WorkflowPlanningContextUtils {
         snapshot.getDdlArtifacts().clear();
         snapshot.getRuleArtifacts().clear();
         snapshot.getIndexPlans().clear();
-        snapshot.setDerivedColumnPlan(null);
         snapshot.setValidationReport(null);
     }
     

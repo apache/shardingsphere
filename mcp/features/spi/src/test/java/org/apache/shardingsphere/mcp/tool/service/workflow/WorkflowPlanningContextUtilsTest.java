@@ -26,12 +26,12 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.IndexPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowFeatureData;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -80,7 +81,19 @@ class WorkflowPlanningContextUtilsTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("ddl", "ALTER TABLE t ADD c VARCHAR(32)", 1));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));
         snapshot.getIndexPlans().add(new IndexPlan("idx", "c", "reason", "CREATE INDEX idx ON t(c)"));
-        snapshot.setDerivedColumnPlan(new DerivedColumnPlan());
+        WorkflowFeatureData featureData = new WorkflowFeatureData() {
+            
+            @Override
+            public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+                return Map.of();
+            }
+            
+            @Override
+            public WorkflowFeatureData copy() {
+                return this;
+            }
+        };
+        snapshot.setFeatureData(featureData);
         snapshot.setValidationReport(new ValidationReport());
         WorkflowPlanningContextUtils.clearPlanningState(snapshot);
         assertTrue(snapshot.getIssues().isEmpty());
@@ -89,7 +102,7 @@ class WorkflowPlanningContextUtilsTest {
         assertTrue(snapshot.getDdlArtifacts().isEmpty());
         assertTrue(snapshot.getRuleArtifacts().isEmpty());
         assertTrue(snapshot.getIndexPlans().isEmpty());
-        assertNull(snapshot.getDerivedColumnPlan());
+        assertThat(snapshot.getFeatureData(), is(featureData));
         assertNull(snapshot.getValidationReport());
     }
     

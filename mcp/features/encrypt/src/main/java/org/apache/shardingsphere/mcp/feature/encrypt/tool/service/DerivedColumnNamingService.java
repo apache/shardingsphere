@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
@@ -36,26 +37,27 @@ public final class DerivedColumnNamingService {
      * Create derived column plan.
      *
      * @param request workflow request
-     * @param requiresAssistedQuery assisted query required or not
-     * @param requiresLikeQuery like query required or not
+     * @param workflowState encrypt workflow state
      * @param existingNames existing names
      * @param issues workflow issues
      * @return derived column plan
      */
-    public DerivedColumnPlan createPlan(final WorkflowRequest request, final boolean requiresAssistedQuery, final boolean requiresLikeQuery,
+    public DerivedColumnPlan createPlan(final WorkflowRequest request, final EncryptWorkflowState workflowState,
                                         final Set<String> existingNames, final java.util.List<WorkflowIssue> issues) {
+        boolean requiresAssistedQuery = Boolean.TRUE.equals(workflowState.getRequiresEqualityFilter());
+        boolean requiresLikeQuery = Boolean.TRUE.equals(workflowState.getRequiresLikeQuery());
         DerivedColumnPlan result = new DerivedColumnPlan();
         String logicalColumn = WorkflowSqlUtils.trimToEmpty(request.getColumn());
         result.setLogicalColumn(logicalColumn);
         result.setCipherColumnRequired(true);
         result.setAssistedQueryColumnRequired(requiresAssistedQuery);
         result.setLikeQueryColumnRequired(requiresLikeQuery);
-        result.setCipherColumnName(resolveName(logicalColumn + "_cipher", request.getCipherColumnName(), existingNames, issues, result));
+        result.setCipherColumnName(resolveName(logicalColumn + "_cipher", workflowState.getCipherColumnName(), existingNames, issues, result));
         if (requiresAssistedQuery) {
-            result.setAssistedQueryColumnName(resolveName(logicalColumn + "_assisted_query", request.getAssistedQueryColumnName(), existingNames, issues, result));
+            result.setAssistedQueryColumnName(resolveName(logicalColumn + "_assisted_query", workflowState.getAssistedQueryColumnName(), existingNames, issues, result));
         }
         if (requiresLikeQuery) {
-            result.setLikeQueryColumnName(resolveName(logicalColumn + "_like_query", request.getLikeQueryColumnName(), existingNames, issues, result));
+            result.setLikeQueryColumnName(resolveName(logicalColumn + "_like_query", workflowState.getLikeQueryColumnName(), existingNames, issues, result));
         }
         return result;
     }

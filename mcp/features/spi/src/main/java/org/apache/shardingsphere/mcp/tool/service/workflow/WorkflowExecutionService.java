@@ -39,7 +39,7 @@ public final class WorkflowExecutionService {
     private final WorkflowContextStore contextStore;
     
     public WorkflowExecutionService() {
-        this(WorkflowContextStore.getInstance());
+        this(null);
     }
     
     WorkflowExecutionService(final WorkflowContextStore contextStore) {
@@ -58,7 +58,8 @@ public final class WorkflowExecutionService {
      */
     public Map<String, Object> apply(final MCPFeatureContext requestContext, final String sessionId, final String planId,
                                      final List<String> approvedSteps, final String executionMode) {
-        WorkflowContextSnapshot snapshot = contextStore.getRequired(planId);
+        WorkflowContextStore actualContextStore = resolveContextStore(requestContext);
+        WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = checkApplyPreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
@@ -77,7 +78,7 @@ public final class WorkflowExecutionService {
                 snapshot.getInteractionPlan().setCurrentStep("manual-execution");
             }
             snapshot.setStatus("awaiting-manual-execution");
-            contextStore.save(snapshot);
+            actualContextStore.save(snapshot);
             issues.add(new WorkflowIssue(WorkflowIssueCode.MANUAL_EXECUTION_PENDING, "warning", "review",
                     "Artifacts are generated in manual-only mode and will not be executed automatically.", "Execute artifacts manually and run validation afterwards.", true, Map.of()).toMap());
             result.put("status", "awaiting-manual-execution");
@@ -130,7 +131,7 @@ public final class WorkflowExecutionService {
                 snapshot.getInteractionPlan().setCurrentStep("executed");
             }
             snapshot.setStatus("executed");
-            contextStore.save(snapshot);
+            actualContextStore.save(snapshot);
             result.put("status", "completed");
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
@@ -143,7 +144,7 @@ public final class WorkflowExecutionService {
                 snapshot.getInteractionPlan().setCurrentStep("failed");
             }
             snapshot.setStatus("failed");
-            contextStore.save(snapshot);
+            actualContextStore.save(snapshot);
             result.put("status", "failed");
         }
         result.put("issues", issues);
@@ -153,6 +154,10 @@ public final class WorkflowExecutionService {
         result.put("skipped_artifacts", skippedArtifacts);
         result.put("manual_artifact_package", Map.of());
         return result;
+    }
+    
+    private WorkflowContextStore resolveContextStore(final MCPFeatureContext requestContext) {
+        return null == contextStore ? requestContext.getWorkflowContextStore() : contextStore;
     }
     
     private Map<String, Object> checkApplyPreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {
@@ -217,11 +222,12 @@ public final class WorkflowExecutionService {
     }
     
     private Map<String, Object> createManualArtifactPackage(final WorkflowContextSnapshot snapshot) {
+        WorkflowPropertySource propertySource = WorkflowPropertySources.compose(snapshot.getRequest(), snapshot.getFeatureData());
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("ddl_artifacts", snapshot.getDdlArtifacts().stream().map(DDLArtifact::toMap).toList());
         result.put("index_plan", snapshot.getIndexPlans().stream().map(IndexPlan::toMap).toList());
         result.put("distsql_artifacts", snapshot.getRuleArtifacts().stream()
-                .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, snapshot.getRequest(), snapshot.getPropertyRequirements())).toList());
+                .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, propertySource, snapshot.getPropertyRequirements())).toList());
         return result;
     }
 }

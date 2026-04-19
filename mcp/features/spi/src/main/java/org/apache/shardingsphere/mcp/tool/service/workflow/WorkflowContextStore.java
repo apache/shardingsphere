@@ -32,20 +32,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class WorkflowContextStore {
     
-    private static final WorkflowContextStore INSTANCE = new WorkflowContextStore();
-    
     private static final Duration CONTEXT_TTL = Duration.ofHours(24);
     
     private final Map<String, WorkflowContextSnapshot> contexts = new ConcurrentHashMap<>();
-    
-    /**
-     * Get singleton instance.
-     *
-     * @return singleton instance
-     */
-    public static WorkflowContextStore getInstance() {
-        return INSTANCE;
-    }
     
     /**
      * Create plan identifier.

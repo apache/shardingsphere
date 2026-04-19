@@ -19,16 +19,9 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadataCatalog;
-import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -45,7 +38,6 @@ import java.net.http.HttpResponse;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -71,7 +63,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
     }
     
     protected final void launchHttpTransport() {
-        MCPDatabaseMetadataCatalog metadataCatalog = createDatabaseMetadataCatalog();
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
         try {
             initializeRuntimeDatabases(runtimeDatabases);
@@ -80,7 +71,7 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
         }
         StreamableHttpMCPServer httpServer = new StreamableHttpMCPServer(
                 new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, ENDPOINT_PATH),
-                new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), metadataCatalog));
+                new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases)));
         try {
             httpServer.start();
         } catch (final IOException ex) {
@@ -88,43 +79,6 @@ abstract class AbstractHttpProgrammaticRuntimeE2ETest {
             throw new IllegalStateException("Failed to start HTTP transport.", ex);
         }
         this.httpServer = httpServer;
-    }
-    
-    private MCPDatabaseMetadataCatalog createDatabaseMetadataCatalog() {
-        Map<String, MCPDatabaseMetadata> databaseMetadataMap = new LinkedHashMap<>(3, 1F);
-        databaseMetadataMap.put("logic_db", createLogicDatabaseMetadata());
-        databaseMetadataMap.put("analytics_db", createAnalyticsDatabaseMetadata());
-        databaseMetadataMap.put("warehouse", createWarehouseDatabaseMetadata());
-        return new MCPDatabaseMetadataCatalog(databaseMetadataMap);
-    }
-    
-    private MCPDatabaseMetadata createLogicDatabaseMetadata() {
-        return new MCPDatabaseMetadata("logic_db", "MySQL", "", List.of(
-                new MCPSchemaMetadata("logic_db", "public", List.of(
-                        new MCPTableMetadata("logic_db", "public", "orders", List.of(
-                                new MCPColumnMetadata("logic_db", "public", "orders", "", "order_id"),
-                                new MCPColumnMetadata("logic_db", "public", "orders", "", "status")),
-                                List.of(new MCPIndexMetadata("logic_db", "public", "orders", "idx_orders_status"))),
-                        new MCPTableMetadata("logic_db", "public", "order_items", List.of(
-                                new MCPColumnMetadata("logic_db", "public", "order_items", "", "order_id")), List.of())),
-                        List.of(new MCPViewMetadata("logic_db", "public", "active_orders",
-                                List.of(new MCPColumnMetadata("logic_db", "public", "", "active_orders", "order_id")))))));
-    }
-    
-    private MCPDatabaseMetadata createAnalyticsDatabaseMetadata() {
-        return new MCPDatabaseMetadata("analytics_db", "PostgreSQL", "", List.of(
-                new MCPSchemaMetadata("analytics_db", "public", List.of(
-                        new MCPTableMetadata("analytics_db", "public", "metrics", List.of(
-                                new MCPColumnMetadata("analytics_db", "public", "metrics", "", "metric_id")), List.of())),
-                        List.of(), List.of(new MCPSequenceMetadata("analytics_db", "public", "metric_seq")))));
-    }
-    
-    private MCPDatabaseMetadata createWarehouseDatabaseMetadata() {
-        return new MCPDatabaseMetadata("warehouse", "Hive", "", List.of(
-                new MCPSchemaMetadata("warehouse", "warehouse", List.of(
-                        new MCPTableMetadata("warehouse", "warehouse", "facts", List.of(
-                                new MCPColumnMetadata("warehouse", "warehouse", "facts", "", "fact_id")), List.of())),
-                        List.of())));
     }
     
     protected final String initializeSession(final HttpClient httpClient) throws IOException, InterruptedException {

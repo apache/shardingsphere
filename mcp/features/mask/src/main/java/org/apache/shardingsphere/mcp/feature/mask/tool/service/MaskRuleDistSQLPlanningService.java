@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 import org.apache.shardingsphere.infra.util.props.PropertiesUtils;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
 import java.util.LinkedList;
@@ -56,7 +57,7 @@ public final class MaskRuleDistSQLPlanningService {
         validateMaskIdentifiers(request);
         List<String> remainingColumnSegments = new LinkedList<>();
         for (Map<String, Object> each : existingRules) {
-            if (!request.getColumn().equalsIgnoreCase(findRuleValue(each, "column", "logic_column"))) {
+            if (!request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column", "logic_column"))) {
                 remainingColumnSegments.add(createExistingMaskColumnSegment(each));
             }
         }
@@ -74,7 +75,7 @@ public final class MaskRuleDistSQLPlanningService {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
-            if (request.getColumn().equalsIgnoreCase(findRuleValue(each, "column", "logic_column"))) {
+            if (request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column", "logic_column"))) {
                 result.add(createTargetMaskColumnSegment(request));
                 targetColumnHandled = true;
                 continue;
@@ -96,9 +97,9 @@ public final class MaskRuleDistSQLPlanningService {
     }
     
     private String createExistingMaskColumnSegment(final Map<String, Object> rule) {
-        String columnName = findRuleValue(rule, "column", "logic_column");
+        String columnName = WorkflowRuleValueUtils.findRuleValue(rule, "column", "logic_column");
         WorkflowSqlUtils.checkSafeIdentifier("column", columnName);
-        String algorithmType = findRuleValue(rule, "algorithm_type", "mask_algorithm");
+        String algorithmType = WorkflowRuleValueUtils.findRuleValue(rule, "algorithm_type", "mask_algorithm");
         Map<String, String> algorithmProperties = WorkflowSqlUtils.createPropertyMap(null == rule.get("algorithm_props") ? rule.get("props") : rule.get("algorithm_props"));
         String algorithmFragment = algorithmProperties.isEmpty()
                 ? String.format("TYPE(NAME='%s')", algorithmType.toLowerCase(Locale.ENGLISH))
@@ -111,16 +112,5 @@ public final class MaskRuleDistSQLPlanningService {
         WorkflowSqlUtils.checkSafeIdentifier("table", tableName);
         return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, tableName, System.lineSeparator(), System.lineSeparator(),
                 String.join(", " + System.lineSeparator(), columnSegments), System.lineSeparator());
-    }
-    
-    private String findRuleValue(final Map<String, Object> rule, final String... keys) {
-        for (String each : keys) {
-            Object value = rule.get(each);
-            String actualValue = null == value ? "" : WorkflowSqlUtils.trimToEmpty(String.valueOf(value));
-            if (!actualValue.isEmpty()) {
-                return actualValue;
-            }
-        }
-        return "";
     }
 }

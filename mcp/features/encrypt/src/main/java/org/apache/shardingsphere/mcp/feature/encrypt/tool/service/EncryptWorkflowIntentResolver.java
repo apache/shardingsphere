@@ -17,8 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
 import java.util.Locale;
@@ -28,18 +29,18 @@ import java.util.Locale;
  */
 final class EncryptWorkflowIntentResolver {
     
-    ClarifiedIntent resolve(final WorkflowRequest request) {
+    ClarifiedIntent resolve(final EncryptWorkflowRequest request, final EncryptWorkflowState workflowState) {
         ClarifiedIntent result = new ClarifiedIntent();
         result.setOperationType(resolveOperationType(request));
         result.setFieldSemantics(resolveFieldSemantics(request));
-        result.setRequiresDecrypt(resolveRequiresDecrypt(request, result));
-        result.setRequiresEqualityFilter(resolveRequiresEqualityFilter(request, result));
-        result.setRequiresLikeQuery(resolveRequiresLikeQuery(request, result));
+        workflowState.setRequiresDecrypt(resolveRequiresDecrypt(request, result));
+        workflowState.setRequiresEqualityFilter(resolveRequiresEqualityFilter(request, result));
+        workflowState.setRequiresLikeQuery(resolveRequiresLikeQuery(request, result));
         result.setReasoningNotes("Derived from explicit arguments and encrypt-specific intent heuristics.");
         return result;
     }
     
-    private String resolveOperationType(final WorkflowRequest request) {
+    private String resolveOperationType(final EncryptWorkflowRequest request) {
         String actualOperationType = WorkflowSqlUtils.trimToEmpty(request.getOperationType()).toLowerCase(Locale.ENGLISH);
         if (!actualOperationType.isEmpty()) {
             return actualOperationType;
@@ -54,7 +55,7 @@ final class EncryptWorkflowIntentResolver {
         return "create";
     }
     
-    private String resolveFieldSemantics(final WorkflowRequest request) {
+    private String resolveFieldSemantics(final EncryptWorkflowRequest request) {
         String actualFieldSemantics = WorkflowSqlUtils.trimToEmpty(request.getFieldSemantics()).toLowerCase(Locale.ENGLISH);
         if (!actualFieldSemantics.isEmpty()) {
             return actualFieldSemantics;
@@ -70,7 +71,7 @@ final class EncryptWorkflowIntentResolver {
         return columnName;
     }
     
-    private Boolean resolveRequiresDecrypt(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+    private Boolean resolveRequiresDecrypt(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
         }
@@ -88,7 +89,7 @@ final class EncryptWorkflowIntentResolver {
         return null;
     }
     
-    private Boolean resolveRequiresEqualityFilter(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+    private Boolean resolveRequiresEqualityFilter(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
         }
@@ -106,7 +107,7 @@ final class EncryptWorkflowIntentResolver {
         return null;
     }
     
-    private Boolean resolveRequiresLikeQuery(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+    private Boolean resolveRequiresLikeQuery(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
         }
