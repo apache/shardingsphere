@@ -89,10 +89,10 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
         assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("overall_status")), is("failed"));
     }
     
-    protected final void assertValidationEventuallyPassed(final MCPInteractionClient interactionClient, final String planId) throws Exception {
+    protected final void assertValidationEventuallyPassed(final MCPInteractionClient interactionClient, final String validateToolName, final String planId) throws Exception {
         Map<String, Object> actualValidationResponse = Map.of();
         for (int i = 0; i < 10; i++) {
-            actualValidationResponse = interactionClient.call("validate_encrypt_mask_rule", Map.of("plan_id", planId));
+            actualValidationResponse = interactionClient.call(validateToolName, Map.of("plan_id", planId));
             if ("validated".equals(String.valueOf(actualValidationResponse.get("status")))) {
                 assertValidationPassed(actualValidationResponse);
                 return;

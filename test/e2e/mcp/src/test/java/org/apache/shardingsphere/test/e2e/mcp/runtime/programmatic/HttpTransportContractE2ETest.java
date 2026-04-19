@@ -37,7 +37,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> EXPECTED_TOOL_NAMES = List.of(
-            "search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule");
+            "search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
+            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule");
     
     @Test
     void assertInitializeSessionAndProtocolHeaders() throws IOException, InterruptedException {
@@ -104,7 +105,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "plan_encrypt_mask_rule",
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "plan_encrypt_rule",
                 Map.of("table", "orders", "column", "status", "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());

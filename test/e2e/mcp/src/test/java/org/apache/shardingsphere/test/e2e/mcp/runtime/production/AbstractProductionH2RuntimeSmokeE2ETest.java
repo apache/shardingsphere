@@ -40,7 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
     
     private static final List<String> EXPECTED_TOOL_NAMES = List.of(
-            "search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule");
+            "search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
+            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule");
     
     private String jdbcUrl;
     
@@ -89,7 +90,8 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> actual = interactionClient.listTools();
             assertThat(actual.stream().map(each -> String.valueOf(each.get("name"))).toList(),
-                    containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_mask_rule", "apply_encrypt_mask_rule", "validate_encrypt_mask_rule"));
+                    containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
+                            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule"));
             assertToolDefinition(actual, "search_metadata", "Search Metadata", "query", "object_types", "array");
             assertToolDefinition(actual, "execute_query", "Execute Query", "sql", "timeout_ms", "integer");
         }

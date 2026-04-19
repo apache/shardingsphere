@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
@@ -63,7 +64,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         return Stream.of(
                 Arguments.of("database objects", createSearchArguments("", "", "logic", List.of("DATABASE")), List.of("logic_db")),
                 Arguments.of("schema objects", createSearchArguments("logic_db", "", "public", List.of("SCHEMA")), List.of("public")),
-                Arguments.of("column objects", createSearchArguments("logic_db", "", "status", List.of("COLUMN")), List.of("status")),
+                Arguments.of("column objects", createSearchArguments("logic_db", "", "status", List.of("COLUMN")), List.of("status", "status")),
                 Arguments.of("index objects", createSearchArguments("logic_db", "", "status", List.of("INDEX")), List.of("idx_orders_status")));
     }
     
@@ -74,7 +75,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata", Map.of("query", "metric"));
         assertThat(actual.statusCode(), is(200));
-        assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("metrics", "metric_id", "metric_seq")));
+        assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("metrics", "metric_id", "metric_name", "PRIMARY_KEY_3")));
     }
     
     @Test
@@ -152,14 +153,17 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     }
     
     @Test
-    void assertRejectUnsupportedIndexesResource() throws IOException, InterruptedException {
+    void assertReadWarehouseIndexesResource() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId,
                 "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes");
         assertThat(actual.statusCode(), is(200));
-        assertThat(String.valueOf(getFirstResourcePayload(actual.body()).get("error_code")), is("unsupported"));
+        List<Map<String, Object>> actualItems = MCPInteractionPayloads.castToList(getFirstResourcePayload(actual.body()).get("items"));
+        assertThat(actualItems.size(), is(1));
+        assertThat(String.valueOf(actualItems.get(0).get("table")), is("facts"));
+        assertTrue(String.valueOf(actualItems.get(0).get("index")).startsWith("PRIMARY_KEY_"));
     }
     
     private List<String> getItemNames(final Map<String, Object> payload) {
