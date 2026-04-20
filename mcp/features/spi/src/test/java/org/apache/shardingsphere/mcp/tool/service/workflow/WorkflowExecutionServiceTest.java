@@ -140,6 +140,23 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
+    void assertApplyReturnsDdlExecutionFailureForIndexArtifact() {
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
+        contextStore.save(snapshot);
+        WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenThrow(new IllegalStateException("index failed"));
+        Map<String, Object> actualResponse = executionService.apply(createRequestContext(executionFacade), "session-1", "plan-1", List.of("index_ddl"), "");
+        Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
+        Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
+        assertThat(actualResponse.get("status"), is("failed"));
+        assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
+        assertThat(actualStep.get("artifact_type"), is("create-index"));
+    }
+    
+    @Test
     void assertApplyReturnsRuleExecutionFailureForRuleArtifact() {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         WorkflowContextSnapshot snapshot = createSnapshot();

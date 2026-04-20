@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -30,9 +31,31 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WorkflowContextStoreTest {
+    
+    @Test
+    void assertGetOrCreateCreatesNewSnapshot() {
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextSnapshot actualSnapshot = contextStore.getOrCreate("session-1", "");
+        assertThat(actualSnapshot.getSessionId(), is("session-1"));
+        assertThat(actualSnapshot.getStatus(), is("clarifying"));
+        assertTrue(actualSnapshot.getPlanId().startsWith("plan-"));
+    }
+    
+    @Test
+    void assertGetOrCreateReturnsStoredSnapshot() {
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setStatus("planned");
+        contextStore.save(snapshot);
+        WorkflowContextSnapshot actualSnapshot = contextStore.getOrCreate("session-1", "plan-1");
+        assertThat(actualSnapshot.getPlanId(), is("plan-1"));
+        assertThat(actualSnapshot.getStatus(), is("planned"));
+    }
     
     @Test
     void assertFindPurgesExpiredSnapshot() throws Exception {
@@ -98,5 +121,19 @@ class WorkflowContextStoreTest {
         WorkflowContextSnapshot actualSnapshot = contextStore.getRequired("plan-1");
         actualSnapshot.setStatus("failed");
         assertThat(contextStore.getRequired("plan-1").getStatus(), is("planned"));
+    }
+    
+    @Test
+    void assertPersistUpdatesCurrentStepAndStatus() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        InteractionPlan interactionPlan = new InteractionPlan();
+        interactionPlan.setCurrentStep("intaking");
+        snapshot.setInteractionPlan(interactionPlan);
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        contextStore.persist(snapshot, "review", "planned");
+        WorkflowContextSnapshot actualSnapshot = contextStore.getRequired("plan-1");
+        assertThat(actualSnapshot.getStatus(), is("planned"));
+        assertThat(actualSnapshot.getInteractionPlan().getCurrentStep(), is("review"));
     }
 }

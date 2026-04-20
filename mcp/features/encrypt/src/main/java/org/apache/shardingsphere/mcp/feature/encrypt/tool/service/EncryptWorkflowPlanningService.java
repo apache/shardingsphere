@@ -37,7 +37,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningContextUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
@@ -65,7 +65,7 @@ public final class EncryptWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of(WorkflowArtifactPayloadUtils.STEP_DDL, "rules", "logical_metadata", "sql_executability");
     
-    private final EncryptWorkflowRequestMerger requestMerger = new EncryptWorkflowRequestMerger();
+    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
     private final EncryptWorkflowIntentResolver intentResolver = new EncryptWorkflowIntentResolver();
     
@@ -115,37 +115,37 @@ public final class EncryptWorkflowPlanningService {
      */
     public WorkflowContextSnapshot plan(final MCPFeatureContext requestContext, final String sessionId, final EncryptWorkflowRequest request) {
         WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
-        WorkflowContextSnapshot result = WorkflowPlanningContextUtils.getOrCreateSnapshot(actualContextStore, sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = actualContextStore.getOrCreate(sessionId, request.getPlanId());
         EncryptWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         applyResolvedIntent(mergedRequest, clarifiedIntent);
         MCPMetadataQueryFacade metadataQueryService = requestContext.getMetadataQueryFacade();
-        if (!WorkflowPlanningContextUtils.ensurePlanningContext(metadataQueryService, mergedRequest, clarifiedIntent, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result,
+        if (!planningSupport.ensurePlanningContext(metadataQueryService, mergedRequest, clarifiedIntent, result)) {
+            return actualContextStore.persist(result,
                     WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
         }
         List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(requestContext, mergedRequest.getDatabase(), mergedRequest.getTable());
         if (!ensureLifecycleState(clarifiedIntent, mergedRequest, encryptRules, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         EncryptWorkflowState workflowState = getEncryptWorkflowState(result);
         if (isDropWorkflow(clarifiedIntent)) {
             addLifecycleWarnings(workflowState, clarifiedIntent, mergedRequest, encryptRules, result);
             planArtifacts(requestContext, metadataQueryService, workflowState, clarifiedIntent, mergedRequest, encryptRules, result);
-            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
         }
         planAlgorithms(requestContext, workflowState, mergedRequest, result);
         if (hasBlockingAlgorithmIssues(clarifiedIntent, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         if (!clarifiedIntent.getPendingQuestions().isEmpty()) {
-            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         if (!collectPropertyRequirements(mergedRequest, workflowState, clarifiedIntent, result)) {
-            return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
         planArtifacts(requestContext, metadataQueryService, workflowState, clarifiedIntent, mergedRequest, encryptRules, result);
-        return WorkflowPlanningContextUtils.persistSnapshot(actualContextStore, result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+        return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }
     
     private void applyResolvedIntent(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
@@ -154,23 +154,19 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private EncryptWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {
-        EncryptWorkflowRequest result = requestMerger.merge(snapshot.getRequest(), getEncryptWorkflowState(snapshot), request);
-        EncryptWorkflowState workflowState = requestMerger.createState(result);
-        clearEncryptPlanningState(workflowState);
+        EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), getEncryptWorkflowState(snapshot), request);
+        EncryptWorkflowState workflowState = EncryptWorkflowState.from(result);
+        workflowState.clearPlanningState();
         snapshot.setRequest(result);
         snapshot.setFeatureData(workflowState);
         snapshot.setInteractionPlan(InteractionPlan.create(snapshot.getPlanId(), result, "Encrypt workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS));
-        WorkflowPlanningContextUtils.clearPlanningState(snapshot);
+        snapshot.clearPlanningState();
         snapshot.setClarifiedIntent(intentResolver.resolve(result, workflowState));
         return result;
     }
     
     private EncryptWorkflowState getEncryptWorkflowState(final WorkflowContextSnapshot snapshot) {
         return snapshot.getFeatureData() instanceof EncryptWorkflowState ? (EncryptWorkflowState) snapshot.getFeatureData() : new EncryptWorkflowState();
-    }
-    
-    private void clearEncryptPlanningState(final EncryptWorkflowState workflowState) {
-        workflowState.setDerivedColumnPlan(null);
     }
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,

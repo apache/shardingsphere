@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationSupport;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -44,6 +44,8 @@ import java.util.Set;
  * Encrypt workflow validation service.
  */
 public final class EncryptWorkflowValidationService {
+    
+    private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
     private final WorkflowContextStore contextStore;
     
@@ -69,7 +71,7 @@ public final class EncryptWorkflowValidationService {
     public Map<String, Object> validate(final MCPFeatureContext requestContext, final String sessionId, final String planId) {
         WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
         WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
-        Map<String, Object> rejectedResponse = WorkflowValidationUtils.checkValidatePreconditions(sessionId, snapshot);
+        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
         }
@@ -80,11 +82,11 @@ public final class EncryptWorkflowValidationService {
         MCPMetadataQueryFacade metadataQueryService = requestContext.getMetadataQueryFacade();
         validationReport.setDdlValidation(validateDdl(requestContext, snapshot, workflowState, encryptRules, validationReport));
         validationReport.setRuleValidation(validateRules(snapshot, workflowState, encryptRules, validationReport));
-        validationReport.setLogicalMetadataValidation(WorkflowValidationUtils.validateLogicalMetadata(snapshot, metadataQueryService, validationReport));
+        validationReport.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryService, validationReport));
         validationReport.setSqlExecutabilityValidation(validateSqlExecutability(requestContext, sessionId, snapshot, workflowState, validationReport));
-        validationReport.setOverallStatus(WorkflowValidationUtils.resolveOverallStatus(validationReport.getDdlValidation(), validationReport.getRuleValidation(),
+        validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getDdlValidation(), validationReport.getRuleValidation(),
                 validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
-        return WorkflowValidationUtils.finalizeValidation(actualContextStore, snapshot, validationReport);
+        return validationSupport.finalizeValidation(actualContextStore, snapshot, validationReport);
     }
     
     private EncryptWorkflowState getEncryptWorkflowState(final WorkflowContextSnapshot snapshot) {
@@ -101,7 +103,7 @@ public final class EncryptWorkflowValidationService {
         }
         Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules);
         if (actualRule.isEmpty()) {
-            validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(workflowState), "",
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(workflowState), "",
                     "Encrypt rule is missing, so derived column mappings cannot be validated.", "Create or alter the encrypt rule again."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Encrypt rule is missing.");
         }
@@ -131,12 +133,12 @@ public final class EncryptWorkflowValidationService {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Encrypt rule has been removed.");
             }
-            validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no encrypt rule", String.valueOf(actualRule.get()),
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no encrypt rule", String.valueOf(actualRule.get()),
                     "Encrypt rule still exists after drop.", "Drop the encrypt rule again or investigate the failure."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Encrypt rule still exists.");
         }
         if (actualRule.isEmpty()) {
-            validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
                     "Encrypt rule is missing.", "Create or alter the encrypt rule again."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Encrypt rule is missing.");
         }
@@ -166,7 +168,7 @@ public final class EncryptWorkflowValidationService {
                 // CHECKSTYLE:OFF
             } catch (final RuntimeException ex) {
                 // CHECKSTYLE:ON
-                validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", each, ex.getMessage(),
+                validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", each, ex.getMessage(),
                         "Validation SQL cannot be executed from the logical view.", "Inspect rule state and logical metadata."));
                 return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, each, ex.getMessage());
             }
@@ -182,14 +184,14 @@ public final class EncryptWorkflowValidationService {
                     snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), expectedColumnNames);
             for (String each : expectedColumnNames) {
                 if (!actualColumnNames.contains(each)) {
-                    mismatches.add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", each, actualColumnNames.toString(),
+                    mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", each, actualColumnNames.toString(),
                             "Derived column is not visible from Proxy information_schema.", "Create the physical derived columns again."));
                 }
             }
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            mismatches.add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(workflowState), ex.getMessage(),
+            mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", createExpectedDerivedColumnSummary(workflowState), ex.getMessage(),
                     "Failed to verify derived columns from Proxy information_schema.", "Inspect Proxy metadata access or verify the physical columns manually."));
         }
     }
@@ -253,7 +255,7 @@ public final class EncryptWorkflowValidationService {
         if (matchesValue(expected, actual)) {
             return;
         }
-        mismatches.add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
+        mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.DDL_STATE_MISMATCH, "ddl", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
                 "Recheck DDL and encrypt rule state."));
     }
     
@@ -261,7 +263,7 @@ public final class EncryptWorkflowValidationService {
         if (matchesValue(expected, actual)) {
             return;
         }
-        mismatches.add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
+        mismatches.add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", formatFieldValue(fieldName, expected), formatFieldValue(fieldName, actual), impact,
                 "Re-apply the intended encrypt rule."));
     }
     

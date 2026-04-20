@@ -30,12 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Workflow validation utility methods.
+ * Workflow validation support.
  */
-public final class WorkflowValidationUtils {
-    
-    private WorkflowValidationUtils() {
-    }
+public final class WorkflowValidationSupport {
     
     /**
      * Check whether workflow validation can proceed.
@@ -44,7 +41,7 @@ public final class WorkflowValidationUtils {
      * @param snapshot workflow snapshot
      * @return rejection response or empty map
      */
-    public static Map<String, Object> checkValidatePreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {
+    public Map<String, Object> checkValidatePreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {
         if (!WorkflowLifecycleUtils.isOwnedBySession(sessionId, snapshot)) {
             return createRejectedResponse(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH, "The workflow plan belongs to another MCP session.",
                     "Continue the workflow from the same session that created the plan.");
@@ -58,26 +55,12 @@ public final class WorkflowValidationUtils {
     }
     
     /**
-     * Create workflow validation issues from a validation report.
-     *
-     * @param validationReport validation report
-     * @return validation issues
-     */
-    public static List<Map<String, Object>> createValidationIssues(final ValidationReport validationReport) {
-        if (!WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus())) {
-            return List.of();
-        }
-        return List.of(new WorkflowIssue(resolveValidationIssueCode(validationReport), "error", "validating",
-                "Validation detected mismatches between the plan and the current state.", "Inspect mismatches and re-run the workflow after fixes.", true, Map.of()).toMap());
-    }
-    
-    /**
      * Resolve overall validation status from validation sections.
      *
      * @param validationSections validation sections
      * @return overall validation status
      */
-    public static String resolveOverallStatus(final ValidationSection... validationSections) {
+    public String resolveOverallStatus(final ValidationSection... validationSections) {
         for (ValidationSection each : validationSections) {
             if (null != each && WorkflowLifecycle.STATUS_FAILED.equals(each.getStatus())) {
                 return WorkflowLifecycle.STATUS_FAILED;
@@ -87,26 +70,16 @@ public final class WorkflowValidationUtils {
     }
     
     /**
-     * Resolve workflow lifecycle status from validation report.
-     *
-     * @param validationReport validation report
-     * @return workflow lifecycle status
-     */
-    public static String resolveValidationStatus(final ValidationReport validationReport) {
-        return WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus()) ? WorkflowLifecycle.STATUS_FAILED : WorkflowLifecycle.STATUS_VALIDATED;
-    }
-    
-    /**
      * Validate logical metadata visibility for the planned logical column.
      *
      * @param snapshot workflow snapshot
-     * @param metadataQueryService metadata query service
+     * @param metadataQueryFacade metadata query facade
      * @param validationReport validation report
      * @return logical metadata validation section
      */
-    public static ValidationSection validateLogicalMetadata(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryService,
-                                                            final ValidationReport validationReport) {
-        if (metadataQueryService.queryTableColumn(
+    public ValidationSection validateLogicalMetadata(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
+                                                     final ValidationReport validationReport) {
+        if (metadataQueryFacade.queryTableColumn(
                 snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()).isPresent()) {
             return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, Map.of("table", snapshot.getRequest().getTable(), "column", snapshot.getRequest().getColumn()),
                     "Logical table and column are still visible from Proxy metadata.");
@@ -124,15 +97,11 @@ public final class WorkflowValidationUtils {
      * @param validationReport validation report
      * @return validation response
      */
-    public static Map<String, Object> finalizeValidation(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot,
-                                                         final ValidationReport validationReport) {
+    public Map<String, Object> finalizeValidation(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot,
+                                                  final ValidationReport validationReport) {
         String validationStatus = resolveValidationStatus(validationReport);
         snapshot.setValidationReport(validationReport);
-        if (null != snapshot.getInteractionPlan()) {
-            snapshot.getInteractionPlan().setCurrentStep(WorkflowLifecycle.STEP_VALIDATED);
-        }
-        snapshot.setStatus(validationStatus);
-        contextStore.save(snapshot);
+        contextStore.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));
@@ -151,8 +120,8 @@ public final class WorkflowValidationUtils {
      * @param suggestedNextAction suggested next action
      * @return mismatch payload
      */
-    public static Map<String, Object> createMismatch(final String code, final String layer, final String expected,
-                                                     final String actual, final String impact, final String suggestedNextAction) {
+    public Map<String, Object> createMismatch(final String code, final String layer, final String expected,
+                                              final String actual, final String impact, final String suggestedNextAction) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("code", code);
         result.put("layer", layer);
@@ -163,7 +132,19 @@ public final class WorkflowValidationUtils {
         return result;
     }
     
-    private static boolean isValidatableStatus(final WorkflowContextSnapshot snapshot) {
+    private List<Map<String, Object>> createValidationIssues(final ValidationReport validationReport) {
+        if (!WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus())) {
+            return List.of();
+        }
+        return List.of(new WorkflowIssue(resolveValidationIssueCode(validationReport), "error", "validating",
+                "Validation detected mismatches between the plan and the current state.", "Inspect mismatches and re-run the workflow after fixes.", true, Map.of()).toMap());
+    }
+    
+    private String resolveValidationStatus(final ValidationReport validationReport) {
+        return WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus()) ? WorkflowLifecycle.STATUS_FAILED : WorkflowLifecycle.STATUS_VALIDATED;
+    }
+    
+    private boolean isValidatableStatus(final WorkflowContextSnapshot snapshot) {
         String actualStatus = WorkflowSqlUtils.trimToEmpty(snapshot.getStatus());
         if (WorkflowLifecycle.STATUS_VALIDATED.equalsIgnoreCase(actualStatus)
                 || WorkflowLifecycle.STATUS_EXECUTED.equalsIgnoreCase(actualStatus)
@@ -179,7 +160,7 @@ public final class WorkflowValidationUtils {
                 || WorkflowLifecycle.STEP_EXECUTED.equalsIgnoreCase(currentStep);
     }
     
-    private static Map<String, Object> createRejectedResponse(final String issueCode, final String message, final String userAction) {
+    private Map<String, Object> createRejectedResponse(final String issueCode, final String message, final String userAction) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("status", WorkflowLifecycle.STATUS_FAILED);
         result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));
@@ -188,7 +169,7 @@ public final class WorkflowValidationUtils {
         return result;
     }
     
-    private static String resolveValidationIssueCode(final ValidationReport validationReport) {
+    private String resolveValidationIssueCode(final ValidationReport validationReport) {
         for (Map<String, Object> each : validationReport.getMismatches()) {
             String actualCode = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("code")));
             if (!actualCode.isEmpty()) {

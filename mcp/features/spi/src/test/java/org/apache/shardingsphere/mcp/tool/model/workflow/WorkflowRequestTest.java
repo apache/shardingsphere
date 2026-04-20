@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.service.workflow;
+package org.apache.shardingsphere.mcp.tool.model.workflow;
 
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -25,7 +24,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class WorkflowRequestMergerTest {
+class WorkflowRequestTest {
     
     @Test
     void assertMergeKeepsPreviousContextAndOverlaysCurrentInputs() {
@@ -43,7 +42,7 @@ class WorkflowRequestMergerTest {
         current.setNaturalLanguageIntent("mask mobile");
         current.getPrimaryAlgorithmProperties().put("replace-char", "*");
         current.getApprovedSteps().add("rule_distsql");
-        WorkflowRequest actualRequest = new WorkflowRequestMerger().merge(previous, current);
+        WorkflowRequest actualRequest = WorkflowRequest.merge(previous, current);
         assertThat(actualRequest.getPlanId(), is("plan-1"));
         assertThat(actualRequest.getDatabase(), is("logic_db"));
         assertThat(actualRequest.getTable(), is("orders"));
@@ -61,7 +60,7 @@ class WorkflowRequestMergerTest {
         originalRequest.setPlanId("plan-1");
         originalRequest.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         originalRequest.getApprovedSteps().add("ddl");
-        WorkflowRequest actualRequest = new WorkflowRequestMerger().copy(originalRequest);
+        WorkflowRequest actualRequest = originalRequest.copy();
         originalRequest.getPrimaryAlgorithmProperties().put("salt", "abc");
         originalRequest.getApprovedSteps().add("rule_distsql");
         assertThat(actualRequest.getPlanId(), is("plan-1"));

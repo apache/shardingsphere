@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
+import lombok.Getter;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.IndexPlan;
@@ -93,41 +94,17 @@ public final class WorkflowExecutionService {
             return result;
         }
         try {
-            for (DDLArtifact each : snapshot.getDdlArtifacts()) {
+            for (ExecutableArtifact each : createExecutableArtifacts(snapshot)) {
                 currentArtifactType = each.getArtifactType();
                 currentArtifactSql = each.getSql();
-                if (!isApproved(approvedSteps, WorkflowArtifactPayloadUtils.STEP_DDL)) {
+                if (!isApproved(approvedSteps, each.getApprovalStep())) {
                     skippedArtifacts.add(each.getSql());
                     stepResults.add(createStepResult(each.getArtifactType(), WorkflowLifecycle.STATUS_SKIPPED, each.getSql()));
                     continue;
                 }
-                requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each.getSql(), 0, 0));
-                executedDdl.add(each.getSql());
+                executeArtifact(requestContext, sessionId, snapshot, each);
+                addExecutedSql(each, executedDdl, executedDistSql);
                 stepResults.add(createStepResult(each.getArtifactType(), WorkflowLifecycle.STATUS_PASSED, each.getSql()));
-            }
-            for (IndexPlan each : snapshot.getIndexPlans()) {
-                currentArtifactType = WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX;
-                currentArtifactSql = each.getSql();
-                if (!isApproved(approvedSteps, WorkflowArtifactPayloadUtils.STEP_INDEX_DDL)) {
-                    skippedArtifacts.add(each.getSql());
-                    stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX, WorkflowLifecycle.STATUS_SKIPPED, each.getSql()));
-                    continue;
-                }
-                requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each.getSql(), 0, 0));
-                executedDdl.add(each.getSql());
-                stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX, WorkflowLifecycle.STATUS_PASSED, each.getSql()));
-            }
-            for (RuleArtifact each : snapshot.getRuleArtifacts()) {
-                currentArtifactType = WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL;
-                currentArtifactSql = each.getSql();
-                if (!isApproved(approvedSteps, WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL)) {
-                    skippedArtifacts.add(each.getSql());
-                    stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, WorkflowLifecycle.STATUS_SKIPPED, each.getSql()));
-                    continue;
-                }
-                requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each.getSql(), 0, 0));
-                executedDistSql.add(each.getSql());
-                stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, WorkflowLifecycle.STATUS_PASSED, each.getSql()));
             }
             if (null != snapshot.getInteractionPlan()) {
                 snapshot.getInteractionPlan().setCurrentStep(WorkflowLifecycle.STEP_EXECUTED);
@@ -156,6 +133,33 @@ public final class WorkflowExecutionService {
         result.put("skipped_artifacts", skippedArtifacts);
         result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, Map.of());
         return result;
+    }
+    
+    private List<ExecutableArtifact> createExecutableArtifacts(final WorkflowContextSnapshot snapshot) {
+        List<ExecutableArtifact> result = new LinkedList<>();
+        for (DDLArtifact each : snapshot.getDdlArtifacts()) {
+            result.add(new ExecutableArtifact(WorkflowArtifactPayloadUtils.STEP_DDL, each.getArtifactType(), each.getSql(), false));
+        }
+        for (IndexPlan each : snapshot.getIndexPlans()) {
+            result.add(new ExecutableArtifact(WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX, each.getSql(), false));
+        }
+        for (RuleArtifact each : snapshot.getRuleArtifacts()) {
+            result.add(new ExecutableArtifact(WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL, WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, each.getSql(), true));
+        }
+        return result;
+    }
+    
+    private void executeArtifact(final MCPFeatureContext requestContext, final String sessionId, final WorkflowContextSnapshot snapshot, final ExecutableArtifact artifact) {
+        requestContext.getExecutionFacade().execute(
+                new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), artifact.getSql(), 0, 0));
+    }
+    
+    private void addExecutedSql(final ExecutableArtifact artifact, final List<String> executedDdl, final List<String> executedDistSql) {
+        if (artifact.isRuleDistSql()) {
+            executedDistSql.add(artifact.getSql());
+            return;
+        }
+        executedDdl.add(artifact.getSql());
     }
     
     private Map<String, Object> checkApplyPreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {
@@ -210,5 +214,24 @@ public final class WorkflowExecutionService {
         result.put("status", status);
         result.put("sql", sql);
         return result;
+    }
+    
+    @Getter
+    private static final class ExecutableArtifact {
+        
+        private final String approvalStep;
+        
+        private final String artifactType;
+        
+        private final String sql;
+        
+        private final boolean ruleDistSql;
+        
+        ExecutableArtifact(final String approvalStep, final String artifactType, final String sql, final boolean ruleDistSql) {
+            this.approvalStep = approvalStep;
+            this.artifactType = artifactType;
+            this.sql = sql;
+            this.ruleDistSql = ruleDistSql;
+        }
     }
 }

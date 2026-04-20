@@ -24,8 +24,10 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,14 +38,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class WorkflowValidationUtilsTest {
+class WorkflowValidationSupportTest {
+    
+    private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
     @Test
     void assertCheckValidatePreconditionsRejectsDifferentSession() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setSessionId("session-1");
         snapshot.setStatus("executed");
-        Map<String, Object> actualResult = WorkflowValidationUtils.checkValidatePreconditions("session-2", snapshot);
+        Map<String, Object> actualResult = validationSupport.checkValidatePreconditions("session-2", snapshot);
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
@@ -53,7 +57,7 @@ class WorkflowValidationUtilsTest {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setSessionId("session-1");
         snapshot.setStatus("clarifying");
-        Map<String, Object> actualResult = WorkflowValidationUtils.checkValidatePreconditions("session-1", snapshot);
+        Map<String, Object> actualResult = validationSupport.checkValidatePreconditions("session-1", snapshot);
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
     }
@@ -66,33 +70,16 @@ class WorkflowValidationUtilsTest {
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("validated");
         snapshot.setInteractionPlan(interactionPlan);
-        assertTrue(WorkflowValidationUtils.checkValidatePreconditions("session-1", snapshot).isEmpty());
-    }
-    
-    @Test
-    void assertCreateValidationIssuesReturnsMismatchIssue() {
-        ValidationReport validationReport = new ValidationReport();
-        validationReport.setOverallStatus("failed");
-        validationReport.getMismatches().add(Map.of("code", WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
-        List<Map<String, Object>> actualIssues = WorkflowValidationUtils.createValidationIssues(validationReport);
-        assertThat(actualIssues.size(), is(1));
-        assertThat(actualIssues.get(0).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        assertTrue(validationSupport.checkValidatePreconditions("session-1", snapshot).isEmpty());
     }
     
     @Test
     void assertResolveOverallStatusReturnsFailedWhenAnySectionFails() {
-        String actualStatus = WorkflowValidationUtils.resolveOverallStatus(
+        String actualStatus = validationSupport.resolveOverallStatus(
                 new ValidationSection("passed", List.of(), ""),
                 new ValidationSection("failed", List.of(), ""),
                 new ValidationSection("passed", List.of(), ""));
         assertThat(actualStatus, is("failed"));
-    }
-    
-    @Test
-    void assertResolveValidationStatusReturnsValidatedWhenReportPassed() {
-        ValidationReport validationReport = new ValidationReport();
-        validationReport.setOverallStatus("passed");
-        assertThat(WorkflowValidationUtils.resolveValidationStatus(validationReport), is("validated"));
     }
     
     @Test
@@ -102,7 +89,7 @@ class WorkflowValidationUtilsTest {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone"))
                 .thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
-        ValidationSection actualValidationSection = WorkflowValidationUtils.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
+        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
         assertThat(actualValidationSection.getStatus(), is("passed"));
         assertThat(validationReport.getMismatches(), is(List.of()));
     }
@@ -111,13 +98,13 @@ class WorkflowValidationUtilsTest {
     void assertValidateLogicalMetadataWhenColumnMissing() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         ValidationReport validationReport = new ValidationReport();
-        ValidationSection actualValidationSection = WorkflowValidationUtils.validateLogicalMetadata(snapshot, mock(MCPMetadataQueryFacade.class), validationReport);
+        ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, mock(MCPMetadataQueryFacade.class), validationReport);
         assertThat(actualValidationSection.getStatus(), is("failed"));
         assertThat(((Map<?, ?>) validationReport.getMismatches().get(0)).get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
     }
     
     @Test
-    void assertFinalizeValidation() {
+    void assertFinalizeValidationMarksValidatedStatus() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setStatus("executed");
@@ -128,15 +115,31 @@ class WorkflowValidationUtilsTest {
         validationReport.setOverallStatus("passed");
         WorkflowContextStore contextStore = new WorkflowContextStore();
         contextStore.save(snapshot);
-        Map<String, Object> actualResult = WorkflowValidationUtils.finalizeValidation(contextStore, snapshot, validationReport);
+        Map<String, Object> actualResult = validationSupport.finalizeValidation(contextStore, snapshot, validationReport);
         assertThat(actualResult.get("status"), is("validated"));
         assertThat(contextStore.getRequired("plan-1").getStatus(), is("validated"));
         assertThat(contextStore.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
     }
     
     @Test
+    void assertFinalizeValidationReturnsMismatchIssueWhenFailed() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        ValidationReport validationReport = new ValidationReport();
+        validationReport.setOverallStatus("failed");
+        Map<String, Object> mismatch = new LinkedHashMap<>(2, 1F);
+        mismatch.put("code", WorkflowIssueCode.SQL_EXECUTABILITY_FAILED);
+        validationReport.getMismatches().add(mismatch);
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        contextStore.save(snapshot);
+        Map<String, Object> actualResult = validationSupport.finalizeValidation(contextStore, snapshot, validationReport);
+        assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
+        assertThat(actualResult.get("status"), is("failed"));
+    }
+    
+    @Test
     void assertCreateMismatchBuildsExpectedPayload() {
-        Map<String, Object> actualMismatch = WorkflowValidationUtils.createMismatch("code", "rule", "expected", "actual", "impact", "fix it");
+        Map<String, Object> actualMismatch = validationSupport.createMismatch("code", "rule", "expected", "actual", "impact", "fix it");
         assertThat(actualMismatch.get("code"), is("code"));
         assertThat(actualMismatch.get("layer"), is("rule"));
         assertThat(actualMismatch.get("expected"), is("expected"));
@@ -149,7 +152,7 @@ class WorkflowValidationUtilsTest {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setSessionId("session-1");
         result.setStatus("executed");
-        org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest request = new org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest();
+        WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("logic_db");
         request.setSchema("public");
         request.setTable("orders");

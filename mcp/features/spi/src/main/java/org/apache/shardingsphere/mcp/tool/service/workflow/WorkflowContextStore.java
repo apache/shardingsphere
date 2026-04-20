@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -46,6 +47,25 @@ public final class WorkflowContextStore {
     }
     
     /**
+     * Get an existing workflow snapshot or create a new one.
+     *
+     * @param sessionId session identifier
+     * @param planId plan identifier
+     * @return workflow snapshot
+     */
+    public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
+        String actualPlanId = WorkflowSqlUtils.trimToEmpty(planId);
+        if (!actualPlanId.isEmpty()) {
+            return getRequired(actualPlanId);
+        }
+        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
+        result.setPlanId(createPlanId());
+        result.setSessionId(sessionId);
+        result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        return result;
+    }
+    
+    /**
      * Save snapshot.
      *
      * @param snapshot workflow snapshot
@@ -54,9 +74,7 @@ public final class WorkflowContextStore {
         purgeExpiredContexts();
         Instant now = Instant.now();
         snapshot.setUpdateTime(now);
-        WorkflowContextSnapshot copiedSnapshot = WorkflowSnapshotCloner.cloneSnapshot(snapshot);
-        copiedSnapshot.setUpdateTime(now);
-        contexts.put(copiedSnapshot.getPlanId(), copiedSnapshot);
+        contexts.put(snapshot.getPlanId(), snapshot.copy());
     }
     
     /**
@@ -67,7 +85,24 @@ public final class WorkflowContextStore {
      */
     public Optional<WorkflowContextSnapshot> find(final String planId) {
         purgeExpiredContexts();
-        return Optional.ofNullable(contexts.get(planId)).map(WorkflowSnapshotCloner::cloneSnapshot);
+        return Optional.ofNullable(contexts.get(planId)).map(WorkflowContextSnapshot::copy);
+    }
+    
+    /**
+     * Persist snapshot with lifecycle state.
+     *
+     * @param snapshot workflow snapshot
+     * @param currentStep current interaction step
+     * @param status workflow status
+     * @return persisted snapshot
+     */
+    public WorkflowContextSnapshot persist(final WorkflowContextSnapshot snapshot, final String currentStep, final String status) {
+        if (null != snapshot.getInteractionPlan()) {
+            snapshot.getInteractionPlan().setCurrentStep(currentStep);
+        }
+        snapshot.setStatus(status);
+        save(snapshot);
+        return snapshot;
     }
     
     /**

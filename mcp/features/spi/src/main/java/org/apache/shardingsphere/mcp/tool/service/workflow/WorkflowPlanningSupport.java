@@ -33,64 +33,9 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Workflow planning context utility methods.
+ * Workflow planning support.
  */
-public final class WorkflowPlanningContextUtils {
-    
-    private WorkflowPlanningContextUtils() {
-    }
-    
-    /**
-     * Get an existing workflow snapshot or create a new one.
-     *
-     * @param contextStore workflow context store
-     * @param sessionId session identifier
-     * @param planId plan identifier
-     * @return workflow snapshot
-     */
-    public static WorkflowContextSnapshot getOrCreateSnapshot(final WorkflowContextStore contextStore, final String sessionId, final String planId) {
-        String actualPlanId = WorkflowSqlUtils.trimToEmpty(planId);
-        if (!actualPlanId.isEmpty()) {
-            return contextStore.getRequired(actualPlanId);
-        }
-        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
-        result.setPlanId(contextStore.createPlanId());
-        result.setSessionId(sessionId);
-        result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
-        return result;
-    }
-    
-    /**
-     * Clear planning state on snapshot before rebuilding artifacts.
-     *
-     * @param snapshot workflow snapshot
-     */
-    public static void clearPlanningState(final WorkflowContextSnapshot snapshot) {
-        snapshot.getIssues().clear();
-        snapshot.getAlgorithmCandidates().clear();
-        snapshot.getPropertyRequirements().clear();
-        snapshot.getDdlArtifacts().clear();
-        snapshot.getRuleArtifacts().clear();
-        snapshot.getIndexPlans().clear();
-        snapshot.setValidationReport(null);
-    }
-    
-    /**
-     * Persist workflow snapshot with lifecycle state.
-     *
-     * @param contextStore workflow context store
-     * @param snapshot workflow snapshot
-     * @param currentStep current interaction step
-     * @param status workflow status
-     * @return persisted snapshot
-     */
-    public static WorkflowContextSnapshot persistSnapshot(final WorkflowContextStore contextStore,
-                                                          final WorkflowContextSnapshot snapshot, final String currentStep, final String status) {
-        snapshot.getInteractionPlan().setCurrentStep(currentStep);
-        snapshot.setStatus(status);
-        contextStore.save(snapshot);
-        return snapshot;
-    }
+public final class WorkflowPlanningSupport {
     
     /**
      * Ensure workflow planning context is complete and valid.
@@ -101,8 +46,8 @@ public final class WorkflowPlanningContextUtils {
      * @param snapshot workflow snapshot
      * @return whether planning context is ready
      */
-    public static boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
-                                                final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
+    public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
+                                         final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (WorkflowSqlUtils.trimToEmpty(request.getDatabase()).isEmpty()) {
             clarifiedIntent.getPendingQuestions().add("请先提供 logical database。");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
@@ -135,7 +80,7 @@ public final class WorkflowPlanningContextUtils {
         return true;
     }
     
-    private static void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+    private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (WorkflowSqlUtils.trimToEmpty(request.getSchema()).isEmpty()) {
             clarifiedIntent.getPendingQuestions().add("请明确 schema。");
         }
@@ -147,7 +92,7 @@ public final class WorkflowPlanningContextUtils {
         }
     }
     
-    private static boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
+    private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
         String actualIdentifier = WorkflowSqlUtils.trimToEmpty(identifier);
         if (actualIdentifier.isEmpty() || WorkflowSqlUtils.isSafeIdentifier(actualIdentifier)) {
             return true;
@@ -158,7 +103,7 @@ public final class WorkflowPlanningContextUtils {
         return false;
     }
     
-    private static String resolveSchema(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request) {
+    private String resolveSchema(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request) {
         String actualSchema = WorkflowSqlUtils.trimToEmpty(request.getSchema());
         if (!actualSchema.isEmpty()) {
             return actualSchema;
@@ -169,21 +114,21 @@ public final class WorkflowPlanningContextUtils {
         }
         String tableName = WorkflowSqlUtils.trimToEmpty(request.getTable());
         if (!tableName.isEmpty()) {
-            List<String> matchedSchemas = new LinkedList<>();
+            List<String> result = new LinkedList<>();
             for (MCPSchemaMetadata each : databaseMetadata.get().getSchemas()) {
                 if (each.getTables().stream().anyMatch(table -> tableName.equals(table.getTable()))) {
-                    matchedSchemas.add(each.getSchema());
+                    result.add(each.getSchema());
                 }
             }
-            if (1 == matchedSchemas.size()) {
-                return matchedSchemas.get(0);
+            if (1 == result.size()) {
+                return result.get(0);
             }
         }
         return 1 == databaseMetadata.get().getSchemas().size() ? databaseMetadata.get().getSchemas().iterator().next().getSchema() : "";
     }
     
-    private static boolean ensureTableExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
-                                             final WorkflowContextSnapshot snapshot) {
+    private boolean ensureTableExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
+                                      final WorkflowContextSnapshot snapshot) {
         if (metadataQueryFacade.queryTable(request.getDatabase(), request.getSchema(), request.getTable()).isPresent()) {
             return true;
         }
@@ -192,8 +137,8 @@ public final class WorkflowPlanningContextUtils {
         return false;
     }
     
-    private static boolean ensureColumnExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
-                                              final WorkflowContextSnapshot snapshot) {
+    private boolean ensureColumnExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
+                                       final WorkflowContextSnapshot snapshot) {
         if (metadataQueryFacade.queryTableColumn(request.getDatabase(), request.getSchema(), request.getTable(), request.getColumn()).isPresent()) {
             return true;
         }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationSupport;
 
 import java.util.List;
 import java.util.Map;
@@ -39,6 +39,8 @@ import java.util.Optional;
  * Mask workflow validation service.
  */
 public final class MaskWorkflowValidationService {
+    
+    private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
     private final WorkflowContextStore contextStore;
     
@@ -64,7 +66,7 @@ public final class MaskWorkflowValidationService {
     public Map<String, Object> validate(final MCPFeatureContext requestContext, final String sessionId, final String planId) {
         WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
         WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
-        Map<String, Object> rejectedResponse = WorkflowValidationUtils.checkValidatePreconditions(sessionId, snapshot);
+        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
         }
@@ -74,11 +76,11 @@ public final class MaskWorkflowValidationService {
         MCPMetadataQueryFacade metadataQueryService = requestContext.getMetadataQueryFacade();
         validationReport.setDdlValidation(new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Mask workflows do not require physical DDL validation."));
         validationReport.setRuleValidation(validateRules(snapshot, maskRules, validationReport));
-        validationReport.setLogicalMetadataValidation(WorkflowValidationUtils.validateLogicalMetadata(snapshot, metadataQueryService, validationReport));
+        validationReport.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryService, validationReport));
         validationReport.setSqlExecutabilityValidation(validateSqlExecutability(requestContext, sessionId, snapshot, validationReport));
-        validationReport.setOverallStatus(WorkflowValidationUtils.resolveOverallStatus(validationReport.getRuleValidation(),
+        validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getRuleValidation(),
                 validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
-        return WorkflowValidationUtils.finalizeValidation(actualContextStore, snapshot, validationReport);
+        return validationSupport.finalizeValidation(actualContextStore, snapshot, validationReport);
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules, final ValidationReport validationReport) {
@@ -88,18 +90,18 @@ public final class MaskWorkflowValidationService {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Mask rule has been removed.");
             }
-            validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no mask rule", String.valueOf(actualRule.get()),
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", "no mask rule", String.valueOf(actualRule.get()),
                     "Mask rule still exists after drop.", "Drop the mask rule again or investigate the failure."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Mask rule still exists.");
         }
         if (actualRule.isEmpty()) {
-            validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getColumn(), "",
                     "Mask rule is missing.", "Create or alter the mask rule again."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Mask rule is missing.");
         }
         String actualAlgorithmType = WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "algorithm_type", "mask_algorithm");
         if (!WorkflowSqlUtils.trimToEmpty(snapshot.getRequest().getAlgorithmType()).equalsIgnoreCase(actualAlgorithmType)) {
-            validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
                     "Mask algorithm type does not match.", "Re-apply the intended mask rule."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Mask algorithm type does not match.");
         }
@@ -115,7 +117,7 @@ public final class MaskWorkflowValidationService {
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            validationReport.getMismatches().add(WorkflowValidationUtils.createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", validationSql, ex.getMessage(),
+            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", validationSql, ex.getMessage(),
                     "Validation SQL cannot be executed from the logical view.", "Inspect rule state and logical metadata."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, validationSql, ex.getMessage());
         }
