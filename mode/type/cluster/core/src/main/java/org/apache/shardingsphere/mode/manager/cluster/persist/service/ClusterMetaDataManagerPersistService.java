@@ -70,16 +70,22 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
         metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().add(databaseName);
         clusterDatabaseListenerPersistCoordinator.persist(databaseName, ClusterDatabaseListenerCoordinatorType.CREATE);
-        ShardingSphereDatabase reloadDatabase = getReloadedMetaDataContexts(originalMetaDataContexts).getMetaData().getDatabase(databaseName);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().persistCreatedDatabaseSchemas(reloadDatabase);
-        clusterDatabaseListenerPersistCoordinator.delete(databaseName);
+        try {
+            ShardingSphereDatabase reloadDatabase = getReloadedMetaDataContexts(originalMetaDataContexts).getMetaData().getDatabase(databaseName);
+            metaDataPersistFacade.getDatabaseMetaDataFacade().persistCreatedDatabaseSchemas(reloadDatabase);
+        } finally {
+            clusterDatabaseListenerPersistCoordinator.delete(databaseName);
+        }
     }
     
     @Override
     public void dropDatabase(final ShardingSphereDatabase database) {
         clusterDatabaseListenerPersistCoordinator.persist(database.getName(), ClusterDatabaseListenerCoordinatorType.DROP);
-        metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().drop(database.getName());
-        clusterDatabaseListenerPersistCoordinator.delete(database.getName());
+        try {
+            metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase().drop(database.getName());
+        } finally {
+            clusterDatabaseListenerPersistCoordinator.delete(database.getName());
+        }
     }
     
     @Override

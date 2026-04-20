@@ -29,6 +29,8 @@ import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.databa
 import org.apache.shardingsphere.mode.manager.cluster.persist.coordinator.database.ClusterDatabaseListenerPersistCoordinator;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.DatabaseMetaDataPersistFacade;
+import org.apache.shardingsphere.mode.metadata.persist.metadata.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
 import org.apache.shardingsphere.single.rule.SingleRule;
@@ -47,10 +49,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class ClusterMetaDataManagerPersistServiceTest {
@@ -84,10 +88,29 @@ class ClusterMetaDataManagerPersistServiceTest {
     }
     
     @Test
+    void assertCreateDatabaseWithExceptionStillDeletesCoordinator() {
+        DatabaseMetaDataPersistFacade databaseMetaDataPersistFacade = metaDataPersistFacade.getDatabaseMetaDataFacade();
+        doThrow(new IllegalStateException("mocked")).when(databaseMetaDataPersistFacade).persistCreatedDatabaseSchemas(any());
+        assertThrows(IllegalStateException.class, () -> metaDataManagerPersistService.createDatabase("foo_db"));
+        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE);
+        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
+    }
+    
+    @Test
     void assertDropDatabase() {
         metaDataManagerPersistService.dropDatabase(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
         verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
+        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
+    }
+    
+    @Test
+    void assertDropDatabaseWithExceptionStillDeletesCoordinator() {
+        DatabaseMetaDataPersistService databaseMetaDataPersistService = metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase();
+        doThrow(new IllegalStateException("mocked")).when(databaseMetaDataPersistService).drop("foo_db");
+        assertThrows(IllegalStateException.class, () -> metaDataManagerPersistService
+                .dropDatabase(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties()))));
+        verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
         verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
     }
     
