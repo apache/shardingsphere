@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValid
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowValidationToolDescriptorFactory;
+import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public final class ValidateMaskRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowValidationToolDescriptorFactory.create(MaskFeatureDefinition.VALIDATE_TOOL_NAME);
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createValidation(MaskFeatureDefinition.VALIDATE_TOOL_NAME);
     
     private final MaskWorkflowValidationService validationService = new MaskWorkflowValidationService();
     

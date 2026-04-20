@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
+import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
@@ -26,10 +28,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class WorkflowValidationUtilsTest {
     
@@ -91,6 +96,45 @@ class WorkflowValidationUtilsTest {
     }
     
     @Test
+    void assertValidateLogicalMetadataWhenColumnExists() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        ValidationReport validationReport = new ValidationReport();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone"))
+                .thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
+        ValidationSection actualValidationSection = WorkflowValidationUtils.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport);
+        assertThat(actualValidationSection.getStatus(), is("passed"));
+        assertThat(validationReport.getMismatches(), is(List.of()));
+    }
+    
+    @Test
+    void assertValidateLogicalMetadataWhenColumnMissing() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        ValidationReport validationReport = new ValidationReport();
+        ValidationSection actualValidationSection = WorkflowValidationUtils.validateLogicalMetadata(snapshot, mock(MCPMetadataQueryFacade.class), validationReport);
+        assertThat(actualValidationSection.getStatus(), is("failed"));
+        assertThat(((Map<?, ?>) validationReport.getMismatches().get(0)).get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
+    }
+    
+    @Test
+    void assertFinalizeValidation() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setStatus("executed");
+        InteractionPlan interactionPlan = new InteractionPlan();
+        interactionPlan.setCurrentStep("executed");
+        snapshot.setInteractionPlan(interactionPlan);
+        ValidationReport validationReport = new ValidationReport();
+        validationReport.setOverallStatus("passed");
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        contextStore.save(snapshot);
+        Map<String, Object> actualResult = WorkflowValidationUtils.finalizeValidation(contextStore, snapshot, validationReport);
+        assertThat(actualResult.get("status"), is("validated"));
+        assertThat(contextStore.getRequired("plan-1").getStatus(), is("validated"));
+        assertThat(contextStore.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
+    }
+    
+    @Test
     void assertCreateMismatchBuildsExpectedPayload() {
         Map<String, Object> actualMismatch = WorkflowValidationUtils.createMismatch("code", "rule", "expected", "actual", "impact", "fix it");
         assertThat(actualMismatch.get("code"), is("code"));
@@ -99,5 +143,18 @@ class WorkflowValidationUtilsTest {
         assertThat(actualMismatch.get("actual"), is("actual"));
         assertThat(actualMismatch.get("impact"), is("impact"));
         assertThat(actualMismatch.get("suggested_next_action"), is("fix it"));
+    }
+    
+    private WorkflowContextSnapshot createSnapshot() {
+        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
+        result.setSessionId("session-1");
+        result.setStatus("executed");
+        org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest request = new org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setSchema("public");
+        request.setTable("orders");
+        request.setColumn("phone");
+        result.setRequest(request);
+        return result;
     }
 }

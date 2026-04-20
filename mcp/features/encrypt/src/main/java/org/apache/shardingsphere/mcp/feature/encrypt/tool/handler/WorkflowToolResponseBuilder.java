@@ -19,14 +19,9 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
-import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
-import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.IndexPlan;
-import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactMaskUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySources;
 
@@ -45,23 +40,10 @@ final class WorkflowToolResponseBuilder {
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         EncryptWorkflowState workflowState = getEncryptWorkflowState(snapshot);
         WorkflowPropertySource propertySource = WorkflowPropertySources.compose(snapshot.getRequest(), workflowState);
-        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
-        result.put("plan_id", snapshot.getPlanId());
-        result.put("status", snapshot.getStatus());
-        result.put("pending_questions", null == snapshot.getClarifiedIntent() ? List.of() : snapshot.getClarifiedIntent().getPendingQuestions());
-        result.put("issues", snapshot.getIssues().stream().map(WorkflowIssue::toMap).toList());
-        result.put("global_steps", null == snapshot.getInteractionPlan() ? List.of() : snapshot.getInteractionPlan().getSteps());
-        result.put("current_step", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getCurrentStep());
-        result.put("algorithm_recommendations", snapshot.getAlgorithmCandidates().stream().map(AlgorithmCandidate::toMap).toList());
-        result.put("property_requirements", snapshot.getPropertyRequirements().stream().map(AlgorithmPropertyRequirement::toMap).toList());
+        Map<String, Object> result = snapshot.toPlanPayload();
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
         result.put("derived_column_plan", null == workflowState.getDerivedColumnPlan() ? null : workflowState.getDerivedColumnPlan().toMap());
-        result.put("ddl_artifacts", snapshot.getDdlArtifacts().stream().map(DDLArtifact::toMap).toList());
-        result.put("distsql_artifacts", snapshot.getRuleArtifacts().stream().map(each -> createMaskedRuleArtifact(each, propertySource, snapshot)).toList());
-        result.put("index_plan", snapshot.getIndexPlans().stream().map(IndexPlan::toMap).toList());
-        result.put("validation_strategy", null == snapshot.getInteractionPlan() ? Map.of() : snapshot.getInteractionPlan().getValidationStrategy());
-        result.put("delivery_mode", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getDeliveryMode());
-        result.put("execution_mode", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getExecutionMode());
+        result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));
         return result;
     }
     
@@ -82,10 +64,5 @@ final class WorkflowToolResponseBuilder {
     
     private List<AlgorithmPropertyRequirement> filterRequirements(final WorkflowContextSnapshot snapshot, final String role) {
         return snapshot.getPropertyRequirements().stream().filter(each -> role.equals(each.getAlgorithmRole())).toList();
-    }
-    
-    private Map<String, Object> createMaskedRuleArtifact(final RuleArtifact ruleArtifact, final WorkflowPropertySource propertySource,
-                                                         final WorkflowContextSnapshot snapshot) {
-        return WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(ruleArtifact, propertySource, snapshot.getPropertyRequirements());
     }
 }

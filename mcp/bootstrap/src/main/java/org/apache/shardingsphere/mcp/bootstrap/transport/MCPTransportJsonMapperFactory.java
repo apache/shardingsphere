@@ -41,7 +41,6 @@ public final class MCPTransportJsonMapperFactory {
     public static McpJsonMapper create() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.findAndRegisterModules();
         objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.setSerializationInclusion(Include.NON_NULL);

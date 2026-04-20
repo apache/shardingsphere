@@ -21,7 +21,12 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,6 +34,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -96,5 +102,41 @@ public final class ToolHandlerRegistry {
      */
     public static Optional<ToolHandler> findRegisteredHandler(final String toolName) {
         return Optional.ofNullable(REGISTERED_HANDLERS.get(toolName));
+    }
+    
+    /**
+     * Dispatch tool call to registered handler.
+     *
+     * @param requestContext feature context
+     * @param sessionId session identifier
+     * @param toolName tool name
+     * @param arguments tool arguments
+     * @return handled response
+     */
+    public static Optional<MCPResponse> dispatch(final MCPFeatureContext requestContext, final String sessionId,
+                                                 final String toolName, final Map<String, Object> arguments) {
+        Optional<ToolHandler> toolHandler = findRegisteredHandler(toolName);
+        if (toolHandler.isEmpty()) {
+            return Optional.empty();
+        }
+        checkRequiredArguments(arguments, toolHandler.get().getToolDescriptor());
+        return Optional.of(toolHandler.get().handle(requestContext, sessionId, arguments));
+    }
+    
+    private static void checkRequiredArguments(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor) {
+        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
+            if (!each.isRequired()) {
+                continue;
+            }
+            ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> new MCPInvalidRequestException(String.format("%s is required.", each.getName())));
+            if (Type.STRING == each.getValueDefinition().getType()) {
+                checkRequiredTextArgument(arguments, each.getName());
+            }
+        }
+    }
+    
+    private static void checkRequiredTextArgument(final Map<String, Object> arguments, final String argumentName) {
+        String actualValue = Objects.toString(arguments.get(argumentName), "").trim();
+        ShardingSpherePreconditions.checkState(!actualValue.isEmpty(), () -> new MCPInvalidRequestException(String.format("%s is required.", argumentName)));
     }
 }

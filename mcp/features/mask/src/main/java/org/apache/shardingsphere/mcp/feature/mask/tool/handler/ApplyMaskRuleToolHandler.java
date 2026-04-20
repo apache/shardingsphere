@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowExecutionToolDescriptorFactory;
+import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public final class ApplyMaskRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowExecutionToolDescriptorFactory.create(MaskFeatureDefinition.APPLY_TOOL_NAME);
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createExecution(MaskFeatureDefinition.APPLY_TOOL_NAME);
     
     private final WorkflowExecutionService executionService = new WorkflowExecutionService();
     

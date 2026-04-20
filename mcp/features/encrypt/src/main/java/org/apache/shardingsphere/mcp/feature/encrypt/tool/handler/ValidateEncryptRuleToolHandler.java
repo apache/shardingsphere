@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowValidationToolDescriptorFactory;
+import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public final class ValidateEncryptRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowValidationToolDescriptorFactory.create(EncryptFeatureDefinition.VALIDATE_TOOL_NAME);
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createValidation(EncryptFeatureDefinition.VALIDATE_TOOL_NAME);
     
     private final EncryptWorkflowValidationService validationService = new EncryptWorkflowValidationService();
     

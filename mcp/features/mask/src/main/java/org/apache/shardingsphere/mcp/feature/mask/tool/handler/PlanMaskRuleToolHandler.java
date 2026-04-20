@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowPlanningToolDescriptorFactory;
+import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
@@ -42,7 +42,7 @@ import java.util.Map;
  */
 public final class PlanMaskRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowPlanningToolDescriptorFactory.create(MaskFeatureDefinition.PLAN_TOOL_NAME,
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(MaskFeatureDefinition.PLAN_TOOL_NAME,
             List.of(
                     new MCPToolFieldDefinition("user_overrides", new MCPToolValueDefinition(Type.OBJECT, "Optional user overrides for mask algorithm fields.", null), false),
                     new MCPToolFieldDefinition("algorithm_type", new MCPToolValueDefinition(Type.STRING, "Primary mask algorithm type override.", null), false),

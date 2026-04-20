@@ -21,8 +21,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification.Builder;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
@@ -88,6 +87,6 @@ public final class MCPToolSpecificationFactory {
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
         Map<String, Object> payload = toolController.handle(exchange.sessionId(), request.name(), arguments).toPayload();
-        return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(payload.containsKey("error_code")).build();
+        return MCPTransportPayloadUtils.createCallToolResult(payload);
     }
 }

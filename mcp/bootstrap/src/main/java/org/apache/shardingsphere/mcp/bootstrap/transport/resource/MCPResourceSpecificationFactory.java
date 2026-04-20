@@ -21,7 +21,7 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecificatio
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
  * MCP resource specification factory.
  */
 public final class MCPResourceSpecificationFactory {
-    
-    private static final String JSON_CONTENT_TYPE = "application/json";
     
     private final MCPResourceController controller;
     
@@ -78,7 +76,7 @@ public final class MCPResourceSpecificationFactory {
                 .uri(uri)
                 .name(uri.substring(uri.lastIndexOf('/') + 1))
                 .description("ShardingSphere MCP resource: " + uri)
-                .mimeType(JSON_CONTENT_TYPE)
+                .mimeType(MCPTransportPayloadUtils.JSON_CONTENT_TYPE)
                 .build();
     }
     
@@ -87,11 +85,11 @@ public final class MCPResourceSpecificationFactory {
                 .uriTemplate(uriTemplate)
                 .name(uriTemplate.substring(uriTemplate.lastIndexOf('/') + 1))
                 .description("ShardingSphere MCP resource template: " + uriTemplate)
-                .mimeType(JSON_CONTENT_TYPE)
+                .mimeType(MCPTransportPayloadUtils.JSON_CONTENT_TYPE)
                 .build();
     }
     
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {
-        return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(request.uri(), JSON_CONTENT_TYPE, JsonUtils.toJsonString(controller.handle(request.uri()).toPayload()))));
+        return MCPTransportPayloadUtils.createReadResourceResult(request.uri(), controller.handle(request.uri()).toPayload());
     }
 }

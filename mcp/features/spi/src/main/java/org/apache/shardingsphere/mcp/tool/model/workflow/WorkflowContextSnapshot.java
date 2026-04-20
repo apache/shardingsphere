@@ -21,8 +21,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Workflow context snapshot.
@@ -60,4 +62,25 @@ public final class WorkflowContextSnapshot {
     private final List<IndexPlan> indexPlans = new LinkedList<>();
     
     private ValidationReport validationReport;
+    
+    /**
+     * Convert current snapshot to one workflow-plan payload map.
+     *
+     * @return workflow-plan payload
+     */
+    public Map<String, Object> toPlanPayload() {
+        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        result.put("plan_id", planId);
+        result.put("status", status);
+        result.put("pending_questions", null == clarifiedIntent ? List.of() : clarifiedIntent.getPendingQuestions());
+        result.put("issues", issues.stream().map(WorkflowIssue::toMap).toList());
+        result.put("global_steps", null == interactionPlan ? List.of() : interactionPlan.getSteps());
+        result.put("current_step", null == interactionPlan ? "" : interactionPlan.getCurrentStep());
+        result.put("algorithm_recommendations", algorithmCandidates.stream().map(AlgorithmCandidate::toMap).toList());
+        result.put("property_requirements", propertyRequirements.stream().map(AlgorithmPropertyRequirement::toMap).toList());
+        result.put("validation_strategy", null == interactionPlan ? Map.of() : interactionPlan.getValidationStrategy());
+        result.put("delivery_mode", null == interactionPlan ? "" : interactionPlan.getDeliveryMode());
+        result.put("execution_mode", null == interactionPlan ? "" : interactionPlan.getExecutionMode());
+        return result;
+    }
 }

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 
 import java.util.LinkedList;
@@ -55,7 +56,7 @@ public final class WorkflowPlanningContextUtils {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(contextStore.createPlanId());
         result.setSessionId(sessionId);
-        result.setStatus("clarifying");
+        result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
         return result;
     }
     
@@ -106,29 +107,29 @@ public final class WorkflowPlanningContextUtils {
             clarifiedIntent.getPendingQuestions().add("请先提供 logical database。");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
                     "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
-            snapshot.setStatus("clarifying");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
         if (!ensureSupportedIdentifier("database", request.getDatabase(), snapshot)
                 || !ensureSupportedIdentifier("table", request.getTable(), snapshot)
                 || !ensureSupportedIdentifier("column", request.getColumn(), snapshot)) {
-            snapshot.setStatus("failed");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         request.setSchema(resolveSchema(metadataQueryFacade, request));
         if (!ensureSupportedIdentifier("schema", request.getSchema(), snapshot)) {
-            snapshot.setStatus("failed");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         addMissingQuestions(request, clarifiedIntent);
         if (WorkflowSqlUtils.trimToEmpty(request.getSchema()).isEmpty()
                 || WorkflowSqlUtils.trimToEmpty(request.getTable()).isEmpty()
                 || WorkflowSqlUtils.trimToEmpty(request.getColumn()).isEmpty()) {
-            snapshot.setStatus("clarifying");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
         if (!ensureTableExists(metadataQueryFacade, request, snapshot) || !ensureColumnExists(metadataQueryFacade, request, snapshot)) {
-            snapshot.setStatus("failed");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             return false;
         }
         return true;

@@ -18,23 +18,15 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * MCP tool controller.
@@ -54,37 +46,11 @@ public final class MCPToolController {
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
         try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
-            return dispatch(requestContext, sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
+            return ToolHandlerRegistry.dispatch(requestContext, sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             return new MCPErrorResponse(MCPErrorConverter.convert(ex));
         }
-    }
-    
-    Optional<MCPResponse> dispatch(final MCPRequestContext requestContext, final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        Optional<ToolHandler> toolHandler = ToolHandlerRegistry.findRegisteredHandler(toolName);
-        if (toolHandler.isEmpty()) {
-            return Optional.empty();
-        }
-        checkRequiredArguments(arguments, toolHandler.get().getToolDescriptor());
-        return Optional.of(toolHandler.get().handle(requestContext, sessionId, arguments));
-    }
-    
-    private void checkRequiredArguments(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor) {
-        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
-            if (!each.isRequired()) {
-                continue;
-            }
-            ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> new MCPInvalidRequestException(String.format("%s is required.", each.getName())));
-            if (Type.STRING == each.getValueDefinition().getType()) {
-                checkRequiredTextArgument(arguments, each.getName());
-            }
-        }
-    }
-    
-    private void checkRequiredTextArgument(final Map<String, Object> arguments, final String argumentName) {
-        String actualValue = Objects.toString(arguments.get(argumentName), "").trim();
-        ShardingSpherePreconditions.checkState(!actualValue.isEmpty(), () -> new MCPInvalidRequestException(String.format("%s is required.", argumentName)));
     }
 }

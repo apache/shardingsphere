@@ -25,11 +25,24 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * YAML runtime databases configuration swapper.
  */
 public final class YamlRuntimeDatabaseConfigurationsSwapper {
+    
+    private static final String DATABASE_TYPE_KEY = "databaseType";
+    
+    private static final String JDBC_URL_KEY = "jdbcUrl";
+    
+    private static final String USERNAME_KEY = "username";
+    
+    private static final String PASSWORD_KEY = "password";
+    
+    private static final String DRIVER_CLASS_NAME_KEY = "driverClassName";
+    
+    private static final Set<String> SUPPORTED_PROPERTIES = Set.of(DATABASE_TYPE_KEY, JDBC_URL_KEY, USERNAME_KEY, PASSWORD_KEY, DRIVER_CLASS_NAME_KEY);
     
     private final YamlRuntimeDatabaseConfigurationSwapper runtimeDatabaseConfigSwapper = new YamlRuntimeDatabaseConfigurationSwapper();
     
@@ -71,17 +84,21 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
             return null;
         }
         YamlRuntimeDatabaseConfiguration result = new YamlRuntimeDatabaseConfiguration();
-        for (RuntimeDatabaseProperty each : RuntimeDatabaseProperty.values()) {
-            each.setter.setValue(result, getYamlText(yamlProperties, each.key));
-        }
+        result.setDatabaseType(getYamlText(yamlProperties, DATABASE_TYPE_KEY));
+        result.setJdbcUrl(getYamlText(yamlProperties, JDBC_URL_KEY));
+        result.setUsername(getYamlText(yamlProperties, USERNAME_KEY));
+        result.setPassword(getYamlText(yamlProperties, PASSWORD_KEY));
+        result.setDriverClassName(getYamlText(yamlProperties, DRIVER_CLASS_NAME_KEY));
         return result;
     }
     
     private Map<String, Object> createYamlRuntimeDatabaseConfiguration(final YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfig) {
-        Map<String, Object> result = new LinkedHashMap<>(RuntimeDatabaseProperty.values().length, 1F);
-        for (RuntimeDatabaseProperty each : RuntimeDatabaseProperty.values()) {
-            result.put(each.key, each.getter.getValue(yamlRuntimeDatabaseConfig));
-        }
+        Map<String, Object> result = new LinkedHashMap<>(SUPPORTED_PROPERTIES.size(), 1F);
+        result.put(DATABASE_TYPE_KEY, yamlRuntimeDatabaseConfig.getDatabaseType());
+        result.put(JDBC_URL_KEY, yamlRuntimeDatabaseConfig.getJdbcUrl());
+        result.put(USERNAME_KEY, yamlRuntimeDatabaseConfig.getUsername());
+        result.put(PASSWORD_KEY, yamlRuntimeDatabaseConfig.getPassword());
+        result.put(DRIVER_CLASS_NAME_KEY, yamlRuntimeDatabaseConfig.getDriverClassName());
         return result;
     }
     
@@ -90,7 +107,7 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
             return;
         }
         for (String each : yamlProperties.keySet()) {
-            ShardingSpherePreconditions.checkState(RuntimeDatabaseProperty.contains(each),
+            ShardingSpherePreconditions.checkState(SUPPORTED_PROPERTIES.contains(each),
                     () -> new IllegalArgumentException(String.format("Unsupported runtime database property `%s`.", each)));
         }
     }
@@ -98,51 +115,5 @@ public final class YamlRuntimeDatabaseConfigurationsSwapper {
     private String getYamlText(final Map<String, Object> yamlProperties, final String key) {
         Object result = yamlProperties.get(key);
         return null == result ? null : result.toString();
-    }
-    
-    private enum RuntimeDatabaseProperty {
-        
-        DATABASE_TYPE("databaseType", YamlRuntimeDatabaseConfiguration::setDatabaseType, YamlRuntimeDatabaseConfiguration::getDatabaseType),
-        
-        JDBC_URL("jdbcUrl", YamlRuntimeDatabaseConfiguration::setJdbcUrl, YamlRuntimeDatabaseConfiguration::getJdbcUrl),
-        
-        USERNAME("username", YamlRuntimeDatabaseConfiguration::setUsername, YamlRuntimeDatabaseConfiguration::getUsername),
-        
-        PASSWORD("password", YamlRuntimeDatabaseConfiguration::setPassword, YamlRuntimeDatabaseConfiguration::getPassword),
-        
-        DRIVER_CLASS_NAME("driverClassName", YamlRuntimeDatabaseConfiguration::setDriverClassName, YamlRuntimeDatabaseConfiguration::getDriverClassName);
-        
-        private final String key;
-        
-        private final YamlRuntimeDatabasePropertySetter setter;
-        
-        private final YamlRuntimeDatabasePropertyGetter getter;
-        
-        RuntimeDatabaseProperty(final String key, final YamlRuntimeDatabasePropertySetter setter, final YamlRuntimeDatabasePropertyGetter getter) {
-            this.key = key;
-            this.setter = setter;
-            this.getter = getter;
-        }
-        
-        private static boolean contains(final String key) {
-            for (RuntimeDatabaseProperty each : values()) {
-                if (each.key.equals(key)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-    
-    @FunctionalInterface
-    private interface YamlRuntimeDatabasePropertySetter {
-        
-        void setValue(YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfiguration, String value);
-    }
-    
-    @FunctionalInterface
-    private interface YamlRuntimeDatabasePropertyGetter {
-        
-        String getValue(YamlRuntimeDatabaseConfiguration yamlRuntimeDatabaseConfiguration);
     }
 }

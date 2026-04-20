@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
 import java.util.LinkedHashMap;
@@ -58,7 +59,7 @@ public final class WorkflowExecutionService {
      */
     public Map<String, Object> apply(final MCPFeatureContext requestContext, final String sessionId, final String planId,
                                      final List<String> approvedSteps, final String executionMode) {
-        WorkflowContextStore actualContextStore = resolveContextStore(requestContext);
+        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
         WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = checkApplyPreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
@@ -75,93 +76,90 @@ public final class WorkflowExecutionService {
         String currentArtifactSql = "";
         if ("manual-only".equalsIgnoreCase(actualExecutionMode)) {
             if (null != snapshot.getInteractionPlan()) {
-                snapshot.getInteractionPlan().setCurrentStep("manual-execution");
+                snapshot.getInteractionPlan().setCurrentStep(WorkflowLifecycle.STEP_MANUAL_EXECUTION);
             }
-            snapshot.setStatus("awaiting-manual-execution");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION);
             actualContextStore.save(snapshot);
-            issues.add(new WorkflowIssue(WorkflowIssueCode.MANUAL_EXECUTION_PENDING, "warning", "review",
+            issues.add(new WorkflowIssue(WorkflowIssueCode.MANUAL_EXECUTION_PENDING, "warning", WorkflowLifecycle.STEP_REVIEW,
                     "Artifacts are generated in manual-only mode and will not be executed automatically.", "Execute artifacts manually and run validation afterwards.", true, Map.of()).toMap());
-            result.put("status", "awaiting-manual-execution");
+            result.put("status", WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION);
             result.put("issues", issues);
             result.put("step_results", stepResults);
             result.put("executed_ddl", executedDdl);
             result.put("executed_distsql", executedDistSql);
             result.put("skipped_artifacts", skippedArtifacts);
-            result.put("manual_artifact_package", createManualArtifactPackage(snapshot));
+            result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE,
+                    WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, WorkflowPropertySources.compose(snapshot.getRequest(), snapshot.getFeatureData())));
             return result;
         }
         try {
             for (DDLArtifact each : snapshot.getDdlArtifacts()) {
                 currentArtifactType = each.getArtifactType();
                 currentArtifactSql = each.getSql();
-                if (!isApproved(approvedSteps, "ddl")) {
+                if (!isApproved(approvedSteps, WorkflowArtifactPayloadUtils.STEP_DDL)) {
                     skippedArtifacts.add(each.getSql());
-                    stepResults.add(createStepResult(each.getArtifactType(), "skipped", each.getSql()));
+                    stepResults.add(createStepResult(each.getArtifactType(), WorkflowLifecycle.STATUS_SKIPPED, each.getSql()));
                     continue;
                 }
                 requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each.getSql(), 0, 0));
                 executedDdl.add(each.getSql());
-                stepResults.add(createStepResult(each.getArtifactType(), "passed", each.getSql()));
+                stepResults.add(createStepResult(each.getArtifactType(), WorkflowLifecycle.STATUS_PASSED, each.getSql()));
             }
             for (IndexPlan each : snapshot.getIndexPlans()) {
-                currentArtifactType = "create-index";
+                currentArtifactType = WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX;
                 currentArtifactSql = each.getSql();
-                if (!isApproved(approvedSteps, "index_ddl")) {
+                if (!isApproved(approvedSteps, WorkflowArtifactPayloadUtils.STEP_INDEX_DDL)) {
                     skippedArtifacts.add(each.getSql());
-                    stepResults.add(createStepResult("create-index", "skipped", each.getSql()));
+                    stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX, WorkflowLifecycle.STATUS_SKIPPED, each.getSql()));
                     continue;
                 }
                 requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each.getSql(), 0, 0));
                 executedDdl.add(each.getSql());
-                stepResults.add(createStepResult("create-index", "passed", each.getSql()));
+                stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_CREATE_INDEX, WorkflowLifecycle.STATUS_PASSED, each.getSql()));
             }
             for (RuleArtifact each : snapshot.getRuleArtifacts()) {
-                currentArtifactType = "rule_distsql";
+                currentArtifactType = WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL;
                 currentArtifactSql = each.getSql();
-                if (!isApproved(approvedSteps, "rule_distsql")) {
+                if (!isApproved(approvedSteps, WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL)) {
                     skippedArtifacts.add(each.getSql());
-                    stepResults.add(createStepResult("rule_distsql", "skipped", each.getSql()));
+                    stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, WorkflowLifecycle.STATUS_SKIPPED, each.getSql()));
                     continue;
                 }
                 requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each.getSql(), 0, 0));
                 executedDistSql.add(each.getSql());
-                stepResults.add(createStepResult("rule_distsql", "passed", each.getSql()));
+                stepResults.add(createStepResult(WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL, WorkflowLifecycle.STATUS_PASSED, each.getSql()));
             }
             if (null != snapshot.getInteractionPlan()) {
-                snapshot.getInteractionPlan().setCurrentStep("executed");
+                snapshot.getInteractionPlan().setCurrentStep(WorkflowLifecycle.STEP_EXECUTED);
             }
-            snapshot.setStatus("executed");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_EXECUTED);
             actualContextStore.save(snapshot);
-            result.put("status", "completed");
+            result.put("status", WorkflowLifecycle.STATUS_COMPLETED);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             String issueCode = resolveIssueCode(currentArtifactType);
-            stepResults.add(createStepResult(currentArtifactType, "failed", currentArtifactSql));
+            stepResults.add(createStepResult(currentArtifactType, WorkflowLifecycle.STATUS_FAILED, currentArtifactSql));
             issues.add(new WorkflowIssue(issueCode, "error", "executing", ex.getMessage(), "Fix the failed artifact and retry execution.", true,
                     Map.of("artifact_type", currentArtifactType, "sql", currentArtifactSql)).toMap());
             if (null != snapshot.getInteractionPlan()) {
-                snapshot.getInteractionPlan().setCurrentStep("failed");
+                snapshot.getInteractionPlan().setCurrentStep(WorkflowLifecycle.STEP_FAILED);
             }
-            snapshot.setStatus("failed");
+            snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
             actualContextStore.save(snapshot);
-            result.put("status", "failed");
+            result.put("status", WorkflowLifecycle.STATUS_FAILED);
         }
         result.put("issues", issues);
         result.put("step_results", stepResults);
         result.put("executed_ddl", executedDdl);
         result.put("executed_distsql", executedDistSql);
         result.put("skipped_artifacts", skippedArtifacts);
-        result.put("manual_artifact_package", Map.of());
+        result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, Map.of());
         return result;
     }
     
-    private WorkflowContextStore resolveContextStore(final MCPFeatureContext requestContext) {
-        return null == contextStore ? requestContext.getWorkflowContextStore() : contextStore;
-    }
-    
     private Map<String, Object> checkApplyPreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {
-        if (!isOwnedBySession(sessionId, snapshot)) {
+        if (!WorkflowLifecycleUtils.isOwnedBySession(sessionId, snapshot)) {
             return createRejectedResponse(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH, "The workflow plan belongs to another MCP session.",
                     "Continue the workflow from the same session that created the plan.");
         }
@@ -173,40 +171,33 @@ public final class WorkflowExecutionService {
         return Map.of();
     }
     
-    private boolean isOwnedBySession(final String sessionId, final WorkflowContextSnapshot snapshot) {
-        return WorkflowSqlUtils.trimToEmpty(snapshot.getSessionId()).isEmpty() || snapshot.getSessionId().equals(sessionId);
-    }
-    
     private boolean isApplicableStatus(final WorkflowContextSnapshot snapshot) {
         String actualStatus = WorkflowSqlUtils.trimToEmpty(snapshot.getStatus());
-        if ("planned".equalsIgnoreCase(actualStatus) || "awaiting-manual-execution".equalsIgnoreCase(actualStatus)) {
+        if (WorkflowLifecycle.STATUS_PLANNED.equalsIgnoreCase(actualStatus)
+                || WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equalsIgnoreCase(actualStatus)) {
             return true;
         }
-        if (!"failed".equalsIgnoreCase(actualStatus)) {
+        if (!WorkflowLifecycle.STATUS_FAILED.equalsIgnoreCase(actualStatus)) {
             return false;
         }
-        String currentStep = resolveCurrentStep(snapshot);
-        return "failed".equalsIgnoreCase(currentStep) || "validated".equalsIgnoreCase(currentStep);
-    }
-    
-    private String resolveCurrentStep(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getInteractionPlan() ? "" : WorkflowSqlUtils.trimToEmpty(snapshot.getInteractionPlan().getCurrentStep());
+        String currentStep = WorkflowLifecycleUtils.resolveCurrentStep(snapshot);
+        return WorkflowLifecycle.STEP_FAILED.equalsIgnoreCase(currentStep) || WorkflowLifecycle.STEP_VALIDATED.equalsIgnoreCase(currentStep);
     }
     
     private Map<String, Object> createRejectedResponse(final String issueCode, final String message, final String userAction) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("status", "failed");
-        result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "review", message, userAction, false, Map.of()).toMap()));
+        result.put("status", WorkflowLifecycle.STATUS_FAILED);
+        result.put("issues", List.of(new WorkflowIssue(issueCode, "error", WorkflowLifecycle.STEP_REVIEW, message, userAction, false, Map.of()).toMap()));
         result.put("step_results", List.of());
         result.put("executed_ddl", List.of());
         result.put("executed_distsql", List.of());
         result.put("skipped_artifacts", List.of());
-        result.put("manual_artifact_package", Map.of());
+        result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, Map.of());
         return result;
     }
     
     private String resolveIssueCode(final String artifactType) {
-        return "rule_distsql".equalsIgnoreCase(artifactType) ? WorkflowIssueCode.RULE_EXECUTION_FAILED : WorkflowIssueCode.DDL_EXECUTION_FAILED;
+        return WorkflowArtifactPayloadUtils.ARTIFACT_TYPE_RULE_DISTSQL.equalsIgnoreCase(artifactType) ? WorkflowIssueCode.RULE_EXECUTION_FAILED : WorkflowIssueCode.DDL_EXECUTION_FAILED;
     }
     
     private boolean isApproved(final List<String> approvedSteps, final String step) {
@@ -218,16 +209,6 @@ public final class WorkflowExecutionService {
         result.put("artifact_type", artifactType);
         result.put("status", status);
         result.put("sql", sql);
-        return result;
-    }
-    
-    private Map<String, Object> createManualArtifactPackage(final WorkflowContextSnapshot snapshot) {
-        WorkflowPropertySource propertySource = WorkflowPropertySources.compose(snapshot.getRequest(), snapshot.getFeatureData());
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("ddl_artifacts", snapshot.getDdlArtifacts().stream().map(DDLArtifact::toMap).toList());
-        result.put("index_plan", snapshot.getIndexPlans().stream().map(IndexPlan::toMap).toList());
-        result.put("distsql_artifacts", snapshot.getRuleArtifacts().stream()
-                .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, propertySource, snapshot.getPropertyRequirements())).toList());
         return result;
     }
 }

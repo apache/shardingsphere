@@ -19,6 +19,12 @@ package org.apache.shardingsphere.mcp.tool.handler;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -29,6 +35,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -65,8 +72,31 @@ class ToolHandlerRegistryTest {
     }
     
     @Test
+    void assertDispatch() {
+        MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
+        runtimeContext.getSessionManager().createSession("session-1");
+        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+            Optional<MCPResponse> actual = ToolHandlerRegistry.dispatch(requestContext, "session-1", "search_metadata", Map.of("query", "order", "object_types", List.of("index")));
+            assertTrue(actual.isPresent());
+            assertThat(((List<?>) actual.orElseThrow().toPayload().get("items")).size(), is(1));
+        }
+    }
+    
+    @Test
     void assertFindRegisteredHandlerWithUnknownToolName() {
         assertFalse(ToolHandlerRegistry.findRegisteredHandler("unknown_tool").isPresent());
+    }
+    
+    @Test
+    void assertDispatchWithUnknownToolName() {
+        assertFalse(ToolHandlerRegistry.dispatch(mock(MCPFeatureContext.class), "session-1", "unknown_tool", Map.of()).isPresent());
+    }
+    
+    @Test
+    void assertDispatchWithMissingRequiredArgument() {
+        MCPInvalidRequestException actual =
+                assertThrows(MCPInvalidRequestException.class, () -> ToolHandlerRegistry.dispatch(mock(MCPFeatureContext.class), "session-1", "search_metadata", Map.of()));
+        assertThat(actual.getMessage(), is("query is required."));
     }
     
     @Test

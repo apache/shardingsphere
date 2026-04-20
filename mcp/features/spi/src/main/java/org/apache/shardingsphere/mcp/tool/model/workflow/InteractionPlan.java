@@ -45,4 +45,31 @@ public final class InteractionPlan {
     private final List<String> steps = new LinkedList<>();
     
     private final Map<String, Object> validationStrategy = new LinkedHashMap<>(8, 1F);
+    
+    /**
+     * Create interaction plan.
+     *
+     * @param planId workflow plan identifier
+     * @param request workflow request
+     * @param summary interaction summary
+     * @param steps interaction steps
+     * @param validationLayers validation layers
+     * @return interaction plan
+     */
+    public static InteractionPlan create(final String planId, final WorkflowRequest request, final String summary,
+                                         final List<String> steps, final List<String> validationLayers) {
+        InteractionPlan result = new InteractionPlan();
+        result.setPlanId(planId);
+        result.setSummary(summary);
+        result.setCurrentStep(WorkflowLifecycle.STEP_INTAKING);
+        result.setDeliveryMode(resolveMode(request.getDeliveryMode(), "all-at-once"));
+        result.setExecutionMode(resolveMode(request.getExecutionMode(), "review-then-execute"));
+        result.getSteps().addAll(steps);
+        result.getValidationStrategy().put("layers", validationLayers);
+        return result;
+    }
+    
+    private static String resolveMode(final String requestedMode, final String defaultMode) {
+        return null == requestedMode || requestedMode.isBlank() ? defaultMode : requestedMode;
+    }
 }

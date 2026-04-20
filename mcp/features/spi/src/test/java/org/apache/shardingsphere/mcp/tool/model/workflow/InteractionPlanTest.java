@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.service.workflow;
+package org.apache.shardingsphere.mcp.tool.model.workflow;
 
-import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -26,14 +24,14 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-class InteractionPlanFactoryTest {
+class InteractionPlanTest {
     
     @Test
     void assertCreateUsesExplicitModes() {
         WorkflowRequest request = new WorkflowRequest();
         request.setDeliveryMode("step-by-step");
         request.setExecutionMode("manual-only");
-        InteractionPlan actual = InteractionPlanFactory.create("plan-1", request, "Encrypt workflow plan.", List.of("inspect", "plan"), List.of("rules", "ddl"));
+        InteractionPlan actual = InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("inspect", "plan"), List.of("rules", "ddl"));
         assertThat(actual.getPlanId(), is("plan-1"));
         assertThat(actual.getSummary(), is("Encrypt workflow plan."));
         assertThat(actual.getCurrentStep(), is("intaking"));
@@ -48,7 +46,7 @@ class InteractionPlanFactoryTest {
         WorkflowRequest request = new WorkflowRequest();
         request.setDeliveryMode(" ");
         request.setExecutionMode("");
-        InteractionPlan actual = InteractionPlanFactory.create("plan-2", request, "Mask workflow plan.", List.of("inspect"), List.of("rules"));
+        InteractionPlan actual = InteractionPlan.create("plan-2", request, "Mask workflow plan.", List.of("inspect"), List.of("rules"));
         assertThat(actual.getDeliveryMode(), is("all-at-once"));
         assertThat(actual.getExecutionMode(), is("review-then-execute"));
     }
