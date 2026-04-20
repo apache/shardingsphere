@@ -25,6 +25,8 @@ import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.Test;
@@ -39,9 +41,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -89,5 +92,27 @@ class JDBCBackendStatementTest {
         Statement actualWithoutGeneratedKeys = backendStatement.createStorageResource(
                 new ExecutionUnit("ds", new SQLUnit(sql, Collections.emptyList())), connection, 0, ConnectionMode.CONNECTION_STRICTLY, new StatementOption(false), databaseType);
         assertThat(actualWithoutGeneratedKeys, is(preparedStatement));
+    }
+    
+    @Test
+    void assertCreateStorageResourceWithPreparedStatementCache() throws SQLException {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        PreparedStatementCacheContext cacheContext = new PreparedStatementCacheContext(8);
+        when(connectionSession.getPreparedStatementCacheContext()).thenReturn(cacheContext);
+        JDBCBackendStatement backendStatement = new JDBCBackendStatement(connectionSession);
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        String sql = "SELECT * FROM foo WHERE id = ?";
+        when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+        when(DatabaseTypedSPILoader.findService(StatementMemoryStrictlyFetchSizeSetter.class, databaseType)).thenReturn(Optional.empty());
+        StatementOption statementOption = new StatementOption(false);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(1))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
+        backendStatement.createStorageResource(
+                new ExecutionUnit("ds", new SQLUnit(sql, Collections.singletonList(2))), connection, 0, ConnectionMode.CONNECTION_STRICTLY, statementOption, databaseType);
+        verify(connection).prepareStatement(sql);
+        verify(preparedStatement, times(2)).clearParameters();
+        verify(preparedStatement).setObject(1, 1);
+        verify(preparedStatement).setObject(1, 2);
     }
 }

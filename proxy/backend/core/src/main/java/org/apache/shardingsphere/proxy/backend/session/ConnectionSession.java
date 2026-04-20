@@ -65,6 +65,8 @@ public final class ConnectionSession {
     @SuppressWarnings("rawtypes")
     private final ExecutorStatementManager statementManager;
     
+    private final PreparedStatementCacheContext preparedStatementCacheContext = new PreparedStatementCacheContext();
+    
     private final ServerPreparedStatementRegistry serverPreparedStatementRegistry = new ServerPreparedStatementRegistry();
     
     private final AtomicReference<ConnectionContext> connectionContext = new AtomicReference<>();
@@ -80,7 +82,7 @@ public final class ConnectionSession {
         transactionStatus = new TransactionStatus();
         this.attributeMap = attributeMap;
         databaseConnectionManager = new ProxyDatabaseConnectionManager(this);
-        statementManager = new JDBCBackendStatement();
+        statementManager = new JDBCBackendStatement(this);
     }
     
     /**

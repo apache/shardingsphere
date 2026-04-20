@@ -349,6 +349,7 @@ public final class ProxyDatabaseConnectionManager implements DatabaseConnectionM
             }
             cachedConnections.clear();
         }
+        connectionSession.getPreparedStatementCacheContext().closeAll();
         if (!forceRollback) {
             connectionPostProcessors.clear();
         }

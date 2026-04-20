@@ -164,6 +164,11 @@ class ConnectionSessionTest {
         assertNull(connectionSession.getQueryContext());
     }
     
+    @Test
+    void assertPreparedStatementCacheContext() {
+        assertNotNull(connectionSession.getPreparedStatementCacheContext());
+    }
+    
     @SuppressWarnings("unchecked")
     private AtomicReference<ConnectionContext> getConnectionContextReference() throws ReflectiveOperationException {
         return (AtomicReference<ConnectionContext>) Plugins.getMemberAccessor().get(ConnectionSession.class.getDeclaredField("connectionContext"), connectionSession);

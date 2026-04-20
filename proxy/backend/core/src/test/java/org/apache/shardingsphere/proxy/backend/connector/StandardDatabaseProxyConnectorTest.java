@@ -107,6 +107,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
 import java.lang.reflect.Field;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -136,6 +137,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -800,6 +802,22 @@ class StandardDatabaseProxyConnectorTest {
         verify(statement).cancel();
         verify(statement).close();
         assertTrue(cachedResultSets.isEmpty());
+        assertTrue(cachedStatements.isEmpty());
+    }
+    
+    @Test
+    void assertCloseSkipCachedPreparedStatement() throws SQLException {
+        SQLStatementContext sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getTablesContext().getDatabaseNames()).thenReturn(Collections.emptyList());
+        when(sqlStatementContext.getSqlStatement().getDatabaseType()).thenReturn(databaseType);
+        DatabaseProxyConnector engine = createDatabaseProxyConnector(JDBCDriverType.STATEMENT, createQueryContext(sqlStatementContext, mockDatabase()));
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
+        cachedStatements.add(preparedStatement);
+        when(databaseConnectionManager.getConnectionSession().getPreparedStatementCacheContext().contains(preparedStatement)).thenReturn(true);
+        engine.close();
+        verify(preparedStatement, never()).cancel();
+        verify(preparedStatement, never()).close();
         assertTrue(cachedStatements.isEmpty());
     }
     
