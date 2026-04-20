@@ -96,36 +96,6 @@ public final class ShardingRouteAssert {
         return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(queryContext, mock(RuleMetaData.class), database);
     }
     
-    /**
-     * Assert route with database type.
-     *
-     * @param sql SQL
-     * @param params parameters
-     * @param databaseType database type
-     * @return route context
-     */
-    public static RouteContext assertRoute(final String sql, final List<Object> params, final DatabaseType databaseType) {
-        ShardingRule shardingRule = ShardingRouteEngineFixtureBuilder.createAllShardingRule();
-        SingleRule singleRule = ShardingRouteEngineFixtureBuilder.createSingleRule(Collections.singleton(shardingRule));
-        TimestampServiceRule timestampServiceRule = ShardingRouteEngineFixtureBuilder.createTimeServiceRule();
-        SQLParserRule sqlParserRule = new SQLParserRule(new SQLParserRuleConfiguration(new CacheOption(2000, 65535L), new CacheOption(128, 1024L)));
-        SQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(databaseType);
-        ShardingSphereRule broadcastRule = mock(ShardingSphereRule.class, RETURNS_DEEP_STUBS);
-        TableMapperRuleAttribute ruleAttribute = mock(TableMapperRuleAttribute.class);
-        when(ruleAttribute.getDistributedTableNames()).thenReturn(Collections.singleton("t_product"));
-        when(broadcastRule.getAttributes().findAttribute(TableMapperRuleAttribute.class)).thenReturn(Optional.of(ruleAttribute));
-        RuleMetaData ruleMetaData = new RuleMetaData(Arrays.asList(shardingRule, broadcastRule, singleRule, timestampServiceRule));
-        ShardingSphereDatabase database =
-                new ShardingSphereDatabase("foo_db", databaseType, mock(ResourceMetaData.class, RETURNS_DEEP_STUBS), ruleMetaData, buildSchemas(), new ConfigurationProperties(new Properties()));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(Collections.singleton(database), mock(), mock(), mock());
-        SQLStatementContext sqlStatementContext = new SQLBindEngine(metaData, "foo_db", new HintValueContext()).bind(sqlParserEngine.parse(sql, false));
-        ConnectionContext connectionContext = new ConnectionContext(Collections::emptySet);
-        connectionContext.setCurrentDatabaseName("foo_db");
-        QueryContext queryContext = new QueryContext(sqlStatementContext, sql, params, new HintValueContext(), connectionContext, metaData);
-        ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        return new SQLRouteEngine(Arrays.asList(shardingRule, singleRule), props).route(queryContext, mock(RuleMetaData.class), database);
-    }
-    
     private static Collection<ShardingSphereSchema> buildSchemas() {
         Collection<ShardingSphereTable> tables = new LinkedList<>();
         tables.add(new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
