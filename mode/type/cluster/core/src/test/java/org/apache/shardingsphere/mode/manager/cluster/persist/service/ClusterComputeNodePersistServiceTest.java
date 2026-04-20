@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.yaml.YamlComputeNodeData;
 import org.apache.shardingsphere.infra.state.instance.InstanceState;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,8 +40,10 @@ import java.util.Optional;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -98,6 +101,13 @@ class ClusterComputeNodePersistServiceTest {
     void assertUpdateState() {
         computeNodePersistService.updateState("foo_instance_id", InstanceState.OK);
         verify(repository).persistEphemeral("/nodes/compute_nodes/status/foo_instance_id", InstanceState.OK.name());
+    }
+    
+    @Test
+    void assertUpdateStateThrowsExceptionWhenPersistEphemeralFails() {
+        doThrow(new ClusterRepositoryPersistException(new RuntimeException("connection lost")))
+                .when(repository).persistEphemeral("/nodes/compute_nodes/status/foo_instance_id", InstanceState.OK.name());
+        assertThrows(ClusterRepositoryPersistException.class, () -> computeNodePersistService.updateState("foo_instance_id", InstanceState.OK));
     }
     
     @Test

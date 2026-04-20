@@ -35,12 +35,12 @@ class ZookeeperExceptionHandlerTest {
     
     @Test
     void assertHandleConnectionLossException() {
-        assertDoesNotThrow(() -> ZookeeperExceptionHandler.handleException(new ConnectionLossException()));
+        assertThrows(ClusterRepositoryPersistException.class, () -> ZookeeperExceptionHandler.handleException(new ConnectionLossException()));
     }
     
     @Test
     void assertHandleConnectionLossExceptionWithCause() {
-        assertDoesNotThrow(() -> ZookeeperExceptionHandler.handleException(new Exception(new ConnectionLossException())));
+        assertThrows(ClusterRepositoryPersistException.class, () -> ZookeeperExceptionHandler.handleException(new Exception(new ConnectionLossException())));
     }
     
     @Test
