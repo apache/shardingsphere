@@ -105,15 +105,15 @@ class EncryptAlterTableTokenGeneratorTest {
         Iterator<SQLToken> actualIterator = actual.iterator();
         assertThat(actualIterator.next(), isA(RemoveToken.class));
         EncryptColumnToken cipherToken = (EncryptColumnToken) actualIterator.next();
-        assertThat(cipherToken.toString(), is("cipher_certificate_number VARCHAR(4000)"));
+        assertThat(cipherToken.toString(), is("cipher_certificate_number VARCHAR(1024)"));
         assertThat(cipherToken.getStartIndex(), is(68));
         assertThat(cipherToken.getStopIndex(), is(67));
         EncryptColumnToken assistedToken = (EncryptColumnToken) actualIterator.next();
-        assertThat(assistedToken.toString(), is(", ADD COLUMN assisted_certificate_number VARCHAR(4000)"));
+        assertThat(assistedToken.toString(), is(", ADD COLUMN assisted_certificate_number VARCHAR(1024)"));
         assertThat(assistedToken.getStartIndex(), is(68));
         assertThat(assistedToken.getStopIndex(), is(67));
         EncryptColumnToken likeToken = (EncryptColumnToken) actualIterator.next();
-        assertThat(likeToken.toString(), is(", ADD COLUMN like_certificate_number VARCHAR(4000)"));
+        assertThat(likeToken.toString(), is(", ADD COLUMN like_certificate_number VARCHAR(1024)"));
         assertThat(likeToken.getStartIndex(), is(68));
         assertThat(likeToken.getStopIndex(), is(67));
     }

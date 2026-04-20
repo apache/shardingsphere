@@ -26,5 +26,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptColumnDataType {
     
-    public static final String DEFAULT_DATA_TYPE = "VARCHAR(4000)";
+    public static final String DEFAULT_DATA_TYPE = "VARCHAR(1024)";
 }
