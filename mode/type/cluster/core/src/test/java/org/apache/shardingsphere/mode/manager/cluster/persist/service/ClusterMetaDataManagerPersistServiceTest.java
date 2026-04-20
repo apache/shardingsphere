@@ -80,6 +80,7 @@ class ClusterMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.createDatabase("foo_db");
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).add("foo_db");
         verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.CREATE);
+        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
     }
     
     @Test
@@ -87,6 +88,7 @@ class ClusterMetaDataManagerPersistServiceTest {
         metaDataManagerPersistService.dropDatabase(new ShardingSphereDatabase("foo_db", mock(), mock(), mock(), Collections.emptyList(), new ConfigurationProperties(new Properties())));
         verify(clusterDatabaseListenerPersistCoordinator).persist("foo_db", ClusterDatabaseListenerCoordinatorType.DROP);
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade().getDatabase()).drop("foo_db");
+        verify(clusterDatabaseListenerPersistCoordinator).delete("foo_db");
     }
     
     @Test
