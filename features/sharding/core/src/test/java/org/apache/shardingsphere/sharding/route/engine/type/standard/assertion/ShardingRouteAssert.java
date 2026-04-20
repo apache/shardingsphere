@@ -149,13 +149,6 @@ public final class ShardingRouteAssert {
                 Collections.emptyList(), Collections.emptyList()));
         tables.add(new ShardingSphereTable("t_hint_test", Collections.singleton(new ShardingSphereColumn("user_id", Types.INTEGER, true, false, false, true, false, false)),
                 Collections.emptyList(), Collections.emptyList()));
-        tables.add(new ShardingSphereTable("t_order_non_binding", Arrays.asList(
-                new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true, false, false),
-                new ShardingSphereColumn("user_id", Types.INTEGER, false, false, false, true, false, false),
-                new ShardingSphereColumn("status", Types.INTEGER, false, false, false, true, false, false)),
-                Collections.emptyList(), Collections.emptyList()));
-        return Arrays.asList(
-                new ShardingSphereSchema("foo_db", mock(DatabaseType.class), tables, Collections.emptyList()),
-                new ShardingSphereSchema("public", mock(DatabaseType.class), tables, Collections.emptyList()));
+        return Collections.singleton(new ShardingSphereSchema("foo_db", mock(DatabaseType.class), tables, Collections.emptyList()));
     }
 }
