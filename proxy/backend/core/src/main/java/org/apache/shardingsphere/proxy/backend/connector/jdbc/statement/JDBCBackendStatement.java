@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCStatementManager;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementCacheContext;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,6 +41,16 @@ import java.util.Optional;
  */
 public final class JDBCBackendStatement implements ExecutorJDBCStatementManager {
     
+    private final ConnectionSession connectionSession;
+    
+    public JDBCBackendStatement() {
+        this(null);
+    }
+    
+    public JDBCBackendStatement(final ConnectionSession connectionSession) {
+        this.connectionSession = connectionSession;
+    }
+    
     @Override
     public Statement createStorageResource(final Connection connection, final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         Statement result = connection.createStatement();
@@ -53,9 +65,8 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
                                            final ConnectionMode connectionMode, final StatementOption option, final DatabaseType databaseType) throws SQLException {
         String sql = executionUnit.getSqlUnit().getSql();
         List<Object> params = executionUnit.getSqlUnit().getParameters();
-        PreparedStatement result = option.isReturnGeneratedKeys()
-                ? connection.prepareStatement(executionUnit.getSqlUnit().getSql(), Statement.RETURN_GENERATED_KEYS)
-                : connection.prepareStatement(sql);
+        PreparedStatement result = getPreparedStatement(connection, sql, option.isReturnGeneratedKeys());
+        result.clearParameters();
         Iterator<Object> paramIterator = params.iterator();
         int index = 0;
         while (paramIterator.hasNext()) {
@@ -71,6 +82,18 @@ public final class JDBCBackendStatement implements ExecutorJDBCStatementManager 
             setFetchSize(result, databaseType);
         }
         return result;
+    }
+    
+    private PreparedStatement getPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys) throws SQLException {
+        if (null == connectionSession) {
+            return createPreparedStatement(connection, sql, returnGeneratedKeys);
+        }
+        PreparedStatementCacheContext cacheContext = connectionSession.getPreparedStatementCacheContext();
+        return cacheContext.getOrCreate(connection, sql, returnGeneratedKeys, () -> createPreparedStatement(connection, sql, returnGeneratedKeys));
+    }
+    
+    private PreparedStatement createPreparedStatement(final Connection connection, final String sql, final boolean returnGeneratedKeys) throws SQLException {
+        return returnGeneratedKeys ? connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS) : connection.prepareStatement(sql);
     }
     
     private void setFetchSize(final Statement statement, final DatabaseType databaseType) throws SQLException {
