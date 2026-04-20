@@ -63,7 +63,7 @@ public final class PackagedDistributionTestSupport {
         Path workingHome = copyDistributionHome(sourceDistributionHome, tempDir.resolve("distribution-home"));
         deleteDirectoryIfExists(workingHome.resolve("data"));
         deleteDirectoryIfExists(workingHome.resolve("logs"));
-        deleteDirectoryIfExists(workingHome.resolve("ext-lib"));
+        deleteDirectoryIfExists(workingHome.resolve("plugins"));
         Path startScript = workingHome.resolve("bin/start.sh");
         startScript.toFile().setExecutable(true);
         int httpPort = RuntimeTransport.HTTP == transport ? allocatePort() : -1;

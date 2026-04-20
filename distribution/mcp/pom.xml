@@ -36,6 +36,19 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-mcp-bootstrap</artifactId>
             <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mcp-feature-encrypt</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mcp-feature-mask</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -119,8 +132,9 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
+                                <delete dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/ext-lib" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/data" />
-                                <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/ext-lib" />
+                                <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/plugins" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/logs" />
                                 <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/start.sh" perm="755" />
                                 <chmod file="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/bin/docker-entrypoint.sh" perm="755" />

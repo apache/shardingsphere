@@ -58,7 +58,11 @@ final class StdioTransportTestClient implements AutoCloseable {
     private boolean closed;
     
     StdioTransportTestClient(final Path configFile) throws IOException {
-        process = createProcessBuilder(configFile, createLogbackConfigurationFile(configFile)).start();
+        this(configFile, System.getProperty("java.class.path"));
+    }
+    
+    StdioTransportTestClient(final Path configFile, final String classpath) throws IOException {
+        process = createProcessBuilder(configFile, createLogbackConfigurationFile(configFile), classpath).start();
         stdErrorCollector = startStdErrorCollector(process, stdErrorMessages);
         writer = new BufferedWriter(new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
         reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8));
@@ -91,19 +95,21 @@ final class StdioTransportTestClient implements AutoCloseable {
     }
     
     List<String> getStringList(final Map<String, Object> payload, final String fieldName) {
-        return objectMapper.convertValue(payload.get(fieldName), new TypeReference<List<String>>() {
+        return objectMapper.convertValue(payload.get(fieldName), new TypeReference<>() {
         });
     }
     
     Map<String, Object> request(final String requestId, final String method, final Map<String, Object> params) throws IOException {
-        writer.write(objectMapper.writeValueAsString(Map.of("jsonrpc", "2.0", "id", requestId, "method", method, "params", params)));
-        writer.newLine();
-        writer.flush();
+        writeMessage(Map.of("jsonrpc", "2.0", "id", requestId, "method", method, "params", params));
         return getResult(readResponse(requestId));
     }
     
     void notifyServer(final String method, final Map<String, Object> params) throws IOException {
-        writer.write(objectMapper.writeValueAsString(Map.of("jsonrpc", "2.0", "method", method, "params", params)));
+        writeMessage(Map.of("jsonrpc", "2.0", "method", method, "params", params));
+    }
+    
+    private void writeMessage(final Map<String, Object> payload) throws IOException {
+        writer.write(objectMapper.writeValueAsString(payload));
         writer.newLine();
         writer.flush();
     }
@@ -130,9 +136,9 @@ final class StdioTransportTestClient implements AutoCloseable {
         }
     }
     
-    private ProcessBuilder createProcessBuilder(final Path configFile, final Path logbackConfigFile) {
+    private ProcessBuilder createProcessBuilder(final Path configFile, final Path logbackConfigFile, final String classpath) {
         return new ProcessBuilder(Paths.get(System.getProperty("java.home"), "bin", "java").toString(),
-                "-Dlogback.configurationFile=" + logbackConfigFile, "-cp", System.getProperty("java.class.path"), MCPBootstrap.class.getName(), configFile.toString());
+                "-Dlogback.configurationFile=" + logbackConfigFile, "-cp", classpath, MCPBootstrap.class.getName(), configFile.toString());
     }
     
     private Path createLogbackConfigurationFile(final Path configFile) throws IOException {

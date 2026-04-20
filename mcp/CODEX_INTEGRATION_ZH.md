@@ -23,7 +23,7 @@ Codex -> ShardingSphere MCP -> JDBC Driver -> Local Database
 - 你的数据库能够从当前机器访问
 - 对应数据库 JDBC driver 可用
 
-如果目标数据库驱动没有被发行包自带，请把 driver jar 放到发行包目录的 `ext-lib/` 下。
+如果目标数据库驱动或额外的 MCP feature jar 没有被发行包自带，请把对应 jar 放到发行包目录的 `plugins/` 下。
 
 ## 3. 先构建发行包
 
@@ -378,7 +378,7 @@ codex mcp get shardingsphere-mcp-local
 把对应 jar 放到：
 
 ```text
-${DIST_DIR}/ext-lib/
+${DIST_DIR}/plugins/
 ```
 
 然后重新启动 MCP runtime。
@@ -398,7 +398,7 @@ ${DIST_DIR}/ext-lib/
 
 1. 构建发行包
 2. 准备 `mcp-codex-stdio.yaml`
-3. 把目标数据库 driver 放到 `ext-lib/`
+3. 把目标数据库 driver 放到 `plugins/`
 4. 用 `codex mcp add ... -- "${DIST_DIR}/bin/start.sh" ...` 注册
 5. 重启 Codex 或新开会话
 6. 先读取 `shardingsphere://databases` 和目标 table/view resource 验证元数据

@@ -57,10 +57,10 @@ class MCPToolSpecificationFactoryTest {
     private Path tempDir;
     
     @Test
-    void assertCreateToolSpecificationsWithExpectedToolNames() {
+    void assertCreateToolSpecificationsContainsExpectedBaselineToolNames() {
         MCPToolSpecificationFactory factory = createFactory();
         List<SyncToolSpecification> actual = factory.createToolSpecifications();
-        assertThat(actual.stream().map(each -> each.tool().name()).collect(Collectors.toSet()), is(Set.of(
+        assertTrue(actual.stream().map(each -> each.tool().name()).collect(Collectors.toSet()).containsAll(Set.of(
                 "search_metadata", "execute_query", "plan_encrypt_rule", "validate_encrypt_rule",
                 "apply_encrypt_rule", "plan_mask_rule", "validate_mask_rule", "apply_mask_rule")));
     }
@@ -98,7 +98,9 @@ class MCPToolSpecificationFactoryTest {
                                                        final String expectedPayloadKey, final Object expectedPayloadValue, final boolean expectedHasMessage, final String expectedMessage) {
         MCPToolSpecificationFactory factory = createFactory();
         List<SyncToolSpecification> actual = factory.createToolSpecifications();
-        SyncToolSpecification actualSpecification = findToolSpecification(actual, "execute_query");
+        SyncToolSpecification actualSpecification = actual.stream().anyMatch(each -> toolName.equals(each.tool().name()))
+                ? findToolSpecification(actual, toolName)
+                : findToolSpecification(actual, "execute_query");
         McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
         when(exchange.sessionId()).thenReturn("session-1");
         McpSchema.CallToolResult actualResult = actualSpecification.callHandler().apply(exchange, new McpSchema.CallToolRequest(toolName, arguments));

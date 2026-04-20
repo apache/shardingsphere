@@ -21,7 +21,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 APP_HOME=$(cd "${SCRIPT_DIR}/.." && pwd)
 CONF_FILE=${1:-"${APP_HOME}/conf/mcp.yaml"}
 LIB_DIR="${APP_HOME}/lib"
-EXT_LIB_DIR="${APP_HOME}/ext-lib"
+PLUGINS_DIR="${APP_HOME}/plugins"
 DATA_DIR="${APP_HOME}/data"
 LOG_DIR="${APP_HOME}/logs"
 
@@ -35,7 +35,7 @@ if [ ! -d "${LIB_DIR}" ]; then
   exit 1
 fi
 
-mkdir -p "${DATA_DIR}" "${EXT_LIB_DIR}" "${LOG_DIR}"
+mkdir -p "${DATA_DIR}" "${PLUGINS_DIR}" "${LOG_DIR}"
 
 if [ -n "${JAVA_HOME:-}" ] && [ -x "${JAVA_HOME}/bin/java" ]; then
   JAVA="${JAVA_HOME}/bin/java"
@@ -47,8 +47,8 @@ else
 fi
 
 CLASSPATH="${APP_HOME}/conf:${LIB_DIR}/*"
-if [ -d "${EXT_LIB_DIR}" ]; then
-  CLASSPATH="${CLASSPATH}:${EXT_LIB_DIR}/*"
+if [ -d "${PLUGINS_DIR}" ]; then
+  CLASSPATH="${CLASSPATH}:${PLUGINS_DIR}/*"
 fi
 
 cd "${APP_HOME}"

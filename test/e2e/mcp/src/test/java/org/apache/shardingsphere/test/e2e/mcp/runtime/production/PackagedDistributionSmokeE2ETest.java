@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
@@ -42,20 +43,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledOnOs({OS.LINUX, OS.MAC})
 @EnabledIf("isEnabled")
 class PackagedDistributionSmokeE2ETest {
     
-    private static final List<String> EXPECTED_TOOL_NAMES = List.of(
-            "search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
-            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule");
+    private static final List<String> EXPECTED_RUNTIME_ARTIFACT_IDS = List.of(
+            "shardingsphere-mcp-bootstrap", "shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
     
     private static final long STARTUP_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(20L);
     
@@ -74,12 +76,7 @@ class PackagedDistributionSmokeE2ETest {
         try (
                 PackagedDistributionHttpRuntime runtime = new PackagedDistributionHttpRuntime(distribution);
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
-            assertBootstrapDirectoriesCreated(distribution.home());
-            assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
-            assertSupportedTools(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"));
-            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(),
-                    containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
-                            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule"));
+            assertOfficialPackagedRuntime(distribution.home(), interactionClient);
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE", "VIEW"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items", "active_orders"));
@@ -94,12 +91,7 @@ class PackagedDistributionSmokeE2ETest {
         PreparedPackagedDistribution distribution = PackagedDistributionTestSupport.prepare(tempDir.resolve("stdio"), RuntimeTransport.STDIO);
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
             interactionClient.open();
-            assertBootstrapDirectoriesCreated(distribution.home());
-            assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
-            assertSupportedTools(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"));
-            assertThat(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList(),
-                    containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
-                            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule"));
+            assertOfficialPackagedRuntime(distribution.home(), interactionClient);
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items"));
@@ -112,7 +104,29 @@ class PackagedDistributionSmokeE2ETest {
     private void assertBootstrapDirectoriesCreated(final Path distributionHome) {
         assertTrue(Files.isDirectory(distributionHome.resolve("data")));
         assertTrue(Files.isDirectory(distributionHome.resolve("logs")));
-        assertTrue(Files.isDirectory(distributionHome.resolve("ext-lib")));
+        assertTrue(Files.isDirectory(distributionHome.resolve("plugins")));
+    }
+    
+    private void assertLegacyExtensionDirectoryRemoved(final Path distributionHome) {
+        assertFalse(Files.exists(distributionHome.resolve("ext-lib")));
+    }
+    
+    private void assertOfficialPackagedRuntime(final Path distributionHome, final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+        assertBootstrapDirectoriesCreated(distributionHome);
+        assertLegacyExtensionDirectoryRemoved(distributionHome);
+        assertOfficialFeatureJarsPackaged(distributionHome);
+        assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
+        assertSupportedTools(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"));
+        assertOfficialToolNames(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList());
+    }
+    
+    private void assertOfficialFeatureJarsPackaged(final Path distributionHome) throws IOException {
+        try (Stream<Path> paths = Files.list(distributionHome.resolve("lib"))) {
+            List<String> actualJarNames = paths.map(each -> each.getFileName().toString()).toList();
+            for (String each : EXPECTED_RUNTIME_ARTIFACT_IDS) {
+                assertTrue(actualJarNames.stream().anyMatch(actual -> actual.contains(each)));
+            }
+        }
     }
     
     private void assertDatabaseNames(final Map<String, Object> payload, final String... expectedDatabases) {
@@ -121,7 +135,11 @@ class PackagedDistributionSmokeE2ETest {
     }
     
     private void assertSupportedTools(final Object supportedTools) {
-        assertThat(((List<?>) supportedTools).stream().map(String::valueOf).toList(), containsInAnyOrder(EXPECTED_TOOL_NAMES.toArray()));
+        assertOfficialToolNames(((List<?>) supportedTools).stream().map(String::valueOf).toList());
+    }
+    
+    private void assertOfficialToolNames(final List<String> actualToolNames) {
+        assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
     }
     
     private List<String> getItemNames(final Map<String, Object> payload) {

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
@@ -38,10 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
-    
-    private static final List<String> EXPECTED_TOOL_NAMES = List.of(
-            "search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
-            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule");
     
     private String jdbcUrl;
     
@@ -81,8 +78,7 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
     @Test
     void assertServiceCapabilitiesResource() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertThat(((List<?>) interactionClient.readResource("shardingsphere://capabilities").get("supportedTools")).stream().map(String::valueOf).toList(),
-                    containsInAnyOrder(EXPECTED_TOOL_NAMES.toArray()));
+            assertOfficialToolNames(((List<?>) interactionClient.readResource("shardingsphere://capabilities").get("supportedTools")).stream().map(String::valueOf).toList());
         }
     }
     
@@ -90,12 +86,14 @@ abstract class AbstractProductionH2RuntimeSmokeE2ETest extends AbstractProductio
     void assertListTools() throws IOException, InterruptedException {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> actual = interactionClient.listTools();
-            assertThat(actual.stream().map(each -> String.valueOf(each.get("name"))).toList(),
-                    containsInAnyOrder("search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule",
-                            "plan_mask_rule", "apply_mask_rule", "validate_mask_rule"));
+            assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
             assertToolDefinition(actual, "search_metadata", "Search Metadata", "query", "object_types", "array");
             assertToolDefinition(actual, "execute_query", "Execute Query", "sql", "timeout_ms", "integer");
         }
+    }
+    
+    private void assertOfficialToolNames(final List<String> actualToolNames) {
+        assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
     }
     
     @ParameterizedTest(name = "{0}")

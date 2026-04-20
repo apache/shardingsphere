@@ -49,15 +49,15 @@ class MCPResourceSpecificationFactoryTest {
     private Path tempDir;
     
     @Test
-    void assertCreateResourceSpecifications() {
+    void assertCreateResourceSpecificationsContainsExpectedBaselineResources() {
         MCPResourceSpecificationFactory factory = createFactory();
         List<SyncResourceSpecification> actual = factory.createResourceSpecifications();
-        assertThat(actual.size(), is(4));
-        assertTrue(actual.stream().noneMatch(each -> each.resource().uri().contains("{")));
-        assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://capabilities"));
-        assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://databases"));
-        assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://features/encrypt/algorithms"));
-        assertTrue(actual.stream().map(each -> each.resource().uri()).toList().contains("shardingsphere://features/mask/algorithms"));
+        List<String> actualResourceUris = actual.stream().map(each -> each.resource().uri()).toList();
+        assertTrue(actualResourceUris.stream().noneMatch(each -> each.contains("{")));
+        assertTrue(actualResourceUris.contains("shardingsphere://capabilities"));
+        assertTrue(actualResourceUris.contains("shardingsphere://databases"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/encrypt/algorithms"));
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
         SyncResourceSpecification actualSpecification = findResourceSpecification(actual, "shardingsphere://capabilities");
         assertThat(actualSpecification.resource().name(), is("capabilities"));
         assertThat(actualSpecification.resource().description(), is("ShardingSphere MCP resource: shardingsphere://capabilities"));
@@ -69,12 +69,14 @@ class MCPResourceSpecificationFactoryTest {
         TextResourceContents actualContent = (TextResourceContents) actualResult.contents().get(0);
         Map<String, Object> actualPayload = JsonUtils.fromJsonString(actualContent.text(), new TypeReference<>() {
         });
-        assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
-        assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://features/encrypt/databases/{database}/rules"));
-        assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
-        assertTrue(((List<?>) actualPayload.get("supportedTools")).contains("search_metadata"));
-        assertTrue(((List<?>) actualPayload.get("supportedTools")).contains("plan_encrypt_rule"));
-        assertTrue(((List<?>) actualPayload.get("supportedTools")).contains("plan_mask_rule"));
+        List<?> actualSupportedResources = (List<?>) actualPayload.get("supportedResources");
+        assertTrue(actualSupportedResources.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
+        assertTrue(actualSupportedResources.contains("shardingsphere://features/encrypt/databases/{database}/rules"));
+        assertTrue(actualSupportedResources.contains("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
+        List<?> actualSupportedTools = (List<?>) actualPayload.get("supportedTools");
+        assertTrue(actualSupportedTools.contains("search_metadata"));
+        assertTrue(actualSupportedTools.contains("plan_encrypt_rule"));
+        assertTrue(actualSupportedTools.contains("plan_mask_rule"));
         assertTrue(((List<?>) actualPayload.get("supportedStatementClasses")).contains("QUERY"));
     }
     
