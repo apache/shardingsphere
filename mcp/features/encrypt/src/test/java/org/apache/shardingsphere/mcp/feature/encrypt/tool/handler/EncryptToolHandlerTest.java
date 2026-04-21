@@ -79,10 +79,10 @@ class EncryptToolHandlerTest {
         ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
         verify(planningService).plan(any(), eq("session-1"), requestCaptor.capture());
         EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
-        assertFalse(actualRequest.getAllowIndexDDL());
+        assertFalse(actualRequest.getOptions().getAllowIndexDDL());
         assertThat(actualRequest.getAlgorithmType(), is("AES"));
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
-        assertThat(actualRequest.getCipherColumnName(), is("phone_cipher"));
+        assertThat(actualRequest.getOptions().getCipherColumnName(), is("phone_cipher"));
     }
     
     @Test

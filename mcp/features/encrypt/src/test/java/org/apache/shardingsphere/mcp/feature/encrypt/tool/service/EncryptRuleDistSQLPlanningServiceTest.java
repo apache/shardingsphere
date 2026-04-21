@@ -92,12 +92,12 @@ class EncryptRuleDistSQLPlanningServiceTest {
     
     private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
         EncryptWorkflowState result = new EncryptWorkflowState();
-        result.setRequiresEqualityFilter(equalityFilter);
-        result.setRequiresLikeQuery(likeQuery);
-        result.setAssistedQueryAlgorithmType("MD5");
-        result.getAssistedQueryAlgorithmProperties().put("salt", "salt");
-        result.setLikeQueryAlgorithmType("FPE");
-        result.getLikeQueryAlgorithmProperties().put("salt", "salt");
+        result.getOptions().setRequiresEqualityFilter(equalityFilter);
+        result.getOptions().setRequiresLikeQuery(likeQuery);
+        result.getOptions().setAssistedQueryAlgorithmType("MD5");
+        result.getOptions().getAssistedQueryAlgorithmProperties().put("salt", "salt");
+        result.getOptions().setLikeQueryAlgorithmType("FPE");
+        result.getOptions().getLikeQueryAlgorithmProperties().put("salt", "salt");
         result.setDerivedColumnPlan(createDerivedColumnPlan());
         return result;
     }

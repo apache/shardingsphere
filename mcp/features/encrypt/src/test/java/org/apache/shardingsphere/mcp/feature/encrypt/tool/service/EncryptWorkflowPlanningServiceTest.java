@@ -156,9 +156,9 @@ class EncryptWorkflowPlanningServiceTest {
         when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
         EncryptWorkflowRequest request = createNaturalLanguageRequest("给手机号加密，需要可逆和等值查询，不需要like");
         request.setAlgorithmType("AES");
-        request.setAssistedQueryAlgorithmType("MD5");
+        request.getOptions().setAssistedQueryAlgorithmType("MD5");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
-        request.setAllowIndexDDL(false);
+        request.getOptions().setAllowIndexDDL(false);
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(new WorkflowContextStore(), ruleInspectionService,
                 new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(), derivedColumnNamingService,
                 mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class), ruleDistSQLPlanningService);
@@ -166,9 +166,9 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptWorkflowState actualState = (EncryptWorkflowState) actual.getFeatureData();
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getClarifiedIntent().getOperationType(), is("create"));
-        assertTrue(actualState.getRequiresDecrypt());
-        assertTrue(actualState.getRequiresEqualityFilter());
-        assertFalse(actualState.getRequiresLikeQuery());
+        assertTrue(actualState.getOptions().getRequiresDecrypt());
+        assertTrue(actualState.getOptions().getRequiresEqualityFilter());
+        assertFalse(actualState.getOptions().getRequiresLikeQuery());
     }
     
     @Test
@@ -216,7 +216,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, derivedColumnNamingService, physicalDDLPlanningService, indexPlanningService, ruleDistSQLPlanningService);
         EncryptWorkflowRequest request = createRequest("create");
-        request.setAllowIndexDDL(false);
+        request.getOptions().setAllowIndexDDL(false);
         WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", request);
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getDdlArtifacts().size(), is(1));
@@ -249,9 +249,9 @@ class EncryptWorkflowPlanningServiceTest {
         result.setTable("orders");
         result.setColumn("phone");
         result.setOperationType(operationType);
-        result.setRequiresDecrypt(true);
-        result.setRequiresEqualityFilter(false);
-        result.setRequiresLikeQuery(false);
+        result.getOptions().setRequiresDecrypt(true);
+        result.getOptions().setRequiresEqualityFilter(false);
+        result.getOptions().setRequiresLikeQuery(false);
         return result;
     }
     

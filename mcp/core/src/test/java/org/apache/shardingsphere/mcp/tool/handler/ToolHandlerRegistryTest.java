@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
@@ -33,6 +34,7 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +104,7 @@ class ToolHandlerRegistryTest {
     @Test
     void assertGetSupportedToolsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class)).thenReturn(Collections.emptyList());
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(Collections.emptyList());
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolHandlerRegistry.class.getName(), false, createIsolatedToolHandlerRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
                     () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedTools"), null));
@@ -130,11 +132,26 @@ class ToolHandlerRegistryTest {
         assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", blankNameHandler.getClass().getName())));
     }
     
+    @Test
+    void assertLoadHandlersFromFeatureProviders() {
+        ToolHandler firstHandler = createToolHandler("search_metadata");
+        ToolHandler secondHandler = createToolHandler("execute_query");
+        Map<String, ToolHandler> actual = ToolHandlerRegistry.createRegisteredHandlers(List.copyOf(createFeatureProvider(List.of(firstHandler, secondHandler)).getToolHandlers()));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.keySet().stream().toList(), is(List.of("search_metadata", "execute_query")));
+    }
+    
     private static ToolHandler createToolHandler(final String toolName) {
         MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
         when(descriptor.getName()).thenReturn(toolName);
         ToolHandler result = mock(ToolHandler.class);
         when(result.getToolDescriptor()).thenReturn(descriptor);
+        return result;
+    }
+    
+    private static MCPFeatureProvider createFeatureProvider(final Collection<ToolHandler> toolHandlers) {
+        MCPFeatureProvider result = mock(MCPFeatureProvider.class);
+        when(result.getToolHandlers()).thenReturn(toolHandlers);
         return result;
     }
     

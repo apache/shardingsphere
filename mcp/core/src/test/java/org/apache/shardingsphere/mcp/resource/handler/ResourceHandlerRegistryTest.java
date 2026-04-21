@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -70,7 +71,8 @@ class ResourceHandlerRegistryTest {
     void assertGetRegisteredHandlersFailure(final String name, final Collection<ResourceHandler> handlers,
                                             final Class<? extends Throwable> expectedCauseType, final String expectedMessage) throws ReflectiveOperationException {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class)).thenReturn(handlers);
+            MCPFeatureProvider featureProvider = createFeatureProvider(handlers);
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
             Class<?> registryClass = Class.forName(ResourceHandlerRegistry.class.getName(), false, createIsolatedResourceHandlerRegistryClassLoader());
             var getRegisteredHandlersMethod = registryClass.getDeclaredMethod("getRegisteredHandlers");
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
@@ -121,6 +123,12 @@ class ResourceHandlerRegistryTest {
     private static ResourceHandler createResourceHandler(final String uriPattern) {
         ResourceHandler result = mock(ResourceHandler.class);
         when(result.getUriPattern()).thenReturn(uriPattern);
+        return result;
+    }
+    
+    private static MCPFeatureProvider createFeatureProvider(final Collection<ResourceHandler> resourceHandlers) {
+        MCPFeatureProvider result = mock(MCPFeatureProvider.class);
+        when(result.getResourceHandlers()).thenReturn(resourceHandlers);
         return result;
     }
     

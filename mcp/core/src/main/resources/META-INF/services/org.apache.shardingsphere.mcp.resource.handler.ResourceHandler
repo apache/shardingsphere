@@ -14,22 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler
-org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.SchemaHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.SequencesHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.SequenceHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.TablesHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.ViewsHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.TableHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnsHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.ViewHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnsHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler
-org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler
+# Resource handlers are registered via org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider.

@@ -29,8 +29,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningSupport;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningCoordinator;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
@@ -55,7 +54,7 @@ public final class MaskWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of("rules", "logical_metadata", "sql_executability");
     
-    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
+    private final WorkflowPlanningCoordinator planningCoordinator = new WorkflowPlanningCoordinator();
     
     private final MaskWorkflowIntentResolver intentResolver = new MaskWorkflowIntentResolver();
     
@@ -94,36 +93,7 @@ public final class MaskWorkflowPlanningService {
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot plan(final MCPFeatureContext requestContext, final String sessionId, final WorkflowRequest request) {
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
-        WorkflowContextSnapshot result = actualContextStore.getOrCreate(sessionId, request.getPlanId());
-        WorkflowRequest mergedRequest = prepareSnapshot(result, request);
-        ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
-        applyResolvedIntent(mergedRequest, clarifiedIntent);
-        MCPMetadataQueryFacade metadataQueryService = requestContext.getMetadataQueryFacade();
-        if (!planningSupport.ensurePlanningContext(metadataQueryService, mergedRequest, clarifiedIntent, result)) {
-            return actualContextStore.persist(result,
-                    WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING, result.getStatus());
-        }
-        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(requestContext, mergedRequest.getDatabase(), mergedRequest.getTable());
-        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, maskRules, result)) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
-        }
-        if (isDropWorkflow(clarifiedIntent)) {
-            planArtifacts(clarifiedIntent, mergedRequest, maskRules, result);
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
-        }
-        planAlgorithms(requestContext, clarifiedIntent, mergedRequest, result);
-        if (hasBlockingAlgorithmIssues(clarifiedIntent, result)) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
-        }
-        if (!clarifiedIntent.getPendingQuestions().isEmpty()) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
-        }
-        if (!collectPropertyRequirements(mergedRequest, clarifiedIntent, result)) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
-        }
-        planArtifacts(clarifiedIntent, mergedRequest, maskRules, result);
-        return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+        return planningCoordinator.plan(requestContext, sessionId, request, contextStore, new MaskPlanningScenario());
     }
     
     private void applyResolvedIntent(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
@@ -223,5 +193,59 @@ public final class MaskWorkflowPlanningService {
         snapshot.getRuleArtifacts().add(isDropWorkflow(clarifiedIntent)
                 ? ruleDistSQLPlanningService.planMaskDropRule(request, maskRules)
                 : ruleDistSQLPlanningService.planMaskRule(request, maskRules));
+    }
+    
+    private final class MaskPlanningScenario implements WorkflowPlanningCoordinator.WorkflowPlanningScenario<WorkflowRequest, Void> {
+        
+        @Override
+        public WorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+            return MaskWorkflowPlanningService.this.prepareSnapshot(snapshot, request);
+        }
+        
+        @Override
+        public void applyResolvedIntent(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+            MaskWorkflowPlanningService.this.applyResolvedIntent(request, clarifiedIntent);
+        }
+        
+        @Override
+        public List<Map<String, Object>> queryRules(final MCPFeatureContext requestContext, final WorkflowRequest request) {
+            return ruleInspectionService.queryMaskRules(requestContext, request.getDatabase(), request.getTable());
+        }
+        
+        @Override
+        public boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
+                                            final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
+            return MaskWorkflowPlanningService.this.ensureLifecycleState(clarifiedIntent, request, existingRules, snapshot);
+        }
+        
+        @Override
+        public Void getWorkflowState(final WorkflowContextSnapshot snapshot) {
+            return null;
+        }
+        
+        @Override
+        public boolean isDropWorkflow(final ClarifiedIntent clarifiedIntent) {
+            return MaskWorkflowPlanningService.this.isDropWorkflow(clarifiedIntent);
+        }
+        
+        @Override
+        public void planDrop(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryFacade, final Void workflowState,
+                             final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final List<Map<String, Object>> existingRules,
+                             final WorkflowContextSnapshot snapshot) {
+            planArtifacts(clarifiedIntent, request, existingRules, snapshot);
+        }
+        
+        @Override
+        public boolean planNonDrop(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryFacade, final Void workflowState,
+                                   final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final List<Map<String, Object>> existingRules,
+                                   final WorkflowContextSnapshot snapshot) {
+            planAlgorithms(requestContext, clarifiedIntent, request, snapshot);
+            if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot) || !clarifiedIntent.getPendingQuestions().isEmpty()
+                    || !collectPropertyRequirements(request, clarifiedIntent, snapshot)) {
+                return false;
+            }
+            planArtifacts(clarifiedIntent, request, existingRules, snapshot);
+            return true;
+        }
     }
 }

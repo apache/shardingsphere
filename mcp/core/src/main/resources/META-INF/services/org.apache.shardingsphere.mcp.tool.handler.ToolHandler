@@ -14,6 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler
-org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler
+# Tool handlers are registered via org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider.

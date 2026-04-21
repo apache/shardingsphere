@@ -14,7 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskAlgorithmsHandler
-org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler
-org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandler
+# Mask resource handlers are registered via org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider.

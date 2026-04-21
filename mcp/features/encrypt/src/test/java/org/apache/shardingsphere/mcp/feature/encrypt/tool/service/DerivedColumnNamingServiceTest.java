@@ -56,7 +56,7 @@ class DerivedColumnNamingServiceTest {
         WorkflowRequest request = new WorkflowRequest();
         request.setColumn("phone");
         EncryptWorkflowState workflowState = createWorkflowState(false, false);
-        workflowState.setCipherColumnName("phone-cipher");
+        workflowState.getOptions().setCipherColumnName("phone-cipher");
         List<WorkflowIssue> issues = new LinkedList<>();
         DerivedColumnPlan actual = service.createPlan(request, workflowState, new LinkedHashSet<>(), issues);
         assertThat(actual.getCipherColumnName(), is("phone_cipher"));
@@ -79,8 +79,8 @@ class DerivedColumnNamingServiceTest {
     
     private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
         EncryptWorkflowState result = new EncryptWorkflowState();
-        result.setRequiresEqualityFilter(equalityFilter);
-        result.setRequiresLikeQuery(likeQuery);
+        result.getOptions().setRequiresEqualityFilter(equalityFilter);
+        result.getOptions().setRequiresLikeQuery(likeQuery);
         return result;
     }
 }

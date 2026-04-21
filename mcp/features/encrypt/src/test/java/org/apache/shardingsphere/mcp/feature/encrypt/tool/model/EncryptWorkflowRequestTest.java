@@ -30,16 +30,16 @@ class EncryptWorkflowRequestTest {
     void assertCopyCreatesDetachedRequest() {
         EncryptWorkflowRequest originalRequest = new EncryptWorkflowRequest();
         originalRequest.setAlgorithmType("AES");
-        originalRequest.setRequiresDecrypt(true);
-        originalRequest.setAssistedQueryAlgorithmType("MD5");
-        originalRequest.getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
+        originalRequest.getOptions().setRequiresDecrypt(true);
+        originalRequest.getOptions().setAssistedQueryAlgorithmType("MD5");
+        originalRequest.getOptions().getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
         EncryptWorkflowRequest actualRequest = originalRequest.copy();
-        originalRequest.setAssistedQueryAlgorithmType("SM3");
-        originalRequest.getAssistedQueryAlgorithmProperties().put("salt", "abc");
+        originalRequest.getOptions().setAssistedQueryAlgorithmType("SM3");
+        originalRequest.getOptions().getAssistedQueryAlgorithmProperties().put("salt", "abc");
         assertThat(actualRequest.getAlgorithmType(), is("AES"));
-        assertTrue(actualRequest.getRequiresDecrypt());
-        assertThat(actualRequest.getAssistedQueryAlgorithmType(), is("MD5"));
-        assertThat(actualRequest.getAssistedQueryAlgorithmProperties().size(), is(1));
+        assertTrue(actualRequest.getOptions().getRequiresDecrypt());
+        assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmType(), is("MD5"));
+        assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmProperties().size(), is(1));
     }
     
     @Test
@@ -51,13 +51,13 @@ class EncryptWorkflowRequestTest {
         previousRequest.setColumn("phone");
         previousRequest.getPrimaryAlgorithmProperties().put("aes-key-value", "previous-key");
         EncryptWorkflowState previousState = new EncryptWorkflowState();
-        previousState.setRequiresDecrypt(true);
-        previousState.setAssistedQueryAlgorithmType("MD5");
-        previousState.getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
+        previousState.getOptions().setRequiresDecrypt(true);
+        previousState.getOptions().setAssistedQueryAlgorithmType("MD5");
+        previousState.getOptions().getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
         EncryptWorkflowRequest currentRequest = new EncryptWorkflowRequest();
         currentRequest.setOperationType("alter");
-        currentRequest.setRequiresLikeQuery(true);
-        currentRequest.setLikeQueryAlgorithmType("CHAR_DIGEST_LIKE");
+        currentRequest.getOptions().setRequiresLikeQuery(true);
+        currentRequest.getOptions().setLikeQueryAlgorithmType("CHAR_DIGEST_LIKE");
         currentRequest.getPrimaryAlgorithmProperties().put("aes-key-value", "current-key");
         EncryptWorkflowRequest actualRequest = EncryptWorkflowRequest.merge(previousRequest, previousState, currentRequest);
         assertThat(actualRequest.getPlanId(), is("plan-1"));
@@ -65,11 +65,11 @@ class EncryptWorkflowRequestTest {
         assertThat(actualRequest.getTable(), is("orders"));
         assertThat(actualRequest.getColumn(), is("phone"));
         assertThat(actualRequest.getOperationType(), is("alter"));
-        assertTrue(actualRequest.getRequiresDecrypt());
-        assertTrue(actualRequest.getRequiresLikeQuery());
-        assertThat(actualRequest.getAssistedQueryAlgorithmType(), is("MD5"));
-        assertThat(actualRequest.getLikeQueryAlgorithmType(), is("CHAR_DIGEST_LIKE"));
+        assertTrue(actualRequest.getOptions().getRequiresDecrypt());
+        assertTrue(actualRequest.getOptions().getRequiresLikeQuery());
+        assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmType(), is("MD5"));
+        assertThat(actualRequest.getOptions().getLikeQueryAlgorithmType(), is("CHAR_DIGEST_LIKE"));
         assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("current-key"));
-        assertThat(actualRequest.getAssistedQueryAlgorithmProperties().get("digest-algorithm-name"), is("SHA-256"));
+        assertThat(actualRequest.getOptions().getAssistedQueryAlgorithmProperties().get("digest-algorithm-name"), is("SHA-256"));
     }
 }

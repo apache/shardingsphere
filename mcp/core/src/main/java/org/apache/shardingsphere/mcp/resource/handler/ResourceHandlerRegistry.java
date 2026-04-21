@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.feature.MCPFeatureProviderRegistry;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
@@ -53,7 +53,7 @@ public final class ResourceHandlerRegistry {
     }
     
     private static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers() {
-        return createRegisteredHandlers(new ArrayList<>(ShardingSphereServiceLoader.getServiceInstances(ResourceHandler.class)));
+        return createRegisteredHandlers(MCPFeatureProviderRegistry.loadResourceHandlers());
     }
     
     static Map<MCPUriPattern, ResourceHandler> createRegisteredHandlers(final Collection<ResourceHandler> handlers) {

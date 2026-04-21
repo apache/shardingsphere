@@ -286,9 +286,10 @@ If you want to add another feature beyond encrypt and mask, keep the implementat
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
 - For each public tool, implement `ToolHandler` and provide a unique `MCPToolDescriptor`
 - For each public resource, implement `ResourceHandler` and provide a unique URI pattern
-- Register `org.apache.shardingsphere.mcp.tool.handler.ToolHandler` and `org.apache.shardingsphere.mcp.resource.handler.ResourceHandler` under `src/main/resources/META-INF/services/`
+- Implement one `MCPFeatureProvider` that returns the feature-owned tool and resource handlers
+- Register `org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider` under `src/main/resources/META-INF/services/`
 - Keep feature URIs under `shardingsphere://features/<feature>/...` so they do not leak into shared metadata paths
-- `mcp/core` discovers and validates these handlers through `ShardingSphereServiceLoader`; `mcp/bootstrap` only publishes the final protocol surface
+- `mcp/core` discovers feature providers through `ShardingSphereServiceLoader`, flattens their handlers, and validates global uniqueness; `mcp/bootstrap` only publishes the final protocol surface
 - Tool names and resource URI patterns must stay globally unique; duplicate registrations are rejected during startup validation
 
 The encrypt and mask modules are the recommended reference implementations.

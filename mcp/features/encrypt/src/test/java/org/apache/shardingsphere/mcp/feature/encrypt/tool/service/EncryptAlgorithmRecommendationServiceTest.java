@@ -61,7 +61,7 @@ class EncryptAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendEncryptAlgorithmsWithSpecifiedBuiltinPrimary() {
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
-        workflowState.setRequiresDecrypt(true);
+        workflowState.getOptions().setRequiresDecrypt(true);
         WorkflowRequest request = new WorkflowRequest();
         request.setAlgorithmType("AES");
         List<WorkflowIssue> issues = new LinkedList<>();
@@ -87,7 +87,7 @@ class EncryptAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendEncryptAlgorithmsWithMissingAssistedQueryAlgorithm() {
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
-        workflowState.setRequiresEqualityFilter(true);
+        workflowState.getOptions().setRequiresEqualityFilter(true);
         WorkflowRequest request = new WorkflowRequest();
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(workflowState, request, List.of(createAlgorithmRow("AES", true, true, false)), issues);
@@ -111,7 +111,7 @@ class EncryptAlgorithmRecommendationServiceTest {
     @Test
     void assertRecommendEncryptAlgorithmsWithLikeRequirementUsesLikeCapableAlgorithms() {
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
-        workflowState.setRequiresLikeQuery(true);
+        workflowState.getOptions().setRequiresLikeQuery(true);
         WorkflowRequest request = new WorkflowRequest();
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(workflowState, request, List.of(

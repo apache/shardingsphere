@@ -30,15 +30,15 @@ class EncryptWorkflowStateTest {
     @Test
     void assertFromCopiesRequestState() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
-        request.setAllowIndexDDL(true);
-        request.setRequiresDecrypt(true);
-        request.setCipherColumnName("phone_cipher");
-        request.getLikeQueryAlgorithmProperties().put("delta", "1");
+        request.getOptions().setAllowIndexDDL(true);
+        request.getOptions().setRequiresDecrypt(true);
+        request.getOptions().setCipherColumnName("phone_cipher");
+        request.getOptions().getLikeQueryAlgorithmProperties().put("delta", "1");
         EncryptWorkflowState actualState = EncryptWorkflowState.from(request);
-        assertTrue(actualState.getAllowIndexDDL());
-        assertTrue(actualState.getRequiresDecrypt());
-        assertThat(actualState.getCipherColumnName(), is("phone_cipher"));
-        assertThat(actualState.getLikeQueryAlgorithmProperties().get("delta"), is("1"));
+        assertTrue(actualState.getOptions().getAllowIndexDDL());
+        assertTrue(actualState.getOptions().getRequiresDecrypt());
+        assertThat(actualState.getOptions().getCipherColumnName(), is("phone_cipher"));
+        assertThat(actualState.getOptions().getLikeQueryAlgorithmProperties().get("delta"), is("1"));
     }
     
     @Test
@@ -52,17 +52,17 @@ class EncryptWorkflowStateTest {
     @Test
     void assertCopyCreatesDetachedState() {
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
-        workflowState.setCipherColumnName("phone_cipher");
-        workflowState.getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
+        workflowState.getOptions().setCipherColumnName("phone_cipher");
+        workflowState.getOptions().getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
         DerivedColumnPlan derivedColumnPlan = new DerivedColumnPlan();
         derivedColumnPlan.setCipherColumnName("phone_cipher");
         workflowState.setDerivedColumnPlan(derivedColumnPlan);
         EncryptWorkflowState actualState = workflowState.copy();
-        assertThat(actualState.getCipherColumnName(), is("phone_cipher"));
-        workflowState.setCipherColumnName("phone_cipher_v2");
-        workflowState.getAssistedQueryAlgorithmProperties().put("salt", "abc");
+        assertThat(actualState.getOptions().getCipherColumnName(), is("phone_cipher"));
+        workflowState.getOptions().setCipherColumnName("phone_cipher_v2");
+        workflowState.getOptions().getAssistedQueryAlgorithmProperties().put("salt", "abc");
         workflowState.getDerivedColumnPlan().setCipherColumnName("phone_cipher_v2");
-        assertThat(actualState.getAssistedQueryAlgorithmProperties().size(), is(1));
+        assertThat(actualState.getOptions().getAssistedQueryAlgorithmProperties().size(), is(1));
         assertThat(actualState.getDerivedColumnPlan().getCipherColumnName(), is("phone_cipher"));
     }
 }

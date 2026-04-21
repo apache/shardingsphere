@@ -76,23 +76,23 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
     private void bindFeatureArguments(final EncryptWorkflowRequest request, final MCPToolArguments toolArguments) {
         String allowIndexDDL = toolArguments.getStringArgument("allow_index_ddl");
         if (!allowIndexDDL.isEmpty()) {
-            request.setAllowIndexDDL(toolArguments.getBooleanArgument("allow_index_ddl", true));
+            request.getOptions().setAllowIndexDDL(toolArguments.getBooleanArgument("allow_index_ddl", true));
         }
         request.setAlgorithmType(toolArguments.getStringArgument("algorithm_type"));
-        request.setAssistedQueryAlgorithmType(toolArguments.getStringArgument("assisted_query_algorithm_type"));
-        request.setLikeQueryAlgorithmType(toolArguments.getStringArgument("like_query_algorithm_type"));
-        request.setCipherColumnName(toolArguments.getStringArgument("cipher_column_name"));
-        request.setAssistedQueryColumnName(toolArguments.getStringArgument("assisted_query_column_name"));
-        request.setLikeQueryColumnName(toolArguments.getStringArgument("like_query_column_name"));
+        request.getOptions().setAssistedQueryAlgorithmType(toolArguments.getStringArgument("assisted_query_algorithm_type"));
+        request.getOptions().setLikeQueryAlgorithmType(toolArguments.getStringArgument("like_query_algorithm_type"));
+        request.getOptions().setCipherColumnName(toolArguments.getStringArgument("cipher_column_name"));
+        request.getOptions().setAssistedQueryColumnName(toolArguments.getStringArgument("assisted_query_column_name"));
+        request.getOptions().setLikeQueryColumnName(toolArguments.getStringArgument("like_query_column_name"));
         request.getPrimaryAlgorithmProperties().putAll(toolArguments.getMapArgument("primary_algorithm_properties"));
-        request.getAssistedQueryAlgorithmProperties().putAll(toolArguments.getMapArgument("assisted_query_algorithm_properties"));
-        request.getLikeQueryAlgorithmProperties().putAll(toolArguments.getMapArgument("like_query_algorithm_properties"));
+        request.getOptions().getAssistedQueryAlgorithmProperties().putAll(toolArguments.getMapArgument("assisted_query_algorithm_properties"));
+        request.getOptions().getLikeQueryAlgorithmProperties().putAll(toolArguments.getMapArgument("like_query_algorithm_properties"));
     }
     
     private void applyStructuredIntentEvidence(final EncryptWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
-        request.setRequiresDecrypt(getNullableBoolean(structuredIntentEvidence, "requires_decrypt"));
-        request.setRequiresEqualityFilter(getNullableBoolean(structuredIntentEvidence, "requires_equality_filter"));
-        request.setRequiresLikeQuery(getNullableBoolean(structuredIntentEvidence, "requires_like_query"));
+        request.getOptions().setRequiresDecrypt(getNullableBoolean(structuredIntentEvidence, "requires_decrypt"));
+        request.getOptions().setRequiresEqualityFilter(getNullableBoolean(structuredIntentEvidence, "requires_equality_filter"));
+        request.getOptions().setRequiresLikeQuery(getNullableBoolean(structuredIntentEvidence, "requires_like_query"));
         Object fieldSemantics = structuredIntentEvidence.get("field_semantics");
         if (null != fieldSemantics) {
             request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
@@ -101,11 +101,11 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
     
     private void applyUserOverrides(final EncryptWorkflowRequest request, final Map<String, Object> userOverrides) {
         request.setAlgorithmType(resolveOverrideValue(request.getAlgorithmType(), userOverrides.get("algorithm_type")));
-        request.setAssistedQueryAlgorithmType(resolveOverrideValue(request.getAssistedQueryAlgorithmType(), userOverrides.get("assisted_query_algorithm_type")));
-        request.setLikeQueryAlgorithmType(resolveOverrideValue(request.getLikeQueryAlgorithmType(), userOverrides.get("like_query_algorithm_type")));
-        request.setCipherColumnName(resolveOverrideValue(request.getCipherColumnName(), userOverrides.get("cipher_column_name")));
-        request.setAssistedQueryColumnName(resolveOverrideValue(request.getAssistedQueryColumnName(), userOverrides.get("assisted_query_column_name")));
-        request.setLikeQueryColumnName(resolveOverrideValue(request.getLikeQueryColumnName(), userOverrides.get("like_query_column_name")));
+        request.getOptions().setAssistedQueryAlgorithmType(resolveOverrideValue(request.getOptions().getAssistedQueryAlgorithmType(), userOverrides.get("assisted_query_algorithm_type")));
+        request.getOptions().setLikeQueryAlgorithmType(resolveOverrideValue(request.getOptions().getLikeQueryAlgorithmType(), userOverrides.get("like_query_algorithm_type")));
+        request.getOptions().setCipherColumnName(resolveOverrideValue(request.getOptions().getCipherColumnName(), userOverrides.get("cipher_column_name")));
+        request.getOptions().setAssistedQueryColumnName(resolveOverrideValue(request.getOptions().getAssistedQueryColumnName(), userOverrides.get("assisted_query_column_name")));
+        request.getOptions().setLikeQueryColumnName(resolveOverrideValue(request.getOptions().getLikeQueryColumnName(), userOverrides.get("like_query_column_name")));
     }
     
     private Boolean getNullableBoolean(final Map<String, Object> source, final String fieldName) {

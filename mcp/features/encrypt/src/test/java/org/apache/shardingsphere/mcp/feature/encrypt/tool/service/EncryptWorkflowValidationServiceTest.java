@@ -63,8 +63,8 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("AES");
         EncryptWorkflowState workflowState = createWorkflowState(true, true);
-        workflowState.setAssistedQueryAlgorithmType("MD5");
-        workflowState.setLikeQueryAlgorithmType("FPE");
+        workflowState.getOptions().setAssistedQueryAlgorithmType("MD5");
+        workflowState.getOptions().setLikeQueryAlgorithmType("FPE");
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(true, true));
         snapshot.setFeatureData(workflowState);
         WorkflowContextStore contextStore = new WorkflowContextStore();
@@ -187,8 +187,8 @@ class EncryptWorkflowValidationServiceTest {
     
     private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
         EncryptWorkflowState result = new EncryptWorkflowState();
-        result.setRequiresEqualityFilter(equalityFilter);
-        result.setRequiresLikeQuery(likeQuery);
+        result.getOptions().setRequiresEqualityFilter(equalityFilter);
+        result.getOptions().setRequiresLikeQuery(likeQuery);
         return result;
     }
     

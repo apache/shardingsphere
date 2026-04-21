@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
@@ -29,6 +28,7 @@ import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationCoordinator;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationSupport;
 
 import java.util.List;
@@ -39,6 +39,8 @@ import java.util.Optional;
  * Mask workflow validation service.
  */
 public final class MaskWorkflowValidationService {
+    
+    private final WorkflowValidationCoordinator validationCoordinator = new WorkflowValidationCoordinator();
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
@@ -64,23 +66,7 @@ public final class MaskWorkflowValidationService {
      * @return validation payload
      */
     public Map<String, Object> validate(final MCPFeatureContext requestContext, final String sessionId, final String planId) {
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
-        WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
-        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
-        if (!rejectedResponse.isEmpty()) {
-            return rejectedResponse;
-        }
-        ValidationReport validationReport = new ValidationReport();
-        snapshot.setValidationReport(validationReport);
-        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        MCPMetadataQueryFacade metadataQueryService = requestContext.getMetadataQueryFacade();
-        validationReport.setDdlValidation(new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Mask workflows do not require physical DDL validation."));
-        validationReport.setRuleValidation(validateRules(snapshot, maskRules, validationReport));
-        validationReport.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryService, validationReport));
-        validationReport.setSqlExecutabilityValidation(validateSqlExecutability(requestContext, sessionId, snapshot, validationReport));
-        validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getRuleValidation(),
-                validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
-        return validationSupport.finalizeValidation(actualContextStore, snapshot, validationReport);
+        return validationCoordinator.validate(requestContext, sessionId, planId, contextStore, new MaskValidationScenario());
     }
     
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules, final ValidationReport validationReport) {
@@ -127,5 +113,37 @@ public final class MaskWorkflowValidationService {
         WorkflowSqlUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
         WorkflowSqlUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
         return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
+    }
+    
+    private final class MaskValidationScenario implements WorkflowValidationCoordinator.WorkflowValidationScenario<Void> {
+        
+        @Override
+        public Void getWorkflowState(final WorkflowContextSnapshot snapshot) {
+            return null;
+        }
+        
+        @Override
+        public List<Map<String, Object>> queryRules(final MCPFeatureContext requestContext, final WorkflowContextSnapshot snapshot) {
+            return ruleInspectionService.queryMaskRules(requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
+        }
+        
+        @Override
+        public ValidationSection validateDdl(final MCPFeatureContext requestContext, final String sessionId, final WorkflowContextSnapshot snapshot,
+                                             final Void workflowState, final List<Map<String, Object>> existingRules, final ValidationReport validationReport) {
+            return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Mask workflows do not require physical DDL validation.");
+        }
+        
+        @Override
+        public ValidationSection validateRules(final MCPFeatureContext requestContext, final String sessionId, final WorkflowContextSnapshot snapshot,
+                                               final Void workflowState, final List<Map<String, Object>> existingRules, final ValidationReport validationReport) {
+            return MaskWorkflowValidationService.this.validateRules(snapshot, existingRules, validationReport);
+        }
+        
+        @Override
+        public ValidationSection validateSqlExecutability(final MCPFeatureContext requestContext, final String sessionId,
+                                                          final WorkflowContextSnapshot snapshot, final Void workflowState,
+                                                          final ValidationReport validationReport) {
+            return MaskWorkflowValidationService.this.validateSqlExecutability(requestContext, sessionId, snapshot, validationReport);
+        }
     }
 }

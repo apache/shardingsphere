@@ -33,9 +33,9 @@ final class EncryptWorkflowIntentResolver {
         ClarifiedIntent result = new ClarifiedIntent();
         result.setOperationType(resolveOperationType(request));
         result.setFieldSemantics(resolveFieldSemantics(request));
-        workflowState.setRequiresDecrypt(resolveRequiresDecrypt(request, result));
-        workflowState.setRequiresEqualityFilter(resolveRequiresEqualityFilter(request, result));
-        workflowState.setRequiresLikeQuery(resolveRequiresLikeQuery(request, result));
+        workflowState.getOptions().setRequiresDecrypt(resolveRequiresDecrypt(request, result));
+        workflowState.getOptions().setRequiresEqualityFilter(resolveRequiresEqualityFilter(request, result));
+        workflowState.getOptions().setRequiresLikeQuery(resolveRequiresLikeQuery(request, result));
         result.setReasoningNotes("Derived from explicit arguments and encrypt-specific intent heuristics.");
         return result;
     }
@@ -75,8 +75,8 @@ final class EncryptWorkflowIntentResolver {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
         }
-        if (null != request.getRequiresDecrypt()) {
-            return request.getRequiresDecrypt();
+        if (null != request.getOptions().getRequiresDecrypt()) {
+            return request.getOptions().getRequiresDecrypt();
         }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不可逆")) {
@@ -93,8 +93,8 @@ final class EncryptWorkflowIntentResolver {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
         }
-        if (null != request.getRequiresEqualityFilter()) {
-            return request.getRequiresEqualityFilter();
+        if (null != request.getOptions().getRequiresEqualityFilter()) {
+            return request.getOptions().getRequiresEqualityFilter();
         }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不需要等值")) {
@@ -111,8 +111,8 @@ final class EncryptWorkflowIntentResolver {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
         }
-        if (null != request.getRequiresLikeQuery()) {
-            return request.getRequiresLikeQuery();
+        if (null != request.getOptions().getRequiresLikeQuery()) {
+            return request.getOptions().getRequiresLikeQuery();
         }
         String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不需要like") || naturalLanguageIntent.contains("不需要模糊")) {

@@ -17,18 +17,15 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Shared encrypt workflow options.
  */
-@Getter
-@Setter
-final class EncryptWorkflowOptions {
+@lombok.Getter
+@lombok.Setter
+public final class EncryptWorkflowOptions {
     
     private Boolean allowIndexDDL;
     
@@ -51,6 +48,16 @@ final class EncryptWorkflowOptions {
     private final Map<String, String> assistedQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
     private final Map<String, String> likeQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
+    
+    Map<String, String> getAlgorithmProperties(final String algorithmRole) {
+        if ("assisted_query".equals(algorithmRole)) {
+            return assistedQueryAlgorithmProperties;
+        }
+        if ("like_query".equals(algorithmRole)) {
+            return likeQueryAlgorithmProperties;
+        }
+        return Map.of();
+    }
     
     EncryptWorkflowOptions copy() {
         EncryptWorkflowOptions result = new EncryptWorkflowOptions();

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.tool.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.feature.MCPFeatureProviderRegistry;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -56,7 +55,7 @@ public final class ToolHandlerRegistry {
     }
     
     private static Map<String, ToolHandler> createRegisteredHandlers() {
-        return createRegisteredHandlers(new ArrayList<>(ShardingSphereServiceLoader.getServiceInstances(ToolHandler.class)));
+        return createRegisteredHandlers(MCPFeatureProviderRegistry.loadToolHandlers());
     }
     
     static Map<String, ToolHandler> createRegisteredHandlers(final Collection<ToolHandler> handlers) {

@@ -113,13 +113,13 @@ public final class EncryptRuleDistSQLPlanningService {
             result.append(String.format(", LIKE_QUERY=%s", derivedColumnPlan.getLikeQueryColumnName()));
         }
         result.append(String.format(", ENCRYPT_ALGORITHM(%s)", WorkflowSqlUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties())));
-        if (Boolean.TRUE.equals(workflowState.getRequiresEqualityFilter())) {
+        if (Boolean.TRUE.equals(workflowState.getOptions().getRequiresEqualityFilter())) {
             result.append(String.format(", ASSISTED_QUERY_ALGORITHM(%s)",
-                    WorkflowSqlUtils.createAlgorithmFragment(workflowState.getAssistedQueryAlgorithmType(), workflowState.getAssistedQueryAlgorithmProperties())));
+                    WorkflowSqlUtils.createAlgorithmFragment(workflowState.getOptions().getAssistedQueryAlgorithmType(), workflowState.getOptions().getAssistedQueryAlgorithmProperties())));
         }
-        if (Boolean.TRUE.equals(workflowState.getRequiresLikeQuery())) {
+        if (Boolean.TRUE.equals(workflowState.getOptions().getRequiresLikeQuery())) {
             result.append(String.format(", LIKE_QUERY_ALGORITHM(%s)",
-                    WorkflowSqlUtils.createAlgorithmFragment(workflowState.getLikeQueryAlgorithmType(), workflowState.getLikeQueryAlgorithmProperties())));
+                    WorkflowSqlUtils.createAlgorithmFragment(workflowState.getOptions().getLikeQueryAlgorithmType(), workflowState.getOptions().getLikeQueryAlgorithmProperties())));
         }
         result.append(")");
         return result.toString();

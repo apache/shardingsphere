@@ -44,20 +44,20 @@ public final class DerivedColumnNamingService {
      */
     public DerivedColumnPlan createPlan(final WorkflowRequest request, final EncryptWorkflowState workflowState,
                                         final Set<String> existingNames, final java.util.List<WorkflowIssue> issues) {
-        boolean requiresAssistedQuery = Boolean.TRUE.equals(workflowState.getRequiresEqualityFilter());
-        boolean requiresLikeQuery = Boolean.TRUE.equals(workflowState.getRequiresLikeQuery());
+        boolean requiresAssistedQuery = Boolean.TRUE.equals(workflowState.getOptions().getRequiresEqualityFilter());
+        boolean requiresLikeQuery = Boolean.TRUE.equals(workflowState.getOptions().getRequiresLikeQuery());
         DerivedColumnPlan result = new DerivedColumnPlan();
         String logicalColumn = WorkflowSqlUtils.trimToEmpty(request.getColumn());
         result.setLogicalColumn(logicalColumn);
         result.setCipherColumnRequired(true);
         result.setAssistedQueryColumnRequired(requiresAssistedQuery);
         result.setLikeQueryColumnRequired(requiresLikeQuery);
-        result.setCipherColumnName(resolveName(logicalColumn + "_cipher", workflowState.getCipherColumnName(), existingNames, issues, result));
+        result.setCipherColumnName(resolveName(logicalColumn + "_cipher", workflowState.getOptions().getCipherColumnName(), existingNames, issues, result));
         if (requiresAssistedQuery) {
-            result.setAssistedQueryColumnName(resolveName(logicalColumn + "_assisted_query", workflowState.getAssistedQueryColumnName(), existingNames, issues, result));
+            result.setAssistedQueryColumnName(resolveName(logicalColumn + "_assisted_query", workflowState.getOptions().getAssistedQueryColumnName(), existingNames, issues, result));
         }
         if (requiresLikeQuery) {
-            result.setLikeQueryColumnName(resolveName(logicalColumn + "_like_query", workflowState.getLikeQueryColumnName(), existingNames, issues, result));
+            result.setLikeQueryColumnName(resolveName(logicalColumn + "_like_query", workflowState.getOptions().getLikeQueryColumnName(), existingNames, issues, result));
         }
         return result;
     }
