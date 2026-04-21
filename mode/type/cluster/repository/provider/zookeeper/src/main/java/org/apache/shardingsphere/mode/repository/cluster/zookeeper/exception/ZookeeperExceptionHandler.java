@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.cluster.exception.ClusterRepositoryPersistException;
-import org.apache.zookeeper.KeeperException.ConnectionLossException;
 import org.apache.zookeeper.KeeperException.NoNodeException;
 import org.apache.zookeeper.KeeperException.NodeExistsException;
 
@@ -35,7 +34,7 @@ public final class ZookeeperExceptionHandler {
     /**
      * Handle exception.
      *
-     * <p>Ignore interrupt and connection invalid exception.</p>
+     * <p>Ignore interrupt and node status exception.</p>
      *
      * @param cause to be handled exception
      * @throws ClusterRepositoryPersistException cluster persist repository exception
@@ -57,6 +56,6 @@ public final class ZookeeperExceptionHandler {
     }
     
     private static boolean isIgnoredException(final Throwable cause) {
-        return cause instanceof ConnectionLossException || cause instanceof NoNodeException || cause instanceof NodeExistsException;
+        return cause instanceof NoNodeException || cause instanceof NodeExistsException;
     }
 }
