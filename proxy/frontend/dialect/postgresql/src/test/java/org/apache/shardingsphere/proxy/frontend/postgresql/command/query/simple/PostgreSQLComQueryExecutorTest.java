@@ -27,6 +27,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.hint.HintValueContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
@@ -71,6 +72,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -181,6 +183,27 @@ class PostgreSQLComQueryExecutorTest {
         assertThat(getParameterStatusValue(secondStatusPacket), is("64MB"));
         assertThat(queryExecutor.getResponseType(), is(ResponseType.UPDATE));
         verify(portalContext, never()).closeAll();
+    }
+    
+    @Test
+    void assertExecuteUpdateWithClientEncoding() throws SQLException, ReflectiveOperationException {
+        VariableAssignSegment assignSegment = new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), "'UTF8'");
+        UpdateResponseHeader updateResponseHeader = new UpdateResponseHeader(new SetStatement(DATABASE_TYPE, Collections.singletonList(assignSegment)));
+        when(proxyBackendHandler.execute()).thenReturn(updateResponseHeader);
+        Collection<DatabasePacket> actual = queryExecutor.execute();
+        Iterator<DatabasePacket> iterator = actual.iterator();
+        PostgreSQLCommandCompletePacket commandCompletePacket = (PostgreSQLCommandCompletePacket) iterator.next();
+        PostgreSQLParameterStatusPacket parameterStatusPacket = (PostgreSQLParameterStatusPacket) iterator.next();
+        assertThat(actual.size(), is(2));
+        assertThat(getSqlCommand(commandCompletePacket), is("SET"));
+        assertThat(getParameterStatusKey(parameterStatusPacket), is("client_encoding"));
+        assertThat(getParameterStatusValue(parameterStatusPacket), is("UTF8"));
+    }
+    
+    @Test
+    void assertExecuteWithInvalidClientEncoding() throws SQLException {
+        when(proxyBackendHandler.execute()).thenThrow(new InvalidParameterValueException("client_encoding", "latin1"));
+        assertThrows(InvalidParameterValueException.class, () -> queryExecutor.execute());
     }
     
     @Test

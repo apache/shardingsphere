@@ -17,17 +17,23 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor;
 
+import io.netty.util.Attribute;
+import io.netty.util.AttributeMap;
 import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPILoader;
+import org.apache.shardingsphere.database.protocol.constant.CommonConstants;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.session.ReplayedSessionVariableProvider;
+import org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset.PostgreSQLCharsetVariableProvider;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.sql.parser.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -53,6 +59,28 @@ class PostgreSQLResetVariableAdminExecutorTest {
             databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType)).thenReturn(Optional.of(replayedSessionVariableProvider));
             executor.execute(connectionSession, mock());
             verify(requiredSessionVariableRecorder).setVariable("key", "DEFAULT");
+        }
+    }
+
+    @Test
+    void assertExecuteWithClientEncoding() {
+        PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement(databaseType, "client_encoding"));
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
+        AttributeMap attributeMap = mock(AttributeMap.class);
+        @SuppressWarnings("unchecked")
+        Attribute<Charset> attribute = mock(Attribute.class);
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(requiredSessionVariableRecorder);
+        when(connectionSession.getAttributeMap()).thenReturn(attributeMap);
+        when(attributeMap.attr(CommonConstants.CHARSET_ATTRIBUTE_KEY)).thenReturn(attribute);
+        try (MockedStatic<DatabaseTypedSPILoader> databaseTypedSPILoader = mockStatic(DatabaseTypedSPILoader.class)) {
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(CharsetVariableProvider.class, databaseType)).thenReturn(Optional.of(new PostgreSQLCharsetVariableProvider()));
+            ReplayedSessionVariableProvider replayedSessionVariableProvider = mock(ReplayedSessionVariableProvider.class);
+            when(replayedSessionVariableProvider.isNeedToReplay("client_encoding")).thenReturn(true);
+            databaseTypedSPILoader.when(() -> DatabaseTypedSPILoader.findService(ReplayedSessionVariableProvider.class, databaseType)).thenReturn(Optional.of(replayedSessionVariableProvider));
+            executor.execute(connectionSession, mock());
+            verify(attribute).set(StandardCharsets.UTF_8);
+            verify(requiredSessionVariableRecorder).setVariable("client_encoding", "DEFAULT");
         }
     }
 }
