@@ -25,7 +25,6 @@ import java.lang.reflect.Method;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.hamcrest.Matchers.nullValue;
 
 class SQLRewriteEngineTestParametersBuilderTest {
     
@@ -65,7 +64,7 @@ class SQLRewriteEngineTestParametersBuilderTest {
     
     @Test
     void assertCreateInputParameterWithNull() throws Exception {
-        assertThat(invokeCreateInputParameter("NULL"), is(nullValue()));
+        assertThat(invokeCreateInputParameter("NULL"), is(org.hamcrest.Matchers.nullValue()));
     }
     
     @Test
