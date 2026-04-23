@@ -61,7 +61,7 @@ class PostgreSQLResetVariableAdminExecutorTest {
             verify(requiredSessionVariableRecorder).setVariable("key", "DEFAULT");
         }
     }
-
+    
     @Test
     void assertExecuteWithClientEncoding() {
         PostgreSQLResetVariableAdminExecutor executor = new PostgreSQLResetVariableAdminExecutor(new PostgreSQLResetParameterStatement(databaseType, "client_encoding"));

@@ -66,7 +66,7 @@ class PostgreSQLSetVariableAdminExecutorTest {
             verify(requiredSessionVariableRecorder).setVariable("key", "value");
         }
     }
-
+    
     @Test
     void assertExecuteWithInvalidClientEncoding() {
         SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), "'LATIN1'")));
