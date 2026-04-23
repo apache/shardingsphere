@@ -42,7 +42,7 @@ import java.util.Collection;
 public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
     
     private static final byte[] HEX_DIGITS = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
-
+    
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     
     private final Collection<Object> data;
@@ -109,7 +109,7 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
         result.setLength(length);
         return result.toString();
     }
-
+    
     private byte[] encodeByteaText(final byte[] value) {
         byte[] result = new byte[value.length * 2 + 2];
         result[0] = '\\';

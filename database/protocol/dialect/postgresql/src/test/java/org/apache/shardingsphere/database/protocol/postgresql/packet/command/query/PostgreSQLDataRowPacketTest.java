@@ -148,7 +148,7 @@ class PostgreSQLDataRowPacketTest {
                 Arguments.of("timestamp_microsecond_precision", Timestamp.valueOf("2024-01-15 14:30:45.123456"), "2024-01-15 14:30:45.123456".getBytes(StandardCharsets.UTF_8)),
                 Arguments.of("timestamp_sub_microsecond_nanos", createTimestampWithSubMicrosecondNanos(), "1973-06-03 10:30:01".getBytes(StandardCharsets.UTF_8)));
     }
-
+    
     private static Timestamp createTimestampWithSubMicrosecondNanos() {
         Timestamp result = Timestamp.valueOf("1973-06-03 10:30:01");
         result.setNanos(500);
