@@ -52,7 +52,8 @@ public final class MCPInteractionTraceRecord {
      * @return interaction trace record
      */
     public static MCPInteractionTraceRecord createResourceList(final int sequence, final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, "resource_list", "mcp_list_resources", Map.of(), structuredContent, true, latencyMillis);
+        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_LIST_KIND, MCPInteractionActionNames.LIST_RESOURCES,
+                Map.of(), structuredContent, true, latencyMillis);
     }
     
     /**
@@ -65,7 +66,8 @@ public final class MCPInteractionTraceRecord {
      * @return interaction trace record
      */
     public static MCPInteractionTraceRecord createResourceRead(final int sequence, final String resourceUri, final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, "resource_read", "mcp_read_resource", Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
+        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, MCPInteractionActionNames.READ_RESOURCE,
+                Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
     }
     
     /**

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 
 import java.util.LinkedList;
@@ -87,32 +88,8 @@ public final class LLMUsabilityMetricCalculator {
         double boundaryConfusionRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isBoundaryConfusion);
         double resourceHitRate = getResourceHitRate(scenarioResults);
         double recoveryRate = getRecoveryRate(scenarioResults);
-        List<LLMUsabilityDimensionScore> dimensionScores = new LinkedList<>();
-        for (LLMUsabilityDimension each : LLMUsabilityDimension.values()) {
-            dimensionScores.add(createDimensionScore(each, scenarioResults));
-        }
         return new LLMUsabilityScorecard(suiteId, runId, taskSuccessRate, firstCorrectActionRate, invalidCallRate, averageRoundTrips,
-                queryAnswerFidelity, boundaryConfusionRate, resourceHitRate, recoveryRate, dimensionScores, scenarioResults);
-    }
-    
-    private LLMUsabilityDimensionScore createDimensionScore(final LLMUsabilityDimension dimension, final List<LLMUsabilityScenarioResult> scenarioResults) {
-        List<LLMUsabilityScenarioResult> matchedResults = new LinkedList<>();
-        for (LLMUsabilityScenarioResult each : scenarioResults) {
-            if (dimension == each.getDimension()) {
-                matchedResults.add(each);
-            }
-        }
-        int scenarioCount = matchedResults.size();
-        double successRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isSuccess);
-        double firstCorrectActionRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isFirstCorrectAction);
-        double invalidCallRate = getInvalidCallRate(matchedResults);
-        double averageRoundTrips = getAverageRoundTrips(matchedResults);
-        double resourceHitRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isResourceHit);
-        double recoveryRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isRecoveredAfterError);
-        double queryAnswerFidelity = getAverageQueryAnswerFidelity(matchedResults);
-        double boundaryConfusionRate = calculateRate(matchedResults, LLMUsabilityScenarioResult::isBoundaryConfusion);
-        return new LLMUsabilityDimensionScore(dimension, scenarioCount, successRate, firstCorrectActionRate, invalidCallRate,
-                averageRoundTrips, resourceHitRate, recoveryRate, queryAnswerFidelity, boundaryConfusionRate);
+                queryAnswerFidelity, boundaryConfusionRate, resourceHitRate, recoveryRate, scenarioResults);
     }
     
     private double calculateRate(final List<LLMUsabilityScenarioResult> scenarioResults, final Predicate<LLMUsabilityScenarioResult> matcher) {
@@ -209,7 +186,7 @@ public final class LLMUsabilityMetricCalculator {
             return true;
         }
         for (MCPInteractionTraceRecord each : interactionTrace) {
-            if (!"resource_read".equals(each.getActionKind())) {
+            if (!MCPInteractionActionNames.RESOURCE_READ_KIND.equals(each.getActionKind())) {
                 continue;
             }
             String resourceUri = String.valueOf(each.getArguments().getOrDefault("uri", ""));

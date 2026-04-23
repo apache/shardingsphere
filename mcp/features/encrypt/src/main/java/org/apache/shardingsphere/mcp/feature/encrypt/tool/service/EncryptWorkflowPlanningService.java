@@ -33,10 +33,10 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningCoordinator;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
@@ -64,7 +64,7 @@ public final class EncryptWorkflowPlanningService {
     
     private static final List<String> VALIDATION_LAYERS = List.of(WorkflowArtifactPayloadUtils.STEP_DDL, "rules", "logical_metadata", "sql_executability");
     
-    private final WorkflowPlanningCoordinator planningCoordinator = new WorkflowPlanningCoordinator();
+    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
     
     private final EncryptWorkflowIntentResolver intentResolver = new EncryptWorkflowIntentResolver();
     
@@ -113,31 +113,53 @@ public final class EncryptWorkflowPlanningService {
      * @return workflow snapshot
      */
     public WorkflowContextSnapshot plan(final MCPFeatureContext requestContext, final String sessionId, final EncryptWorkflowRequest request) {
-        return planningCoordinator.plan(requestContext, sessionId, request, contextStore, new EncryptPlanningScenario());
+        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
+        WorkflowContextSnapshot result = actualContextStore.getOrCreate(sessionId, request.getPlanId());
+        EncryptWorkflowRequest mergedRequest = prepareSnapshot(result, request);
+        ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
+        applyResolvedIntent(mergedRequest, clarifiedIntent);
+        MCPMetadataQueryFacade metadataQueryFacade = requestContext.getMetadataQueryFacade();
+        if (!planningSupport.ensurePlanningContext(metadataQueryFacade, mergedRequest, clarifiedIntent, result)) {
+            String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
+            return actualContextStore.persist(result, currentStep, result.getStatus());
+        }
+        List<Map<String, Object>> existingRules = ruleInspectionService.queryEncryptRules(requestContext, mergedRequest.getDatabase(), mergedRequest.getTable());
+        if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result)) {
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        }
+        EncryptWorkflowState workflowState = getWorkflowState(result);
+        if (isDropWorkflow(clarifiedIntent)) {
+            planDrop(requestContext, metadataQueryFacade, workflowState, clarifiedIntent, mergedRequest, existingRules, result);
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+        }
+        if (!planNonDrop(requestContext, metadataQueryFacade, workflowState, clarifiedIntent, mergedRequest, existingRules, result)) {
+            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+        }
+        return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }
     
-    private void applyResolvedIntent(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+    private void applyResolvedIntent(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         request.setOperationType(clarifiedIntent.getOperationType());
         request.setFieldSemantics(clarifiedIntent.getFieldSemantics());
     }
     
     private EncryptWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {
-        EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), getEncryptWorkflowState(snapshot), request);
-        EncryptWorkflowState workflowState = EncryptWorkflowState.from(result);
-        workflowState.clearPlanningState();
+        EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), request);
+        EncryptWorkflowState workflowState = getWorkflowState(snapshot);
+        workflowState.setDerivedColumnPlan(null);
         snapshot.setRequest(result);
         snapshot.setFeatureData(workflowState);
         snapshot.setInteractionPlan(InteractionPlan.create(snapshot.getPlanId(), result, "Encrypt workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS));
         snapshot.clearPlanningState();
-        snapshot.setClarifiedIntent(intentResolver.resolve(result, workflowState));
+        snapshot.setClarifiedIntent(intentResolver.resolve(result));
         return result;
     }
     
-    private EncryptWorkflowState getEncryptWorkflowState(final WorkflowContextSnapshot snapshot) {
+    private EncryptWorkflowState getWorkflowState(final WorkflowContextSnapshot snapshot) {
         return snapshot.getFeatureData() instanceof EncryptWorkflowState ? (EncryptWorkflowState) snapshot.getFeatureData() : new EncryptWorkflowState();
     }
     
-    private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
+    private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
                                          final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
         boolean ruleExists = encryptRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column", "column")));
         if ("create".equalsIgnoreCase(clarifiedIntent.getOperationType()) && ruleExists) {
@@ -162,21 +184,38 @@ public final class EncryptWorkflowPlanningService {
         return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
     
-    private void planAlgorithms(final MCPFeatureContext requestContext, final EncryptWorkflowState workflowState, final WorkflowRequest request,
-                                final WorkflowContextSnapshot snapshot) {
-        List<Map<String, Object>> encryptAlgorithms = ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(requestContext));
-        List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendEncryptAlgorithms(workflowState, request, encryptAlgorithms, snapshot.getIssues());
-        snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
-        applyRecommendedAlgorithms(request, workflowState, algorithmCandidates);
+    private void planDrop(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryFacade, final EncryptWorkflowState workflowState,
+                          final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules,
+                          final WorkflowContextSnapshot snapshot) {
+        addLifecycleWarnings(request, clarifiedIntent, existingRules, snapshot);
+        planArtifacts(requestContext, metadataQueryFacade, workflowState, clarifiedIntent, request, existingRules, snapshot);
     }
     
-    private boolean collectPropertyRequirements(final WorkflowRequest request, final EncryptWorkflowState workflowState,
-                                                final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
+    private boolean planNonDrop(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryFacade, final EncryptWorkflowState workflowState,
+                                final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules,
+                                final WorkflowContextSnapshot snapshot) {
+        planAlgorithms(requestContext, request, snapshot);
+        if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot) || !clarifiedIntent.getPendingQuestions().isEmpty()
+                || !collectPropertyRequirements(request, clarifiedIntent, snapshot)) {
+            return false;
+        }
+        planArtifacts(requestContext, metadataQueryFacade, workflowState, clarifiedIntent, request, existingRules, snapshot);
+        return true;
+    }
+    
+    private void planAlgorithms(final MCPFeatureContext requestContext, final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        List<Map<String, Object>> encryptAlgorithms = ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(requestContext));
+        List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendEncryptAlgorithms(request, encryptAlgorithms, snapshot.getIssues());
+        snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
+        applyRecommendedAlgorithms(request, algorithmCandidates);
+    }
+    
+    private boolean collectPropertyRequirements(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         List<AlgorithmPropertyRequirement> propertyRequirements = algorithmPropertyTemplateService.findRequirements(
-                request.getAlgorithmType(), workflowState.getOptions().getAssistedQueryAlgorithmType(), workflowState.getOptions().getLikeQueryAlgorithmType());
+                request.getAlgorithmType(), request.getOptions().getAssistedQueryAlgorithmType(), request.getOptions().getLikeQueryAlgorithmType());
         snapshot.getPropertyRequirements().addAll(propertyRequirements);
-        applyDefaultProperties(request, workflowState, propertyRequirements);
-        List<String> missingRequiredProperties = findMissingRequiredProperties(request, workflowState, propertyRequirements);
+        applyDefaultProperties(request, propertyRequirements);
+        List<String> missingRequiredProperties = findMissingRequiredProperties(request, propertyRequirements);
         if (missingRequiredProperties.isEmpty()) {
             return true;
         }
@@ -197,7 +236,7 @@ public final class EncryptWorkflowPlanningService {
         return hasBlockingIssue;
     }
     
-    private void addLifecycleWarnings(final EncryptWorkflowState workflowState, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
+    private void addLifecycleWarnings(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent,
                                       final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
         if (isDropWorkflow(clarifiedIntent)) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED, "warning", "planning-artifacts",
@@ -207,11 +246,11 @@ public final class EncryptWorkflowPlanningService {
                     "Clean up obsolete physical artifacts manually if they are no longer needed.", true, Map.of()));
             return;
         }
-        addShrinkAlterCleanupWarning(workflowState, clarifiedIntent, request, encryptRules, snapshot);
+        addShrinkAlterCleanupWarning(request, clarifiedIntent, encryptRules, snapshot);
     }
     
     private void planArtifacts(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowState workflowState,
-                               final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final List<Map<String, Object>> encryptRules,
+                               final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules,
                                final WorkflowContextSnapshot snapshot) {
         if (isDropWorkflow(clarifiedIntent)) {
             snapshot.getRuleArtifacts().add(ruleDistSQLPlanningService.planEncryptDropRule(request, encryptRules));
@@ -221,53 +260,50 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private void planEncryptArtifacts(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowState workflowState,
-                                      final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final List<Map<String, Object>> encryptRules,
+                                      final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptRules,
                                       final WorkflowContextSnapshot snapshot) {
-        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(metadataQueryService, request, workflowState, encryptRules, snapshot);
+        DerivedColumnPlan derivedColumnPlan = createDerivedColumnPlan(metadataQueryService, request, encryptRules, snapshot);
         workflowState.setDerivedColumnPlan(derivedColumnPlan);
-        addShrinkAlterCleanupWarning(workflowState, clarifiedIntent, request, encryptRules, snapshot);
+        addShrinkAlterCleanupWarning(request, clarifiedIntent, encryptRules, snapshot);
         Set<String> existingNames = createExistingPhysicalNames(metadataQueryService, request, encryptRules);
         String derivedColumnDefinition = resolveDerivedColumnDefinition(requestContext, request, snapshot);
         List<DDLArtifact> ddlArtifacts = physicalDDLPlanningService.planAddColumnArtifacts(request.getTable(), derivedColumnPlan, existingNames, derivedColumnDefinition);
         snapshot.getDdlArtifacts().addAll(ddlArtifacts);
-        if (!Boolean.FALSE.equals(workflowState.getOptions().getAllowIndexDDL())) {
+        if (!Boolean.FALSE.equals(request.getOptions().getAllowIndexDDL())) {
             snapshot.getIndexPlans().addAll(indexPlanningService.planIndexes(request.getTable(), derivedColumnPlan, createExistingIndexes(metadataQueryService, request)));
         }
-        snapshot.getRuleArtifacts().add(ruleDistSQLPlanningService.planEncryptRule(request, workflowState, encryptRules));
+        snapshot.getRuleArtifacts().add(ruleDistSQLPlanningService.planEncryptRule(request, derivedColumnPlan, encryptRules));
     }
     
-    private void applyRecommendedAlgorithms(final WorkflowRequest request, final EncryptWorkflowState workflowState, final List<AlgorithmCandidate> algorithmCandidates) {
+    private void applyRecommendedAlgorithms(final EncryptWorkflowRequest request, final List<AlgorithmCandidate> algorithmCandidates) {
         for (AlgorithmCandidate each : algorithmCandidates) {
             if ("primary".equals(each.getAlgorithmRole())) {
                 request.setAlgorithmType(each.getAlgorithmType());
                 continue;
             }
             if ("assisted_query".equals(each.getAlgorithmRole())) {
-                workflowState.getOptions().setAssistedQueryAlgorithmType(each.getAlgorithmType());
+                request.getOptions().setAssistedQueryAlgorithmType(each.getAlgorithmType());
                 continue;
             }
             if ("like_query".equals(each.getAlgorithmRole())) {
-                workflowState.getOptions().setLikeQueryAlgorithmType(each.getAlgorithmType());
+                request.getOptions().setLikeQueryAlgorithmType(each.getAlgorithmType());
             }
         }
     }
     
-    private void applyDefaultProperties(final WorkflowRequest request, final EncryptWorkflowState workflowState,
-                                        final List<AlgorithmPropertyRequirement> propertyRequirements) {
+    private void applyDefaultProperties(final EncryptWorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         for (AlgorithmPropertyRequirement each : propertyRequirements) {
             if (each.getDefaultValue().isEmpty()) {
                 continue;
             }
-            Map<String, String> targetProperties = getProperties(request, workflowState, each.getAlgorithmRole());
-            targetProperties.putIfAbsent(each.getPropertyKey(), each.getDefaultValue());
+            getProperties(request, each.getAlgorithmRole()).putIfAbsent(each.getPropertyKey(), each.getDefaultValue());
         }
     }
     
-    private List<String> findMissingRequiredProperties(final WorkflowRequest request, final EncryptWorkflowState workflowState,
-                                                       final List<AlgorithmPropertyRequirement> propertyRequirements) {
+    private List<String> findMissingRequiredProperties(final EncryptWorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         List<String> result = new LinkedList<>();
         for (AlgorithmPropertyRequirement each : propertyRequirements) {
-            Map<String, String> targetProperties = getProperties(request, workflowState, each.getAlgorithmRole());
+            Map<String, String> targetProperties = getProperties(request, each.getAlgorithmRole());
             if (each.isRequired() && WorkflowSqlUtils.trimToEmpty(targetProperties.get(each.getPropertyKey())).isEmpty()) {
                 result.add(each.getPropertyKey());
             }
@@ -275,45 +311,38 @@ public final class EncryptWorkflowPlanningService {
         return result;
     }
     
-    private Map<String, String> getProperties(final WorkflowRequest request, final EncryptWorkflowState workflowState, final String role) {
-        if ("assisted_query".equals(role)) {
-            return workflowState.getOptions().getAssistedQueryAlgorithmProperties();
-        }
-        if ("like_query".equals(role)) {
-            return workflowState.getOptions().getLikeQueryAlgorithmProperties();
-        }
-        return request.getPrimaryAlgorithmProperties();
+    private Map<String, String> getProperties(final EncryptWorkflowRequest request, final String role) {
+        return request.getAlgorithmProperties(role);
     }
     
-    private DerivedColumnPlan createDerivedColumnPlan(final MCPMetadataQueryFacade metadataQueryService, final WorkflowRequest request,
-                                                      final EncryptWorkflowState workflowState, final List<Map<String, Object>> encryptRules,
-                                                      final WorkflowContextSnapshot snapshot) {
+    private DerivedColumnPlan createDerivedColumnPlan(final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowRequest request,
+                                                      final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
         Set<String> existingNames = createExistingPhysicalNames(metadataQueryService, request, encryptRules);
-        DerivedColumnPlan result = derivedColumnNamingService.createPlan(request, workflowState, existingNames, snapshot.getIssues());
+        DerivedColumnPlan result = derivedColumnNamingService.createPlan(request, existingNames, snapshot.getIssues());
         Map<String, Object> existingRule = findEncryptRule(encryptRules, request.getColumn()).orElse(Map.of());
         String actualCipherColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "cipher_column");
         String actualAssistedQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "assisted_query_column", "assisted_query");
         String actualLikeQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "like_query_column", "like_query");
         if ("alter".equalsIgnoreCase(request.getOperationType())) {
-            if (WorkflowSqlUtils.trimToEmpty(workflowState.getOptions().getCipherColumnName()).isEmpty() && !actualCipherColumn.isEmpty()) {
+            if (WorkflowSqlUtils.trimToEmpty(request.getOptions().getCipherColumnName()).isEmpty() && !actualCipherColumn.isEmpty()) {
                 result.setCipherColumnName(actualCipherColumn);
             }
-            if (result.isAssistedQueryColumnRequired() && WorkflowSqlUtils.trimToEmpty(workflowState.getOptions().getAssistedQueryColumnName()).isEmpty()
+            if (result.isAssistedQueryColumnRequired() && WorkflowSqlUtils.trimToEmpty(request.getOptions().getAssistedQueryColumnName()).isEmpty()
                     && !actualAssistedQueryColumn.isEmpty()) {
                 result.setAssistedQueryColumnName(actualAssistedQueryColumn);
             }
-            if (result.isLikeQueryColumnRequired() && WorkflowSqlUtils.trimToEmpty(workflowState.getOptions().getLikeQueryColumnName()).isEmpty()
+            if (result.isLikeQueryColumnRequired() && WorkflowSqlUtils.trimToEmpty(request.getOptions().getLikeQueryColumnName()).isEmpty()
                     && !actualLikeQueryColumn.isEmpty()) {
                 result.setLikeQueryColumnName(actualLikeQueryColumn);
             }
         }
-        workflowState.getOptions().setCipherColumnName(result.getCipherColumnName());
-        workflowState.getOptions().setAssistedQueryColumnName(result.getAssistedQueryColumnName());
-        workflowState.getOptions().setLikeQueryColumnName(result.getLikeQueryColumnName());
+        request.getOptions().setCipherColumnName(result.getCipherColumnName());
+        request.getOptions().setAssistedQueryColumnName(result.getAssistedQueryColumnName());
+        request.getOptions().setLikeQueryColumnName(result.getLikeQueryColumnName());
         return result;
     }
     
-    private void addShrinkAlterCleanupWarning(final EncryptWorkflowState workflowState, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
+    private void addShrinkAlterCleanupWarning(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent,
                                               final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
         if (!"alter".equalsIgnoreCase(clarifiedIntent.getOperationType())) {
             return;
@@ -322,9 +351,9 @@ public final class EncryptWorkflowPlanningService {
         if (existingRule.isEmpty()) {
             return;
         }
-        boolean removesAssistedQuery = Boolean.FALSE.equals(workflowState.getOptions().getRequiresEqualityFilter())
+        boolean removesAssistedQuery = Boolean.FALSE.equals(request.getOptions().getRequiresEqualityFilter())
                 && !WorkflowRuleValueUtils.findRuleValue(existingRule.get(), "assisted_query_column", "assisted_query").isEmpty();
-        boolean removesLikeQuery = Boolean.FALSE.equals(workflowState.getOptions().getRequiresLikeQuery())
+        boolean removesLikeQuery = Boolean.FALSE.equals(request.getOptions().getRequiresLikeQuery())
                 && !WorkflowRuleValueUtils.findRuleValue(existingRule.get(), "like_query_column", "like_query").isEmpty();
         if (!removesAssistedQuery && !removesLikeQuery) {
             return;
@@ -334,7 +363,7 @@ public final class EncryptWorkflowPlanningService {
                 "Clean up obsolete physical artifacts manually after the rule change if needed.", true, Map.of()));
     }
     
-    private Set<String> createExistingPhysicalNames(final MCPMetadataQueryFacade metadataQueryService, final WorkflowRequest request,
+    private Set<String> createExistingPhysicalNames(final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowRequest request,
                                                     final List<Map<String, Object>> encryptRules) {
         Set<String> result = new LinkedHashSet<>();
         for (MCPColumnMetadata each : metadataQueryService.queryTableColumns(request.getDatabase(), request.getSchema(), request.getTable())) {
@@ -355,7 +384,7 @@ public final class EncryptWorkflowPlanningService {
         }
     }
     
-    private Set<String> createExistingIndexes(final MCPMetadataQueryFacade metadataQueryService, final WorkflowRequest request) {
+    private Set<String> createExistingIndexes(final MCPMetadataQueryFacade metadataQueryService, final EncryptWorkflowRequest request) {
         Set<String> result = new LinkedHashSet<>();
         try {
             for (MCPIndexMetadata each : metadataQueryService.queryIndexes(request.getDatabase(), request.getSchema(), request.getTable())) {
@@ -372,7 +401,7 @@ public final class EncryptWorkflowPlanningService {
         return encryptRules.stream().filter(each -> columnName.equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column", "column"))).findFirst();
     }
     
-    private String resolveDerivedColumnDefinition(final MCPFeatureContext requestContext, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+    private String resolveDerivedColumnDefinition(final MCPFeatureContext requestContext, final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         try {
             return requestContext.getQueryFacade().queryColumnDefinition(request.getDatabase(), request.getSchema(), request.getTable(), request.getColumn());
             // CHECKSTYLE:OFF
@@ -381,61 +410,6 @@ public final class EncryptWorkflowPlanningService {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.LOGICAL_METADATA_UNAVAILABLE, "warning", "planning-artifacts",
                     "Failed to derive the source column definition from Proxy metadata.", "Review the generated DDL before execution.", true, Map.of("reason", ex.getMessage())));
             return "";
-        }
-    }
-    
-    private final class EncryptPlanningScenario implements WorkflowPlanningCoordinator.WorkflowPlanningScenario<EncryptWorkflowRequest, EncryptWorkflowState> {
-        
-        @Override
-        public EncryptWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {
-            return EncryptWorkflowPlanningService.this.prepareSnapshot(snapshot, request);
-        }
-        
-        @Override
-        public void applyResolvedIntent(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-            EncryptWorkflowPlanningService.this.applyResolvedIntent(request, clarifiedIntent);
-        }
-        
-        @Override
-        public List<Map<String, Object>> queryRules(final MCPFeatureContext requestContext, final EncryptWorkflowRequest request) {
-            return ruleInspectionService.queryEncryptRules(requestContext, request.getDatabase(), request.getTable());
-        }
-        
-        @Override
-        public boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
-                                            final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
-            return EncryptWorkflowPlanningService.this.ensureLifecycleState(clarifiedIntent, request, existingRules, snapshot);
-        }
-        
-        @Override
-        public EncryptWorkflowState getWorkflowState(final WorkflowContextSnapshot snapshot) {
-            return getEncryptWorkflowState(snapshot);
-        }
-        
-        @Override
-        public boolean isDropWorkflow(final ClarifiedIntent clarifiedIntent) {
-            return EncryptWorkflowPlanningService.this.isDropWorkflow(clarifiedIntent);
-        }
-        
-        @Override
-        public void planDrop(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                             final EncryptWorkflowState workflowState, final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
-                             final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
-            addLifecycleWarnings(workflowState, clarifiedIntent, request, existingRules, snapshot);
-            planArtifacts(requestContext, metadataQueryFacade, workflowState, clarifiedIntent, request, existingRules, snapshot);
-        }
-        
-        @Override
-        public boolean planNonDrop(final MCPFeatureContext requestContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                                   final EncryptWorkflowState workflowState, final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
-                                   final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
-            planAlgorithms(requestContext, workflowState, request, snapshot);
-            if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot) || !clarifiedIntent.getPendingQuestions().isEmpty()
-                    || !collectPropertyRequirements(request, workflowState, clarifiedIntent, snapshot)) {
-                return false;
-            }
-            planArtifacts(requestContext, metadataQueryFacade, workflowState, clarifiedIntent, request, existingRules, snapshot);
-            return true;
         }
     }
 }

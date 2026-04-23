@@ -34,6 +34,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMod
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTraceRecord;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 
@@ -55,10 +56,6 @@ import java.util.Set;
 public final class LLMMCPConversationRunner {
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    
-    private static final String RESOURCE_LIST_BRIDGE_NAME = "mcp_list_resources";
-    
-    private static final String RESOURCE_READ_BRIDGE_NAME = "mcp_read_resource";
     
     private final int maxTurns;
     
@@ -113,8 +110,9 @@ public final class LLMMCPConversationRunner {
                             return createArtifactBundle(scenario, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, finalAnswerJson,
                                     LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned invalid tool arguments JSON."));
                         }
-                        if (RESOURCE_READ_BRIDGE_NAME.equals(each.getName()) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
-                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1, "resource_read", each.getName(), arguments, "invalid_tool_arguments"));
+                        if (MCPInteractionActionNames.READ_RESOURCE.equals(each.getName()) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
+                            interactionTrace.add(MCPInteractionTraceRecord.createInvalidAction(interactionTrace.size() + 1,
+                                    MCPInteractionActionNames.RESOURCE_READ_KIND, each.getName(), arguments, "invalid_tool_arguments"));
                             return createArtifactBundle(scenario, rawModelOutputs, interactionTrace, mcpRuntimeLogLines, finalAnswerJson,
                                     LLME2EAssertionReport.failure("invalid_tool_arguments", "Model returned an empty resource URI."));
                         }
@@ -311,16 +309,16 @@ public final class LLMMCPConversationRunner {
     private List<Map<String, Object>> createToolDefinitions(final Collection<String> allowedToolNames) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (String each : allowedToolNames) {
-            if (RESOURCE_LIST_BRIDGE_NAME.equals(each)) {
+            if (MCPInteractionActionNames.LIST_RESOURCES.equals(each)) {
                 result.add(Map.of("type", "function", "function", Map.of(
-                        "name", RESOURCE_LIST_BRIDGE_NAME,
+                        "name", MCPInteractionActionNames.LIST_RESOURCES,
                         "description", "Bridge to MCP resources/list for application-driven context discovery.",
                         "parameters", createEmptyObjectSchema())));
                 continue;
             }
-            if (RESOURCE_READ_BRIDGE_NAME.equals(each)) {
+            if (MCPInteractionActionNames.READ_RESOURCE.equals(each)) {
                 result.add(Map.of("type", "function", "function", Map.of(
-                        "name", RESOURCE_READ_BRIDGE_NAME,
+                        "name", MCPInteractionActionNames.READ_RESOURCE,
                         "description", "Bridge to MCP resources/read for application-driven context retrieval.",
                         "parameters", Map.of(
                                 "type", "object",
@@ -356,10 +354,10 @@ public final class LLMMCPConversationRunner {
     }
     
     private Map<String, Object> executeAction(final String actionName, final Map<String, Object> arguments) throws IOException, InterruptedException {
-        if (RESOURCE_LIST_BRIDGE_NAME.equals(actionName)) {
+        if (MCPInteractionActionNames.LIST_RESOURCES.equals(actionName)) {
             return mcpInteractionClient.listResources();
         }
-        if (RESOURCE_READ_BRIDGE_NAME.equals(actionName)) {
+        if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName)) {
             String resourceUri = Objects.toString(arguments.get("uri"), "").trim();
             if (resourceUri.isEmpty()) {
                 throw new IllegalArgumentException("Resource URI is required.");
@@ -371,10 +369,10 @@ public final class LLMMCPConversationRunner {
     
     private MCPInteractionTraceRecord createTraceRecord(final int sequence, final String actionName, final Map<String, Object> arguments,
                                                         final Map<String, Object> structuredContent, final long latencyMillis) {
-        if (RESOURCE_LIST_BRIDGE_NAME.equals(actionName)) {
+        if (MCPInteractionActionNames.LIST_RESOURCES.equals(actionName)) {
             return MCPInteractionTraceRecord.createResourceList(sequence, structuredContent, latencyMillis);
         }
-        if (RESOURCE_READ_BRIDGE_NAME.equals(actionName)) {
+        if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName)) {
             return MCPInteractionTraceRecord.createResourceRead(sequence, Objects.toString(arguments.get("uri"), "").trim(), structuredContent, latencyMillis);
         }
         return new MCPInteractionTraceRecord(sequence, "tool_call", actionName, arguments, structuredContent, true, latencyMillis);

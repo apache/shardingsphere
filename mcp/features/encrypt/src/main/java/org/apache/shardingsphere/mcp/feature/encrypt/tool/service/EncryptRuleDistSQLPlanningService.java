@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
@@ -37,18 +36,17 @@ public final class EncryptRuleDistSQLPlanningService {
      * Plan encrypt rule artifact.
      *
      * @param request workflow request
-     * @param workflowState encrypt workflow state
+     * @param derivedColumnPlan derived column plan
      * @param existingRules existing table rule rows
      * @return rule artifact
      */
-    public RuleArtifact planEncryptRule(final WorkflowRequest request, final EncryptWorkflowState workflowState,
+    public RuleArtifact planEncryptRule(final EncryptWorkflowRequest request, final DerivedColumnPlan derivedColumnPlan,
                                         final List<Map<String, Object>> existingRules) {
-        DerivedColumnPlan derivedColumnPlan = workflowState.getDerivedColumnPlan();
         validateEncryptIdentifiers(request, derivedColumnPlan);
         String lineSeparator = System.lineSeparator();
         String prefix = "alter".equalsIgnoreCase(request.getOperationType()) || !existingRules.isEmpty() ? "ALTER ENCRYPT RULE" : "CREATE ENCRYPT RULE";
         return new RuleArtifact(request.getOperationType(), String.format("%s %s (%sCOLUMNS(%s%s))", prefix, request.getTable(), lineSeparator, lineSeparator,
-                String.join(", ", buildEncryptColumnSegments(request, workflowState, derivedColumnPlan, existingRules))));
+                String.join(", ", buildEncryptColumnSegments(request, derivedColumnPlan, existingRules))));
     }
     
     /**
@@ -58,7 +56,7 @@ public final class EncryptRuleDistSQLPlanningService {
      * @param existingRules existing table rule rows
      * @return rule artifact
      */
-    public RuleArtifact planEncryptDropRule(final WorkflowRequest request, final List<Map<String, Object>> existingRules) {
+    public RuleArtifact planEncryptDropRule(final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules) {
         validateEncryptDropIdentifiers(request);
         List<String> remainingColumnSegments = new LinkedList<>();
         for (Map<String, Object> each : existingRules) {
@@ -72,7 +70,7 @@ public final class EncryptRuleDistSQLPlanningService {
                         System.lineSeparator(), System.lineSeparator(), String.join(", " + System.lineSeparator(), remainingColumnSegments), System.lineSeparator()));
     }
     
-    private void validateEncryptIdentifiers(final WorkflowRequest request, final DerivedColumnPlan derivedColumnPlan) {
+    private void validateEncryptIdentifiers(final EncryptWorkflowRequest request, final DerivedColumnPlan derivedColumnPlan) {
         WorkflowSqlUtils.checkSafeIdentifier("table", request.getTable());
         WorkflowSqlUtils.checkSafeIdentifier("column", request.getColumn());
         WorkflowSqlUtils.checkSafeIdentifier("cipher_column", derivedColumnPlan.getCipherColumnName());
@@ -80,30 +78,30 @@ public final class EncryptRuleDistSQLPlanningService {
         WorkflowSqlUtils.checkSafeIdentifier("like_query_column", derivedColumnPlan.getLikeQueryColumnName());
     }
     
-    private void validateEncryptDropIdentifiers(final WorkflowRequest request) {
+    private void validateEncryptDropIdentifiers(final EncryptWorkflowRequest request) {
         WorkflowSqlUtils.checkSafeIdentifier("table", request.getTable());
         WorkflowSqlUtils.checkSafeIdentifier("column", request.getColumn());
     }
     
-    private List<String> buildEncryptColumnSegments(final WorkflowRequest request, final EncryptWorkflowState workflowState, final DerivedColumnPlan derivedColumnPlan,
+    private List<String> buildEncryptColumnSegments(final EncryptWorkflowRequest request, final DerivedColumnPlan derivedColumnPlan,
                                                     final List<Map<String, Object>> existingRules) {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
             if (request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column", "column"))) {
-                result.add(createTargetEncryptColumnSegment(request, workflowState, derivedColumnPlan));
+                result.add(createTargetEncryptColumnSegment(request, derivedColumnPlan));
                 targetColumnHandled = true;
                 continue;
             }
             result.add(createExistingEncryptColumnSegment(each));
         }
         if (!targetColumnHandled) {
-            result.add(createTargetEncryptColumnSegment(request, workflowState, derivedColumnPlan));
+            result.add(createTargetEncryptColumnSegment(request, derivedColumnPlan));
         }
         return result;
     }
     
-    private String createTargetEncryptColumnSegment(final WorkflowRequest request, final EncryptWorkflowState workflowState, final DerivedColumnPlan derivedColumnPlan) {
+    private String createTargetEncryptColumnSegment(final EncryptWorkflowRequest request, final DerivedColumnPlan derivedColumnPlan) {
         StringBuilder result = new StringBuilder();
         result.append(String.format("(NAME=%s, CIPHER=%s", request.getColumn(), derivedColumnPlan.getCipherColumnName()));
         if (derivedColumnPlan.isAssistedQueryColumnRequired()) {
@@ -113,13 +111,13 @@ public final class EncryptRuleDistSQLPlanningService {
             result.append(String.format(", LIKE_QUERY=%s", derivedColumnPlan.getLikeQueryColumnName()));
         }
         result.append(String.format(", ENCRYPT_ALGORITHM(%s)", WorkflowSqlUtils.createAlgorithmFragment(request.getAlgorithmType(), request.getPrimaryAlgorithmProperties())));
-        if (Boolean.TRUE.equals(workflowState.getOptions().getRequiresEqualityFilter())) {
+        if (Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())) {
             result.append(String.format(", ASSISTED_QUERY_ALGORITHM(%s)",
-                    WorkflowSqlUtils.createAlgorithmFragment(workflowState.getOptions().getAssistedQueryAlgorithmType(), workflowState.getOptions().getAssistedQueryAlgorithmProperties())));
+                    WorkflowSqlUtils.createAlgorithmFragment(request.getOptions().getAssistedQueryAlgorithmType(), request.getOptions().getAssistedQueryAlgorithmProperties())));
         }
-        if (Boolean.TRUE.equals(workflowState.getOptions().getRequiresLikeQuery())) {
+        if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
             result.append(String.format(", LIKE_QUERY_ALGORITHM(%s)",
-                    WorkflowSqlUtils.createAlgorithmFragment(workflowState.getOptions().getLikeQueryAlgorithmType(), workflowState.getOptions().getLikeQueryAlgorithmProperties())));
+                    WorkflowSqlUtils.createAlgorithmFragment(request.getOptions().getLikeQueryAlgorithmType(), request.getOptions().getLikeQueryAlgorithmProperties())));
         }
         result.append(")");
         return result.toString();

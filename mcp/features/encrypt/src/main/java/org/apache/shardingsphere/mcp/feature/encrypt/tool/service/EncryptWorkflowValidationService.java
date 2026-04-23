@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationCoordinator;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationSupport;
 
 import java.util.LinkedHashMap;
@@ -44,8 +44,6 @@ import java.util.Set;
  * Encrypt workflow validation service.
  */
 public final class EncryptWorkflowValidationService {
-    
-    private final WorkflowValidationCoordinator validationCoordinator = new WorkflowValidationCoordinator();
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
@@ -71,10 +69,35 @@ public final class EncryptWorkflowValidationService {
      * @return validation payload
      */
     public Map<String, Object> validate(final MCPFeatureContext requestContext, final String sessionId, final String planId) {
-        return validationCoordinator.validate(requestContext, sessionId, planId, contextStore, new EncryptValidationScenario());
+        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
+        WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
+        Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
+        if (!rejectedResponse.isEmpty()) {
+            return rejectedResponse;
+        }
+        ValidationReport validationReport = new ValidationReport();
+        snapshot.setValidationReport(validationReport);
+        EncryptWorkflowRequest request = getWorkflowRequest(snapshot);
+        EncryptWorkflowState workflowState = getWorkflowState(snapshot);
+        List<Map<String, Object>> encryptRules = ruleInspectionService.queryEncryptRules(requestContext, request.getDatabase(), request.getTable());
+        validationReport.setDdlValidation(validateDdl(requestContext, snapshot, workflowState, encryptRules, validationReport));
+        validationReport.setRuleValidation(validateRules(snapshot, request, workflowState, encryptRules, validationReport));
+        validationReport.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, requestContext.getMetadataQueryFacade(), validationReport));
+        validationReport.setSqlExecutabilityValidation(validateSqlExecutability(requestContext, sessionId, snapshot, request, validationReport));
+        validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getDdlValidation(), validationReport.getRuleValidation(),
+                validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
+        return validationSupport.finalizeValidation(actualContextStore, snapshot, validationReport);
     }
     
-    private EncryptWorkflowState getEncryptWorkflowState(final WorkflowContextSnapshot snapshot) {
+    private EncryptWorkflowRequest getWorkflowRequest(final WorkflowContextSnapshot snapshot) {
+        if (snapshot.getRequest() instanceof EncryptWorkflowRequest) {
+            return (EncryptWorkflowRequest) snapshot.getRequest();
+        }
+        EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), null);
+        return null == result ? new EncryptWorkflowRequest() : result;
+    }
+    
+    private EncryptWorkflowState getWorkflowState(final WorkflowContextSnapshot snapshot) {
         return snapshot.getFeatureData() instanceof EncryptWorkflowState ? (EncryptWorkflowState) snapshot.getFeatureData() : new EncryptWorkflowState();
     }
     
@@ -111,7 +134,7 @@ public final class EncryptWorkflowValidationService {
                 "Derived column mappings match the planned physical layout.");
     }
     
-    private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState,
+    private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request, final EncryptWorkflowState workflowState,
                                             final List<Map<String, Object>> encryptRules, final ValidationReport validationReport) {
         Optional<Map<String, Object>> actualRule = findEncryptRule(snapshot, encryptRules);
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
@@ -128,13 +151,13 @@ public final class EncryptWorkflowValidationService {
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Encrypt rule is missing.");
         }
         List<Map<String, Object>> mismatches = new LinkedList<>();
-        addAlgorithmTypeMismatch(mismatches, "encryptor_type", snapshot.getRequest().getAlgorithmType(),
+        addAlgorithmTypeMismatch(mismatches, "encryptor_type", request.getAlgorithmType(),
                 WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "encryptor_type"), "Encrypt algorithm type does not match.");
         addAlgorithmTypeMismatch(mismatches, "assisted_query_type",
-                Boolean.TRUE.equals(workflowState.getOptions().getRequiresEqualityFilter()) ? workflowState.getOptions().getAssistedQueryAlgorithmType() : "",
+                Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter()) ? request.getOptions().getAssistedQueryAlgorithmType() : "",
                 WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "assisted_query_type", "assisted_query_encryptor_type"), "Assisted-query algorithm type does not match.");
         addAlgorithmTypeMismatch(mismatches, "like_query_type",
-                Boolean.TRUE.equals(workflowState.getOptions().getRequiresLikeQuery()) ? workflowState.getOptions().getLikeQueryAlgorithmType() : "",
+                Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery()) ? request.getOptions().getLikeQueryAlgorithmType() : "",
                 WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "like_query_type", "like_query_encryptor_type"), "LIKE-query algorithm type does not match.");
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
@@ -143,10 +166,9 @@ public final class EncryptWorkflowValidationService {
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, actualRule.get(), "Encrypt rule matches the planned algorithm and mapping.");
     }
     
-    private ValidationSection validateSqlExecutability(final MCPFeatureContext requestContext, final String sessionId,
-                                                       final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState,
-                                                       final ValidationReport validationReport) {
-        List<String> validationSqls = createValidationSqls(snapshot, workflowState);
+    private ValidationSection validateSqlExecutability(final MCPFeatureContext requestContext, final String sessionId, final WorkflowContextSnapshot snapshot,
+                                                       final EncryptWorkflowRequest request, final ValidationReport validationReport) {
+        List<String> validationSqls = createValidationSqls(snapshot, request);
         for (String each : validationSqls) {
             try {
                 requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each, 1, 0));
@@ -213,7 +235,7 @@ public final class EncryptWorkflowValidationService {
         return result;
     }
     
-    private List<String> createValidationSqls(final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState) {
+    private List<String> createValidationSqls(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {
         WorkflowSqlUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
         WorkflowSqlUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
         List<String> result = new LinkedList<>();
@@ -221,11 +243,11 @@ public final class EncryptWorkflowValidationService {
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             return result;
         }
-        if (Boolean.TRUE.equals(workflowState.getOptions().getRequiresEqualityFilter())) {
+        if (Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())) {
             result.add(String.format("SELECT %s FROM %s WHERE %s = 'sample'", snapshot.getRequest().getColumn(),
                     snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()));
         }
-        if (Boolean.TRUE.equals(workflowState.getOptions().getRequiresLikeQuery())) {
+        if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
             result.add(String.format("SELECT %s FROM %s WHERE %s LIKE 'sample%%'", snapshot.getRequest().getColumn(),
                     snapshot.getRequest().getTable(), snapshot.getRequest().getColumn()));
         }
@@ -264,39 +286,5 @@ public final class EncryptWorkflowValidationService {
         return String.format("cipher=%s, assisted_query=%s, like_query=%s", workflowState.getDerivedColumnPlan().getCipherColumnName(),
                 WorkflowSqlUtils.trimToEmpty(workflowState.getDerivedColumnPlan().getAssistedQueryColumnName()),
                 WorkflowSqlUtils.trimToEmpty(workflowState.getDerivedColumnPlan().getLikeQueryColumnName()));
-    }
-    
-    private final class EncryptValidationScenario implements WorkflowValidationCoordinator.WorkflowValidationScenario<EncryptWorkflowState> {
-        
-        @Override
-        public EncryptWorkflowState getWorkflowState(final WorkflowContextSnapshot snapshot) {
-            return EncryptWorkflowValidationService.this.getEncryptWorkflowState(snapshot);
-        }
-        
-        @Override
-        public List<Map<String, Object>> queryRules(final MCPFeatureContext requestContext, final WorkflowContextSnapshot snapshot) {
-            return ruleInspectionService.queryEncryptRules(requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        }
-        
-        @Override
-        public ValidationSection validateDdl(final MCPFeatureContext requestContext, final String sessionId, final WorkflowContextSnapshot snapshot,
-                                             final EncryptWorkflowState workflowState, final List<Map<String, Object>> existingRules,
-                                             final ValidationReport validationReport) {
-            return EncryptWorkflowValidationService.this.validateDdl(requestContext, snapshot, workflowState, existingRules, validationReport);
-        }
-        
-        @Override
-        public ValidationSection validateRules(final MCPFeatureContext requestContext, final String sessionId, final WorkflowContextSnapshot snapshot,
-                                               final EncryptWorkflowState workflowState, final List<Map<String, Object>> existingRules,
-                                               final ValidationReport validationReport) {
-            return EncryptWorkflowValidationService.this.validateRules(snapshot, workflowState, existingRules, validationReport);
-        }
-        
-        @Override
-        public ValidationSection validateSqlExecutability(final MCPFeatureContext requestContext, final String sessionId,
-                                                          final WorkflowContextSnapshot snapshot, final EncryptWorkflowState workflowState,
-                                                          final ValidationReport validationReport) {
-            return EncryptWorkflowValidationService.this.validateSqlExecutability(requestContext, sessionId, snapshot, workflowState, validationReport);
-        }
     }
 }

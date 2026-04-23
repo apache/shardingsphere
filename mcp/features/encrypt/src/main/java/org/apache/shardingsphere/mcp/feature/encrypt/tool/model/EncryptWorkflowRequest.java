@@ -43,25 +43,17 @@ public final class EncryptWorkflowRequest extends WorkflowRequest {
     }
     
     /**
-     * Merge the current request with the previous request and feature state.
+     * Merge the current request with the previous request.
      *
      * @param previousRequest previous workflow request
-     * @param previousState previous encrypt workflow state
      * @param currentRequest current encrypt workflow request
      * @return merged encrypt workflow request
      */
-    public static EncryptWorkflowRequest merge(final WorkflowRequest previousRequest,
-                                               final EncryptWorkflowState previousState, final EncryptWorkflowRequest currentRequest) {
-        if (null == previousRequest && null == previousState && null == currentRequest) {
+    public static EncryptWorkflowRequest merge(final WorkflowRequest previousRequest, final EncryptWorkflowRequest currentRequest) {
+        if (null == previousRequest && null == currentRequest) {
             return null;
         }
-        EncryptWorkflowRequest result = new EncryptWorkflowRequest();
-        if (null != previousRequest) {
-            copyCommonFields(previousRequest, result);
-        }
-        if (null != previousState) {
-            previousState.getOptions().copyTo(result.options);
-        }
+        EncryptWorkflowRequest result = copyPreviousRequest(previousRequest);
         if (null != currentRequest) {
             currentRequest.overlayTo(result);
             currentRequest.getOptions().overlayTo(result.options);
@@ -75,19 +67,15 @@ public final class EncryptWorkflowRequest extends WorkflowRequest {
         return result.isEmpty() ? super.getAlgorithmProperties(algorithmRole) : result;
     }
     
-    private static void copyCommonFields(final WorkflowRequest source, final EncryptWorkflowRequest target) {
-        target.setPlanId(source.getPlanId());
-        target.setDatabase(source.getDatabase());
-        target.setSchema(source.getSchema());
-        target.setTable(source.getTable());
-        target.setColumn(source.getColumn());
-        target.setOperationType(source.getOperationType());
-        target.setNaturalLanguageIntent(source.getNaturalLanguageIntent());
-        target.setFieldSemantics(source.getFieldSemantics());
-        target.setDeliveryMode(source.getDeliveryMode());
-        target.setExecutionMode(source.getExecutionMode());
-        target.setAlgorithmType(source.getAlgorithmType());
-        target.getPrimaryAlgorithmProperties().putAll(source.getPrimaryAlgorithmProperties());
-        target.getApprovedSteps().addAll(source.getApprovedSteps());
+    private static EncryptWorkflowRequest copyPreviousRequest(final WorkflowRequest previousRequest) {
+        if (null == previousRequest) {
+            return new EncryptWorkflowRequest();
+        }
+        if (previousRequest instanceof EncryptWorkflowRequest) {
+            return ((EncryptWorkflowRequest) previousRequest).copy();
+        }
+        EncryptWorkflowRequest result = new EncryptWorkflowRequest();
+        WorkflowRequest.copyFieldsTo(previousRequest, result);
+        return result;
     }
 }

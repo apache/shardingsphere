@@ -34,13 +34,11 @@ import java.util.Map;
  */
 public final class ApplyMaskRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createExecution(MaskFeatureDefinition.APPLY_TOOL_NAME);
-    
     private final WorkflowExecutionService executionService = new WorkflowExecutionService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
-        return TOOL_DESCRIPTOR;
+        return WorkflowToolDescriptors.createExecution(MaskFeatureDefinition.APPLY_TOOL_NAME);
     }
     
     @Override

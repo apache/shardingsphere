@@ -46,7 +46,5 @@ public final class LLMUsabilityScorecard {
     
     private final double recoveryRate;
     
-    private final List<LLMUsabilityDimensionScore> dimensionScores;
-    
     private final List<LLMUsabilityScenarioResult> scenarioResults;
 }

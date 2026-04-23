@@ -24,6 +24,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatMod
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMToolCall;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
@@ -98,14 +99,14 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithResourceBridgeSequence() throws IOException, InterruptedException {
-        final List<String> actualToolNames = List.of("mcp_list_resources", "mcp_read_resource", "execute_query");
+        final List<String> actualToolNames = List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "execute_query");
         final LLME2EScenario actualScenario = createScenario(actualToolNames);
         final LLMMCPConversationRunner actualRunner = createRunner(3);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(new LLMChatCompletion("",
                 List.of(
-                        new LLMToolCall("tool-1", "mcp_list_resources", "{}"),
-                        new LLMToolCall("tool-2", "mcp_read_resource", JsonUtils.toJsonString(Map.of("uri", RESOURCE_URI))),
+                        new LLMToolCall("tool-1", MCPInteractionActionNames.LIST_RESOURCES, "{}"),
+                        new LLMToolCall("tool-2", MCPInteractionActionNames.READ_RESOURCE, JsonUtils.toJsonString(Map.of("uri", RESOURCE_URI))),
                         new LLMToolCall("tool-3", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
                 "tool-call-response"));
         when(mcpInteractionClient.listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
@@ -118,8 +119,8 @@ class LLMMCPConversationRunnerTest {
         
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().size(), CoreMatchers.is(3));
-        assertThat(actual.getInteractionTrace().get(0).getActionKind(), CoreMatchers.is("resource_list"));
-        assertThat(actual.getInteractionTrace().get(1).getActionKind(), CoreMatchers.is("resource_read"));
+        assertThat(actual.getInteractionTrace().get(0).getActionKind(), CoreMatchers.is(MCPInteractionActionNames.RESOURCE_LIST_KIND));
+        assertThat(actual.getInteractionTrace().get(1).getActionKind(), CoreMatchers.is(MCPInteractionActionNames.RESOURCE_READ_KIND));
         assertThat(actual.getInteractionTrace().get(2).getTargetName(), CoreMatchers.is("execute_query"));
         verify(mcpInteractionClient).listResources();
         verify(mcpInteractionClient).readResource(RESOURCE_URI);
@@ -179,15 +180,15 @@ class LLMMCPConversationRunnerTest {
     
     @Test
     void assertRunWithEmptyResourceUri() throws IOException, InterruptedException {
-        final LLME2EScenario actualScenario = createScenario(List.of("mcp_read_resource"));
+        final LLME2EScenario actualScenario = createScenario(List.of(MCPInteractionActionNames.READ_RESOURCE));
         final LLMMCPConversationRunner actualRunner = createRunner(1);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "mcp_read_resource", Map.of("uri", "   "), "tool-call-response"));
+                createToolCallCompletion("tool-1", MCPInteractionActionNames.READ_RESOURCE, Map.of("uri", "   "), "tool-call-response"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("invalid_tool_arguments"));
-        assertThat(actual.getInteractionTrace().get(0).getActionKind(), CoreMatchers.is("resource_read"));
+        assertThat(actual.getInteractionTrace().get(0).getActionKind(), CoreMatchers.is(MCPInteractionActionNames.RESOURCE_READ_KIND));
         verify(mcpInteractionClient, never()).readResource(anyString());
     }
     
@@ -232,7 +233,7 @@ class LLMMCPConversationRunnerTest {
                 Arguments.of("table mismatch", createMutatedFinalAnswerPayload("table", "other_table")),
                 Arguments.of("query mismatch", createMutatedFinalAnswerPayload("query", "SELECT * FROM orders")),
                 Arguments.of("totalOrders mismatch", createMutatedFinalAnswerPayload("totalOrders", 3)),
-                Arguments.of("interactionSequence mismatch", createMutatedFinalAnswerPayload("interactionSequence", List.of("mcp_read_resource"))));
+                Arguments.of("interactionSequence mismatch", createMutatedFinalAnswerPayload("interactionSequence", List.of(MCPInteractionActionNames.READ_RESOURCE))));
     }
     
     @Test

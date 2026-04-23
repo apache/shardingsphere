@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
+package org.apache.shardingsphere.test.e2e.mcp.support.transport;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-@RequiredArgsConstructor
-@Getter
-public final class LLMUsabilityDimensionScore {
+/**
+ * MCP interaction action names used by the LLM E2E support layer.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MCPInteractionActionNames {
     
-    private final LLMUsabilityDimension dimension;
+    public static final String LIST_RESOURCES = "mcp_list_resources";
     
-    private final int scenarioCount;
+    public static final String READ_RESOURCE = "mcp_read_resource";
     
-    private final double successRate;
+    public static final String RESOURCE_LIST_KIND = "resource_list";
     
-    private final double firstCorrectActionRate;
-    
-    private final double invalidCallRate;
-    
-    private final double averageRoundTrips;
-    
-    private final double resourceHitRate;
-    
-    private final double recoveryRate;
-    
-    private final double queryAnswerFidelity;
-    
-    private final double boundaryConfusionRate;
+    public static final String RESOURCE_READ_KIND = "resource_read";
 }

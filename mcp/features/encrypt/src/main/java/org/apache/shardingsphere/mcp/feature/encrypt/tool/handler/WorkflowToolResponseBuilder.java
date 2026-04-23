@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequir
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySource;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySources;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,7 +38,7 @@ final class WorkflowToolResponseBuilder {
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         EncryptWorkflowState workflowState = getEncryptWorkflowState(snapshot);
-        WorkflowPropertySource propertySource = WorkflowPropertySources.compose(snapshot.getRequest(), workflowState);
+        WorkflowPropertySource propertySource = getPropertySource(snapshot);
         Map<String, Object> result = snapshot.toPlanPayload();
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
         result.put("derived_column_plan", null == workflowState.getDerivedColumnPlan() ? null : workflowState.getDerivedColumnPlan().toMap());
@@ -64,5 +63,9 @@ final class WorkflowToolResponseBuilder {
     
     private List<AlgorithmPropertyRequirement> filterRequirements(final WorkflowContextSnapshot snapshot, final String role) {
         return snapshot.getPropertyRequirements().stream().filter(each -> role.equals(each.getAlgorithmRole())).toList();
+    }
+    
+    private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {
+        return null == snapshot.getRequest() ? algorithmRole -> Map.of() : snapshot.getRequest();
     }
 }

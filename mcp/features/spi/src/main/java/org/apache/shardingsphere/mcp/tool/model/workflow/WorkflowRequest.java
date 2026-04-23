@@ -86,6 +86,18 @@ public class WorkflowRequest implements WorkflowPropertySource {
         return result;
     }
     
+    /**
+     * Copy workflow request fields to the target request.
+     *
+     * @param source source request
+     * @param target target request
+     * @param <T> target request type
+     * @return target request
+     */
+    public static <T extends WorkflowRequest> T copyFieldsTo(final WorkflowRequest source, final T target) {
+        return null == source ? target : source.copyTo(target);
+    }
+    
     @Override
     public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
         return "primary".equals(algorithmRole) ? primaryAlgorithmProperties : Map.of();

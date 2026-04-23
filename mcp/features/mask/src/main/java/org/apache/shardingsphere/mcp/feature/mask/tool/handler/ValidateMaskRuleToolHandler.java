@@ -34,13 +34,11 @@ import java.util.Map;
  */
 public final class ValidateMaskRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createValidation(MaskFeatureDefinition.VALIDATE_TOOL_NAME);
-    
     private final MaskWorkflowValidationService validationService = new MaskWorkflowValidationService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
-        return TOOL_DESCRIPTOR;
+        return WorkflowToolDescriptors.createValidation(MaskFeatureDefinition.VALIDATE_TOOL_NAME);
     }
     
     @Override

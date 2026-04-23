@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
@@ -29,13 +28,13 @@ import java.util.Locale;
  */
 final class EncryptWorkflowIntentResolver {
     
-    ClarifiedIntent resolve(final EncryptWorkflowRequest request, final EncryptWorkflowState workflowState) {
+    ClarifiedIntent resolve(final EncryptWorkflowRequest request) {
         ClarifiedIntent result = new ClarifiedIntent();
         result.setOperationType(resolveOperationType(request));
         result.setFieldSemantics(resolveFieldSemantics(request));
-        workflowState.getOptions().setRequiresDecrypt(resolveRequiresDecrypt(request, result));
-        workflowState.getOptions().setRequiresEqualityFilter(resolveRequiresEqualityFilter(request, result));
-        workflowState.getOptions().setRequiresLikeQuery(resolveRequiresLikeQuery(request, result));
+        request.getOptions().setRequiresDecrypt(resolveRequiresDecrypt(request, result));
+        request.getOptions().setRequiresEqualityFilter(resolveRequiresEqualityFilter(request, result));
+        request.getOptions().setRequiresLikeQuery(resolveRequiresLikeQuery(request, result));
         result.setReasoningNotes("Derived from explicit arguments and encrypt-specific intent heuristics.");
         return result;
     }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.junit.jupiter.api.Test;
@@ -61,10 +61,13 @@ class EncryptWorkflowValidationServiceTest {
     @Test
     void assertValidateHappyPath() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.getRequest().setAlgorithmType("AES");
-        EncryptWorkflowState workflowState = createWorkflowState(true, true);
-        workflowState.getOptions().setAssistedQueryAlgorithmType("MD5");
-        workflowState.getOptions().setLikeQueryAlgorithmType("FPE");
+        EncryptWorkflowRequest request = (EncryptWorkflowRequest) snapshot.getRequest();
+        request.setAlgorithmType("AES");
+        request.getOptions().setRequiresEqualityFilter(true);
+        request.getOptions().setRequiresLikeQuery(true);
+        request.getOptions().setAssistedQueryAlgorithmType("MD5");
+        request.getOptions().setLikeQueryAlgorithmType("FPE");
+        EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(true, true));
         snapshot.setFeatureData(workflowState);
         WorkflowContextStore contextStore = new WorkflowContextStore();
@@ -114,7 +117,7 @@ class EncryptWorkflowValidationServiceTest {
     void assertValidateWhenRuleMissing() {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        EncryptWorkflowState workflowState = createWorkflowState(false, false);
+        EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
         snapshot.setFeatureData(workflowState);
         contextStore.save(snapshot);
@@ -133,8 +136,9 @@ class EncryptWorkflowValidationServiceTest {
     @Test
     void assertValidateWhenSqlExecutionFails() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
-        snapshot.getRequest().setAlgorithmType("AES");
-        EncryptWorkflowState workflowState = createWorkflowState(false, false);
+        EncryptWorkflowRequest request = (EncryptWorkflowRequest) snapshot.getRequest();
+        request.setAlgorithmType("AES");
+        EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
         snapshot.setFeatureData(workflowState);
         WorkflowContextStore contextStore = new WorkflowContextStore();
@@ -173,7 +177,7 @@ class EncryptWorkflowValidationServiceTest {
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("executed");
         result.setInteractionPlan(interactionPlan);
-        WorkflowRequest request = new WorkflowRequest();
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setDatabase("logic_db");
         request.setSchema("public");
         request.setTable("orders");
@@ -182,13 +186,6 @@ class EncryptWorkflowValidationServiceTest {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         clarifiedIntent.setOperationType(operationType);
         result.setClarifiedIntent(clarifiedIntent);
-        return result;
-    }
-    
-    private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
-        EncryptWorkflowState result = new EncryptWorkflowState();
-        result.getOptions().setRequiresEqualityFilter(equalityFilter);
-        result.getOptions().setRequiresLikeQuery(likeQuery);
         return result;
     }
     

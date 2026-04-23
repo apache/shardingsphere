@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
 import java.util.LinkedHashMap;
@@ -36,28 +35,26 @@ public final class DerivedColumnNamingService {
     /**
      * Create derived column plan.
      *
-     * @param request workflow request
-     * @param workflowState encrypt workflow state
+     * @param request encrypt workflow request
      * @param existingNames existing names
      * @param issues workflow issues
      * @return derived column plan
      */
-    public DerivedColumnPlan createPlan(final WorkflowRequest request, final EncryptWorkflowState workflowState,
-                                        final Set<String> existingNames, final java.util.List<WorkflowIssue> issues) {
-        boolean requiresAssistedQuery = Boolean.TRUE.equals(workflowState.getOptions().getRequiresEqualityFilter());
-        boolean requiresLikeQuery = Boolean.TRUE.equals(workflowState.getOptions().getRequiresLikeQuery());
+    public DerivedColumnPlan createPlan(final EncryptWorkflowRequest request, final Set<String> existingNames, final java.util.List<WorkflowIssue> issues) {
+        boolean requiresAssistedQuery = Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter());
+        boolean requiresLikeQuery = Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery());
         DerivedColumnPlan result = new DerivedColumnPlan();
         String logicalColumn = WorkflowSqlUtils.trimToEmpty(request.getColumn());
         result.setLogicalColumn(logicalColumn);
         result.setCipherColumnRequired(true);
         result.setAssistedQueryColumnRequired(requiresAssistedQuery);
         result.setLikeQueryColumnRequired(requiresLikeQuery);
-        result.setCipherColumnName(resolveName(logicalColumn + "_cipher", workflowState.getOptions().getCipherColumnName(), existingNames, issues, result));
+        result.setCipherColumnName(resolveName(logicalColumn + "_cipher", request.getOptions().getCipherColumnName(), existingNames, issues, result));
         if (requiresAssistedQuery) {
-            result.setAssistedQueryColumnName(resolveName(logicalColumn + "_assisted_query", workflowState.getOptions().getAssistedQueryColumnName(), existingNames, issues, result));
+            result.setAssistedQueryColumnName(resolveName(logicalColumn + "_assisted_query", request.getOptions().getAssistedQueryColumnName(), existingNames, issues, result));
         }
         if (requiresLikeQuery) {
-            result.setLikeQueryColumnName(resolveName(logicalColumn + "_like_query", workflowState.getOptions().getLikeQueryColumnName(), existingNames, issues, result));
+            result.setLikeQueryColumnName(resolveName(logicalColumn + "_like_query", request.getOptions().getLikeQueryColumnName(), existingNames, issues, result));
         }
         return result;
     }

@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -36,9 +35,8 @@ class EncryptRuleDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanEncryptRuleWithCreate() {
-        WorkflowRequest request = createRequest("create");
-        EncryptWorkflowState workflowState = createWorkflowState(true, true);
-        RuleArtifact actual = service.planEncryptRule(request, workflowState, List.of());
+        EncryptWorkflowRequest request = createRequest("create", true, true);
+        RuleArtifact actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of());
         assertThat(actual.getOperationType(), is("create"));
         assertTrue(actual.getSql().startsWith("CREATE ENCRYPT RULE orders"));
         assertTrue(actual.getSql().contains("NAME=phone"));
@@ -48,9 +46,8 @@ class EncryptRuleDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanEncryptRuleWithExistingRules() {
-        WorkflowRequest request = createRequest("alter");
-        EncryptWorkflowState workflowState = createWorkflowState(true, false);
-        RuleArtifact actual = service.planEncryptRule(request, workflowState, List.of(
+        EncryptWorkflowRequest request = createRequest("alter", true, false);
+        RuleArtifact actual = service.planEncryptRule(request, createDerivedColumnPlan(), List.of(
                 Map.of("logic_column", "phone", "cipher_column", "old_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old"),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
         assertThat(actual.getOperationType(), is("alter"));
@@ -62,7 +59,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanEncryptDropRuleWithoutRemainingColumns() {
-        WorkflowRequest request = createRequest("drop");
+        EncryptWorkflowRequest request = createRequest("drop", false, false);
         RuleArtifact actual = service.planEncryptDropRule(request, List.of(Map.of("logic_column", "phone", "cipher_column", "phone_cipher")));
         assertThat(actual.getOperationType(), is("drop"));
         assertThat(actual.getSql(), is("DROP ENCRYPT RULE orders"));
@@ -70,7 +67,7 @@ class EncryptRuleDistSQLPlanningServiceTest {
     
     @Test
     void assertPlanEncryptDropRuleWithRemainingColumns() {
-        WorkflowRequest request = createRequest("drop");
+        EncryptWorkflowRequest request = createRequest("drop", false, false);
         RuleArtifact actual = service.planEncryptDropRule(request, List.of(
                 Map.of("logic_column", "phone", "cipher_column", "phone_cipher"),
                 Map.of("logic_column", "email", "cipher_column", "email_cipher", "encryptor_type", "AES", "encryptor_props", "aes-key-value=old")));
@@ -80,25 +77,19 @@ class EncryptRuleDistSQLPlanningServiceTest {
         assertTrue(actual.getSql().contains("CIPHER=email_cipher"));
     }
     
-    private WorkflowRequest createRequest(final String operationType) {
-        WorkflowRequest result = new WorkflowRequest();
+    private EncryptWorkflowRequest createRequest(final String operationType, final boolean equalityFilter, final boolean likeQuery) {
+        EncryptWorkflowRequest result = new EncryptWorkflowRequest();
         result.setOperationType(operationType);
         result.setTable("orders");
         result.setColumn("phone");
         result.setAlgorithmType("AES");
         result.getPrimaryAlgorithmProperties().put("aes-key-value", "secret");
-        return result;
-    }
-    
-    private EncryptWorkflowState createWorkflowState(final boolean equalityFilter, final boolean likeQuery) {
-        EncryptWorkflowState result = new EncryptWorkflowState();
         result.getOptions().setRequiresEqualityFilter(equalityFilter);
         result.getOptions().setRequiresLikeQuery(likeQuery);
         result.getOptions().setAssistedQueryAlgorithmType("MD5");
         result.getOptions().getAssistedQueryAlgorithmProperties().put("salt", "salt");
         result.getOptions().setLikeQueryAlgorithmType("FPE");
         result.getOptions().getLikeQueryAlgorithmProperties().put("salt", "salt");
-        result.setDerivedColumnPlan(createDerivedColumnPlan());
         return result;
     }
     

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLMStructuredAnswer;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,7 +33,7 @@ final class LLMSmokeScenarioFactory {
     
     private static final String USER_PROMPT_RESOURCE = "llm/suite/smoke/minimal-smoke-user-prompt.md";
     
-    private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("search_metadata", "mcp_read_resource", "execute_query");
+    private static final List<String> SMOKE_INTERACTION_SEQUENCE = List.of("search_metadata", MCPInteractionActionNames.READ_RESOURCE, "execute_query");
     
     LLME2EScenario createMinimalSmokeScenario(final String scenarioId, final String databaseName, final String schemaName,
                                               final String tableName, final String query, final int totalOrders) {

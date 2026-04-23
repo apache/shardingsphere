@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.resource.handler;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
@@ -26,8 +24,7 @@ import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 /**
  * Handler for one MCP resource URI pattern.
  */
-@SingletonSPI
-public interface ResourceHandler extends ShardingSphereSPI {
+public interface ResourceHandler {
     
     /**
      * Get URI pattern.

@@ -34,13 +34,11 @@ import java.util.Map;
  */
 public final class ApplyEncryptRuleToolHandler implements ToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createExecution(EncryptFeatureDefinition.APPLY_TOOL_NAME);
-    
     private final WorkflowExecutionService executionService = new WorkflowExecutionService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
-        return TOOL_DESCRIPTOR;
+        return WorkflowToolDescriptors.createExecution(EncryptFeatureDefinition.APPLY_TOOL_NAME);
     }
     
     @Override

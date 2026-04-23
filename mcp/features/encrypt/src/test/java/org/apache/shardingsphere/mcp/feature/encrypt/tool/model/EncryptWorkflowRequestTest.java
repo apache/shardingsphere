@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,22 +43,21 @@ class EncryptWorkflowRequestTest {
     
     @Test
     void assertMergeKeepsPreviousRequestStateAndOverlaysCurrentInputs() {
-        WorkflowRequest previousRequest = new WorkflowRequest();
+        EncryptWorkflowRequest previousRequest = new EncryptWorkflowRequest();
         previousRequest.setPlanId("plan-1");
         previousRequest.setDatabase("logic_db");
         previousRequest.setTable("orders");
         previousRequest.setColumn("phone");
         previousRequest.getPrimaryAlgorithmProperties().put("aes-key-value", "previous-key");
-        EncryptWorkflowState previousState = new EncryptWorkflowState();
-        previousState.getOptions().setRequiresDecrypt(true);
-        previousState.getOptions().setAssistedQueryAlgorithmType("MD5");
-        previousState.getOptions().getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
+        previousRequest.getOptions().setRequiresDecrypt(true);
+        previousRequest.getOptions().setAssistedQueryAlgorithmType("MD5");
+        previousRequest.getOptions().getAssistedQueryAlgorithmProperties().put("digest-algorithm-name", "SHA-256");
         EncryptWorkflowRequest currentRequest = new EncryptWorkflowRequest();
         currentRequest.setOperationType("alter");
         currentRequest.getOptions().setRequiresLikeQuery(true);
         currentRequest.getOptions().setLikeQueryAlgorithmType("CHAR_DIGEST_LIKE");
         currentRequest.getPrimaryAlgorithmProperties().put("aes-key-value", "current-key");
-        EncryptWorkflowRequest actualRequest = EncryptWorkflowRequest.merge(previousRequest, previousState, currentRequest);
+        EncryptWorkflowRequest actualRequest = EncryptWorkflowRequest.merge(previousRequest, currentRequest);
         assertThat(actualRequest.getPlanId(), is("plan-1"));
         assertThat(actualRequest.getDatabase(), is("logic_db"));
         assertThat(actualRequest.getTable(), is("orders"));

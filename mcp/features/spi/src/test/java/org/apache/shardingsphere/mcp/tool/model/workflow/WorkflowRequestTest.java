@@ -68,4 +68,29 @@ class WorkflowRequestTest {
         assertThat(actualRequest.getPrimaryAlgorithmProperties().get("aes-key-value"), is("123456"));
         assertThat(actualRequest.getApprovedSteps(), is(List.of("ddl")));
     }
+    
+    @Test
+    void assertCopyFieldsTo() {
+        WorkflowRequest source = new WorkflowRequest();
+        source.setPlanId("plan-1");
+        source.setDatabase("logic_db");
+        source.getPrimaryAlgorithmProperties().put("first-n", "1");
+        source.getApprovedSteps().add("ddl");
+        WorkflowRequest target = new WorkflowRequest();
+        WorkflowRequest actualRequest = WorkflowRequest.copyFieldsTo(source, target);
+        assertThat(actualRequest, is(target));
+        assertThat(target.getPlanId(), is("plan-1"));
+        assertThat(target.getDatabase(), is("logic_db"));
+        assertThat(target.getPrimaryAlgorithmProperties().get("first-n"), is("1"));
+        assertThat(target.getApprovedSteps(), is(List.of("ddl")));
+    }
+    
+    @Test
+    void assertCopyFieldsToWithNullSource() {
+        WorkflowRequest target = new WorkflowRequest();
+        target.setPlanId("plan-1");
+        WorkflowRequest actualRequest = WorkflowRequest.copyFieldsTo(null, target);
+        assertThat(actualRequest, is(target));
+        assertThat(target.getPlanId(), is("plan-1"));
+    }
 }

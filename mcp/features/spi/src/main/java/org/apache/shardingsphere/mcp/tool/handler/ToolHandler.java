@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool.handler;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
@@ -28,8 +26,7 @@ import java.util.Map;
 /**
  * Handler for one MCP tool.
  */
-@SingletonSPI
-public interface ToolHandler extends ShardingSphereSPI {
+public interface ToolHandler {
     
     /**
      * Get tool descriptor.

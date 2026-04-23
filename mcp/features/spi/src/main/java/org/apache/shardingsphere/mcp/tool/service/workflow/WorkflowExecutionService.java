@@ -90,7 +90,7 @@ public final class WorkflowExecutionService {
             result.put("executed_distsql", executedDistSql);
             result.put("skipped_artifacts", skippedArtifacts);
             result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE,
-                    WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, WorkflowPropertySources.compose(snapshot.getRequest(), snapshot.getFeatureData())));
+                    WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, getPropertySource(snapshot)));
             return result;
         }
         try {
@@ -198,6 +198,10 @@ public final class WorkflowExecutionService {
         result.put("skipped_artifacts", List.of());
         result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, Map.of());
         return result;
+    }
+    
+    private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {
+        return null == snapshot.getRequest() ? algorithmRole -> Map.of() : snapshot.getRequest();
     }
     
     private String resolveIssueCode(final String artifactType) {

@@ -43,7 +43,7 @@ class WorkflowArtifactPayloadUtilsTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE t ADD COLUMN c_cipher VARCHAR(32)", 1));
         snapshot.getIndexPlans().add(new IndexPlan("idx_t_c_cipher", "c_cipher", "lookup", "CREATE INDEX idx_t_c_cipher ON t(c_cipher)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='123456'))"));
-        Map<String, Object> actual = WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, WorkflowPropertySources.compose(snapshot.getRequest(), snapshot.getFeatureData()));
+        Map<String, Object> actual = WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, snapshot.getRequest());
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS)).size(), is(1));
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN)).size(), is(1));
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));

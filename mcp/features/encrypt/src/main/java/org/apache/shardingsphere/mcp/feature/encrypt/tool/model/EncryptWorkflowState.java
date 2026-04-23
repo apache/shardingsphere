@@ -31,43 +31,17 @@ import java.util.Map;
 public final class EncryptWorkflowState implements WorkflowFeatureData {
     
     @Getter
-    private final EncryptWorkflowOptions options = new EncryptWorkflowOptions();
-    
-    @Getter
     @Setter
     private DerivedColumnPlan derivedColumnPlan;
     
-    /**
-     * Create encrypt workflow state from request values.
-     *
-     * @param request encrypt workflow request
-     * @return encrypt workflow state
-     */
-    public static EncryptWorkflowState from(final EncryptWorkflowRequest request) {
-        EncryptWorkflowState result = new EncryptWorkflowState();
-        if (null == request) {
-            return result;
-        }
-        request.getOptions().copyTo(result.options);
-        return result;
-    }
-    
-    /**
-     * Clear transient planning artifacts from the workflow state.
-     */
-    public void clearPlanningState() {
-        derivedColumnPlan = null;
-    }
-    
     @Override
     public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
-        return options.getAlgorithmProperties(algorithmRole);
+        return Map.of();
     }
     
     @Override
     public EncryptWorkflowState copy() {
         EncryptWorkflowState result = new EncryptWorkflowState();
-        options.copyTo(result.options);
         result.setDerivedColumnPlan(copyDerivedColumnPlan());
         return result;
     }
