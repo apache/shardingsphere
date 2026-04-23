@@ -168,6 +168,7 @@ execute
     | createJob
     | createStreamingJob
     | cancelTask
+    | cancelMaterializedViewTask
     | backup
     | cancelBackup
     | cancelLoadStatement

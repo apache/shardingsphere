@@ -137,6 +137,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameR
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RenameTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RepeatStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ReplaceTableContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelMaterializedViewTaskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelTaskContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeJobContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.ResumeSyncJobContext;
@@ -276,6 +277,7 @@ import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateStrea
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCreateSyncJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropFunctionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisPauseSyncJobStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelMaterializedViewTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisCancelTaskStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisAlterJobStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisDropJobStatement;
@@ -564,6 +566,13 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
         String jobName = SQLUtils.getExactlyValue(ctx.stringLiterals().getText());
         long taskId = Long.parseLong(ctx.numberLiterals().getText());
         return new DorisCancelTaskStatement(getDatabaseType(), jobName, taskId);
+    }
+    
+    @Override
+    public ASTNode visitCancelMaterializedViewTask(final CancelMaterializedViewTaskContext ctx) {
+        long taskId = Long.parseLong(ctx.numberLiterals().getText());
+        String mvName = ctx.tableName().getText();
+        return new DorisCancelMaterializedViewTaskStatement(getDatabaseType(), taskId, mvName);
     }
     
     private JobScheduleSegment createJobScheduleSegment(final JobScheduleExpressionContext ctx) {

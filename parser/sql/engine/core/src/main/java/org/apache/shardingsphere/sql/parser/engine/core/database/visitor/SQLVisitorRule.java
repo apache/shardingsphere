@@ -299,6 +299,8 @@ public enum SQLVisitorRule {
     
     CANCEL_TASK("CancelTask", SQLStatementType.DDL),
     
+    CANCEL_MATERIALIZED_VIEW_TASK("CancelMaterializedViewTask", SQLStatementType.DDL),
+    
     RESUME_JOB("ResumeJob", SQLStatementType.DDL),
     
     RESUME_SYNC_JOB("ResumeSyncJob", SQLStatementType.DDL),
