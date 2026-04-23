@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DD
  * Refresh materialized view statement for Doris.
  */
 public final class DorisRefreshMaterializedViewStatement extends DDLStatement {
-
+    
     public DorisRefreshMaterializedViewStatement(final DatabaseType databaseType) {
         super(databaseType);
     }

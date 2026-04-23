@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  * Clean profile statement for Doris.
  */
 public final class DorisCleanProfileStatement extends DALStatement {
-
+    
     public DorisCleanProfileStatement(final DatabaseType databaseType) {
         super(databaseType);
     }

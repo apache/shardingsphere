@@ -24,7 +24,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
  * Create external resource statement for Doris.
  */
 public final class DorisCreateExternalResourceStatement extends DALStatement {
-
+    
     public DorisCreateExternalResourceStatement(final DatabaseType databaseType) {
         super(databaseType);
     }
