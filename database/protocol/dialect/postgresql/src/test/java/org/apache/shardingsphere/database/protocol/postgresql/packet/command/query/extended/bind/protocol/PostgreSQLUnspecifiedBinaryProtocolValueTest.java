@@ -36,30 +36,30 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PostgreSQLUnspecifiedBinaryProtocolValueTest {
-
+    
     @Mock
     private ByteBuf byteBuf;
-
+    
     private PostgreSQLPacketPayload payload;
-
+    
     @BeforeEach
     void setup() {
         payload = new PostgreSQLPacketPayload(byteBuf, StandardCharsets.UTF_8);
     }
-
+    
     @Test
     void assertGetColumnLength() {
         PostgreSQLUnspecifiedBinaryProtocolValue actual = new PostgreSQLUnspecifiedBinaryProtocolValue();
         assertThat(actual.getColumnLength(payload, "val"), is(3));
         assertThat(actual.getColumnLength(payload, new PostgreSQLTypeUnspecifiedSQLParameter("test")), is(4));
     }
-
+    
     @Test
     void assertGetColumnLengthWithMultiByteCharset() {
         PostgreSQLUnspecifiedBinaryProtocolValue actual = new PostgreSQLUnspecifiedBinaryProtocolValue();
         assertThat(actual.getColumnLength(payload, "中文"), is(6));
     }
-
+    
     @Test
     void assertRead() {
         String timestampStr = "2020-08-23 15:57:03+08";
@@ -74,13 +74,13 @@ class PostgreSQLUnspecifiedBinaryProtocolValueTest {
         assertThat(actual.toString(), is(timestampStr));
         assertThat(readBuf.readerIndex(), is(expectedLength));
     }
-
+    
     @Test
     void assertWrite() {
         new PostgreSQLUnspecifiedBinaryProtocolValue().write(payload, "val");
         verify(byteBuf).writeBytes("val".getBytes(StandardCharsets.UTF_8));
     }
-
+    
     @Test
     void assertWriteWithTypeUnspecifiedParameter() {
         new PostgreSQLUnspecifiedBinaryProtocolValue().write(payload, new PostgreSQLTypeUnspecifiedSQLParameter("test"));
