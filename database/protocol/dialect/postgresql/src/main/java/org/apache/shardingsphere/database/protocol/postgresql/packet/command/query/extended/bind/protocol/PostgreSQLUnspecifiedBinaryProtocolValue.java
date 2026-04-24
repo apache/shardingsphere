@@ -19,7 +19,6 @@ package org.apache.shardingsphere.database.protocol.postgresql.packet.command.qu
 
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQLPacketPayload;
-import org.apache.shardingsphere.infra.exception.generic.UnsupportedSQLOperationException;
 
 /**
  * Binary protocol value for unspecified for PostgreSQL.
@@ -28,7 +27,7 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQ
     
     @Override
     public int getColumnLength(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedSQLOperationException("getColumnLength");
+        return value.toString().getBytes(payload.getCharset()).length;
     }
     
     @Override
@@ -41,6 +40,6 @@ public final class PostgreSQLUnspecifiedBinaryProtocolValue implements PostgreSQ
     
     @Override
     public void write(final PostgreSQLPacketPayload payload, final Object value) {
-        throw new UnsupportedSQLOperationException("write");
+        payload.writeStringEOF(value.toString());
     }
 }
