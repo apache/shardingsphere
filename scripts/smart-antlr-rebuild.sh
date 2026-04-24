@@ -21,10 +21,14 @@
 # It uses 'mvn compile' with skips to ensure 'import' grammars are resolved.
 # -------------------------------------------------------------------------
 
+set -u
+set -o pipefail
+
 # 1. Ensure we are in the project root
-PROJECT_ROOT=$(git rev-parse --show-toplevel)
-if [ $? -ne 0 ]; then
-    echo "Error: Not a git repository." >&2
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROJECT_ROOT=$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$PROJECT_ROOT" ]; then
+    echo "Error: Unable to resolve the project root from $SCRIPT_DIR." >&2
     exit 1
 fi
 cd "$PROJECT_ROOT" || exit 1
@@ -32,34 +36,64 @@ cd "$PROJECT_ROOT" || exit 1
 STATE_FILE=".antlr_last_commit"
 CURRENT_COMMIT=$(git rev-parse HEAD)
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+MAVEN_COMMAND="./mvnw"
+
+if [ ! -x "$MAVEN_COMMAND" ]; then
+    MAVEN_COMMAND="mvn"
+fi
+
+resolve_module_for_path() {
+    local current_dir="$1"
+    while [ "$current_dir" != "." ] && [ "$current_dir" != "/" ]; do
+        if [ -f "$current_dir/pom.xml" ]; then
+            printf "%s\n" "${current_dir#./}"
+            return 0
+        fi
+        current_dir=$(dirname "$current_dir")
+    done
+    return 1
+}
+
+write_state_file() {
+    printf "%s:%s\n" "$CURRENT_BRANCH" "$CURRENT_COMMIT" > "$STATE_FILE"
+}
 
 # 2. Function to find all modules containing .g4 files
 find_all_antlr_modules() {
+    local all_modules=()
+    local current_dir
     echo "Scanning all ANTLR4 modules... (This may take a moment)" >&2
-    g4_dirs=$(find . -name "*.g4" -not -path "*/target/*" | xargs -I {} dirname {} | sort -u)
-    all_modules=()
-    for dir in $g4_dirs; do
-        current_dir="$dir"
-        while [[ "$current_dir" != "." && "$current_dir" != "/" ]]; do
-            if [ -f "$current_dir/pom.xml" ]; then
-                all_modules+=("${current_dir#./}")
-                break
-            fi
-            current_dir=$(dirname "$current_dir")
-        done
-    done
+    while IFS= read -r -d '' each; do
+        current_dir=$(dirname "$each")
+        if resolved_module=$(resolve_module_for_path "$current_dir"); then
+            all_modules+=("$resolved_module")
+        fi
+    done < <(find . -name "*.g4" -not -path "*/target/*" -print0)
+    if [ ${#all_modules[@]} -eq 0 ]; then
+        return 0
+    fi
     printf "%s\n" "${all_modules[@]}" | sort -u
+}
+
+collect_changed_g4_files() {
+    local last_commit="$1"
+    {
+        git diff --name-only "$last_commit" "$CURRENT_COMMIT" -- '*.g4'
+        git diff --name-only --cached -- '*.g4'
+        git diff --name-only -- '*.g4'
+        git ls-files --others --exclude-standard -- '*.g4'
+    } | sort -u
 }
 
 # 3. Determine change set
 if [ -f "$STATE_FILE" ]; then
     read -r stored_data < "$STATE_FILE"
-    LAST_BRANCH=$(echo "$stored_data" | cut -d':' -f1)
-    LAST_COMMIT=$(echo "$stored_data" | cut -d':' -f2)
+    LAST_BRANCH=${stored_data%%:*}
+    LAST_COMMIT=${stored_data#*:}
 
-    if [ "$CURRENT_BRANCH" == "$LAST_BRANCH" ] && git rev-parse "$LAST_COMMIT" >/dev/null 2>&1; then
+    if [ "$CURRENT_BRANCH" = "$LAST_BRANCH" ] && git rev-parse "$LAST_COMMIT" >/dev/null 2>&1; then
         echo "Branch: $CURRENT_BRANCH. Comparing changes since $LAST_COMMIT..." >&2
-        changed_files=$(git diff --name-only "$LAST_COMMIT" "$CURRENT_COMMIT" | grep '\.g4$')
+        changed_files=$(collect_changed_g4_files "$LAST_COMMIT")
     else
         changed_files="FORCE_ALL"
     fi
@@ -68,41 +102,41 @@ else
 fi
 
 # 4. Resolve modules to recompile
-if [ "$changed_files" == "FORCE_ALL" ]; then
+if [ "$changed_files" = "FORCE_ALL" ]; then
     unique_modules=$(find_all_antlr_modules)
-elif [ ! -z "$changed_files" ]; then
-    echo "Detected changes in grammar files." >&2
+elif [ -n "$changed_files" ]; then
     modules_to_build=()
+    echo "Detected changes in grammar files." >&2
     for file in $changed_files; do
         dir=$(dirname "$file")
-        while [[ "$dir" != "." && "$dir" != "/" ]]; do
-            if [ -f "$dir/pom.xml" ]; then
-                modules_to_build+=("${dir#./}")
-                break
-            fi
-            dir=$(dirname "$dir")
-        done
+        if resolved_module=$(resolve_module_for_path "$dir"); then
+            modules_to_build+=("$resolved_module")
+        fi
     done
-    unique_modules=$(printf "%s\n" "${modules_to_build[@]}" | sort -u)
+    if [ ${#modules_to_build[@]} -eq 0 ]; then
+        unique_modules=""
+    else
+        unique_modules=$(printf "%s\n" "${modules_to_build[@]}" | sort -u)
+    fi
 else
     echo "No ANTLR4 grammar changes detected."
-    echo "$CURRENT_BRANCH:$CURRENT_COMMIT" > "$STATE_FILE"
+    write_state_file
     exit 0
 fi
 
 # 5. Execute Maven build with optimized flags
-if [ ! -z "$unique_modules" ]; then
+if [ -n "$unique_modules" ]; then
     project_list=$(echo "$unique_modules" | tr '\n' ',' | sed 's/,$//')
 
     echo "------------------------------------------------"
-    echo "Recompiling affected modules via 'mvn compile'..."
+    echo "Recompiling affected modules via '$MAVEN_COMMAND compile'..."
     echo "This ensures all imported grammars (Symbol, etc.) are correctly resolved."
     echo "------------------------------------------------"
 
     # -T 1C: Parallel build (1 thread per core)
     # -am: Also make dependencies (Crucial for Resource Copying)
     # -DskipTests, -Dcheckstyle.skip, etc: Skips heavy non-compilation tasks
-    mvn compile -pl "$project_list" -am \
+    "$MAVEN_COMMAND" compile -pl "$project_list" -am \
         -T 1C \
         -DskipTests \
         -Dcheckstyle.skip \
@@ -112,11 +146,11 @@ if [ ! -z "$unique_modules" ]; then
         -Dspotless.skip
 
     if [ $? -eq 0 ]; then
-        echo "$CURRENT_BRANCH:$CURRENT_COMMIT" > "$STATE_FILE"
+        write_state_file
         echo "------------------------------------------------"
         echo "SUCCESS: ANTLR4 classes and visitors are ready."
     else
-        echo "ERROR: Maven build failed. You might need to run 'mvn install' on infra modules once." >&2
+        echo "ERROR: Maven build failed. You might need to run './mvnw install' on infra modules once." >&2
         exit 1
     fi
 else
