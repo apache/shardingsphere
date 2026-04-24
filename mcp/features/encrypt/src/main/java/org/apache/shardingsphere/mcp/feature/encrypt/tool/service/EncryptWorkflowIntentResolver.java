@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowIntentResolverSupport;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
 import java.util.Locale;
@@ -30,44 +31,13 @@ final class EncryptWorkflowIntentResolver {
     
     ClarifiedIntent resolve(final EncryptWorkflowRequest request) {
         ClarifiedIntent result = new ClarifiedIntent();
-        result.setOperationType(resolveOperationType(request));
-        result.setFieldSemantics(resolveFieldSemantics(request));
+        result.setOperationType(WorkflowIntentResolverSupport.resolveOperationType(request));
+        result.setFieldSemantics(WorkflowIntentResolverSupport.resolveFieldSemantics(request));
         request.getOptions().setRequiresDecrypt(resolveRequiresDecrypt(request, result));
         request.getOptions().setRequiresEqualityFilter(resolveRequiresEqualityFilter(request, result));
         request.getOptions().setRequiresLikeQuery(resolveRequiresLikeQuery(request, result));
         result.setReasoningNotes("Derived from explicit arguments and encrypt-specific intent heuristics.");
         return result;
-    }
-    
-    private String resolveOperationType(final EncryptWorkflowRequest request) {
-        String actualOperationType = WorkflowSqlUtils.trimToEmpty(request.getOperationType()).toLowerCase(Locale.ENGLISH);
-        if (!actualOperationType.isEmpty()) {
-            return actualOperationType;
-        }
-        String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("drop") || naturalLanguageIntent.contains("删除")) {
-            return "drop";
-        }
-        if (naturalLanguageIntent.contains("alter") || naturalLanguageIntent.contains("修改") || naturalLanguageIntent.contains("补")) {
-            return "alter";
-        }
-        return "create";
-    }
-    
-    private String resolveFieldSemantics(final EncryptWorkflowRequest request) {
-        String actualFieldSemantics = WorkflowSqlUtils.trimToEmpty(request.getFieldSemantics()).toLowerCase(Locale.ENGLISH);
-        if (!actualFieldSemantics.isEmpty()) {
-            return actualFieldSemantics;
-        }
-        String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
-        String columnName = WorkflowSqlUtils.trimToEmpty(request.getColumn()).toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("手机号") || columnName.contains("phone") || columnName.contains("mobile") || columnName.contains("tel")) {
-            return "phone";
-        }
-        if (naturalLanguageIntent.contains("身份证") || columnName.contains("id_card")) {
-            return "id_card";
-        }
-        return columnName;
     }
     
     private Boolean resolveRequiresDecrypt(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {

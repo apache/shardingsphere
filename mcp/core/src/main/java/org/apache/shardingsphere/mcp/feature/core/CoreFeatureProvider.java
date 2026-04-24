@@ -21,28 +21,15 @@ import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemaHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SequenceHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SequencesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TableHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TablesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Core MCP feature provider.
@@ -59,21 +46,50 @@ public final class CoreFeatureProvider implements MCPFeatureProvider {
         return List.of(
                 new ServiceCapabilitiesHandler(),
                 new DatabaseCapabilitiesHandler(),
-                new DatabasesHandler(),
-                new DatabaseHandler(),
-                new SchemasHandler(),
-                new SchemaHandler(),
-                new SequencesHandler(),
-                new SequenceHandler(),
-                new TablesHandler(),
-                new ViewsHandler(),
-                new TableHandler(),
-                new TableColumnsHandler(),
-                new TableColumnHandler(),
-                new ViewHandler(),
-                new ViewColumnsHandler(),
-                new ViewColumnHandler(),
-                new IndexesHandler(),
-                new IndexHandler());
+                new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabases()),
+                new MetadataResourceHandler("shardingsphere://databases/{database}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getVariable("database")))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySchemas(uriVariables.getVariable("database"))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(
+                                requestContext.getMetadataQueryFacade().querySchema(uriVariables.getVariable("database"), uriVariables.getVariable("schema")))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySequences(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().querySequence(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("sequence")))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTables(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/views",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViews(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTable(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table")))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTableColumns(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTableColumn(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("column")))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryView(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view")))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViewColumns(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryViewColumn(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"), uriVariables.getVariable("column")))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryIndexes(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))),
+                new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryIndex(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("index")))));
+    }
+    
+    private static List<?> singletonOrEmpty(final Optional<?> metadata) {
+        return metadata.map(Collections::singletonList).orElse(Collections.emptyList());
     }
 }

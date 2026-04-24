@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
@@ -24,6 +25,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,6 +89,46 @@ public final class WorkflowValidationSupport {
         validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH, "logical_metadata", snapshot.getRequest().getColumn(), "",
                 "Logical column is not visible from Proxy metadata.", "Refresh metadata or investigate the logical schema."));
         return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Logical column is not visible from Proxy metadata.");
+    }
+    
+    /**
+     * Create the baseline projection SQL used by workflow validation.
+     *
+     * @param snapshot workflow snapshot
+     * @return projection validation SQL
+     */
+    public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot) {
+        WorkflowSqlUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
+        WorkflowSqlUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
+        return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
+    }
+    
+    /**
+     * Validate whether planned SQLs are executable from the logical view.
+     *
+     * @param executionFacade SQL execution facade
+     * @param sessionId session identifier
+     * @param snapshot workflow snapshot
+     * @param validationReport validation report
+     * @param validationSqls validation SQLs
+     * @param successDetails success details
+     * @return SQL executability validation section
+     */
+    public ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId,
+                                                      final WorkflowContextSnapshot snapshot, final ValidationReport validationReport,
+                                                      final List<String> validationSqls, final String successDetails) {
+        for (String each : validationSqls) {
+            try {
+                executionFacade.execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each, 1, 0));
+                // CHECKSTYLE:OFF
+            } catch (final RuntimeException ex) {
+                // CHECKSTYLE:ON
+                validationReport.getMismatches().add(createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", each, ex.getMessage(),
+                        "Validation SQL cannot be executed from the logical view.", "Inspect rule state and logical metadata."));
+                return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, each, ex.getMessage());
+            }
+        }
+        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, validationSqls, successDetails);
     }
     
     /**

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
@@ -113,22 +112,7 @@ public final class MaskWorkflowValidationService {
     
     private ValidationSection validateSqlExecutability(final MCPFeatureContext requestContext, final String sessionId,
                                                        final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
-        String validationSql = createValidationSql(snapshot);
-        try {
-            requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), validationSql, 1, 0));
-            return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(validationSql), "Validation SQL is executable from the logical view.");
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", validationSql, ex.getMessage(),
-                    "Validation SQL cannot be executed from the logical view.", "Inspect rule state and logical metadata."));
-            return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, validationSql, ex.getMessage());
-        }
-    }
-    
-    private String createValidationSql(final WorkflowContextSnapshot snapshot) {
-        WorkflowSqlUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
-        WorkflowSqlUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
-        return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
+        return validationSupport.validateSqlExecutability(requestContext.getExecutionFacade(), sessionId, snapshot, validationReport,
+                List.of(validationSupport.createProjectionValidationSql(snapshot)), "Validation SQL is executable from the logical view.");
     }
 }

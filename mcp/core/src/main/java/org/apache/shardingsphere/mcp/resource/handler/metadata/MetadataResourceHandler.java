@@ -17,31 +17,33 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
-import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.function.BiFunction;
 
 /**
- * Handler for index resource URI.
+ * Metadata resource handler backed by one metadata loader function.
  */
-public final class IndexHandler implements ResourceHandler {
+@RequiredArgsConstructor
+public final class MetadataResourceHandler implements ResourceHandler {
+    
+    private final String uriPattern;
+    
+    private final BiFunction<MCPFeatureContext, MCPUriVariables, List<?>> metadataLoader;
     
     @Override
     public String getUriPattern() {
-        return "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}";
+        return uriPattern;
     }
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        var metadataQueryService = requestContext.getMetadataQueryFacade();
-        String databaseName = uriVariables.getVariable("database");
-        String schemaName = uriVariables.getVariable("schema");
-        String tableName = uriVariables.getVariable("table");
-        String indexName = uriVariables.getVariable("index");
-        return new MCPMetadataResponse(metadataQueryService.queryIndex(databaseName, schemaName, tableName, indexName).map(Collections::singletonList).orElse(Collections.emptyList()));
+        return new MCPMetadataResponse(metadataLoader.apply(requestContext, uriVariables));
     }
 }

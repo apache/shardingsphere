@@ -20,12 +20,13 @@ package org.apache.shardingsphere.mcp.feature.encrypt;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptAlgorithmsHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRuleHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.ApplyEncryptRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.ValidateEncryptRuleToolHandler;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +38,9 @@ public final class EncryptFeatureProvider implements MCPFeatureProvider {
     
     @Override
     public Collection<ToolHandler> getToolHandlers() {
-        return List.of(new PlanEncryptRuleToolHandler(), new ApplyEncryptRuleToolHandler(), new ValidateEncryptRuleToolHandler());
+        return List.of(new PlanEncryptRuleToolHandler(),
+                new WorkflowExecutionToolHandler(EncryptFeatureDefinition.APPLY_TOOL_NAME),
+                new WorkflowValidationToolHandler(EncryptFeatureDefinition.VALIDATE_TOOL_NAME, new EncryptWorkflowValidationService()::validate));
     }
     
     @Override

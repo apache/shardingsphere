@@ -15,36 +15,54 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
+package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
 
 import java.util.Map;
 
 /**
- * Tool handler for mask workflow execution.
+ * Generic workflow validation tool handler.
  */
-public final class ApplyMaskRuleToolHandler implements ToolHandler {
+@RequiredArgsConstructor
+public final class WorkflowValidationToolHandler implements ToolHandler {
     
-    private final WorkflowExecutionService executionService = new WorkflowExecutionService();
+    private final String toolName;
+    
+    private final WorkflowValidator workflowValidator;
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
-        return WorkflowToolDescriptors.createExecution(MaskFeatureDefinition.APPLY_TOOL_NAME);
+        return WorkflowToolDescriptors.createValidation(toolName);
     }
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(executionService.apply(requestContext, sessionId, toolArguments.getStringArgument("plan_id"),
-                toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
+        return new MCPMapResponse(workflowValidator.validate(requestContext, sessionId, toolArguments.getStringArgument("plan_id")));
+    }
+    
+    /**
+     * Validate one workflow plan.
+     */
+    @FunctionalInterface
+    public interface WorkflowValidator {
+        
+        /**
+         * Validate workflow.
+         *
+         * @param requestContext request context
+         * @param sessionId session id
+         * @param planId plan id
+         * @return validation payload
+         */
+        Map<String, Object> validate(MCPFeatureContext requestContext, String sessionId, String planId);
     }
 }

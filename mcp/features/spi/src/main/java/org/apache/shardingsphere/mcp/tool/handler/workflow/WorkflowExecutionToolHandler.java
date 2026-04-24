@@ -15,35 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
+package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
 
 import java.util.Map;
 
 /**
- * Tool handler for encrypt workflow validation.
+ * Generic workflow execution tool handler.
  */
-public final class ValidateEncryptRuleToolHandler implements ToolHandler {
+@RequiredArgsConstructor
+public final class WorkflowExecutionToolHandler implements ToolHandler {
     
-    private final EncryptWorkflowValidationService validationService = new EncryptWorkflowValidationService();
+    private final String toolName;
+    
+    private final WorkflowExecutionService executionService;
+    
+    public WorkflowExecutionToolHandler(final String toolName) {
+        this(toolName, new WorkflowExecutionService());
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
-        return WorkflowToolDescriptors.createValidation(EncryptFeatureDefinition.VALIDATE_TOOL_NAME);
+        return WorkflowToolDescriptors.createExecution(toolName);
     }
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(validationService.validate(requestContext, sessionId, toolArguments.getStringArgument("plan_id")));
+        return new MCPMapResponse(executionService.apply(requestContext, sessionId, toolArguments.getStringArgument("plan_id"),
+                toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
     }
 }

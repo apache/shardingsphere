@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
@@ -168,19 +167,8 @@ public final class EncryptWorkflowValidationService {
     
     private ValidationSection validateSqlExecutability(final MCPFeatureContext requestContext, final String sessionId, final WorkflowContextSnapshot snapshot,
                                                        final EncryptWorkflowRequest request, final ValidationReport validationReport) {
-        List<String> validationSqls = createValidationSqls(snapshot, request);
-        for (String each : validationSqls) {
-            try {
-                requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId, snapshot.getRequest().getDatabase(), snapshot.getRequest().getSchema(), each, 1, 0));
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED, "sql_executability", each, ex.getMessage(),
-                        "Validation SQL cannot be executed from the logical view.", "Inspect rule state and logical metadata."));
-                return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, each, ex.getMessage());
-            }
-        }
-        return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, validationSqls, "Validation SQLs are executable from the logical view.");
+        return validationSupport.validateSqlExecutability(requestContext.getExecutionFacade(), sessionId, snapshot, validationReport,
+                createValidationSqls(snapshot, request), "Validation SQLs are executable from the logical view.");
     }
     
     private void addMissingPhysicalDerivedColumnMismatches(final MCPFeatureContext requestContext, final WorkflowContextSnapshot snapshot,
@@ -236,10 +224,8 @@ public final class EncryptWorkflowValidationService {
     }
     
     private List<String> createValidationSqls(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {
-        WorkflowSqlUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
-        WorkflowSqlUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
         List<String> result = new LinkedList<>();
-        result.add(String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable()));
+        result.add(validationSupport.createProjectionValidationSql(snapshot));
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             return result;
         }

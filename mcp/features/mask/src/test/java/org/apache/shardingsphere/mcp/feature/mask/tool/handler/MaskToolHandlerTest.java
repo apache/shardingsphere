@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
@@ -29,6 +30,8 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -96,16 +99,15 @@ class MaskToolHandlerTest {
     
     @Test
     void assertGetValidateMaskRuleToolDescriptor() {
-        MCPToolDescriptor actual = new ValidateMaskRuleToolHandler().getToolDescriptor();
+        MCPToolDescriptor actual = new WorkflowValidationToolHandler(MaskFeatureDefinition.VALIDATE_TOOL_NAME, (requestContext, sessionId, planId) -> Map.of()).getToolDescriptor();
         assertThat(actual.getName(), is("validate_mask_rule"));
     }
     
     @Test
-    void assertHandleValidateMaskRule() throws ReflectiveOperationException {
-        ValidateMaskRuleToolHandler handler = new ValidateMaskRuleToolHandler();
+    void assertHandleValidateMaskRule() {
         MaskWorkflowValidationService validationService = mock(MaskWorkflowValidationService.class);
         when(validationService.validate(any(), any(), any())).thenReturn(Map.of("status", "validated"));
-        setField(handler, "validationService", validationService);
+        WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(MaskFeatureDefinition.VALIDATE_TOOL_NAME, validationService::validate);
         MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of("plan_id", "plan-1"));
         verify(validationService).validate(any(), eq("session-1"), eq("plan-1"));
         assertThat(actual.toPayload().get("status"), is("validated"));
@@ -113,16 +115,15 @@ class MaskToolHandlerTest {
     
     @Test
     void assertGetApplyMaskRuleToolDescriptor() {
-        MCPToolDescriptor actual = new ApplyMaskRuleToolHandler().getToolDescriptor();
+        MCPToolDescriptor actual = new WorkflowExecutionToolHandler(MaskFeatureDefinition.APPLY_TOOL_NAME).getToolDescriptor();
         assertThat(actual.getName(), is("apply_mask_rule"));
     }
     
     @Test
-    void assertHandleApplyMaskRule() throws ReflectiveOperationException {
-        ApplyMaskRuleToolHandler handler = new ApplyMaskRuleToolHandler();
+    void assertHandleApplyMaskRule() {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
         when(executionService.apply(any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
-        setField(handler, "executionService", executionService);
+        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(MaskFeatureDefinition.APPLY_TOOL_NAME, executionService);
         MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
                 "plan_id", "plan-1",
                 "approved_steps", List.of("rule_distsql"),

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
@@ -25,6 +26,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
+import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
@@ -35,7 +37,10 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WorkflowValidationSupportTest {
@@ -101,6 +106,36 @@ class WorkflowValidationSupportTest {
         ValidationSection actualValidationSection = validationSupport.validateLogicalMetadata(snapshot, mock(MCPMetadataQueryFacade.class), validationReport);
         assertThat(actualValidationSection.getStatus(), is("failed"));
         assertThat(((Map<?, ?>) validationReport.getMismatches().get(0)).get("code"), is(WorkflowIssueCode.LOGICAL_METADATA_MISMATCH));
+    }
+    
+    @Test
+    void assertCreateProjectionValidationSql() {
+        assertThat(validationSupport.createProjectionValidationSql(createSnapshot()), is("SELECT phone FROM orders"));
+    }
+    
+    @Test
+    void assertValidateSqlExecutability() {
+        ValidationReport validationReport = new ValidationReport();
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        ValidationSection actualValidationSection = validationSupport.validateSqlExecutability(executionFacade, "session-1", createSnapshot(), validationReport,
+                List.of("SELECT phone FROM orders", "SELECT phone FROM orders WHERE phone = 'sample'"), "Validation SQLs are executable from the logical view.");
+        assertThat(actualValidationSection.getStatus(), is("passed"));
+        assertThat(actualValidationSection.getEvidence(), is(List.of("SELECT phone FROM orders", "SELECT phone FROM orders WHERE phone = 'sample'")));
+        assertThat(validationReport.getMismatches(), is(List.of()));
+        verify(executionFacade, times(2)).execute(any());
+    }
+    
+    @Test
+    void assertValidateSqlExecutabilityWhenExecutionFails() {
+        ValidationReport validationReport = new ValidationReport();
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenThrow(new IllegalStateException("sql failed"));
+        ValidationSection actualValidationSection = validationSupport.validateSqlExecutability(executionFacade, "session-1", createSnapshot(), validationReport,
+                List.of("SELECT phone FROM orders"), "Validation SQL is executable from the logical view.");
+        assertThat(actualValidationSection.getStatus(), is("failed"));
+        assertThat(validationReport.getMismatches().size(), is(1));
+        assertThat(validationReport.getMismatches().get(0).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
     }
     
     @Test

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
@@ -34,6 +35,8 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -106,16 +109,15 @@ class EncryptToolHandlerTest {
     
     @Test
     void assertGetValidateEncryptRuleToolDescriptor() {
-        MCPToolDescriptor actual = new ValidateEncryptRuleToolHandler().getToolDescriptor();
+        MCPToolDescriptor actual = new WorkflowValidationToolHandler(EncryptFeatureDefinition.VALIDATE_TOOL_NAME, (requestContext, sessionId, planId) -> Map.of()).getToolDescriptor();
         assertThat(actual.getName(), is("validate_encrypt_rule"));
     }
     
     @Test
-    void assertHandleValidateEncryptRule() throws ReflectiveOperationException {
-        ValidateEncryptRuleToolHandler handler = new ValidateEncryptRuleToolHandler();
+    void assertHandleValidateEncryptRule() {
         EncryptWorkflowValidationService validationService = mock(EncryptWorkflowValidationService.class);
         when(validationService.validate(any(), any(), any())).thenReturn(Map.of("status", "validated"));
-        setField(handler, "validationService", validationService);
+        WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(EncryptFeatureDefinition.VALIDATE_TOOL_NAME, validationService::validate);
         MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of("plan_id", "plan-1"));
         verify(validationService).validate(any(), eq("session-1"), eq("plan-1"));
         assertThat(actual.toPayload().get("status"), is("validated"));
@@ -123,16 +125,15 @@ class EncryptToolHandlerTest {
     
     @Test
     void assertGetApplyEncryptRuleToolDescriptor() {
-        MCPToolDescriptor actual = new ApplyEncryptRuleToolHandler().getToolDescriptor();
+        MCPToolDescriptor actual = new WorkflowExecutionToolHandler(EncryptFeatureDefinition.APPLY_TOOL_NAME).getToolDescriptor();
         assertThat(actual.getName(), is("apply_encrypt_rule"));
     }
     
     @Test
-    void assertHandleApplyEncryptRule() throws ReflectiveOperationException {
-        ApplyEncryptRuleToolHandler handler = new ApplyEncryptRuleToolHandler();
+    void assertHandleApplyEncryptRule() {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
         when(executionService.apply(any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
-        setField(handler, "executionService", executionService);
+        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(EncryptFeatureDefinition.APPLY_TOOL_NAME, executionService);
         MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
                 "plan_id", "plan-1",
                 "approved_steps", List.of("ddl", "rule_distsql"),

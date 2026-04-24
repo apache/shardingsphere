@@ -18,10 +18,13 @@
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowFeatureData;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
@@ -29,6 +32,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -36,6 +40,112 @@ import java.util.Optional;
  * Workflow planning support.
  */
 public final class WorkflowPlanningSupport {
+    
+    /**
+     * Apply resolved intent fields to the workflow request.
+     *
+     * @param request workflow request
+     * @param clarifiedIntent clarified intent
+     */
+    public void applyResolvedIntent(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        request.setOperationType(clarifiedIntent.getOperationType());
+        request.setFieldSemantics(clarifiedIntent.getFieldSemantics());
+    }
+    
+    /**
+     * Prepare workflow snapshot for planning.
+     *
+     * @param snapshot workflow snapshot
+     * @param request merged request
+     * @param featureData feature-scoped workflow data
+     * @param clarifiedIntent clarified intent
+     * @param summary interaction summary
+     * @param interactionSteps interaction steps
+     * @param validationLayers validation layers
+     * @param <T> request type
+     * @return prepared request
+     */
+    public <T extends WorkflowRequest> T prepareSnapshot(final WorkflowContextSnapshot snapshot, final T request, final WorkflowFeatureData featureData,
+                                                         final ClarifiedIntent clarifiedIntent, final String summary,
+                                                         final List<String> interactionSteps, final List<String> validationLayers) {
+        snapshot.setRequest(request);
+        snapshot.setFeatureData(featureData);
+        snapshot.setInteractionPlan(InteractionPlan.create(snapshot.getPlanId(), request, summary, interactionSteps, validationLayers));
+        snapshot.clearPlanningState();
+        snapshot.setClarifiedIntent(clarifiedIntent);
+        return request;
+    }
+    
+    /**
+     * Ensure lifecycle state matches the requested workflow operation.
+     *
+     * @param ruleLabel rule label for user-facing issues
+     * @param clarifiedIntent clarified intent
+     * @param ruleExists whether the target rule already exists
+     * @param snapshot workflow snapshot
+     * @return whether lifecycle state is valid
+     */
+    public boolean ensureLifecycleState(final String ruleLabel, final ClarifiedIntent clarifiedIntent,
+                                        final boolean ruleExists, final WorkflowContextSnapshot snapshot) {
+        String actualOperationType = WorkflowSqlUtils.trimToEmpty(clarifiedIntent.getOperationType()).toLowerCase(Locale.ENGLISH);
+        if ("create".equals(actualOperationType) && ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+                    String.format("%s already exists for the target column.", ruleLabel), "Use alter instead of create.", false, Map.of()));
+            return false;
+        }
+        if ("alter".equals(actualOperationType) && !ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
+                    String.format("%s does not exist for the target column.", ruleLabel), "Use create instead of alter or confirm the target column.", false, Map.of()));
+            return false;
+        }
+        if ("drop".equals(actualOperationType) && !ruleExists) {
+            snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND, "error", "discovering",
+                    String.format("%s does not exist for the target column.", ruleLabel), "Confirm target table and column or skip the drop request.", false, Map.of()));
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * Add one fallback clarification question when algorithm selection is blocked.
+     *
+     * @param clarifiedIntent clarified intent
+     * @param snapshot workflow snapshot
+     * @param fallbackQuestion fallback question
+     * @return whether there is any blocking algorithm issue
+     */
+    public boolean hasBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
+        boolean result = snapshot.getIssues().stream().anyMatch(each -> "selecting-algorithm".equals(each.getStage()) && "error".equals(each.getSeverity()));
+        if (result && clarifiedIntent.getPendingQuestions().isEmpty()) {
+            clarifiedIntent.getPendingQuestions().add(fallbackQuestion);
+        }
+        return result;
+    }
+    
+    /**
+     * Collect required algorithm properties and emit missing-property clarification prompts.
+     *
+     * @param request workflow request
+     * @param clarifiedIntent clarified intent
+     * @param snapshot workflow snapshot
+     * @param propertyRequirements property requirements
+     * @return whether all required properties are present
+     */
+    public boolean collectPropertyRequirements(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent,
+                                               final WorkflowContextSnapshot snapshot, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        snapshot.getPropertyRequirements().addAll(propertyRequirements);
+        applyDefaultProperties(request, propertyRequirements);
+        List<String> missingRequiredProperties = findMissingRequiredProperties(request, propertyRequirements);
+        if (missingRequiredProperties.isEmpty()) {
+            return true;
+        }
+        for (String each : missingRequiredProperties) {
+            clarifiedIntent.getPendingQuestions().add(String.format("请提供属性 `%s`。", each));
+        }
+        snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING, "error", "collecting-properties",
+                "Required algorithm properties are still missing.", "Provide all required algorithm properties.", true, Map.of("missing_properties", missingRequiredProperties)));
+        return false;
+    }
     
     /**
      * Ensure workflow planning context is complete and valid.
@@ -145,5 +255,24 @@ public final class WorkflowPlanningSupport {
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.COLUMN_NOT_FOUND, "error", "discovering",
                 String.format("Column `%s` does not exist in Proxy logical metadata.", request.getColumn()), "Check column name.", false, Map.of()));
         return false;
+    }
+    
+    private void applyDefaultProperties(final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        for (AlgorithmPropertyRequirement each : propertyRequirements) {
+            if (!each.getDefaultValue().isEmpty()) {
+                request.getAlgorithmProperties(each.getAlgorithmRole()).putIfAbsent(each.getPropertyKey(), each.getDefaultValue());
+            }
+        }
+    }
+    
+    private List<String> findMissingRequiredProperties(final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        List<String> result = new LinkedList<>();
+        for (AlgorithmPropertyRequirement each : propertyRequirements) {
+            String actualValue = request.getAlgorithmProperties(each.getAlgorithmRole()).get(each.getPropertyKey());
+            if (each.isRequired() && WorkflowSqlUtils.trimToEmpty(actualValue).isEmpty()) {
+                result.add(each.getPropertyKey());
+            }
+        }
+        return result;
     }
 }

@@ -27,38 +27,25 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabaseHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.DatabasesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.IndexesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SequenceHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SequencesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemaHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.SchemasHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TableColumnsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TableHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.TablesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewColumnsHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewHandler;
-import org.apache.shardingsphere.mcp.resource.handler.metadata.ViewsHandler;
+import org.apache.shardingsphere.mcp.resource.handler.metadata.MetadataResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
-import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -100,9 +87,13 @@ class ResourceHandlerTest {
     @Test
     void assertHandleWithUnsupportedIndexResource() {
         try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new IndexesHandler().handle(requestContext,
-                    match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
-                            "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
+                    "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                    (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().queryIndexes(
+                            uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table")))
+                    .handle(requestContext,
+                            match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                                    "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
             assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
         }
     }
@@ -110,9 +101,13 @@ class ResourceHandlerTest {
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
         try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
-            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new SequencesHandler().handle(requestContext,
-                    match("shardingsphere://databases/{database}/schemas/{schema}/sequences",
-                            "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
+            MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
+                    "shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                    (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
+                            uriVariables.getVariable("database"), uriVariables.getVariable("schema")))
+                    .handle(requestContext,
+                            match("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                                    "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
             assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
         }
     }
@@ -164,46 +159,94 @@ class ResourceHandlerTest {
         return Stream.of(
                 new HandlerCase("service capabilities", new ServiceCapabilitiesHandler(), "shardingsphere://capabilities",
                         "shardingsphere://capabilities", HandlerResultType.SERVICE_CAPABILITY, "", List.of()),
-                new HandlerCase("databases", new DatabasesHandler(), "shardingsphere://databases",
+                new HandlerCase("databases", new MetadataResourceHandler("shardingsphere://databases",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabases()), "shardingsphere://databases",
                         "shardingsphere://databases", HandlerResultType.METADATA, "", List.of("logic_db", "runtime_db", "warehouse")),
-                new HandlerCase("database", new DatabaseHandler(), "shardingsphere://databases/{database}",
+                new HandlerCase("database", new MetadataResourceHandler("shardingsphere://databases/{database}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getVariable("database")))),
+                        "shardingsphere://databases/{database}",
                         "shardingsphere://databases/logic_db", HandlerResultType.METADATA, "", List.of("logic_db")),
                 new HandlerCase("database capabilities", new DatabaseCapabilitiesHandler(), "shardingsphere://databases/{database}/capabilities",
                         "shardingsphere://databases/logic_db/capabilities", HandlerResultType.DATABASE_CAPABILITY, "logic_db", List.of()),
-                new HandlerCase("database schemas", new SchemasHandler(), "shardingsphere://databases/{database}/schemas",
+                new HandlerCase("database schemas", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySchemas(uriVariables.getVariable("database"))),
+                        "shardingsphere://databases/{database}/schemas",
                         "shardingsphere://databases/logic_db/schemas", HandlerResultType.METADATA, "", List.of("public")),
-                new HandlerCase("database schema sequences", new SequencesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                new HandlerCase("database schema sequences", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySequences(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"))),
+                        "shardingsphere://databases/{database}/schemas/{schema}/sequences",
                         "shardingsphere://databases/runtime_db/schemas/public/sequences", HandlerResultType.METADATA, "", List.of("order_seq")),
-                new HandlerCase("database schema sequence", new SequenceHandler(), "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
+                new HandlerCase("database schema sequence", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().querySequence(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("sequence")))),
+                        "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
                         "shardingsphere://databases/runtime_db/schemas/public/sequences/order_seq", HandlerResultType.METADATA, "", List.of("order_seq")),
-                new HandlerCase("database schema", new SchemaHandler(), "shardingsphere://databases/{database}/schemas/{schema}",
+                new HandlerCase("database schema", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().querySchema(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema")))),
+                        "shardingsphere://databases/{database}/schemas/{schema}",
                         "shardingsphere://databases/logic_db/schemas/public", HandlerResultType.METADATA, "", List.of("public")),
-                new HandlerCase("database schema tables", new TablesHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables",
+                new HandlerCase("database schema tables", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTables(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"))),
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables",
                         "shardingsphere://databases/logic_db/schemas/public/tables", HandlerResultType.METADATA, "", List.of("order_items", "orders")),
-                new HandlerCase("database schema views", new ViewsHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views",
+                new HandlerCase("database schema views", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/views",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViews(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"))),
+                        "shardingsphere://databases/{database}/schemas/{schema}/views",
                         "shardingsphere://databases/logic_db/schemas/public/views", HandlerResultType.METADATA, "", List.of("orders_view")),
-                new HandlerCase("database schema table", new TableHandler(), "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
+                new HandlerCase("database schema table", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTable(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table")))),
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders", HandlerResultType.METADATA, "", List.of("orders")),
-                new HandlerCase("database schema table columns", new TableColumnsHandler(),
+                new HandlerCase("database schema table columns", new MetadataResourceHandler(
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTableColumns(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema table column", new TableColumnHandler(),
+                new HandlerCase("database schema table column", new MetadataResourceHandler(
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTableColumn(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("column")))),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema view", new ViewHandler(), "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
+                new HandlerCase("database schema view", new MetadataResourceHandler("shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryView(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view")))),
+                        "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view", HandlerResultType.METADATA, "", List.of("orders_view")),
-                new HandlerCase("database schema view columns", new ViewColumnsHandler(),
+                new HandlerCase("database schema view columns", new MetadataResourceHandler(
+                        "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViewColumns(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"))),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema view column", new ViewColumnHandler(),
+                new HandlerCase("database schema view column", new MetadataResourceHandler(
+                        "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryViewColumn(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"), uriVariables.getVariable("column")))),
                         "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                         "shardingsphere://databases/logic_db/schemas/public/views/orders_view/columns/order_id", HandlerResultType.METADATA, "", List.of("order_id")),
-                new HandlerCase("database schema table indexes", new IndexesHandler(),
+                new HandlerCase("database schema table indexes", new MetadataResourceHandler(
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                        (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryIndexes(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes", HandlerResultType.METADATA, "", List.of("order_idx")),
-                new HandlerCase("database schema table index", new IndexHandler(),
+                new HandlerCase("database schema table index", new MetadataResourceHandler(
+                        "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
+                        (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryIndex(
+                                uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("index")))),
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")));
+    }
+    
+    private static List<?> singletonOrEmpty(final Optional<?> metadata) {
+        return metadata.map(Collections::singletonList).orElse(Collections.emptyList());
     }
     
     private static final class HandlerCase {

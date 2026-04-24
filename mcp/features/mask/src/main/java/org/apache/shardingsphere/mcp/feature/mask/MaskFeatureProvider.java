@@ -20,12 +20,13 @@ package org.apache.shardingsphere.mcp.feature.mask;
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskAlgorithmsHandler;
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandler;
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler;
-import org.apache.shardingsphere.mcp.feature.mask.tool.handler.ApplyMaskRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.handler.PlanMaskRuleToolHandler;
-import org.apache.shardingsphere.mcp.feature.mask.tool.handler.ValidateMaskRuleToolHandler;
+import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,7 +38,9 @@ public final class MaskFeatureProvider implements MCPFeatureProvider {
     
     @Override
     public Collection<ToolHandler> getToolHandlers() {
-        return List.of(new PlanMaskRuleToolHandler(), new ApplyMaskRuleToolHandler(), new ValidateMaskRuleToolHandler());
+        return List.of(new PlanMaskRuleToolHandler(),
+                new WorkflowExecutionToolHandler(MaskFeatureDefinition.APPLY_TOOL_NAME),
+                new WorkflowValidationToolHandler(MaskFeatureDefinition.VALIDATE_TOOL_NAME, new MaskWorkflowValidationService()::validate));
     }
     
     @Override
