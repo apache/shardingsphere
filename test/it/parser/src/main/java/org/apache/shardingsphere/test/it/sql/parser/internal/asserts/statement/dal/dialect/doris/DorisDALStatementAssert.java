@@ -23,6 +23,8 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.DA
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dal.UnsetVariableStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCleanTrashStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanAllProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanProfileStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCreateExternalResourceStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplayerPlayStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
@@ -56,6 +58,8 @@ import org.apache.shardingsphere.sql.parser.statement.doris.dal.show.DorisShowQu
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminCleanTrashStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCleanAllProfileStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCleanProfileStatementAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisCreateExternalResourceStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisPlanReplayerPlayStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminCopyTabletStatementAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.dal.dialect.doris.type.DorisAdminSetReplicaStatusStatementAssert;
@@ -90,6 +94,8 @@ import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.d
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCleanTrashStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanAllProfileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCleanProfileStatementTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisCreateExternalResourceStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisPlanReplayerPlayStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminCopyTabletStatementTestCase;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.dal.dialect.doris.DorisAdminSetReplicaStatusStatementTestCase;
@@ -200,6 +206,10 @@ public final class DorisDALStatementAssert {
             DorisShowLoadWarningsStatementAssert.assertIs(assertContext, (DorisShowLoadWarningsStatement) actual, (DorisShowLoadWarningsStatementTestCase) expected);
         } else if (actual instanceof DorisCleanAllProfileStatement) {
             DorisCleanAllProfileStatementAssert.assertIs(assertContext, (DorisCleanAllProfileStatement) actual, (DorisCleanAllProfileStatementTestCase) expected);
+        } else if (actual instanceof DorisCleanProfileStatement) {
+            DorisCleanProfileStatementAssert.assertIs(assertContext, (DorisCleanProfileStatement) actual, (DorisCleanProfileStatementTestCase) expected);
+        } else if (actual instanceof DorisCreateExternalResourceStatement) {
+            DorisCreateExternalResourceStatementAssert.assertIs(assertContext, (DorisCreateExternalResourceStatement) actual, (DorisCreateExternalResourceStatementTestCase) expected);
         } else if (actual instanceof DorisPlanReplayerPlayStatement) {
             DorisPlanReplayerPlayStatementAssert.assertIs(assertContext, (DorisPlanReplayerPlayStatement) actual, (DorisPlanReplayerPlayStatementTestCase) expected);
         }

@@ -78,6 +78,7 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateS
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLikeClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateLogfileGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateMaterializedViewContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.DorisRefreshMaterializedViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CreateSyncJobContext;
@@ -259,6 +260,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.tr
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.trigger.DropTriggerStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.AlterViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.ddl.DorisRefreshMaterializedViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.view.DropViewStatement;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.DeleteStatement;
@@ -1930,7 +1932,12 @@ public final class DorisDDLStatementVisitor extends DorisStatementVisitor implem
     public ASTNode visitCreateMaterializedView(final CreateMaterializedViewContext ctx) {
         return new CreateMaterializedViewStatement(getDatabaseType());
     }
-    
+
+    @Override
+    public ASTNode visitDorisRefreshMaterializedView(final DorisRefreshMaterializedViewContext ctx) {
+        return new DorisRefreshMaterializedViewStatement(getDatabaseType());
+    }
+
     @Override
     public ASTNode visitCreateEncryptKey(final CreateEncryptKeyContext ctx) {
         return new CreateEncryptKeyStatement(getDatabaseType());

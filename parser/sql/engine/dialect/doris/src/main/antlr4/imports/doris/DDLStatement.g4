@@ -466,6 +466,18 @@ createMaterializedView
 // DORIS ADDED END
 
 // DORIS ADDED BEGIN
+dorisRefreshMaterializedView
+    : REFRESH MATERIALIZED VIEW name (partitionSpec | COMPLETE | AUTO)
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
+partitionSpec
+    : PARTITIONS LP_ identifierList RP_
+    ;
+// DORIS ADDED END
+
+// DORIS ADDED BEGIN
 buildMode
     : BUILD (IMMEDIATE | DEFERRED)
     ;

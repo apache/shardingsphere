@@ -172,7 +172,10 @@ execute
     | cancelBackup
     | cancelLoadStatement
     | cleanAllProfile
+    | cleanProfile
     | planReplayerPlay
+    | dorisRefreshMaterializedView
+    | createExternalResource
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF
