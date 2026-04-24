@@ -85,6 +85,7 @@ import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.implicit.ImplicitTransactionCallback;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -391,6 +392,9 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
     private Collection<SQLException> closeStatements() {
         Collection<SQLException> result = new LinkedList<>();
         for (Statement each : cachedStatements) {
+            if (isCachedPreparedStatement(each)) {
+                continue;
+            }
             try {
                 each.cancel();
                 each.close();
@@ -400,6 +404,10 @@ public final class StandardDatabaseProxyConnector implements DatabaseProxyConnec
         }
         cachedStatements.clear();
         return result;
+    }
+    
+    private boolean isCachedPreparedStatement(final Statement statement) {
+        return statement instanceof PreparedStatement && databaseConnectionManager.getConnectionSession().getPreparedStatementCacheContext().contains(statement);
     }
     
     private Optional<SQLException> closeSQLFederationEngine() {
