@@ -73,3 +73,5 @@ document/public/
 .codex/models_cache.json
 .codex/version.json
 .codex/.personality_migration
+
+.antlr_last_commit
