@@ -66,8 +66,8 @@ public final class ShowLogicalTablesExecutor implements DistSQLQueryExecutor<Sho
     
     private LocalDataQueryResultRow getRow(final IdentifierValue schemaName, final ShardingSphereTable table, final ShowLogicalTablesStatement sqlStatement) {
         if (new DatabaseTypeRegistry(database.getProtocolType()).getDialectDatabaseMetaData().getSchemaOption().isSchemaAvailable()) {
-            return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType(), schemaName.getValue()) : new LocalDataQueryResultRow(table.getName(),
-                    schemaName.getValue());
+            return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType(), schemaName.getValue())
+                    : new LocalDataQueryResultRow(table.getName(), schemaName.getValue());
         }
         return sqlStatement.isContainsFull() ? new LocalDataQueryResultRow(table.getName(), table.getType()) : new LocalDataQueryResultRow(table.getName());
     }
