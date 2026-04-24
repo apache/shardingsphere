@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.junit.jupiter.api.condition.EnabledIf;
 
-@EnabledIf("isEnabled")
-class HttpProductionH2RuntimeSmokeE2ETest extends AbstractProductionH2RuntimeSmokeE2ETest {
+abstract class AbstractTransportParameterizedProductionRuntimeE2ETest extends AbstractProductionRuntimeE2ETest {
     
-    private static boolean isEnabled() {
-        return MCPE2ECondition.isProductionH2Enabled();
+    private RuntimeTransport transport;
+    
+    protected final void useTransport(final RuntimeTransport transport) {
+        this.transport = transport;
     }
     
     @Override
-    protected RuntimeTransport getTransport() {
-        return RuntimeTransport.HTTP;
+    protected final RuntimeTransport getTransport() {
+        if (null == transport) {
+            throw new IllegalStateException("Runtime transport is not selected for current production E2E test.");
+        }
+        return transport;
     }
 }

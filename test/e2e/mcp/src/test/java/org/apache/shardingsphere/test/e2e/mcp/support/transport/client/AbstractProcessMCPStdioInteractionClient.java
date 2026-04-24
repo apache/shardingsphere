@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -37,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * STDIO MCP interaction client backed by one child process.
  */
-abstract class AbstractProcessMCPStdioInteractionClient implements MCPInteractionClient {
+abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInteractionClient {
     
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
     
@@ -73,41 +72,6 @@ abstract class AbstractProcessMCPStdioInteractionClient implements MCPInteractio
     }
     
     @Override
-    public final Map<String, Object> call(final String actionName, final Map<String, Object> arguments) throws IOException {
-        ensureOpened();
-        Map<String, Object> response = sendRequest(actionName + "-1", "tools/call", Map.of("name", actionName, "arguments", arguments));
-        return MCPInteractionPayloads.getStructuredContent(response);
-    }
-    
-    @Override
-    public final List<Map<String, Object>> listTools() throws IOException {
-        ensureOpened();
-        Map<String, Object> response = sendRequest("tools-list-1", "tools/list", Map.of());
-        return MCPInteractionPayloads.castToList(MCPInteractionPayloads.getJsonRpcResult(response).get("tools"));
-    }
-    
-    @Override
-    public final Map<String, Object> listResources() throws IOException {
-        ensureOpened();
-        Map<String, Object> response = sendRequest("resources-list-1", "resources/list", Map.of());
-        return MCPInteractionPayloads.getListResourcesPayload(response);
-    }
-    
-    @Override
-    public final Map<String, Object> listResourceTemplates() throws IOException {
-        ensureOpened();
-        Map<String, Object> response = sendRequest("resources-templates-list-1", "resources/templates/list", Map.of());
-        return MCPInteractionPayloads.getJsonRpcResult(response);
-    }
-    
-    @Override
-    public final Map<String, Object> readResource(final String resourceUri) throws IOException {
-        ensureOpened();
-        Map<String, Object> response = sendRequest("resources-read-1", "resources/read", Map.of("uri", resourceUri));
-        return MCPInteractionPayloads.getFirstResourcePayload(response);
-    }
-    
-    @Override
     public final void close() throws IOException {
         if (null == process) {
             return;
@@ -127,8 +91,22 @@ abstract class AbstractProcessMCPStdioInteractionClient implements MCPInteractio
     
     protected abstract String getClientName();
     
+    @Override
+    protected final void ensureOpened() {
+        if (null == process) {
+            throw new IllegalStateException("MCP session is not initialized.");
+        }
+    }
+    
+    @Override
+    protected final Map<String, Object> sendRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException {
+        writeJsonRpcMessage(MCPInteractionProtocolSupport.createJsonRpcRequest(requestId, method, params));
+        return readResponse(requestId);
+    }
+    
     private void initializeSession() throws IOException {
-        Map<String, Object> initializeResponse = sendRequest(INITIALIZE_REQUEST_ID, "initialize", createInitializeRequestParams());
+        Map<String, Object> initializeResponse = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
+                MCPInteractionProtocolSupport.createInitializeRequestParams(getClientName()));
         if (MCPInteractionPayloads.hasJsonRpcError(initializeResponse)) {
             throw new IllegalStateException("Failed to initialize STDIO MCP session: "
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializeResponse).get("message")
@@ -154,13 +132,8 @@ abstract class AbstractProcessMCPStdioInteractionClient implements MCPInteractio
         }
     }
     
-    private Map<String, Object> sendRequest(final String requestId, final String method, final Map<String, Object> params) throws IOException {
-        writeJsonRpcMessage(createJsonRpcRequest(requestId, method, params));
-        return readResponse(requestId);
-    }
-    
     private void notifyServer(final String method, final Map<String, Object> params) throws IOException {
-        writeJsonRpcMessage(createJsonRpcNotification(method, params));
+        writeJsonRpcMessage(MCPInteractionProtocolSupport.createJsonRpcNotification(method, params));
     }
     
     private void writeJsonRpcMessage(final Map<String, Object> payload) throws IOException {
@@ -223,37 +196,6 @@ abstract class AbstractProcessMCPStdioInteractionClient implements MCPInteractio
     private String extractFailureMessage(final String errorLine) {
         int separatorIndex = errorLine.lastIndexOf(": ");
         return -1 == separatorIndex ? errorLine : errorLine.substring(separatorIndex + 2);
-    }
-    
-    private Map<String, Object> createInitializeRequestParams() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("protocolVersion", MCPTransportConstants.PROTOCOL_VERSION);
-        result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", getClientName(), "version", "1.0.0"));
-        return result;
-    }
-    
-    private Map<String, Object> createJsonRpcRequest(final String requestId, final String method, final Map<String, Object> params) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("jsonrpc", "2.0");
-        result.put("id", requestId);
-        result.put("method", method);
-        result.put("params", params);
-        return result;
-    }
-    
-    private Map<String, Object> createJsonRpcNotification(final String method, final Map<String, Object> params) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("jsonrpc", "2.0");
-        result.put("method", method);
-        result.put("params", params);
-        return result;
-    }
-    
-    private void ensureOpened() {
-        if (null == process) {
-            throw new IllegalStateException("MCP session is not initialized.");
-        }
     }
     
     private void closeQuietly() {

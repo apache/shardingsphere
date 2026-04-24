@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.fixture;
 
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.Assumptions;
@@ -56,7 +56,8 @@ public final class LLMRuntimeFixtureFactory {
     public Fixture createSingleDatabaseH2Fixture(final Path tempDir, final String databaseName,
                                                  final String logicalDatabase, final RuntimeTransport transport) throws IOException {
         try {
-            H2RuntimeTestSupport.LLMH2RuntimeFixture actualFixture = H2RuntimeTestSupport.createLLMRuntimeFixture(tempDir, databaseName, logicalDatabase, transport);
+            H2RuntimeTestSupport.LLMH2RuntimeFixture actualFixture = H2RuntimeTestSupport.createLLMRuntimeFixture(
+                    tempDir, databaseName, logicalDatabase, transport.getH2AccessMode());
             return new Fixture("public", actualFixture.totalOrders(), actualFixture.runtimeDatabases(), () -> {
             });
         } catch (final SQLException ex) {
@@ -78,7 +79,7 @@ public final class LLMRuntimeFixtureFactory {
                                                 final String analyticsDatabase, final RuntimeTransport transport) throws IOException {
         try {
             H2RuntimeTestSupport.LLMH2RuntimeFixture actualFixture = H2RuntimeTestSupport.createMultiDatabaseLLMRuntimeFixture(
-                    tempDir, logicalDatabase, analyticsDatabase, transport);
+                    tempDir, logicalDatabase, analyticsDatabase, transport.getH2AccessMode());
             return new Fixture("public", actualFixture.totalOrders(), actualFixture.runtimeDatabases(), () -> {
             });
         } catch (final SQLException ex) {

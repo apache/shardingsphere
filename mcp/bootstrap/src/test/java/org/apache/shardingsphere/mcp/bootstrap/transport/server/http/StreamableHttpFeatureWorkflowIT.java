@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.fixture.FeatureWorkflowRuntimeTestSupport;
-import org.apache.shardingsphere.mcp.bootstrap.fixture.H2RuntimeTestSupport.H2AccessMode;
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport.H2AccessMode;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.junit.jupiter.api.Test;

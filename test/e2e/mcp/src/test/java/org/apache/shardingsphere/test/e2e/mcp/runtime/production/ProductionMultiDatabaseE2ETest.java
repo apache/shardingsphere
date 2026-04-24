@@ -17,16 +17,22 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
@@ -35,7 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProductionRuntimeE2ETest {
+@EnabledIf("isEnabled")
+class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
     
     private static final String LOGIC_DATABASE_NAME = "logic_db";
     
@@ -50,8 +57,8 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
-            firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-first", getTransport());
-            secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-second", getTransport());
+            firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-first", getTransport().getH2AccessMode());
+            secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "production-e2e-multi-second", getTransport().getH2AccessMode());
             H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
             H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         } catch (final SQLException ex) {
@@ -64,16 +71,20 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
         return createRuntimeDatabases("H2", "H2");
     }
     
-    @Test
-    void assertListDatabasesWithMultipleRuntimeDatabases() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertListDatabasesWithMultipleRuntimeDatabases(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases"));
             assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems(LOGIC_DATABASE_NAME, ANALYTICS_DATABASE_NAME));
         }
     }
     
-    @Test
-    void assertRefreshMetadataVisibleForSubsequentClientSessionsInTargetDatabaseOnly() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertRefreshMetadataVisibleForSubsequentClientSessionsInTargetDatabaseOnly(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient firstInteractionClient = createOpenedInteractionClient()) {
             firstInteractionClient.call("execute_query",
                     Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
@@ -89,8 +100,10 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
         }
     }
     
-    @Test
-    void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertRejectCrossDatabaseTransactionSwitch(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("execute_query",
                     Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "BEGIN"));
@@ -101,8 +114,10 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
         }
     }
     
-    @Test
-    void assertRejectMismatchedDatabaseType() {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertRejectMismatchedDatabaseType(final String name, final RuntimeTransport transport) {
+        useTransport(transport);
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> openAndCloseInteractionClient("MySQL", "H2"));
         assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
@@ -143,5 +158,20 @@ abstract class AbstractProductionMultiDatabaseE2ETest extends AbstractProduction
         } catch (final IOException | InterruptedException ex) {
             throw new IllegalStateException(ex);
         }
+    }
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionStdioEnabled();
+    }
+    
+    private static Stream<Arguments> transports() {
+        Stream.Builder<Arguments> result = Stream.builder();
+        if (MCPE2ECondition.isProductionH2Enabled()) {
+            result.add(Arguments.of("http", RuntimeTransport.HTTP));
+        }
+        if (MCPE2ECondition.isProductionStdioEnabled()) {
+            result.add(Arguments.of("stdio", RuntimeTransport.STDIO));
+        }
+        return result.build();
     }
 }

@@ -18,24 +18,31 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.testcontainers.containers.GenericContainer;
 
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProductionRuntimeE2ETest {
+@EnabledIf("isEnabled")
+class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
     
     private static final String LOGICAL_DATABASE_NAME = "logic_db";
     
@@ -73,22 +80,28 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         return MySQLRuntimeTestSupport.createRuntimeDatabases(container, LOGICAL_DATABASE_NAME);
     }
     
-    @Test
-    void assertReadCapabilitiesWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertReadCapabilitiesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertThat(String.valueOf(interactionClient.readResource("shardingsphere://databases/logic_db/capabilities").get("databaseType")), is("MySQL"));
         }
     }
     
-    @Test
-    void assertListResourcesWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertListResourcesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
         }
     }
     
-    @Test
-    void assertReadTableDetailWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertReadTableDetailWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/tables/orders", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
@@ -99,8 +112,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertSearchMetadataTablesAndViewsWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertSearchMetadataTablesAndViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.call("search_metadata",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "query", "order", "object_types", List.of("TABLE", "VIEW"))));
@@ -108,8 +123,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertReadViewsWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertReadViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/views", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)));
@@ -118,8 +135,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertReadIndexesWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertReadIndexesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<String> actualIndexNames = getPayloadItems(interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/tables/orders/indexes", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME)))
@@ -128,8 +147,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertExecuteSelectWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertExecuteSelectWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
@@ -137,8 +158,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertExecuteUpdateWithActualMySQLBackend() throws SQLException, IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertExecuteUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.call("execute_query",
                     Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
@@ -148,8 +171,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertRejectSequenceResourceWithActualMySQLBackend() throws IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertRejectSequenceResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actual = interactionClient.readResource(
                     String.format("shardingsphere://databases/%s/schemas/%s/sequences", LOGICAL_DATABASE_NAME, LOGICAL_DATABASE_NAME));
@@ -158,8 +183,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertExecuteRollbackWithActualMySQLBackend() throws SQLException, IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertExecuteRollbackWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> beginResponse = interactionClient.call("execute_query", Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "BEGIN"));
             interactionClient.call("execute_query",
@@ -171,8 +198,10 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
         }
     }
     
-    @Test
-    void assertCloseRollsBackPendingTransactionWithActualMySQLBackend() throws SQLException, IOException, InterruptedException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
+    void assertCloseRollsBackPendingTransactionWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
+        useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             interactionClient.call("execute_query", Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", "BEGIN"));
             interactionClient.call("execute_query",
@@ -180,5 +209,20 @@ abstract class AbstractProductionMySQLRuntimeSmokeE2ETest extends AbstractProduc
             interactionClient.close();
             assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("NEW"));
         }
+    }
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isProductionMySQLEnabled() || MCPE2ECondition.isProductionMySQLStdioEnabled();
+    }
+    
+    private static Stream<Arguments> transports() {
+        Stream.Builder<Arguments> result = Stream.builder();
+        if (MCPE2ECondition.isProductionMySQLEnabled()) {
+            result.add(Arguments.of("http", RuntimeTransport.HTTP));
+        }
+        if (MCPE2ECondition.isProductionMySQLStdioEnabled()) {
+            result.add(Arguments.of("stdio", RuntimeTransport.STDIO));
+        }
+        return result.build();
     }
 }

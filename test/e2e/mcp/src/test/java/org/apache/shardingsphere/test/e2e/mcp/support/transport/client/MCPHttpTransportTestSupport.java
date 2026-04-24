@@ -19,11 +19,10 @@ package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionProtocolSupport;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -32,7 +31,7 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPHttpTransportTestSupport {
     
-    public static final String PROTOCOL_VERSION = "2025-11-25";
+    public static final String PROTOCOL_VERSION = MCPInteractionProtocolSupport.PROTOCOL_VERSION;
     
     private static final String CONTENT_TYPE = "application/json";
     
@@ -71,11 +70,7 @@ public final class MCPHttpTransportTestSupport {
      * @return initialize request parameters
      */
     public static Map<String, Object> createInitializeRequestParams(final String clientName) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("protocolVersion", PROTOCOL_VERSION);
-        result.put("capabilities", Map.of());
-        result.put("clientInfo", Map.of("name", clientName, "version", "1.0.0"));
-        return result;
+        return MCPInteractionProtocolSupport.createInitializeRequestParams(clientName);
     }
     
     /**
@@ -87,15 +82,6 @@ public final class MCPHttpTransportTestSupport {
      * @return JSON-RPC request body
      */
     public static String createJsonRpcRequestBody(final String requestId, final String method, final Map<String, Object> params) {
-        return JsonUtils.toJsonString(createJsonRpcRequest(requestId, method, params));
-    }
-    
-    private static Map<String, Object> createJsonRpcRequest(final String requestId, final String method, final Map<String, Object> params) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("jsonrpc", "2.0");
-        result.put("id", requestId);
-        result.put("method", method);
-        result.put("params", params);
-        return result;
+        return MCPInteractionProtocolSupport.createJsonRpcRequestBody(requestId, method, params);
     }
 }
