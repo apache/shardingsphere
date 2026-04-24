@@ -1451,8 +1451,8 @@ public abstract class OpenGaussStatementVisitor extends OpenGaussStatementParser
     private LimitSegment createLimitSegmentWhenRowCountOrOffsetAbsent(final SelectLimitContext ctx) {
         if (null != ctx.limitClause()) {
             if (null != ctx.limitClause().selectOffsetValue()) {
-                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
                 LimitValueSegment offset = (LimitValueSegment) visit(ctx.limitClause().selectOffsetValue());
+                LimitValueSegment limit = (LimitValueSegment) visit(ctx.limitClause().selectLimitValue());
                 return new LimitSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), offset, limit);
             }
             if (null != ctx.limitClause().selectFetchValue()) {
