@@ -1038,6 +1038,10 @@ cancelTask
     : CANCEL TASK WHERE jobName EQ_ stringLiterals AND identifier EQ_ numberLiterals
     ;
 
+cancelMaterializedViewTask
+    : CANCEL MATERIALIZED VIEW TASK numberLiterals ON tableName
+    ;
+
 resumeSyncJob
     : RESUME SYNC JOB (owner DOT_)? identifier
     ;
