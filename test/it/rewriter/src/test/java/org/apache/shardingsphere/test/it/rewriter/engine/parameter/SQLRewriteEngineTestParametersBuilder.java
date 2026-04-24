@@ -22,7 +22,6 @@ import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.shardingsphere.test.it.rewriter.engine.type.SQLExecuteType;
 import org.apache.shardingsphere.test.it.rewriter.entity.RewriteAssertionEntity;
 import org.apache.shardingsphere.test.it.rewriter.entity.RewriteAssertionsRootEntity;
@@ -124,7 +123,14 @@ public final class SQLRewriteEngineTestParametersBuilder {
     
     private static Object createInputParameter(final String inputParam) {
         if (StringUtils.isNumeric(inputParam)) {
-            return NumberUtils.createNumber(inputParam);
+            try {
+                return Integer.valueOf(inputParam);
+            } catch (final NumberFormatException ignored) {
+            }
+            try {
+                return Long.valueOf(inputParam);
+            } catch (final NumberFormatException ignored) {
+            }
         }
         return "NULL".equals(inputParam) ? null : inputParam;
     }
