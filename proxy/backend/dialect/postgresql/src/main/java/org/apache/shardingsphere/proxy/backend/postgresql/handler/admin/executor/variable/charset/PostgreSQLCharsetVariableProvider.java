@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.postgresql.handler.admin.executor.variable.charset;
 
+import org.apache.shardingsphere.database.connector.core.metadata.database.enums.QuoteCharacter;
 import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.variable.charset.CharsetVariableProvider;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
@@ -37,12 +39,17 @@ public final class PostgreSQLCharsetVariableProvider implements CharsetVariableP
     
     @Override
     public Charset parseCharset(final String variableValue) {
-        String formattedValue = variableValue.trim().toLowerCase(Locale.ROOT);
-        try {
-            return "default".equals(formattedValue) ? Charset.defaultCharset() : PostgreSQLCharacterSets.findCharacterSet(formattedValue);
-        } catch (final IllegalArgumentException ignored) {
+        String formattedValue = formatValue(variableValue).toLowerCase(Locale.ROOT);
+        boolean isDefault = "default".equals(formattedValue);
+        boolean isUtf8 = "utf8".equals(formattedValue) || "utf-8".equals(formattedValue) || "utf_8".equals(formattedValue) || "unicode".equals(formattedValue);
+        if (!isDefault && !isUtf8) {
             throw new InvalidParameterValueException("client_encoding", formattedValue);
         }
+        return StandardCharsets.UTF_8;
+    }
+    
+    private String formatValue(final String value) {
+        return QuoteCharacter.SINGLE_QUOTE.isWrapped(value) || QuoteCharacter.QUOTE.isWrapped(value) ? value.substring(1, value.length() - 1).trim() : value.trim();
     }
     
     @Override

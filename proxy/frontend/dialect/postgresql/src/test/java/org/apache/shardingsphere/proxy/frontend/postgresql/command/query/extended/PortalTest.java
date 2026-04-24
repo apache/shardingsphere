@@ -31,6 +31,7 @@ import org.apache.shardingsphere.database.protocol.postgresql.packet.command.que
 import org.apache.shardingsphere.database.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.database.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
+import org.apache.shardingsphere.database.exception.core.exception.data.InvalidParameterValueException;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertStatementContext;
@@ -322,6 +323,17 @@ class PortalTest {
         String actualValue = (String) Plugins.getMemberAccessor().get(PostgreSQLParameterStatusPacket.class.getDeclaredField("value"), parameterStatusPacket);
         assertThat(actualPackets.get(0), isA(PostgreSQLCommandCompletePacket.class));
         assertThat(actualValue, is("utf8"));
+    }
+    
+    @Test
+    void assertBindWithInvalidClientEncoding() throws SQLException {
+        when(proxyBackendHandler.execute()).thenThrow(new InvalidParameterValueException("client_encoding", "latin1"));
+        VariableAssignSegment assignSegment = new VariableAssignSegment(0, 0, new VariableSegment(0, 0, "client_encoding"), "'LATIN1'");
+        SetStatement setStatement = new SetStatement(databaseType, Collections.singletonList(assignSegment));
+        PostgreSQLServerPreparedStatement preparedStatement = new PostgreSQLServerPreparedStatement(
+                "", new CommonSQLStatementContext(setStatement), new HintValueContext(), Collections.emptyList(), Collections.emptyList());
+        Portal portal = new Portal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), databaseConnectionManager);
+        assertThrows(InvalidParameterValueException.class, portal::bind);
     }
     
     @Test
