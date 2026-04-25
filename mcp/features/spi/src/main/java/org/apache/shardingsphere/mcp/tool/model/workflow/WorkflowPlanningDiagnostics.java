@@ -20,27 +20,28 @@ package org.apache.shardingsphere.mcp.tool.model.workflow;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Clarified workflow intent.
+ * Workflow planning diagnostics.
  */
 @Getter
-@Setter
-public final class ClarifiedIntent {
+final class WorkflowPlanningDiagnostics {
     
-    private String operationType;
+    private final List<WorkflowIssue> issues = new LinkedList<>();
     
-    private String fieldSemantics;
+    private final List<AlgorithmCandidate> algorithmCandidates = new LinkedList<>();
     
-    private String reasoningNotes;
+    private final List<AlgorithmPropertyRequirement> propertyRequirements = new LinkedList<>();
     
-    private final Map<String, Object> inferredValues = new LinkedHashMap<>(4, 1F);
+    @Setter
+    private ValidationReport validationReport;
     
-    private final List<String> unresolvedFields = new LinkedList<>();
-    
-    private final List<String> pendingQuestions = new LinkedList<>();
+    void clearPlanningState() {
+        issues.clear();
+        algorithmCandidates.clear();
+        propertyRequirements.clear();
+        validationReport = null;
+    }
 }

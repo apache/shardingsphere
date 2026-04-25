@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
@@ -52,7 +51,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
-        Map<String, Object> actualResponse = executionService.apply(mock(MCPFeatureContext.class), "session-1", "plan-1", List.of(), "manual-only");
+        Map<String, Object> actualResponse = executionService.apply(null, mock(MCPFeatureExecutionFacade.class), "session-1", "plan-1", List.of(), "manual-only");
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
         Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).get(0);
         assertThat(actualResponse.get("status"), is("awaiting-manual-execution"));
@@ -64,7 +63,7 @@ class WorkflowExecutionServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         contextStore.save(createSnapshot());
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
-        Map<String, Object> actualResponse = executionService.apply(mock(MCPFeatureContext.class), "session-2", "plan-1", List.of(), "");
+        Map<String, Object> actualResponse = executionService.apply(null, mock(MCPFeatureExecutionFacade.class), "session-2", "plan-1", List.of(), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
@@ -77,7 +76,7 @@ class WorkflowExecutionServiceTest {
         snapshot.setStatus("clarifying");
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
-        Map<String, Object> actualResponse = executionService.apply(mock(MCPFeatureContext.class), "session-1", "plan-1", List.of(), "");
+        Map<String, Object> actualResponse = executionService.apply(null, mock(MCPFeatureExecutionFacade.class), "session-1", "plan-1", List.of(), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
@@ -94,7 +93,7 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actualResponse = executionService.apply(createRequestContext(executionFacade), "session-1", "plan-1",
+        Map<String, Object> actualResponse = executionService.apply(null, executionFacade, "session-1", "plan-1",
                 List.of("ddl", "index_ddl", "rule_distsql"), "");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("executed_ddl")).size(), is(2));
@@ -113,7 +112,7 @@ class WorkflowExecutionServiceTest {
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
-        Map<String, Object> actualResponse = executionService.apply(createRequestContext(executionFacade), "session-1", "plan-1", List.of("review"), "");
+        Map<String, Object> actualResponse = executionService.apply(null, executionFacade, "session-1", "plan-1", List.of("review"), "");
         List<?> actualStepResults = (List<?>) actualResponse.get("step_results");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("skipped_artifacts")).size(), is(3));
@@ -131,7 +130,7 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("ddl failed"));
-        Map<String, Object> actualResponse = executionService.apply(createRequestContext(executionFacade), "session-1", "plan-1", List.of("ddl"), "");
+        Map<String, Object> actualResponse = executionService.apply(null, executionFacade, "session-1", "plan-1", List.of("ddl"), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
@@ -148,7 +147,7 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("index failed"));
-        Map<String, Object> actualResponse = executionService.apply(createRequestContext(executionFacade), "session-1", "plan-1", List.of("index_ddl"), "");
+        Map<String, Object> actualResponse = executionService.apply(null, executionFacade, "session-1", "plan-1", List.of("index_ddl"), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
@@ -165,16 +164,10 @@ class WorkflowExecutionServiceTest {
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("rule failed"));
-        Map<String, Object> actualResponse = executionService.apply(createRequestContext(executionFacade), "session-1", "plan-1", List.of("rule_distsql"), "");
+        Map<String, Object> actualResponse = executionService.apply(null, executionFacade, "session-1", "plan-1", List.of("rule_distsql"), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
-    }
-    
-    private MCPFeatureContext createRequestContext(final MCPFeatureExecutionFacade executionFacade) {
-        MCPFeatureContext result = mock(MCPFeatureContext.class);
-        when(result.getExecutionFacade()).thenReturn(executionFacade);
-        return result;
     }
     
     private WorkflowContextSnapshot createSnapshot() {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
 import java.util.LinkedHashMap;
@@ -34,23 +34,23 @@ public final class EncryptRuleInspectionService {
     /**
      * Query encrypt rules.
      *
-     * @param requestContext request context
+     * @param queryFacade query facade
      * @param databaseName database name
      * @param tableName table name
      * @return encrypt rules
      */
-    public List<Map<String, Object>> queryEncryptRules(final MCPFeatureContext requestContext, final String databaseName, final String tableName) {
-        return normalizeEncryptRuleRows(requestContext.getQueryFacade().query(databaseName, "", buildShowEncryptRulesSql(databaseName, tableName)));
+    public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
+        return normalizeEncryptRuleRows(queryFacade.query(databaseName, "", buildShowEncryptRulesSql(databaseName, tableName)));
     }
     
     /**
      * Query encrypt algorithms.
      *
-     * @param requestContext request context
+     * @param queryFacade query facade
      * @return encrypt algorithm plugins
      */
-    public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureContext requestContext) {
-        return requestContext.getQueryFacade().queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
+    public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
     }
     
     /**

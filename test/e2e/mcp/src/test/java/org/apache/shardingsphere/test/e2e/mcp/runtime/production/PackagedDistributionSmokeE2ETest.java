@@ -19,11 +19,11 @@ package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
+import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionHttpRuntime;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.PackagedDistributionStdioInteractionClient;
 import org.junit.jupiter.api.Test;
@@ -32,17 +32,11 @@ import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.http.HttpClient;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,10 +52,6 @@ class PackagedDistributionSmokeE2ETest {
     
     private static final List<String> EXPECTED_RUNTIME_ARTIFACT_IDS = List.of(
             "shardingsphere-mcp-bootstrap", "shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
-    
-    private static final long STARTUP_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(20L);
-    
-    private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
     
     @TempDir
     private Path tempDir;
@@ -148,103 +138,5 @@ class PackagedDistributionSmokeE2ETest {
     
     private List<Map<String, Object>> getPayloadItems(final Map<String, Object> payload) {
         return MCPInteractionPayloads.castToList(payload.get("items"));
-    }
-    
-    private static final class PackagedDistributionHttpRuntime implements AutoCloseable {
-        
-        private final PreparedPackagedDistribution distribution;
-        
-        private final List<String> outputMessages = new CopyOnWriteArrayList<>();
-        
-        private Process process;
-        
-        private Thread outputCollector;
-        
-        private PackagedDistributionHttpRuntime(final PreparedPackagedDistribution distribution) {
-            this.distribution = distribution;
-        }
-        
-        private MCPInteractionClient openInteractionClient() throws IOException, InterruptedException {
-            startProcessIfNeeded();
-            long deadline = System.currentTimeMillis() + STARTUP_TIMEOUT_MILLIS;
-            IllegalStateException lastException = null;
-            while (System.currentTimeMillis() < deadline) {
-                if (!process.isAlive()) {
-                    throw createStartupFailure(lastException);
-                }
-                MCPHttpInteractionClient result = new MCPHttpInteractionClient(distribution.getEndpointUri(), HttpClient.newHttpClient());
-                try {
-                    result.open();
-                    return result;
-                } catch (final IOException | IllegalStateException ex) {
-                    lastException = new IllegalStateException("Packaged MCP HTTP distribution is not ready yet.", ex);
-                    closeInteractionClientQuietly(result);
-                    Thread.sleep(250L);
-                }
-            }
-            throw createStartupFailure(lastException);
-        }
-        
-        private void startProcessIfNeeded() throws IOException {
-            if (null != process) {
-                return;
-            }
-            ProcessBuilder processBuilder = new ProcessBuilder(distribution.getStartScript().toString(), distribution.configFile().toString());
-            processBuilder.directory(distribution.home().toFile());
-            processBuilder.environment().put("JAVA_HOME", System.getProperty("java.home"));
-            processBuilder.redirectErrorStream(true);
-            process = processBuilder.start();
-            outputCollector = startOutputCollector(process, outputMessages);
-        }
-        
-        private Thread startOutputCollector(final Process process, final List<String> outputMessages) {
-            Thread result = new Thread(() -> collectOutput(process, outputMessages), "mcp-packaged-http-smoke");
-            result.setDaemon(true);
-            result.start();
-            return result;
-        }
-        
-        private void collectOutput(final Process process, final List<String> outputMessages) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while (null != (line = reader.readLine())) {
-                    outputMessages.add(line);
-                }
-            } catch (final IOException ignored) {
-            }
-        }
-        
-        private IllegalStateException createStartupFailure(final IllegalStateException cause) {
-            return new IllegalStateException("Packaged MCP HTTP distribution failed to become ready. output: "
-                    + String.join(System.lineSeparator(), outputMessages), cause);
-        }
-        
-        @Override
-        public void close() {
-            if (null == process) {
-                return;
-            }
-            process.destroy();
-            try {
-                if (!process.waitFor(PROCESS_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                    process.destroyForcibly();
-                    process.waitFor(PROCESS_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-                }
-                if (null != outputCollector) {
-                    outputCollector.join(TimeUnit.SECONDS.toMillis(PROCESS_STOP_TIMEOUT_SECONDS));
-                }
-            } catch (final InterruptedException ignored) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        
-        private void closeInteractionClientQuietly(final MCPInteractionClient interactionClient) {
-            try {
-                interactionClient.close();
-            } catch (final IOException ignored) {
-            } catch (final InterruptedException ignored) {
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 }

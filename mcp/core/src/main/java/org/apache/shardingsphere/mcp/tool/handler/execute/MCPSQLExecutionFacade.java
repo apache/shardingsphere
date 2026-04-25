@@ -23,12 +23,12 @@ import org.apache.shardingsphere.mcp.tool.handler.execute.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupportedException;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
@@ -45,20 +45,17 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
     
-    private final MCPJdbcTransactionResourceManager transactionResourceManager;
-    
     private final MCPJdbcTransactionStatementExecutor transactionStatementExecutor;
     
     private final MCPJdbcStatementExecutor statementExecutor;
     
     private final AuditRecorder auditRecorder = new AuditRecorder();
     
-    public MCPSQLExecutionFacade(final MCPRequestContext requestContext) {
-        databaseCapabilityProvider = requestContext.getDatabaseCapabilityProvider();
-        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(requestContext.getSessionManager());
-        transactionResourceManager = requestContext.getSessionManager().getTransactionResourceManager();
-        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(requestContext.getSessionManager());
-        statementExecutor = new MCPJdbcStatementExecutor(transactionResourceManager.getRuntimeDatabases(), transactionResourceManager);
+    public MCPSQLExecutionFacade(final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final MCPSessionManager sessionManager) {
+        this.databaseCapabilityProvider = databaseCapabilityProvider;
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
+        transactionStatementExecutor = new MCPJdbcTransactionStatementExecutor(sessionManager);
+        statementExecutor = new MCPJdbcStatementExecutor(sessionManager.getTransactionResourceManager().getRuntimeDatabases(), sessionManager.getTransactionResourceManager());
     }
     
     /**

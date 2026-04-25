@@ -39,6 +39,6 @@ public final class EncryptAlgorithmsHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPMetadataResponse(ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(requestContext)));
+        return new MCPMetadataResponse(ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(requestContext.getQueryFacade())));
     }
 }

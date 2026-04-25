@@ -21,11 +21,11 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestExcepti
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Map;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,15 +58,13 @@ class WorkflowContextStoreTest {
     }
     
     @Test
-    void assertFindPurgesExpiredSnapshot() throws Exception {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+    void assertFindPurgesExpiredSnapshot() {
+        MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
+        WorkflowContextStore contextStore = new WorkflowContextStore(clock, Duration.ofHours(24), 10);
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         contextStore.save(snapshot);
-        @SuppressWarnings("unchecked")
-        Map<String, WorkflowContextSnapshot> contexts = (Map<String, WorkflowContextSnapshot>) Plugins.getMemberAccessor()
-                .get(WorkflowContextStore.class.getDeclaredField("contexts"), contextStore);
-        contexts.get("plan-1").setUpdateTime(Instant.now().minus(Duration.ofDays(2)));
+        clock.setInstant(clock.instant().plus(Duration.ofDays(2)));
         Optional<WorkflowContextSnapshot> actualSnapshot = contextStore.find("plan-1");
         assertFalse(actualSnapshot.isPresent());
     }
@@ -135,5 +133,68 @@ class WorkflowContextStoreTest {
         WorkflowContextSnapshot actualSnapshot = contextStore.getRequired("plan-1");
         assertThat(actualSnapshot.getStatus(), is("planned"));
         assertThat(actualSnapshot.getInteractionPlan().getCurrentStep(), is("review"));
+    }
+    
+    @Test
+    void assertSaveEvictsOldestSnapshotWhenCapacityExceeded() {
+        MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
+        WorkflowContextStore contextStore = new WorkflowContextStore(clock, Duration.ofHours(24), 2);
+        WorkflowContextSnapshot firstSnapshot = createSnapshot("plan-1");
+        contextStore.save(firstSnapshot);
+        clock.setInstant(clock.instant().plusSeconds(1L));
+        WorkflowContextSnapshot secondSnapshot = createSnapshot("plan-2");
+        contextStore.save(secondSnapshot);
+        clock.setInstant(clock.instant().plusSeconds(1L));
+        WorkflowContextSnapshot thirdSnapshot = createSnapshot("plan-3");
+        contextStore.save(thirdSnapshot);
+        assertFalse(contextStore.find("plan-1").isPresent());
+        assertTrue(contextStore.find("plan-2").isPresent());
+        assertTrue(contextStore.find("plan-3").isPresent());
+    }
+    
+    @Test
+    void assertConstructWithNonPositiveTtlThrowsException() {
+        Exception actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowContextStore(Clock.systemUTC(), Duration.ZERO, 1));
+        assertThat(actual.getMessage(), is("Context TTL must be positive."));
+    }
+    
+    @Test
+    void assertConstructWithNonPositiveCapacityThrowsException() {
+        Exception actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowContextStore(Clock.systemUTC(), Duration.ofHours(1L), 0));
+        assertThat(actual.getMessage(), is("Max entries must be positive."));
+    }
+    
+    private WorkflowContextSnapshot createSnapshot(final String planId) {
+        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
+        result.setPlanId(planId);
+        return result;
+    }
+    
+    private static final class MutableClock extends Clock {
+        
+        private Instant currentInstant;
+        
+        private MutableClock(final Instant currentInstant) {
+            this.currentInstant = currentInstant;
+        }
+        
+        @Override
+        public ZoneId getZone() {
+            return ZoneId.of("UTC");
+        }
+        
+        @Override
+        public Clock withZone(final ZoneId zone) {
+            return this;
+        }
+        
+        @Override
+        public Instant instant() {
+            return currentInstant;
+        }
+        
+        private void setInstant(final Instant currentInstant) {
+            this.currentInstant = currentInstant;
+        }
     }
 }

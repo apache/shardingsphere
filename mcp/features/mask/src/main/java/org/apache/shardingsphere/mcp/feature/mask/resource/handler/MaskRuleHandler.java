@@ -39,6 +39,6 @@ public final class MaskRuleHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPMetadataResponse(ruleInspectionService.queryMaskRules(requestContext, uriVariables.getVariable("database"), uriVariables.getVariable("table")));
+        return new MCPMetadataResponse(ruleInspectionService.queryMaskRules(requestContext.getQueryFacade(), uriVariables.getVariable("database"), uriVariables.getVariable("table")));
     }
 }

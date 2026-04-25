@@ -58,15 +58,8 @@ public final class PackagedDistributionTestSupport {
      * @throws IOException I/O exception
      */
     public static PreparedPackagedDistribution prepare(final Path tempDir, final RuntimeTransport transport) throws IOException {
-        Path sourceDistributionHome = findDistributionHome().orElseThrow(() -> new IllegalStateException(
-                "Packaged MCP distribution was not found. Run `./mvnw -pl distribution/mcp -am -DskipTests package` first."));
-        Path workingHome = copyDistributionHome(sourceDistributionHome, tempDir.resolve("distribution-home"));
-        deleteDirectoryIfExists(workingHome.resolve("data"));
-        deleteDirectoryIfExists(workingHome.resolve("logs"));
-        deleteDirectoryIfExists(workingHome.resolve("plugins"));
-        Path startScript = workingHome.resolve("bin/start.sh");
-        startScript.toFile().setExecutable(true);
-        int httpPort = RuntimeTransport.HTTP == transport ? allocatePort() : -1;
+        Path workingHome = prepareWorkingHome(tempDir);
+        int httpPort = resolveHttpPort(transport);
         Path configFile = rewriteConfiguration(workingHome, transport, httpPort);
         return new PreparedPackagedDistribution(workingHome, configFile, transport, httpPort);
     }
@@ -79,14 +72,39 @@ public final class PackagedDistributionTestSupport {
      * @throws IllegalStateException configured distribution home does not exist
      */
     public static Optional<Path> findDistributionHome() throws IOException {
-        String configuredHome = System.getProperty("mcp.distribution.home", "").trim();
-        if (!configuredHome.isEmpty()) {
-            Path result = Paths.get(configuredHome).toAbsolutePath().normalize();
-            if (!Files.isDirectory(result)) {
-                throw new IllegalStateException("Configured mcp.distribution.home `" + result + "` does not exist.");
-            }
-            return Optional.of(result);
+        Optional<Path> configuredDistributionHome = resolveConfiguredDistributionHome();
+        if (configuredDistributionHome.isPresent()) {
+            return configuredDistributionHome;
         }
+        return findBuiltDistributionHome();
+    }
+    
+    private static Path prepareWorkingHome(final Path tempDir) throws IOException {
+        Path sourceDistributionHome = findRequiredDistributionHome();
+        Path workingHome = copyDistributionHome(sourceDistributionHome, tempDir.resolve("distribution-home"));
+        resetRuntimeDirectories(workingHome);
+        makeStartScriptExecutable(workingHome);
+        return workingHome;
+    }
+    
+    private static Path findRequiredDistributionHome() throws IOException {
+        return findDistributionHome().orElseThrow(() -> new IllegalStateException(
+                "Packaged MCP distribution was not found. Run `./mvnw -pl distribution/mcp -am -DskipTests package` first."));
+    }
+    
+    private static Optional<Path> resolveConfiguredDistributionHome() {
+        String configuredHome = System.getProperty("mcp.distribution.home", "").trim();
+        if (configuredHome.isEmpty()) {
+            return Optional.empty();
+        }
+        Path result = Paths.get(configuredHome).toAbsolutePath().normalize();
+        if (!Files.isDirectory(result)) {
+            throw new IllegalStateException("Configured mcp.distribution.home `" + result + "` does not exist.");
+        }
+        return Optional.of(result);
+    }
+    
+    private static Optional<Path> findBuiltDistributionHome() throws IOException {
         Path targetDirectory = findRepositoryRoot().resolve("distribution/mcp/target");
         if (!Files.isDirectory(targetDirectory)) {
             return Optional.empty();
@@ -131,6 +149,16 @@ public final class PackagedDistributionTestSupport {
         return target;
     }
     
+    private static void resetRuntimeDirectories(final Path workingHome) throws IOException {
+        deleteDirectoryIfExists(workingHome.resolve("data"));
+        deleteDirectoryIfExists(workingHome.resolve("logs"));
+        deleteDirectoryIfExists(workingHome.resolve("plugins"));
+    }
+    
+    private static void makeStartScriptExecutable(final Path workingHome) {
+        workingHome.resolve("bin/start.sh").toFile().setExecutable(true);
+    }
+    
     private static void deleteDirectoryIfExists(final Path path) throws IOException {
         if (!Files.exists(path)) {
             return;
@@ -148,17 +176,29 @@ public final class PackagedDistributionTestSupport {
         }
     }
     
+    private static int resolveHttpPort(final RuntimeTransport transport) throws IOException {
+        return RuntimeTransport.HTTP == transport ? allocatePort() : -1;
+    }
+    
     private static Path rewriteConfiguration(final Path workingHome, final RuntimeTransport transport, final int httpPort) throws IOException {
-        Path result = RuntimeTransport.HTTP == transport ? workingHome.resolve("conf/mcp.yaml") : workingHome.resolve("conf/mcp-stdio.yaml");
+        Path result = resolveConfigFile(workingHome, transport);
         MCPLaunchConfiguration sourceConfig = MCPConfigurationLoader.load(result.toString());
+        MCPLaunchConfiguration actualConfig = createRuntimeConfiguration(sourceConfig, transport, httpPort);
+        Files.writeString(result, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(actualConfig)));
+        return result;
+    }
+    
+    private static Path resolveConfigFile(final Path workingHome, final RuntimeTransport transport) {
+        return RuntimeTransport.HTTP == transport ? workingHome.resolve("conf/mcp.yaml") : workingHome.resolve("conf/mcp-stdio.yaml");
+    }
+    
+    private static MCPLaunchConfiguration createRuntimeConfiguration(final MCPLaunchConfiguration sourceConfig, final RuntimeTransport transport, final int httpPort) {
         HttpTransportConfiguration actualHttpTransport = new HttpTransportConfiguration(RuntimeTransport.HTTP == transport,
                 sourceConfig.getHttpTransport().getBindHost(), sourceConfig.getHttpTransport().isAllowRemoteAccess(),
                 sourceConfig.getHttpTransport().getAccessToken(), RuntimeTransport.HTTP == transport ? httpPort : sourceConfig.getHttpTransport().getPort(),
                 sourceConfig.getHttpTransport().getEndpointPath());
         StdioTransportConfiguration actualStdioTransport = new StdioTransportConfiguration(RuntimeTransport.STDIO == transport);
-        MCPLaunchConfiguration actualConfig = new MCPLaunchConfiguration(actualHttpTransport, actualStdioTransport, sourceConfig.getDatabases());
-        Files.writeString(result, YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(actualConfig)));
-        return result;
+        return new MCPLaunchConfiguration(actualHttpTransport, actualStdioTransport, sourceConfig.getDatabases());
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {

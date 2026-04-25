@@ -51,7 +51,7 @@ public final class WorkflowExecutionToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(executionService.apply(requestContext, sessionId, toolArguments.getStringArgument("plan_id"),
+        return new MCPMapResponse(executionService.apply(requestContext.getWorkflowContextStore(), requestContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id"),
                 toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
     }
 }

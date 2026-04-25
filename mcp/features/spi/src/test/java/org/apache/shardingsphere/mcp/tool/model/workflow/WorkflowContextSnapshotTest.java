@@ -35,16 +35,20 @@ class WorkflowContextSnapshotTest {
     @Test
     void assertCopyCreatesDetachedSnapshot() {
         WorkflowContextSnapshot originalSnapshot = createSnapshot();
-        WorkflowContextSnapshot actualSnapshot = originalSnapshot.copy();
+        WorkflowContextSnapshot actualSnapshot = WorkflowContextSnapshots.copy(originalSnapshot);
         assertThat(actualSnapshot.getPlanId(), is("plan-1"));
         originalSnapshot.getRequest().setTable("archived_orders");
         originalSnapshot.getClarifiedIntent().getPendingQuestions().add("another question");
+        originalSnapshot.getClarifiedIntent().getUnresolvedFields().add("schema");
+        originalSnapshot.getClarifiedIntent().getInferredValues().put("requires_decrypt", false);
         originalSnapshot.getFeatureData().getAlgorithmProperties("primary").put("mode", "changed");
         originalSnapshot.getInteractionPlan().getValidationStrategy().put("layers", new LinkedList<>(List.of("rule")));
         getStringList(originalSnapshot.getIssues().get(0).getDetails(), "missing_fields").add("schema");
         getStringList(originalSnapshot.getValidationReport().getMismatches().get(0), "layers").add("rule");
         assertThat(actualSnapshot.getRequest().getTable(), is("orders"));
         assertThat(actualSnapshot.getClarifiedIntent().getPendingQuestions(), is(List.of("provide schema")));
+        assertTrue(actualSnapshot.getClarifiedIntent().getUnresolvedFields().isEmpty());
+        assertTrue(actualSnapshot.getClarifiedIntent().getInferredValues().isEmpty());
         assertThat(actualSnapshot.getFeatureData().getAlgorithmProperties("primary").get("mode"), is("strict"));
         assertThat(actualSnapshot.getInteractionPlan().getValidationStrategy().get("layers"), is(List.of("ddl")));
         assertThat(actualSnapshot.getIssues().get(0).getDetails().get("missing_fields"), is(List.of("column")));

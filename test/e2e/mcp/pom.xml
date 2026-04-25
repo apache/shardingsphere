@@ -32,6 +32,9 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <maven.deploy.skip>true</maven.deploy.skip>
+        <mcp.e2e.llm.groups />
+        <mcp.e2e.llm.excludedGroups>llm-e2e</mcp.e2e.llm.excludedGroups>
+        <mcp.e2e.llm.enabled>false</mcp.e2e.llm.enabled>
     </properties>
     
     <dependencies>
@@ -84,4 +87,30 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <groups>${mcp.e2e.llm.groups}</groups>
+                    <excludedGroups>${mcp.e2e.llm.excludedGroups}</excludedGroups>
+                    <systemPropertyVariables>
+                        <mcp.e2e.llm.enabled>${mcp.e2e.llm.enabled}</mcp.e2e.llm.enabled>
+                    </systemPropertyVariables>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
+    <profiles>
+        <profile>
+            <id>llm-e2e</id>
+            <properties>
+                <mcp.e2e.llm.groups>llm-e2e</mcp.e2e.llm.groups>
+                <mcp.e2e.llm.excludedGroups />
+                <mcp.e2e.llm.enabled>true</mcp.e2e.llm.enabled>
+            </properties>
+        </profile>
+    </profiles>
 </project>

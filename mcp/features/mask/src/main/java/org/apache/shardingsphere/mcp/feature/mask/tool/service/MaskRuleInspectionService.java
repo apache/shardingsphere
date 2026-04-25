@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 
 import java.util.LinkedHashMap;
@@ -34,23 +34,23 @@ public final class MaskRuleInspectionService {
     /**
      * Query mask rules.
      *
-     * @param requestContext request context
+     * @param queryFacade query facade
      * @param databaseName database name
      * @param tableName table name
      * @return mask rules
      */
-    public List<Map<String, Object>> queryMaskRules(final MCPFeatureContext requestContext, final String databaseName, final String tableName) {
-        return normalizeMaskRuleRows(requestContext.getQueryFacade().query(databaseName, "", buildShowMaskRulesSql(databaseName, tableName)));
+    public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
+        return normalizeMaskRuleRows(queryFacade.query(databaseName, "", buildShowMaskRulesSql(databaseName, tableName)));
     }
     
     /**
      * Query mask algorithms.
      *
-     * @param requestContext request context
+     * @param queryFacade query facade
      * @return mask algorithm plugins
      */
-    public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureContext requestContext) {
-        return requestContext.getQueryFacade().queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
+    public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
     }
     
     /**

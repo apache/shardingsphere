@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
+import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionProcessSupport;
+
 import java.nio.file.Path;
 
 /**
@@ -35,10 +37,7 @@ public final class PackagedDistributionStdioInteractionClient extends AbstractPr
     
     @Override
     protected ProcessBuilder createProcessBuilder() {
-        ProcessBuilder result = new ProcessBuilder(distributionHome.resolve("bin/start.sh").toString(), configFile.toString());
-        result.directory(distributionHome.toFile());
-        result.environment().put("JAVA_HOME", System.getProperty("java.home"));
-        return result;
+        return PackagedDistributionProcessSupport.createProcessBuilder(distributionHome, configFile);
     }
     
     @Override

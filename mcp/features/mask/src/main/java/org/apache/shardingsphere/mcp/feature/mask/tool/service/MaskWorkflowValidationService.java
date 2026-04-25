@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
@@ -56,25 +58,29 @@ public final class MaskWorkflowValidationService {
     /**
      * Validate workflow artifacts.
      *
-     * @param requestContext request context
+     * @param requestContextStore workflow context store
+     * @param metadataQueryFacade metadata query facade
+     * @param queryFacade query facade
+     * @param executionFacade execution facade
      * @param sessionId session id
      * @param planId plan identifier
      * @return validation payload
      */
-    public Map<String, Object> validate(final MCPFeatureContext requestContext, final String sessionId, final String planId) {
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContext);
+    public Map<String, Object> validate(final WorkflowContextStore requestContextStore, final MCPMetadataQueryFacade metadataQueryFacade,
+                                        final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
+                                        final String sessionId, final String planId) {
+        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContextStore);
         WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
         }
-        ValidationReport validationReport = new ValidationReport();
-        snapshot.setValidationReport(validationReport);
-        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(requestContext, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
+        ValidationReport validationReport = validationSupport.createValidationReport(snapshot);
+        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
         validationReport.setDdlValidation(validateDdl());
         validationReport.setRuleValidation(validateRules(snapshot, maskRules, validationReport));
-        validationReport.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, requestContext.getMetadataQueryFacade(), validationReport));
-        validationReport.setSqlExecutabilityValidation(validateSqlExecutability(requestContext, sessionId, snapshot, validationReport));
+        validationReport.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport));
+        validationReport.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport));
         validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getDdlValidation(), validationReport.getRuleValidation(),
                 validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
         return validationSupport.finalizeValidation(actualContextStore, snapshot, validationReport);
@@ -110,9 +116,9 @@ public final class MaskWorkflowValidationService {
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, actualRule.get(), "Mask rule matches the planned algorithm.");
     }
     
-    private ValidationSection validateSqlExecutability(final MCPFeatureContext requestContext, final String sessionId,
+    private ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId,
                                                        final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
-        return validationSupport.validateSqlExecutability(requestContext.getExecutionFacade(), sessionId, snapshot, validationReport,
+        return validationSupport.validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport,
                 List.of(validationSupport.createProjectionValidationSql(snapshot)), "Validation SQL is executable from the logical view.");
     }
 }

@@ -17,11 +17,8 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.tool.model.workflow.DDLArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.IndexPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -58,11 +55,6 @@ public final class WorkflowArtifactPayloadUtils {
      * @return masked workflow artifact payload
      */
     public static Map<String, Object> createArtifactPayload(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put(PAYLOAD_KEY_DDL_ARTIFACTS, snapshot.getDdlArtifacts().stream().map(DDLArtifact::toMap).toList());
-        result.put(PAYLOAD_KEY_INDEX_PLAN, snapshot.getIndexPlans().stream().map(IndexPlan::toMap).toList());
-        result.put(PAYLOAD_KEY_DISTSQL_ARTIFACTS, snapshot.getRuleArtifacts().stream()
-                .map(each -> WorkflowArtifactMaskUtils.createMaskedRuleArtifactMap(each, propertySource, snapshot.getPropertyRequirements())).toList());
-        return result;
+        return WorkflowArtifactBundle.from(snapshot).toPayload(propertySource, snapshot.getPropertyRequirements());
     }
 }

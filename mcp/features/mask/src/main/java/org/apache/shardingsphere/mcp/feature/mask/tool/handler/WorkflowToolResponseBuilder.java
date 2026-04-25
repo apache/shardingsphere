@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmProp
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactPayloadUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanPayloadBuilder;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPropertySource;
 
 import java.util.List;
@@ -36,7 +37,7 @@ final class WorkflowToolResponseBuilder {
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
-        Map<String, Object> result = snapshot.toPlanPayload();
+        Map<String, Object> result = WorkflowPlanPayloadBuilder.build(snapshot);
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
         result.put("derived_column_plan", null);
         result.putAll(WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, propertySource));

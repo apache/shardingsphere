@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 
@@ -33,11 +32,11 @@ public final class WorkflowLifecycleUtils {
      * Resolve the workflow context store for the current request.
      *
      * @param contextStore injected workflow context store
-     * @param requestContext request context
+     * @param requestContextStore request context store
      * @return workflow context store
      */
-    public static WorkflowContextStore resolveContextStore(final WorkflowContextStore contextStore, final MCPFeatureContext requestContext) {
-        return null == contextStore ? requestContext.getWorkflowContextStore() : contextStore;
+    public static WorkflowContextStore resolveContextStore(final WorkflowContextStore contextStore, final WorkflowContextStore requestContextStore) {
+        return null == contextStore ? requestContextStore : contextStore;
     }
     
     /**

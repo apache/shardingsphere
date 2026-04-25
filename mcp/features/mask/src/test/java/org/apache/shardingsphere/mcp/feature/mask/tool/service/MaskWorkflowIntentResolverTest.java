@@ -19,18 +19,23 @@ package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowIntentResolverSupport;
+import org.junit.jupiter.api.Test;
 
-/**
- * Mask workflow intent resolver.
- */
-final class MaskWorkflowIntentResolver {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class MaskWorkflowIntentResolverTest {
     
-    ClarifiedIntent resolve(final WorkflowRequest request) {
-        ClarifiedIntent result = new ClarifiedIntent();
-        result.setOperationType(WorkflowIntentResolverSupport.resolveOperationType(request, result));
-        result.setFieldSemantics(WorkflowIntentResolverSupport.resolveFieldSemantics(request, result));
-        result.setReasoningNotes(WorkflowIntentResolverSupport.summarizeReasoning(result));
-        return result;
+    @Test
+    void assertResolveRecordsSharedInference() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setColumn("customer_phone");
+        request.setNaturalLanguageIntent("请删除现有脱敏规则");
+        ClarifiedIntent actual = new MaskWorkflowIntentResolver().resolve(request);
+        assertThat(actual.getOperationType(), is("drop"));
+        assertThat(actual.getFieldSemantics(), is("phone"));
+        assertThat(actual.getInferredValues().get("operation_type"), is("drop"));
+        assertThat(actual.getInferredValues().get("field_semantics"), is("phone"));
+        assertThat(actual.getReasoningNotes(), is("Resolved from explicit arguments, heuristic inference for operation_type, field_semantics."));
     }
 }

@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -45,10 +46,13 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     private static final String DEFAULT_COLUMN_DEFINITION = "VARCHAR(4000)";
     
-    private final MCPRequestContext requestContext;
+    private final MCPSessionManager sessionManager;
     
-    public WorkflowProxyQueryService(final MCPRequestContext requestContext) {
-        this.requestContext = requestContext;
+    private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
+    
+    public WorkflowProxyQueryService(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
+        this.sessionManager = sessionManager;
+        this.databaseCapabilityProvider = databaseCapabilityProvider;
     }
     
     @Override
@@ -65,7 +69,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public List<Map<String, Object>> queryWithAnyDatabase(final String sql) {
-        String databaseName = requestContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases().keySet().stream().findFirst()
+        String databaseName = sessionManager.getTransactionResourceManager().getRuntimeDatabases().keySet().stream().findFirst()
                 .orElseThrow(() -> new MCPUnavailableException("No runtime database is configured."));
         return query(databaseName, "", sql);
     }
@@ -134,12 +138,12 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
         if (actualSchemaName.isEmpty()) {
             return false;
         }
-        String databaseType = requestContext.getDatabaseCapabilityProvider().provide(databaseName).map(MCPDatabaseCapability::getDatabaseType).orElse("");
+        String databaseType = databaseCapabilityProvider.provide(databaseName).map(MCPDatabaseCapability::getDatabaseType).orElse("");
         return "PostgreSQL".equalsIgnoreCase(databaseType) || "openGauss".equalsIgnoreCase(databaseType) || "H2".equalsIgnoreCase(databaseType);
     }
     
     private Connection openConnection(final String databaseName) throws SQLException {
-        RuntimeDatabaseConfiguration runtimeDatabaseConfig = requestContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases().get(databaseName);
+        RuntimeDatabaseConfiguration runtimeDatabaseConfig = sessionManager.getTransactionResourceManager().getRuntimeDatabases().get(databaseName);
         if (null == runtimeDatabaseConfig) {
             throw new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName));
         }

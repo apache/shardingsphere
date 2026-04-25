@@ -27,6 +27,7 @@ import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUs
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Tag("llm-e2e")
 @EnabledIf("isEnabled")
 class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     

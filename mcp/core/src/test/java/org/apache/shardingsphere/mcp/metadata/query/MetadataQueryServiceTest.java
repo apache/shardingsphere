@@ -48,7 +48,7 @@ class MetadataQueryServiceTest {
     
     private final MCPRequestContext requestContext = ResourceTestDataFactory.createRequestContext(ResourceTestDataFactory.createDatabaseMetadata());
     
-    private final MetadataQueryService metadataQueryService = new MetadataQueryService(requestContext);
+    private final MetadataQueryService metadataQueryService = new MetadataQueryService(requestContext.getDatabaseCapabilityProvider(), requestContext.getMetadataContext());
     
     @AfterEach
     void closeRequestContext() {

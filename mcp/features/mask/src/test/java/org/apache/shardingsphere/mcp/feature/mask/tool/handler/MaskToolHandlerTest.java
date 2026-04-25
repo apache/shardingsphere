@@ -22,6 +22,9 @@ import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
@@ -30,6 +33,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 import org.junit.jupiter.api.Test;
@@ -61,10 +65,11 @@ class MaskToolHandlerTest {
     void assertHandlePlanMaskRule() throws ReflectiveOperationException {
         PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
         MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
+        RequestContextFixture fixture = createRequestContextFixture();
+        MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of(
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone",
@@ -73,7 +78,7 @@ class MaskToolHandlerTest {
                 "user_overrides", Map.of("algorithm_type", "KEEP_FIRST_N_LAST_M")));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<WorkflowRequest> requestCaptor = ArgumentCaptor.forClass(WorkflowRequest.class);
-        verify(planningService).plan(any(), eq("session-1"), requestCaptor.capture());
+        verify(planningService).plan(eq(fixture.contextStore), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         WorkflowRequest actualRequest = requestCaptor.getValue();
         assertThat(actualRequest.getAlgorithmType(), is("KEEP_FIRST_N_LAST_M"));
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
@@ -83,10 +88,10 @@ class MaskToolHandlerTest {
     void assertHandlePlanMaskRuleWithMaskedArtifacts() throws ReflectiveOperationException {
         PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
         MaskWorkflowPlanningService planningService = mock(MaskWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any())).thenReturn(createDetailedSnapshot());
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new MaskAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
+        MCPResponse actual = handler.handle(createRequestContextFixture().requestContext, "session-1", Map.of(
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone"));
@@ -99,17 +104,20 @@ class MaskToolHandlerTest {
     
     @Test
     void assertGetValidateMaskRuleToolDescriptor() {
-        MCPToolDescriptor actual = new WorkflowValidationToolHandler(MaskFeatureDefinition.VALIDATE_TOOL_NAME, (requestContext, sessionId, planId) -> Map.of()).getToolDescriptor();
+        MCPToolDescriptor actual = new WorkflowValidationToolHandler(MaskFeatureDefinition.VALIDATE_TOOL_NAME,
+                (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of()).getToolDescriptor();
         assertThat(actual.getName(), is("validate_mask_rule"));
     }
     
     @Test
     void assertHandleValidateMaskRule() {
         MaskWorkflowValidationService validationService = mock(MaskWorkflowValidationService.class);
-        when(validationService.validate(any(), any(), any())).thenReturn(Map.of("status", "validated"));
+        when(validationService.validate(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "validated"));
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(MaskFeatureDefinition.VALIDATE_TOOL_NAME, validationService::validate);
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of("plan_id", "plan-1"));
-        verify(validationService).validate(any(), eq("session-1"), eq("plan-1"));
+        RequestContextFixture fixture = createRequestContextFixture();
+        MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of("plan_id", "plan-1"));
+        verify(validationService).validate(eq(fixture.contextStore), eq(fixture.metadataQueryFacade),
+                eq(fixture.queryFacade), eq(fixture.executionFacade), eq("session-1"), eq("plan-1"));
         assertThat(actual.toPayload().get("status"), is("validated"));
     }
     
@@ -122,13 +130,15 @@ class MaskToolHandlerTest {
     @Test
     void assertHandleApplyMaskRule() {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
-        when(executionService.apply(any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
+        when(executionService.apply(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
         WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(MaskFeatureDefinition.APPLY_TOOL_NAME, executionService);
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
+        RequestContextFixture fixture = createRequestContextFixture();
+        MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of(
                 "plan_id", "plan-1",
                 "approved_steps", List.of("rule_distsql"),
                 "execution_mode", "review-then-execute"));
-        verify(executionService).apply(any(), eq("session-1"), eq("plan-1"), eq(List.of("rule_distsql")), eq("review-then-execute"));
+        verify(executionService).apply(eq(fixture.contextStore), eq(fixture.executionFacade),
+                eq("session-1"), eq("plan-1"), eq(List.of("rule_distsql")), eq("review-then-execute"));
         assertThat(actual.toPayload().get("status"), is("completed"));
     }
     
@@ -163,5 +173,23 @@ class MaskToolHandlerTest {
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
+    }
+    
+    private RequestContextFixture createRequestContextFixture() {
+        MCPFeatureContext result = mock(MCPFeatureContext.class);
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(result.getWorkflowContextStore()).thenReturn(contextStore);
+        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
+        return new RequestContextFixture(result, contextStore, metadataQueryFacade, queryFacade, executionFacade);
+    }
+    
+    private record RequestContextFixture(MCPFeatureContext requestContext, WorkflowContextStore contextStore,
+                                         MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
+                                         MCPFeatureExecutionFacade executionFacade) {
     }
 }

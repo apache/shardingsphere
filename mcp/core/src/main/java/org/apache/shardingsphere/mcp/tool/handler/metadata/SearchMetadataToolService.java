@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
@@ -52,10 +51,10 @@ public final class SearchMetadataToolService {
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
             "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
     
-    private final MCPMetadataQueryFacade metadataQueryService;
+    private final MCPMetadataQueryFacade metadataQueryFacade;
     
-    public SearchMetadataToolService(final MCPFeatureContext requestContext) {
-        metadataQueryService = requestContext.getMetadataQueryFacade();
+    public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade) {
+        this.metadataQueryFacade = metadataQueryFacade;
     }
     
     /**
@@ -67,7 +66,7 @@ public final class SearchMetadataToolService {
     public MetadataSearchResult execute(final MetadataSearchRequest request) {
         ShardingSpherePreconditions.checkState(request.getSchema().isEmpty() || !request.getDatabase().isEmpty(), () -> new MCPInvalidRequestException("Schema cannot be provided without database."));
         List<MetadataSearchHit> metadataItems = request.getDatabase().isEmpty()
-                ? metadataQueryService.queryDatabases().stream().flatMap(each -> readSearchResults(each.getDatabase(), request).stream()).collect(Collectors.toList())
+                ? metadataQueryFacade.queryDatabases().stream().flatMap(each -> readSearchResults(each.getDatabase(), request).stream()).collect(Collectors.toList())
                 : readSearchResults(request.getDatabase(), request);
         return paginate(metadataItems, request.getQuery(), request.getPageSize(), request.getPageToken());
     }
@@ -76,10 +75,10 @@ public final class SearchMetadataToolService {
         List<MetadataSearchHit> result = new LinkedList<>();
         for (SupportedMCPMetadataObjectType each : getSearchObjectTypes(request.getObjectTypes())) {
             if (SupportedMCPMetadataObjectType.DATABASE == each) {
-                metadataQueryService.queryDatabase(databaseName).ifPresent(optional -> result.add(createSearchHit(optional)));
+                metadataQueryFacade.queryDatabase(databaseName).ifPresent(optional -> result.add(createSearchHit(optional)));
                 continue;
             }
-            if (!metadataQueryService.isSupportedMetadataObjectType(databaseName, each)) {
+            if (!metadataQueryFacade.isSupportedMetadataObjectType(databaseName, each)) {
                 continue;
             }
             result.addAll(querySearchHits(databaseName, each, request.getSchema()));
@@ -91,10 +90,10 @@ public final class SearchMetadataToolService {
         List<MetadataSearchHit> result = new LinkedList<>();
         if (SupportedMCPMetadataObjectType.SCHEMA == objectType) {
             if (!schemaName.isEmpty()) {
-                metadataQueryService.querySchema(databaseName, schemaName).ifPresent(optional -> result.add(createSearchHit(optional)));
+                metadataQueryFacade.querySchema(databaseName, schemaName).ifPresent(optional -> result.add(createSearchHit(optional)));
                 return result;
             }
-            for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
+            for (MCPSchemaMetadata each : metadataQueryFacade.querySchemas(databaseName)) {
                 result.add(createSearchHit(each));
             }
             return result;
@@ -125,19 +124,19 @@ public final class SearchMetadataToolService {
     
     private List<MCPTableMetadata> queryTables(final String databaseName, final String schemaName) {
         if (!schemaName.isEmpty()) {
-            return metadataQueryService.queryTables(databaseName, schemaName);
+            return metadataQueryFacade.queryTables(databaseName, schemaName);
         }
-        return metadataQueryService.querySchemas(databaseName).stream().flatMap(each -> metadataQueryService.queryTables(databaseName, each.getSchema()).stream()).collect(Collectors.toList());
+        return metadataQueryFacade.querySchemas(databaseName).stream().flatMap(each -> metadataQueryFacade.queryTables(databaseName, each.getSchema()).stream()).collect(Collectors.toList());
     }
     
     private List<MCPViewMetadata> queryViews(final String databaseName, final String schemaName) {
         List<MCPViewMetadata> result = new LinkedList<>();
         if (!schemaName.isEmpty()) {
-            result.addAll(metadataQueryService.queryViews(databaseName, schemaName));
+            result.addAll(metadataQueryFacade.queryViews(databaseName, schemaName));
             return result;
         }
-        for (MCPSchemaMetadata each : metadataQueryService.querySchemas(databaseName)) {
-            result.addAll(metadataQueryService.queryViews(databaseName, each.getSchema()));
+        for (MCPSchemaMetadata each : metadataQueryFacade.querySchemas(databaseName)) {
+            result.addAll(metadataQueryFacade.queryViews(databaseName, each.getSchema()));
         }
         return result;
     }
@@ -145,12 +144,12 @@ public final class SearchMetadataToolService {
     private List<MetadataSearchHit> queryColumnSearchHits(final String databaseName, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
         for (MCPTableMetadata each : queryTables(databaseName, schemaName)) {
-            for (MCPColumnMetadata column : metadataQueryService.queryTableColumns(databaseName, each.getSchema(), each.getTable())) {
+            for (MCPColumnMetadata column : metadataQueryFacade.queryTableColumns(databaseName, each.getSchema(), each.getTable())) {
                 result.add(createSearchHit(column));
             }
         }
         for (MCPViewMetadata each : queryViews(databaseName, schemaName)) {
-            for (MCPColumnMetadata column : metadataQueryService.queryViewColumns(databaseName, each.getSchema(), each.getView())) {
+            for (MCPColumnMetadata column : metadataQueryFacade.queryViewColumns(databaseName, each.getSchema(), each.getView())) {
                 result.add(createSearchHit(column));
             }
         }
@@ -159,15 +158,15 @@ public final class SearchMetadataToolService {
     
     private List<MetadataSearchHit> queryIndexSearchHits(final String databaseName, final String schemaName) {
         return queryTables(databaseName, schemaName).stream()
-                .flatMap(each -> metadataQueryService.queryIndexes(databaseName, each.getSchema(), each.getTable()).stream()).map(this::createSearchHit).collect(Collectors.toList());
+                .flatMap(each -> metadataQueryFacade.queryIndexes(databaseName, each.getSchema(), each.getTable()).stream()).map(this::createSearchHit).collect(Collectors.toList());
     }
     
     private List<MetadataSearchHit> querySequenceSearchHits(final String databaseName, final String schemaName) {
         if (!schemaName.isEmpty()) {
-            return metadataQueryService.querySequences(databaseName, schemaName).stream().map(this::createSearchHit).collect(Collectors.toList());
+            return metadataQueryFacade.querySequences(databaseName, schemaName).stream().map(this::createSearchHit).collect(Collectors.toList());
         }
-        return metadataQueryService.querySchemas(databaseName).stream()
-                .flatMap(each -> metadataQueryService.querySequences(databaseName, each.getSchema()).stream()).map(this::createSearchHit).collect(Collectors.toList());
+        return metadataQueryFacade.querySchemas(databaseName).stream()
+                .flatMap(each -> metadataQueryFacade.querySequences(databaseName, each.getSchema()).stream()).map(this::createSearchHit).collect(Collectors.toList());
     }
     
     private Set<SupportedMCPMetadataObjectType> getSearchObjectTypes(final Set<SupportedMCPMetadataObjectType> objectTypes) {

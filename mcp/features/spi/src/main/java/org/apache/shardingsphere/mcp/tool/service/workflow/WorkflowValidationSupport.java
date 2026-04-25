@@ -72,6 +72,18 @@ public final class WorkflowValidationSupport {
     }
     
     /**
+     * Create one validation report and attach it to the workflow snapshot.
+     *
+     * @param snapshot workflow snapshot
+     * @return validation report
+     */
+    public ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot) {
+        ValidationReport result = new ValidationReport();
+        snapshot.setValidationReport(result);
+        return result;
+    }
+    
+    /**
      * Validate logical metadata visibility for the planned logical column.
      *
      * @param snapshot workflow snapshot
@@ -142,7 +154,6 @@ public final class WorkflowValidationSupport {
     public Map<String, Object> finalizeValidation(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot,
                                                   final ValidationReport validationReport) {
         String validationStatus = resolveValidationStatus(validationReport);
-        snapshot.setValidationReport(validationReport);
         contextStore.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("status", validationStatus);

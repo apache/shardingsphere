@@ -216,7 +216,7 @@ class SearchMetadataToolServiceTest {
     
     private MetadataSearchResult execute(final List<MCPDatabaseMetadata> databaseMetadata, final MetadataSearchRequest request) {
         try (MCPRequestContext requestContext = ResourceTestDataFactory.createRequestContext(databaseMetadata)) {
-            return new SearchMetadataToolService(requestContext).execute(request);
+            return new SearchMetadataToolService(requestContext.getMetadataQueryFacade()).execute(request);
         }
     }
     

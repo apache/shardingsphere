@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
@@ -53,7 +52,7 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         contextStore.save(createSnapshot("plan-1", "session-1", "executed", "create"));
         EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(contextStore, mock(EncryptRuleInspectionService.class));
-        Map<String, Object> actual = service.validate(mock(MCPFeatureContext.class), "session-2", "plan-1");
+        Map<String, Object> actual = service.validate(null, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-2", "plan-1");
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
@@ -89,7 +88,7 @@ class EncryptWorkflowValidationServiceTest {
                 .thenReturn(Set.of("phone_cipher", "phone_assisted_query", "phone_like_query"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actual = service.validate(createRequestContext(metadataQueryFacade, queryFacade, executionFacade), "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(null, metadataQueryFacade, queryFacade, executionFacade, "session-1", "plan-1");
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
         verify(executionFacade, times(3)).execute(any());
@@ -107,7 +106,7 @@ class EncryptWorkflowValidationServiceTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actual = service.validate(createRequestContext(metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade), "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(null, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", "plan-1");
         assertThat(actual.get("status"), is("validated"));
         assertThat(((Map<?, ?>) actual.get("ddl_validation")).get("status"), is("skipped"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
@@ -128,7 +127,7 @@ class EncryptWorkflowValidationServiceTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actual = service.validate(createRequestContext(metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade), "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(null, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", "plan-1");
         assertThat(actual.get("status"), is("failed"));
         assertThat(actual.get("overall_status"), is("failed"));
     }
@@ -155,18 +154,9 @@ class EncryptWorkflowValidationServiceTest {
         when(queryFacade.queryInformationSchemaColumnNames("logic_db", "public", "orders", Set.of("phone_cipher"))).thenReturn(Set.of("phone_cipher"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("sql failed"));
-        Map<String, Object> actual = service.validate(createRequestContext(metadataQueryFacade, queryFacade, executionFacade), "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(null, metadataQueryFacade, queryFacade, executionFacade, "session-1", "plan-1");
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("sql_executability_validation")).get("status"), is("failed"));
-    }
-    
-    private MCPFeatureContext createRequestContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade,
-                                                   final MCPFeatureExecutionFacade executionFacade) {
-        MCPFeatureContext result = mock(MCPFeatureContext.class);
-        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
-        when(result.getQueryFacade()).thenReturn(queryFacade);
-        when(result.getExecutionFacade()).thenReturn(executionFacade);
-        return result;
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String status, final String operationType) {

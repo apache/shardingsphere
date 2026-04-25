@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 
@@ -37,18 +38,29 @@ public final class WorkflowIntentResolverSupport {
      * @return resolved operation type
      */
     public static String resolveOperationType(final WorkflowRequest request) {
+        return resolveOperationType(request, null);
+    }
+    
+    /**
+     * Resolve workflow operation type from explicit fields and heuristics.
+     *
+     * @param request workflow request
+     * @param clarifiedIntent clarified intent
+     * @return resolved operation type
+     */
+    public static String resolveOperationType(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         String actualOperationType = WorkflowSqlUtils.trimToEmpty(request.getOperationType()).toLowerCase(Locale.ENGLISH);
         if (!actualOperationType.isEmpty()) {
             return actualOperationType;
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
         if (naturalLanguageIntent.contains("drop") || naturalLanguageIntent.contains("删除")) {
-            return WorkflowLifecycle.OPERATION_DROP;
+            return recordInferredValue(clarifiedIntent, "operation_type", WorkflowLifecycle.OPERATION_DROP);
         }
         if (naturalLanguageIntent.contains("alter") || naturalLanguageIntent.contains("修改") || naturalLanguageIntent.contains("补")) {
-            return "alter";
+            return recordInferredValue(clarifiedIntent, "operation_type", "alter");
         }
-        return "create";
+        return recordInferredValue(clarifiedIntent, "operation_type", "create");
     }
     
     /**
@@ -58,6 +70,17 @@ public final class WorkflowIntentResolverSupport {
      * @return resolved field semantics
      */
     public static String resolveFieldSemantics(final WorkflowRequest request) {
+        return resolveFieldSemantics(request, null);
+    }
+    
+    /**
+     * Resolve field semantics from explicit fields and heuristics.
+     *
+     * @param request workflow request
+     * @param clarifiedIntent clarified intent
+     * @return resolved field semantics
+     */
+    public static String resolveFieldSemantics(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         String actualFieldSemantics = WorkflowSqlUtils.trimToEmpty(request.getFieldSemantics()).toLowerCase(Locale.ENGLISH);
         if (!actualFieldSemantics.isEmpty()) {
             return actualFieldSemantics;
@@ -65,15 +88,43 @@ public final class WorkflowIntentResolverSupport {
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
         String columnName = WorkflowSqlUtils.trimToEmpty(request.getColumn()).toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("手机号") || columnName.contains("phone") || columnName.contains("mobile") || columnName.contains("tel")) {
-            return "phone";
+            return recordInferredValue(clarifiedIntent, "field_semantics", "phone");
         }
         if (naturalLanguageIntent.contains("身份证") || columnName.contains("id_card")) {
-            return "id_card";
+            return recordInferredValue(clarifiedIntent, "field_semantics", "id_card");
         }
-        return columnName;
+        return recordInferredValue(clarifiedIntent, "field_semantics", columnName);
+    }
+    
+    /**
+     * Create one reasoning summary for workflow intent resolution.
+     *
+     * @param clarifiedIntent clarified intent
+     * @return reasoning summary
+     */
+    public static String summarizeReasoning(final ClarifiedIntent clarifiedIntent) {
+        if (clarifiedIntent.getInferredValues().isEmpty() && clarifiedIntent.getUnresolvedFields().isEmpty()) {
+            return "Resolved from explicit arguments.";
+        }
+        StringBuilder result = new StringBuilder("Resolved from explicit arguments");
+        if (!clarifiedIntent.getInferredValues().isEmpty()) {
+            result.append(", heuristic inference for ").append(String.join(", ", clarifiedIntent.getInferredValues().keySet()));
+        }
+        if (!clarifiedIntent.getUnresolvedFields().isEmpty()) {
+            result.append(", unresolved fields: ").append(String.join(", ", clarifiedIntent.getUnresolvedFields()));
+        }
+        result.append('.');
+        return result.toString();
     }
     
     private static String getNaturalLanguageIntent(final WorkflowRequest request) {
         return WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
+    }
+    
+    private static String recordInferredValue(final ClarifiedIntent clarifiedIntent, final String fieldName, final String value) {
+        if (null != clarifiedIntent) {
+            clarifiedIntent.getInferredValues().put(fieldName, value);
+        }
+        return value;
     }
 }

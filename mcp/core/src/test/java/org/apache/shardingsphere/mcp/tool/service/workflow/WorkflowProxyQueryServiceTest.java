@@ -65,7 +65,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.getObject(1)).thenReturn("orders");
         when(resultSet.getObject(2)).thenReturn("status");
         try (MCPRequestContext requestContext = createRequestContext(Map.of("logic_db", runtimeDatabaseConfig))) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             List<Map<String, Object>> actual = service.query("logic_db", "public", "SHOW MASK RULES");
             assertThat(actual.size(), is(1));
             assertThat(actual.get(0).get("table"), is("orders"));
@@ -90,7 +90,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getObject(1)).thenReturn("AES");
         try (MCPRequestContext requestContext = createRequestContext(Map.of("logic_db", runtimeDatabaseConfig))) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             List<Map<String, Object>> actual = service.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
             assertThat(actual.get(0).get("type"), is("AES"));
         }
@@ -99,7 +99,7 @@ class WorkflowProxyQueryServiceTest {
     @Test
     void assertQueryWithAnyDatabaseThrowsWhenNoRuntimeDatabaseExists() {
         try (MCPRequestContext requestContext = createRequestContext(Map.of())) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             Exception actual = assertThrows(RuntimeException.class, () -> service.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS"));
             assertThat(actual.getMessage(), is("No runtime database is configured."));
         }
@@ -108,7 +108,7 @@ class WorkflowProxyQueryServiceTest {
     @Test
     void assertQueryThrowsWhenDatabaseIsNotConfigured() {
         try (MCPRequestContext requestContext = createRequestContext(Map.of())) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             Exception actual = assertThrows(MCPUnavailableException.class, () -> service.query("logic_db", "", "SHOW MASK RULES"));
             assertThat(actual.getMessage(), is("Database `logic_db` is not configured."));
         }
@@ -131,7 +131,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSetMetaData.getPrecision(1)).thenReturn(10);
         when(resultSetMetaData.getScale(1)).thenReturn(2);
         try (MCPRequestContext requestContext = createRequestContext(Map.of("logic_db", runtimeDatabaseConfig))) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             String actual = service.queryColumnDefinition("logic_db", "public", "orders", "amount");
             assertThat(actual, is("DECIMAL(10, 2)"));
         }
@@ -150,7 +150,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.getMetaData()).thenReturn(resultSetMetaData);
         when(resultSetMetaData.getColumnCount()).thenReturn(0);
         try (MCPRequestContext requestContext = createRequestContext(Map.of("logic_db", runtimeDatabaseConfig))) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             String actual = service.queryColumnDefinition("logic_db", "public", "orders", "amount");
             assertThat(actual, is("VARCHAR(4000)"));
         }
@@ -175,7 +175,7 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.getObject(1)).thenReturn("status_cipher", "status_assisted_query");
         Set<String> columnNames = new LinkedHashSet<>(List.of("status_cipher", "status_assisted_query"));
         try (MCPRequestContext requestContext = createRequestContext(Map.of("logic_db", runtimeDatabaseConfig))) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", columnNames);
             assertThat(actual, is(Set.of("status_cipher", "status_assisted_query")));
         }
@@ -198,10 +198,14 @@ class WorkflowProxyQueryServiceTest {
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getObject(1)).thenReturn("status_cipher");
         try (MCPRequestContext requestContext = createRequestContext(Map.of("logic_db", runtimeDatabaseConfig), "PostgreSQL")) {
-            WorkflowProxyQueryService service = new WorkflowProxyQueryService(requestContext);
+            WorkflowProxyQueryService service = createService(requestContext);
             Set<String> actual = service.queryInformationSchemaColumnNames("logic_db", "public", "orders", new LinkedHashSet<>(List.of("status_cipher")));
             assertThat(actual, is(Set.of("status_cipher")));
         }
+    }
+    
+    private WorkflowProxyQueryService createService(final MCPRequestContext requestContext) {
+        return new WorkflowProxyQueryService(requestContext.getSessionManager(), requestContext.getDatabaseCapabilityProvider());
     }
     
     private MCPRequestContext createRequestContext(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {

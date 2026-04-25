@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
@@ -175,12 +173,7 @@ class MCPSQLExecutionFacadeConcurrencyTest {
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager) {
-        return new MCPSQLExecutionFacade(createRequestContext(sessionManager));
-    }
-    
-    private MCPRequestContext createRequestContext(final MCPSessionManager sessionManager) {
-        Map<String, RuntimeDatabaseConfiguration> capabilityRuntimeDatabases = Map.of("logic_db", createCapabilityRuntimeDatabaseConfiguration());
-        return new MCPRequestContext(new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(capabilityRuntimeDatabases)));
+        return new MCPSQLExecutionFacade(new MCPDatabaseCapabilityProvider(Map.of("logic_db", createCapabilityRuntimeDatabaseConfiguration())), sessionManager);
     }
     
     private RuntimeDatabaseConfiguration createCapabilityRuntimeDatabaseConfiguration() {

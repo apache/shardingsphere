@@ -24,6 +24,9 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowS
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmPropertyRequirement;
@@ -35,6 +38,7 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 import org.junit.jupiter.api.Test;
@@ -67,10 +71,11 @@ class EncryptToolHandlerTest {
     void assertHandlePlanEncryptRule() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
         EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
+        RequestContextFixture fixture = createRequestContextFixture();
+        MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of(
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone",
@@ -80,7 +85,7 @@ class EncryptToolHandlerTest {
                 "user_overrides", Map.of("cipher_column_name", "phone_cipher")));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
-        verify(planningService).plan(any(), eq("session-1"), requestCaptor.capture());
+        verify(planningService).plan(eq(fixture.contextStore), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
         EncryptWorkflowRequest actualRequest = requestCaptor.getValue();
         assertFalse(actualRequest.getOptions().getAllowIndexDDL());
         assertThat(actualRequest.getAlgorithmType(), is("AES"));
@@ -92,10 +97,10 @@ class EncryptToolHandlerTest {
     void assertHandlePlanEncryptRuleWithMaskedArtifacts() throws ReflectiveOperationException {
         PlanEncryptRuleToolHandler handler = new PlanEncryptRuleToolHandler();
         EncryptWorkflowPlanningService planningService = mock(EncryptWorkflowPlanningService.class);
-        when(planningService.plan(any(), any(), any())).thenReturn(createDetailedSnapshot());
+        when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
+        MCPResponse actual = handler.handle(createRequestContextFixture().requestContext, "session-1", Map.of(
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone"));
@@ -109,17 +114,20 @@ class EncryptToolHandlerTest {
     
     @Test
     void assertGetValidateEncryptRuleToolDescriptor() {
-        MCPToolDescriptor actual = new WorkflowValidationToolHandler(EncryptFeatureDefinition.VALIDATE_TOOL_NAME, (requestContext, sessionId, planId) -> Map.of()).getToolDescriptor();
+        MCPToolDescriptor actual = new WorkflowValidationToolHandler(EncryptFeatureDefinition.VALIDATE_TOOL_NAME,
+                (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of()).getToolDescriptor();
         assertThat(actual.getName(), is("validate_encrypt_rule"));
     }
     
     @Test
     void assertHandleValidateEncryptRule() {
         EncryptWorkflowValidationService validationService = mock(EncryptWorkflowValidationService.class);
-        when(validationService.validate(any(), any(), any())).thenReturn(Map.of("status", "validated"));
+        when(validationService.validate(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "validated"));
         WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(EncryptFeatureDefinition.VALIDATE_TOOL_NAME, validationService::validate);
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of("plan_id", "plan-1"));
-        verify(validationService).validate(any(), eq("session-1"), eq("plan-1"));
+        RequestContextFixture fixture = createRequestContextFixture();
+        MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of("plan_id", "plan-1"));
+        verify(validationService).validate(eq(fixture.contextStore), eq(fixture.metadataQueryFacade),
+                eq(fixture.queryFacade), eq(fixture.executionFacade), eq("session-1"), eq("plan-1"));
         assertThat(actual.toPayload().get("status"), is("validated"));
     }
     
@@ -132,13 +140,15 @@ class EncryptToolHandlerTest {
     @Test
     void assertHandleApplyEncryptRule() {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
-        when(executionService.apply(any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
+        when(executionService.apply(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
         WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(EncryptFeatureDefinition.APPLY_TOOL_NAME, executionService);
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), "session-1", Map.of(
+        RequestContextFixture fixture = createRequestContextFixture();
+        MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of(
                 "plan_id", "plan-1",
                 "approved_steps", List.of("ddl", "rule_distsql"),
                 "execution_mode", "manual-only"));
-        verify(executionService).apply(any(), eq("session-1"), eq("plan-1"), eq(List.of("ddl", "rule_distsql")), eq("manual-only"));
+        verify(executionService).apply(eq(fixture.contextStore), eq(fixture.executionFacade),
+                eq("session-1"), eq("plan-1"), eq(List.of("ddl", "rule_distsql")), eq("manual-only"));
         assertThat(actual.toPayload().get("status"), is("completed"));
     }
     
@@ -184,5 +194,23 @@ class EncryptToolHandlerTest {
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
+    }
+    
+    private RequestContextFixture createRequestContextFixture() {
+        MCPFeatureContext result = mock(MCPFeatureContext.class);
+        WorkflowContextStore contextStore = new WorkflowContextStore();
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(result.getWorkflowContextStore()).thenReturn(contextStore);
+        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        when(result.getQueryFacade()).thenReturn(queryFacade);
+        when(result.getExecutionFacade()).thenReturn(executionFacade);
+        return new RequestContextFixture(result, contextStore, metadataQueryFacade, queryFacade, executionFacade);
+    }
+    
+    private record RequestContextFixture(MCPFeatureContext requestContext, WorkflowContextStore contextStore,
+                                         MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
+                                         MCPFeatureExecutionFacade executionFacade) {
     }
 }

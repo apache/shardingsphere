@@ -58,20 +58,15 @@ public final class MCPRequestContext implements MCPFeatureContext {
     }
     
     public MCPRequestContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final RequestScopedMetadataContext metadataContext,
-                             final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureExecutionFacade executionFacade, final MCPFeatureQueryFacade queryFacade) {
-        this(sessionManager, databaseCapabilityProvider, metadataContext, new WorkflowContextStore(), metadataQueryFacade, executionFacade, queryFacade);
-    }
-    
-    public MCPRequestContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final RequestScopedMetadataContext metadataContext,
                              final WorkflowContextStore workflowContextStore, final MCPMetadataQueryFacade metadataQueryFacade,
                              final MCPFeatureExecutionFacade executionFacade, final MCPFeatureQueryFacade queryFacade) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;
         this.metadataContext = metadataContext;
         this.workflowContextStore = workflowContextStore;
-        this.metadataQueryFacade = null == metadataQueryFacade ? new MetadataQueryService(this) : metadataQueryFacade;
-        this.executionFacade = null == executionFacade ? new MCPSQLExecutionFacade(this) : executionFacade;
-        this.queryFacade = null == queryFacade ? new WorkflowProxyQueryService(this) : queryFacade;
+        this.metadataQueryFacade = null == metadataQueryFacade ? new MetadataQueryService(databaseCapabilityProvider, metadataContext) : metadataQueryFacade;
+        this.executionFacade = null == executionFacade ? new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager) : executionFacade;
+        this.queryFacade = null == queryFacade ? new WorkflowProxyQueryService(sessionManager, databaseCapabilityProvider) : queryFacade;
     }
     
     @Override

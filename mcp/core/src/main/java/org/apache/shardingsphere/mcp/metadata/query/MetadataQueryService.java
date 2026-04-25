@@ -21,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseProfile;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
@@ -47,7 +48,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class MetadataQueryService implements MCPMetadataQueryFacade {
     
-    private final MCPRequestContext requestContext;
+    private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
+    
+    private final RequestScopedMetadataContext metadataContext;
     
     /**
      * Query databases.
@@ -56,7 +59,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
      */
     @Override
     public List<MCPDatabaseMetadata> queryDatabases() {
-        return requestContext.getDatabaseCapabilityProvider().getDatabaseProfiles().stream()
+        return databaseCapabilityProvider.getDatabaseProfiles().stream()
                 .map(this::createDatabaseSummary).sorted(Comparator.comparing(MCPDatabaseMetadata::getDatabase)).collect(Collectors.toList());
     }
     
@@ -68,7 +71,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
      */
     @Override
     public Optional<MCPDatabaseMetadata> queryDatabase(final String databaseName) {
-        return requestContext.getMetadataContext().loadDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::createDetail);
+        return metadataContext.loadDatabaseMetadata(databaseName).map(MCPDatabaseMetadata::createDetail);
     }
     
     /**
@@ -82,7 +85,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
         if (!isSupportedMetadataObjectType(databaseName, SupportedMCPMetadataObjectType.SCHEMA)) {
             return Collections.emptyList();
         }
-        return requestContext.getMetadataContext().loadDatabaseMetadata(databaseName).map(optional -> optional.getSchemas().stream()
+        return metadataContext.loadDatabaseMetadata(databaseName).map(optional -> optional.getSchemas().stream()
                 .map(MCPSchemaMetadata::createSummary).sorted(Comparator.comparing(MCPSchemaMetadata::getSchema)).collect(Collectors.toList())).orElse(Collections.emptyList());
     }
     
@@ -314,7 +317,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
     }
     
     private Optional<MCPSchemaMetadata> findSchema(final String databaseName, final String schemaName) {
-        return requestContext.getMetadataContext().loadDatabaseMetadata(databaseName)
+        return metadataContext.loadDatabaseMetadata(databaseName)
                 .flatMap(optional -> optional.getSchemas().stream().filter(each -> schemaName.equals(each.getSchema())).findFirst());
     }
     
@@ -347,7 +350,7 @@ public final class MetadataQueryService implements MCPMetadataQueryFacade {
      */
     @Override
     public boolean isSupportedMetadataObjectType(final String databaseName, final SupportedMCPMetadataObjectType objectType) {
-        Optional<MCPDatabaseCapability> databaseCapability = requestContext.getDatabaseCapabilityProvider().provide(databaseName);
+        Optional<MCPDatabaseCapability> databaseCapability = databaseCapabilityProvider.provide(databaseName);
         return databaseCapability.isPresent() && databaseCapability.get().getSupportedMetadataObjectTypes().contains(objectType);
     }
     

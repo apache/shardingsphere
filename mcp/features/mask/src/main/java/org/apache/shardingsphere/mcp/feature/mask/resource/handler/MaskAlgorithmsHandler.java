@@ -39,6 +39,6 @@ public final class MaskAlgorithmsHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPMetadataResponse(ruleInspectionService.enrichMaskAlgorithms(ruleInspectionService.queryMaskAlgorithms(requestContext)));
+        return new MCPMetadataResponse(ruleInspectionService.enrichMaskAlgorithms(ruleInspectionService.queryMaskAlgorithms(requestContext.getQueryFacade())));
     }
 }

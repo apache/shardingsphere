@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.tool.model.workflow.InteractionPlan;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
@@ -27,24 +26,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class WorkflowLifecycleUtilsTest {
     
     @Test
     void assertResolveContextStoreUsesRequestContextStore() {
         WorkflowContextStore expectedContextStore = new WorkflowContextStore();
-        MCPFeatureContext requestContext = mock(MCPFeatureContext.class);
-        when(requestContext.getWorkflowContextStore()).thenReturn(expectedContextStore);
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(null, requestContext);
+        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(null, expectedContextStore);
         assertThat(actualContextStore, is(expectedContextStore));
     }
     
     @Test
     void assertResolveContextStorePrefersConfiguredStore() {
         WorkflowContextStore expectedContextStore = new WorkflowContextStore();
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(expectedContextStore, mock(MCPFeatureContext.class));
+        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(expectedContextStore, new WorkflowContextStore());
         assertThat(actualContextStore, is(expectedContextStore));
     }
     

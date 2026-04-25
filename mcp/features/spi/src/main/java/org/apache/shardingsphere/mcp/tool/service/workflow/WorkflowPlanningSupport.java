@@ -148,6 +148,24 @@ public final class WorkflowPlanningSupport {
     }
     
     /**
+     * Judge whether workflow planning can continue to artifact generation.
+     *
+     * @param request workflow request
+     * @param clarifiedIntent clarified intent
+     * @param snapshot workflow snapshot
+     * @param propertyRequirements property requirements
+     * @param fallbackQuestion fallback question
+     * @return whether artifact planning can continue
+     */
+    public boolean isReadyForArtifactPlanning(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot,
+                                              final List<AlgorithmPropertyRequirement> propertyRequirements, final String fallbackQuestion) {
+        if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion) || !clarifiedIntent.getPendingQuestions().isEmpty()) {
+            return false;
+        }
+        return collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);
+    }
+    
+    /**
      * Ensure workflow planning context is complete and valid.
      *
      * @param metadataQueryFacade metadata query facade

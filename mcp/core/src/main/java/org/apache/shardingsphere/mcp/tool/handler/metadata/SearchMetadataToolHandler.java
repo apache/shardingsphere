@@ -66,7 +66,7 @@ public final class SearchMetadataToolHandler implements ToolHandler {
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));
-        MetadataSearchResult searchResult = new SearchMetadataToolService(requestContext).execute(request);
+        MetadataSearchResult searchResult = new SearchMetadataToolService(requestContext.getMetadataQueryFacade()).execute(request);
         return new MCPMetadataResponse(searchResult.getItems(), searchResult.getNextPageToken());
     }
 }

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.ExecuteQueryResultKind;
@@ -307,7 +305,7 @@ class MCPSQLExecutionFacadeTest {
     }
     
     private MCPSQLExecutionFacade createFacade(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider capabilityProvider) {
-        return new MCPSQLExecutionFacade(new MCPRequestContext(new MCPRuntimeContext(sessionManager, capabilityProvider)));
+        return new MCPSQLExecutionFacade(capabilityProvider, sessionManager);
     }
     
     private MCPDatabaseCapabilityProvider createCapabilityProvider(final String databaseType) {

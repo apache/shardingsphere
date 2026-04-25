@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
@@ -36,12 +35,10 @@ class MaskRuleInspectionServiceTest {
     
     @Test
     void assertQueryMaskRulesForDatabase() {
-        MCPFeatureContext requestContext = mock(MCPFeatureContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         when(queryFacade.query("logic_db", "", "SHOW MASK RULES FROM logic_db"))
                 .thenReturn(List.of(Map.of("logic_column", "phone", "mask_algorithm", "MASK_FROM_X_TO_Y", "props", "from-x=4")));
-        List<Map<String, Object>> actual = service.queryMaskRules(requestContext, "logic_db", "");
+        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db", "");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).get("column"), is("phone"));
         assertThat(actual.get(0).get("algorithm_type"), is("MASK_FROM_X_TO_Y"));
@@ -49,22 +46,18 @@ class MaskRuleInspectionServiceTest {
     
     @Test
     void assertQueryMaskRulesForTable() {
-        MCPFeatureContext requestContext = mock(MCPFeatureContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         when(queryFacade.query("logic_db", "", "SHOW MASK RULE orders FROM logic_db"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        List<Map<String, Object>> actual = service.queryMaskRules(requestContext, "logic_db", "orders");
+        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db", "orders");
         assertThat(actual.get(0).get("column"), is("phone"));
     }
     
     @Test
     void assertQueryMaskAlgorithms() {
-        MCPFeatureContext requestContext = mock(MCPFeatureContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MD5")));
-        List<Map<String, Object>> actual = service.queryMaskAlgorithms(requestContext);
+        List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
         assertThat(actual.size(), is(1));
         verify(queryFacade).queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
     }

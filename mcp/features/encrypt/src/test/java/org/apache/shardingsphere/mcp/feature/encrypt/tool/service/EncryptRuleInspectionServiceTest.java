@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 
@@ -37,34 +36,28 @@ class EncryptRuleInspectionServiceTest {
     
     @Test
     void assertQueryEncryptRulesForDatabase() {
-        MCPFeatureContext requestContext = mock(MCPFeatureContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         when(queryFacade.query("logic_db", "", "SHOW ENCRYPT RULES FROM logic_db"))
                 .thenReturn(List.of(Map.of("logic_column", "phone", "assisted_query", "phone_assisted")));
-        List<Map<String, Object>> actual = service.queryEncryptRules(requestContext, "logic_db", "");
+        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).get("assisted_query_column"), is("phone_assisted"));
     }
     
     @Test
     void assertQueryEncryptRulesForTable() {
-        MCPFeatureContext requestContext = mock(MCPFeatureContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         when(queryFacade.query("logic_db", "", "SHOW ENCRYPT TABLE RULE orders FROM logic_db"))
                 .thenReturn(List.of(Map.of("logic_column", "phone", "like_query", "phone_like")));
-        List<Map<String, Object>> actual = service.queryEncryptRules(requestContext, "logic_db", "orders");
+        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "orders");
         assertThat(actual.get(0).get("like_query_column"), is("phone_like"));
     }
     
     @Test
     void assertQueryEncryptAlgorithms() {
-        MCPFeatureContext requestContext = mock(MCPFeatureContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(requestContext.getQueryFacade()).thenReturn(queryFacade);
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES")));
-        List<Map<String, Object>> actual = service.queryEncryptAlgorithms(requestContext);
+        List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
         assertThat(actual.size(), is(1));
         verify(queryFacade).queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
     }

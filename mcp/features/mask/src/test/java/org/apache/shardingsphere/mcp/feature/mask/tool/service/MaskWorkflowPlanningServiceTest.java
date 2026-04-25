@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
@@ -55,7 +54,7 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, mock(MaskRuleInspectionService.class),
                 mock(MaskAlgorithmRecommendationService.class), mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
-        WorkflowContextSnapshot actual = service.plan(createRequestContext(mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class)), "session-1", new WorkflowRequest());
+        WorkflowContextSnapshot actual = service.plan(null, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), "session-1", new WorkflowRequest());
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
@@ -67,7 +66,7 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
-        WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", createRequest("create"));
+        WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
@@ -81,7 +80,7 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService);
-        WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", createRequest("drop"));
+        WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("drop"));
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getRuleArtifacts().size(), is(1));
     }
@@ -97,7 +96,7 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, new MaskAlgorithmRecommendationService(),
                 new MaskAlgorithmPropertyTemplateService(), new MaskRuleDistSQLPlanningService());
-        WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", createNaturalLanguageRequest(naturalLanguageIntent));
+        WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createNaturalLanguageRequest(naturalLanguageIntent));
         assertThat(actual.getClarifiedIntent().getOperationType(), is(expectedOperationType));
         assertThat(actual.getClarifiedIntent().getFieldSemantics(), is(expectedFieldSemantics));
         assertThat(actual.getStatus(), is(expectedStatus));
@@ -118,7 +117,7 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
-        WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", createRequest("create"));
+        WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getClarifiedIntent().getPendingQuestions().get(0), is("请改用当前 Proxy 可见的脱敏算法。"));
     }
@@ -138,7 +137,7 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, mock(MaskRuleDistSQLPlanningService.class));
-        WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", createRequest("create"));
+        WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
     }
@@ -159,24 +158,17 @@ class MaskWorkflowPlanningServiceTest {
         WorkflowContextStore contextStore = new WorkflowContextStore();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, ruleDistSQLPlanningService);
-        WorkflowContextSnapshot actual = service.plan(createResolvedRequestContext(), "session-1", createRequest("create"));
+        WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getRuleArtifacts().size(), is(1));
     }
     
-    private MCPFeatureContext createResolvedRequestContext() {
+    private MCPMetadataQueryFacade createResolvedMetadataQueryFacade() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
         when(metadataQueryFacade.queryTable("logic_db", "public", "orders")).thenReturn(Optional.of(createTableMetadata()));
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata()));
-        return createRequestContext(metadataQueryFacade, mock(MCPFeatureQueryFacade.class));
-    }
-    
-    private MCPFeatureContext createRequestContext(final MCPMetadataQueryFacade metadataQueryFacade, final MCPFeatureQueryFacade queryFacade) {
-        MCPFeatureContext result = mock(MCPFeatureContext.class);
-        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
-        when(result.getQueryFacade()).thenReturn(queryFacade);
-        return result;
+        return metadataQueryFacade;
     }
     
     private WorkflowRequest createRequest(final String operationType) {
