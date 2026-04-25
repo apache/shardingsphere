@@ -20,12 +20,14 @@ package org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.d
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.exception.kernel.data.UnsupportedDataTypeConversionException;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -42,6 +44,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Result set utility class.
@@ -57,6 +60,10 @@ public final class ResultSetUtils {
                     + "[ ]"
                     + "[XXXXX][XXXX][XXX][XX][X]");
     
+    private static final Pattern MYSQL_INTEGER_PATTERN = Pattern.compile("-?\\d+");
+    
+    private static final Pattern MYSQL_FLOATING_PATTERN = Pattern.compile("-?\\d*\\.\\d*");
+    
     /**
      * Convert value via expected class type.
      *
@@ -66,6 +73,23 @@ public final class ResultSetUtils {
      * @throws SQLFeatureNotSupportedException SQL feature not supported exception
      */
     public static Object convertValue(final Object value, final Class<?> convertType) throws SQLFeatureNotSupportedException {
+        return convertValue(value, convertType, false);
+    }
+    
+    /**
+     * Convert value via expected class type.
+     *
+     * @param value original value
+     * @param convertType expected class type
+     * @param protocolType protocol database type
+     * @return converted value
+     * @throws SQLFeatureNotSupportedException SQL feature not supported exception
+     */
+    public static Object convertValue(final Object value, final Class<?> convertType, final DatabaseType protocolType) throws SQLFeatureNotSupportedException {
+        return convertValue(value, convertType, isMySQLCompatibleConversion(protocolType));
+    }
+    
+    private static Object convertValue(final Object value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) throws SQLFeatureNotSupportedException {
         ShardingSpherePreconditions.checkNotNull(convertType, () -> new SQLFeatureNotSupportedException("Type can not be null"));
         if (null == value) {
             return convertNullValue(convertType);
@@ -94,17 +118,17 @@ public final class ResultSetUtils {
         if (value instanceof byte[]) {
             return convertByteArrayValue((byte[]) value, convertType);
         }
-        if (boolean.class.equals(convertType)) {
-            return convertBooleanValue(value);
-        }
         if (String.class.equals(convertType)) {
             return value.toString();
         }
         if (value instanceof String) {
-            Optional<Object> result = convertStringValue((String) value, convertType);
+            Optional<Object> result = convertStringValue((String) value, convertType, isMySQLCompatibleConversion);
             if (result.isPresent()) {
                 return result.get();
             }
+        }
+        if (boolean.class.equals(convertType)) {
+            return convertBooleanValue(value);
         }
         try {
             return convertType.cast(value);
@@ -113,7 +137,11 @@ public final class ResultSetUtils {
         }
     }
     
-    private static Optional<Object> convertStringValue(final String value, final Class<?> convertType) {
+    private static boolean isMySQLCompatibleConversion(final DatabaseType protocolType) {
+        return null != protocolType && "MySQL".equals(protocolType.getType());
+    }
+    
+    private static Optional<Object> convertStringValue(final String value, final Class<?> convertType, final boolean isMySQLCompatibleConversion) {
         if (byte[].class.equals(convertType)) {
             return Optional.of(value.getBytes(StandardCharsets.UTF_8));
         }
@@ -128,7 +156,119 @@ public final class ResultSetUtils {
         if (Time.class.equals(convertType)) {
             return Optional.of(Time.valueOf(LocalTime.from(LOOSE_DATE_TIME_FORMATTER.parse(value))));
         }
+        if (isMySQLCompatibleConversion) {
+            return convertMySQLStringValue(value, convertType);
+        }
         return Optional.empty();
+    }
+    
+    private static Optional<Object> convertMySQLStringValue(final String value, final Class<?> convertType) {
+        if (value.isEmpty()) {
+            return Optional.of(convertMySQLEmptyValue(convertType, value));
+        }
+        try {
+            switch (convertType.getName()) {
+                case "boolean":
+                case "java.lang.Boolean":
+                    return Optional.of(convertMySQLBooleanValue(value, convertType));
+                case "byte":
+                case "java.lang.Byte":
+                    return Optional.of(convertMySQLByteValue(value, convertType));
+                case "short":
+                case "java.lang.Short":
+                    return Optional.of(convertMySQLIntegerValue(value).shortValueExact());
+                case "int":
+                case "java.lang.Integer":
+                    return Optional.of(convertMySQLIntegerValue(value).intValueExact());
+                case "long":
+                case "java.lang.Long":
+                    return Optional.of(convertMySQLIntegerValue(value).longValueExact());
+                case "double":
+                case "java.lang.Double":
+                    return Optional.of(Double.parseDouble(value));
+                case "float":
+                case "java.lang.Float":
+                    return Optional.of(Float.parseFloat(value));
+                case "java.math.BigDecimal":
+                    return Optional.of(new BigDecimal(value));
+                default:
+                    return Optional.empty();
+            }
+        } catch (final NumberFormatException | ArithmeticException ignored) {
+            throw new UnsupportedDataTypeConversionException(convertType, value);
+        }
+    }
+    
+    private static BigDecimal convertMySQLIntegerValue(final String value) {
+        if (value.indexOf('.') > -1 || value.indexOf('e') > -1 || value.indexOf('E') > -1) {
+            double doubleValue = Double.parseDouble(value);
+            return BigDecimal.valueOf(doubleValue).setScale(0, RoundingMode.DOWN);
+        }
+        return new BigDecimal(value);
+    }
+    
+    private static Object convertMySQLEmptyValue(final Class<?> convertType, final String originalValue) {
+        switch (convertType.getName()) {
+            case "boolean":
+            case "java.lang.Boolean":
+                return false;
+            case "byte":
+            case "java.lang.Byte":
+                return (byte) 0;
+            case "short":
+            case "java.lang.Short":
+                return (short) 0;
+            case "int":
+            case "java.lang.Integer":
+                return 0;
+            case "long":
+            case "java.lang.Long":
+                return 0L;
+            case "float":
+            case "java.lang.Float":
+                return 0.0F;
+            case "double":
+            case "java.lang.Double":
+                return 0.0D;
+            case "java.math.BigDecimal":
+                return BigDecimal.ZERO;
+            default:
+                throw new UnsupportedDataTypeConversionException(convertType, originalValue);
+        }
+    }
+    
+    private static byte convertMySQLByteValue(final String value, final Class<?> convertType) {
+        if (1 != value.length()) {
+            throw new UnsupportedDataTypeConversionException(convertType, value);
+        }
+        return (byte) value.charAt(0);
+    }
+    
+    private static Boolean convertMySQLBooleanValue(final String value, final Class<?> convertType) {
+        if ("Y".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value) || "T".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value)) {
+            return true;
+        }
+        if ("N".equalsIgnoreCase(value) || "no".equalsIgnoreCase(value) || "F".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
+            return false;
+        }
+        if (value.contains("e") || value.contains("E") || MYSQL_FLOATING_PATTERN.matcher(value).matches()) {
+            return convertMySQLDoubleToBoolean(Double.parseDouble(value));
+        }
+        if (MYSQL_INTEGER_PATTERN.matcher(value).matches()) {
+            if ('-' == value.charAt(0) || value.length() <= 18 && value.charAt(0) >= '0' && value.charAt(0) <= '8') {
+                return longToBoolean(Long.parseLong(value));
+            }
+            return convertMySQLBigIntegerToBoolean(new BigDecimal(value).toBigInteger());
+        }
+        throw new UnsupportedDataTypeConversionException(convertType, value);
+    }
+    
+    private static boolean convertMySQLDoubleToBoolean(final double value) {
+        return value > 0.0D || -1.0D == value;
+    }
+    
+    private static boolean convertMySQLBigIntegerToBoolean(final BigInteger value) {
+        return value.signum() > 0 || BigInteger.valueOf(-1L).equals(value);
     }
     
     private static Object convertNullValue(final Class<?> convertType) {

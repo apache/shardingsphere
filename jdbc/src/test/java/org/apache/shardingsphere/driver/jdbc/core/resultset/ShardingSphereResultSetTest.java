@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.resultset;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
+import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSpherePreparedStatement;
 import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatement;
 import org.apache.shardingsphere.infra.binder.context.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,12 +54,14 @@ import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -67,6 +72,14 @@ class ShardingSphereResultSetTest {
     private MergedResult mergeResultSet;
     
     private ShardingSphereResultSet shardingSphereResultSet;
+    
+    private DatabaseType protocolType;
+    
+    private ShardingSphereConnection connection;
+    
+    private MetaDataContexts metaDataContexts;
+    
+    private ShardingSphereStatement statement;
     
     @BeforeEach
     void setUp() throws SQLException {
@@ -92,13 +105,19 @@ class ShardingSphereResultSetTest {
     }
     
     private ShardingSphereStatement getShardingSphereStatement() {
-        ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        when(connection.getCurrentDatabaseName()).thenReturn("logic_db");
+        protocolType = mock(DatabaseType.class);
+        when(protocolType.getType()).thenReturn("MySQL");
+        when(protocolType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        when(metaDataContexts.getMetaData().getDatabase("logic_db").getProtocolType()).thenReturn(protocolType);
         when(connection.getContextManager().getMetaDataContexts()).thenReturn(metaDataContexts);
-        ShardingSphereStatement result = mock(ShardingSphereStatement.class);
-        when(result.getConnection()).thenReturn(connection);
-        return result;
+        statement = mock(ShardingSphereStatement.class);
+        when(statement.getConnection()).thenReturn(connection);
+        when(statement.getUsedDatabaseName()).thenReturn("logic_db");
+        return statement;
     }
     
     @Test
@@ -570,6 +589,56 @@ class ShardingSphereResultSetTest {
         assertThat(shardingSphereResultSet.getObject(1, int.class), is(result));
         when(mergeResultSet.getValue(1, Integer.class)).thenReturn(result);
         assertThat(shardingSphereResultSet.getObject(1, Integer.class), is(result));
+    }
+    
+    @Test
+    void assertGetObjectWithIntegerFromStringInMySQLProtocol() throws SQLException {
+        when(mergeResultSet.getValue(1, Integer.class)).thenReturn("123");
+        assertThat(shardingSphereResultSet.getObject(1, Integer.class), is(123));
+    }
+    
+    @Test
+    void assertGetObjectWithIntegerFromStringInNonMySQLProtocol() throws SQLException {
+        when(protocolType.getType()).thenReturn("PostgreSQL");
+        when(mergeResultSet.getValue(1, Integer.class)).thenReturn("123");
+        assertThrows(SQLException.class, () -> shardingSphereResultSet.getObject(1, Integer.class));
+    }
+    
+    @Test
+    void assertGetObjectWithIntegerFromStringUsesUsedDatabaseProtocolForStatement() throws SQLException {
+        ShardingSphereConnection statementConnection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts statementMetaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        when(statementMetaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
+        DatabaseType currentDatabaseProtocolType = mock(DatabaseType.class);
+        when(currentDatabaseProtocolType.getType()).thenReturn("PostgreSQL");
+        when(currentDatabaseProtocolType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        DatabaseType usedDatabaseProtocolType = mock(DatabaseType.class);
+        when(usedDatabaseProtocolType.getType()).thenReturn("MySQL");
+        when(usedDatabaseProtocolType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        ShardingSphereStatement usedDatabaseStatement = mock(ShardingSphereStatement.class);
+        when(statementConnection.getCurrentDatabaseName()).thenReturn("current_db");
+        when(statementConnection.getContextManager().getMetaDataContexts()).thenReturn(statementMetaDataContexts);
+        when(statementMetaDataContexts.getMetaData().getDatabase("current_db").getProtocolType()).thenReturn(currentDatabaseProtocolType);
+        when(statementMetaDataContexts.getMetaData().getDatabase("used_db").getProtocolType()).thenReturn(usedDatabaseProtocolType);
+        when(usedDatabaseStatement.getConnection()).thenReturn(statementConnection);
+        when(usedDatabaseStatement.getUsedDatabaseName()).thenReturn("used_db");
+        ShardingSphereResultSet usedDatabaseResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, usedDatabaseStatement, createSQLStatementContext());
+        when(mergeResultSet.getValue(1, Integer.class)).thenReturn("123");
+        assertThat(usedDatabaseResultSet.getObject(1, Integer.class), is(123));
+    }
+    
+    @Test
+    void assertGetObjectWithIntegerFromStringUsesUsedDatabaseProtocolForPreparedStatement() throws SQLException {
+        ShardingSpherePreparedStatement preparedStatement = mock(ShardingSpherePreparedStatement.class);
+        ShardingSphereDatabase usedDatabase = mock(ShardingSphereDatabase.class);
+        DatabaseType usedDatabaseProtocolType = mock(DatabaseType.class);
+        when(usedDatabaseProtocolType.getType()).thenReturn("MySQL");
+        when(usedDatabaseProtocolType.getTrunkDatabaseType()).thenReturn(Optional.empty());
+        when(usedDatabase.getProtocolType()).thenReturn(usedDatabaseProtocolType);
+        when(preparedStatement.getUsedDatabase()).thenReturn(usedDatabase);
+        ShardingSphereResultSet preparedResultSet = new ShardingSphereResultSet(getResultSets(), mergeResultSet, preparedStatement, createSQLStatementContext());
+        when(mergeResultSet.getValue(1, Integer.class)).thenReturn("123");
+        assertThat(preparedResultSet.getObject(1, Integer.class), is(123));
     }
     
     @Test
