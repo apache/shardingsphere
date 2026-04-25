@@ -29,6 +29,7 @@
     
     <modules>
         <module>features</module>
+        <module>test-fixture</module>
         <module>core</module>
         <module>bootstrap</module>
     </modules>

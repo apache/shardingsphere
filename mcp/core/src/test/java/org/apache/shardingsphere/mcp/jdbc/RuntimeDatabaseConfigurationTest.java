@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.jdbc;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;

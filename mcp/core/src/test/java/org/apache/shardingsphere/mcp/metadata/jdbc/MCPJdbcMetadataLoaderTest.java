@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.metadata.jdbc;
 
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
@@ -26,6 +25,8 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeConfigurationTestSupport;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -75,7 +76,7 @@ class MCPJdbcMetadataLoaderTest {
     void assertLoad() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertThat(actual.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("H2"));
         assertFalse(actual.findMetadata("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
     }
@@ -85,7 +86,7 @@ class MCPJdbcMetadataLoaderTest {
     void assertLoadWithTypedMetadata(final String name, final SupportedMCPMetadataObjectType objectType, final String objectName) throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-" + objectName);
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl)));
         assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), objectType, objectName));
     }
     
@@ -96,7 +97,8 @@ class MCPJdbcMetadataLoaderTest {
         H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
         H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
-                "logic_db", createRuntimeDatabaseConfiguration(firstJdbcUrl), "analytics_db", createRuntimeDatabaseConfiguration(secondJdbcUrl));
+                "logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(firstJdbcUrl),
+                "analytics_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(secondJdbcUrl));
         LoadedMetadataCatalog actual = load(connectionConfigs);
         assertThat(actual.getDatabaseMetadataMap().size(), is(2));
         assertTrue(actual.findMetadata("analytics_db").isPresent());
@@ -177,7 +179,7 @@ class MCPJdbcMetadataLoaderTest {
     void assertLoadWithSchemaRegisteredOnce() throws SQLException {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-shared-schema");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", createRuntimeDatabaseConfiguration(jdbcUrl)));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl)));
         MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
@@ -367,10 +369,6 @@ class MCPJdbcMetadataLoaderTest {
         } finally {
             DriverManager.deregisterDriver(mockDriver);
         }
-    }
-    
-    private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
-        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
     
     private LoadedMetadataCatalog load(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {

@@ -21,9 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -55,18 +55,39 @@ public final class MCPBootstrapTestDataFactory {
      */
     public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Path tempDir) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(2, 1F);
-        result.put("logic_db", createRuntimeDatabaseConfiguration(tempDir, "logic_db", "logic-db"));
-        result.put("runtime_db", createRuntimeDatabaseConfiguration(tempDir, "runtime_db", "runtime-db"));
+        result.put("logic_db", createInitializedRuntimeDatabaseConfiguration(tempDir, "logic-db"));
+        result.put("runtime_db", createInitializedRuntimeDatabaseConfiguration(tempDir, "runtime-db"));
         return result;
     }
     
-    private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final Path tempDir, final String logicalDatabase, final String storageDatabase) {
+    /**
+     * Create runtime databases for one prepared H2 runtime.
+     *
+     * @param logicalDatabase logical database
+     * @param jdbcUrl JDBC URL
+     * @return runtime databases
+     */
+    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String logicalDatabase, final String jdbcUrl) {
+        return Map.of(logicalDatabase, createRuntimeDatabaseConfiguration(jdbcUrl));
+    }
+    
+    /**
+     * Create one H2 runtime database configuration.
+     *
+     * @param jdbcUrl JDBC URL
+     * @return runtime database configuration
+     */
+    public static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
+        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
+    }
+    
+    private static RuntimeDatabaseConfiguration createInitializedRuntimeDatabaseConfiguration(final Path tempDir, final String storageDatabase) {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, storageDatabase);
         try {
             H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         } catch (final SQLException ex) {
             throw new IllegalStateException("Failed to initialize bootstrap test database.", ex);
         }
-        return H2RuntimeTestSupport.createRuntimeDatabases(logicalDatabase, jdbcUrl).get(logicalDatabase);
+        return createRuntimeDatabaseConfiguration(jdbcUrl);
     }
 }

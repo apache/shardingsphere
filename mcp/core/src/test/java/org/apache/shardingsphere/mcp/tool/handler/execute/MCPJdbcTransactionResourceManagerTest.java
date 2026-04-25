@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeConfigurationTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,8 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
@@ -223,15 +223,15 @@ class MCPJdbcTransactionResourceManagerTest {
     
     @Test
     void assertCloseSession() throws SQLException {
-        String jdbcUrl = String.format("jdbc:h2:file:%s;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", tempDir.resolve("resource-close").toAbsolutePath());
-        initializeDatabase(jdbcUrl);
+        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "resource-close");
+        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
         manager.beginTransaction("session-1", "logic_db");
         try (Statement statement = manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new).createStatement()) {
             statement.execute("UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1");
         }
         manager.closeSession("session-1");
-        assertThat(querySingleString(jdbcUrl), is("NEW"));
+        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
     }
     
     @Test
@@ -247,36 +247,7 @@ class MCPJdbcTransactionResourceManagerTest {
     
     private MCPJdbcTransactionResourceManager createResourceManager(final Map<String, String> jdbcUrls) {
         return new MCPJdbcTransactionResourceManager(jdbcUrls.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> new RuntimeDatabaseConfiguration("H2", entry.getValue(), "", "", "org.h2.Driver"))));
-    }
-    
-    private void initializeDatabase(final String jdbcUrl) throws SQLException {
-        executeStatements(jdbcUrl,
-                "CREATE SCHEMA IF NOT EXISTS public",
-                "SET SCHEMA public",
-                "CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)",
-                "MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (1, 'NEW', 10)",
-                "MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (2, 'DONE', 20)");
-    }
-    
-    private void executeStatements(final String jdbcUrl, final String... sqls) throws SQLException {
-        try (
-                Connection connection = DriverManager.getConnection(jdbcUrl);
-                Statement statement = connection.createStatement()) {
-            for (String each : sqls) {
-                statement.execute(each);
-            }
-        }
-    }
-    
-    private String querySingleString(final String jdbcUrl) throws SQLException {
-        try (
-                Connection connection = DriverManager.getConnection(jdbcUrl);
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT status FROM public.orders WHERE order_id = 1")) {
-            resultSet.next();
-            return resultSet.getString(1);
-        }
+                .collect(Collectors.toMap(Entry::getKey, entry -> H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(entry.getValue()))));
     }
     
     private static Stream<Arguments> assertFindTransactionConnectionCases() {

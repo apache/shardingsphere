@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.MCPBootstrapTestDataFactory;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
@@ -43,7 +44,7 @@ class StreamableHttpMetadataDiscoveryIT extends AbstractStreamableHttpIT {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        return Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
+        return MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
     @Test

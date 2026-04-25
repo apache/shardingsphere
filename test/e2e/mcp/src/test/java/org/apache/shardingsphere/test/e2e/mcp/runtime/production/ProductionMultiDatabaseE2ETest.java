@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeConfigurationTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -47,8 +48,6 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
     private static final String LOGIC_DATABASE_NAME = "logic_db";
     
     private static final String ANALYTICS_DATABASE_NAME = "analytics_db";
-    
-    private static final String H2_DRIVER_CLASS_NAME = "org.h2.Driver";
     
     private String firstJdbcUrl;
     
@@ -135,7 +134,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
     }
     
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl) {
-        return new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", H2_DRIVER_CLASS_NAME);
+        return H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(databaseType, jdbcUrl);
     }
     
     private void openAndCloseInteractionClient(final String firstDatabaseType, final String secondDatabaseType) {

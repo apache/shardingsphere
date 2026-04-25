@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.bootstrap.fixture;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 
 import java.nio.file.Path;
 import java.sql.Connection;

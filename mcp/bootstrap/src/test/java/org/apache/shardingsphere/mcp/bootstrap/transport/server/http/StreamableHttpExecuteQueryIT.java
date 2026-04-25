@@ -17,17 +17,14 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.MCPBootstrapTestDataFactory;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,7 +44,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        return Map.of("logic_db", new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver"));
+        return MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
     @Test
@@ -79,7 +76,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PROCESSING' WHERE order_id = 1"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("COMMIT"));
-        assertThat(querySingleString(jdbcUrl), is("PROCESSING"));
+        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PROCESSING"));
     }
     
     @Test
@@ -88,7 +85,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         assertThat(sendDeleteRequest(session.httpClient(), session.sessionId(), session.accessToken()).statusCode(), is(200));
-        assertThat(querySingleString(jdbcUrl), is("NEW"));
+        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
     }
     
     @Test
@@ -97,7 +94,7 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("BEGIN"));
         callToolAndGetStructuredContent(session, "execute_query", createExecuteQueryArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
         stopRuntime();
-        assertThat(querySingleString(jdbcUrl), is("NEW"));
+        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
     }
     
     @Test
@@ -111,15 +108,5 @@ class StreamableHttpExecuteQueryIT extends AbstractStreamableHttpIT {
     
     private Map<String, Object> createExecuteQueryArguments(final String sql) {
         return Map.of("database", "logic_db", "schema", "public", "sql", sql);
-    }
-    
-    private String querySingleString(final String jdbcUrl) throws SQLException {
-        try (
-                Connection connection = DriverManager.getConnection(jdbcUrl);
-                Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT status FROM public.orders WHERE order_id = 1")) {
-            resultSet.next();
-            return resultSet.getString(1);
-        }
     }
 }

@@ -39,11 +39,24 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mcp-core</artifactId>
+            <artifactId>shardingsphere-mcp-test-fixture</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mcp-feature-encrypt</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-mcp-feature-mask</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
         <dependency>
             <groupId>io.modelcontextprotocol.sdk</groupId>
             <artifactId>mcp-core</artifactId>
@@ -83,18 +96,6 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mcp-feature-encrypt</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mcp-feature-mask</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

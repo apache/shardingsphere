@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.MCPBootstrapTestDataFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -230,7 +231,7 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
         } catch (final SQLException ex) {
             throw new IllegalStateException(ex);
         }
-        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
+        return MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

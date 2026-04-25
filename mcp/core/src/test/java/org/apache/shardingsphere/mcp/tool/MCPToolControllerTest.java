@@ -19,11 +19,12 @@ package org.apache.shardingsphere.mcp.tool;
 
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.jdbc.H2RuntimeConfigurationTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -141,7 +142,7 @@ class MCPToolControllerTest {
         String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "tool-controller");
         H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
         Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(ResourceTestDataFactory.createRuntimeDatabases());
-        runtimeDatabases.put("logic_db", H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl).get("logic_db"));
+        runtimeDatabases.put("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl));
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases));
         runtimeContext.getSessionManager().createSession("session-1");
         return new MCPToolController(runtimeContext);

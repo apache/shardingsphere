@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeConfigurationTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -57,7 +58,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
-        return H2RuntimeTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
+        return H2RuntimeConfigurationTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
     
     @ParameterizedTest(name = "{0}")

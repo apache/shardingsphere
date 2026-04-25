@@ -272,7 +272,7 @@ bin\start.bat conf\mcp-stdio.yaml
 
 ## Feature SPI 结构
 
-当前 MCP 子链路按 `features + core + bootstrap` 分层组织：
+当前 MCP 子链路按 `features + test-fixture + core + bootstrap` 分层组织：
 
 - `mcp/features/spi`
   - 定义 feature SPI、workflow 公共模型、descriptor 与共享 issue / response 语义
@@ -280,6 +280,8 @@ bin\start.bat conf\mcp-stdio.yaml
   - 提供 encrypt MCP tools、resources 与 workflow 实现
 - `mcp/features/mask`
   - 提供 mask MCP tools、resources 与 workflow 实现
+- `mcp/test-fixture`
+  - 提供 core、bootstrap、E2E 共享的测试专用 H2 fixture；它不会进入正式打包运行时，也不能依赖 `mcp/core`
 - `mcp/core`
   - 提供 capability、metadata、session、execute-query 与通用 runtime 能力
 - `mcp/bootstrap`

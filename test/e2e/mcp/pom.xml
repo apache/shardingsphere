@@ -53,9 +53,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-mcp-core</artifactId>
+            <artifactId>shardingsphere-mcp-test-fixture</artifactId>
             <version>${project.version}</version>
-            <type>test-jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
