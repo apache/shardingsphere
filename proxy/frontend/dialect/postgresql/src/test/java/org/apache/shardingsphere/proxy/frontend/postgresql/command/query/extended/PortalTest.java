@@ -51,6 +51,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.SQLStatement;
@@ -115,6 +116,9 @@ class PortalTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getCurrentDatabaseName()).thenReturn("foo_db");
+        RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(requiredSessionVariableRecorder);
+        when(connectionSession.getRequiredSessionVariableRecorder().getVariable("timezone")).thenReturn("UTC");
         ConnectionContext connectionContext = mock(ConnectionContext.class);
         when(connectionContext.getCurrentDatabaseName()).thenReturn(Optional.of("foo_db"));
         when(connectionSession.getConnectionContext()).thenReturn(connectionContext);
@@ -159,6 +163,32 @@ class PortalTest {
         assertThat(actualPackets.get(0), isA(PostgreSQLDataRowPacket.class));
         assertThat(actualPackets.get(1), isA(PostgreSQLDataRowPacket.class));
         assertThat(actualPackets.get(2), isA(PostgreSQLCommandCompletePacket.class));
+    }
+    
+    @Test
+    void assertExecuteBeforeDescribe() throws SQLException {
+        QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.VARCHAR, "columnTypeName", 0, 0, false, false, false, false);
+        QueryHeader intColumnQueryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
+        when(responseHeader.getQueryHeaders()).thenReturn(Arrays.asList(queryHeader, intColumnQueryHeader));
+        when(proxyBackendHandler.execute()).thenReturn(responseHeader);
+        when(proxyBackendHandler.next()).thenReturn(true, true, false);
+        when(proxyBackendHandler.getRowData()).thenReturn(
+                new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
+                new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
+        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(new SelectStatement(databaseType));
+        when(sqlStatementContext.getTablesContext().getDatabaseName()).thenReturn(Optional.empty());
+        Portal portal = createPortal(sqlStatementContext, Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
+        
+        List<DatabasePacket> actualPackets = portal.execute(2);
+        assertThat(actualPackets.size(), is(3));
+        Iterator<DatabasePacket> actualPacketsIterator = actualPackets.iterator();
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLDataRowPacket.class));
+        assertThat(actualPacketsIterator.next(), isA(PostgreSQLPortalSuspendedPacket.class));
+        assertThat(portal.getColumnTypes(), is(Arrays.asList(Types.VARCHAR, Types.INTEGER)));
+        assertThat(portal.describe(), isA(PostgreSQLRowDescriptionPacket.class));
     }
     
     @Test

@@ -67,8 +67,14 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     @Getter
     private volatile ResponseType responseType;
     
+    @Getter
+    private Collection<Integer> columnTypes;
+    
+    private ConnectionSession connectionSession;
+    
     public OpenGaussComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
+        this.connectionSession = connectionSession;
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
         SQLStatement sqlStatement = ProxySQLComQueryParser.parse(packet.getSQL(), databaseType, connectionSession);
         proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(databaseType, packet.getSQL(), sqlStatement, connectionSession, packet.getHintValueContext());
@@ -92,7 +98,9 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
+        columnTypes = new LinkedList<>();
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
+            columnTypes.add(each.getColumnType());
             result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
         }
         return result;
@@ -126,7 +134,15 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData());
+        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData(), columnTypes, extractSessionTimeZone(connectionSession));
+    }
+    
+    private static String extractSessionTimeZone(final ConnectionSession connectionSession) {
+        if (null == connectionSession) {
+            return "UTC";
+        }
+        return connectionSession.getRequiredSessionVariableRecorder()
+                .getVariable("timezone");
     }
     
     @Override

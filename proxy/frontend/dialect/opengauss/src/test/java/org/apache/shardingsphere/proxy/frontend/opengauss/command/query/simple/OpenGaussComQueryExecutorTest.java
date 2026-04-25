@@ -35,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
@@ -87,10 +88,12 @@ class OpenGaussComQueryExecutorTest {
     
     private OpenGaussComQueryExecutor queryExecutor;
     
+    @Mock
+    private ConnectionSession connectionSession;
+    
     @BeforeEach
     void setUp() throws SQLException {
         databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
-        ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(queryPacket.getSQL()).thenReturn("sql");
         when(queryPacket.getHintValueContext()).thenReturn(new HintValueContext());
         SQLStatement sqlStatement = mock(SQLStatement.class);
@@ -115,6 +118,17 @@ class OpenGaussComQueryExecutorTest {
         PostgreSQLColumnDescription actualColumn = (PostgreSQLColumnDescription) columnDescriptions.iterator().next();
         assertThat(actualColumn.getColumnName(), is("label"));
         assertThat(actualColumn.getColumnIndex(), is(1));
+    }
+    
+    @Test
+    void assertExecuteQueryCreatesColumnType() throws SQLException {
+        QueryHeader queryHeader = new QueryHeader("schema", "table", "label", "column", 1, "type", 2, 3, true, true, true, true);
+        QueryResponseHeader queryResponseHeader = mock(QueryResponseHeader.class);
+        when(queryResponseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
+        when(proxyBackendHandler.execute()).thenReturn(queryResponseHeader);
+        queryExecutor.execute();
+        assertThat(queryExecutor.getColumnTypes(), is(Collections.singletonList(1)));
+        
     }
     
     @Test
@@ -178,6 +192,9 @@ class OpenGaussComQueryExecutorTest {
     
     @Test
     void assertGetQueryRowPacket() throws SQLException {
+        RequiredSessionVariableRecorder recorder = mock(RequiredSessionVariableRecorder.class);
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(recorder);
+        when(recorder.getVariable("timezone")).thenReturn("UTC");
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(new LinkedList<>()));
         assertThat(queryExecutor.getQueryRowPacket(), is(isA(PostgreSQLDataRowPacket.class)));
     }

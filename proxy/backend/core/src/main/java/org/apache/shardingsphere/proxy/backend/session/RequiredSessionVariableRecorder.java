@@ -47,6 +47,16 @@ public final class RequiredSessionVariableRecorder {
     }
     
     /**
+     * Get variable.
+     *
+     * @param variableName variable name
+     * @return variable value
+     */
+    public String getVariable(final String variableName) {
+        return sessionVariables.get(variableName);
+    }
+    
+    /**
      * Return true if no session variable was set.
      *
      * @return true if no session variable was set

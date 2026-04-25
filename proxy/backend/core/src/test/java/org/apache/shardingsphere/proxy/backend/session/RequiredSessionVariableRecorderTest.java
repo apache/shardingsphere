@@ -26,6 +26,7 @@ import java.util.HashSet;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RequiredSessionVariableRecorderTest {
@@ -41,6 +42,8 @@ class RequiredSessionVariableRecorderTest {
         recorder.setVariable("max_sort_length", "1024");
         recorder.setVariable("@variable_name", "'variable_value'");
         assertFalse(recorder.isEmpty());
+        assertNull(recorder.getVariable("timestamp"));
+        assertThat(recorder.getVariable("max_sort_length"), is("1024"));
         assertThat(recorder.toSetSQLs(databaseType), is(Collections.singletonList("SET sql_mode=default,@variable_name='variable_value',max_sort_length=1024")));
         assertThat(recorder.toResetSQLs(databaseType), is(Collections.singletonList("SET sql_mode=DEFAULT,@variable_name=NULL,max_sort_length=DEFAULT")));
         assertThat(recorder.toResetSQLs(databaseType), is(Collections.singletonList("SET sql_mode=DEFAULT,@variable_name=NULL,max_sort_length=DEFAULT")));

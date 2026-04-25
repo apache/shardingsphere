@@ -37,6 +37,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PortalContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.VariableAssignSegment;
@@ -192,6 +193,9 @@ class PostgreSQLComQueryExecutorTest {
     @Test
     void assertGetQueryRowPacket() throws SQLException {
         when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.emptyList()));
+        RequiredSessionVariableRecorder requiredSessionVariableRecorder = mock(RequiredSessionVariableRecorder.class);
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(requiredSessionVariableRecorder);
+        when(connectionSession.getRequiredSessionVariableRecorder().getVariable("timezone")).thenReturn("UTC");
         PostgreSQLPacket actual = queryExecutor.getQueryRowPacket();
         assertThat(actual, is(isA(PostgreSQLDataRowPacket.class)));
     }
