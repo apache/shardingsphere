@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback.replay;
+package org.apache.shardingsphere.database.connector.core.statement;
+
+import org.apache.shardingsphere.database.connector.core.spi.DatabaseTypedSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
- * Prepared statement parameters replay callback.
+ * Dialect prepared statement parameter replayer.
+ * SPI for replaying parameters on PreparedStatement with database-specific handling.
  */
-public interface PreparedStatementParametersReplayCallback {
+@SingletonSPI
+public interface DialectPreparedStatementParameterReplayer extends DatabaseTypedSPI {
     
     /**
-     * Replay to set prepared statement parameters.
+     * Replay parameter on prepared statement.
      *
-     * @param preparedStatement prepared statement
-     * @param params parameters
-     * @param originalBatchIndex original batch index from addBatch calls, used to retrieve correct parameter metadata
+     * @param preparedStatement target prepared statement
+     * @param parameter parameter to replay
      * @throws SQLException SQL exception
      */
-    void replay(PreparedStatement preparedStatement, List<Object> params, int originalBatchIndex) throws SQLException;
+    void replay(PreparedStatement preparedStatement, PreparedStatementParameter parameter) throws SQLException;
 }

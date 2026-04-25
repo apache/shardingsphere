@@ -15,24 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback.replay;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
+package org.apache.shardingsphere.database.connector.core.statement;
 
 /**
- * Prepared statement parameters replay callback.
+ * Setter method type for prepared statement parameters.
  */
-public interface PreparedStatementParametersReplayCallback {
+public enum SetterMethodType {
     
-    /**
-     * Replay to set prepared statement parameters.
-     *
-     * @param preparedStatement prepared statement
-     * @param params parameters
-     * @param originalBatchIndex original batch index from addBatch calls, used to retrieve correct parameter metadata
-     * @throws SQLException SQL exception
-     */
-    void replay(PreparedStatement preparedStatement, List<Object> params, int originalBatchIndex) throws SQLException;
+    SET_OBJECT,
+    
+    SET_NULL,
+    
+    SET_BLOB,
+    
+    SET_BLOB_INPUT_STREAM,
+    
+    SET_CLOB,
+    
+    SET_CLOB_READER,
+    
+    SET_BINARY_STREAM,
+    
+    SET_ASCII_STREAM,
+    
+    SET_CHARACTER_STREAM,
+    
+    SET_BYTES
 }

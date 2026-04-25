@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.executor.callback.replay;
+package org.apache.shardingsphere.database.connector.core.statement;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
+import java.sql.PreparedStatement;
 
 /**
- * Prepared statement parameters replay callback.
+ * Default prepared statement parameter replayer.
+ * Keeps the original ShardingSphere behavior: use setObject for all parameters.
  */
-public interface PreparedStatementParametersReplayCallback {
+public final class DefaultPreparedStatementParameterReplayer implements DialectPreparedStatementParameterReplayer {
     
-    /**
-     * Replay to set prepared statement parameters.
-     *
-     * @param preparedStatement prepared statement
-     * @param params parameters
-     * @param originalBatchIndex original batch index from addBatch calls, used to retrieve correct parameter metadata
-     * @throws SQLException SQL exception
-     */
-    void replay(PreparedStatement preparedStatement, List<Object> params, int originalBatchIndex) throws SQLException;
+    @Override
+    public void replay(final PreparedStatement preparedStatement, final PreparedStatementParameter parameter) throws SQLException {
+        preparedStatement.setObject(parameter.getIndex(), parameter.getValue());
+    }
+    
+    @Override
+    public String getDatabaseType() {
+        return null;
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }

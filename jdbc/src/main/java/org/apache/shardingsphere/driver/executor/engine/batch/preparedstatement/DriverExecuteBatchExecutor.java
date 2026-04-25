@@ -146,8 +146,11 @@ public final class DriverExecuteBatchExecutor {
     
     private void setBatchParameters(final PreparedStatementParametersReplayCallback replayCallback) throws SQLException {
         for (Statement each : batchPreparedStatementExecutor.getStatements()) {
-            for (List<Object> eachParams : batchPreparedStatementExecutor.getParameterSet(each)) {
-                replayCallback.replay((PreparedStatement) each, eachParams);
+            List<List<Object>> parameterSets = batchPreparedStatementExecutor.getParameterSet(each);
+            List<Integer> originalBatchIndices = batchPreparedStatementExecutor.getOriginalBatchIndices(each);
+            for (int i = 0; i < parameterSets.size(); i++) {
+                int originalBatchIndex = i < originalBatchIndices.size() ? originalBatchIndices.get(i) : i;
+                replayCallback.replay((PreparedStatement) each, parameterSets.get(i), originalBatchIndex);
                 ((PreparedStatement) each).addBatch();
             }
         }
