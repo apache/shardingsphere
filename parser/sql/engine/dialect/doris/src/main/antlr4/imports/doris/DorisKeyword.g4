@@ -2364,6 +2364,16 @@ RESOURCE
     : R E S O U R C E
     ;
 
+// DORIS ADDED BEGIN
+RESOURCES
+    : R E S O U R C E S
+    ;
+
+RESOURCETYPE
+    : R E S O U R C E T Y P E
+    ;
+// DORIS ADDED END
+
 RESPECT
     : R E S P E C T
     ;

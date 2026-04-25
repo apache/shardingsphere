@@ -495,6 +495,8 @@
     <sql-case id="select_format_function_oracle" value="SELECT FORMAT('abc', '999') FROM dual" db-types="Oracle" />
     <sql-case id="select_first_value_oracle" value="SELECT FIRST_VALUE(salary) OVER (ORDER BY salary) FROM employees" db-types="Oracle" />
     <sql-case id="select_datetime_lbe_literal_oracle" value="SELECT {ts '2020-02-02 10:00:00'} FROM dual" db-types="Oracle" />
+    <sql-case id="select_resources_as_identifier_doris" value="SELECT resources FROM t_resources" db-types="Doris" />
+    <sql-case id="select_resourcetype_as_identifier_doris" value="SELECT resourcetype FROM t_resourcetype" db-types="Doris" />
     <sql-case id="select_plan_as_identifier_doris" value="SELECT plan FROM t_plan" db-types="Doris" />
     <sql-case id="select_replayer_as_identifier_doris" value="SELECT replayer FROM t_replayer" db-types="Doris" />
     <sql-case id="select_play_as_quoted_identifier_doris" value="SELECT `play` FROM t_play" db-types="Doris" />
