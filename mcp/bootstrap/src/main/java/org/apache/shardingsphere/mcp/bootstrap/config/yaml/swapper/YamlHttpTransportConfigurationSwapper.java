@@ -47,8 +47,7 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         String bindHost = resolveBindHost(yamlConfig.getBindHost());
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
         String accessToken = resolveAccessToken(yamlConfig.getAccessToken());
-        return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()),
-                resolveEndpointPath(yamlConfig.getEndpointPath()));
+        return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
     }
     
     private String resolveBindHost(final String bindHost) {
