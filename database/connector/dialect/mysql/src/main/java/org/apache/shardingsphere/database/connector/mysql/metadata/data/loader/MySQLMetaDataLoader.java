@@ -206,7 +206,10 @@ public final class MySQLMetaDataLoader implements DialectMetaDataLoader {
     }
     
     private String getDatabaseName(final Connection connection, final Collection<String> tableNames) throws SQLException {
-        return "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : connection.getCatalog();
+        String catalog = connection.getCatalog();
+        return (null == catalog || catalog.isEmpty())
+                ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next())
+                : catalog;
     }
     
     @Override
