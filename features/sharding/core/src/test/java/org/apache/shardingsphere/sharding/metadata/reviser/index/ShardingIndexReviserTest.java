@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.sharding.metadata.reviser.index;
 
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.metadata.data.model.IndexMetaData;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
+import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 import org.junit.jupiter.api.Test;
@@ -35,17 +38,47 @@ import static org.mockito.Mockito.when;
 
 class ShardingIndexReviserTest {
     
+    private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "PostgreSQL");
+    
     @Test
     void assertReviseWithEmptyActualDataNode() {
         assertThat(new ShardingIndexReviser(mock(ShardingTable.class)).revise("foo_tbl", new IndexMetaData("foo_idx"), mock(ShardingRule.class)), is(Optional.empty()));
     }
     
     @Test
-    void assertReviseWithActualDataNodes() {
-        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable()).revise("tbl_0", new IndexMetaData("foo_idx", Collections.singletonList("foo_col")), mock(ShardingRule.class));
+    void assertReviseWithHashedActualIndexName() {
+        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
+                .revise("tbl_0", new IndexMetaData(IndexMetaDataUtils.getActualIndexName("named_index_boundary_case_abcdefghijklmnopqrstuvwxyz", "tbl_0", databaseType),
+                        Collections.singletonList("foo_col")), mock(ShardingRule.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("named_index_boundary_case_abcdefghijklmnopqrstuvwxyz"));
+        assertThat(actual.get().getColumns().size(), is(1));
+    }
+    
+    @Test
+    void assertReviseWithLegacyActualIndexName() {
+        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
+                .revise("tbl_0", new IndexMetaData(IndexMetaDataUtils.getLegacyActualIndexName("foo_idx", "tbl_0"), Collections.singletonList("foo_col")), mock(ShardingRule.class));
         assertTrue(actual.isPresent());
         assertThat(actual.get().getName(), is("foo_idx"));
-        assertThat(actual.get().getColumns().size(), is(1));
+    }
+    
+    @Test
+    void assertReviseWithLegacyActualIndexNameForSecondActualTable() {
+        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
+                .revise("tbl_1", new IndexMetaData(IndexMetaDataUtils.getLegacyActualIndexName("foo_idx", "tbl_1"), Collections.singletonList("foo_col")), mock(ShardingRule.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is("foo_idx"));
+    }
+    
+    @Test
+    void assertReviseWithTruncatedAnonymousActualIndexName() {
+        String logicIndexName = "very_long_status_column_name_for_sharding_rewrite_validation_account_identifier_idx";
+        Optional<IndexMetaData> actual = new ShardingIndexReviser(mockShardingTable())
+                .revise("tbl_0", new IndexMetaData(IndexMetaDataUtils.getActualIndexName(logicIndexName, "tbl_0", databaseType),
+                        Arrays.asList("very_long_status_column_name_for_sharding_rewrite_validation", "account_identifier")), mock(ShardingRule.class));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get().getName(), is(logicIndexName));
     }
     
     private static ShardingTable mockShardingTable() {

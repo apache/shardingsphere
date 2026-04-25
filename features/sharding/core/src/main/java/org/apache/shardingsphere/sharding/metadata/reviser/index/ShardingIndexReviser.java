@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.ShardingTable;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Sharding index reviser.
@@ -39,9 +40,21 @@ public final class ShardingIndexReviser implements IndexReviser<ShardingRule> {
         if (shardingTable.getActualDataNodes().isEmpty()) {
             return Optional.empty();
         }
+        String actualTableName = tableName;
+        String logicIndexName = IndexMetaDataUtils.getGeneratedLogicIndexName(originalMetaData.getName(), actualTableName);
+        if (!IndexMetaDataUtils.isGeneratedActualIndexNameMatch(originalMetaData.getName(), logicIndexName, actualTableName)) {
+            String generatedAnonymousIndexName = getGeneratedAnonymousIndexName(originalMetaData);
+            if (IndexMetaDataUtils.isGeneratedActualIndexNameMatch(originalMetaData.getName(), generatedAnonymousIndexName, actualTableName)) {
+                logicIndexName = generatedAnonymousIndexName;
+            }
+        }
         IndexMetaData result = new IndexMetaData(
-                IndexMetaDataUtils.getLogicIndexName(originalMetaData.getName(), shardingTable.getActualDataNodes().iterator().next().getTableName()), originalMetaData.getColumns());
+                logicIndexName, originalMetaData.getColumns());
         result.setUnique(originalMetaData.isUnique());
         return Optional.of(result);
+    }
+    
+    private String getGeneratedAnonymousIndexName(final IndexMetaData originalMetaData) {
+        return originalMetaData.getColumns().stream().map(each -> each + "_").collect(Collectors.joining("", "", "idx"));
     }
 }

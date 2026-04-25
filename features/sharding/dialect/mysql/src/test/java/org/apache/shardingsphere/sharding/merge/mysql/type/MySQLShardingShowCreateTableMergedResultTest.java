@@ -23,8 +23,10 @@ import org.apache.shardingsphere.infra.binder.context.statement.SQLStatementCont
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereConstraint;
+import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtils;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -132,6 +134,29 @@ class MySQLShardingShowCreateTableMergedResultTest {
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin"));
     }
     
+    @Test
+    void assertGetValueWithLegacyIndexName() throws SQLException {
+        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
+                rule, mock(SQLStatementContext.class), createSchemaWithIndex(),
+                Collections.singletonList(mockQueryResultWithIndex(IndexMetaDataUtils.getLegacyActualIndexName("foo_idx", "foo_tbl_0"))));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
+                + "  `id` int(11) NOT NULL,\n"
+                + "  KEY `foo_idx` (`id`)\n"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin"));
+    }
+    
+    @Test
+    void assertGetValueWithShortenedIndexName() throws SQLException {
+        MySQLShardingShowCreateTableMergedResult actual = new MySQLShardingShowCreateTableMergedResult(
+                rule, mock(SQLStatementContext.class), createSchemaWithIndex(), Collections.singletonList(mockQueryResultWithIndex(IndexMetaDataUtils.getActualIndexName("foo_idx", "foo_tbl_0"))));
+        assertTrue(actual.next());
+        assertThat(actual.getValue(2, String.class), is("CREATE TABLE `foo_tbl` (\n"
+                + "  `id` int(11) NOT NULL,\n"
+                + "  KEY `foo_idx` (`id`)\n"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin"));
+    }
+    
     private QueryResult mockQueryResultWithoutTableRule() throws SQLException {
         QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getColumnCount()).thenReturn(2);
@@ -145,6 +170,24 @@ class MySQLShardingShowCreateTableMergedResultTest {
                 + "  `created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n"
                 + "  PRIMARY KEY (`id`),\n"
                 + "  CONSTRAINT `foo_tbl_foreign_key` FOREIGN KEY (`bar_id`) REFERENCES `bar_tbl` (`bar_id`) \n"
+                + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
+        return result;
+    }
+    
+    private ShardingSphereSchema createSchemaWithIndex() {
+        ShardingSphereTable table =
+                new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.singleton(new ShardingSphereIndex("foo_idx", Collections.emptyList(), false)), Collections.emptyList());
+        return new ShardingSphereSchema("foo_db", mock(DatabaseType.class), Collections.singleton(table), Collections.emptyList());
+    }
+    
+    private QueryResult mockQueryResultWithIndex(final String actualIndexName) throws SQLException {
+        QueryResult result = mock(QueryResult.class, RETURNS_DEEP_STUBS);
+        when(result.getMetaData().getColumnCount()).thenReturn(2);
+        when(result.next()).thenReturn(true, false);
+        when(result.getValue(1, Object.class)).thenReturn("foo_tbl_0");
+        when(result.getValue(2, Object.class)).thenReturn("CREATE TABLE `foo_tbl_0` (\n"
+                + "  `id` int(11) NOT NULL,\n"
+                + "  KEY `" + actualIndexName + "` (`id`)\n"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin");
         return result;
     }
