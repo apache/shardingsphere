@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sqlfederation.compiler.metadata.schema.SQLFeder
 import org.apache.shardingsphere.sqlfederation.compiler.rel.converter.SQLFederationRelConverter;
 import org.apache.shardingsphere.sqlfederation.compiler.sql.function.mysql.MySQLOperatorTable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,7 +55,9 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
 
 class SQLStatementCompilerIT {
@@ -239,6 +242,14 @@ class SQLStatementCompilerIT {
                 realColumn, doubleColumn, numericColumn, decimalColumn, charColumn, varcharColumn, longVarcharColumn, dateColumn, timeColumn, timeStampColumn, binaryColumn,
                 varBinaryColumn, longVarbinaryColumn),
                 Collections.emptyList(), Collections.emptyList());
+    }
+    
+    @Test
+    void assertCompileWhenCorrelatedInSubqueryProjectsOuterColumn() {
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(TypedSPILoader.getService(DatabaseType.class, "MySQL"))
+                .parse("SELECT o.order_id FROM t_order o WHERE o.user_id IN (SELECT o.user_id FROM t_order_item i)", false);
+        String actual = assertDoesNotThrow(() -> sqlStatementCompiler.compile(sqlStatement, "MySQL").getPhysicalPlan().explain().replaceAll(System.lineSeparator(), " "));
+        assertThat(actual, containsString("EnumerableScan(table=[[federate_jdbc, t_order_item]], sql=[SELECT * FROM `federate_jdbc`.`t_order_item`]"));
     }
     
     @ParameterizedTest(name = "{0}")
