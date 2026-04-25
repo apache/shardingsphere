@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command.query.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 
 import java.util.LinkedHashMap;
@@ -61,7 +62,7 @@ public final class FirebirdFetchStatementCache {
      * @param proxyBackendHandler proxy backend handler
      */
     public void registerStatement(final int connectionId, final int statementId, final ProxyBackendHandler proxyBackendHandler) {
-        statementRegistry.get(connectionId).put(statementId, proxyBackendHandler);
+        getRegisteredStatements(connectionId).put(statementId, proxyBackendHandler);
     }
     
     /**
@@ -72,7 +73,7 @@ public final class FirebirdFetchStatementCache {
      * @return fetch response packets
      */
     public ProxyBackendHandler getFetchBackendHandler(final int connectionId, final int statementId) {
-        return statementRegistry.get(connectionId).get(statementId);
+        return getRegisteredStatements(connectionId).get(statementId);
     }
     
     /**
@@ -82,7 +83,7 @@ public final class FirebirdFetchStatementCache {
      * @param statementId statement ID
      */
     public void unregisterStatement(final int connectionId, final int statementId) {
-        statementRegistry.get(connectionId).remove(statementId);
+        getRegisteredStatements(connectionId).remove(statementId);
     }
     
     /**
@@ -90,7 +91,22 @@ public final class FirebirdFetchStatementCache {
      *
      * @param connectionId connection ID
      */
+    @SneakyThrows
     public void unregisterConnection(final int connectionId) {
-        statementRegistry.remove(connectionId);
+        Map<Integer, ProxyBackendHandler> statements = statementRegistry.remove(connectionId);
+        if (null == statements) {
+            return;
+        }
+        for (ProxyBackendHandler entry : statements.values()) {
+            entry.close();
+        }
+    }
+    
+    private Map<Integer, ProxyBackendHandler> getRegisteredStatements(final int connectionId) {
+        Map<Integer, ProxyBackendHandler> result = statementRegistry.get(connectionId);
+        if (null == result) {
+            throw new IllegalStateException("No fetch statement cache found for connectionId: " + connectionId);
+        }
+        return result;
     }
 }

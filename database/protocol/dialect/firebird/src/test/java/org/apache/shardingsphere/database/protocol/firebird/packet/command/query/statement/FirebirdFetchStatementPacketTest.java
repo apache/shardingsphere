@@ -22,6 +22,7 @@ import org.apache.shardingsphere.database.protocol.firebird.packet.command.query
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.BlrConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdFetchStatementPacketTest {
@@ -48,6 +50,11 @@ class FirebirdFetchStatementPacketTest {
     
     @Mock
     private ByteBuf byteBuf;
+    
+    @BeforeEach
+    void setUp() {
+        lenient().when(byteBuf.duplicate()).thenReturn(byteBuf);
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertFetchStatementPacketArguments")

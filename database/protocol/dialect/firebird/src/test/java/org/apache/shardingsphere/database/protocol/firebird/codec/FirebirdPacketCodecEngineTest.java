@@ -73,6 +73,7 @@ class FirebirdPacketCodecEngineTest {
     void setUp() {
         when(context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
         when(context.channel().attr(FirebirdConstant.CONNECTION_PROTOCOL_VERSION).get()).thenReturn(FirebirdProtocolVersion.PROTOCOL_VERSION10);
+        when(context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).get()).thenReturn(1);
         when(context.alloc().compositeBuffer(anyInt())).thenAnswer(invocation -> Unpooled.compositeBuffer(invocation.getArgument(0)));
     }
     
@@ -225,13 +226,13 @@ class FirebirdPacketCodecEngineTest {
     
     private MockedStatic<FirebirdCommandPacketFactory> mockExpectedLength(final int expectedLength) {
         MockedStatic<FirebirdCommandPacketFactory> result = mockStatic(FirebirdCommandPacketFactory.class);
-        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any())).thenReturn(expectedLength);
+        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any(), anyInt())).thenReturn(expectedLength);
         return result;
     }
     
     private MockedStatic<FirebirdCommandPacketFactory> mockExpectedLengthException() {
         MockedStatic<FirebirdCommandPacketFactory> result = mockStatic(FirebirdCommandPacketFactory.class);
-        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any())).thenThrow(IndexOutOfBoundsException.class);
+        result.when(() -> FirebirdCommandPacketFactory.getExpectedLength(any(), any(), any(), anyInt())).thenThrow(IndexOutOfBoundsException.class);
         return result;
     }
     

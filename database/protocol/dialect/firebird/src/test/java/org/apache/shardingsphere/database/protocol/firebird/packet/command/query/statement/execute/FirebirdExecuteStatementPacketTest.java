@@ -18,12 +18,15 @@
 package org.apache.shardingsphere.database.protocol.firebird.packet.command.query.statement.execute;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.FirebirdProtocolVersion;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.FirebirdBinaryColumnType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdBlobRegistry;
 import org.apache.shardingsphere.database.protocol.firebird.payload.FirebirdPacketPayload;
 import org.apache.shardingsphere.database.protocol.payload.PacketPayload;
 import org.firebirdsql.gds.BlrConstants;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,6 +45,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 @ExtendWith(MockitoExtension.class)
 class FirebirdExecuteStatementPacketTest {
@@ -51,6 +55,14 @@ class FirebirdExecuteStatementPacketTest {
     
     @Mock
     private ByteBuf byteBuf;
+    
+    @BeforeEach
+    void setUp() {
+        FirebirdBlobRegistry.clearSegment();
+        lenient().when(byteBuf.duplicate()).thenReturn(byteBuf);
+        lenient().when(byteBuf.alloc()).thenReturn(UnpooledByteBufAllocator.DEFAULT);
+        lenient().when(payload.getByteBuf()).thenReturn(byteBuf);
+    }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteStatementPacketArguments")
@@ -100,6 +112,7 @@ class FirebirdExecuteStatementPacketTest {
         when(byteBuf.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(byteBuf.skipBytes(anyInt())).thenReturn(byteBuf);
         when(returnBlr.isReadable()).thenReturn(true);
+        when(returnBlr.duplicate()).thenReturn(returnBlr);
         when(returnBlr.readUnsignedByte()).thenReturn((short) 5, (short) 0, (short) BlrConstants.blr_long, (short) BlrConstants.blr_end);
         when(returnBlr.skipBytes(anyInt())).thenReturn(returnBlr);
         when(payload.readInt4Unsigned()).thenReturn(30L, 1L, 1024L);
@@ -151,7 +164,7 @@ class FirebirdExecuteStatementPacketTest {
                 Arguments.of("skip_count_2", (short) BlrConstants.blr_text, FirebirdBinaryColumnType.LEGACY_TEXT, null),
                 Arguments.of("skip_count_1", (short) BlrConstants.blr_long, FirebirdBinaryColumnType.LONG, 123),
                 Arguments.of("skip_count_0", (short) BlrConstants.blr_bool, FirebirdBinaryColumnType.BOOLEAN, 0),
-                Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, 0L));
+                Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, null));
     }
     
     private static Stream<Arguments> assertIsStoredProcedureArguments() {

@@ -29,4 +29,6 @@ import org.apache.shardingsphere.database.protocol.firebird.constant.protocol.Fi
 public final class FirebirdConstant {
     
     public static final AttributeKey<FirebirdProtocolVersion> CONNECTION_PROTOCOL_VERSION = AttributeKey.valueOf("FIREBIRD_CONNECTION_PROTOCOL_VERSION");
+    
+    public static final AttributeKey<Integer> CURRENT_CONNECTION = AttributeKey.valueOf("FIREBIRD_CURRENT_CONNECTION");
 }

@@ -20,6 +20,9 @@ package org.apache.shardingsphere.proxy.frontend.firebird.command;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.FirebirdCommandPacketType;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCancelCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchCreateCommandPacket;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchExecuteCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCancelBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCloseBlobCommandPacket;
 import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.blob.FirebirdCreateBlobCommandPacket;
@@ -40,13 +43,17 @@ import org.apache.shardingsphere.database.protocol.packet.command.CommandPacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.admin.FirebirdUnsupportedCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchCancelCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdBatchExecuteCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdCreateBatchCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.batch.FirebirdSendBatchMessageCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCancelBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCloseBlobCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCreateBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdGetBlobSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdOpenBlobCommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdPutBlobSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdSeekBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdPutBlobSegmentCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdCloseBlobCommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.executors.FirebirdGetBlobSegmentCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdBlobInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdDatabaseInfoExecutor;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.info.FirebirdSQLInfoExecutor;
@@ -114,6 +121,14 @@ public final class FirebirdCommandExecutorFactory {
                 return new FirebirdRollbackTransactionCommandExecutor((FirebirdRollbackTransactionPacket) commandPacket, connectionSession);
             case FREE_STATEMENT:
                 return new FirebirdFreeStatementCommandExecutor((FirebirdFreeStatementPacket) commandPacket, connectionSession);
+            case BATCH_CREATE:
+                return new FirebirdCreateBatchCommandExecutor((FirebirdBatchCreateCommandPacket) commandPacket, connectionSession);
+            case BATCH_MSG:
+                return new FirebirdSendBatchMessageCommandExecutor();
+            case BATCH_EXEC:
+                return new FirebirdBatchExecuteCommandExecutor((FirebirdBatchExecuteCommandPacket) commandPacket, connectionSession);
+            case BATCH_CANCEL:
+                return new FirebirdBatchCancelCommandExecutor((FirebirdBatchCancelCommandPacket) commandPacket, connectionSession);
             default:
                 return new FirebirdUnsupportedCommandExecutor();
         }

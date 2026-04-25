@@ -49,6 +49,7 @@ import org.apache.shardingsphere.proxy.frontend.connection.ConnectionIdGenerator
 import org.apache.shardingsphere.proxy.frontend.firebird.authentication.authenticator.FirebirdAuthenticatorType;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.FirebirdBlobIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.blob.upload.FirebirdBlobUploadCache;
+import org.apache.shardingsphere.database.protocol.firebird.packet.command.query.batch.FirebirdBatchRegistry;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.FirebirdStatementIdGenerator;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.statement.fetch.FirebirdFetchStatementCache;
 import org.apache.shardingsphere.proxy.frontend.firebird.command.query.transaction.FirebirdTransactionIdGenerator;
@@ -70,11 +71,13 @@ public final class FirebirdAuthenticationEngine implements AuthenticationEngine 
     @Override
     public int handshake(final ChannelHandlerContext context) {
         connectionId = ConnectionIdGenerator.getInstance().nextId();
+        context.channel().attr(FirebirdConstant.CURRENT_CONNECTION).set(connectionId);
         FirebirdTransactionIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdStatementIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdBlobIdGenerator.getInstance().registerConnection(connectionId);
         FirebirdBlobUploadCache.getInstance().registerConnection(connectionId);
         FirebirdFetchStatementCache.getInstance().registerConnection(connectionId);
+        FirebirdBatchRegistry.getInstance().registerConnection(connectionId);
         return connectionId;
     }
     
