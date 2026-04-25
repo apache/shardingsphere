@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * STDIO MCP test client backed by one child process.
  */
+@SuppressWarnings("UseOfProcessBuilder")
 final class StdioTransportTestClient implements AutoCloseable {
     
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;

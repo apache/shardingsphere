@@ -17,26 +17,25 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.transport.client;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionProcessSupport;
 
+import java.io.IOException;
 import java.nio.file.Path;
 
 /**
  * Packaged distribution STDIO MCP interaction client.
  */
+@RequiredArgsConstructor
 public final class PackagedDistributionStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
     
     private final Path distributionHome;
     
     private final Path configFile;
     
-    public PackagedDistributionStdioInteractionClient(final Path distributionHome, final Path configFile) {
-        this.distributionHome = distributionHome;
-        this.configFile = configFile;
-    }
-    
     @Override
-    protected ProcessBuilder createProcessBuilder() {
+    protected ProcessBuilder createProcessBuilder() throws IOException {
+        PackagedDistributionProcessSupport.prepareRuntimeLayout(distributionHome, configFile);
         return PackagedDistributionProcessSupport.createProcessBuilder(distributionHome, configFile);
     }
     

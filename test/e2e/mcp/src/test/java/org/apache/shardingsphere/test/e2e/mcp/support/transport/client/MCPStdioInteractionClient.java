@@ -27,6 +27,7 @@ import java.nio.file.Paths;
 /**
  * STDIO MCP interaction client backed by one child process.
  */
+@SuppressWarnings("UseOfProcessBuilder")
 public final class MCPStdioInteractionClient extends AbstractProcessMCPStdioInteractionClient {
     
     private static final String CLIENT_NAME = "mcp-e2e-stdio";
