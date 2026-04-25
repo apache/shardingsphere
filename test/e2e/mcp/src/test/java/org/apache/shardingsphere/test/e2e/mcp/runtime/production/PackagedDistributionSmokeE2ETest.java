@@ -46,7 +46,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@EnabledOnOs({OS.LINUX, OS.MAC})
+@EnabledOnOs({OS.LINUX, OS.MAC, OS.WINDOWS})
 @EnabledIf("isEnabled")
 class PackagedDistributionSmokeE2ETest {
     

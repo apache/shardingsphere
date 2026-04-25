@@ -37,15 +37,20 @@ cd "${DIST_DIR}"
 bin/start.sh
 ```
 
+```bat
+cd /d "%DIST_DIR%"
+bin\start.bat
+```
+
 Notes:
 
-- `bin/start.sh` runs in the foreground. Keep this terminal open and use a second terminal for the `curl` commands below.
+- `bin/start.sh` and `bin\start.bat` run in the foreground. Keep this terminal open and use a second terminal for the `curl` commands below.
 - The packaged runtime reads `conf/mcp.yaml` and `conf/logback.xml`.
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
 - `conf/mcp.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`, `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
 - Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
-- `bin/start.sh` validates the config file, runtime libraries, and Java availability before startup, creates `data/`, `logs/`, and `plugins/`, then starts from the package root so relative runtime paths resolve consistently.
+- `bin/start.sh` and `bin\start.bat` validate the config file, runtime libraries, and Java availability before startup, create `data/`, `logs/`, and `plugins/`, then start from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
 - The bundled demo runtime exposes two logical databases named `orders` and `billing`, both backed by the packaged H2 driver and seed data under `data/`.
 
@@ -228,6 +233,10 @@ The packaged runtime now ships `conf/mcp-stdio.yaml` out of the box. Start with 
 bin/start.sh conf/mcp-stdio.yaml
 ```
 
+```bat
+bin\start.bat conf\mcp-stdio.yaml
+```
+
 Notes:
 
 - The process still runs in the foreground.
@@ -247,7 +256,7 @@ Reference:
 - For real deployments, replace the `runtimeDatabases` block with your own logical database mapping and JDBC connection properties. Each logical database entry must declare its own required runtime fields; schema discovery now comes from JDBC metadata, and legacy `runtime.*` aliases are no longer supported.
 - `driverClassName` is optional for JDBC 4 drivers that auto-register through `DriverManager`. Keep it only when your target driver requires an explicit override.
 - The packaged distribution keeps the official MCP baseline jars, including encrypt and mask, under `lib/`.
-- If your target database driver or an extra MCP feature jar is not already packaged, copy that jar under `plugins/` before running `bin/start.sh`.
+- If your target database driver or an extra MCP feature jar is not already packaged, copy that jar under `plugins/` before running `bin/start.sh` or `bin\start.bat`.
 - If you embed `shardingsphere-mcp-bootstrap` directly instead of using the packaged distribution, add the feature jars you need to that runtime classpath explicitly.
 - Exactly one transport must be enabled for each runtime process.
 - For local-only HTTP usage, keep `transport.http.enabled: true` and `transport.stdio.enabled: false`.
@@ -258,8 +267,8 @@ Reference:
 - Non-loopback `bindHost` values also require a non-blank `transport.http.accessToken`, so remote HTTP is not exposed anonymously.
 - The built-in access token is a deployment-level shared secret, not a login or per-user credential.
 - Even with the built-in access token enabled, keep externally exposed endpoints behind a trusted network, gateway, or reverse proxy.
-- To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml`.
-- To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`.
+- To start with a custom configuration file, run `bin/start.sh /path/to/mcp.yaml` on Unix-like systems or `bin\start.bat path\to\mcp.yaml` on Windows.
+- To tune the JVM for local experiments, use `JAVA_OPTS`, for example `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh` on Unix-like systems or `set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat` on Windows.
 
 ## Feature SPI Layout
 

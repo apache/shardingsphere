@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +35,12 @@ import java.util.concurrent.TimeUnit;
 public final class PackagedDistributionProcessSupport implements AutoCloseable {
     
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
+    
+    private static final String WINDOWS_COMMAND_FLAG = "/c";
+    
+    private static final String WINDOWS_COMMAND_INTERPRETER = "cmd.exe";
+    
+    private static final String WINDOWS_OS_NAME_PREFIX = "windows";
     
     private final ProcessBuilder processBuilder;
     
@@ -65,10 +72,23 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
      * @return process builder
      */
     public static ProcessBuilder createProcessBuilder(final Path distributionHome, final Path configFile) {
-        ProcessBuilder result = new ProcessBuilder(distributionHome.resolve("bin/start.sh").toString(), configFile.toString());
+        ProcessBuilder result = new ProcessBuilder(createCommand(distributionHome, configFile, System.getProperty("os.name", ""), resolveWindowsCommandInterpreter()));
         result.directory(distributionHome.toFile());
         result.environment().put("JAVA_HOME", System.getProperty("java.home"));
         return result;
+    }
+    
+    static List<String> createCommand(final Path distributionHome, final Path configFile, final String osName, final String windowsCommandInterpreter) {
+        Path startScript = resolveStartScript(distributionHome, osName);
+        return isWindows(osName) ? List.of(windowsCommandInterpreter, WINDOWS_COMMAND_FLAG, startScript.toString(), configFile.toString()) : List.of(startScript.toString(), configFile.toString());
+    }
+    
+    static Path resolveStartScript(final Path distributionHome) {
+        return resolveStartScript(distributionHome, System.getProperty("os.name", ""));
+    }
+    
+    static Path resolveStartScript(final Path distributionHome, final String osName) {
+        return distributionHome.resolve(isWindows(osName) ? "bin/start.bat" : "bin/start.sh");
     }
     
     /**
@@ -120,6 +140,15 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
         result.setDaemon(true);
         result.start();
         return result;
+    }
+    
+    private static String resolveWindowsCommandInterpreter() {
+        String result = System.getenv("ComSpec");
+        return null == result || result.trim().isEmpty() ? WINDOWS_COMMAND_INTERPRETER : result.trim();
+    }
+    
+    private static boolean isWindows(final String osName) {
+        return osName.toLowerCase(Locale.ENGLISH).startsWith(WINDOWS_OS_NAME_PREFIX);
     }
     
     private void collectOutput(final Process process, final List<String> outputMessages) {

@@ -156,7 +156,10 @@ public final class PackagedDistributionTestSupport {
     }
     
     private static void makeStartScriptExecutable(final Path workingHome) {
-        workingHome.resolve("bin/start.sh").toFile().setExecutable(true);
+        Path startScript = workingHome.resolve("bin/start.sh");
+        if (Files.exists(startScript)) {
+            startScript.toFile().setExecutable(true);
+        }
     }
     
     private static void deleteDirectoryIfExists(final Path path) throws IOException {
@@ -204,7 +207,7 @@ public final class PackagedDistributionTestSupport {
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {
         
         public Path getStartScript() {
-            return home.resolve("bin/start.sh");
+            return PackagedDistributionProcessSupport.resolveStartScript(home);
         }
         
         public URI getEndpointUri() {

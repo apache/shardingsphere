@@ -121,7 +121,11 @@ class PackagedDistributionTestSupportTest {
             assertFalse(Files.exists(actual.home().resolve("data")));
             assertFalse(Files.exists(actual.home().resolve("logs")));
             assertFalse(Files.exists(actual.home().resolve("plugins")));
-            assertTrue(actual.getStartScript().toFile().canExecute());
+            assertThat(actual.getStartScript(), is(PackagedDistributionProcessSupport.resolveStartScript(actual.home())));
+            assertTrue(Files.exists(actual.getStartScript()));
+            if ("start.sh".equals(actual.getStartScript().getFileName().toString())) {
+                assertTrue(actual.getStartScript().toFile().canExecute());
+            }
             assertThat(actualConfig.getHttpTransport().isEnabled(), is(httpEnabled));
             assertThat(actualConfig.getStdioTransport().isEnabled(), is(stdioEnabled));
             if (httpEnabled) {
@@ -149,6 +153,7 @@ class PackagedDistributionTestSupportTest {
         Files.createDirectories(target.resolve("logs"));
         Files.createDirectories(target.resolve("plugins"));
         Files.writeString(target.resolve("bin/start.sh"), "#!/bin/sh\nexit 0\n");
+        Files.writeString(target.resolve("bin/start.bat"), "@echo off\r\nexit /b 0\r\n");
         Files.writeString(target.resolve("conf/mcp.yaml"), HTTP_CONFIGURATION);
         Files.writeString(target.resolve("conf/mcp-stdio.yaml"), STDIO_CONFIGURATION);
         return target;

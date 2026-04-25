@@ -37,15 +37,20 @@ cd "${DIST_DIR}"
 bin/start.sh
 ```
 
+```bat
+cd /d "%DIST_DIR%"
+bin\start.bat
+```
+
 说明：
 
-- `bin/start.sh` 会以前台方式运行。请保持这个终端不退出，并在第二个终端执行下面的 `curl` 命令。
+- `bin/start.sh` 和 `bin\start.bat` 都会以前台方式运行。请保持这个终端不退出，并在第二个终端执行下面的 `curl` 命令。
 - 发行包运行时会读取 `conf/mcp.yaml` 和 `conf/logback.xml`。
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
 - `conf/mcp.yaml` 现在对支持字段名采用严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、`transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
 - 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
-- `bin/start.sh` 启动前会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`plugins/` 目录，然后切到发行包根目录启动，确保相对路径可用。
+- `bin/start.sh` 和 `bin\start.bat` 启动前都会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`plugins/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
 - 内置 demo runtime 会暴露两个逻辑库 `orders` 和 `billing`，底层使用发行包自带的 H2 驱动以及 `data/` 下的种子数据。
 
@@ -228,6 +233,10 @@ STDIO 现在实现为真实的 MCP stdio transport，适用于由本地 MCP clie
 bin/start.sh conf/mcp-stdio.yaml
 ```
 
+```bat
+bin\start.bat conf\mcp-stdio.yaml
+```
+
 说明：
 
 - 进程仍然会以前台方式运行。
@@ -247,7 +256,7 @@ bin/start.sh conf/mcp-stdio.yaml
 - 如果要接真实部署，请把 `runtimeDatabases` 段替换成你自己的逻辑库映射和 JDBC 连接属性。每个逻辑库条目都需要显式声明所需的 runtime 字段；schema 发现改为依赖 JDBC metadata，legacy `runtime.*` alias 已不再支持。
 - 对支持 JDBC 4 自动注册的驱动，`driverClassName` 可以不写；只有目标驱动需要显式覆盖时再配置。
 - 发行包默认把 MCP 官方基线 jar，包括 encrypt 和 mask feature，放在 `lib/` 下。
-- 如果目标数据库驱动或额外的 MCP feature jar 没有随发行包提供，请先把对应 jar 放到 `plugins/`，再执行 `bin/start.sh`。
+- 如果目标数据库驱动或额外的 MCP feature jar 没有随发行包提供，请先把对应 jar 放到 `plugins/`，再执行 `bin/start.sh` 或 `bin\start.bat`。
 - 如果你不是用发行包，而是直接嵌入 `shardingsphere-mcp-bootstrap`，那就需要把所需 feature jar 显式加入运行时 classpath。
 - 每个 runtime 进程必须且只能启用一种 transport。
 - 如果只需要本地 HTTP 调试，保留 `transport.http.enabled: true`，并把 `transport.stdio.enabled` 设为 `false`。
@@ -258,8 +267,8 @@ bin/start.sh conf/mcp-stdio.yaml
 - 非 loopback `bindHost` 还必须配置非空的 `transport.http.accessToken`，避免 remote HTTP 以匿名方式暴露。
 - 内建 `accessToken` 是部署级共享密钥，不是登录态 token，也不是按用户划分的凭证。
 - 即使启用了内建 `accessToken`，对外暴露场景仍建议放在受信网络、上游网关或反向代理后面。
-- 如果要使用自定义配置文件启动，可以执行 `bin/start.sh /path/to/mcp.yaml`。
-- 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`。
+- 如果要使用自定义配置文件启动，Unix-like 系统可以执行 `bin/start.sh /path/to/mcp.yaml`，Windows 可以执行 `bin\start.bat path\to\mcp.yaml`。
+- 如果要调整 JVM 参数，可以使用 `JAVA_OPTS`，例如 Unix-like 系统执行 `JAVA_OPTS="-Xms256m -Xmx256m" bin/start.sh`，Windows 执行 `set "JAVA_OPTS=-Xms256m -Xmx256m" && bin\start.bat`。
 
 ## Feature SPI 结构
 
