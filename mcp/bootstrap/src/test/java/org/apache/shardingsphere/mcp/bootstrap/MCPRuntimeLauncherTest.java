@@ -26,9 +26,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
@@ -56,16 +54,12 @@ import static org.mockito.Mockito.when;
 
 class MCPRuntimeLauncherTest {
     
-    @TempDir
-    private Path tempDir;
-    
     @Test
-    void assertLaunchWithH2Runtime() throws SQLException {
-        String jdbcUrl = createInitializedH2Runtime("launcher");
+    void assertLaunchWithSingleRuntimeDatabase() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(
                 new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp"), new StdioTransportConfiguration(false),
-                        MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", jdbcUrl))));
+                        MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", MCPBootstrapTestDataFactory.createMockRuntimeDatabaseConfiguration("launcher-single")))));
         actual.stop();
     }
     
@@ -73,8 +67,8 @@ class MCPRuntimeLauncherTest {
     void assertLaunchWithRuntimeDatabases() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 0, "/mcp"),
-                new StdioTransportConfiguration(false), Map.of("logic_db", createMockRuntimeDatabaseConfiguration("launcher-first"),
-                        "analytics_db", createMockRuntimeDatabaseConfiguration("launcher-second")))));
+                new StdioTransportConfiguration(false), Map.of("logic_db", MCPBootstrapTestDataFactory.createMockRuntimeDatabaseConfiguration("launcher-first"),
+                        "analytics_db", MCPBootstrapTestDataFactory.createMockRuntimeDatabaseConfiguration("launcher-second")))));
         actual.stop();
     }
     
@@ -90,7 +84,8 @@ class MCPRuntimeLauncherTest {
     void assertLaunchWithStdioTransport() {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         MCPRuntimeServer actual = assertDoesNotThrow(() -> runtimeLauncher.launch(new MCPLaunchConfiguration(new HttpTransportConfiguration(false, "127.0.0.1", false, "", 0, "/mcp"),
-                new StdioTransportConfiguration(true), MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", createMockRuntimeDatabaseConfiguration("launcher-stdio")))));
+                new StdioTransportConfiguration(true), MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db",
+                        MCPBootstrapTestDataFactory.createMockRuntimeDatabaseConfiguration("launcher-stdio")))));
         assertThat(actual, isA(StdioMCPServer.class));
         actual.stop();
     }
@@ -116,7 +111,8 @@ class MCPRuntimeLauncherTest {
         MCPRuntimeLauncher runtimeLauncher = new MCPRuntimeLauncher();
         IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> runtimeLauncher.launch(
                 new MCPLaunchConfiguration(new HttpTransportConfiguration(true, "0.0.0.0", true, "", 0, "/mcp"), new StdioTransportConfiguration(false),
-                        MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", createMockRuntimeDatabaseConfiguration("launcher-remote-http")))));
+                        MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db",
+                                MCPBootstrapTestDataFactory.createMockRuntimeDatabaseConfiguration("launcher-remote-http")))));
         assertThat(actual.getMessage(), is("Property `transport.http.accessToken` must not be blank when remote HTTP access is enabled."));
     }
     
@@ -128,24 +124,6 @@ class MCPRuntimeLauncherTest {
                         Map.of("logic_db", MCPBootstrapTestDataFactory.createRuntimeDatabaseConfiguration(
                                 "MySQL", BootstrapMockRuntimeDriver.createJdbcUrl("launcher-mismatched-type"), BootstrapMockRuntimeDriver.class.getName())))));
         assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
-    }
-    
-    private RuntimeDatabaseConfiguration createMockRuntimeDatabaseConfiguration(final String databaseName) {
-        return MCPBootstrapTestDataFactory.createRuntimeDatabaseConfiguration(
-                "H2", BootstrapMockRuntimeDriver.createJdbcUrl(databaseName), BootstrapMockRuntimeDriver.class.getName());
-    }
-    
-    private String createInitializedH2Runtime(final String databaseName) throws SQLException {
-        String jdbcUrl = String.format("jdbc:h2:file:%s;MODE=MySQL;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false", tempDir.resolve(databaseName).toAbsolutePath());
-        try (
-                Connection connection = DriverManager.getConnection(jdbcUrl);
-                Statement statement = connection.createStatement()) {
-            statement.execute("CREATE SCHEMA IF NOT EXISTS public");
-            statement.execute("SET SCHEMA public");
-            statement.execute("CREATE TABLE IF NOT EXISTS orders (order_id INT PRIMARY KEY, status VARCHAR(32), amount INT)");
-            statement.execute("MERGE INTO orders (order_id, status, amount) KEY (order_id) VALUES (1, 'NEW', 10)");
-        }
-        return jdbcUrl;
     }
     
     private static final class CountingDriver implements Driver {

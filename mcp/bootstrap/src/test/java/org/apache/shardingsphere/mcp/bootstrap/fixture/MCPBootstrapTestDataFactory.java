@@ -68,27 +68,6 @@ public final class MCPBootstrapTestDataFactory {
     }
     
     /**
-     * Create runtime databases for one prepared H2 runtime.
-     *
-     * @param logicalDatabase logical database
-     * @param jdbcUrl JDBC URL
-     * @return runtime databases
-     */
-    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String logicalDatabase, final String jdbcUrl) {
-        return createRuntimeDatabases(logicalDatabase, createRuntimeDatabaseConfiguration(jdbcUrl));
-    }
-    
-    /**
-     * Create one H2 runtime database configuration.
-     *
-     * @param jdbcUrl JDBC URL
-     * @return runtime database configuration
-     */
-    public static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String jdbcUrl) {
-        return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
-    }
-    
-    /**
      * Create one runtime database configuration.
      *
      * @param databaseType database type
