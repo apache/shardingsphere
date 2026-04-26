@@ -88,6 +88,7 @@ class ImportDatabaseConfigurationExecutorTest {
     private static Stream<Arguments> importSuccessCases() {
         return Stream.of(
                 Arguments.of("import sharding", "sharding_db", "/conf/import/database-sharding.yaml"),
+                Arguments.of("import single", "single_db", "/conf/import/database-single.yaml"),
                 Arguments.of("import readwrite splitting", "readwrite_splitting_db", "/conf/import/database-readwrite-splitting.yaml"),
                 Arguments.of("import encrypt", "encrypt_db", "/conf/import/database-encrypt.yaml"),
                 Arguments.of("import shadow", "shadow_db", "/conf/import/database-shadow.yaml"),

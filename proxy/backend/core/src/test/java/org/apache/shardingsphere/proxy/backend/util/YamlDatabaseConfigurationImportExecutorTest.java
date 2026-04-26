@@ -48,6 +48,8 @@ import org.apache.shardingsphere.mode.persist.service.MetaDataManagerPersistServ
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.single.config.SingleRuleConfiguration;
+import org.apache.shardingsphere.single.rule.SingleRule;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.AutoMockExtension;
 import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockSettings;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -78,6 +81,7 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -197,6 +201,97 @@ class YamlDatabaseConfigurationImportExecutorTest {
             assertThat(storageUnits.get("foo_ds"), is(mockedConstruction.constructed().get(0)));
         }
         assertThat(rules, is(Collections.singletonList(expectedRule)));
+        ArgumentCaptor<Collection<RuleConfiguration>> ruleConfigsCaptor = ArgumentCaptor.forClass(Collection.class);
+        verify(databaseRulePersistService).persist(eq("foo_db"), ruleConfigsCaptor.capture());
+        assertThat(ruleConfigsCaptor.getValue(), is(Collections.singletonList(ruleConfig)));
+    }
+    
+    @Test
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    void assertImportDatabaseConfigurationReplacesDefaultSingleRule() {
+        Map<String, StorageUnit> storageUnits = new HashMap<>(1, 1F);
+        LinkedList<ShardingSphereRule> rules = new LinkedList<>();
+        SingleRule existedRule = mock(SingleRule.class);
+        when(existedRule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
+        rules.add(existedRule);
+        mockMetaDataContexts(mockDatabase(storageUnits, rules), new ConfigurationProperties(new Properties()));
+        MetaDataManagerPersistService metaDataManagerService = mock(MetaDataManagerPersistService.class);
+        when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
+        DatabaseRulePersistService databaseRulePersistService = mock(DatabaseRulePersistService.class);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
+        DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
+        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
+        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
+        when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        ruleConfig.setDefaultDataSource("foo_ds");
+        YamlRuleConfiguration yamlRuleConfig = mock(YamlRuleConfiguration.class);
+        when(yamlRuleConfig.getRuleConfigurationType()).thenReturn((Class) SingleRuleConfiguration.class);
+        YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
+        when(swapper.swapToObject(yamlRuleConfig)).thenReturn(ruleConfig);
+        when(swapper.getOrder()).thenReturn(1);
+        when(OrderedSPILoader.getServicesByClass(eq(YamlRuleConfigurationSwapper.class), anyCollection())).thenReturn(Collections.singletonMap(SingleRuleConfiguration.class, swapper));
+        when(OrderedSPILoader.getServicesByClass(eq(DatabaseRuleConfigurationChecker.class), anyCollection())).thenReturn(Collections.singletonMap(SingleRuleConfiguration.class, null));
+        DatabaseRuleBuilder builder = mock(DatabaseRuleBuilder.class);
+        SingleRule importedRule = mock(SingleRule.class);
+        when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(importedRule);
+        when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
+        YamlProxyDatabaseConfiguration yamlConfig = createYamlConfiguration();
+        yamlConfig.setRules(Collections.singletonList(yamlRuleConfig));
+        try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
+            executor.importDatabaseConfiguration(yamlConfig);
+        }
+        assertThat(rules, contains(importedRule));
+        ArgumentCaptor<Collection<RuleConfiguration>> ruleConfigsCaptor = ArgumentCaptor.forClass(Collection.class);
+        verify(databaseRulePersistService).persist(eq("foo_db"), ruleConfigsCaptor.capture());
+        assertThat(ruleConfigsCaptor.getValue(), is(Collections.singletonList(ruleConfig)));
+    }
+    
+    @Test
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    void assertImportDatabaseConfigurationWhenSingleRuleCreatedDuringStorageUnitRegistration() {
+        Map<String, StorageUnit> storageUnits = new HashMap<>(1, 1F);
+        LinkedList<ShardingSphereRule> rules = new LinkedList<>();
+        mockMetaDataContexts(mockDatabase(storageUnits, rules), new ConfigurationProperties(new Properties()));
+        MetaDataManagerPersistService metaDataManagerService = mock(MetaDataManagerPersistService.class);
+        when(contextManager.getPersistServiceFacade().getModeFacade().getMetaDataManagerService()).thenReturn(metaDataManagerService);
+        SingleRule existedRule = mock(SingleRule.class);
+        when(existedRule.getConfiguration()).thenReturn(new SingleRuleConfiguration());
+        doAnswer(invocation -> {
+            rules.add(existedRule);
+            return null;
+        }).when(metaDataManagerService).registerStorageUnits(eq("foo_db"), anyMap());
+        DatabaseRulePersistService databaseRulePersistService = mock(DatabaseRulePersistService.class);
+        when(contextManager.getPersistServiceFacade().getMetaDataFacade().getDatabaseRuleService()).thenReturn(databaseRulePersistService);
+        DataSourceConfiguration dataSourceConfig = mock(DataSourceConfiguration.class);
+        when(dataSourceConfigSwapper.swap(any(YamlProxyDataSourceConfiguration.class))).thenReturn(dataSourceConfig);
+        DataSourcePoolProperties poolProperties = mock(DataSourcePoolProperties.class, RETURNS_DEEP_STUBS);
+        when(DataSourcePoolPropertiesCreator.create(dataSourceConfig)).thenReturn(poolProperties);
+        when(StorageUnitNodeMapCreator.create(anyMap(), anyBoolean())).thenReturn(Collections.singletonMap("foo_ds", mock(StorageNode.class)));
+        when(DataSourcePoolCreator.create(poolProperties)).thenReturn(mock(DataSource.class));
+        when(DatabaseTypeEngine.getProtocolType(anyMap(), any(ConfigurationProperties.class))).thenReturn(mock(DatabaseType.class));
+        SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
+        ruleConfig.setDefaultDataSource("foo_ds");
+        YamlRuleConfiguration yamlRuleConfig = mock(YamlRuleConfiguration.class);
+        when(yamlRuleConfig.getRuleConfigurationType()).thenReturn((Class) SingleRuleConfiguration.class);
+        YamlRuleConfigurationSwapper swapper = mock(YamlRuleConfigurationSwapper.class);
+        when(swapper.swapToObject(yamlRuleConfig)).thenReturn(ruleConfig);
+        when(swapper.getOrder()).thenReturn(1);
+        when(OrderedSPILoader.getServicesByClass(eq(YamlRuleConfigurationSwapper.class), anyCollection())).thenReturn(Collections.singletonMap(SingleRuleConfiguration.class, swapper));
+        when(OrderedSPILoader.getServicesByClass(eq(DatabaseRuleConfigurationChecker.class), anyCollection())).thenReturn(Collections.singletonMap(SingleRuleConfiguration.class, null));
+        DatabaseRuleBuilder builder = mock(DatabaseRuleBuilder.class);
+        SingleRule importedRule = mock(SingleRule.class);
+        when(builder.build(eq(ruleConfig), anyString(), any(DatabaseType.class), any(ResourceMetaData.class), anyCollection(), any())).thenReturn(importedRule);
+        when(OrderedSPILoader.getServices(DatabaseRuleBuilder.class, Collections.singleton(ruleConfig))).thenReturn(Collections.singletonMap(ruleConfig, builder));
+        YamlProxyDatabaseConfiguration yamlConfig = createYamlConfiguration();
+        yamlConfig.setRules(Collections.singletonList(yamlRuleConfig));
+        try (MockedConstruction<StorageUnit> ignored = mockConstruction(StorageUnit.class)) {
+            executor.importDatabaseConfiguration(yamlConfig);
+        }
+        assertThat(rules, contains(importedRule));
         ArgumentCaptor<Collection<RuleConfiguration>> ruleConfigsCaptor = ArgumentCaptor.forClass(Collection.class);
         verify(databaseRulePersistService).persist(eq("foo_db"), ruleConfigsCaptor.capture());
         assertThat(ruleConfigsCaptor.getValue(), is(Collections.singletonList(ruleConfig)));
