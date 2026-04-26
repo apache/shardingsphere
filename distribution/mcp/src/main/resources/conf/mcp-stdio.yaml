@@ -1,0 +1,40 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+transport:
+  http:
+    enabled: false
+    bindHost: 127.0.0.1
+    allowRemoteAccess: false
+    port: 18088
+    endpointPath: /mcp
+  stdio:
+    enabled: true
+
+runtimeDatabases:
+  # Replace this demo runtime block for real deployments.
+  # For non-H2 databases, add the JDBC driver jar under plugins/ before startup.
+  orders:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-orders;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    username: ""
+    password: ""
+    driverClassName: org.h2.Driver
+  billing:
+    databaseType: H2
+    jdbcUrl: "jdbc:h2:file:./data/mcp-demo-billing;MODE=MySQL;DATABASE_TO_UPPER=false;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'conf/demo-h2.sql'"
+    username: ""
+    password: ""
+    driverClassName: org.h2.Driver

@@ -608,11 +608,27 @@ Check [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/
 docker logout
 ```
 
+3.8 ShardingSphere MCP publication
+
+ShardingSphere MCP is published through the repository workflow [`.github/workflows/mcp-build.yml`](https://github.com/apache/shardingsphere/blob/master/.github/workflows/mcp-build.yml).
+The workflow builds the MCP distribution, pushes `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}` to GHCR,
+pushes `latest` for stable releases, and then publishes `mcp/server.json` to the official MCP Registry through GitHub OIDC.
+
 ### 4. Publish release on GitHub
 
 Click `Draft a new release` in [GitHub Releases](https://github.com/apache/shardingsphere/releases).
 
 Edit release version and release notes, select `Set as the latest release`, click `Publish release`.
+
+After the GitHub release is published:
+
+- wait for the `MCP - Build` workflow to finish successfully
+- confirm [GitHub Packages](https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-mcp) contains `ghcr.io/apache/shardingsphere-mcp:${RELEASE.VERSION}`
+- confirm the official MCP Registry returns the published metadata:
+
+```shell
+curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.apache/shardingsphere-mcp"
+```
 
 ### 5. Remove previous release from Release Area
 

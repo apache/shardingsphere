@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.spi.type.ordered.cache.OrderedServicesCac
 import org.apache.shardingsphere.mode.event.DataChangedEvent.Type;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.changed.RuleItemChangedNodePathBuilder;
-import org.apache.shardingsphere.mode.metadata.manager.ActiveVersionChecker;
 import org.apache.shardingsphere.mode.metadata.manager.MetaDataContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.metadata.refresher.util.TableRefreshUtils;
@@ -48,7 +47,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -220,12 +218,9 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     
     private void alterRuleItem(final String databaseName, final Collection<MetaDataVersion> metaDataVersions) {
         RuleItemChangedNodePathBuilder ruleItemChangedNodePathBuilder = new RuleItemChangedNodePathBuilder();
-        ActiveVersionChecker activeVersionChecker = new ActiveVersionChecker(metaDataPersistFacade.getRepository());
         for (MetaDataVersion each : metaDataVersions) {
-            Optional<DatabaseRuleNodePath> databaseRuleNodePath = ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath(), Type.UPDATED);
-            if (databaseRuleNodePath.isPresent() && activeVersionChecker.checkSame(new VersionNodePath(databaseRuleNodePath.get()), each.getActiveVersion())) {
-                metaDataContextManager.getDatabaseRuleItemManager().alter(databaseRuleNodePath.get());
-            }
+            ruleItemChangedNodePathBuilder.build(databaseName, new VersionNodePath(each.getNodePath()).getActiveVersionPath(), Type.UPDATED)
+                    .ifPresent(optional -> metaDataContextManager.getDatabaseRuleItemManager().alter(optional));
         }
     }
     

@@ -68,8 +68,8 @@ class FirebirdConnectionPropertiesParserTest {
         public Stream<? extends Arguments> provideArguments(final ParameterDeclarations parameters, final ExtensionContext context) {
             return Stream.of(
                     Arguments.of("simple_first", "jdbc:firebirdsql://127.0.0.1/foo_ds", "127.0.0.1", 3050, "foo_ds", null, new Properties()),
-                    Arguments.of("simple_second", "jdbc:firebird://localhost:32783//var/lib/firebird/data/demo_ds_2.fdb",
-                            "localhost", 32783, "/var/lib/firebird/data/demo_ds_2.fdb", null, new Properties()),
+                    Arguments.of("simple_second", "jdbc:firebird://localhost:32783//opt/firebird/data/demo_ds_2.fdb",
+                            "localhost", 32783, "/opt/firebird/data/demo_ds_2.fdb", null, new Properties()),
                     Arguments.of("simple_third", "jdbc:firebirdsql://localhost/database?socket_buffer_size=32767", "localhost", 3050, "database", null, PropertiesBuilder.build(
                             new Property("socketBufferSize", "32767"))),
                     Arguments.of("complex",

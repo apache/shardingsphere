@@ -26,12 +26,12 @@ class AgentPreconditionsTest {
     
     @Test
     void assertCheckStateSuccess() {
-        assertDoesNotThrow(() -> AgentPreconditions.checkState(true, "Can not locate agent jar file by URL /var/tmp."));
+        assertDoesNotThrow(() -> AgentPreconditions.checkState(true, "Can not locate agent jar file by URL /tmp."));
     }
     
     @Test
     void assertCheckStateFailed() {
-        assertThrows(IllegalStateException.class, () -> AgentPreconditions.checkState(false, "Can not locate agent jar file by URL /var/tmp."));
+        assertThrows(IllegalStateException.class, () -> AgentPreconditions.checkState(false, "Can not locate agent jar file by URL /tmp."));
     }
     
     @Test

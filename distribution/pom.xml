@@ -33,12 +33,12 @@
         <module>jdbc</module>
         <module>proxy</module>
         <module>proxy-native</module>
+        <module>mcp</module>
     </modules>
     
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
-    
     <build>
         <pluginManagement>
             <plugins>

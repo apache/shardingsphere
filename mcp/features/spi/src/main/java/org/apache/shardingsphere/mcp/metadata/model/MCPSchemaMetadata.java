@@ -1,0 +1,69 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.metadata.model;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * MCP schema metadata.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class MCPSchemaMetadata {
+    
+    private final String database;
+    
+    private final String schema;
+    
+    private final List<MCPTableMetadata> tables;
+    
+    private final List<MCPViewMetadata> views;
+    
+    private final List<MCPSequenceMetadata> sequences;
+    
+    public MCPSchemaMetadata(final String database, final String schema, final List<MCPTableMetadata> tables, final List<MCPViewMetadata> views) {
+        this(database, schema, tables, views, Collections.emptyList());
+    }
+    
+    /**
+     * Create summary.
+     *
+     * @return schema metadata summary
+     */
+    public MCPSchemaMetadata createSummary() {
+        return new MCPSchemaMetadata(database, schema, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+    }
+    
+    /**
+     * Create detail.
+     *
+     * @return schema metadata detail
+     */
+    public MCPSchemaMetadata createDetail() {
+        return new MCPSchemaMetadata(database, schema,
+                tables.stream().map(MCPTableMetadata::createSummary).sorted(Comparator.comparing(MCPTableMetadata::getTable)).collect(Collectors.toList()),
+                views.stream().map(MCPViewMetadata::createSummary).sorted(Comparator.comparing(MCPViewMetadata::getView)).collect(Collectors.toList()),
+                sequences.stream().map(MCPSequenceMetadata::createSummary).sorted(Comparator.comparing(MCPSequenceMetadata::getSequence)).collect(Collectors.toList()));
+    }
+}

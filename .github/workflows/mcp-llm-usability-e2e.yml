@@ -1,0 +1,102 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+name: MCP - LLM Usability E2E
+
+on:
+  schedule:
+    - cron: '0 19 * * 1-5'
+  workflow_dispatch:
+
+concurrency:
+  group: mcp-llm-usability-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dspotless.apply.skip=true
+  MCP_LLM_BASE_URL: http://127.0.0.1:11434/v1
+  MCP_LLM_MODEL: qwen3:1.7b
+  MCP_LLM_API_KEY: ollama
+  MCP_LLM_READY_TIMEOUT_SECONDS: '900'
+  MCP_LLM_REQUEST_TIMEOUT_SECONDS: '300'
+  MCP_LLM_ARTIFACT_ROOT: test/e2e/mcp/target/llm-e2e
+  OLLAMA_CONTAINER_NAME: ollama-mcp-llm-usability-e2e
+
+jobs:
+  global-environment:
+    name: Import Global Environment
+    uses: ./.github/workflows/required-reusable.yml
+
+  mcp-llm-usability-e2e:
+    name: MCP - LLM Usability E2E
+    if: github.repository == 'apache/shardingsphere'
+    needs: global-environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      MCP_LLM_RUN_ID: gha-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v6.0.1
+      - uses: ./.github/workflows/resources/actions/setup-build-environment
+        with:
+          java-version: '17'
+          cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
+          cache-suffix: 'mcp-llm-usability-e2e'
+          cache-save-enabled: 'false'
+          enable-docker-setup: 'true'
+      - name: Start Ollama
+        run: docker run -d --rm --name "${OLLAMA_CONTAINER_NAME}" -p 11434:11434 ollama/ollama:latest
+      - name: Wait for Ollama API
+        shell: bash
+        run: |
+          set -euo pipefail
+          for _ in {1..60}; do
+            if curl -fsS http://127.0.0.1:11434/api/tags >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Ollama API did not become ready in time." 1>&2
+          exit 1
+      - name: Pull qwen3:1.7b
+        run: docker exec "${OLLAMA_CONTAINER_NAME}" ollama pull qwen3:1.7b
+      - name: Build MCP E2E Test Dependencies
+        run: ./mvnw -pl test/e2e/mcp -am install -DskipTests -DskipITs -Dspotless.skip=true -B -ntp
+      - name: Verify MCP LLM Usability Selector
+        run: test -f test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java
+      - name: Run MCP LLM Usability Suite
+        run: ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true -Dtest=LLMUsabilitySuiteE2ETest -Dsurefire.failIfNoSpecifiedTests=true -Dmcp.e2e.llm.enabled=true -B -ntp
+      - name: Collect Ollama Logs
+        if: always()
+        shell: bash
+        run: docker logs "${OLLAMA_CONTAINER_NAME}" > "${RUNNER_TEMP}/ollama-mcp-llm-usability-e2e.log" 2>&1 || true
+      - name: Upload MCP LLM Artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: mcp-llm-usability-e2e-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            test/e2e/mcp/target/llm-e2e
+            test/e2e/mcp/target/surefire-reports
+            ${{ runner.temp }}/ollama-mcp-llm-usability-e2e.log
+          if-no-files-found: warn
+      - name: Stop Ollama
+        if: always()
+        run: docker rm -f "${OLLAMA_CONTAINER_NAME}" || true

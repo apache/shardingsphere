@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.apache/shardingsphere-mcp",
+  "title": "Apache ShardingSphere MCP",
+  "description": "Standalone MCP runtime for Apache ShardingSphere metadata and SQL access",
+  "websiteUrl": "https://github.com/apache/shardingsphere/tree/master/mcp",
+  "repository": {
+    "url": "https://github.com/apache/shardingsphere",
+    "source": "github",
+    "subfolder": "mcp"
+  },
+  "version": "5.5.4-SNAPSHOT",
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT",
+      "version": "5.5.4-SNAPSHOT",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "SHARDINGSPHERE_MCP_TRANSPORT",
+          "value": "stdio",
+          "description": "Launch the container in stdio mode for MCP clients."
+        }
+      ]
+    }
+  ]
+}
