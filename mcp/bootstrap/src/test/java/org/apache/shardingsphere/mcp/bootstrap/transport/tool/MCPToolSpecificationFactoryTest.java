@@ -28,12 +28,10 @@ import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,9 +50,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPToolSpecificationFactoryTest {
-    
-    @TempDir
-    private Path tempDir;
     
     @Test
     void assertCreateToolSpecificationsContainsExpectedBaselineToolNames() {
@@ -122,7 +117,7 @@ class MCPToolSpecificationFactoryTest {
     }
     
     private MCPToolSpecificationFactory createFactory() {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(MCPBootstrapTestDataFactory.createRuntimeDatabases(tempDir));
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(MCPBootstrapTestDataFactory.createRuntimeDatabases());
         MCPSessionManager sessionManager = new MCPSessionManager(runtimeDatabases);
         sessionManager.createSession("session-1");
         return new MCPToolSpecificationFactory(new MCPRuntimeContext(sessionManager, new MCPDatabaseCapabilityProvider(runtimeDatabases)));

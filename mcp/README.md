@@ -272,7 +272,7 @@ Reference:
 
 ## Feature SPI Layout
 
-The current MCP subchain is organized as `features + test-fixture + core + bootstrap`:
+The current MCP subchain is organized as `features + core + bootstrap`:
 
 - `mcp/features/spi`
   - defines feature SPI, shared workflow models, descriptors, and common issue / response semantics
@@ -280,8 +280,6 @@ The current MCP subchain is organized as `features + test-fixture + core + boots
   - provides encrypt MCP tools, resources, and workflow implementation
 - `mcp/features/mask`
   - provides mask MCP tools, resources, and workflow implementation
-- `mcp/test-fixture`
-  - provides shared test-only H2 fixtures for core, bootstrap, and E2E modules; it does not ship in the packaged runtime and must not depend on `mcp/core`
 - `mcp/core`
   - provides capability, metadata, session, execute-query, and shared runtime services
 - `mcp/bootstrap`

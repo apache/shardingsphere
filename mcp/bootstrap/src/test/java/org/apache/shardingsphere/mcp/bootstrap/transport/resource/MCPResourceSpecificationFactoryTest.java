@@ -26,12 +26,10 @@ import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.bootstrap.fixture.MCPBootstrapTestDataFactory;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -44,9 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class MCPResourceSpecificationFactoryTest {
-    
-    @TempDir
-    private Path tempDir;
     
     @Test
     void assertCreateResourceSpecificationsContainsExpectedBaselineResources() {
@@ -131,6 +126,6 @@ class MCPResourceSpecificationFactoryTest {
     }
     
     private MCPResourceSpecificationFactory createFactory() {
-        return new MCPResourceSpecificationFactory(MCPBootstrapTestDataFactory.createRuntimeContext(tempDir));
+        return new MCPResourceSpecificationFactory(MCPBootstrapTestDataFactory.createRuntimeContext());
     }
 }

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.BootstrapMockRuntimeDriver;
 import org.apache.shardingsphere.mcp.bootstrap.fixture.MCPBootstrapTestDataFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -225,13 +225,9 @@ class StreamableHttpTransportIT extends AbstractStreamableHttpIT {
     
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(getTempDir(), "streamable-http-runtime");
-        try {
-            H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
-        return MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db", jdbcUrl);
+        return MCPBootstrapTestDataFactory.createRuntimeDatabases("logic_db",
+                MCPBootstrapTestDataFactory.createRuntimeDatabaseConfiguration("H2",
+                        BootstrapMockRuntimeDriver.createJdbcUrl("streamable-http-runtime"), BootstrapMockRuntimeDriver.class.getName()));
     }
     
     private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,

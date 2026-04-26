@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.mcp.bootstrap.fixture;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -43,8 +44,8 @@ public final class FeatureWorkflowRuntimeTestSupport {
      * @param accessMode H2 access mode
      * @return JDBC URL
      */
-    public static String createJdbcUrl(final Path tempDir, final String databaseName, final H2RuntimeTestSupport.H2AccessMode accessMode) {
-        return FeatureDistSQLTestDriver.createJdbcUrl(H2RuntimeTestSupport.createJdbcUrl(tempDir, databaseName, accessMode));
+    public static String createJdbcUrl(final Path tempDir, final String databaseName, final H2AccessMode accessMode) {
+        return FeatureDistSQLTestDriver.createJdbcUrl(createH2JdbcUrl(tempDir, databaseName, accessMode));
     }
     
     /**
@@ -81,5 +82,23 @@ public final class FeatureWorkflowRuntimeTestSupport {
                 statement.execute(each);
             }
         }
+    }
+    
+    private static String createH2JdbcUrl(final Path tempDir, final String databaseName, final H2AccessMode accessMode) {
+        return String.format("jdbc:h2:file:%s;MODE=MySQL%s;DATABASE_TO_UPPER=false", tempDir.resolve(databaseName).toAbsolutePath(), accessMode.getJdbcParameter());
+    }
+    
+    /**
+     * H2 access mode.
+     */
+    @RequiredArgsConstructor
+    @Getter
+    public enum H2AccessMode {
+        
+        SINGLE_PROCESS(";DB_CLOSE_DELAY=-1"),
+        
+        MULTI_PROCESS(";AUTO_SERVER=TRUE");
+        
+        private final String jdbcParameter;
     }
 }

@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeConfigurationTestSupport;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;

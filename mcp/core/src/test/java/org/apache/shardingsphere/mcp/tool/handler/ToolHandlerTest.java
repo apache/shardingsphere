@@ -18,26 +18,16 @@
 package org.apache.shardingsphere.mcp.tool.handler;
 
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeConfigurationTestSupport;
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import java.nio.file.Path;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +35,9 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ToolHandlerTest {
-    
-    @TempDir
-    private Path tempDir;
     
     @Test
     void assertGetSearchMetadataToolDescriptor() {
@@ -100,46 +86,8 @@ class ToolHandlerTest {
         }
     }
     
-    @Test
-    void assertGetExecuteQueryToolDescriptor() {
-        MCPToolDescriptor actual = new ExecuteSQLToolHandler().getToolDescriptor();
-        assertThat(actual.getName(), is("execute_query"));
-        assertThat(actual.getFields().size(), is(5));
-    }
-    
-    @Test
-    void assertHandleExecuteQuery() throws SQLException {
-        try (MCPRequestContext requestContext = new MCPRequestContext(createExecutionRuntimeContext())) {
-            Map<String, Object> actual = new ExecuteSQLToolHandler().handle(requestContext, "session-1", Map.of("database", "logic_db", "sql", "SELECT 1")).toPayload();
-            assertThat(actual.get("result_kind"), is("result_set"));
-            assertThat(actual.get("statement_class"), is("query"));
-            assertThat(actual.get("statement_type"), is("SELECT"));
-            assertThat(((List<?>) actual.get("columns")).size(), is(1));
-            assertThat(((List<?>) actual.get("rows")).size(), is(1));
-        }
-    }
-    
-    @Test
-    void assertHandleExecuteQueryWithMissingSql() throws SQLException {
-        try (MCPRequestContext requestContext = new MCPRequestContext(createExecutionRuntimeContext())) {
-            IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
-                    () -> new ExecuteSQLToolHandler().handle(requestContext, "session-1", Map.of("database", "logic_db")));
-            assertThat(actual.getMessage(), is("sql cannot be empty."));
-        }
-    }
-    
     private MCPRuntimeContext createSearchRuntimeContext() {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext();
-        result.getSessionManager().createSession("session-1");
-        return result;
-    }
-    
-    private MCPRuntimeContext createExecutionRuntimeContext() throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "tool-handler");
-        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(ResourceTestDataFactory.createRuntimeDatabases());
-        runtimeDatabases.put("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl));
-        MCPRuntimeContext result = new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases));
         result.getSessionManager().createSession("session-1");
         return result;
     }

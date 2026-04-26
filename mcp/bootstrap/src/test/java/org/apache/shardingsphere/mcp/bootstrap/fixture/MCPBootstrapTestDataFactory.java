@@ -23,12 +23,9 @@ import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityPr
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
 
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.sql.SQLException;
 
 /**
  * Bootstrap test data factory.
@@ -39,25 +36,35 @@ public final class MCPBootstrapTestDataFactory {
     /**
      * Create runtime context.
      *
-     * @param tempDir temp directory
      * @return runtime context
      */
-    public static MCPRuntimeContext createRuntimeContext(final Path tempDir) {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases(tempDir);
+    public static MCPRuntimeContext createRuntimeContext() {
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases();
         return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases));
     }
     
     /**
      * Create runtime databases.
      *
-     * @param tempDir temp directory
      * @return runtime databases
      */
-    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final Path tempDir) {
+    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(2, 1F);
-        result.put("logic_db", createInitializedRuntimeDatabaseConfiguration(tempDir, "logic-db"));
-        result.put("runtime_db", createInitializedRuntimeDatabaseConfiguration(tempDir, "runtime-db"));
+        result.put("logic_db", createMockRuntimeDatabaseConfiguration("logic-db"));
+        result.put("runtime_db", createMockRuntimeDatabaseConfiguration("runtime-db"));
         return result;
+    }
+    
+    /**
+     * Create runtime databases for one prepared runtime.
+     *
+     * @param logicalDatabase logical database
+     * @param runtimeDatabaseConfiguration runtime database configuration
+     * @return runtime databases
+     */
+    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(
+                                                                                   final String logicalDatabase, final RuntimeDatabaseConfiguration runtimeDatabaseConfiguration) {
+        return Map.of(logicalDatabase, runtimeDatabaseConfiguration);
     }
     
     /**
@@ -68,7 +75,7 @@ public final class MCPBootstrapTestDataFactory {
      * @return runtime databases
      */
     public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String logicalDatabase, final String jdbcUrl) {
-        return Map.of(logicalDatabase, createRuntimeDatabaseConfiguration(jdbcUrl));
+        return createRuntimeDatabases(logicalDatabase, createRuntimeDatabaseConfiguration(jdbcUrl));
     }
     
     /**
@@ -81,13 +88,27 @@ public final class MCPBootstrapTestDataFactory {
         return new RuntimeDatabaseConfiguration("H2", jdbcUrl, "", "", "org.h2.Driver");
     }
     
-    private static RuntimeDatabaseConfiguration createInitializedRuntimeDatabaseConfiguration(final Path tempDir, final String storageDatabase) {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, storageDatabase);
-        try {
-            H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException("Failed to initialize bootstrap test database.", ex);
-        }
-        return createRuntimeDatabaseConfiguration(jdbcUrl);
+    /**
+     * Create one runtime database configuration.
+     *
+     * @param databaseType database type
+     * @param jdbcUrl JDBC URL
+     * @param driverClassName driver class name
+     * @return runtime database configuration
+     */
+    public static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(
+                                                                                  final String databaseType, final String jdbcUrl, final String driverClassName) {
+        return new RuntimeDatabaseConfiguration(databaseType, jdbcUrl, "", "", driverClassName);
+    }
+    
+    /**
+     * Create one mock runtime database configuration.
+     *
+     * @param databaseName database name
+     * @return runtime database configuration
+     */
+    public static RuntimeDatabaseConfiguration createMockRuntimeDatabaseConfiguration(final String databaseName) {
+        return createRuntimeDatabaseConfiguration("H2",
+                BootstrapMockRuntimeDriver.createJdbcUrl(databaseName), BootstrapMockRuntimeDriver.class.getName());
     }
 }

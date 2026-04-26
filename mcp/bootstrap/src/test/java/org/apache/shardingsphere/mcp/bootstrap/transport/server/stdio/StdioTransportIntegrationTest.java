@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio;
 
-import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport;
+import org.apache.shardingsphere.mcp.bootstrap.fixture.BootstrapMockRuntimeDriver;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -99,8 +98,7 @@ class StdioTransportIntegrationTest {
     }
     
     private Path createRuntimeDatabasesConfigFile() throws IOException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "stdio-transport", H2RuntimeTestSupport.H2AccessMode.MULTI_PROCESS);
-        initializeDatabase(jdbcUrl);
+        String jdbcUrl = BootstrapMockRuntimeDriver.createJdbcUrl("stdio-transport");
         Path result = tempDir.resolve("mcp-runtime-databases.yaml");
         Files.writeString(result, "transport:\n"
                 + "  http:\n"
@@ -117,15 +115,7 @@ class StdioTransportIntegrationTest {
                 + "    jdbcUrl: '" + jdbcUrl + "'\n"
                 + "    username: ''\n"
                 + "    password: ''\n"
-                + "    driverClassName: org.h2.Driver\n");
+                + "    driverClassName: " + BootstrapMockRuntimeDriver.class.getName() + '\n');
         return result;
-    }
-    
-    private void initializeDatabase(final String jdbcUrl) {
-        try {
-            H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        } catch (final SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
     }
 }

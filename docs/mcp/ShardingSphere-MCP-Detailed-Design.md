@@ -83,7 +83,6 @@ shardingsphere
 ### 5.1 artifact 命名
 - 建议固定为：
   - `shardingsphere-mcp`
-  - `shardingsphere-mcp-test-fixture`
   - `shardingsphere-mcp-core`
   - `shardingsphere-mcp-bootstrap`
   - `shardingsphere-mcp-distribution`
@@ -96,7 +95,6 @@ shardingsphere
     - `packaging`：`pom`
     - `modules`：
       - `features`
-      - `test-fixture`
       - `core`
       - `bootstrap`
   - `distribution/mcp/pom.xml`
@@ -109,13 +107,7 @@ shardingsphere
   - 版本与主仓库统一
   - distribution 与 test 的聚合逻辑一致
   - 模块边界清晰
-  - 共享测试夹具不再依赖 `test-jar` 透传
-
-### 5.2.1 test-fixture 边界
-- `mcp/test-fixture` 只承载跨 `core`、`bootstrap`、`test/e2e/mcp` 复用的测试夹具
-- `mcp/test-fixture` 不进入 `distribution/mcp` 打包链路
-- `mcp/test-fixture` 必须保持 transport-neutral，且不能依赖 `mcp/core`
-- `mcp/core`、`mcp/bootstrap`、`test/e2e/mcp` 通过普通 test-scope 依赖复用 fixture，而不是再消费 `mcp-core` 的 `test-jar`
+  - 测试夹具按模块本地收敛，避免额外 reactor 模块
 
 ### 5.3 模块接入方式
 - 这是整个实现里最关键的结构性设计。

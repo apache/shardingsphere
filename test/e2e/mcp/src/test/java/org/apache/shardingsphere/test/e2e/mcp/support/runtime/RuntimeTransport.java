@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.test.fixture.jdbc.H2RuntimeTestSupport.H2AccessMode;
+import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport.H2AccessMode;
 
 /**
  * Runtime transport type for MCP E2E tests.
