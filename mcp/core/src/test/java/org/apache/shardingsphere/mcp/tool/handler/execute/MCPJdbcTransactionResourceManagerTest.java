@@ -17,25 +17,19 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeConfigurationTestSupport;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,6 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -50,9 +45,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPJdbcTransactionResourceManagerTest {
-    
-    @TempDir
-    private Path tempDir;
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertFindTransactionConnectionCases")
@@ -223,15 +215,19 @@ class MCPJdbcTransactionResourceManagerTest {
     
     @Test
     void assertCloseSession() throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "resource-close");
-        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        MCPJdbcTransactionResourceManager manager = createResourceManager(Map.of("logic_db", jdbcUrl));
+        TransactionState state = new TransactionState("NEW");
+        Connection connection = createTransactionalConnection(state);
+        MCPJdbcTransactionResourceManager manager = createResourceManager(connection);
         manager.beginTransaction("session-1", "logic_db");
         try (Statement statement = manager.findTransactionConnection("session-1", "logic_db").orElseThrow(IllegalStateException::new).createStatement()) {
             statement.execute("UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1");
         }
+        assertThat(state.getCurrentStatus(), is("PROCESSING"));
         manager.closeSession("session-1");
-        assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
+        assertThat(state.getCurrentStatus(), is("NEW"));
+        verify(connection).rollback();
+        verify(connection).setAutoCommit(true);
+        verify(connection).close();
     }
     
     @Test
@@ -245,13 +241,23 @@ class MCPJdbcTransactionResourceManagerTest {
         return new MCPJdbcTransactionResourceManager(Map.of("logic_db", runtimeDatabaseConfig));
     }
     
-    private MCPJdbcTransactionResourceManager createResourceManager(final Map<String, String> jdbcUrls) {
-        return new MCPJdbcTransactionResourceManager(jdbcUrls.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getKey, entry -> H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(entry.getValue()))));
+    private Connection createTransactionalConnection(final TransactionState state) throws SQLException {
+        Connection result = mock(Connection.class);
+        Statement statement = mock(Statement.class);
+        when(result.createStatement()).thenReturn(statement);
+        when(statement.execute("UPDATE public.orders SET status = 'PROCESSING' WHERE order_id = 1")).thenAnswer(invocation -> {
+            state.update("PROCESSING");
+            return true;
+        });
+        doAnswer(invocation -> {
+            state.rollback();
+            return null;
+        }).when(result).rollback();
+        return result;
     }
     
     private static Stream<Arguments> assertFindTransactionConnectionCases() {
-        return java.util.stream.Stream.of(
+        return Stream.of(
                 Arguments.of("active transaction", "logic_db", "logic_db", true, null),
                 Arguments.of("no active transaction", null, "logic_db", false, null),
                 Arguments.of("cross database transaction", "logic_db", "analytics_db", false, "Cross-database transaction switching is not supported."));
@@ -299,5 +305,29 @@ class MCPJdbcTransactionResourceManagerTest {
                 Arguments.of("release savepoint", true, null, null),
                 Arguments.of("missing savepoint", false, null, "Savepoint does not exist."),
                 Arguments.of("release savepoint failure", true, "release savepoint failed", "release savepoint failed"));
+    }
+    
+    private static final class TransactionState {
+        
+        private final String initialStatus;
+        
+        private String workingStatus;
+        
+        private TransactionState(final String initialStatus) {
+            this.initialStatus = initialStatus;
+            workingStatus = initialStatus;
+        }
+        
+        private void update(final String newStatus) {
+            workingStatus = newStatus;
+        }
+        
+        private void rollback() {
+            workingStatus = initialStatus;
+        }
+        
+        private String getCurrentStatus() {
+            return workingStatus;
+        }
     }
 }

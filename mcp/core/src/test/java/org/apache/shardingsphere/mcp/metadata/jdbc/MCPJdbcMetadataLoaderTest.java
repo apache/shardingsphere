@@ -25,15 +25,11 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeTestSupport;
-import org.apache.shardingsphere.mcp.jdbc.H2RuntimeConfigurationTestSupport;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Driver;
@@ -69,36 +65,25 @@ import static org.mockito.Mockito.when;
 
 class MCPJdbcMetadataLoaderTest {
     
-    @TempDir
-    private Path tempDir;
-    
     @Test
     void assertLoad() throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader");
-        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl)));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration("H2", createStandardH2MetadataConnection())));
         assertThat(actual.findMetadata("logic_db").map(MCPDatabaseMetadata::getDatabaseType).orElseThrow(), is("H2"));
-        assertFalse(actual.findMetadata("logic_db").orElseThrow().getDatabaseVersion().isEmpty());
+        assertThat(actual.findMetadata("logic_db").orElseThrow().getDatabaseVersion(), is("2.2.224"));
     }
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("loadTypedMetadataArguments")
     void assertLoadWithTypedMetadata(final String name, final SupportedMCPMetadataObjectType objectType, final String objectName) throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-" + objectName);
-        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl)));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration("H2", createStandardH2MetadataConnection())));
         assertTrue(containsMetadata(actual.findMetadata("logic_db").orElseThrow(), objectType, objectName));
     }
     
     @Test
     void assertLoadWithMultipleLogicalDatabases() throws SQLException {
-        String firstJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-first");
-        String secondJdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-second");
-        H2RuntimeTestSupport.initializeDatabase(firstJdbcUrl);
-        H2RuntimeTestSupport.initializeDatabase(secondJdbcUrl);
         Map<String, RuntimeDatabaseConfiguration> connectionConfigs = Map.of(
-                "logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(firstJdbcUrl),
-                "analytics_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(secondJdbcUrl));
+                "logic_db", createMockRuntimeDatabaseConfiguration("H2", createStandardH2MetadataConnection()),
+                "analytics_db", createMockRuntimeDatabaseConfiguration("H2", createStandardH2MetadataConnection()));
         LoadedMetadataCatalog actual = load(connectionConfigs);
         assertThat(actual.getDatabaseMetadataMap().size(), is(2));
         assertTrue(actual.findMetadata("analytics_db").isPresent());
@@ -177,9 +162,7 @@ class MCPJdbcMetadataLoaderTest {
     
     @Test
     void assertLoadWithSchemaRegisteredOnce() throws SQLException {
-        String jdbcUrl = H2RuntimeTestSupport.createJdbcUrl(tempDir, "metadata-loader-shared-schema");
-        H2RuntimeTestSupport.initializeDatabase(jdbcUrl);
-        LoadedMetadataCatalog actual = load(Map.of("logic_db", H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(jdbcUrl)));
+        LoadedMetadataCatalog actual = load(Map.of("logic_db", createMockRuntimeDatabaseConfiguration("H2", createStandardH2MetadataConnection())));
         MCPDatabaseMetadata databaseMetadata = actual.findMetadata("logic_db").orElseThrow();
         assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.TABLE, "orders"));
         assertTrue(containsMetadata(databaseMetadata, SupportedMCPMetadataObjectType.VIEW, "active_orders"));
@@ -500,6 +483,27 @@ class MCPJdbcMetadataLoaderTest {
         });
         when(statement.executeQuery("SELECT sequence_schema AS SEQUENCE_SCHEMA, sequence_name AS SEQUENCE_NAME FROM information_schema.sequences"))
                 .thenThrow(new SQLException("sequence metadata query failed"));
+        return result;
+    }
+    
+    private Connection createStandardH2MetadataConnection() throws SQLException {
+        Connection result = createConnectionWithMetadata(
+                List.of(
+                        Map.of("TABLE_SCHEM", "PUBLIC", "TABLE_NAME", "orders"),
+                        Map.of("TABLE_SCHEM", "PUBLIC", "TABLE_NAME", "order_items")),
+                List.of(Map.of("TABLE_SCHEM", "PUBLIC", "TABLE_NAME", "active_orders")),
+                Map.of(
+                        "orders", List.of("order_id", "status", "amount"),
+                        "order_items", List.of("item_id", "order_id", "sku"),
+                        "active_orders", List.of("order_id", "status")),
+                Map.of(
+                        "orders", List.of("PRIMARY_KEY_C", "idx_orders_status"),
+                        "order_items", List.of("PRIMARY_KEY_C")),
+                List.of(Map.of("SEQUENCE_SCHEMA", "PUBLIC", "SEQUENCE_NAME", "order_seq")));
+        DatabaseMetaData databaseMetaData = result.getMetaData();
+        when(databaseMetaData.getDatabaseProductName()).thenReturn("");
+        when(databaseMetaData.getDatabaseProductVersion()).thenReturn("2.2.224");
+        when(databaseMetaData.getURL()).thenReturn("jdbc:h2:mem:metadata-loader");
         return result;
     }
     
