@@ -69,7 +69,7 @@ public final class InventoryPositionCalculator {
         if (dataTypeOption.isStringDataType(firstColumnDataType)) {
             return getStringPositions();
         }
-        if (dataTypeOption.isBinaryDataType(firstColumnDataType)) {
+        if (dataTypeOption.isBinaryDataType(firstColumnDataType, null)) {
             return getBinaryPositions();
         }
         log.info("Unsupported unique key type, unique key columns: {}", uniqueKeyColumns);

@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.database.connector.core.metadata.database.metadata.option.datatype;
 
+import com.cedarsoftware.util.CaseInsensitiveSet;
+
 import java.sql.Types;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -26,6 +29,8 @@ import java.util.Optional;
  * Default data type option.
  */
 public final class DefaultDataTypeOption implements DialectDataTypeOption {
+    
+    private static final CaseInsensitiveSet<String> TEXT_DATA_TYPES = new CaseInsensitiveSet<>(Arrays.asList("TINYTEXT", "TEXT", "MEDIUMTEXT", "LONGTEXT", "CLOB", "NCLOB"));
     
     @Override
     public Map<String, Integer> getExtraDataTypes() {
@@ -59,6 +64,8 @@ public final class DefaultDataTypeOption implements DialectDataTypeOption {
             case Types.NCHAR:
             case Types.NVARCHAR:
             case Types.LONGNVARCHAR:
+            case Types.CLOB:
+            case Types.NCLOB:
                 return true;
             default:
                 return false;
@@ -66,14 +73,20 @@ public final class DefaultDataTypeOption implements DialectDataTypeOption {
     }
     
     @Override
-    public boolean isBinaryDataType(final int sqlType) {
+    public boolean isBinaryDataType(final int sqlType, final String dataTypeName) {
         switch (sqlType) {
             case Types.BINARY:
             case Types.VARBINARY:
             case Types.LONGVARBINARY:
                 return true;
             default:
-                return false;
+                break;
         }
+        return null != dataTypeName && dataTypeName.endsWith("BLOB");
+    }
+    
+    @Override
+    public boolean isTextType(final String type) {
+        return TEXT_DATA_TYPES.contains(type);
     }
 }

@@ -56,10 +56,28 @@ class OracleDataTypeOptionTest {
     @Test
     void assertIsStringDataType() {
         assertTrue(dataTypeOption.isStringDataType(Types.VARCHAR));
+        assertTrue(dataTypeOption.isStringDataType(Types.CLOB));
     }
     
     @Test
     void assertIsBinaryDataType() {
-        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.BINARY, null));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "RAW"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "raw"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "LONG RAW"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "long raw"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "BFILE"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "bfile"));
+        assertTrue(dataTypeOption.isBinaryDataType(Types.OTHER, "BLOB"));
+        assertFalse(dataTypeOption.isBinaryDataType(Types.OTHER, "VARCHAR2"));
+    }
+    
+    @Test
+    void assertIsTextType() {
+        assertTrue(dataTypeOption.isTextType("CLOB"));
+        assertTrue(dataTypeOption.isTextType("NCLOB"));
+        assertFalse(dataTypeOption.isTextType("VARCHAR2"));
+        assertFalse(dataTypeOption.isTextType("NVARCHAR2"));
+        assertFalse(dataTypeOption.isTextType("RAW"));
     }
 }
