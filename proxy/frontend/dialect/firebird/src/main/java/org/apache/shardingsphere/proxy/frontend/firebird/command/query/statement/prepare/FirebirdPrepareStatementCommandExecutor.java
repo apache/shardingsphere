@@ -424,6 +424,8 @@ public final class FirebirdPrepareStatementCommandExecutor implements CommandExe
                 return Types.VARCHAR;
             case "gen_id":
             case "count":
+            case "min":
+            case "max":
                 return Types.BIGINT;
             case "current_timestamp":
                 return Types.TIMESTAMP;
