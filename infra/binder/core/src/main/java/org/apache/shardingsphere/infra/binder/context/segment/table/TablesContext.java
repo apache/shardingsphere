@@ -24,6 +24,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -44,6 +45,8 @@ public final class TablesContext {
     private final Collection<String> schemaNames = new CaseInsensitiveSet<>();
     
     private final Collection<String> databaseNames = new CaseInsensitiveSet<>();
+    
+    private final Collection<IdentifierValue> identifierSchemaNames = new LinkedList<>();
     
     public TablesContext(final SimpleTableSegment table) {
         this(null == table ? Collections.emptyList() : Collections.singletonList(table));
@@ -68,7 +71,10 @@ public final class TablesContext {
         tableNames.add(tableName.getIdentifier().getValue());
         // TODO support bind with all statement contains table segment @duanzhengqiang
         tableName.getTableBoundInfo().filter(optional -> !Strings.isNullOrEmpty(optional.getOriginalSchema().getValue()))
-                .ifPresent(optional -> schemaNames.add(optional.getOriginalSchema().getValue()));
+                .ifPresent(optional -> {
+                    schemaNames.add(optional.getOriginalSchema().getValue());
+                    identifierSchemaNames.add(optional.getOriginalSchema());
+                });
         tableName.getTableBoundInfo().filter(optional -> !Strings.isNullOrEmpty(optional.getOriginalDatabase().getValue()))
                 .ifPresent(optional -> databaseNames.add(optional.getOriginalDatabase().getValue()));
     }
@@ -89,5 +95,14 @@ public final class TablesContext {
      */
     public Optional<String> getSchemaName() {
         return schemaNames.isEmpty() ? Optional.empty() : Optional.of(schemaNames.iterator().next());
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public Optional<IdentifierValue> getIdentifierSchemaName() {
+        return identifierSchemaNames.isEmpty() ? Optional.empty() : Optional.of(identifierSchemaNames.iterator().next());
     }
 }

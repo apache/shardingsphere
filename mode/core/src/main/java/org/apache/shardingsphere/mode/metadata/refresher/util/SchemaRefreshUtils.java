@@ -48,7 +48,7 @@ public final class SchemaRefreshUtils {
      * @return schema name
      */
     public static String getSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        return getRawSchemaName(database, sqlStatementContext).toLowerCase();
+        return getRawSchemaName(database, sqlStatementContext).getValue().toLowerCase();
     }
     
     /**
@@ -60,7 +60,7 @@ public final class SchemaRefreshUtils {
      * @return actual schema name
      */
     public static String getActualSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext, final ConfigurationProperties props) {
-        return getActualSchemaName(database, new IdentifierValue(getRawSchemaName(database, sqlStatementContext)), props);
+        return getActualSchemaName(database, getRawSchemaName(database, sqlStatementContext), props);
     }
     
     /**
@@ -99,8 +99,8 @@ public final class SchemaRefreshUtils {
         return result;
     }
     
-    private static String getRawSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
-        return sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
+    private static IdentifierValue getRawSchemaName(final ShardingSphereDatabase database, final SQLStatementContext sqlStatementContext) {
+        return sqlStatementContext.getTablesContext().getIdentifierSchemaName()
+                .orElseGet(() -> new IdentifierValue(new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName())));
     }
 }
