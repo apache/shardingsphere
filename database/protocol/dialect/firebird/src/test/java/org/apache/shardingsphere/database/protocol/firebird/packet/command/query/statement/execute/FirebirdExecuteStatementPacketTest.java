@@ -150,7 +150,7 @@ class FirebirdExecuteStatementPacketTest {
                 Arguments.of("skip_count_4", (short) BlrConstants.blr_varying2, FirebirdBinaryColumnType.VARYING, null),
                 Arguments.of("skip_count_2", (short) BlrConstants.blr_text, FirebirdBinaryColumnType.LEGACY_TEXT, null),
                 Arguments.of("skip_count_1", (short) BlrConstants.blr_long, FirebirdBinaryColumnType.LONG, 123),
-                Arguments.of("skip_count_0", (short) BlrConstants.blr_bool, FirebirdBinaryColumnType.BOOLEAN, 0),
+                Arguments.of("skip_count_0", (short) BlrConstants.blr_bool, FirebirdBinaryColumnType.BOOLEAN, 123),
                 Arguments.of("blob_parameter", (short) BlrConstants.blr_quad, FirebirdBinaryColumnType.BLOB, 0L));
     }
     

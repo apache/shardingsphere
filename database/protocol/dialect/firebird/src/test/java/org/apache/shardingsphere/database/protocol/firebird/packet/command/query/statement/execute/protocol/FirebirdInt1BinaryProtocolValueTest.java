@@ -36,18 +36,18 @@ class FirebirdInt1BinaryProtocolValueTest {
     
     @Test
     void assertRead() {
-        when(payload.readInt1Unsigned()).thenReturn(1);
+        when(payload.readInt4()).thenReturn(1);
         assertThat(new FirebirdInt1BinaryProtocolValue().read(payload), is(1));
     }
-    
+
     @Test
     void assertWrite() {
         new FirebirdInt1BinaryProtocolValue().write(payload, 1);
-        verify(payload).writeInt2(1);
+        verify(payload).writeInt4(1);
     }
-    
+
     @Test
     void assertGetLength() {
-        assertThat(new FirebirdInt1BinaryProtocolValue().getLength(payload), is(1));
+        assertThat(new FirebirdInt1BinaryProtocolValue().getLength(payload), is(4));
     }
 }
