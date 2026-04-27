@@ -26,16 +26,16 @@ public final class FirebirdInt1BinaryProtocolValue implements FirebirdBinaryProt
     
     @Override
     public Object read(final FirebirdPacketPayload payload) {
-        return payload.readInt4();
+        return payload.readInt1Unsigned();
     }
     
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        payload.writeInt4(value instanceof Boolean ? (((Boolean) value) ? 1 : 0) : (Integer) value);
+        payload.writeInt2((Integer) value);
     }
     
     @Override
     public int getLength(final FirebirdPacketPayload payload) {
-        return 4;
+        return 1;
     }
 }

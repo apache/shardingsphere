@@ -41,7 +41,7 @@ public final class FirebirdBinaryProtocolValueFactory {
         setInt8BinaryProtocolValue();
         setInt4BinaryProtocolValue();
         setInt2BinaryProtocolValue();
-        setInt1BinaryProtocolValue();
+        setBooleanBinaryProtocolValue();
         setDoubleBinaryProtocolValue();
         setFloatBinaryProtocolValue();
         setDateBinaryProtocolValue();
@@ -90,8 +90,8 @@ public final class FirebirdBinaryProtocolValueFactory {
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.SHORT, binaryProtocolValue);
     }
     
-    private static void setInt1BinaryProtocolValue() {
-        FirebirdInt1BinaryProtocolValue binaryProtocolValue = new FirebirdInt1BinaryProtocolValue();
+    private static void setBooleanBinaryProtocolValue() {
+        FirebirdBooleanBinaryProtocolValue binaryProtocolValue = new FirebirdBooleanBinaryProtocolValue();
         BINARY_PROTOCOL_VALUES.put(FirebirdBinaryColumnType.BOOLEAN, binaryProtocolValue);
     }
     
