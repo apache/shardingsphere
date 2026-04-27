@@ -41,8 +41,14 @@ class FirebirdInt1BinaryProtocolValueTest {
     }
 
     @Test
-    void assertWrite() {
+    void assertWriteWithInteger() {
         new FirebirdInt1BinaryProtocolValue().write(payload, 1);
+        verify(payload).writeInt4(1);
+    }
+
+    @Test
+    void assertWriteWithBoolean() {
+        new FirebirdInt1BinaryProtocolValue().write(payload, true);
         verify(payload).writeInt4(1);
     }
 

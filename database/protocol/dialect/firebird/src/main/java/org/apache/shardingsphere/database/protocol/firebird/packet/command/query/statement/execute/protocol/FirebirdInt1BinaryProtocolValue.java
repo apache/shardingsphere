@@ -31,7 +31,7 @@ public final class FirebirdInt1BinaryProtocolValue implements FirebirdBinaryProt
 
     @Override
     public void write(final FirebirdPacketPayload payload, final Object value) {
-        payload.writeInt4((Integer) value);
+        payload.writeInt4(value instanceof Boolean ? (((Boolean) value) ? 1 : 0) : (Integer) value);
     }
 
     @Override
