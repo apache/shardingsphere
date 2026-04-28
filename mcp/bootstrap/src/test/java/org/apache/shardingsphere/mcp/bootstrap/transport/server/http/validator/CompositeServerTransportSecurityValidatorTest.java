@@ -40,7 +40,7 @@ class CompositeServerTransportSecurityValidatorTest {
     void assertValidateHeaders() throws TransportHeaderConstraintException, ServerTransportSecurityException {
         TransportHeaderConstraint first = mock(TransportHeaderConstraint.class);
         TransportHeaderConstraint second = mock(TransportHeaderConstraint.class);
-        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(List.of(first, second));
+        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(mock(), List.of(first, second));
         validator.validateHeaders(Map.of("Authorization", List.of("Bearer foo_token")));
         InOrder inOrder = inOrder(first, second);
         inOrder.verify(first).validate(Map.of("Authorization", List.of("Bearer foo_token")));
@@ -49,7 +49,7 @@ class CompositeServerTransportSecurityValidatorTest {
     
     @Test
     void assertValidateHeadersWithNoFailure() {
-        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(List.of());
+        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(mock(), List.of());
         assertDoesNotThrow(() -> validator.validateHeaders(Map.of()));
     }
     
@@ -58,7 +58,7 @@ class CompositeServerTransportSecurityValidatorTest {
         TransportHeaderConstraint first = mock(TransportHeaderConstraint.class);
         doThrow(new TransportHeaderConstraintException(401, "Unauthorized.")).when(first).validate(Map.of());
         TransportHeaderConstraint second = mock(TransportHeaderConstraint.class);
-        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(List.of(first, second));
+        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(mock(), List.of(first, second));
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> validator.validateHeaders(Map.of()));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));

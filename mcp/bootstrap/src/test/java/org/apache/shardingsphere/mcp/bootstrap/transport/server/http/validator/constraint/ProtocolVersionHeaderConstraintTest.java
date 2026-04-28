@@ -19,60 +19,29 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.
 
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 class ProtocolVersionHeaderConstraintTest {
     
     @Test
-    void assertValidateWithoutSessionId() {
-        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint(sessionManager);
-        assertDoesNotThrow(() -> actualConstraint.validate(Map.of()));
-        verifyNoInteractions(sessionManager);
-    }
-    
-    @Test
-    void assertValidateWithUnknownSession() {
-        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        when(sessionManager.hasSession("session-id")).thenReturn(false);
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint(sessionManager);
-        assertDoesNotThrow(() -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"))));
-        verify(sessionManager).hasSession("session-id");
-        verifyNoMoreInteractions(sessionManager);
-    }
-    
-    @Test
     void assertValidateWithMissingProtocolHeader() {
-        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        when(sessionManager.hasSession("session-id")).thenReturn(true);
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint(sessionManager);
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class,
-                () -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"))));
+        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint();
+        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"))));
         assertThat(actual.getStatusCode(), is(400));
         assertThat(actual.getMessage(), is("MCP-Protocol-Version header is required."));
     }
     
     @Test
     void assertValidateWithProtocolMismatch() {
-        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        when(sessionManager.hasSession("session-id")).thenReturn(true);
-        when(sessionManager.findProtocolVersion("session-id")).thenReturn(Optional.of("2025-06-18"));
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint(sessionManager);
+        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint();
         TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class,
                 () -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"), "MCP-Protocol-Version", List.of("2025-03-26"))));
         assertThat(actual.getStatusCode(), is(400));
@@ -80,20 +49,8 @@ class ProtocolVersionHeaderConstraintTest {
     }
     
     @Test
-    void assertValidateWithDefaultProtocolVersion() {
-        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        when(sessionManager.hasSession("session-id")).thenReturn(true);
-        when(sessionManager.findProtocolVersion("session-id")).thenReturn(Optional.empty());
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint(sessionManager);
-        assertDoesNotThrow(() -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"), "MCP-Protocol-Version", List.of(MCPTransportConstants.PROTOCOL_VERSION))));
-    }
-    
-    @Test
-    void assertValidate() {
-        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
-        when(sessionManager.hasSession("session-id")).thenReturn(true);
-        when(sessionManager.findProtocolVersion("session-id")).thenReturn(Optional.of(MCPTransportConstants.PROTOCOL_VERSION));
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint(sessionManager);
+    void assertValidateWithSupportedProtocolVersion() {
+        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint();
         assertDoesNotThrow(() -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"), "MCP-Protocol-Version", List.of(MCPTransportConstants.PROTOCOL_VERSION))));
     }
 }

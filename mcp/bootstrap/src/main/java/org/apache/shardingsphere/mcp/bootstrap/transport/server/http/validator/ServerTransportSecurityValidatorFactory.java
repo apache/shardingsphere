@@ -46,10 +46,10 @@ public final class ServerTransportSecurityValidatorFactory {
      * @return transport security validator
      */
     public static ServerTransportSecurityValidator create(final MCPSessionManager sessionManager, final String bindHost, final String accessToken) {
-        return new CompositeServerTransportSecurityValidator(createConstraints(sessionManager, bindHost, accessToken));
+        return new CompositeServerTransportSecurityValidator(sessionManager, createConstraints(bindHost, accessToken));
     }
     
-    private static List<TransportHeaderConstraint> createConstraints(final MCPSessionManager sessionManager, final String bindHost, final String accessToken) {
+    private static List<TransportHeaderConstraint> createConstraints(final String bindHost, final String accessToken) {
         List<TransportHeaderConstraint> result = new LinkedList<>();
         String actualAccessToken = Objects.toString(accessToken, "").trim();
         if (!actualAccessToken.isEmpty()) {
@@ -58,7 +58,7 @@ public final class ServerTransportSecurityValidatorFactory {
         if (HttpTransportHostUtils.isLoopbackHost(bindHost)) {
             result.add(new LoopbackOriginHeaderConstraint());
         }
-        result.add(new ProtocolVersionHeaderConstraint(sessionManager));
+        result.add(new ProtocolVersionHeaderConstraint());
         return result;
     }
 }

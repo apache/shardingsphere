@@ -17,16 +17,13 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPJdbcTransactionResourceManager;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -39,7 +36,7 @@ public final class MCPSessionManager {
     @Getter
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
     
-    private final Map<String, SessionContext> sessions = new ConcurrentHashMap<>();
+    private final Map<String, ReentrantLock> sessions = new ConcurrentHashMap<>();
     
     public MCPSessionManager(final Map<String, RuntimeDatabaseConfiguration> databases) {
         transactionResourceManager = new MCPJdbcTransactionResourceManager(databases);
@@ -51,17 +48,7 @@ public final class MCPSessionManager {
      * @param sessionId session id
      */
     public void createSession(final String sessionId) {
-        createSession(sessionId, "");
-    }
-    
-    /**
-     * Create a new session with negotiated protocol version.
-     *
-     * @param sessionId session id
-     * @param protocolVersion negotiated protocol version
-     */
-    public void createSession(final String sessionId, final String protocolVersion) {
-        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new SessionContext(protocolVersion)), () -> new IllegalStateException("Session already exists."));
+        ShardingSpherePreconditions.checkState(null == sessions.putIfAbsent(sessionId, new ReentrantLock(true)), () -> new IllegalStateException("Session already exists."));
     }
     
     /**
@@ -75,29 +62,19 @@ public final class MCPSessionManager {
     }
     
     /**
-     * Find negotiated protocol version for session.
-     *
-     * @param sessionId session id
-     * @return negotiated protocol version
-     */
-    public Optional<String> findProtocolVersion(final String sessionId) {
-        return findSessionContext(sessionId).map(SessionContext::getProtocolVersion).filter(each -> !each.isEmpty());
-    }
-    
-    /**
      * Close the session and rollback any pending work.
      *
      * @param sessionId session identifier
      */
     public void closeSession(final String sessionId) {
-        Optional<SessionContext> sessionContext = findSessionContext(sessionId);
-        if (sessionContext.isEmpty()) {
+        ReentrantLock executionLock = findExecutionLock(sessionId);
+        if (null == executionLock) {
             return;
         }
         try {
             transactionResourceManager.closeSession(sessionId);
         } finally {
-            sessions.remove(sessionId, sessionContext.get());
+            sessions.remove(sessionId, executionLock);
         }
     }
     
@@ -110,24 +87,19 @@ public final class MCPSessionManager {
         }
     }
     
-    Optional<SessionContext> findSessionContext(final String sessionId) {
-        return Optional.ofNullable(sessions.get(sessionId));
+    ReentrantLock findExecutionLock(final String sessionId) {
+        return sessions.get(sessionId);
     }
     
-    SessionContext getRequiredSessionContext(final String sessionId) {
-        return findSessionContext(sessionId).orElseThrow(MCPSessionNotExistedException::new);
+    ReentrantLock getRequiredExecutionLock(final String sessionId) {
+        ReentrantLock result = findExecutionLock(sessionId);
+        if (null == result) {
+            throw new MCPSessionNotExistedException();
+        }
+        return result;
     }
     
     Set<String> getSessionIds() {
         return new LinkedHashSet<>(sessions.keySet());
-    }
-    
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    @Getter
-    static final class SessionContext {
-        
-        private final String protocolVersion;
-        
-        private final ReentrantLock executionLock = new ReentrantLock(true);
     }
 }

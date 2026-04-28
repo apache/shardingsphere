@@ -19,8 +19,11 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
+import io.modelcontextprotocol.spec.HttpHeaders;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.List;
 import java.util.Map;
@@ -31,11 +34,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class CompositeServerTransportSecurityValidator implements ServerTransportSecurityValidator {
     
+    private final MCPSessionManager sessionManager;
+    
     private final List<TransportHeaderConstraint> constraints;
     
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
         for (TransportHeaderConstraint each : constraints) {
+            if (each instanceof SessionRequiredTransportHeaderConstraint) {
+                String sessionId = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
+                if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId)) {
+                    continue;
+                }
+            }
             try {
                 each.validate(headers);
             } catch (final TransportHeaderConstraintException ex) {

@@ -21,6 +21,9 @@ import io.modelcontextprotocol.spec.ProtocolVersions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * MCP transport constants.
  */
@@ -28,6 +31,8 @@ import lombok.NoArgsConstructor;
 public final class MCPTransportConstants {
     
     public static final String PROTOCOL_VERSION = ProtocolVersions.MCP_2025_11_25;
+    
+    public static final List<String> SUPPORTED_PROTOCOL_VERSIONS = Collections.singletonList(PROTOCOL_VERSION);
     
     public static final String SERVER_NAME = "Apache ShardingSphere MCP";
     

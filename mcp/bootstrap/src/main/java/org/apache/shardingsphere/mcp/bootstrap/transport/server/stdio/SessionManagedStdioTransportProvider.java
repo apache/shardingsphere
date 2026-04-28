@@ -47,7 +47,7 @@ final class SessionManagedStdioTransportProvider extends StdioServerTransportPro
     
     @Override
     public List<String> protocolVersions() {
-        return List.of(MCPTransportConstants.PROTOCOL_VERSION);
+        return MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS;
     }
     
     @Override

@@ -80,29 +80,29 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     @Override
     public List<String> protocolVersions() {
-        return Collections.singletonList(MCPTransportConstants.PROTOCOL_VERSION);
+        return MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS;
     }
     
     @Override
     public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
         delegate.setSessionFactory(initializeRequest -> {
-            McpSchema.InitializeRequest actualInitializeRequest = normalizeInitializeRequest(initializeRequest);
+            McpSchema.InitializeRequest actualInitializeRequest = negotiateInitializeRequest(initializeRequest);
             McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(actualInitializeRequest);
-            sessionManager.createSession(result.session().getId(), actualInitializeRequest.protocolVersion());
+            sessionManager.createSession(result.session().getId());
             return result;
         });
     }
     
-    private McpSchema.InitializeRequest normalizeInitializeRequest(final McpSchema.InitializeRequest initializeRequest) {
-        String protocolVersion = normalizeProtocolVersion(initializeRequest.protocolVersion());
-        return protocolVersion.equals(initializeRequest.protocolVersion())
+    private McpSchema.InitializeRequest negotiateInitializeRequest(final McpSchema.InitializeRequest initializeRequest) {
+        String negotiatedProtocolVersion = negotiateProtocolVersion(initializeRequest.protocolVersion());
+        return negotiatedProtocolVersion.equals(initializeRequest.protocolVersion())
                 ? initializeRequest
-                : new McpSchema.InitializeRequest(protocolVersion, initializeRequest.capabilities(), initializeRequest.clientInfo(), initializeRequest.meta());
+                : new McpSchema.InitializeRequest(negotiatedProtocolVersion, initializeRequest.capabilities(), initializeRequest.clientInfo(), initializeRequest.meta());
     }
     
-    private String normalizeProtocolVersion(final String rawProtocolVersion) {
-        String protocolVersion = Objects.toString(rawProtocolVersion, "").trim();
-        return protocolVersion.isEmpty() || !protocolVersions().contains(protocolVersion) ? MCPTransportConstants.PROTOCOL_VERSION : protocolVersion;
+    private String negotiateProtocolVersion(final String requestedProtocolVersion) {
+        String actualRequestedProtocolVersion = Objects.toString(requestedProtocolVersion, "").trim();
+        return protocolVersions().contains(actualRequestedProtocolVersion) ? actualRequestedProtocolVersion : MCPTransportConstants.PROTOCOL_VERSION;
     }
     
     @Override

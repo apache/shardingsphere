@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.session;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
-import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * MCP session execution coordinator.
@@ -40,13 +40,13 @@ public final class MCPSessionExecutionCoordinator {
      * @return operation result
      */
     public <T> T executeWithSessionLock(final String sessionId, final Supplier<T> operation) {
-        MCPSessionManager.SessionContext sessionContext = sessionManager.getRequiredSessionContext(sessionId);
-        sessionContext.getExecutionLock().lock();
+        ReentrantLock executionLock = sessionManager.getRequiredExecutionLock(sessionId);
+        executionLock.lock();
         try {
-            ShardingSpherePreconditions.checkState(isCurrentSessionContext(sessionId, sessionContext), MCPSessionNotExistedException::new);
+            ShardingSpherePreconditions.checkState(isCurrentExecutionLock(sessionId, executionLock), MCPSessionNotExistedException::new);
             return operation.get();
         } finally {
-            sessionContext.getExecutionLock().unlock();
+            executionLock.unlock();
         }
     }
     
@@ -56,17 +56,17 @@ public final class MCPSessionExecutionCoordinator {
      * @param sessionId session id
      */
     public void closeSession(final String sessionId) {
-        Optional<MCPSessionManager.SessionContext> sessionContext = sessionManager.findSessionContext(sessionId);
-        if (sessionContext.isEmpty()) {
+        ReentrantLock executionLock = sessionManager.findExecutionLock(sessionId);
+        if (null == executionLock) {
             return;
         }
-        sessionContext.get().getExecutionLock().lock();
+        executionLock.lock();
         try {
-            if (isCurrentSessionContext(sessionId, sessionContext.get())) {
+            if (isCurrentExecutionLock(sessionId, executionLock)) {
                 sessionManager.closeSession(sessionId);
             }
         } finally {
-            sessionContext.get().getExecutionLock().unlock();
+            executionLock.unlock();
         }
     }
     
@@ -79,7 +79,7 @@ public final class MCPSessionExecutionCoordinator {
         }
     }
     
-    private boolean isCurrentSessionContext(final String sessionId, final MCPSessionManager.SessionContext sessionContext) {
-        return sessionContext == sessionManager.findSessionContext(sessionId).orElse(null);
+    private boolean isCurrentExecutionLock(final String sessionId, final ReentrantLock executionLock) {
+        return executionLock == sessionManager.findExecutionLock(sessionId);
     }
 }

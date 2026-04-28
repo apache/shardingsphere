@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.HttpTransportSecurityHeaderUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.List;
 import java.util.Map;
@@ -31,26 +30,19 @@ import java.util.Map;
  * Protocol version header constraint.
  */
 @RequiredArgsConstructor
-public final class ProtocolVersionHeaderConstraint implements TransportHeaderConstraint {
+public final class ProtocolVersionHeaderConstraint implements SessionRequiredTransportHeaderConstraint {
     
     private static final String PROTOCOL_HEADER_REQUIRED_MESSAGE = "MCP-Protocol-Version header is required.";
     
     private static final String PROTOCOL_VERSION_MISMATCH_MESSAGE = "Protocol version mismatch.";
     
-    private final MCPSessionManager sessionManager;
-    
     @Override
     public void validate(final Map<String, List<String>> headers) throws TransportHeaderConstraintException {
-        String sessionId = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
-        if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId)) {
-            return;
-        }
         String actualProtocolVersion = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, HttpHeaders.PROTOCOL_VERSION);
         if (actualProtocolVersion.isEmpty()) {
             throw new TransportHeaderConstraintException(400, PROTOCOL_HEADER_REQUIRED_MESSAGE);
         }
-        String expectedProtocolVersion = sessionManager.findProtocolVersion(sessionId).orElse(MCPTransportConstants.PROTOCOL_VERSION);
-        if (!expectedProtocolVersion.equals(actualProtocolVersion)) {
+        if (!MCPTransportConstants.PROTOCOL_VERSION.equals(actualProtocolVersion)) {
             throw new TransportHeaderConstraintException(400, PROTOCOL_VERSION_MISMATCH_MESSAGE);
         }
     }
