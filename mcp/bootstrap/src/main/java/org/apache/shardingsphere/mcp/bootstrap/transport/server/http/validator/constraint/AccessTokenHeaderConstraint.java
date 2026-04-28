@@ -33,13 +33,16 @@ public final class AccessTokenHeaderConstraint implements TransportHeaderConstra
     
     private static final String AUTHORIZATION_HEADER = "Authorization";
     
+    private static final String BEARER_AUTH_SCHEME = "Bearer";
+    
     private final String accessToken;
     
     @Override
     public void validate(final Map<String, List<String>> headers) throws TransportHeaderConstraintException {
         String authorization = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, AUTHORIZATION_HEADER);
         String[] authorizationSegments = authorization.isEmpty() ? new String[0] : authorization.split("\\s+", 2);
-        ShardingSpherePreconditions.checkState(2 == authorizationSegments.length && "Bearer".equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim()),
+        ShardingSpherePreconditions.checkState(2 == authorizationSegments.length
+                        && BEARER_AUTH_SCHEME.equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim()),
                 () -> new TransportHeaderConstraintException(401, "Unauthorized."));
     }
 }
