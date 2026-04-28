@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.mcp.session;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.tool.handler.execute.MCPJdbcTransactionResourceManager;
 import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.tool.handler.execute.MCPJdbcTransactionResourceManager;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -120,19 +122,12 @@ public final class MCPSessionManager {
         return new LinkedHashSet<>(sessions.keySet());
     }
     
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
     static final class SessionContext {
         
-        @Getter
         private final String protocolVersion;
         
         private final ReentrantLock executionLock = new ReentrantLock(true);
-        
-        private SessionContext(final String protocolVersion) {
-            this.protocolVersion = protocolVersion;
-        }
-        
-        ReentrantLock getExecutionLock() {
-            return executionLock;
-        }
     }
 }
