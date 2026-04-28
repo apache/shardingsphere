@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
-import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionPayloads;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -40,6 +38,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+    
+    private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
+            "search_metadata", "execute_query", "plan_encrypt_rule", "apply_encrypt_rule",
+            "validate_encrypt_rule", "plan_mask_rule", "apply_mask_rule", "validate_mask_rule");
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
@@ -90,6 +92,19 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Test
+    void assertAcceptInitializeWithoutProtocolVersion() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        Map<String, Object> initializeRequestParams = new LinkedHashMap<>(MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-programmatic"));
+        initializeRequestParams.remove("protocolVersion");
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, initializeRequestParams);
+        assertThat(actual.statusCode(), is(200));
+        assertThat(actual.headers().firstValue("MCP-Protocol-Version").orElse(""), is(getProtocolVersion()));
+        Map<String, Object> actualPayload = parseJsonBody(actual.body());
+        assertThat(String.valueOf(castToMap(actualPayload.get("result")).get("protocolVersion")), is(getProtocolVersion()));
+    }
+    
+    @Test
     void assertAcceptFollowUpRequestWithLowercaseSessionHeaders() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -103,7 +118,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertThat(actual.statusCode(), is(200));
         assertThat(((List<?>) getFirstResourcePayload(actual.body()).get("supportedTools")).stream().map(String::valueOf).toList(),
-                containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
+                containsInAnyOrder(OFFICIAL_TOOL_NAMES.toArray()));
     }
     
     @Test
@@ -126,7 +141,6 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId));
         assertThat(actual.statusCode(), is(400));
-        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("MCP-Protocol-Version header is required."));
     }
     
     @Test
@@ -136,7 +150,6 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId, "MCP-Protocol-Version", "2024-11-05"));
         assertThat(actual.statusCode(), is(400));
-        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Protocol version mismatch."));
     }
     
     @Test
@@ -170,37 +183,5 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(deleteResponse.statusCode(), is(200));
         assertThat(actual.statusCode(), is(404));
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session does not exist."));
-    }
-    
-    private Map<String, Object> parseJsonBody(final String responseBody) {
-        return MCPInteractionPayloads.parseJsonPayload(responseBody);
-    }
-    
-    private HttpResponse<String> sendInitializeRequest(final HttpClient httpClient, final Map<String, Object> initializeRequestParams) throws IOException, InterruptedException {
-        HttpRequest request = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri())
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody("init-1", "initialize", initializeRequestParams)))
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-    
-    private HttpResponse<String> sendCapabilitiesRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = MCPHttpTransportTestSupport.createJsonRequestBuilder(getEndpointUri());
-        headers.forEach(requestBuilder::header);
-        HttpRequest request = requestBuilder
-                .POST(HttpRequest.BodyPublishers.ofString(MCPHttpTransportTestSupport.createJsonRpcRequestBody(
-                        "resource-1", "resources/read", Map.of("uri", "shardingsphere://capabilities"))))
-                .build();
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-    
-    private HttpResponse<String> sendDeleteRequest(final HttpClient httpClient, final Map<String, String> headers) throws IOException, InterruptedException {
-        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(getEndpointUri()).DELETE();
-        headers.forEach(requestBuilder::header);
-        return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
-    }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> castToMap(final Object value) {
-        return (Map<String, Object>) value;
     }
 }

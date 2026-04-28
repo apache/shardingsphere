@@ -26,7 +26,7 @@ public interface TransportHeaderConstraint {
     
     /**
      * Get constraint key.
-     * 
+     *
      * @return constraint key
      */
     String getConstraintKey();

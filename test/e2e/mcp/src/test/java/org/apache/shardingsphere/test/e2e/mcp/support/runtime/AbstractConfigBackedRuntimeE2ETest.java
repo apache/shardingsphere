@@ -161,7 +161,7 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     }
     
     private URI getEndpointUri(final StreamableHttpMCPServer httpServer) {
-        return URI.create(String.format("http://%s:%d%s", LOOPBACK_BIND_HOST, httpServer.getLocalPort(), ENDPOINT_PATH));
+        return URI.create(String.format("http://%s:%d%s", LOOPBACK_BIND_HOST, httpServer.getLocalPort(), getHttpEndpointPath()));
     }
     
     private Path createConfigurationFile(final String fileName, final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) throws IOException {
@@ -172,9 +172,17 @@ public abstract class AbstractConfigBackedRuntimeE2ETest {
     
     private String createConfigurationContent(final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases) {
         RuntimeTransport transport = getTransport();
-        HttpTransportConfiguration httpTransportConfig = new HttpTransportConfiguration(RuntimeTransport.HTTP == transport, LOOPBACK_BIND_HOST, false, "", 0, ENDPOINT_PATH);
+        HttpTransportConfiguration httpTransportConfig = createHttpTransportConfiguration(RuntimeTransport.HTTP == transport);
         StdioTransportConfiguration stdioTransportConfig = new StdioTransportConfiguration(RuntimeTransport.STDIO == transport);
         return YamlEngine.marshal(new YamlMCPLaunchConfigurationSwapper().swapToYamlConfiguration(new MCPLaunchConfiguration(
                 httpTransportConfig, stdioTransportConfig, runtimeDatabases)));
+    }
+    
+    protected HttpTransportConfiguration createHttpTransportConfiguration(final boolean enabled) {
+        return new HttpTransportConfiguration(enabled, LOOPBACK_BIND_HOST, false, "", 0, getHttpEndpointPath());
+    }
+    
+    protected String getHttpEndpointPath() {
+        return ENDPOINT_PATH;
     }
 }

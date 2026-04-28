@@ -1,0 +1,70 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
+
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
+
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+@EnabledIf("isEnabled")
+class HttpTransportSecurityE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isContractEnabled();
+    }
+    
+    @Test
+    void assertAcceptInitializeWithIpv6LoopbackOrigin() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Origin", "http://[::1]:8080"), createInitializeRequestParams());
+        assertThat(actual.statusCode(), is(200));
+        assertFalse(actual.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
+    }
+    
+    @Test
+    void assertRejectInitializeWithInvalidOrigin() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Origin", "https://evil.example.com"), createInitializeRequestParams());
+        assertThat(actual.statusCode(), is(403));
+    }
+    
+    @Test
+    void assertRejectInitializeWithInvalidAcceptHeader() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actual = sendInitializeRequest(httpClient, Map.of("Accept", "application/json"), createInitializeRequestParams());
+        assertThat(actual.statusCode(), is(400));
+    }
+    
+    private Map<String, Object> createInitializeRequestParams() {
+        return new LinkedHashMap<>(MCPHttpTransportTestSupport.createInitializeRequestParams("mcp-e2e-security"));
+    }
+}
