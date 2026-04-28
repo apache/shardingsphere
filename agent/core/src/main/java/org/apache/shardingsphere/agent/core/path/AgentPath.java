@@ -36,11 +36,12 @@ public final class AgentPath {
     /**
      * Get agent root path.
      *
+     * @param classLoader classLoader
      * @return agent root path
      */
-    public static File getRootPath() {
+    public static File getRootPath(final ClassLoader classLoader) {
         String classResourcePath = String.join("", AgentPath.class.getName().replaceAll("\\.", "/"), ".class");
-        URL resource = Objects.requireNonNull(ClassLoader.getSystemClassLoader().getResource(classResourcePath), "Can not locate agent jar file.");
+        URL resource = Objects.requireNonNull(classLoader.getResource(classResourcePath), "Can not locate agent jar file.");
         return getJarFile(resource.toString()).getParentFile();
     }
     
