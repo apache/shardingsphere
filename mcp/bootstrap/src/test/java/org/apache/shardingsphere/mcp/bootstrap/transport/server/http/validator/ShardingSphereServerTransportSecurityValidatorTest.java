@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 
 import java.util.List;
 import java.util.Map;
@@ -30,35 +29,22 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-class CompositeServerTransportSecurityValidatorTest {
-    
-    @Test
-    void assertValidateHeaders() throws TransportHeaderConstraintException, ServerTransportSecurityException {
-        TransportHeaderConstraint first = mock(TransportHeaderConstraint.class);
-        TransportHeaderConstraint second = mock(TransportHeaderConstraint.class);
-        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(mock(), List.of(first, second));
-        validator.validateHeaders(Map.of("Authorization", List.of("Bearer foo_token")));
-        InOrder inOrder = inOrder(first, second);
-        inOrder.verify(first).validate(Map.of("Authorization", List.of("Bearer foo_token")));
-        inOrder.verify(second).validate(Map.of("Authorization", List.of("Bearer foo_token")));
-    }
+class ShardingSphereServerTransportSecurityValidatorTest {
     
     @Test
     void assertValidateHeadersWithNoFailure() {
-        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(mock(), List.of());
-        assertDoesNotThrow(() -> validator.validateHeaders(Map.of()));
+        assertDoesNotThrow(() -> new ShardingSphereServerTransportSecurityValidator(mock(), List.of()).validateHeaders(Map.of()));
     }
     
     @Test
     void assertValidateHeadersWithFailure() throws TransportHeaderConstraintException {
         TransportHeaderConstraint first = mock(TransportHeaderConstraint.class);
-        doThrow(new TransportHeaderConstraintException(401, "Unauthorized.")).when(first).validate(Map.of());
+        doThrow(new TransportHeaderConstraintException(401, "Unauthorized.")).when(first).validate("");
         TransportHeaderConstraint second = mock(TransportHeaderConstraint.class);
-        CompositeServerTransportSecurityValidator validator = new CompositeServerTransportSecurityValidator(mock(), List.of(first, second));
+        ShardingSphereServerTransportSecurityValidator validator = new ShardingSphereServerTransportSecurityValidator(mock(), List.of(first, second));
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> validator.validateHeaders(Map.of()));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));

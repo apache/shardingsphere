@@ -30,10 +30,10 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Composite server transport security validator.
+ * ShardingSphere server transport security validator.
  */
 @RequiredArgsConstructor
-public final class CompositeServerTransportSecurityValidator implements ServerTransportSecurityValidator {
+public final class ShardingSphereServerTransportSecurityValidator implements ServerTransportSecurityValidator {
     
     private final MCPSessionManager sessionManager;
     

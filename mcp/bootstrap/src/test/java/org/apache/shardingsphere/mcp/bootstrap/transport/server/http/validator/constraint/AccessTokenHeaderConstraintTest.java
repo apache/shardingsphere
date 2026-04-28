@@ -20,9 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -33,7 +30,7 @@ class AccessTokenHeaderConstraintTest {
     @Test
     void assertValidateWithMissingAuthorization() {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate(Map.of()));
+        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate(""));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
     }
@@ -41,8 +38,7 @@ class AccessTokenHeaderConstraintTest {
     @Test
     void assertValidateWithInvalidAuthorizationScheme() {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class,
-                () -> actualConstraint.validate(Map.of("Authorization", List.of("Basic foo_token"))));
+        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate("Basic foo_token"));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
     }
@@ -50,8 +46,7 @@ class AccessTokenHeaderConstraintTest {
     @Test
     void assertValidateWithWrongAccessToken() {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class,
-                () -> actualConstraint.validate(Map.of("Authorization", List.of("Bearer bar_token"))));
+        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate("Bearer bar_token"));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
     }
@@ -59,6 +54,6 @@ class AccessTokenHeaderConstraintTest {
     @Test
     void assertValidateWithCorrectAccessToken() {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
-        assertDoesNotThrow(() -> actualConstraint.validate(Map.of("Authorization", List.of("Bearer foo_token"))));
+        assertDoesNotThrow(() -> actualConstraint.validate("Bearer foo_token"));
     }
 }

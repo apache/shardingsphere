@@ -46,7 +46,7 @@ public final class ServerTransportSecurityValidatorFactory {
      * @return transport security validator
      */
     public static ServerTransportSecurityValidator create(final MCPSessionManager sessionManager, final String bindHost, final String accessToken) {
-        return new CompositeServerTransportSecurityValidator(sessionManager, createConstraints(bindHost, accessToken));
+        return new ShardingSphereServerTransportSecurityValidator(sessionManager, createConstraints(bindHost, accessToken));
     }
     
     private static List<TransportHeaderConstraint> createConstraints(final String bindHost, final String accessToken) {

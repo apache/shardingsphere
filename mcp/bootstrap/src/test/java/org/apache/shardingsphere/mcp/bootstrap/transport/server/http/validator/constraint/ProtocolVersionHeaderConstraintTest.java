@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
+import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -32,25 +30,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class ProtocolVersionHeaderConstraintTest {
     
     @Test
-    void assertValidateWithMissingProtocolHeader() {
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint();
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"))));
-        assertThat(actual.getStatusCode(), is(400));
-        assertThat(actual.getMessage(), is("MCP-Protocol-Version header is required."));
-    }
-    
-    @Test
     void assertValidateWithProtocolMismatch() {
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint();
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class,
-                () -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"), "MCP-Protocol-Version", List.of("2025-03-26"))));
-        assertThat(actual.getStatusCode(), is(400));
-        assertThat(actual.getMessage(), is("Protocol version mismatch."));
+        TransportHeaderConstraintException ex = assertThrows(TransportHeaderConstraintException.class, () -> new ProtocolVersionHeaderConstraint().validate(ProtocolVersions.MCP_2025_03_26));
+        assertThat(ex.getStatusCode(), is(400));
+        assertThat(ex.getMessage(), is("Protocol version mismatch."));
     }
     
     @Test
     void assertValidateWithSupportedProtocolVersion() {
-        ProtocolVersionHeaderConstraint actualConstraint = new ProtocolVersionHeaderConstraint();
-        assertDoesNotThrow(() -> actualConstraint.validate(Map.of("Mcp-Session-Id", List.of("session-id"), "MCP-Protocol-Version", List.of(MCPTransportConstants.PROTOCOL_VERSION))));
+        assertDoesNotThrow(() -> new ProtocolVersionHeaderConstraint().validate(MCPTransportConstants.PROTOCOL_VERSION));
     }
 }
