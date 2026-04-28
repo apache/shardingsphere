@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,7 +30,7 @@ class AccessTokenHeaderConstraintTest {
     @Test
     void assertValidateWithMissingAuthorization() {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate(""));
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate(""));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
     }
@@ -38,7 +38,7 @@ class AccessTokenHeaderConstraintTest {
     @Test
     void assertValidateWithInvalidAuthorizationScheme() {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate("Basic foo_token"));
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("Basic foo_token"));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
     }
@@ -46,7 +46,7 @@ class AccessTokenHeaderConstraintTest {
     @Test
     void assertValidateWithWrongAccessToken() {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate("Bearer bar_token"));
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("Bearer bar_token"));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
     }

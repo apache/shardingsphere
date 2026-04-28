@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 
 /**
  * Transport header constraint.
@@ -35,7 +35,7 @@ public interface TransportHeaderConstraint {
      * Validate.
      *
      * @param value value
-     * @throws TransportHeaderConstraintException transport header constraint exception
+     * @throws ServerTransportSecurityException server transport security exception
      */
-    void validate(String value) throws TransportHeaderConstraintException;
+    void validate(String value) throws ServerTransportSecurityException;
 }

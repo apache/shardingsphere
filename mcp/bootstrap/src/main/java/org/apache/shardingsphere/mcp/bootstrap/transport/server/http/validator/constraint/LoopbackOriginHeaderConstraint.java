@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
 import java.net.URI;
 import java.util.Objects;
@@ -35,15 +35,15 @@ public final class LoopbackOriginHeaderConstraint implements TransportHeaderCons
     }
     
     @Override
-    public void validate(final String value) throws TransportHeaderConstraintException {
+    public void validate(final String value) throws ServerTransportSecurityException {
         if (value.isEmpty()) {
             return;
         }
         try {
             String host = Objects.toString(URI.create(value).getHost(), "").trim();
-            ShardingSpherePreconditions.checkState(HttpTransportHostUtils.isLoopbackHost(host), () -> new TransportHeaderConstraintException(403, "Origin is not allowed for the current binding."));
+            ShardingSpherePreconditions.checkState(HttpTransportHostUtils.isLoopbackHost(host), () -> new ServerTransportSecurityException(403, "Origin is not allowed for the current binding."));
         } catch (final IllegalArgumentException ex) {
-            throw new TransportHeaderConstraintException(403, "Origin is not allowed for the current binding.");
+            throw new ServerTransportSecurityException(403, "Origin is not allowed for the current binding.");
         }
     }
 }

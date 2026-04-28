@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
+import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -30,7 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 class ShardingSphereServerTransportSecurityValidatorTest {
     
@@ -40,14 +44,54 @@ class ShardingSphereServerTransportSecurityValidatorTest {
     }
     
     @Test
-    void assertValidateHeadersWithFailure() throws TransportHeaderConstraintException {
+    void assertValidateHeadersWithFailure() throws ServerTransportSecurityException {
         TransportHeaderConstraint first = mock(TransportHeaderConstraint.class);
-        doThrow(new TransportHeaderConstraintException(401, "Unauthorized.")).when(first).validate("");
+        doThrow(new ServerTransportSecurityException(401, "Unauthorized.")).when(first).validate("");
         TransportHeaderConstraint second = mock(TransportHeaderConstraint.class);
         ShardingSphereServerTransportSecurityValidator validator = new ShardingSphereServerTransportSecurityValidator(mock(), List.of(first, second));
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> validator.validateHeaders(Map.of()));
         assertThat(actual.getStatusCode(), is(401));
         assertThat(actual.getMessage(), is("Unauthorized."));
         verifyNoInteractions(second);
+    }
+    
+    @Test
+    void assertValidateHeadersSkipsSessionRequiredConstraintWithoutSessionId() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        SessionRequiredTransportHeaderConstraint constraint = mock(SessionRequiredTransportHeaderConstraint.class);
+        assertDoesNotThrow(() -> new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(constraint))
+                .validateHeaders(Map.of("Authorization", List.of("Bearer foo_token"))));
+        verifyNoInteractions(sessionManager, constraint);
+    }
+    
+    @Test
+    void assertValidateHeadersSkipsSessionRequiredConstraintWithEmptySessionHeader() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        SessionRequiredTransportHeaderConstraint constraint = mock(SessionRequiredTransportHeaderConstraint.class);
+        assertDoesNotThrow(() -> new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(constraint))
+                .validateHeaders(Map.of("Mcp-Session-Id", List.of())));
+        verifyNoInteractions(sessionManager, constraint);
+    }
+    
+    @Test
+    void assertValidateHeadersSkipsSessionRequiredConstraintForUnknownSession() {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        SessionRequiredTransportHeaderConstraint constraint = mock(SessionRequiredTransportHeaderConstraint.class);
+        assertDoesNotThrow(() -> new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(constraint))
+                .validateHeaders(Map.of("Mcp-Session-Id", List.of("session-id"))));
+        verify(sessionManager).hasSession("session-id");
+        verifyNoInteractions(constraint);
+    }
+    
+    @Test
+    void assertValidateHeadersWithExistingSession() throws ServerTransportSecurityException {
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        SessionRequiredTransportHeaderConstraint constraint = mock(SessionRequiredTransportHeaderConstraint.class);
+        when(sessionManager.hasSession("session-id")).thenReturn(true);
+        when(constraint.getConstraintKey()).thenReturn("Authorization");
+        assertDoesNotThrow(() -> new ShardingSphereServerTransportSecurityValidator(sessionManager, List.of(constraint))
+                .validateHeaders(Map.of("mcp-session-id", List.of(" session-id "), "authorization", List.of(" Bearer foo_token "))));
+        verify(sessionManager).hasSession("session-id");
+        verify(constraint).validate("Bearer foo_token");
     }
 }

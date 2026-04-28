@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.spec.HttpHeaders;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
 /**
  * Protocol version header constraint.
@@ -33,8 +33,8 @@ public final class ProtocolVersionHeaderConstraint implements SessionRequiredTra
     }
     
     @Override
-    public void validate(final String value) throws TransportHeaderConstraintException {
-        ShardingSpherePreconditions.checkNotEmpty(value, () -> new TransportHeaderConstraintException(400, "MCP-Protocol-Version header is required."));
-        ShardingSpherePreconditions.checkState(MCPTransportConstants.PROTOCOL_VERSION.equals(value), () -> new TransportHeaderConstraintException(400, "Protocol version mismatch."));
+    public void validate(final String value) throws ServerTransportSecurityException {
+        ShardingSpherePreconditions.checkNotEmpty(value, () -> new ServerTransportSecurityException(400, "MCP-Protocol-Version header is required."));
+        ShardingSpherePreconditions.checkState(MCPTransportConstants.PROTOCOL_VERSION.equals(value), () -> new ServerTransportSecurityException(400, "Protocol version mismatch."));
     }
 }

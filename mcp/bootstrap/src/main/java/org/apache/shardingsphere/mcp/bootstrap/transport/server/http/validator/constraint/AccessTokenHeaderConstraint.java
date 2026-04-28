@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
 /**
  * Access token header constraint.
@@ -37,10 +37,10 @@ public final class AccessTokenHeaderConstraint implements TransportHeaderConstra
     }
     
     @Override
-    public void validate(final String value) throws TransportHeaderConstraintException {
+    public void validate(final String value) throws ServerTransportSecurityException {
         String[] authorizationSegments = value.isEmpty() ? new String[0] : value.split("\\s+", 2);
         ShardingSpherePreconditions.checkState(
                 2 == authorizationSegments.length && BEARER_AUTH_SCHEME.equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim()),
-                () -> new TransportHeaderConstraintException(401, "Unauthorized."));
+                () -> new ServerTransportSecurityException(401, "Unauthorized."));
     }
 }

@@ -48,11 +48,7 @@ public final class ShardingSphereServerTransportSecurityValidator implements Ser
                     continue;
                 }
             }
-            try {
-                each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
-            } catch (final TransportHeaderConstraintException ex) {
-                throw new ServerTransportSecurityException(ex.getStatusCode(), ex.getMessage());
-            }
+            each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
         }
     }
     

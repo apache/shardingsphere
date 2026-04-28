@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.spec.ProtocolVersions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -31,7 +31,7 @@ class ProtocolVersionHeaderConstraintTest {
     
     @Test
     void assertValidateWithProtocolMismatch() {
-        TransportHeaderConstraintException ex = assertThrows(TransportHeaderConstraintException.class, () -> new ProtocolVersionHeaderConstraint().validate(ProtocolVersions.MCP_2025_03_26));
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> new ProtocolVersionHeaderConstraint().validate(ProtocolVersions.MCP_2025_03_26));
         assertThat(ex.getStatusCode(), is(400));
         assertThat(ex.getMessage(), is("Protocol version mismatch."));
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
+import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -54,7 +54,7 @@ class LoopbackOriginHeaderConstraintTest {
     @Test
     void assertValidateWithRemoteOrigin() {
         LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate("http://example.com:8080"));
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("http://example.com:8080"));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
     }
@@ -62,7 +62,7 @@ class LoopbackOriginHeaderConstraintTest {
     @Test
     void assertValidateWithInvalidOrigin() {
         LoopbackOriginHeaderConstraint actualConstraint = new LoopbackOriginHeaderConstraint();
-        TransportHeaderConstraintException actual = assertThrows(TransportHeaderConstraintException.class, () -> actualConstraint.validate("://bad-origin"));
+        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("://bad-origin"));
         assertThat(actual.getStatusCode(), is(403));
         assertThat(actual.getMessage(), is("Origin is not allowed for the current binding."));
     }
