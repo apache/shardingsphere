@@ -27,6 +27,7 @@ import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Composite server transport security validator.
@@ -42,16 +43,21 @@ public final class CompositeServerTransportSecurityValidator implements ServerTr
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
         for (TransportHeaderConstraint each : constraints) {
             if (each instanceof SessionRequiredTransportHeaderConstraint) {
-                String sessionId = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
+                String sessionId = getFirstHeaderValue(headers, HttpHeaders.MCP_SESSION_ID);
                 if (sessionId.isEmpty() || !sessionManager.hasSession(sessionId)) {
                     continue;
                 }
             }
             try {
-                each.validate(HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, each.getConstraintKey()));
+                each.validate(getFirstHeaderValue(headers, each.getConstraintKey()));
             } catch (final TransportHeaderConstraintException ex) {
                 throw new ServerTransportSecurityException(ex.getStatusCode(), ex.getMessage());
             }
         }
+    }
+    
+    private String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
+        return headers.entrySet().stream()
+                .filter(entry -> headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()).findFirst().map(entry -> Objects.toString(entry.getValue().get(0), "").trim()).orElse("");
     }
 }
