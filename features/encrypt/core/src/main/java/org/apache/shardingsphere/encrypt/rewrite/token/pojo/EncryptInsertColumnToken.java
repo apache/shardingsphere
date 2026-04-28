@@ -54,12 +54,12 @@ public abstract class EncryptInsertColumnToken extends SQLToken {
             if (null == literals) {
                 return "NULL";
             }
-            return literals instanceof String ? "'" + literals + "'" : String.valueOf(literals);
+            return formatLiteral(literals);
         }
         return expressionSegment.getText();
     }
     
-    public int getParameterMarkerCount() {
-        return expressionSegment instanceof ParameterMarkerExpressionSegment ? 1 : 0;
+    private String formatLiteral(final Object literals) {
+        return literals instanceof String ? "'" + literals + "'" : String.valueOf(literals);
     }
 }

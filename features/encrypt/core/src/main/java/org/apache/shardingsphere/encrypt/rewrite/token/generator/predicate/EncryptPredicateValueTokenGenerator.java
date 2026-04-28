@@ -19,6 +19,7 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseTypeRegistry;
 import org.apache.shardingsphere.encrypt.exception.metadata.MissingMatchedEncryptQueryAlgorithmException;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
@@ -72,8 +73,9 @@ public final class EncryptPredicateValueTokenGenerator implements CollectionSQLT
     @Override
     public Collection<SQLToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
         Collection<SQLToken> result = new LinkedHashSet<>(encryptConditions.size(), 1F);
+        DatabaseType databaseType = sqlStatementContext.getSqlStatement().getDatabaseType();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
-                .orElseGet(() -> new DatabaseTypeRegistry(sqlStatementContext.getSqlStatement().getDatabaseType()).getDefaultSchemaName(database.getName()));
+                .orElseGet(() -> new DatabaseTypeRegistry(databaseType).getDefaultSchemaName(database.getName()));
         for (EncryptCondition each : encryptConditions) {
             Optional<EncryptTable> encryptTable = rule.findEncryptTable(each.getTableName());
             encryptTable.flatMap(optional -> generateSQLToken(schemaName, optional, each)).ifPresent(result::add);
