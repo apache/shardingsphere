@@ -48,7 +48,7 @@ public final class CompositeServerTransportSecurityValidator implements ServerTr
                 }
             }
             try {
-                each.validate(headers);
+                each.validate(HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, each.getConstraintKey()));
             } catch (final TransportHeaderConstraintException ex) {
                 throw new ServerTransportSecurityException(ex.getStatusCode(), ex.getMessage());
             }

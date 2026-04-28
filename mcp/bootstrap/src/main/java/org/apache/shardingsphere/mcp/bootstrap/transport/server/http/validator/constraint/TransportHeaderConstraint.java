@@ -19,20 +19,23 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.
 
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * Transport header constraint.
  */
-@FunctionalInterface
 public interface TransportHeaderConstraint {
+    
+    /**
+     * Get constraint key.
+     * 
+     * @return constraint key
+     */
+    String getConstraintKey();
     
     /**
      * Validate.
      *
-     * @param headers headers
+     * @param value value
      * @throws TransportHeaderConstraintException transport header constraint exception
      */
-    void validate(Map<String, List<String>> headers) throws TransportHeaderConstraintException;
+    void validate(String value) throws TransportHeaderConstraintException;
 }

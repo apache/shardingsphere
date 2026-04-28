@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.HttpTransportSecurityHeaderUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -31,23 +29,21 @@ import java.util.Objects;
  */
 public final class LoopbackOriginHeaderConstraint implements TransportHeaderConstraint {
     
-    private static final String ORIGIN_HEADER = "Origin";
-    
-    private static final String FORBIDDEN_MESSAGE = "Origin is not allowed for the current binding.";
+    @Override
+    public String getConstraintKey() {
+        return "Origin";
+    }
     
     @Override
-    public void validate(final Map<String, List<String>> headers) throws TransportHeaderConstraintException {
-        String origin = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, ORIGIN_HEADER);
-        if (origin.isEmpty()) {
+    public void validate(final String value) throws TransportHeaderConstraintException {
+        if (value.isEmpty()) {
             return;
         }
         try {
-            String host = Objects.toString(URI.create(origin).getHost(), "").trim();
-            if (!HttpTransportHostUtils.isLoopbackHost(host)) {
-                throw new TransportHeaderConstraintException(403, FORBIDDEN_MESSAGE);
-            }
+            String host = Objects.toString(URI.create(value).getHost(), "").trim();
+            ShardingSpherePreconditions.checkState(HttpTransportHostUtils.isLoopbackHost(host), () -> new TransportHeaderConstraintException(403, "Origin is not allowed for the current binding."));
         } catch (final IllegalArgumentException ex) {
-            throw new TransportHeaderConstraintException(403, FORBIDDEN_MESSAGE);
+            throw new TransportHeaderConstraintException(403, "Origin is not allowed for the current binding.");
         }
     }
 }

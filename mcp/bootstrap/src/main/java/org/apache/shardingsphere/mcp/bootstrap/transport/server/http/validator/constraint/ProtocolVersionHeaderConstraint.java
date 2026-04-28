@@ -18,32 +18,23 @@
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
 import io.modelcontextprotocol.spec.HttpHeaders;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.HttpTransportSecurityHeaderUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Protocol version header constraint.
  */
-@RequiredArgsConstructor
 public final class ProtocolVersionHeaderConstraint implements SessionRequiredTransportHeaderConstraint {
     
-    private static final String PROTOCOL_HEADER_REQUIRED_MESSAGE = "MCP-Protocol-Version header is required.";
-    
-    private static final String PROTOCOL_VERSION_MISMATCH_MESSAGE = "Protocol version mismatch.";
+    @Override
+    public String getConstraintKey() {
+        return HttpHeaders.PROTOCOL_VERSION;
+    }
     
     @Override
-    public void validate(final Map<String, List<String>> headers) throws TransportHeaderConstraintException {
-        String actualProtocolVersion = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, HttpHeaders.PROTOCOL_VERSION);
-        if (actualProtocolVersion.isEmpty()) {
-            throw new TransportHeaderConstraintException(400, PROTOCOL_HEADER_REQUIRED_MESSAGE);
-        }
-        if (!MCPTransportConstants.PROTOCOL_VERSION.equals(actualProtocolVersion)) {
-            throw new TransportHeaderConstraintException(400, PROTOCOL_VERSION_MISMATCH_MESSAGE);
-        }
+    public void validate(final String value) throws TransportHeaderConstraintException {
+        ShardingSpherePreconditions.checkNotEmpty(value, () -> new TransportHeaderConstraintException(400, "MCP-Protocol-Version header is required."));
+        ShardingSpherePreconditions.checkState(MCPTransportConstants.PROTOCOL_VERSION.equals(value), () -> new TransportHeaderConstraintException(400, "Protocol version mismatch."));
     }
 }

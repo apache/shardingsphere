@@ -19,11 +19,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.HttpTransportSecurityHeaderUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * Access token header constraint.
@@ -31,18 +27,20 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class AccessTokenHeaderConstraint implements TransportHeaderConstraint {
     
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    
     private static final String BEARER_AUTH_SCHEME = "Bearer";
     
     private final String accessToken;
     
     @Override
-    public void validate(final Map<String, List<String>> headers) throws TransportHeaderConstraintException {
-        String authorization = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, AUTHORIZATION_HEADER);
-        String[] authorizationSegments = authorization.isEmpty() ? new String[0] : authorization.split("\\s+", 2);
-        ShardingSpherePreconditions.checkState(2 == authorizationSegments.length
-                && BEARER_AUTH_SCHEME.equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim()),
+    public String getConstraintKey() {
+        return "Authorization";
+    }
+    
+    @Override
+    public void validate(final String value) throws TransportHeaderConstraintException {
+        String[] authorizationSegments = value.isEmpty() ? new String[0] : value.split("\\s+", 2);
+        ShardingSpherePreconditions.checkState(
+                2 == authorizationSegments.length && BEARER_AUTH_SCHEME.equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim()),
                 () -> new TransportHeaderConstraintException(401, "Unauthorized."));
     }
 }
