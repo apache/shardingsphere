@@ -58,7 +58,7 @@ class EncryptWorkflowPlanningServiceTest {
     
     @Test
     void assertPlanRejectsMissingPlanningContext() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, mock(EncryptRuleInspectionService.class),
                 mock(EncryptAlgorithmRecommendationService.class), mock(EncryptAlgorithmPropertyTemplateService.class),
                 mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class),
@@ -72,7 +72,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanRejectsLifecycleMismatchForCreate() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class),
                 mock(IndexPlanningService.class), mock(EncryptRuleDistSQLPlanningService.class));
@@ -87,7 +87,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
         when(ruleDistSQLPlanningService.planEncryptDropRule(any(), any())).thenReturn(new RuleArtifact("drop", "DROP ENCRYPT RULE orders"));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class),
                 mock(IndexPlanningService.class), ruleDistSQLPlanningService);
@@ -109,7 +109,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(ruleInspectionService.enrichEncryptAlgorithms(any())).thenReturn(List.of(
                 Map.of("type", "AES", "supports_like", false),
                 Map.of("type", "MD5", "supports_like", false)));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, new EncryptAlgorithmRecommendationService(),
                 new EncryptAlgorithmPropertyTemplateService(), mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class),
                 mock(IndexPlanningService.class), new EncryptRuleDistSQLPlanningService());
@@ -132,7 +132,7 @@ class EncryptWorkflowPlanningServiceTest {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm", "missing", "fix", false, Map.of()));
             return List.of();
         });
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class),
                 mock(IndexPlanningService.class), mock(EncryptRuleDistSQLPlanningService.class));
@@ -158,7 +158,7 @@ class EncryptWorkflowPlanningServiceTest {
         request.getOptions().setAssistedQueryAlgorithmType("MD5");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
         request.getOptions().setAllowIndexDDL(false);
-        EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(new WorkflowContextStore(), ruleInspectionService,
+        EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(WorkflowContextStore.newInstance(), ruleInspectionService,
                 new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(), derivedColumnNamingService,
                 mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class), ruleDistSQLPlanningService);
         WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), createQueryFacade(), "session-1", request);
@@ -184,7 +184,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of(
                 new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", "")));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class), mock(IndexPlanningService.class),
                 mock(EncryptRuleDistSQLPlanningService.class));
@@ -213,7 +213,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
         when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
         IndexPlanningService indexPlanningService = mock(IndexPlanningService.class);
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         EncryptWorkflowPlanningService service = new EncryptWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, derivedColumnNamingService, physicalDDLPlanningService, indexPlanningService, ruleDistSQLPlanningService);
         EncryptWorkflowRequest request = createRequest("create");

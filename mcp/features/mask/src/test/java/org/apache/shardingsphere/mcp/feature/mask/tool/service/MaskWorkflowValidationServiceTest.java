@@ -44,7 +44,7 @@ class MaskWorkflowValidationServiceTest {
     
     @Test
     void assertValidateRejectsDifferentSession() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(createSnapshot("plan-1", "session-1", "executed", "create"));
         MaskWorkflowValidationService service = new MaskWorkflowValidationService(contextStore, mock(MaskRuleInspectionService.class));
         Map<String, Object> actual = service.validate(null, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-2", "plan-1");
@@ -54,7 +54,7 @@ class MaskWorkflowValidationServiceTest {
     
     @Test
     void assertValidateHappyPath() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         contextStore.save(snapshot);
@@ -73,7 +73,7 @@ class MaskWorkflowValidationServiceTest {
     
     @Test
     void assertValidateDropWorkflowAfterRuleRemoval() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
         contextStore.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
@@ -90,7 +90,7 @@ class MaskWorkflowValidationServiceTest {
     
     @Test
     void assertValidateWhenAlgorithmMismatch() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         contextStore.save(snapshot);
@@ -108,7 +108,7 @@ class MaskWorkflowValidationServiceTest {
     
     @Test
     void assertValidateWhenSqlExecutionFails() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         contextStore.save(snapshot);

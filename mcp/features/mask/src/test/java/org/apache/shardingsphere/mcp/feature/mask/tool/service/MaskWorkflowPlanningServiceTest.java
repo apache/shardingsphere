@@ -51,7 +51,7 @@ class MaskWorkflowPlanningServiceTest {
     
     @Test
     void assertPlanRejectsMissingPlanningContext() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, mock(MaskRuleInspectionService.class),
                 mock(MaskAlgorithmRecommendationService.class), mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(null, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), "session-1", new WorkflowRequest());
@@ -63,7 +63,7 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanRejectsLifecycleMismatchForCreate() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
@@ -77,7 +77,7 @@ class MaskWorkflowPlanningServiceTest {
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
         when(ruleDistSQLPlanningService.planMaskDropRule(any(), any())).thenReturn(new RuleArtifact("drop", "DROP MASK RULE orders"));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), ruleDistSQLPlanningService);
         WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("drop"));
@@ -93,7 +93,7 @@ class MaskWorkflowPlanningServiceTest {
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("column", "phone")) : List.of());
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
         when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, new MaskAlgorithmRecommendationService(),
                 new MaskAlgorithmPropertyTemplateService(), new MaskRuleDistSQLPlanningService());
         WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createNaturalLanguageRequest(naturalLanguageIntent));
@@ -114,7 +114,7 @@ class MaskWorkflowPlanningServiceTest {
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm", "missing", "fix", false, Map.of()));
             return List.of();
         });
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
@@ -134,7 +134,7 @@ class MaskWorkflowPlanningServiceTest {
         MaskAlgorithmPropertyTemplateService propertyTemplateService = mock(MaskAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements("MASK_FROM_X_TO_Y")).thenReturn(List.of(
                 new AlgorithmPropertyRequirement("primary", "from-x", true, false, "from", "")));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, mock(MaskRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
@@ -155,7 +155,7 @@ class MaskWorkflowPlanningServiceTest {
         when(propertyTemplateService.findRequirements("MASK_FROM_X_TO_Y")).thenReturn(List.of());
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
         when(ruleDistSQLPlanningService.planMaskRule(any(), any())).thenReturn(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MaskWorkflowPlanningService service = new MaskWorkflowPlanningService(contextStore, ruleInspectionService, algorithmRecommendationService,
                 propertyTemplateService, ruleDistSQLPlanningService);
         WorkflowContextSnapshot actual = service.plan(null, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));

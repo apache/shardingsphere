@@ -148,7 +148,7 @@ class WorkflowValidationSupportTest {
         snapshot.setInteractionPlan(interactionPlan);
         ValidationReport validationReport = new ValidationReport();
         validationReport.setOverallStatus("passed");
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(contextStore, snapshot, validationReport);
         assertThat(actualResult.get("status"), is("validated"));
@@ -165,7 +165,7 @@ class WorkflowValidationSupportTest {
         Map<String, Object> mismatch = new LinkedHashMap<>(2, 1F);
         mismatch.put("code", WorkflowIssueCode.SQL_EXECUTABILITY_FAILED);
         validationReport.getMismatches().add(mismatch);
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(contextStore, snapshot, validationReport);
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));

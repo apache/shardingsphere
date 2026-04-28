@@ -47,9 +47,9 @@ class ServerTransportSecurityValidatorFactoryTest {
     void assertCreateWithAccessTokenConstraintFirst() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "foo_token");
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class,
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
                 () -> validator.validateHeaders(Map.of("Origin", List.of("http://example.com:8080"), "Mcp-Session-Id", List.of("session-id"))));
-        assertThat(actual.getStatusCode(), is(401));
+        assertThat(ex.getStatusCode(), is(401));
         verifyNoInteractions(sessionManager);
     }
     
@@ -57,9 +57,9 @@ class ServerTransportSecurityValidatorFactoryTest {
     void assertCreateWithLoopbackOriginConstraintSecond() {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "127.0.0.1", "");
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class,
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
                 () -> validator.validateHeaders(Map.of("Origin", List.of("http://example.com:8080"), "Mcp-Session-Id", List.of("session-id"))));
-        assertThat(actual.getStatusCode(), is(403));
+        assertThat(ex.getStatusCode(), is(403));
         verifyNoInteractions(sessionManager);
     }
     
@@ -68,8 +68,8 @@ class ServerTransportSecurityValidatorFactoryTest {
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         when(sessionManager.hasSession("session-id")).thenReturn(true);
         ServerTransportSecurityValidator validator = ServerTransportSecurityValidatorFactory.create(sessionManager, "0.0.0.0", "");
-        ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class,
+        ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class,
                 () -> validator.validateHeaders(Map.of("Mcp-Session-Id", List.of("session-id"))));
-        assertThat(actual.getStatusCode(), is(400));
+        assertThat(ex.getStatusCode(), is(400));
     }
 }

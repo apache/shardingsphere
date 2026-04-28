@@ -49,7 +49,7 @@ class EncryptWorkflowValidationServiceTest {
     
     @Test
     void assertValidateRejectsDifferentSession() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(createSnapshot("plan-1", "session-1", "executed", "create"));
         EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(contextStore, mock(EncryptRuleInspectionService.class));
         Map<String, Object> actual = service.validate(null, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-2", "plan-1");
@@ -69,7 +69,7 @@ class EncryptWorkflowValidationServiceTest {
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(true, true));
         snapshot.setFeatureData(workflowState);
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
@@ -96,7 +96,7 @@ class EncryptWorkflowValidationServiceTest {
     
     @Test
     void assertValidateDropWorkflowAfterRuleRemoval() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
         contextStore.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -114,7 +114,7 @@ class EncryptWorkflowValidationServiceTest {
     
     @Test
     void assertValidateWhenRuleMissing() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
@@ -140,7 +140,7 @@ class EncryptWorkflowValidationServiceTest {
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
         snapshot.setFeatureData(workflowState);
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(

@@ -198,7 +198,7 @@ class EncryptToolHandlerTest {
     
     private RequestContextFixture createRequestContextFixture() {
         MCPFeatureContext result = mock(MCPFeatureContext.class);
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);

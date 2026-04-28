@@ -35,7 +35,7 @@ public final class MCPRuntimeContext {
     private final WorkflowContextStore workflowContextStore;
     
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
-        this(sessionManager, databaseCapabilityProvider, new WorkflowContextStore());
+        this(sessionManager, databaseCapabilityProvider, WorkflowContextStore.newInstance());
     }
     
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowContextStore workflowContextStore) {

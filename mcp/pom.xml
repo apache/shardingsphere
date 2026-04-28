@@ -28,6 +28,7 @@
     <name>${project.artifactId}</name>
     
     <modules>
+        <module>api</module>
         <module>features</module>
         <module>core</module>
         <module>bootstrap</module>

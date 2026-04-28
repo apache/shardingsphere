@@ -31,15 +31,15 @@ class WorkflowLifecycleUtilsTest {
     
     @Test
     void assertResolveContextStoreUsesRequestContextStore() {
-        WorkflowContextStore expectedContextStore = new WorkflowContextStore();
+        WorkflowContextStore expectedContextStore = WorkflowContextStore.newInstance();
         WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(null, expectedContextStore);
         assertThat(actualContextStore, is(expectedContextStore));
     }
     
     @Test
     void assertResolveContextStorePrefersConfiguredStore() {
-        WorkflowContextStore expectedContextStore = new WorkflowContextStore();
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(expectedContextStore, new WorkflowContextStore());
+        WorkflowContextStore expectedContextStore = WorkflowContextStore.newInstance();
+        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(expectedContextStore, WorkflowContextStore.newInstance());
         assertThat(actualContextStore, is(expectedContextStore));
     }
     

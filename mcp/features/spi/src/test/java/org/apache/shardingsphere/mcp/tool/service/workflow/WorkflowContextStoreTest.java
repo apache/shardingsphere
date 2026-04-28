@@ -38,7 +38,7 @@ class WorkflowContextStoreTest {
     
     @Test
     void assertGetOrCreateCreatesNewSnapshot() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot actualSnapshot = contextStore.getOrCreate("session-1", "");
         assertThat(actualSnapshot.getSessionId(), is("session-1"));
         assertThat(actualSnapshot.getStatus(), is("clarifying"));
@@ -47,7 +47,7 @@ class WorkflowContextStoreTest {
     
     @Test
     void assertGetOrCreateReturnsStoredSnapshot() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setStatus("planned");
@@ -60,7 +60,7 @@ class WorkflowContextStoreTest {
     @Test
     void assertFindPurgesExpiredSnapshot() {
         MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
-        WorkflowContextStore contextStore = new WorkflowContextStore(clock, Duration.ofHours(24), 10);
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance(clock, Duration.ofHours(24), 10);
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         contextStore.save(snapshot);
@@ -71,7 +71,7 @@ class WorkflowContextStoreTest {
     
     @Test
     void assertGetRequiredReturnsSavedSnapshot() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setStatus("planned");
@@ -83,14 +83,14 @@ class WorkflowContextStoreTest {
     
     @Test
     void assertGetRequiredThrowsForUnknownPlanId() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         Exception actualException = assertThrows(MCPInvalidRequestException.class, () -> contextStore.getRequired("missing"));
         assertThat(actualException.getMessage(), is("Unknown plan_id `missing`."));
     }
     
     @Test
     void assertRemoveDeletesSnapshot() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         contextStore.save(snapshot);
@@ -100,7 +100,7 @@ class WorkflowContextStoreTest {
     
     @Test
     void assertSaveStoresDetachedSnapshotCopy() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setStatus("planned");
@@ -111,7 +111,7 @@ class WorkflowContextStoreTest {
     
     @Test
     void assertGetRequiredReturnsDetachedSnapshotCopy() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         snapshot.setStatus("planned");
@@ -128,7 +128,7 @@ class WorkflowContextStoreTest {
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("intaking");
         snapshot.setInteractionPlan(interactionPlan);
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.persist(snapshot, "review", "planned");
         WorkflowContextSnapshot actualSnapshot = contextStore.getRequired("plan-1");
         assertThat(actualSnapshot.getStatus(), is("planned"));
@@ -138,7 +138,7 @@ class WorkflowContextStoreTest {
     @Test
     void assertSaveEvictsOldestSnapshotWhenCapacityExceeded() {
         MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
-        WorkflowContextStore contextStore = new WorkflowContextStore(clock, Duration.ofHours(24), 2);
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance(clock, Duration.ofHours(24), 2);
         WorkflowContextSnapshot firstSnapshot = createSnapshot("plan-1");
         contextStore.save(firstSnapshot);
         clock.setInstant(clock.instant().plusSeconds(1L));
@@ -154,13 +154,13 @@ class WorkflowContextStoreTest {
     
     @Test
     void assertConstructWithNonPositiveTtlThrowsException() {
-        Exception actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowContextStore(Clock.systemUTC(), Duration.ZERO, 1));
+        Exception actual = assertThrows(IllegalArgumentException.class, () -> WorkflowContextStore.newInstance(Clock.systemUTC(), Duration.ZERO, 1));
         assertThat(actual.getMessage(), is("Context TTL must be positive."));
     }
     
     @Test
     void assertConstructWithNonPositiveCapacityThrowsException() {
-        Exception actual = assertThrows(IllegalArgumentException.class, () -> new WorkflowContextStore(Clock.systemUTC(), Duration.ofHours(1L), 0));
+        Exception actual = assertThrows(IllegalArgumentException.class, () -> WorkflowContextStore.newInstance(Clock.systemUTC(), Duration.ofHours(1L), 0));
         assertThat(actual.getMessage(), is("Max entries must be positive."));
     }
     

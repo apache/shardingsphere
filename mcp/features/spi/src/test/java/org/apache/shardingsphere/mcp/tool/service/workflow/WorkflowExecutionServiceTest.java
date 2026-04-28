@@ -45,7 +45,7 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyMasksManualArtifactPackage() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "AES key.", ""));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='123456'))"));
@@ -60,7 +60,7 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyRejectsDifferentSession() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(createSnapshot());
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         Map<String, Object> actualResponse = executionService.apply(null, mock(MCPFeatureExecutionFacade.class), "session-2", "plan-1", List.of(), "");
@@ -71,7 +71,7 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyRejectsInvalidLifecycleStatus() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.setStatus("clarifying");
         contextStore.save(snapshot);
@@ -88,7 +88,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -108,7 +108,7 @@ class WorkflowExecutionServiceTest {
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         contextStore.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService(contextStore);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -123,7 +123,7 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyReturnsDdlExecutionFailureForDdlArtifact() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         contextStore.save(snapshot);
@@ -140,7 +140,7 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyReturnsDdlExecutionFailureForIndexArtifact() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
         contextStore.save(snapshot);
@@ -157,7 +157,7 @@ class WorkflowExecutionServiceTest {
     
     @Test
     void assertApplyReturnsRuleExecutionFailureForRuleArtifact() {
-        WorkflowContextStore contextStore = new WorkflowContextStore();
+        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getRuleArtifacts().add(new RuleArtifact("create", "ALTER MASK RULE orders"));
         contextStore.save(snapshot);
