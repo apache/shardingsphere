@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
-import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
-import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.HttpTransportSecurityHeaderUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
- * Access token security validator.
+ * Access token header constraint.
  */
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class AccessTokenSecurityValidator implements ServerTransportSecurityValidator {
+@RequiredArgsConstructor
+public final class AccessTokenHeaderConstraint implements TransportHeaderConstraint {
     
     private static final String AUTHORIZATION_HEADER = "Authorization";
     
@@ -38,24 +36,13 @@ public final class AccessTokenSecurityValidator implements ServerTransportSecuri
     
     private final String accessToken;
     
-    /**
-     * Create validator.
-     * 
-     * @param accessToken access token
-     * @return created validator
-     */
-    public static ServerTransportSecurityValidator create(final String accessToken) {
-        String actualAccessToken = Objects.toString(accessToken, "").trim();
-        return actualAccessToken.isEmpty() ? NOOP : new AccessTokenSecurityValidator(actualAccessToken);
-    }
-    
     @Override
-    public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+    public void validate(final Map<String, List<String>> headers) throws TransportHeaderConstraintException {
         String authorization = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, AUTHORIZATION_HEADER);
         String[] authorizationSegments = authorization.isEmpty() ? new String[0] : authorization.split("\\s+", 2);
         if (2 == authorizationSegments.length && "Bearer".equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim())) {
             return;
         }
-        throw new ServerTransportSecurityException(401, UNAUTHORIZED_MESSAGE);
+        throw new TransportHeaderConstraintException(401, UNAUTHORIZED_MESSAGE);
     }
 }

@@ -136,7 +136,6 @@ class StreamableHttpTransportIT {
         HttpClient httpClient = HttpClient.newHttpClient();
         HttpResponse<String> actualResponse = sendInitializeRequest(httpClient, createJsonRequestHeaders(), createInitializeRequestParams("integration-test"));
         assertThat(actualResponse.statusCode(), is(401));
-        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
     
     @Test
@@ -146,7 +145,6 @@ class StreamableHttpTransportIT {
         HttpResponse<String> actualResponse = sendInitializeRequest(httpClient,
                 createJsonRequestHeaders(Map.of("Authorization", getAuthorizationHeaderValue("wrong-token"))), createInitializeRequestParams("integration-test"));
         assertThat(actualResponse.statusCode(), is(401));
-        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
     
     @Test
@@ -158,7 +156,6 @@ class StreamableHttpTransportIT {
                 "MCP-Session-Id", session.sessionId(),
                 "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION));
         assertThat(streamResponse.statusCode(), is(404));
-        assertThat(parseJsonBody(streamResponse.body()).get("message"), is("Session does not exist."));
     }
     
     @Test
@@ -178,7 +175,6 @@ class StreamableHttpTransportIT {
         HttpResponse<String> initializeResponse = sendInitializeRequest(httpClient,
                 createJsonRequestHeaders(Map.of("Origin", "https://evil.example.com")), createInitializeRequestParams("integration-test"));
         assertThat(initializeResponse.statusCode(), is(403));
-        assertThat(parseJsonBody(initializeResponse.body()).get("message"), is("Origin is not allowed for the current binding."));
     }
     
     @Test
@@ -226,7 +222,6 @@ class StreamableHttpTransportIT {
                 "MCP-Session-Id", "missing-session",
                 "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)));
         assertThat(actualResponse.statusCode(), is(401));
-        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
     
     @Test
@@ -237,7 +232,6 @@ class StreamableHttpTransportIT {
                 "MCP-Session-Id", session.sessionId(),
                 "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)));
         assertThat(actualResponse.statusCode(), is(401));
-        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Unauthorized."));
     }
     
     @Test
@@ -245,7 +239,49 @@ class StreamableHttpTransportIT {
         RuntimeHttpSession session = launchRuntime();
         HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders(Map.of("MCP-Session-Id", session.sessionId())));
         assertThat(actualResponse.statusCode(), is(400));
-        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("MCP-Protocol-Version header is required."));
+    }
+    
+    @Test
+    void assertRejectFollowUpRequestWithProtocolMismatch() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntime();
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders(Map.of(
+                "MCP-Session-Id", session.sessionId(),
+                "MCP-Protocol-Version", "2024-11-05")));
+        assertThat(actualResponse.statusCode(), is(400));
+    }
+    
+    @Test
+    void assertRejectFollowUpRequestWithoutSessionId() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntime();
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders());
+        assertThat(actualResponse.statusCode(), is(400));
+    }
+    
+    @Test
+    void assertRejectFollowUpRequestWithUnknownSession() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntime();
+        HttpResponse<String> actualResponse = sendCapabilitiesRequest(session.httpClient(), createJsonRequestHeaders(Map.of(
+                "MCP-Session-Id", "missing-session",
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)));
+        assertThat(actualResponse.statusCode(), is(404));
+    }
+    
+    @Test
+    void assertRejectInitializeWithInvalidAcceptHeader() throws IOException, InterruptedException, SQLException {
+        launchJDBCRuntime();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpResponse<String> actualResponse = sendInitializeRequest(httpClient,
+                createJsonRequestHeaders(Map.of("Accept", "application/json")), createInitializeRequestParams("integration-test"));
+        assertThat(actualResponse.statusCode(), is(400));
+    }
+    
+    @Test
+    void assertRejectFollowUpRequestWithMalformedRequestBody() throws IOException, InterruptedException, SQLException {
+        RuntimeHttpSession session = launchRuntime();
+        HttpResponse<String> actualResponse = sendRawPostRequest(session.httpClient(), createJsonRequestHeaders(Map.of(
+                "MCP-Session-Id", session.sessionId(),
+                "MCP-Protocol-Version", MCPTransportConstants.PROTOCOL_VERSION)), "not-json");
+        assertThat(actualResponse.statusCode(), is(400));
     }
     
     @Test
@@ -255,7 +291,6 @@ class StreamableHttpTransportIT {
         HttpResponse<String> actualResponse = sendDeleteRequest(session.httpClient(), session.sessionId());
         assertThat(deleteResponse.statusCode(), is(200));
         assertThat(actualResponse.statusCode(), is(404));
-        assertThat(parseJsonBody(actualResponse.body()).get("message"), is("Session does not exist."));
     }
     
     @Test
@@ -518,8 +553,13 @@ class StreamableHttpTransportIT {
     
     private HttpResponse<String> sendPostRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
                                                  final Map<String, Object> requestBody) throws IOException, InterruptedException {
+        return sendRawPostRequest(httpClient, requestHeaders, JsonUtils.toJsonString(requestBody));
+    }
+    
+    private HttpResponse<String> sendRawPostRequest(final HttpClient httpClient, final Map<String, String> requestHeaders,
+                                                    final String requestBody) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(createEndpointUri())
-                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(requestBody)));
+                .POST(HttpRequest.BodyPublishers.ofString(requestBody));
         requestHeaders.forEach(requestBuilder::header);
         return httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
     }

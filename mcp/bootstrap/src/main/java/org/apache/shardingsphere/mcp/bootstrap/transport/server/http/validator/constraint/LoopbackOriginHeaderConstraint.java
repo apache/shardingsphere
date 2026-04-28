@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
-import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
-import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
 import org.apache.shardingsphere.mcp.bootstrap.transport.HttpTransportHostUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.HttpTransportSecurityHeaderUtils;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
 import java.net.URI;
 import java.util.List;
@@ -27,26 +27,16 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Loopback origin security validator.
+ * Loopback origin header constraint.
  */
-public final class LoopbackOriginSecurityValidator implements ServerTransportSecurityValidator {
+public final class LoopbackOriginHeaderConstraint implements TransportHeaderConstraint {
     
     private static final String ORIGIN_HEADER = "Origin";
     
     private static final String FORBIDDEN_MESSAGE = "Origin is not allowed for the current binding.";
     
-    /**
-     * Create validator.
-     * 
-     * @param bindHost bind host
-     * @return created validator
-     */
-    public static ServerTransportSecurityValidator create(final String bindHost) {
-        return HttpTransportHostUtils.isLoopbackHost(bindHost) ? new LoopbackOriginSecurityValidator() : NOOP;
-    }
-    
     @Override
-    public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
+    public void validate(final Map<String, List<String>> headers) throws TransportHeaderConstraintException {
         String origin = HttpTransportSecurityHeaderUtils.getFirstHeaderValue(headers, ORIGIN_HEADER);
         if (origin.isEmpty()) {
             return;
@@ -54,10 +44,10 @@ public final class LoopbackOriginSecurityValidator implements ServerTransportSec
         try {
             String host = Objects.toString(URI.create(origin).getHost(), "").trim();
             if (!HttpTransportHostUtils.isLoopbackHost(host)) {
-                throw new ServerTransportSecurityException(403, FORBIDDEN_MESSAGE);
+                throw new TransportHeaderConstraintException(403, FORBIDDEN_MESSAGE);
             }
         } catch (final IllegalArgumentException ex) {
-            throw new ServerTransportSecurityException(403, FORBIDDEN_MESSAGE);
+            throw new TransportHeaderConstraintException(403, FORBIDDEN_MESSAGE);
         }
     }
 }

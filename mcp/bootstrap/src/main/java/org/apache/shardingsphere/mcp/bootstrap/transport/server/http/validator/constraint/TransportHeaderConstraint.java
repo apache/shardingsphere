@@ -15,35 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
+package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.TransportHeaderConstraintException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
- * HTTP transport security header utils.
+ * Transport header constraint.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HttpTransportSecurityHeaderUtils {
+@FunctionalInterface
+public interface TransportHeaderConstraint {
     
     /**
-     * Get the first header value.
-     *
+     * Validate.
+     * 
      * @param headers headers
-     * @param headerName header name
-     * @return first header value
+     * @throws TransportHeaderConstraintException transport header constraint exception
      */
-    public static String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
-        for (Entry<String, List<String>> entry : headers.entrySet()) {
-            if (headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()) {
-                return Objects.toString(entry.getValue().get(0), "").trim();
-            }
-        }
-        return "";
-    }
+    void validate(Map<String, List<String>> headers) throws TransportHeaderConstraintException;
 }

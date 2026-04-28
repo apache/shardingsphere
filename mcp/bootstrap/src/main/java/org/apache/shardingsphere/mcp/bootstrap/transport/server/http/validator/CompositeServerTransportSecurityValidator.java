@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityValidator;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
 
 import java.util.List;
 import java.util.Map;
@@ -30,12 +31,16 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class CompositeServerTransportSecurityValidator implements ServerTransportSecurityValidator {
     
-    private final List<ServerTransportSecurityValidator> delegates;
+    private final List<TransportHeaderConstraint> constraints;
     
     @Override
     public void validateHeaders(final Map<String, List<String>> headers) throws ServerTransportSecurityException {
-        for (ServerTransportSecurityValidator each : delegates) {
-            each.validateHeaders(headers);
+        for (TransportHeaderConstraint each : constraints) {
+            try {
+                each.validate(headers);
+            } catch (final TransportHeaderConstraintException ex) {
+                throw new ServerTransportSecurityException(ex.getStatusCode(), ex.getMessage());
+            }
         }
     }
 }

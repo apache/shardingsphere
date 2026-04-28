@@ -17,33 +17,20 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
+import lombok.Getter;
 
 /**
- * HTTP transport security header utils.
+ * Transport header constraint exception.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HttpTransportSecurityHeaderUtils {
+@Getter
+public final class TransportHeaderConstraintException extends Exception {
     
-    /**
-     * Get the first header value.
-     *
-     * @param headers headers
-     * @param headerName header name
-     * @return first header value
-     */
-    public static String getFirstHeaderValue(final Map<String, List<String>> headers, final String headerName) {
-        for (Entry<String, List<String>> entry : headers.entrySet()) {
-            if (headerName.equalsIgnoreCase(entry.getKey()) && !entry.getValue().isEmpty()) {
-                return Objects.toString(entry.getValue().get(0), "").trim();
-            }
-        }
-        return "";
+    private static final long serialVersionUID = 297403771106160685L;
+    
+    private final int statusCode;
+    
+    public TransportHeaderConstraintException(final int statusCode, final String message) {
+        super(message);
+        this.statusCode = statusCode;
     }
 }
