@@ -97,6 +97,22 @@ class PackagedDistributionTestSupportTest {
     }
     
     @Test
+    void assertFindDistributionHomeWithRelativeConfiguredHome() throws IOException {
+        final Path configuredHome = Files.createDirectories(tempDir.resolve("distribution-home"));
+        final String actualOriginalHome = System.getProperty("mcp.distribution.home");
+        final String actualOriginalProjectDirectory = System.getProperty("maven.multiModuleProjectDirectory");
+        System.setProperty("mcp.distribution.home", "distribution-home");
+        System.setProperty("maven.multiModuleProjectDirectory", tempDir.toString());
+        try {
+            final Optional<Path> actual = PackagedDistributionTestSupport.findDistributionHome();
+            assertThat(actual.orElseThrow(), is(configuredHome.toAbsolutePath().normalize()));
+        } finally {
+            restoreDistributionHome(actualOriginalHome);
+            restoreProjectDirectory(actualOriginalProjectDirectory);
+        }
+    }
+    
+    @Test
     void assertFindDistributionHomeWithMissingConfiguredHome() {
         final Path configuredHome = tempDir.resolve("missing-home");
         final String actualOriginalHome = System.getProperty("mcp.distribution.home");
@@ -165,5 +181,13 @@ class PackagedDistributionTestSupportTest {
             return;
         }
         System.setProperty("mcp.distribution.home", originalHome);
+    }
+    
+    private void restoreProjectDirectory(final String originalProjectDirectory) {
+        if (null == originalProjectDirectory) {
+            System.clearProperty("maven.multiModuleProjectDirectory");
+            return;
+        }
+        System.setProperty("maven.multiModuleProjectDirectory", originalProjectDirectory);
     }
 }

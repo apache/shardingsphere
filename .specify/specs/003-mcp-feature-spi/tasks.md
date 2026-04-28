@@ -1,10 +1,10 @@
-# Tasks: MCP Feature SPI Modularization
+# Tasks: MCP Feature SPI Simplification
 
 **Input**: Design documents from `/.specify/specs/003-mcp-feature-spi/`
 **Prerequisites**: `plan.md`, `spec.md`, `research.md`, `data-model.md`, `quickstart.md`, `contracts/feature-spi.md`
-**Tests**: Add or update module-scoped tests for `mcp/features/spi`, `mcp/features/encrypt`, `mcp/features/mask`, `mcp/core`, and `mcp/bootstrap`.
+**Tests**: Add or update module-scoped tests for `mcp/features/spi`, `mcp/core`, `mcp/features/encrypt`, `mcp/features/mask`, and any newly added shared module.
 
-**Organization**: Tasks are grouped by user story so the refactor can be implemented and verified in independent slices.
+**Organization**: Tasks are grouped by user story so the simplification can land in small, reviewable slices.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -14,144 +14,118 @@
 
 ## Analysis Gates
 
-以下 5 个问题必须在重度迁移前落成代码边界，而不是留到实现中途再回头返工：
+以下问题必须在实际搬迁前落成明确答案：
 
-- `mcp/features/spi` 需要提升哪些 extension-facing contracts
-- feature 访问 shared MCP 能力时的 runtime facade 最小集合
-- workflow 状态与 snapshot store 的 ownership
-- handler SPI 注册与 registry 聚合方式
-- `bootstrap` / `distribution` 如何把 feature jars 带入运行时 classpath
-
----
-
-## Phase 1: Setup (Shared Infrastructure)
-
-- [ ] T001 Update `mcp/pom.xml` and create `mcp/features/pom.xml` so the MCP reactor includes `spi`, `encrypt`, and `mask` modules under `mcp/features/`.
-- [ ] T002 Update `mcp/bootstrap/pom.xml` and `distribution/mcp/pom.xml`, and create `mcp/features/spi/pom.xml`, `mcp/features/encrypt/pom.xml`, and `mcp/features/mask/pom.xml` so feature jars are built and packaged without direct implementation wiring in bootstrap code.
-- [ ] T003 [P] Create module source, test, and service-registration skeletons under `mcp/features/spi/src/main/`, `mcp/features/encrypt/src/main/`, `mcp/features/mask/src/main/`, and matching `src/test/` trees.
+- `mcp/features/spi` 当前每个 package family 的 ownership 是什么
+- 哪些类型是 shared API 而不是 SPI
+- 哪些 concrete helper 真正被多个 feature 共享
+- 哪些 implementation 是 core-private
+- 为了避免 feature 反向依赖 core，`mcp/api` 的边界应如何定义
+- 当前共享 concrete helper 家族如何拆分，才能在不引入 `mcp/features/support` 的前提下完成归位
 
 ---
 
-## Phase 2: Foundational (Blocking Prerequisites)
+## Phase 1: Setup and classification
 
-- [ ] T004 Create the SPI elevation set in `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/`, including `tool/handler/ToolHandler.java`, `resource/handler/ResourceHandler.java`, `tool/descriptor/MCPToolDescriptor.java`, `tool/descriptor/MCPToolFieldDefinition.java`, `tool/descriptor/MCPToolValueDefinition.java`, and feature-facing response contracts under `protocol/response/`.
-- [ ] T005 [P] Create runtime facade contracts in `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/feature/spi/runtime/`, including `MCPFeatureRuntimeContext.java`, `MCPFeatureMetadataFacade.java`, `MCPFeatureExecutionFacade.java`, `MCPFeatureSessionFacade.java`, `MCPFeatureWorkflowStore.java`, and `MCPFeatureCapabilityFacade.java`.
-- [ ] T006 Create core-side SPI adapters in `mcp/core/src/main/java/org/apache/shardingsphere/mcp/feature/runtime/`, including `CoreMCPFeatureRuntimeContext.java` and the concrete facade implementations that expose shared metadata, execution, session, capability, and workflow-store services to feature modules.
-- [ ] T007 Define workflow state ownership by extracting feature-neutral workflow-store contracts into `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/feature/spi/workflow/` and adapting `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/service/workflow/WorkflowContextStore.java` to back the SPI facade instead of being called directly by feature code.
-- [ ] T008 [P] Update boundary tests in `mcp/core/src/test/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandlerTest.java`, `mcp/core/src/test/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandlerTest.java`, and create `mcp/core/src/test/java/org/apache/shardingsphere/mcp/feature/runtime/CoreMCPFeatureRuntimeContextTest.java` so the new SPI contracts are locked before registry migration starts.
-
-**Checkpoint**: Module graph and SPI contracts are in place; feature modules can now depend only on `mcp/features/spi`.
+- [ ] T001 Produce a type-classification matrix for all production classes under `mcp/features/spi/src/main/java/`, mapping each family to `pure-spi`, `shared-api`, `feature-support`, `core-runtime`, or `feature-owned`, and explicitly flag any SPI signature that currently exposes a concrete implementation type.
+- [ ] T002 Update `mcp/pom.xml` and create `mcp/api/pom.xml` because the classification requires a dedicated shared API module.
+- [ ] T003 [P] Record the decomposition targets for shared concrete helper families and explicitly verify that no `mcp/features/support` module is introduced.
 
 ---
 
-## Phase 3: User Story 1 - Keep core feature-agnostic through direct handler SPI loading (Priority: P1)
+## Phase 2: Foundational extraction
 
-**Goal**: Make `mcp/core` discover encrypt and mask only through `ToolHandler` and `ResourceHandler` SPI, while keeping shared MCP infrastructure in core.
-**Independent Test**: Start MCP with encrypt and mask feature handlers on the classpath and verify discovery comes from SPI-aggregated surfaces with no hard-coded encrypt/mask dispatch in core.
+- [ ] T004 Move shared non-SPI contracts out of `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/` into `mcp/api/src/main/java/org/apache/shardingsphere/mcp/`, covering descriptor, request/response, protocol, metadata-model, and shared exception families identified by T001.
+- [ ] T005 [P] Move core-private runtime helpers out of `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/` into `mcp/core/src/main/java/org/apache/shardingsphere/mcp/`, covering registry-only utilities, URI parsing, and core-owned store/runtime implementation families identified by T001.
+- [ ] T006 Keep only interface-only seams in `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/`, rewrite their imports so they point at `mcp/api` contracts where needed, and eliminate signatures that return or accept concrete helpers such as workflow store implementations.
+- [ ] T007 [P] Update `mcp/core/pom.xml`, `mcp/features/spi/pom.xml`, `mcp/features/encrypt/pom.xml`, and `mcp/features/mask/pom.xml` so the dependency graph matches the new contract boundaries.
+
+**Checkpoint**: `mcp/features/spi` compiles as a pure SPI module and no longer carries shared DTO/runtime baggage.
+
+---
+
+## Phase 3: User Story 1 - Make the SPI boundary obvious (Priority: P1)
+
+**Goal**: Ensure `mcp/features/spi` is recognizable as a pure SPI boundary by inspection.
+**Independent Test**: Inspect the module and confirm no concrete runtime helper classes remain.
 
 ### Tests for User Story 1
 
-- [ ] T009 [P] [US1] Update `mcp/core/src/test/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandlerRegistryTest.java`, `mcp/core/src/test/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandlerRegistryTest.java`, `mcp/core/src/test/java/org/apache/shardingsphere/mcp/tool/MCPToolControllerTest.java`, and `mcp/core/src/test/java/org/apache/shardingsphere/mcp/resource/MCPResourceControllerTest.java` to assert SPI-aggregated discovery and the absence of encrypt/mask-specific branching in core dispatch.
-- [ ] T010 [P] [US1] Update `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`, `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/MCPResourceSpecificationFactoryTest.java`, and `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/MCPRuntimeLauncherTest.java` to verify bootstrap consumes only aggregated surfaces.
+- [ ] T008 [P] [US1] Add or update boundary tests in `mcp/features/spi/src/test/java/` to assert that remaining exported types are interface-level contracts and minimal supporting enums/annotations only.
+- [ ] T009 [P] [US1] Add a lightweight architectural guard test or verification search that fails if new concrete classes are added under forbidden `mcp/features/spi` package families such as `tool/service`, `tool/model/workflow`, or `resource/uri`.
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Rewrite `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandlerRegistry.java` and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandlerRegistry.java` so core aggregates shared handlers with feature handlers through handler SPI only.
-- [ ] T012 [US1] Rewrite `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/MCPToolController.java`, `mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/MCPResourceController.java`, and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/capability/service/MCPServiceCapabilityProvider.java` so runtime dispatch and capability reporting depend only on aggregated handler surfaces.
-- [ ] T013 [US1] Rewrite `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactory.java`, `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/MCPResourceSpecificationFactory.java`, and `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/MCPSyncServerFactory.java` so bootstrap never references encrypt or mask implementation classes directly.
-- [ ] T014 [US1] Remove provider-based assembly from `mcp/core/src/main/java/org/apache/shardingsphere/mcp/feature/MCPFeatureProviderRegistry.java` and related uses, or reduce that contract to non-surface metadata only if any residual metadata seam remains necessary after registry simplification.
+- [ ] T010 [US1] Remove or relocate concrete classes from `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/tool/service/`, `tool/model/workflow/`, `tool/request/`, `tool/response/`, `protocol/response/`, and any other non-SPI package families identified by T001.
+- [ ] T011 [US1] Update package structure and Javadocs in `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/` so the remaining module clearly documents itself as a pure SPI boundary.
 
-**Checkpoint**: `mcp/core` is feature-agnostic and runtime discovery depends on handler SPI aggregation rather than hard-coded encrypt/mask classes or provider-enumerated surfaces.
+**Checkpoint**: A reviewer can open `mcp/features/spi` and see only true SPI contracts plus minimal signature-owned types.
 
 ---
 
-## Phase 4: User Story 2 - Let feature modules own and self-register their workflow surface (Priority: P1)
+## Phase 4: User Story 2 - Place shared classes without creating circular dependencies (Priority: P1)
 
-**Goal**: Move encrypt and mask tools, resources, planning, execution-preparation, recommendation, and validation into their own feature modules and register them directly through handler SPI.
-**Independent Test**: Review module boundaries and run feature-module tests to confirm encrypt-only or mask-only behavior changes stay within the owning feature module plus stable SPI contracts.
+**Goal**: Give every former `mcp/features/spi` class family a correct home without creating feature-to-core reverse dependency.
+**Independent Test**: The classification matrix is fully implemented in code, and the resulting dependency graph remains acyclic and ownership-driven.
 
 ### Tests for User Story 2
 
-- [ ] T015 [P] [US2] Create encrypt feature tests in `mcp/features/encrypt/src/test/java/org/apache/shardingsphere/mcp/feature/encrypt/tool/PlanEncryptRuleToolHandlerTest.java`, `mcp/features/encrypt/src/test/java/org/apache/shardingsphere/mcp/feature/encrypt/tool/ApplyEncryptRuleToolHandlerTest.java`, `mcp/features/encrypt/src/test/java/org/apache/shardingsphere/mcp/feature/encrypt/tool/ValidateEncryptRuleToolHandlerTest.java`, and `mcp/features/encrypt/src/test/java/org/apache/shardingsphere/mcp/feature/encrypt/resource/EncryptResourceHandlerTest.java`.
-- [ ] T016 [P] [US2] Create mask feature tests in `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/tool/PlanMaskRuleToolHandlerTest.java`, `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/tool/ApplyMaskRuleToolHandlerTest.java`, `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/tool/ValidateMaskRuleToolHandlerTest.java`, and `mcp/features/mask/src/test/java/org/apache/shardingsphere/mcp/feature/mask/resource/MaskResourceHandlerTest.java`.
+- [ ] T012 [P] [US2] Add module-scoped tests for `mcp/api` if introduced, covering shared descriptor, request/response, metadata-model, and exception contracts after extraction.
+- [ ] T013 [P] [US2] Add or update compile-scope tests and dependency assertions for `mcp/core`, `mcp/features/encrypt`, and `mcp/features/mask` so reverse dependency on core implementation packages is rejected and no `mcp/features/support` module is introduced as a shortcut.
 
 ### Implementation for User Story 2
 
-- [ ] T017 [US2] Move encrypt tools and resources into `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/tool/` and `/resource/`, and add `META-INF/services/org.apache.shardingsphere.mcp.tool.handler.ToolHandler` plus `META-INF/services/org.apache.shardingsphere.mcp.resource.handler.ResourceHandler` under `mcp/features/encrypt/src/main/resources/`.
-- [ ] T018 [US2] Move encrypt workflow services and models from shared MCP locations into `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/workflow/`, including planning, execution, validation, rule inspection, algorithm recommendation, property template, DistSQL planning, DDL planning, and index planning.
-- [ ] T019 [US2] Move mask tools and resources into `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/tool/` and `/resource/`, and add `META-INF/services/org.apache.shardingsphere.mcp.tool.handler.ToolHandler` plus `META-INF/services/org.apache.shardingsphere.mcp.resource.handler.ResourceHandler` under `mcp/features/mask/src/main/resources/`.
-- [ ] T020 [US2] Move mask workflow services and models from shared MCP locations into `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/workflow/`, keeping only shared workflow-store/runtime adapters in core.
-- [ ] T021 [US2] Delete or replace feature-specific classes under shared MCP locations once feature modules fully own them, and remove any remaining provider-based handler enumeration from feature modules.
+- [ ] T014 [US2] Move shared API families into `mcp/api/src/main/java/org/apache/shardingsphere/mcp/` and update all imports from `mcp/core`, `mcp/features/spi`, `mcp/features/encrypt`, and `mcp/features/mask`.
+- [ ] T015 [US2] Decompose truly shared concrete helper families so that shared contracts move to `mcp/api` or SPI, while concrete implementations move to `mcp/core/src/main/java/` or the owning feature module rather than to a new support module.
+- [ ] T016 [US2] Move feature-owned concrete helpers out of `mcp/features/spi` and into `mcp/features/encrypt/src/main/java/` or `mcp/features/mask/src/main/java/` based on T001 ownership decisions.
+- [ ] T017 [US2] Move core-private implementations out of `mcp/features/spi` into `mcp/core/src/main/java/` and keep feature-facing access through interface-only seams where necessary.
 
-**Checkpoint**: Encrypt and mask behavior is owned by their feature modules, and core retains only shared platform infrastructure.
+**Checkpoint**: Every former `mcp/features/spi` type family has a final home, and no move relies on hidden reverse dependency to core.
 
 ---
 
-## Phase 5: User Story 3 - Add future MCP features by registering handlers, not editing core (Priority: P2)
+## Phase 5: User Story 3 - Keep feature modules extensible without relying on core internals (Priority: P2)
 
-**Goal**: Make the handler-level SPI model reusable for future MCP feature modules beyond encrypt and mask.
-**Independent Test**: Register a hypothetical future feature's handlers in tests and verify they can be discovered without adding any feature-specific branching to core.
+**Goal**: Ensure encrypt and mask continue to extend MCP through pure SPI and shared contracts only.
+**Independent Test**: Encrypt and mask compile and run without importing core-private implementation packages.
 
 ### Tests for User Story 3
 
-- [ ] T022 [P] [US3] Extend `mcp/core/src/test/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandlerRegistryTest.java` and `mcp/core/src/test/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandlerRegistryTest.java` to cover duplicate tool name, duplicate URI pattern, overlapping URI pattern, empty registry, and invalid SPI registration failures.
-- [ ] T023 [P] [US3] Add subset-loading coverage in `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioTransportIntegrationTest.java` and `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/http/StreamableHttpMetadataDiscoveryIT.java` to verify runtime behavior with only encrypt or only mask jars available.
+- [ ] T018 [P] [US3] Update module-scoped tests in `mcp/features/encrypt/src/test/java/` and `mcp/features/mask/src/test/java/` to use extracted shared API contracts and to avoid direct core implementation imports.
+- [ ] T019 [P] [US3] Update runtime discovery tests in `mcp/core/src/test/java/` and `mcp/bootstrap/src/test/java/` to confirm handler discovery still works after the contract/runtime split.
 
 ### Implementation for User Story 3
 
-- [ ] T024 [US3] Add deterministic ordering and completeness validation to `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandlerRegistry.java` and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandlerRegistry.java`.
-- [ ] T025 [US3] Add onboarding Javadoc and examples to `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandler.java`, `mcp/features/spi/src/main/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandler.java`, and related SPI contracts so future feature authors can add surfaces without changing core.
+- [ ] T020 [US3] Rewrite encrypt imports and constructors in `mcp/features/encrypt/src/main/java/` so they consume pure SPI interfaces and `mcp/api` only.
+- [ ] T021 [US3] Rewrite mask imports and constructors in `mcp/features/mask/src/main/java/` so they consume pure SPI interfaces and `mcp/api` only.
+- [ ] T022 [US3] Update core adapter code in `mcp/core/src/main/java/` so any feature-facing runtime seam remains interface-only from the feature perspective.
 
-**Checkpoint**: Core is reusable for future MCP feature modules and rejects ambiguous or incomplete registration deterministically.
-
----
-
-## Phase 6: User Story 4 - Publish clean first-release feature contracts (Priority: P2)
-
-**Goal**: Replace shared pre-release tool names and flat URI layout with explicit encrypt/mask tool families and feature-scoped URI namespaces.
-**Independent Test**: Inspect MCP discovery output and verify only encrypt-specific and mask-specific tool families plus `shardingsphere://features/<feature>/...` URI spaces are exposed.
-
-### Tests for User Story 4
-
-- [ ] T026 [P] [US4] Update discovery-surface tests in `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/tool/MCPToolSpecificationFactoryTest.java`, `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/resource/MCPResourceSpecificationFactoryTest.java`, `mcp/core/src/test/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandlerRegistryTest.java`, and `mcp/core/src/test/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandlerRegistryTest.java` to assert the new tool-name families and feature-scoped URIs.
-- [ ] T027 [P] [US4] Add legacy-surface absence checks in `mcp/core/src/test/java/org/apache/shardingsphere/mcp/tool/handler/ToolHandlerRegistryTest.java` and `mcp/core/src/test/java/org/apache/shardingsphere/mcp/resource/handler/ResourceHandlerRegistryTest.java` so `plan_encrypt_mask_rule`, `apply_encrypt_mask_rule`, `validate_encrypt_mask_rule`, and old flat resource paths are no longer published.
-
-### Implementation for User Story 4
-
-- [ ] T028 [US4] Rename encrypt external contracts inside `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/tool/` and `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/resource/` to `plan_encrypt_rule`, `apply_encrypt_rule`, `validate_encrypt_rule`, and `shardingsphere://features/encrypt/...`.
-- [ ] T029 [US4] Rename mask external contracts inside `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/tool/` and `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/resource/` to `plan_mask_rule`, `apply_mask_rule`, `validate_mask_rule`, and `shardingsphere://features/mask/...`.
-- [ ] T030 [US4] Update user-facing and design documentation in `mcp/README.md`, `mcp/README_ZH.md`, `mcp/CODEX_INTEGRATION_ZH.md`, `/.specify/specs/003-mcp-feature-spi/contracts/feature-spi.md`, and `/.specify/specs/003-mcp-feature-spi/quickstart.md` so only the first-release pluginized contracts are documented.
-
-**Checkpoint**: MCP publishes clean encrypt/mask contract families and no longer carries transitional combined naming.
+**Checkpoint**: Feature modules remain extensible and operational without leaning on core implementation internals.
 
 ---
 
-## Phase 7: Polish & Cross-Cutting Concerns
+## Phase 6: Polish and guardrails
 
-- [ ] T031 [P] Run module-scoped test commands for `mcp/features/spi`, `mcp/features/encrypt`, `mcp/features/mask`, `mcp/core`, and `mcp/bootstrap`, then fix failures in the corresponding `src/test/java` trees.
-- [ ] T032 Run scoped style and packaging verification against `mcp/pom.xml`, `mcp/bootstrap/pom.xml`, `distribution/mcp/pom.xml`, and all touched Java sources until Checkstyle, Spotless, and MCP distribution assembly pass.
+- [ ] T023 [P] Add documentation updates to `mcp/README.md`, `mcp/README_ZH.md`, and relevant module READMEs explaining the new ownership rules: pure SPI, shared API, optional feature support, core runtime, feature-owned code.
+- [ ] T024 Add an architectural note or enforcement check that future contributors must not place new concrete helper code under `mcp/features/spi`.
+- [ ] T025 Run module-scoped tests and style checks for every touched module and fix resulting issues.
 
-## Dependencies & Execution Order
+## Dependencies and execution order
 
-- Setup must finish before SPI extraction and registry work begin.
-- Foundational work blocks all user stories because the SPI boundary, runtime facades, workflow-store seam, and packaging path must be settled first.
-- US1 is the MVP slice and should land before any feature migration.
-- US2 depends on US1 because feature modules need the SPI contracts and aggregated surface path to exist first.
-- US3 can start after US1 for registry validation, but subset-loading checks complete only after US2 publishes real encrypt and mask modules.
-- US4 depends on US2 because clean first-release names and URIs should be published from the final feature-owned surfaces.
-- Polish runs last after the desired user stories are complete.
+- Classification must happen before any module move.
+- Shared API extraction and core-private extraction are foundational.
+- Shared concrete helper decomposition must finish without introducing `mcp/features/support`.
+- Feature cleanup depends on the shared API and core-private moves being settled first.
+- Polish runs last after dependency cleanup is stable.
 
-## Parallel Execution Examples
+## Parallel execution examples
 
-- After T004 completes, T005 and T008 can run in parallel because runtime facade contracts and boundary tests touch different files.
-- After T011 completes, T009 and T010 can run in parallel with T012/T013 because tests and registry/bootstrap rewrites are split across different files.
-- In US2, T015 can run in parallel with T016, and T017 can run in parallel with T019 because encrypt and mask modules have disjoint write scopes.
-- In US3, T022 and T023 can run in parallel because core registry failure tests and bootstrap subset-loading tests touch different modules.
-- In US4, T028 and T029 can run in parallel because encrypt and mask contract renames live in different feature modules.
+- After T001, T002 and T003 can proceed in parallel because `mcp/api` setup and decomposition-target recording touch different files.
+- After T004 starts, T005 can proceed in parallel because shared API families and core-private runtime families have disjoint destinations.
+- T020 and T021 can run in parallel because encrypt and mask have separate write scopes once the shared module boundaries are in place.
 
-## Implementation Strategy
+## Implementation strategy
 
-- MVP first: complete Phase 1, Phase 2, and US1 so `mcp/core` becomes feature-agnostic before any business logic migration.
-- Increment 2: complete US2 so encrypt and mask truly own their workflow surfaces in separate modules and self-register them through handler SPI.
-- Increment 3: complete US4 to publish the final first-release tool names and URI namespaces.
-- Hardening: complete US3 and Phase 7 to lock deterministic loading, fail-fast validation, subset loading, and packaging quality.
+- MVP first: classify all current `mcp/features/spi` type families and extract shared API plus core-private runtime families.
+- Increment 2: resolve any remaining shared concrete helper families through decomposition into core-private or feature-owned implementations.
+- Increment 3: clean feature dependencies, harden tests, and add guardrails so `mcp/features/spi` stays pure over time.

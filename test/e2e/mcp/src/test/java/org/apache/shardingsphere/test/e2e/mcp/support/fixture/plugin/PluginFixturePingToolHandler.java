@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.fixture.plugin;
+package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Test-only tool handler used to prove bootstrap discovers arbitrary SPI plugins from classpath.
+ * Test-only tool handler used to prove packaged distribution plugin discovery.
  */
-public final class FixturePingToolHandler implements ToolHandler {
+public final class PluginFixturePingToolHandler implements ToolHandler {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping",
             List.of(new MCPToolFieldDefinition("message", new MCPToolValueDefinition(Type.STRING, "Fixture message.", null), true)));

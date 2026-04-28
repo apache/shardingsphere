@@ -1,179 +1,147 @@
-# Contract: MCP Feature SPI
+# Contract: MCP Feature SPI Simplification
 
-## 1. 设计目标
+## 1. Contract goal
 
-- `mcp/features/spi` 是 feature 模块和上层 MCP 基础设施之间唯一稳定边界。
-- `mcp/core` 不允许直接依赖 encrypt / mask 实现类。
-- feature 通过 handler SPI 被发现，通过 SPI 合约暴露 surface，通过 SPI runtime facade 访问共享能力。
+- `mcp/features/spi` is the stable extension boundary for MCP feature modules.
+- The module must be recognizable as SPI by inspection alone.
+- Non-SPI shared contracts must not remain in `mcp/features/spi`.
+- Concrete runtime implementations must not remain in `mcp/features/spi`.
 
-## 2. 顶层 SPI
+## 2. What stays in `mcp/features/spi`
 
-### 2.1 `ToolHandler`
+The following kinds of production types are allowed to remain in `mcp/features/spi`:
 
-当前 MCP tool handler contract 应提升到 `mcp/features/spi`，并成为 feature tool surface 的唯一 SPI 注册入口。
+- SPI interfaces, such as feature extension points and handler contracts
+- interface-owned minimal enums
+- interface-owned annotations
+- interface-owned constants that cannot be cleanly separated from the interface contract
+- interface-only runtime seams that expose shared MCP capabilities to features
 
-保留能力：
+### 2.1 Required properties of allowed SPI types
 
-- 描述 tool schema
-- 处理一次 tool call
-- 通过 SPI runtime facade 访问共享能力
+- They describe extension behavior but do not implement runtime behavior.
+- They do not allocate or store workflow state.
+- They do not perform registry assembly.
+- They do not perform request binding or payload construction.
+- They do not perform core-only URI parsing or registry validation.
+- They do not expose concrete support implementations or core-private classes in public method signatures.
 
-约束：
+## 3. What must leave `mcp/features/spi`
 
-- tool name 全局唯一
-- tool handler 不得通过 core implementation class 直接访问共享能力
-- feature module 必须通过 `META-INF/services/org.apache.shardingsphere.mcp.tool.handler.ToolHandler` 注册自己的 tool handlers
+The following kinds of production types are not SPI and must move out:
 
-### 2.2 `ResourceHandler`
+- concrete services
+- workflow orchestration helpers
+- request binders
+- payload builders
+- context stores
+- registry implementations
+- URI parsing utilities used only by registry/runtime
+- default concrete handlers shared by multiple features
+- requests, responses, descriptors, protocol DTOs, metadata DTOs, and exceptions that are compiled against by both core and feature modules
 
-当前 MCP resource handler contract 应提升到 `mcp/features/spi`，并成为 feature resource surface 的唯一 SPI 注册入口。
+## 4. Destination rules
 
-保留能力：
+### 4.1 Move to `mcp/core`
 
-- 声明 URI pattern
-- 处理一次 resource read
-- 通过 SPI runtime facade 访问共享能力
+Move a type to `mcp/core` when all of the following are true:
 
-约束：
+- it is a concrete implementation
+- it is used only by shared MCP runtime infrastructure
+- feature modules do not need to compile against it directly
 
-- URI pattern 全局唯一
-- 任意两个 pattern 不允许 overlap
-- feature module 必须通过 `META-INF/services/org.apache.shardingsphere.mcp.resource.handler.ResourceHandler` 注册自己的 resource handlers
+Examples of likely candidates:
 
-## 3. Runtime facade contracts
+- registry-only utilities
+- core runtime context implementations
+- core-private in-memory stores
+- dispatch-only validation helpers
 
-feature handler 不应直接拿到 `mcp/core` implementation，而应拿到窄接口 facade。
+### 4.2 Move to `mcp/api`
 
-建议至少包含以下 facade：
+Move a type to `mcp/api` when all of the following are true:
 
-```java
-public interface MCPFeatureRuntimeContext {
+- it is not an SPI interface
+- it is a shared compile-time contract
+- it is referenced by both core and feature modules
 
-    MCPFeatureMetadataFacade getMetadataFacade();
+Examples of likely candidates:
 
-    MCPFeatureExecutionFacade getExecutionFacade();
+- tool descriptors
+- request / response DTOs
+- metadata models
+- protocol models
+- shared exceptions
 
-    MCPFeatureSessionFacade getSessionFacade();
+### 4.3 Decompose instead of creating `mcp/features/support`
 
-    MCPFeatureWorkflowStore getWorkflowStore();
+When a concrete helper is reused by multiple feature modules and cannot remain in `mcp/features/spi`, do not create a new support module. Instead, split the family so that:
 
-    MCPFeatureCapabilityFacade getCapabilityFacade();
-}
-```
+- shared contracts move to `mcp/api` or remain as SPI interfaces
+- core-private implementations move to `mcp/core`
+- feature-specific implementations move to the owning feature module
 
-说明：
+Examples of likely candidates:
 
-- `MetadataFacade` 负责逻辑元数据读取
-- `ExecutionFacade` 负责 SQL / DistSQL 执行
-- `SessionFacade` 负责 session 级上下文
-- `WorkflowStore` 负责多步工作流状态续接
-- `CapabilityFacade` 负责数据库或服务 capability 查询
+- generic workflow apply helpers that can be reduced to SPI plus core implementation
+- workflow validation helpers whose feature-specific logic belongs in encrypt or mask
+- request binding utilities whose shared parts can become API contracts while concrete behavior becomes core-private or feature-owned
 
-这些 facade 的实现留在 `mcp/core`，但 contract 属于 `mcp/features/spi`。
+### 4.4 Move to the owning feature module
 
-## 4. Optional workflow subcontracts
+Move a type to `mcp/features/encrypt` or `mcp/features/mask` when it expresses behavior, models, or helpers that only one feature truly owns.
 
-为了保持 `spi` 足够纯，但又不把所有 helper 都公开，建议只提升少量稳定 workflow seam：
+Examples of likely candidates:
 
-```java
-public interface MCPFeaturePlanner {
+- algorithm recommendation services
+- rule inspection helpers
+- feature-specific workflow state
+- naming helpers
+- DistSQL planning helpers
 
-    Object plan(MCPFeatureRuntimeContext runtimeContext, String sessionId, Map<String, Object> arguments);
-}
+## 5. Minimal SPI surface
 
-public interface MCPFeatureApplier {
+The stable SPI surface may continue to include interface-only contracts such as:
 
-    Object apply(MCPFeatureRuntimeContext runtimeContext, String sessionId, Map<String, Object> arguments);
-}
+- `MCPFeatureProvider`, retained as the top-level feature SPI entry
+- `ToolHandler`
+- `ResourceHandler`
+- `MCPFeatureContext`
+- feature runtime facade interfaces
+- capability and query facade interfaces
 
-public interface MCPFeatureValidator {
+Rules:
 
-    Object validate(MCPFeatureRuntimeContext runtimeContext, String sessionId, Map<String, Object> arguments);
-}
-```
+- these contracts must not embed concrete behavior
+- any default methods must remain trivial and non-runtime-bearing
+- any parameter or return type that currently exposes a concrete helper, such as a workflow store implementation, must be replaced by an interface-only seam or neutral shared contract
+- implementations of these interfaces must live outside `mcp/features/spi`
 
-说明：
+## 6. Dependency contract
 
-- encrypt / mask 可以各自实现这三类 contract
-- recommendation、template、naming、rule inspection 等 helper 默认留在 feature 内部，不进入公共 SPI
-
-## 5. Tool naming contract
-
-### 5.1 Encrypt
-
-- `plan_encrypt_rule`
-- `apply_encrypt_rule`
-- `validate_encrypt_rule`
-
-### 5.2 Mask
-
-- `plan_mask_rule`
-- `apply_mask_rule`
-- `validate_mask_rule`
-
-约束：
-
-- 不再保留 `*_encrypt_mask_*` 共享命名
-- 后续新 feature 也遵循 `plan_<feature>_rule`、`apply_<feature>_rule`、`validate_<feature>_rule`
-
-## 6. Resource URI contract
-
-### 6.1 Encrypt
-
-- `shardingsphere://features/encrypt/algorithms`
-- `shardingsphere://features/encrypt/databases/{database}/rules`
-- `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules`
-
-### 6.2 Mask
-
-- `shardingsphere://features/mask/algorithms`
-- `shardingsphere://features/mask/databases/{database}/rules`
-- `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
-
-约束：
-
-- URI 首段必须体现 feature ownership
-- 不保留旧的平铺式命名作为兼容层
-
-## 7. Registry assembly contract
-
-`mcp/core` 的 registry 装配流程应满足：
-
-1. 加载所有 `ToolHandler`
-2. 加载所有 `ResourceHandler`
-3. 校验 duplicate tool name
-4. 校验 duplicate / overlapping URI pattern
-5. 构建最终可见 surface catalog
-
-失败策略：
-
-- 任意冲突都在启动期显式失败
-- 不允许 silent shadowing
-- 缺失或无效 SPI 注册必须给出明确错误来源
-
-## 8. Dependency contract
-
-必须满足：
+The simplified end state must satisfy:
 
 - `mcp/core -> mcp/features/spi`
+- `mcp/core -> mcp/api`
 - `mcp/features/encrypt -> mcp/features/spi`
+- `mcp/features/encrypt -> mcp/api`
 - `mcp/features/mask -> mcp/features/spi`
+- `mcp/features/mask -> mcp/api`
 
-不得出现：
+The simplified end state must avoid:
 
-- `mcp/core -> mcp/features/encrypt`
-- `mcp/core -> mcp/features/mask`
-- `mcp/features/encrypt -> mcp/core`
-- `mcp/features/mask -> mcp/core`
+- `mcp/features/encrypt -> mcp/core` implementation packages
+- `mcp/features/mask -> mcp/core` implementation packages
+- introducing `mcp/features/support`
+- new concrete helper classes added back into `mcp/features/spi`
 
-`mcp/bootstrap` 只负责把官方 feature jars 带入运行时，不直接引用具体实现类。
+## 7. Review contract
 
-## 9. Feature metadata note
+Before implementation starts, reviewers must be able to answer, for every current production type under `mcp/features/spi`:
 
-本次 feature modularization 不要求顶层 feature metadata SPI 参与 tool / resource surface 装配。
+1. Is it a true SPI interface?
+2. If not, is it a shared API contract, a core runtime implementation, or a feature-owned implementation after decomposition?
+3. Does its target module avoid circular dependencies?
+4. Does its target module make ownership more obvious than the current location?
 
-如果未来需要 feature catalog、display name、feature capability summary 等额外 metadata：
-
-- 应定义为单独的可选 SPI
-- 不应成为 tool / resource registry assembly 的前置条件
-- 不应改变本次已经确定的 handler-level pluginization 模型
+If any answer is unclear, the type is not ready to move yet.

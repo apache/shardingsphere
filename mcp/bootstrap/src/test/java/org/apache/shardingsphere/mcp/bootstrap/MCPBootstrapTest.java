@@ -43,32 +43,25 @@ class MCPBootstrapTest {
     
     @Test
     void assertMainCloseServerWhenShutdownHookRuns() throws IOException {
-        MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
-        MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
-        Runtime runtime = mock(Runtime.class);
-        AtomicReference<Thread> shutdownHook = new AtomicReference<>();
-        try (
-                MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
-                MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
-                MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
-            mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
-            mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("conf/mcp.yaml")).thenReturn(launchConfig);
-            doAnswer(invocation -> {
-                shutdownHook.set(invocation.getArgument(0, Thread.class));
-                return null;
-            }).when(runtime).addShutdownHook(any(Thread.class));
-            MCPBootstrap.main(new String[0]);
-            MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().get(0);
-            verify(actualLauncher).launch(launchConfig);
-            shutdownHook.get().run();
-        }
-        verify(runtimeServer).stop();
-        verifyNoMoreInteractions(runtimeServer);
+        assertMain(new String[0], "conf/mcp.yaml", false);
     }
     
     @Test
     void assertMainCloseServerOnceWhenShutdownHookRunsRepeatedly() throws IOException {
+        assertMain(new String[]{"stdio.yaml"}, "stdio.yaml", true);
+    }
+    
+    @Test
+    void assertMainTrimConfigurationPathArgument() throws IOException {
+        assertMain(new String[]{"  stdio.yaml  "}, "stdio.yaml", false);
+    }
+    
+    @Test
+    void assertMainUseDefaultConfigurationPathForBlankArgument() throws IOException {
+        assertMain(new String[]{"   "}, "conf/mcp.yaml", false);
+    }
+    
+    private void assertMain(final String[] args, final String expectedConfigPath, final boolean runShutdownHookTwice) throws IOException {
         MCPLaunchConfiguration launchConfig = createLaunchConfiguration(true);
         MCPRuntimeServer runtimeServer = mock(MCPRuntimeServer.class);
         Runtime runtime = mock(Runtime.class);
@@ -79,16 +72,19 @@ class MCPBootstrapTest {
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
                         (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
-            mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load("stdio.yaml")).thenReturn(launchConfig);
+            mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load(expectedConfigPath)).thenReturn(launchConfig);
             doAnswer(invocation -> {
                 shutdownHook.set(invocation.getArgument(0, Thread.class));
                 return null;
             }).when(runtime).addShutdownHook(any(Thread.class));
-            MCPBootstrap.main(new String[]{"stdio.yaml"});
+            MCPBootstrap.main(args);
             MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().get(0);
             verify(actualLauncher).launch(launchConfig);
-            shutdownHook.get().run();
-            shutdownHook.get().run();
+            Thread actualShutdownHook = shutdownHook.get();
+            actualShutdownHook.run();
+            if (runShutdownHookTwice) {
+                actualShutdownHook.run();
+            }
         }
         verify(runtimeServer).stop();
         verifyNoMoreInteractions(runtimeServer);

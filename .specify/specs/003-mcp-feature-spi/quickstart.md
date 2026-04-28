@@ -1,161 +1,153 @@
-# Quickstart: MCP Feature SPI Modularization
+# Quickstart: MCP Feature SPI Simplification
 
-## 1. 目标
+## 1. Goal
 
-这份 quickstart 不是实现代码，而是后续落地时判断“插件化是否真的成立”的验收样板。
+This quickstart is the acceptance walk-through for a simplified SPI boundary.
 
-只要下面这些步骤能成立，就说明 `mcp/features/spi`、`encrypt`、`mask`、`core`、`bootstrap` 的职责拆分是对的。
+If these checks pass, `mcp/features/spi` is no longer an overloaded shared module and the requirement is satisfied.
 
-## 2. 目标模块结构
+## 2. Expected module roles
 
 ```text
 mcp
-|-- features
-|   |-- spi
-|   |-- encrypt
-|   `-- mask
-|-- core
-`-- bootstrap
+|-- api                  # shared non-SPI contracts
+|-- core                 # core-private runtime implementations
+|-- bootstrap
+`-- features
+    |-- spi              # pure SPI interfaces only
+    |-- encrypt
+    `-- mask
 ```
 
-## 3. 预期依赖方向
+Notes:
+
+- `mcp/api` is required for shared non-SPI contracts used by both core and feature modules.
+- `mcp/features/support` must not be introduced for this requirement.
+
+## 3. Expected dependency directions
 
 - `mcp/core -> mcp/features/spi`
+- `mcp/core -> mcp/api`
 - `mcp/features/encrypt -> mcp/features/spi`
+- `mcp/features/encrypt -> mcp/api`
 - `mcp/features/mask -> mcp/features/spi`
-- `mcp/bootstrap -> mcp/core`
-- `mcp/bootstrap` 在运行时携带 encrypt / mask jars，但不直接引用其实现类
+- `mcp/features/mask -> mcp/api`
 
-反例：
+Anti-patterns:
 
-- `mcp/core -> mcp/features/encrypt`
-- `mcp/core -> mcp/features/mask`
-- `mcp/features/encrypt -> mcp/core`
-- `mcp/features/mask -> mcp/core`
+- `mcp/features/encrypt -> mcp/core` implementation packages
+- `mcp/features/mask -> mcp/core` implementation packages
+- introducing `mcp/features/support`
+- new concrete helper classes added back into `mcp/features/spi`
 
-这些依赖一旦出现，就说明插件化边界已经破坏。
+## 4. SPI module acceptance sample
 
-## 4. Encrypt 模块验收样板
+### 4.1 What should remain in `mcp/features/spi`
 
-### 4.1 Encrypt SPI 注册
+- handler interfaces
+- feature runtime facade interfaces
+- capability/query facade interfaces
+- minimal enums/annotations/constants directly owned by those interfaces
 
-- `mcp/features/encrypt` 自己注册 `ToolHandler`
-- `mcp/features/encrypt` 自己注册 `ResourceHandler`
-- `mcp/core` 不直接引用 encrypt 实现类
+### 4.2 What should not remain in `mcp/features/spi`
 
-### 4.2 Encrypt 首发 tool family
+- workflow execution services
+- workflow planning services
+- workflow validation services
+- request binders
+- payload builders
+- context store implementations
+- registry implementations
+- URI parsing helpers
+- descriptor DTO implementations
+- request/response DTOs
+- protocol response types
+- SPI interfaces whose method signatures expose concrete helper implementations
 
-- `plan_encrypt_rule`
-- `apply_encrypt_rule`
-- `validate_encrypt_rule`
+### 4.3 Reviewer check
 
-不应再出现：
+Open `mcp/features/spi/src/main/java`.
 
-- `plan_encrypt_mask_rule`
-- `apply_encrypt_mask_rule`
-- `validate_encrypt_mask_rule`
+Expected result:
 
-### 4.3 Encrypt 首发资源空间
+- the module reads like a pure contract layer
+- there are no concrete helper packages pretending to be SPI
 
-- `shardingsphere://features/encrypt/algorithms`
-- `shardingsphere://features/encrypt/databases/{database}/rules`
-- `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules`
+## 5. Shared API acceptance sample
 
-### 4.4 Encrypt workflow ownership
+If a type is compiled against by both core and feature modules and is not itself an SPI interface, it belongs in `mcp/api`.
 
-以下能力都应位于 `mcp/features/encrypt`：
+Typical examples:
 
-- rule inspection
-- algorithm recommendation
-- property template
-- derived column / index planning
-- DistSQL planning
-- apply / validate workflow
+- tool descriptors
+- request / response DTOs
+- metadata models
+- protocol models
+- shared exceptions
 
-## 5. Mask 模块验收样板
+Expected result:
 
-### 5.1 Mask SPI 注册
+- these types are no longer in `mcp/features/spi`
+- features do not need core internals to compile against them
 
-- `mcp/features/mask` 自己注册 `ToolHandler`
-- `mcp/features/mask` 自己注册 `ResourceHandler`
-- `mcp/core` 不直接引用 mask 实现类
+## 6. Core runtime acceptance sample
 
-### 5.2 Mask 首发 tool family
+If a concrete helper is used only by shared runtime infrastructure, it belongs in `mcp/core`.
 
-- `plan_mask_rule`
-- `apply_mask_rule`
-- `validate_mask_rule`
+Typical examples:
 
-### 5.3 Mask 首发资源空间
+- registry-only utilities
+- core-owned URI parser
+- core runtime context implementation
+- core-owned in-memory store implementation
 
-- `shardingsphere://features/mask/algorithms`
-- `shardingsphere://features/mask/databases/{database}/rules`
-- `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
+Expected result:
 
-### 5.4 Mask workflow ownership
+- these classes are no longer in `mcp/features/spi`
+- feature modules do not import them directly
 
-以下能力都应位于 `mcp/features/mask`：
+## 7. Shared concrete helper decomposition sample
 
-- rule inspection
-- algorithm recommendation
-- property template
-- DistSQL planning
-- apply / validate workflow
+If a concrete helper is actually reused by multiple feature modules, it still must not cause a new `mcp/features/support` module to appear.
 
-## 6. 单 feature 装载场景
+Typical candidates:
 
-### 场景 A：只装载 encrypt
+- generic feature-side workflow apply helper
+- generic feature-side validation helper
+- generic feature-side payload helper
 
-预期结果：
+Expected result:
 
-- encrypt tools / resources 可见
-- mask tools / resources 不可见
-- core 自己的 metadata / execute / capability surface 仍然可见
-- 启动不因 mask 缺失而失败
+- shared contracts are extracted into `mcp/api` or SPI
+- core-private implementations live in `mcp/core`
+- feature-specific implementations live in `mcp/features/encrypt` or `mcp/features/mask`
+- `mcp/features/support` does not exist
 
-### 场景 B：只装载 mask
+## 8. Feature module acceptance sample
 
-预期结果：
+### Encrypt
 
-- mask tools / resources 可见
-- encrypt tools / resources 不可见
-- core 自己的 metadata / execute / capability surface 仍然可见
-- 启动不因 encrypt 缺失而失败
+Expected result:
 
-## 7. 冲突场景
+- encrypt-specific workflow helpers live in `mcp/features/encrypt`
+- encrypt depends on pure SPI and shared API only
+- encrypt does not depend on core implementation packages
 
-### 场景 A：两个 feature 暴露了同名 tool
+### Mask
 
-预期结果：
+Expected result:
 
-- registry 启动失败
-- 错误明确指出冲突 tool name 和两个来源
+- mask-specific workflow helpers live in `mcp/features/mask`
+- mask depends on pure SPI and shared API only
+- mask does not depend on core implementation packages
 
-### 场景 B：两个 feature 暴露了重复或重叠 URI
+## 9. Scope guard
 
-预期结果：
+This quickstart should pass without requiring any of the following:
 
-- registry 启动失败
-- 错误明确指出冲突 URI pattern 和两个来源
+- redesigning external tool names
+- redesigning resource URIs
+- changing encrypt or mask business behavior
+- switching branches during the requirement analysis
 
-### 场景 C：feature jar 在 classpath 中，但缺失应有的 handler SPI 注册
-
-预期结果：
-
-- 对应 feature surface 不会被静默部分发布
-- 缺失或不完整的 SPI 注册有明确错误或明确缺失结果
-
-## 8. 新增未来 feature 的标准步骤
-
-以 `audit` 为例：
-
-1. 新建 `mcp/features/audit`
-2. 依赖 `mcp/features/spi`
-3. 实现自己的 `ToolHandler`
-4. 实现自己的 `ResourceHandler`
-5. 暴露自己的 tool family，例如 `plan_audit_rule`
-6. 暴露自己的 resource namespace，例如 `shardingsphere://features/audit/...`
-7. 在 `META-INF/services` 注册 handler
-8. 将 jar 放入 MCP runtime classpath
-
-如果以上步骤无需修改 `mcp/core` 业务分支，就说明本次 SPI 设计达到了目标。
+If the work starts drifting into those areas, the simplification has left its intended scope.

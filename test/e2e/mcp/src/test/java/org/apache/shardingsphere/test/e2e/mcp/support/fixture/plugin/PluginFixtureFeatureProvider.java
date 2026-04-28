@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.fixture.plugin;
+package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
@@ -25,17 +25,17 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Test-only MCP feature provider used to prove bootstrap discovers arbitrary SPI plugins from classpath.
+ * Test-only MCP feature provider used to prove packaged distribution plugin discovery.
  */
-public final class FixtureTestFeatureProvider implements MCPFeatureProvider {
+public final class PluginFixtureFeatureProvider implements MCPFeatureProvider {
     
     @Override
     public Collection<ToolHandler> getToolHandlers() {
-        return List.of(new FixturePingToolHandler());
+        return List.of(new PluginFixturePingToolHandler());
     }
     
     @Override
     public Collection<ResourceHandler> getResourceHandlers() {
-        return List.of(new FixtureStatusResourceHandler());
+        return List.of(new PluginFixtureStatusResourceHandler());
     }
 }

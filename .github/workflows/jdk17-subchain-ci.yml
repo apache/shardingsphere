@@ -93,8 +93,9 @@ jobs:
             echo "Packaged MCP distribution was not found." 1>&2
             exit 1
           fi
+          DISTRIBUTION_HOME=$(cd "${DISTRIBUTION_HOME}" && pwd)
           ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
-            -Dtest=PackagedDistributionSmokeE2ETest \
+            -Dtest=PackagedDistributionSmokeE2ETest,PackagedDistributionPluginDiscoveryE2ETest \
             -Dsurefire.failIfNoSpecifiedTests=true \
             -Dmcp.e2e.distribution.enabled=true \
             -Dmcp.distribution.home="${DISTRIBUTION_HOME}" \

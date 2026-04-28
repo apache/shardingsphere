@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.bootstrap.fixture.plugin;
+package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
@@ -27,9 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Test-only resource handler used to prove bootstrap discovers arbitrary SPI plugins from classpath.
+ * Test-only resource handler used to prove packaged distribution plugin discovery.
  */
-public final class FixtureStatusResourceHandler implements ResourceHandler {
+public final class PluginFixtureStatusResourceHandler implements ResourceHandler {
     
     private static final String URI_PATTERN = "shardingsphere://features/test-fixture/status";
     

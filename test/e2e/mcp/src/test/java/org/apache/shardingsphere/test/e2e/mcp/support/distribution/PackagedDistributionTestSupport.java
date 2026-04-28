@@ -97,11 +97,19 @@ public final class PackagedDistributionTestSupport {
         if (configuredHome.isEmpty()) {
             return Optional.empty();
         }
-        Path result = Paths.get(configuredHome).toAbsolutePath().normalize();
+        Path result = resolveConfiguredDistributionHomePath(configuredHome);
         if (!Files.isDirectory(result)) {
             throw new IllegalStateException("Configured mcp.distribution.home `" + result + "` does not exist.");
         }
         return Optional.of(result);
+    }
+    
+    private static Path resolveConfiguredDistributionHomePath(final String configuredHome) {
+        Path result = Paths.get(configuredHome);
+        if (result.isAbsolute()) {
+            return result.normalize();
+        }
+        return findRepositoryRoot().resolve(result).normalize();
     }
     
     private static Optional<Path> findBuiltDistributionHome() throws IOException {

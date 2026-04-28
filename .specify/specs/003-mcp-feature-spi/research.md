@@ -1,102 +1,103 @@
-# Research: MCP Feature SPI Modularization
+# Research: MCP Feature SPI Simplification
 
-## Decision 1: 以 `ToolHandler` / `ResourceHandler` 作为 feature surface 的唯一 SPI 注册入口
+## Decision 1: `mcp/features/spi` only keeps pure SPI interfaces and minimal signature-owned support types
 
-- **Decision**: `mcp/features/encrypt` 和 `mcp/features/mask` 分别通过 `ToolHandler` 与 `ResourceHandler` SPI 直接注册自己的 tool 与 resource surface，`mcp/core` 的 surface 聚合只消费这两类 handler SPI。
+- **Decision**: The end state of `mcp/features/spi` is a pure extension boundary. It may contain SPI interfaces and only the minimal enums, annotations, and constants that are inseparable from those interfaces. It may not contain concrete services, stores, binders, payload builders, registries, parsers, or default concrete handlers.
 - **Rationale**:
-  - 这与用户“feature 模块与上层只通过 SPI 注册交互”的要求最对等。
-  - 这样可以消除“feature 模块外部可插拔，但 feature 内部 tools/resources 仍靠 provider 手工枚举”的半插件化设计。
-  - `ToolHandler` 和 `ResourceHandler` 本身已经是 SPI 接口，直接复用现有扩展模型比额外再包一层 provider 更简单、更纯粹。
+  - This matches the requirement that the module should be "as clean as possible" and ideally contain only SPI interfaces.
+  - It makes the stable extension surface obvious to maintainers and future feature authors.
+  - It removes the current ambiguity where readers must distinguish real SPI from shared runtime baggage.
 - **Alternatives considered**:
-  - 保留 `MCPFeatureProvider` 作为 surface assembly 唯一入口：拒绝，因为这会让 feature 内部仍然停留在手工组装 handler 的模式。
-  - 同时支持 handler SPI 和 provider surface 两套注册来源：拒绝，因为会让 registry 规则和冲突来源变得不透明。
+  - Keep the current "SPI plus large shared contract/runtime" model: rejected because it directly conflicts with the new requirement.
+  - Keep a few convenient concrete workflow helpers in `mcp/features/spi`: rejected because convenience is exactly how the SPI boundary became too heavy.
 
-## Decision 2: 把 extension-facing contracts 整体提升到 `mcp/features/spi`
+## Decision 2: Shared non-SPI contracts move to a dedicated shared API module, not to core internals
 
-- **Decision**: 当前由 feature 实现直接依赖的 contract 类型从 `mcp/core` 提升到 `mcp/features/spi`，至少包括 `ToolHandler`、`ResourceHandler`、descriptor model、response contract，以及供 feature handler 访问共享能力的 runtime facade。
+- **Decision**: Requests, responses, descriptors, metadata models, protocol models, exceptions, and other non-SPI contracts compiled against by both `mcp/core` and feature modules move to a dedicated shared API module, proposed as `mcp/api`.
 - **Rationale**:
-  - 如果这些 contract 继续留在 `mcp/core`，feature 模块在编译期仍然直接依赖 core，实现上仍然是不对等的。
-  - `mcp/features/spi` 必须成为唯一稳定边界，feature 才能在不触碰 core internals 的情况下独立演进。
+  - These types are not SPI, so they do not belong in `mcp/features/spi`.
+  - Moving them straight to `mcp/core` would force feature modules to compile against core internals, weakening module boundaries.
+  - A shared API module gives both core and features a neutral compile-time home.
 - **Alternatives considered**:
-  - 只调整注册方式，contract 继续留在 core：拒绝，因为 feature 仍然通过 core 类型与实现细节耦合。
-  - 让 feature 直接依赖 `MCPRuntimeContext`、`MCPResponse` 等 core 类型：拒绝，因为这违背了“只通过 SPI 契约交互”的目标。
+  - Leave them in `mcp/features/spi`: rejected because they are not SPI interfaces.
+  - Move them all into `mcp/core`: rejected because that creates a reverse dependency pressure from features to core.
 
-## Decision 3: `mcp/core` 只保留共享平台职责，不再持有 encrypt / mask workflow 语义
+## Decision 3: Do not introduce `mcp/features/support`; decompose shared concrete helpers instead
 
-- **Decision**: `mcp/core` 继续保留 registry、controller、protocol、session、metadata、execution、URI 匹配等共享基础设施，但移除 encrypt / mask 业务规划、验证、算法推荐、规则检查和 feature resource 实现。
+- **Decision**: A new `mcp/features/support` module will not be introduced. Reusable concrete helpers that are shared by multiple feature modules must be decomposed so that shared contracts move to `mcp/api` or stay as SPI interfaces, while final concrete implementations become either core-private runtime code or feature-owned code.
 - **Rationale**:
-  - 当前真正的不对等点，不只在 surface 注册，还在 workflow planning / validation / resource 语义都堆在 core。
-  - 只有把这些 feature 语义一起下沉，模块拆分才有实际价值。
+  - Some current workflow helpers are concrete implementations, not contracts.
+  - They cannot stay in `mcp/features/spi`, but introducing a support module would just create a new shared dumping ground.
+  - Decomposition forces the design to distinguish contracts from implementations and keeps the final graph simpler.
 - **Alternatives considered**:
-  - 继续保留 `WorkflowPlanningService` 一类共享服务，只在内部按 `featureType` 分支：拒绝，因为 core 仍然知道 encrypt / mask 差异。
-  - 只移动 tool / resource handler 类，不移动 service：拒绝，因为 feature 语义仍然驻留在 core。
+  - Introduce `mcp/features/support`: rejected by explicit requirement confirmation.
+  - Move all shared concrete helpers into `mcp/core`: rejected because feature modules would then depend on core implementation code.
+  - Duplicate every shared helper into each feature module: only acceptable when the helper proves to be feature-owned after decomposition, otherwise rejected because it increases drift.
 
-## Decision 4: SPI 公开“少量但足够”的 workflow subcontracts，而不是把所有 helper 都变成 SPI
+## Decision 4: Core-private runtime helpers move into `mcp/core`
 
-- **Decision**: `mcp/features/spi` 允许存在少量细粒度 workflow subcontracts，例如 planner、applier、validator、workflow snapshot / store facade；但不把 recommendation、template、naming 等所有 helper 都提升成公共 SPI。
+- **Decision**: Registry-only utilities, URI parsing that is only used by core registries, runtime context implementations, in-memory stores used only by core, and other concrete runtime infrastructure move into `mcp/core`.
 - **Rationale**:
-  - 用户已经确认 `spi` 可以包含 finer-grained workflow subcontracts。
-  - 但 SPI 面不能膨胀成“所有实现细节都公共化”，否则会削弱后续演进空间。
-  - planner / applier / validator / snapshot store 是稳定边界；算法推荐和命名规则更适合留在 feature 内部实现。
+  - These classes are implementation details of the shared runtime, not extension contracts.
+  - Keeping them in `mcp/features/spi` hides their actual ownership and encourages accidental feature coupling to core implementation details.
 - **Alternatives considered**:
-  - 只保留 handler contract，不提供任何 workflow seam：拒绝，因为 feature 仍然需要一套稳定的 workflow 组合边界。
-  - 把所有 helper service 都提升到 `spi`：拒绝，因为会造成过度设计和不必要的长期兼容负担。
+  - Keep them in `mcp/features/spi` because core currently depends on that module: rejected because dependency convenience is not a valid ownership rule.
+  - Move them into a shared API module: rejected because they are implementations, not shared contracts.
 
-## Decision 5: tool family 按 feature 拆分，而不是继续共享 `encrypt_mask` 命名
+## Decision 5: Interface-only runtime seams may remain in SPI
 
-- **Decision**:
-  - encrypt 对外发布 `plan_encrypt_rule`、`apply_encrypt_rule`、`validate_encrypt_rule`
-  - mask 对外发布 `plan_mask_rule`、`apply_mask_rule`、`validate_mask_rule`
+- **Decision**: If features need a stable way to access shared runtime capabilities, interface-only seams such as feature runtime facades may remain in `mcp/features/spi`, but their implementations must live outside that module.
 - **Rationale**:
-  - 产品尚未发布，不需要为了兼容保留共享工作流命名。
-  - feature-specific tool family 更符合 ownership，也避免一个 tool family 承担多个 feature 语义。
+  - Features still need a stable compile-time boundary to shared metadata, execution, capability, or session access.
+  - The new requirement is about removing concrete weight from the SPI module, not about eliminating extension-facing interfaces.
 - **Alternatives considered**:
-  - 保留 `plan_encrypt_mask_rule` 一类共享命名：拒绝，因为这会把 encrypt 与 mask 的 surface 继续捆绑在一起。
-  - 拆成更细碎的每一步独立 tool：拒绝，因为目前业务工作流仍以 plan / apply / validate 三段为稳定骨架。
+  - Remove all runtime seams from SPI and let features call core implementations directly: rejected because that breaks the extension boundary.
+  - Keep both interfaces and default implementations in SPI: rejected because it keeps the module heavy.
 
-## Decision 6: URI 采用 feature-scoped namespace，而不是沿用现有平铺路径
+## Decision 6: External MCP surface redesign is out of scope for this requirement
 
-- **Decision**:
-  - encrypt 资源 URI 收敛到 `shardingsphere://features/encrypt/...`
-  - mask 资源 URI 收敛到 `shardingsphere://features/mask/...`
+- **Decision**: Tool-name families, resource URI layouts, and feature workflow semantics are not part of this simplification unless another specification explicitly changes them.
 - **Rationale**:
-  - URI 首发即应表达 feature ownership，避免继续把 feature surface 混在平铺命名下。
-  - feature namespace 能天然降低重叠和歧义，也更利于未来加新 feature。
+  - The current requirement is already substantial and concerns module purity, ownership, and dependencies.
+  - Mixing in external surface redesign would obscure the acceptance boundary and make the refactor harder to review.
 - **Alternatives considered**:
-  - 保留 `shardingsphere://databases/{database}/encrypt-rules` 等旧路径：拒绝，因为 ownership 不明显，而且和 pluginized surface 不匹配。
-  - 使用单独的 `plugin` 前缀：拒绝，因为最终模块命名已经确定为 `features`，URI 也应保持一致。
+  - Reopen external naming and URI decisions during the same change: rejected because it couples internal architectural cleanup to unrelated product-surface changes.
 
-## Decision 7: reactor 结构保持 `features -> spi / encrypt / mask`，bootstrap 只负责把官方 feature jars 带入运行时
+## Decision 7: Classify before moving
 
-- **Decision**:
-  - 保持 `mcp/features/pom.xml`
-  - `mcp/core -> mcp/features/spi`
-  - `mcp/features/encrypt -> mcp/features/spi`
-  - `mcp/features/mask -> mcp/features/spi`
-  - `mcp/bootstrap` 可以在打包层带入 encrypt / mask feature jar，但不直接引用实现类
+- **Decision**: Before implementation, the current `mcp/features/spi` production sources must be classified into five buckets:
+  - pure SPI contract
+  - shared API contract
+  - core runtime implementation
+  - feature-owned implementation
 - **Rationale**:
-  - 这样可以在不改变已确认模块结构的前提下，落实“feature 只依赖 SPI、不依赖 core internals”的设计目标。
-  - 当前目标是代码层和 surface 发现层插件化，不额外扩展到外部插件目录或运行时动态装载。
+  - The current module mixes several ownership models.
+  - A class-by-class destination matrix avoids ad hoc moves and helps reviewers validate that the new boundaries are intentional.
 - **Alternatives considered**:
-  - `encrypt / mask -> core`：拒绝，因为这会把 feature 变成 core 的附属目录。
-  - 额外新增 runtime 聚合模块：暂不采用，因为当前模块结构已经固定，这一轮不扩展 reactor 形态。
+  - Start moving files package by package without a classification matrix: rejected because it is likely to recreate the same muddled boundary under different module names.
 
-## Decision 8: surface 聚合必须确定且显式失败，不能允许静默覆盖
+## Decision 8: Use the current package families as the first-pass classification seed
 
-- **Decision**: 对 duplicate tool name、duplicate / overlapping URI pattern、空 surface、无效 SPI 注册统一在 registry 装配阶段显式失败。
+- **Decision**: The initial classification matrix should start from the package families that exist today under `mcp/features/spi`, rather than from abstract concepts alone.
 - **Rationale**:
-  - 用户已明确要求对歧义注册做显式拒绝。
-  - feature 插件化之后，启动期 fail-fast 比运行期 silent shadowing 更重要。
+  - The module is already heavy enough that reviewers need concrete starting evidence, not just a target architecture.
+  - Current package-level weight shows where the simplification pressure really comes from.
+  - Several boundary leaks are visible directly in today's code and should become explicit acceptance anchors.
+- **Observed baseline**:
+  - `mcp/features/spi` currently contains `6128` production lines.
+  - Workflow-like families under `tool/service/workflow`, `tool/model/workflow`, `tool/handler/workflow`, `tool/descriptor`, `tool/request`, and `tool/response` account for `3932` lines, about `64.2%` of the module.
+  - `tool/service/workflow` alone contributes `1858` lines across `14` files.
+  - `tool/model/workflow` contributes `1273` lines across `18` files.
+  - `MCPFeatureContext` currently exposes `WorkflowContextStore` directly, proving that the SPI surface leaks a concrete support implementation in its method signature.
+  - `WorkflowExecutionService` is a concrete orchestration service that applies artifacts, persists lifecycle state, and builds payload maps, which is runtime behavior rather than SPI.
+  - `ResourceHandlerRegistry` in `mcp/core` constructs and validates `MCPUriPattern`, indicating that URI-pattern parsing is a core-private registry concern rather than a feature SPI concern.
+  - `EncryptFeatureProvider` and `MaskFeatureProvider` directly instantiate `WorkflowExecutionToolHandler` and `WorkflowValidationToolHandler`, showing that `mcp/features/spi` is currently acting as a shared support/runtime module rather than a pure SPI layer.
+- **Initial seed mapping**:
+  - likely `pure-spi`: `capability/*`, `context/MCPFeatureContext` after signature cleanup, `feature/spi/*`, `tool/handler/ToolHandler`, `resource/handler/ResourceHandler`
+  - likely `shared-api`: `metadata/model/*`, `metadata/jdbc/RuntimeDatabaseProfile`, `protocol/*`, `protocol/error/*`, `protocol/exception/*`, `protocol/response/*`, `tool/descriptor/MCPToolDescriptor`, `MCPToolFieldDefinition`, `MCPToolValueDefinition`, `tool/request/*`, `tool/response/*`, `resource/uri/MCPUriVariables`
+  - likely decomposition candidates before final placement: `tool/service/workflow/*`, `tool/model/workflow/*`, `tool/handler/workflow/*`, `tool/descriptor/WorkflowToolDescriptors`
+  - likely `core-runtime`: `resource/uri/MCPUriPattern`
+- **Retained SPI note**:
+  - `MCPFeatureProvider` remains part of the intended SPI surface for this requirement; the simplification is about purging non-SPI concrete weight, not removing the top-level provider contract.
 - **Alternatives considered**:
-  - 先到先得：拒绝，因为 discovery surface 会随 classpath 顺序漂移。
-  - 后者覆盖前者：拒绝，因为 reviewer 很难定位真实生效来源。
-
-## Decision 9: `MCPFeatureProvider` 不再作为 tool/resource 装配链路的一部分
-
-- **Decision**: 本次 feature modularization 的验收边界不再依赖 `MCPFeatureProvider` 参与 tool / resource 装配；若将来仍需 feature-level metadata SPI，应单独定义，并且不能作为 surface assembly 的前置条件。
-- **Rationale**:
-  - 从当前代码看，`MCPFeatureProvider` 的唯一实际价值主要是 featureType 去重，而不是运行时 surface 执行所必需。
-  - 保留它参与 surface assembly 只会让 registry 模型更复杂，而不会带来新的用户价值。
-- **Alternatives considered**:
-  - 继续以 provider 承担 featureType 校验和 handler 枚举：拒绝，因为 handler 直接 SPI 已经足够表达 surface。
-  - 直接为当前 feature 引入新的 metadata SPI：暂不采用，因为当前需求的核心是 surface pluginization，而不是 feature catalog 功能。
+  - Keep the research purely principle-level and defer all concrete families to implementation: rejected because that makes the plan less reviewable and less actionable.

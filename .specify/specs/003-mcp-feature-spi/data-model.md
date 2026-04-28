@@ -1,163 +1,166 @@
-# Data Model: MCP Feature SPI Modularization
+# Data Model: MCP Feature SPI Simplification
 
-## 1. 建模目标
+## 1. Modeling goal
 
-- 模型要表达“谁拥有 surface”，而不是只表达“有哪些 handlers”。
-- 模型要支持 core 与 feature 解耦，同时保证 registry 聚合仍可确定执行。
-- 模型要覆盖 future feature 扩展，而不只服务 encrypt / mask 两个现有模块。
-- 模型要把 tool naming family、resource namespace、workflow state ownership 一起显式化。
+- The model describes ownership and classification rules for types currently living in `mcp/features/spi`.
+- The model must make it easy to reason about where a class belongs after the simplification.
+- The model must prevent "move it to core for convenience" from becoming the default answer for every non-SPI type.
 
-## 2. 核心实体
+## 2. Core entities
 
-### 2.1 FeatureModule
+### 2.1 Type Family
 
-一个位于 `mcp/features` 下的 MCP 业务能力模块。
+A logical family of related production types currently grouped under one package or responsibility in `mcp/features/spi`.
 
-- `moduleName`: 模块名，例如 `encrypt`、`mask`
-- `toolHandlers`: 当前 feature 模块通过 SPI 注册的 tool handlers
-- `resourceHandlers`: 当前 feature 模块通过 SPI 注册的 resource handlers
-- `workflowImplementations`: 当前 feature 对外需要稳定暴露的 planner / applier / validator 等实现
-
-**Validation rules**
-
-- `moduleName` 必须非空
-- `toolHandlers` 和 `resourceHandlers` 不能同时为空
-- 所有 surface 的命名与 URI namespace 必须和模块 ownership 一致
-
-### 2.2 ToolHandler Contribution
-
-一个由 feature 模块通过 SPI 暴露给 registry 的 MCP tool surface。
-
-- `name`: tool 名称
-- `descriptor`: MCP tool descriptor
-- `owningModule`: 所属 feature 模块
-- `handler`: 实际执行逻辑
+- `name`: family name, for example `tool descriptor`, `workflow execution helper`, `metadata model`
+- `currentPackage`: current package path under `mcp/features/spi`
+- `currentRole`: why the family exists today
+- `consumers`: modules that compile against the family
 
 **Validation rules**
 
-- `name` 必须非空
-- `name` 在全局 registry 级别必须唯一
-- `descriptor` 必须完整，required field 与 schema 定义保持一致
+- `name` must be non-empty
+- `currentPackage` must identify one current ownership location
+- `consumers` must be explicit enough to decide whether the family is core-private, shared contract, feature-owned, or needs decomposition before final placement
 
-### 2.3 ResourceHandler Contribution
+### 2.2 Classification Record
 
-一个由 feature 模块通过 SPI 暴露给 registry 的 MCP resource surface。
+The explicit decision that assigns one type family to its final ownership category.
 
-- `uriPattern`: resource URI pattern
-- `owningModule`: 所属 feature 模块
-- `handler`: 实际读取逻辑
-
-**Validation rules**
-
-- `uriPattern` 必须非空
-- `uriPattern` 在全局 registry 级别必须唯一
-- 任意两个 pattern 不能 overlap
-
-### 2.4 MCPFeatureRuntimeContext
-
-feature handler 通过 `mcp/features/spi` 看到的共享运行时 facade，而不是 core implementation。
-
-- `metadataFacade`: 逻辑元数据查询能力
-- `executionFacade`: SQL / DistSQL 执行能力
-- `sessionFacade`: session 与事务相关能力
-- `workflowStore`: feature workflow 状态读写能力
-- `capabilityFacade`: 数据库 / 服务 capability 查询能力
+- `typeFamily`: the family being classified
+- `category`: one of `pure-spi`, `shared-api`, `feature-support`, `core-runtime`, `feature-owned`
+- `targetModule`: final module destination
+- `reason`: short ownership rationale
 
 **Validation rules**
 
-- facade 暴露共享能力，但不泄露 `mcp/core` 实现细节
-- feature handler 只能通过这些 facade 与上层 runtime 交互
+- each `typeFamily` must have exactly one classification record
+- `category` and `targetModule` must agree
+- `reason` must explain why other categories were rejected
 
-### 2.5 FeatureWorkflowSnapshot
+### 2.3 Pure SPI Contract
 
-某个 feature 自己管理的 workflow 状态对象。
+A type family that remains in `mcp/features/spi`.
 
-- `planId`: 计划标识
-- `sessionId`: 创建该 workflow 的 session
-- `owningModule`: feature ownership
-- `status`: 当前状态
-- `payload`: feature-specific planning / review / execute / validate state
-
-**Validation rules**
-
-- `planId` 全局唯一
-- `owningModule` 必须与具体 feature 模块一致
-- `payload` 可以 feature-specific，但 store 与 registry 不得依赖其内部结构
-
-### 2.6 FeatureSurfaceCatalog
-
-`mcp/core` 聚合完成后的最终可见 surface 目录。
-
-- `tools`: 已注册 tool map
-- `resources`: 已注册 resource map
-- `supportedModules`: 当前 runtime 实际启用的 feature 模块列表
+- `contractName`
+- `interfaceSet`
+- `minimalSupportingTypes`
 
 **Validation rules**
 
-- 聚合顺序必须确定
-- 单个 feature 缺失时，不影响其他 feature 和 core surface
-- catalog 构建失败时必须给出显式错误来源
+- all members are interfaces or minimal interface-owned supporting types
+- the family contains no concrete runtime implementation
 
-### 2.7 FeatureContractNamespace
+### 2.4 Shared API Contract
 
-某个 feature 的首发外部 contract 约束。
+A non-SPI compile-time contract shared by core and feature modules.
 
-- `toolNameFamily`: 例如 `plan_encrypt_rule` / `apply_encrypt_rule` / `validate_encrypt_rule`
-- `resourceNamespace`: 例如 `shardingsphere://features/encrypt/...`
-- `owningModule`: 对应 feature 模块
+- `contractName`
+- `exposedFieldsOrMethods`
+- `consumingModules`
 
 **Validation rules**
 
-- tool 与 URI namespace 必须和 feature ownership 一致
-- 不允许多个 feature 共享同一组外部 contract 名称
+- it is not a concrete runtime implementation
+- it is referenced by both core and feature modules
+- it belongs in a neutral shared module rather than `mcp/features/spi`
 
-## 3. 实体关系
+### 2.5 Shared Concrete Family
 
-- 一个 `FeatureModule` 拥有多个 `ToolHandler Contribution`
-- 一个 `FeatureModule` 拥有多个 `ResourceHandler Contribution`
-- 一个 `FeatureModule` 生成并管理自己的 `FeatureWorkflowSnapshot`
-- `FeatureSurfaceCatalog` 聚合多个 feature modules 提供的 surface
-- 每个 feature module 必须绑定一个 `FeatureContractNamespace`
+A current concrete helper family reused by multiple feature modules that cannot remain as-is.
 
-## 4. 状态与生命周期
+- `familyName`
+- `featureConsumers`
+- `sharedBehavior`
+- `decompositionPlan`
 
-### 4.1 Handler SPI lifecycle
+**Validation rules**
 
-1. handler 通过 SPI 被发现
-2. registry 校验 tool / resource surface 完整性与唯一性
-3. registry 聚合 tools / resources
-4. bootstrap 基于 catalog 暴露 MCP tool / resource specifications
+- it is concrete code, not just a contract
+- it is truly shared by multiple feature modules
+- it must be decomposed until each resulting type becomes shared API, core runtime, or feature-owned
 
-### 4.2 Workflow lifecycle
+### 2.6 Core Runtime Component
 
-1. feature-specific `plan_*` tool 创建或更新 `FeatureWorkflowSnapshot`
-2. feature-specific `apply_*` tool 读取同一 snapshot 并推进执行状态
-3. feature-specific `validate_*` tool 读取同一 snapshot 并完成验证
+A concrete implementation owned only by shared MCP runtime infrastructure.
 
-`status` 的具体取值由 feature 决定，但 encrypt / mask 当前仍沿用 001 已定义的 planning / review / execute / validate 语义。
+- `componentName`
+- `runtimeResponsibility`
+- `coreConsumers`
 
-## 5. 首发实例化结果
+**Validation rules**
 
-### 5.1 Encrypt
+- feature modules do not compile against it directly
+- it may live in `mcp/core`
 
-- `owningModule`: `encrypt`
-- `toolNameFamily`:
-  - `plan_encrypt_rule`
-  - `apply_encrypt_rule`
-  - `validate_encrypt_rule`
-- `resourceNamespace`:
-  - `shardingsphere://features/encrypt/algorithms`
-  - `shardingsphere://features/encrypt/databases/{database}/rules`
-  - `shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules`
+### 2.7 Feature-Owned Component
 
-### 5.2 Mask
+A concrete type family that belongs to one feature only.
 
-- `owningModule`: `mask`
-- `toolNameFamily`:
-  - `plan_mask_rule`
-  - `apply_mask_rule`
-  - `validate_mask_rule`
-- `resourceNamespace`:
-  - `shardingsphere://features/mask/algorithms`
-  - `shardingsphere://features/mask/databases/{database}/rules`
-  - `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
+- `featureName`
+- `componentName`
+- `responsibility`
+
+**Validation rules**
+
+- exactly one feature owns the family
+- the family should not remain in `mcp/features/spi`
+
+## 3. Relationships
+
+- One `Type Family` has exactly one `Classification Record`.
+- A `Classification Record` maps a type family to one of:
+  - `Pure SPI Contract`
+  - `Shared API Contract`
+  - `Shared Concrete Family`
+  - `Core Runtime Component`
+  - `Feature-Owned Component`
+
+## 4. Classification flow
+
+1. Determine whether the type family is an SPI contract.
+2. If not, determine whether it is a shared compile-time contract.
+3. If not, determine whether it is a shared concrete helper used by multiple features and therefore needs decomposition.
+4. If not, determine whether it is core-private runtime code.
+5. Otherwise, treat it as feature-owned.
+
+This flow exists to prevent convenience-based placement.
+
+## 5. Initial type-family examples
+
+### 5.1 Likely `pure-spi`
+
+- `capability/*`
+- `context/MCPFeatureContext` after removing any concrete implementation types from its signatures
+- `feature/spi/*`
+- `tool/handler/ToolHandler`
+- `resource/handler/ResourceHandler`
+
+### 5.2 Likely `shared-api`
+
+- `metadata/model/*`
+- `metadata/jdbc/RuntimeDatabaseProfile`
+- `protocol/*`, `protocol/error/*`, `protocol/exception/*`, `protocol/response/*`
+- `tool/descriptor/MCPToolDescriptor`, `MCPToolFieldDefinition`, `MCPToolValueDefinition`
+- `tool/request/*`
+- `tool/response/*`
+- `resource/uri/MCPUriVariables`
+
+### 5.3 Likely decomposition candidates
+
+- `tool/service/workflow/*`
+- `tool/model/workflow/*`
+- `tool/handler/workflow/*`
+- `tool/descriptor/WorkflowToolDescriptors`
+
+### 5.4 Likely `core-runtime`
+
+- `resource/uri/MCPUriPattern`
+- any registry assembly helper that is used only by core registries
+- any workflow store implementation that ends up owned only by shared runtime after classification
+
+### 5.5 Likely `feature-owned`
+
+- encrypt-specific workflow state and helpers after shared families are reduced
+- mask-specific workflow state and helpers after shared families are reduced
+- feature-specific recommendation or inspection logic
