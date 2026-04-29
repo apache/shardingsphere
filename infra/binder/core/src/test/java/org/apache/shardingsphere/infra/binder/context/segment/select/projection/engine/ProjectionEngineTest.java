@@ -36,6 +36,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.Expr
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.item.ShorthandProjectionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -115,6 +116,17 @@ class ProjectionEngineTest {
         Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
         assertTrue(actual.isPresent());
         assertThat(actual.get(), isA(AggregationProjection.class));
+    }
+    
+    @Test
+    void assertCreateExpressionProjectionWhenAggregationProjectionSegmentContainsWindow() {
+        AggregationProjectionSegment aggregationProjectionSegment = new AggregationProjectionSegment(0, 25, AggregationType.MAX, "MAX(id) OVER ()");
+        aggregationProjectionSegment.setWindow(new WindowItemSegment(8, 25));
+        aggregationProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("max_id")));
+        Optional<Projection> actual = new ProjectionEngine(databaseType).createProjection(aggregationProjectionSegment);
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), isA(ExpressionProjection.class));
+        assertThat(actual.get().getAlias().map(IdentifierValue::getValue).orElse(null), is("max_id"));
     }
     
     @Test
