@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Encrypt MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EncryptFeatureDefinition {
     
     public static final String PLAN_TOOL_NAME = "plan_encrypt_rule";
@@ -33,7 +37,4 @@ public final class EncryptFeatureDefinition {
     public static final String RULES_RESOURCE_URI = "shardingsphere://features/encrypt/databases/{database}/rules";
     
     public static final String RULE_RESOURCE_URI = "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules";
-    
-    private EncryptFeatureDefinition() {
-    }
 }

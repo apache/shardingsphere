@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.mcp.feature.mask;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Mask MCP feature definition.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MaskFeatureDefinition {
     
     public static final String PLAN_TOOL_NAME = "plan_mask_rule";
@@ -33,7 +37,4 @@ public final class MaskFeatureDefinition {
     public static final String RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/{database}/rules";
     
     public static final String RULE_RESOURCE_URI = "shardingsphere://features/mask/databases/{database}/tables/{table}/rules";
-    
-    private MaskFeatureDefinition() {
-    }
 }
