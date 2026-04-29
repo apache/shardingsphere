@@ -17,18 +17,38 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
+import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
 import io.modelcontextprotocol.spec.HttpHeaders;
+import io.modelcontextprotocol.spec.McpSchema;
+import io.modelcontextprotocol.spec.McpSchema.InitializeResult;
+import io.modelcontextprotocol.spec.McpStreamableServerSession;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,18 +57,269 @@ import static org.mockito.Mockito.when;
 class StreamableHttpMCPServletTest {
     
     @Test
-    void assertDoGetWithUnauthorizedRequestFromMcpValidator() throws ServletException, IOException {
+    void assertProtocolVersions() {
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(mock(HttpServletStreamableServerTransportProvider.class), mock(MCPSessionManager.class),
+                mock(MCPSessionExecutionCoordinator.class));
+        assertThat(actual.protocolVersions(), is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
+    }
+    
+    @Test
+    void assertSetSessionFactoryWithSupportedProtocolVersion() {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        McpStreamableServerSession.Factory sessionFactory = mock(McpStreamableServerSession.Factory.class);
+        McpStreamableServerSession session = mock(McpStreamableServerSession.class);
+        when(session.getId()).thenReturn("session-id");
+        McpStreamableServerSession.McpStreamableServerSessionInit expectedInit = new McpStreamableServerSession.McpStreamableServerSessionInit(session,
+                Mono.just(new InitializeResult(MCPTransportConstants.PROTOCOL_VERSION, McpSchema.ServerCapabilities.builder().tools(Boolean.FALSE).build(),
+                        new McpSchema.Implementation("Apache ShardingSphere MCP", "development"), "runtime")));
+        when(sessionFactory.startSession(any(McpSchema.InitializeRequest.class))).thenReturn(expectedInit);
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, sessionManager, mock(MCPSessionExecutionCoordinator.class));
+        actual.setSessionFactory(sessionFactory);
+        ArgumentCaptor<McpStreamableServerSession.Factory> actualFactory = ArgumentCaptor.forClass(McpStreamableServerSession.Factory.class);
+        verify(delegate).setSessionFactory(actualFactory.capture());
+        McpSchema.InitializeRequest expectedInitializeRequest = new McpSchema.InitializeRequest(MCPTransportConstants.PROTOCOL_VERSION,
+                new McpSchema.ClientCapabilities(Map.of(), null, null, null), new McpSchema.Implementation("foo_client", "1.0.0"));
+        assertThat(actualFactory.getValue().startSession(expectedInitializeRequest), is(expectedInit));
+        verify(sessionFactory).startSession(expectedInitializeRequest);
+        verify(sessionManager).createSession("session-id");
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("unsupportedProtocolVersions")
+    void assertSetSessionFactoryWithNegotiatedProtocolVersion(final String name, final String requestedProtocolVersion) {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        McpStreamableServerSession.Factory sessionFactory = mock(McpStreamableServerSession.Factory.class);
+        McpStreamableServerSession session = mock(McpStreamableServerSession.class);
+        when(session.getId()).thenReturn("session-id");
+        McpStreamableServerSession.McpStreamableServerSessionInit expectedInit = new McpStreamableServerSession.McpStreamableServerSessionInit(session,
+                Mono.just(new InitializeResult(MCPTransportConstants.PROTOCOL_VERSION, McpSchema.ServerCapabilities.builder().tools(Boolean.FALSE).build(),
+                        new McpSchema.Implementation("Apache ShardingSphere MCP", "development"), "runtime")));
+        when(sessionFactory.startSession(any(McpSchema.InitializeRequest.class))).thenReturn(expectedInit);
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, sessionManager, mock(MCPSessionExecutionCoordinator.class));
+        actual.setSessionFactory(sessionFactory);
+        ArgumentCaptor<McpStreamableServerSession.Factory> actualFactory = ArgumentCaptor.forClass(McpStreamableServerSession.Factory.class);
+        verify(delegate).setSessionFactory(actualFactory.capture());
+        McpSchema.InitializeRequest actualInitializeRequest = new McpSchema.InitializeRequest(requestedProtocolVersion,
+                new McpSchema.ClientCapabilities(Map.of(), null, null, null), new McpSchema.Implementation("foo_client", "1.0.0"));
+        actualFactory.getValue().startSession(actualInitializeRequest);
+        ArgumentCaptor<McpSchema.InitializeRequest> negotiatedRequest = ArgumentCaptor.forClass(McpSchema.InitializeRequest.class);
+        verify(sessionFactory).startSession(negotiatedRequest.capture());
+        assertThat(negotiatedRequest.getValue().protocolVersion(), is(MCPTransportConstants.PROTOCOL_VERSION));
+        assertThat(negotiatedRequest.getValue().capabilities(), is(actualInitializeRequest.capabilities()));
+        assertThat(negotiatedRequest.getValue().clientInfo(), is(actualInitializeRequest.clientInfo()));
+        assertThat(negotiatedRequest.getValue().meta(), is(actualInitializeRequest.meta()));
+        verify(sessionManager).createSession("session-id");
+    }
+    
+    private static Stream<Arguments> unsupportedProtocolVersions() {
+        return Stream.of(
+                Arguments.of("null protocol version", null),
+                Arguments.of("blank protocol version", "  "),
+                Arguments.of("unsupported protocol version", "2024-11-05"));
+    }
+    
+    @Test
+    void assertNotifyClients() {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        Mono<Void> expected = Mono.empty();
+        when(delegate.notifyClients("notifications/tools/list_changed", Map.of("status", "ok"))).thenReturn(expected);
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        assertThat(actual.notifyClients("notifications/tools/list_changed", Map.of("status", "ok")), is(expected));
+    }
+    
+    @Test
+    void assertNotifyClient() {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        Mono<Void> expected = Mono.empty();
+        when(delegate.notifyClient("session-id", "notifications/resources/list_changed", Map.of("status", "ok"))).thenReturn(expected);
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        assertThat(actual.notifyClient("session-id", "notifications/resources/list_changed", Map.of("status", "ok")), is(expected));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("requestMethods")
+    void assertServiceSetUtf8Encoding(final String name, final String requestMethod) throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn(requestMethod);
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn("application/json");
+        when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn(null);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        actual.service(request, response);
+        verify(request).setCharacterEncoding("UTF-8");
+        verify(response).setCharacterEncoding("UTF-8");
+    }
+    
+    private static Stream<Arguments> requestMethods() {
+        return Stream.of(
+                Arguments.of("get request", "GET"),
+                Arguments.of("post request", "POST"),
+                Arguments.of("delete request", "DELETE"));
+    }
+    
+    @Test
+    void assertServiceGetWithDefaultAcceptHeaderAndUtf8Encoding() throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
-        when(request.getRequestURI()).thenReturn("/gateway");
         when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
-        when(request.getHeaderNames()).thenReturn(Collections.enumeration(List.of(HttpHeaders.MCP_SESSION_ID)));
-        when(request.getHeaders(HttpHeaders.MCP_SESSION_ID)).thenReturn(Collections.enumeration(List.of("missing-session")));
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
         HttpServletResponse response = mock(HttpServletResponse.class);
-        StreamableHttpMCPServlet servlet = new StreamableHttpMCPServlet(sessionManager, MCPTransportJsonMapperFactory.create(), "127.0.0.1", "foo_token", "/gateway");
-        servlet.doGet(request, response);
-        verify(sessionManager, never()).hasSession("missing-session");
-        verify(response).sendError(401, "Unauthorized.");
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        doAnswer(invocation -> assertDefaultAcceptHeaderRequest(invocation.getArgument(0), invocation.getArgument(1), response))
+                .when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        actual.service(request, response);
+        verify(request).setCharacterEncoding("UTF-8");
+        verify(response).setCharacterEncoding("UTF-8");
+    }
+    
+    private Object assertDefaultAcceptHeaderRequest(final HttpServletRequest actualRequest, final HttpServletResponse actualResponse, final HttpServletResponse response) {
+        assertThat(actualRequest, isA(HttpServletRequestWrapper.class));
+        assertThat(actualRequest.getHeader(HttpHeaders.ACCEPT), is("application/json, text/event-stream"));
+        assertThat(Collections.list(actualRequest.getHeaders(HttpHeaders.ACCEPT)), is(List.of("application/json, text/event-stream")));
+        assertTrue(Collections.list(actualRequest.getHeaderNames()).contains(HttpHeaders.ACCEPT));
+        assertThat(actualResponse, is(response));
+        assertThat(Thread.currentThread().getContextClassLoader(), is(StreamableHttpMCPServlet.class.getClassLoader()));
+        return null;
+    }
+    
+    @Test
+    void assertServiceGetWithExistingAcceptHeader() throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("GET");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn("text/event-stream");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        doAnswer(invocation -> {
+            assertThat(invocation.getArgument(0), is(request));
+            assertThat(((HttpServletRequest) invocation.getArgument(0)).getHeader(HttpHeaders.ACCEPT), is("text/event-stream"));
+            return null;
+        }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        actual.service(request, response);
+        verify(request).setCharacterEncoding("UTF-8");
+        verify(response).setCharacterEncoding("UTF-8");
+    }
+    
+    @Test
+    void assertServicePostWithSessionHeaderSet() throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        doAnswer(invocation -> {
+            ((HttpServletResponse) invocation.getArgument(1)).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
+            return null;
+        }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        actual.service(request, response);
+        verify(response).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
+        verify(response).setHeader(HttpHeaders.PROTOCOL_VERSION, MCPTransportConstants.PROTOCOL_VERSION);
+    }
+    
+    @Test
+    void assertServicePostWithSessionHeaderAdded() throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        doAnswer(invocation -> {
+            ((HttpServletResponse) invocation.getArgument(1)).addHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
+            return null;
+        }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        actual.service(request, response);
+        verify(response).addHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
+        verify(response).setHeader(HttpHeaders.PROTOCOL_VERSION, MCPTransportConstants.PROTOCOL_VERSION);
+    }
+    
+    @Test
+    void assertServicePostWithoutSessionHeader() throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), mock(MCPSessionExecutionCoordinator.class));
+        doAnswer(invocation -> {
+            HttpServletResponse actualResponse = invocation.getArgument(1);
+            actualResponse.setHeader("X-Test", "value");
+            actualResponse.addHeader("X-Trace", "value");
+            return null;
+        }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        actual.service(request, response);
+        verify(response).setHeader("X-Test", "value");
+        verify(response).addHeader("X-Trace", "value");
+        verify(response, never()).setHeader(HttpHeaders.PROTOCOL_VERSION, MCPTransportConstants.PROTOCOL_VERSION);
+    }
+    
+    @Test
+    void assertServiceDeleteCloseSessionWhenStatusOk() throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("DELETE");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(response.getStatus()).thenReturn(200);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), sessionExecutionCoordinator);
+        actual.service(request, response);
+        verify(sessionExecutionCoordinator).closeSession("session-id");
+    }
+    
+    @Test
+    void assertServiceDeleteSkipCloseSessionWhenStatusNotOk() throws ServletException, IOException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("DELETE");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        when(request.getHeader(HttpHeaders.MCP_SESSION_ID)).thenReturn("session-id");
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(response.getStatus()).thenReturn(404);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), sessionExecutionCoordinator);
+        actual.service(request, response);
+        verify(sessionExecutionCoordinator, never()).closeSession("session-id");
+    }
+    
+    @Test
+    void assertCloseGracefully() {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), sessionExecutionCoordinator);
+        assertDoesNotThrow(() -> actual.closeGracefully().block());
+        assertDoesNotThrow(() -> actual.closeGracefully().block());
+        verify(delegate).closeGracefully();
+        verify(sessionExecutionCoordinator).closeAllSessions();
+    }
+    
+    @Test
+    void assertDestroy() {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        MCPSessionExecutionCoordinator sessionExecutionCoordinator = mock(MCPSessionExecutionCoordinator.class);
+        when(delegate.closeGracefully()).thenReturn(Mono.empty());
+        StreamableHttpMCPServlet actual = new StreamableHttpMCPServlet(delegate, mock(MCPSessionManager.class), sessionExecutionCoordinator);
+        actual.destroy();
+        verify(delegate).closeGracefully();
+        verify(sessionExecutionCoordinator).closeAllSessions();
     }
 }

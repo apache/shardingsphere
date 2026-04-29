@@ -17,33 +17,100 @@
 
 package org.apache.shardingsphere.mcp.bootstrap.transport.server.http;
 
+import io.modelcontextprotocol.server.McpSyncServer;
+import io.modelcontextprotocol.server.transport.HttpServletStreamableServerTransportProvider;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.core.StandardContext;
+import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
+import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+
+import java.io.IOException;
+import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class StreamableHttpMCPServerTest {
     
     @Test
     void assertGetLocalPortBeforeStart() {
-        StreamableHttpMCPServer actual = createServer();
-        assertThat(actual.getLocalPort(), is(18080));
+        assertThat(createServer(18080).getLocalPort(), is(18080));
+    }
+    
+    @Test
+    void assertStartAndStop() throws IOException {
+        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
+        McpSyncServer syncServer = mock(McpSyncServer.class);
+        StreamableHttpMCPServlet transportServlet = createTransportServlet();
+        when(syncServerFactory.create(transportServlet)).thenReturn(syncServer);
+        StreamableHttpMCPServer actual = new StreamableHttpMCPServer(createConfig(0), syncServerFactory, transportServlet);
+        actual.start();
+        assertThat(actual.getLocalPort(), greaterThan(0));
+        actual.stop();
+        verify(syncServerFactory).create(transportServlet);
+        verify(syncServer).closeGracefully();
+        assertThat(actual.getLocalPort(), is(0));
+    }
+    
+    @Test
+    void assertStartOnce() throws IOException {
+        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
+        McpSyncServer syncServer = mock(McpSyncServer.class);
+        StreamableHttpMCPServlet transportServlet = createTransportServlet();
+        when(syncServerFactory.create(transportServlet)).thenReturn(syncServer);
+        StreamableHttpMCPServer actual = new StreamableHttpMCPServer(createConfig(0), syncServerFactory, transportServlet);
+        actual.start();
+        actual.start();
+        actual.stop();
+        verify(syncServerFactory).create(transportServlet);
+    }
+    
+    @Test
+    void assertStartWithLifecycleFailure() {
+        MCPSyncServerFactory syncServerFactory = mock(MCPSyncServerFactory.class);
+        McpSyncServer syncServer = mock(McpSyncServer.class);
+        StreamableHttpMCPServlet transportServlet = createTransportServlet();
+        when(syncServerFactory.create(transportServlet)).thenReturn(syncServer);
+        try (MockedConstruction<Tomcat> mockedTomcat = mockConstruction(Tomcat.class, (mock, context) -> {
+            when(mock.addContext(anyString(), anyString())).thenReturn(new StandardContext());
+            doThrow(new LifecycleException("mocked lifecycle failure")).when(mock).start();
+        })) {
+            StreamableHttpMCPServer actual = new StreamableHttpMCPServer(createConfig(0), syncServerFactory, transportServlet);
+            IOException ex = assertThrows(IOException.class, actual::start);
+            assertThat(ex.getMessage(), is("Failed to start embedded Tomcat runtime."));
+        }
+        verify(syncServer).closeGracefully();
     }
     
     @Test
     void assertStopWithoutStart() {
-        StreamableHttpMCPServer actual = createServer();
-        assertDoesNotThrow(actual::stop);
+        assertDoesNotThrow(() -> createServer(18080).stop());
     }
     
-    private StreamableHttpMCPServer createServer() {
-        return new StreamableHttpMCPServer(new HttpTransportConfiguration(true, "127.0.0.1", false, "", 18080, "/mcp"),
-                new MCPRuntimeContext(mock(MCPSessionManager.class), mock(MCPDatabaseCapabilityProvider.class)));
+    private StreamableHttpMCPServer createServer(final int port) {
+        return new StreamableHttpMCPServer(createConfig(port), mock(MCPSyncServerFactory.class), createTransportServlet());
+    }
+    
+    private HttpTransportConfiguration createConfig(final int port) {
+        return new HttpTransportConfiguration(true, "127.0.0.1", false, "", port, "/mcp");
+    }
+    
+    private StreamableHttpMCPServlet createTransportServlet() {
+        MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
+        return new StreamableHttpMCPServlet(mock(HttpServletStreamableServerTransportProvider.class), sessionManager, new MCPSessionExecutionCoordinator(sessionManager));
     }
 }

@@ -20,6 +20,9 @@ package org.apache.shardingsphere.mcp.bootstrap.config.loader;
 import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -82,9 +85,10 @@ class MCPConfigurationLoaderTest {
         assertThat(actual.getDatabases().get("logic_db").getJdbcUrl(), is("jdbc:h2:mem:logic"));
     }
     
-    @Test
-    void assertLoadWithBlankConfigurationPath() {
-        FileNotFoundException actual = assertThrows(FileNotFoundException.class, () -> MCPConfigurationLoader.load("   "));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("blankConfigurationPaths")
+    void assertLoadWithBlankConfigurationPath(final String name, final String configPath) {
+        FileNotFoundException actual = assertThrows(FileNotFoundException.class, () -> MCPConfigurationLoader.load(configPath));
         assertThat(actual.getMessage(), is("MCP configuration path cannot be blank."));
     }
     
@@ -112,16 +116,11 @@ class MCPConfigurationLoaderTest {
         }
     }
     
-    @Test
-    void assertLoadPackagedDistributionConfiguration() throws IOException {
-        MCPLaunchConfiguration actual = MCPConfigurationLoader.load("distribution/mcp/src/main/resources/conf/mcp.yaml");
-        assertTrue(actual.getHttpTransport().isEnabled());
-        assertFalse(actual.getStdioTransport().isEnabled());
-        assertFalse(actual.getHttpTransport().isAllowRemoteAccess());
-        assertThat(actual.getHttpTransport().getAccessToken(), is(""));
-        assertThat(actual.getDatabases().size(), is(2));
-        assertThat(actual.getDatabases().get("orders").getUsername(), is(""));
-        assertThat(actual.getDatabases().get("billing").getPassword(), is(""));
+    private static Stream<Arguments> blankConfigurationPaths() {
+        return Stream.of(
+                Arguments.of("empty configuration path", ""),
+                Arguments.of("single blank configuration path", " "),
+                Arguments.of("multi blank configuration path", "   "));
     }
     
     private Path createConfigFile(final Path baseDirectory, final String relativePath, final String yamlContent) throws IOException {

@@ -66,14 +66,19 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken, final String endpointPath) {
-        delegate = createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath);
+        this(createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath), sessionManager, new MCPSessionExecutionCoordinator(sessionManager));
+    }
+    
+    StreamableHttpMCPServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,
+                             final MCPSessionExecutionCoordinator sessionExecutionCoordinator) {
+        this.delegate = delegate;
         this.sessionManager = sessionManager;
-        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
+        this.sessionExecutionCoordinator = sessionExecutionCoordinator;
         closed = new AtomicBoolean();
     }
     
-    private HttpServletStreamableServerTransportProvider createDelegate(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper,
-                                                                        final String bindHost, final String accessToken, final String endpointPath) {
+    private static HttpServletStreamableServerTransportProvider createDelegate(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper,
+                                                                               final String bindHost, final String accessToken, final String endpointPath) {
         return HttpServletStreamableServerTransportProvider.builder().jsonMapper(jsonMapper).mcpEndpoint(endpointPath)
                 .securityValidator(ServerTransportSecurityValidatorFactory.create(sessionManager, bindHost, accessToken)).build();
     }

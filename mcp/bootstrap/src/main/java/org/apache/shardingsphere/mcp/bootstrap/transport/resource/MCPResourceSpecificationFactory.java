@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
  */
 public final class MCPResourceSpecificationFactory {
     
+    private final List<String> supportedResources;
+    
     private final MCPResourceController controller;
     
     /**
@@ -42,7 +44,12 @@ public final class MCPResourceSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        controller = new MCPResourceController(runtimeContext);
+        this(ResourceHandlerRegistry.getSupportedResources(), new MCPResourceController(runtimeContext));
+    }
+    
+    MCPResourceSpecificationFactory(final List<String> supportedResources, final MCPResourceController controller) {
+        this.supportedResources = List.copyOf(supportedResources);
+        this.controller = controller;
     }
     
     /**
@@ -51,7 +58,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        return ResourceHandlerRegistry.getSupportedResources().stream()
+        return supportedResources.stream()
                 .filter(each -> !isTemplatedResource(each)).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
@@ -61,7 +68,7 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return ResourceHandlerRegistry.getSupportedResources().stream()
+        return supportedResources.stream()
                 .filter(this::isTemplatedResource)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
