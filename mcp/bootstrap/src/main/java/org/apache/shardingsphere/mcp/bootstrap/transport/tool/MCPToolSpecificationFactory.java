@@ -50,12 +50,8 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        this(ToolHandlerRegistry.getSupportedToolDescriptors(), new MCPToolController(runtimeContext));
-    }
-    
-    MCPToolSpecificationFactory(final List<MCPToolDescriptor> toolDescriptors, final MCPToolController toolController) {
-        this.toolDescriptors = List.copyOf(toolDescriptors);
-        this.toolController = toolController;
+        toolDescriptors = List.copyOf(ToolHandlerRegistry.getSupportedToolDescriptors());
+        toolController = new MCPToolController(runtimeContext);
     }
     
     /**

@@ -22,55 +22,72 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import org.apache.shardingsphere.mcp.tool.MCPToolController;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPToolSpecificationFactoryTest {
     
     @Test
     void assertCreateToolSpecifications() {
-        MCPToolSpecificationFactory actualFactory = new MCPToolSpecificationFactory(List.of(createToolDescriptor()), mock(MCPToolController.class));
-        List<SyncToolSpecification> actual = actualFactory.createToolSpecifications();
-        assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).tool().name(), is("search_metadata"));
-        assertThat(actual.get(0).tool().title(), is("Search Metadata"));
-        assertThat(actual.get(0).tool().description(), is("ShardingSphere MCP tool: search_metadata"));
-        assertThat(actual.get(0).tool().inputSchema().type(), is("object"));
-        assertThat(actual.get(0).tool().inputSchema().required(), is(List.of("query")));
-        assertThat(actual.get(0).tool().inputSchema().properties().get("query"), is(Map.of("type", "string", "description", "Search query.")));
-        assertThat(actual.get(0).tool().inputSchema().properties().get("object_types"), is(Map.of(
-                "type", "array",
-                "description", "Optional object-type filter.",
-                "items", Map.of("type", "string", "description", "Object type."))));
-        assertNotNull(actual.get(0).callHandler());
+        try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor()));
+            MCPToolSpecificationFactory actualFactory = new MCPToolSpecificationFactory(mock(MCPRuntimeContext.class));
+            List<SyncToolSpecification> actual = actualFactory.createToolSpecifications();
+            assertThat(actual.size(), is(1));
+            assertThat(actual.get(0).tool().name(), is("search_metadata"));
+            assertThat(actual.get(0).tool().title(), is("Search Metadata"));
+            assertThat(actual.get(0).tool().description(), is("ShardingSphere MCP tool: search_metadata"));
+            assertThat(actual.get(0).tool().inputSchema().type(), is("object"));
+            assertThat(actual.get(0).tool().inputSchema().required(), is(List.of("query")));
+            assertThat(actual.get(0).tool().inputSchema().properties().get("query"), is(Map.of("type", "string", "description", "Search query.")));
+            assertThat(actual.get(0).tool().inputSchema().properties().get("object_types"), is(Map.of(
+                    "type", "array",
+                    "description", "Optional object-type filter.",
+                    "items", Map.of("type", "string", "description", "Object type."))));
+            assertNotNull(actual.get(0).callHandler());
+        }
     }
     
     @Test
     void assertCreateToolSpecificationsHandleNullArguments() {
-        MCPToolController toolController = mock(MCPToolController.class);
-        Map<String, Object> expectedPayload = Map.of("status", "ok");
-        when(toolController.handle("session-id", "search_metadata", Map.of())).thenReturn(() -> expectedPayload);
-        SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(List.of(createToolDescriptor()), toolController).createToolSpecifications().get(0);
-        McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
-        when(exchange.sessionId()).thenReturn("session-id");
-        CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("search_metadata", null));
-        verify(toolController).handle("session-id", "search_metadata", Map.of());
-        assertThat(actual.structuredContent(), is(expectedPayload));
-        assertThat(((TextContent) actual.content().get(0)).text(), is("{\"status\":\"ok\"}"));
+        try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            Map<String, Object> expectedPayload = Map.of("status", "ok");
+            MCPResponse response = () -> expectedPayload;
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor()));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPFeatureContext.class), eq("session-id"), eq("search_metadata"), eq(Map.of())))
+                    .thenReturn(Optional.of(response));
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
+            McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
+            when(exchange.sessionId()).thenReturn("session-id");
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("search_metadata", null));
+            assertThat(actual.structuredContent(), is(expectedPayload));
+            assertThat(((TextContent) actual.content().get(0)).text(), is("{\"status\":\"ok\"}"));
+        }
     }
     
     private MCPToolDescriptor createToolDescriptor() {

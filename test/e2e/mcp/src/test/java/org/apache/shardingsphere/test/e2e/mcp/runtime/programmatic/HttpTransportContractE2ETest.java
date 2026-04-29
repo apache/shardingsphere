@@ -160,7 +160,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient,
                 Map.of("MCP-Session-Id", "missing-session", "MCP-Protocol-Version", getProtocolVersion()));
         assertThat(actual.statusCode(), is(404));
-        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session does not exist."));
+        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session not found: missing-session"));
     }
     
     @Test
@@ -182,6 +182,6 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, sessionHeaders);
         assertThat(deleteResponse.statusCode(), is(200));
         assertThat(actual.statusCode(), is(404));
-        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session does not exist."));
+        assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session not found: " + sessionId));
     }
 }
