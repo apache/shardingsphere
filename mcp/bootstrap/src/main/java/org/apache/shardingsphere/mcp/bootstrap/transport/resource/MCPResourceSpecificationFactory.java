@@ -38,18 +38,9 @@ public final class MCPResourceSpecificationFactory {
     
     private final MCPResourceController controller;
     
-    /**
-     * Create MCP resource specification factory.
-     *
-     * @param runtimeContext runtime context
-     */
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        this(ResourceHandlerRegistry.getSupportedResources(), new MCPResourceController(runtimeContext));
-    }
-    
-    MCPResourceSpecificationFactory(final List<String> supportedResources, final MCPResourceController controller) {
-        this.supportedResources = List.copyOf(supportedResources);
-        this.controller = controller;
+        supportedResources = ResourceHandlerRegistry.getSupportedResources();
+        controller = new MCPResourceController(runtimeContext);
     }
     
     /**
