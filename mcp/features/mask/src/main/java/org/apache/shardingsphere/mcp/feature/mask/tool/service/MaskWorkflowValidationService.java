@@ -42,18 +42,7 @@ public final class MaskWorkflowValidationService {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final WorkflowContextStore contextStore;
-    
-    private final MaskRuleInspectionService ruleInspectionService;
-    
-    public MaskWorkflowValidationService() {
-        this(null, new MaskRuleInspectionService());
-    }
-    
-    MaskWorkflowValidationService(final WorkflowContextStore contextStore, final MaskRuleInspectionService ruleInspectionService) {
-        this.contextStore = contextStore;
-        this.ruleInspectionService = ruleInspectionService;
-    }
+    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
     /**
      * Validate workflow artifacts.
@@ -69,8 +58,7 @@ public final class MaskWorkflowValidationService {
     public Map<String, Object> validate(final WorkflowContextStore requestContextStore, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
                                         final String sessionId, final String planId) {
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContextStore);
-        WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
+        WorkflowContextSnapshot snapshot = requestContextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
@@ -83,7 +71,7 @@ public final class MaskWorkflowValidationService {
         validationReport.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport));
         validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getDdlValidation(), validationReport.getRuleValidation(),
                 validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
-        return validationSupport.finalizeValidation(actualContextStore, snapshot, validationReport);
+        return validationSupport.finalizeValidation(requestContextStore, snapshot, validationReport);
     }
     
     private ValidationSection validateDdl() {

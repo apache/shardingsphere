@@ -42,14 +42,9 @@ public final class MCPSyncServerFactory {
     private final MCPResourceSpecificationFactory resourceSpecificationFactory;
     
     public MCPSyncServerFactory(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
-        this(jsonMapper, new MCPToolSpecificationFactory(runtimeContext), new MCPResourceSpecificationFactory(runtimeContext));
-    }
-    
-    MCPSyncServerFactory(final McpJsonMapper jsonMapper, final MCPToolSpecificationFactory toolSpecificationFactory,
-                         final MCPResourceSpecificationFactory resourceSpecificationFactory) {
         this.jsonMapper = jsonMapper;
-        this.toolSpecificationFactory = toolSpecificationFactory;
-        this.resourceSpecificationFactory = resourceSpecificationFactory;
+        toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext);
+        resourceSpecificationFactory = new MCPResourceSpecificationFactory(runtimeContext);
     }
     
     /**

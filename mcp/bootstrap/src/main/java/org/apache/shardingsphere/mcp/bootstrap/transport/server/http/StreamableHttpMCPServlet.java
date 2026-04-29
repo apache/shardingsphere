@@ -66,14 +66,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken, final String endpointPath) {
-        this(createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath), sessionManager, new MCPSessionExecutionCoordinator(sessionManager));
-    }
-    
-    StreamableHttpMCPServlet(final HttpServletStreamableServerTransportProvider delegate, final MCPSessionManager sessionManager,
-                             final MCPSessionExecutionCoordinator sessionExecutionCoordinator) {
-        this.delegate = delegate;
+        delegate = createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath);
         this.sessionManager = sessionManager;
-        this.sessionExecutionCoordinator = sessionExecutionCoordinator;
+        sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
         closed = new AtomicBoolean();
     }
     

@@ -34,16 +34,6 @@ import java.util.Map;
  */
 public final class WorkflowExecutionService {
     
-    private final WorkflowContextStore contextStore;
-    
-    public WorkflowExecutionService() {
-        this(null);
-    }
-    
-    WorkflowExecutionService(final WorkflowContextStore contextStore) {
-        this.contextStore = contextStore;
-    }
-    
     /**
      * Apply workflow artifacts.
      *
@@ -57,8 +47,7 @@ public final class WorkflowExecutionService {
      */
     public Map<String, Object> apply(final WorkflowContextStore requestContextStore, final MCPFeatureExecutionFacade executionFacade, final String sessionId, final String planId,
                                      final List<String> approvedSteps, final String executionMode) {
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContextStore);
-        WorkflowContextSnapshot snapshot = actualContextStore.getRequired(planId);
+        WorkflowContextSnapshot snapshot = requestContextStore.getRequired(planId);
         Map<String, Object> rejectedResponse = checkApplyPreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
@@ -66,9 +55,9 @@ public final class WorkflowExecutionService {
         String actualExecutionMode = resolveExecutionMode(executionMode, snapshot);
         WorkflowApplyOutcome applyOutcome = new WorkflowApplyOutcome();
         if (isManualOnly(actualExecutionMode)) {
-            return applyManualOnly(actualContextStore, snapshot, applyOutcome);
+            return applyManualOnly(requestContextStore, snapshot, applyOutcome);
         }
-        return applyAutomatically(actualContextStore, executionFacade, sessionId, snapshot, approvedSteps, applyOutcome);
+        return applyAutomatically(requestContextStore, executionFacade, sessionId, snapshot, approvedSteps, applyOutcome);
     }
     
     private Map<String, Object> checkApplyPreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {

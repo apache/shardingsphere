@@ -34,7 +34,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
@@ -66,41 +65,19 @@ public final class EncryptWorkflowPlanningService {
     
     private final EncryptWorkflowIntentResolver intentResolver = new EncryptWorkflowIntentResolver();
     
-    private final WorkflowContextStore contextStore;
+    private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
-    private final EncryptRuleInspectionService ruleInspectionService;
+    private final EncryptAlgorithmRecommendationService algorithmRecommendationService = new EncryptAlgorithmRecommendationService();
     
-    private final EncryptAlgorithmRecommendationService algorithmRecommendationService;
+    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
     
-    private final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+    private final DerivedColumnNamingService derivedColumnNamingService = new DerivedColumnNamingService();
     
-    private final DerivedColumnNamingService derivedColumnNamingService;
+    private final PhysicalDDLPlanningService physicalDDLPlanningService = new PhysicalDDLPlanningService();
     
-    private final PhysicalDDLPlanningService physicalDDLPlanningService;
+    private final IndexPlanningService indexPlanningService = new IndexPlanningService();
     
-    private final IndexPlanningService indexPlanningService;
-    
-    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService;
-    
-    public EncryptWorkflowPlanningService() {
-        this(null, new EncryptRuleInspectionService(), new EncryptAlgorithmRecommendationService(), new EncryptAlgorithmPropertyTemplateService(),
-                new DerivedColumnNamingService(), new PhysicalDDLPlanningService(), new IndexPlanningService(), new EncryptRuleDistSQLPlanningService());
-    }
-    
-    EncryptWorkflowPlanningService(final WorkflowContextStore contextStore, final EncryptRuleInspectionService ruleInspectionService,
-                                   final EncryptAlgorithmRecommendationService algorithmRecommendationService,
-                                   final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
-                                   final DerivedColumnNamingService derivedColumnNamingService, final PhysicalDDLPlanningService physicalDDLPlanningService,
-                                   final IndexPlanningService indexPlanningService, final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        this.contextStore = contextStore;
-        this.ruleInspectionService = ruleInspectionService;
-        this.algorithmRecommendationService = algorithmRecommendationService;
-        this.algorithmPropertyTemplateService = algorithmPropertyTemplateService;
-        this.derivedColumnNamingService = derivedColumnNamingService;
-        this.physicalDDLPlanningService = physicalDDLPlanningService;
-        this.indexPlanningService = indexPlanningService;
-        this.ruleDistSQLPlanningService = ruleDistSQLPlanningService;
-    }
+    private final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = new EncryptRuleDistSQLPlanningService();
     
     /**
      * Plan encrypt workflow.
@@ -114,28 +91,27 @@ public final class EncryptWorkflowPlanningService {
      */
     public WorkflowContextSnapshot plan(final WorkflowContextStore requestContextStore, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final String sessionId, final EncryptWorkflowRequest request) {
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContextStore);
-        WorkflowContextSnapshot result = actualContextStore.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = requestContextStore.getOrCreate(sessionId, request.getPlanId());
         EncryptWorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
         if (!planningSupport.ensurePlanningContext(metadataQueryFacade, mergedRequest, clarifiedIntent, result)) {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
-            return actualContextStore.persist(result, currentStep, result.getStatus());
+            return requestContextStore.persist(result, currentStep, result.getStatus());
         }
         List<Map<String, Object>> existingRules = ruleInspectionService.queryEncryptRules(queryFacade, mergedRequest.getDatabase(), mergedRequest.getTable());
         if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result)) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+            return requestContextStore.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         EncryptWorkflowState workflowState = getWorkflowState(result);
         if (isDropWorkflow(clarifiedIntent)) {
             planDrop(metadataQueryFacade, queryFacade, workflowState, clarifiedIntent, mergedRequest, existingRules, result);
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+            return requestContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
         }
         if (!planNonDrop(metadataQueryFacade, queryFacade, workflowState, clarifiedIntent, mergedRequest, existingRules, result)) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+            return requestContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
-        return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+        return requestContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }
     
     private EncryptWorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final EncryptWorkflowRequest request) {

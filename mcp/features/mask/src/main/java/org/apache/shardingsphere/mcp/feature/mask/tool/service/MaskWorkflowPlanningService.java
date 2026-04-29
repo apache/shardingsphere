@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
 
@@ -54,31 +53,13 @@ public final class MaskWorkflowPlanningService {
     
     private final MaskWorkflowIntentResolver intentResolver = new MaskWorkflowIntentResolver();
     
-    private final WorkflowContextStore contextStore;
+    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
-    private final MaskRuleInspectionService ruleInspectionService;
+    private final MaskAlgorithmRecommendationService algorithmRecommendationService = new MaskAlgorithmRecommendationService();
     
-    private final MaskAlgorithmRecommendationService algorithmRecommendationService;
+    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new MaskAlgorithmPropertyTemplateService();
     
-    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
-    
-    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService;
-    
-    public MaskWorkflowPlanningService() {
-        this(null, new MaskRuleInspectionService(), new MaskAlgorithmRecommendationService(),
-                new MaskAlgorithmPropertyTemplateService(), new MaskRuleDistSQLPlanningService());
-    }
-    
-    MaskWorkflowPlanningService(final WorkflowContextStore contextStore, final MaskRuleInspectionService ruleInspectionService,
-                                final MaskAlgorithmRecommendationService algorithmRecommendationService,
-                                final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
-                                final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService) {
-        this.contextStore = contextStore;
-        this.ruleInspectionService = ruleInspectionService;
-        this.algorithmRecommendationService = algorithmRecommendationService;
-        this.algorithmPropertyTemplateService = algorithmPropertyTemplateService;
-        this.ruleDistSQLPlanningService = ruleDistSQLPlanningService;
-    }
+    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = new MaskRuleDistSQLPlanningService();
     
     /**
      * Plan mask workflow.
@@ -92,27 +73,26 @@ public final class MaskWorkflowPlanningService {
      */
     public WorkflowContextSnapshot plan(final WorkflowContextStore requestContextStore, final MCPMetadataQueryFacade metadataQueryFacade,
                                         final MCPFeatureQueryFacade queryFacade, final String sessionId, final WorkflowRequest request) {
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(contextStore, requestContextStore);
-        WorkflowContextSnapshot result = actualContextStore.getOrCreate(sessionId, request.getPlanId());
+        WorkflowContextSnapshot result = requestContextStore.getOrCreate(sessionId, request.getPlanId());
         WorkflowRequest mergedRequest = prepareSnapshot(result, request);
         ClarifiedIntent clarifiedIntent = result.getClarifiedIntent();
         planningSupport.applyResolvedIntent(mergedRequest, clarifiedIntent);
         if (!planningSupport.ensurePlanningContext(metadataQueryFacade, mergedRequest, clarifiedIntent, result)) {
             String currentStep = WorkflowLifecycle.STATUS_FAILED.equals(result.getStatus()) ? WorkflowLifecycle.STEP_FAILED : WorkflowLifecycle.STEP_CLARIFYING;
-            return actualContextStore.persist(result, currentStep, result.getStatus());
+            return requestContextStore.persist(result, currentStep, result.getStatus());
         }
         List<Map<String, Object>> existingRules = ruleInspectionService.queryMaskRules(queryFacade, mergedRequest.getDatabase(), mergedRequest.getTable());
         if (!ensureLifecycleState(clarifiedIntent, mergedRequest, existingRules, result)) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+            return requestContextStore.persist(result, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         }
         if (isDropWorkflow(clarifiedIntent)) {
             planArtifacts(clarifiedIntent, mergedRequest, existingRules, result);
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+            return requestContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
         }
         if (!planNonDrop(queryFacade, clarifiedIntent, mergedRequest, existingRules, result)) {
-            return actualContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
+            return requestContextStore.persist(result, WorkflowLifecycle.STEP_CLARIFYING, WorkflowLifecycle.STATUS_CLARIFYING);
         }
-        return actualContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
+        return requestContextStore.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }
     
     private WorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {

@@ -138,10 +138,11 @@ class EncryptToolHandlerTest {
     }
     
     @Test
-    void assertHandleApplyEncryptRule() {
+    void assertHandleApplyEncryptRule() throws ReflectiveOperationException {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
         when(executionService.apply(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
-        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(EncryptFeatureDefinition.APPLY_TOOL_NAME, executionService);
+        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(EncryptFeatureDefinition.APPLY_TOOL_NAME);
+        setField(handler, "executionService", executionService);
         RequestContextFixture fixture = createRequestContextFixture();
         MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of(
                 "plan_id", "plan-1",

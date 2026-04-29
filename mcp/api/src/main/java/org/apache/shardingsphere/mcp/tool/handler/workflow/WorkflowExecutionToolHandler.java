@@ -37,11 +37,7 @@ public final class WorkflowExecutionToolHandler implements ToolHandler {
     
     private final String toolName;
     
-    private final WorkflowExecutionService executionService;
-    
-    public WorkflowExecutionToolHandler(final String toolName) {
-        this(toolName, new WorkflowExecutionService());
-    }
+    private final WorkflowExecutionService executionService = new WorkflowExecutionService();
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

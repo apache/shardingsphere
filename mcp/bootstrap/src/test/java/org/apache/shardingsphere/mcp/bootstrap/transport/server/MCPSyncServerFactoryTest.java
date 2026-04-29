@@ -32,9 +32,12 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperF
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
+import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 import reactor.core.publisher.Mono;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +51,7 @@ import static org.mockito.Mockito.when;
 class MCPSyncServerFactoryTest {
     
     @Test
-    void assertCreateWithTransportProvider() {
+    void assertCreateWithTransportProvider() throws ReflectiveOperationException {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         assertNotNull(transportProvider.sessionFactory);
@@ -65,7 +68,7 @@ class MCPSyncServerFactoryTest {
     }
     
     @Test
-    void assertCreateWithStreamableTransportProvider() {
+    void assertCreateWithStreamableTransportProvider() throws ReflectiveOperationException {
         TestStreamableTransportProvider transportProvider = new TestStreamableTransportProvider();
         McpSyncServer actual = createFactory().create(transportProvider);
         assertNotNull(transportProvider.sessionFactory);
@@ -75,7 +78,7 @@ class MCPSyncServerFactoryTest {
         actual.closeGracefully();
     }
     
-    private MCPSyncServerFactory createFactory() {
+    private MCPSyncServerFactory createFactory() throws ReflectiveOperationException {
         MCPToolSpecificationFactory toolSpecificationFactory = mock(MCPToolSpecificationFactory.class);
         MCPResourceSpecificationFactory resourceSpecificationFactory = mock(MCPResourceSpecificationFactory.class);
         when(toolSpecificationFactory.createToolSpecifications()).thenReturn(List.of(new SyncToolSpecification(
@@ -90,7 +93,15 @@ class MCPSyncServerFactoryTest {
                         .description("Database resource").mimeType("application/json").build(),
                 (exchange, request) -> MCPTransportPayloadUtils.createReadResourceResult(request.uri(), Map.of("status", "ok")))));
         McpJsonMapper jsonMapper = MCPTransportJsonMapperFactory.create();
-        return new MCPSyncServerFactory(jsonMapper, toolSpecificationFactory, resourceSpecificationFactory);
+        MCPSyncServerFactory result = new MCPSyncServerFactory(mock(MCPRuntimeContext.class), jsonMapper);
+        setField(result, "toolSpecificationFactory", toolSpecificationFactory);
+        setField(result, "resourceSpecificationFactory", resourceSpecificationFactory);
+        return result;
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private static final class TestServerTransportProvider implements McpServerTransportProvider {

@@ -23,12 +23,15 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
+import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 import org.mockito.MockedConstruction;
 
+import java.lang.reflect.Field;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -111,6 +114,18 @@ class StreamableHttpMCPServerTest {
     
     private StreamableHttpMCPServlet createTransportServlet() {
         MCPSessionManager sessionManager = new MCPSessionManager(Collections.emptyMap());
-        return new StreamableHttpMCPServlet(mock(HttpServletStreamableServerTransportProvider.class), sessionManager, new MCPSessionExecutionCoordinator(sessionManager));
+        try {
+            StreamableHttpMCPServlet result = new StreamableHttpMCPServlet(sessionManager, MCPTransportJsonMapperFactory.create(), "127.0.0.1", "", "/mcp");
+            setField(result, "delegate", mock(HttpServletStreamableServerTransportProvider.class));
+            setField(result, "sessionExecutionCoordinator", new MCPSessionExecutionCoordinator(sessionManager));
+            return result;
+        } catch (final ReflectiveOperationException ex) {
+            throw new AssertionError(ex);
+        }
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
 }
