@@ -173,6 +173,7 @@ execute
     | cancelLoadStatement
     | cleanAllProfile
     | planReplayerPlay
+    | recover
     // TODO consider refactor following sytax to SEMI_? EOF
     ) (SEMI_ EOF? | EOF)
     | EOF

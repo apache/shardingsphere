@@ -883,6 +883,22 @@ cancelLoadWhereCondition
     | STATE EQ_ string_
     ;
 
+recover
+    : RECOVER (recoverDatabase | recoverTable | recoverPartition)
+    ;
+
+recoverDatabase
+    : DATABASE databaseName NUMBER_? (AS databaseName)?
+    ;
+
+recoverTable
+    : TABLE tableName NUMBER_? (AS identifier)?
+    ;
+
+recoverPartition
+    : PARTITION partitionName NUMBER_? FROM tableName
+    ;
+
 show
     : showDatabases
     | showDatabase

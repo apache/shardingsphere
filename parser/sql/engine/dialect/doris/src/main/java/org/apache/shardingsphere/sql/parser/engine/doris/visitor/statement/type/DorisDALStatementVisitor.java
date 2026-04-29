@@ -181,6 +181,10 @@ import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.BackupT
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelBackupContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelLoadStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.CancelLoadWhereConditionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverDatabaseContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverPartitionContext;
+import org.apache.shardingsphere.sql.parser.autogen.DorisStatementParser.RecoverTableContext;
 import org.apache.shardingsphere.sql.parser.engine.doris.visitor.statement.DorisStatementVisitor;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.BackupTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dal.CacheTableIndexSegment;
@@ -234,6 +238,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.value.literal.impl.Te
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCleanTrashStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisCleanAllProfileStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisPlanReplayerPlayStatement;
+import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisRecoverStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaStatusStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminSetReplicaVersionStatement;
 import org.apache.shardingsphere.sql.parser.statement.doris.dal.DorisAdminCopyTabletStatement;
@@ -1701,5 +1706,49 @@ public final class DorisDALStatementVisitor extends DorisStatementVisitor implem
             result.setConditionValue(SQLUtils.getExactlyValue(condCtx.string_().getText()));
         }
         return result;
+    }
+    
+    @Override
+    public ASTNode visitRecover(final RecoverContext ctx) {
+        DorisRecoverStatement result = new DorisRecoverStatement(getDatabaseType());
+        if (null != ctx.recoverDatabase()) {
+            visitRecoverDatabase(ctx.recoverDatabase(), result);
+        } else if (null != ctx.recoverTable()) {
+            visitRecoverTable(ctx.recoverTable(), result);
+        } else {
+            visitRecoverPartition(ctx.recoverPartition(), result);
+        }
+        return result;
+    }
+    
+    private void visitRecoverDatabase(final RecoverDatabaseContext ctx, final DorisRecoverStatement statement) {
+        statement.setObjectType(DorisRecoverStatement.RecoverObjectType.DATABASE);
+        statement.setDatabase((DatabaseSegment) visit(ctx.databaseName(0)));
+        if (null != ctx.NUMBER_()) {
+            statement.setObjectId(Long.parseLong(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AS()) {
+            statement.setNewName(((DatabaseSegment) visit(ctx.databaseName(1))).getIdentifier().getValue());
+        }
+    }
+    
+    private void visitRecoverTable(final RecoverTableContext ctx, final DorisRecoverStatement statement) {
+        statement.setObjectType(DorisRecoverStatement.RecoverObjectType.TABLE);
+        statement.setTable((SimpleTableSegment) visit(ctx.tableName()));
+        if (null != ctx.NUMBER_()) {
+            statement.setObjectId(Long.parseLong(ctx.NUMBER_().getText()));
+        }
+        if (null != ctx.AS()) {
+            statement.setNewName(((IdentifierValue) visit(ctx.identifier())).getValue());
+        }
+    }
+    
+    private void visitRecoverPartition(final RecoverPartitionContext ctx, final DorisRecoverStatement statement) {
+        statement.setObjectType(DorisRecoverStatement.RecoverObjectType.PARTITION);
+        statement.setPartitionName(((PartitionSegment) visit(ctx.partitionName())).getName().getValue());
+        if (null != ctx.NUMBER_()) {
+            statement.setObjectId(Long.parseLong(ctx.NUMBER_().getText()));
+        }
+        statement.setTable((SimpleTableSegment) visit(ctx.tableName()));
     }
 }

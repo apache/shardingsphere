@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="recover_database" value="RECOVER DATABASE example_db" db-types="Doris" />
+    <sql-case id="recover_database_with_id" value="RECOVER DATABASE example_db 10001" db-types="Doris" />
+    <sql-case id="recover_database_as_new_name" value="RECOVER DATABASE example_db AS new_db" db-types="Doris" />
+    <sql-case id="recover_table" value="RECOVER TABLE example_tbl" db-types="Doris" />
+    <sql-case id="recover_table_with_db" value="RECOVER TABLE example_db.example_tbl" db-types="Doris" />
+    <sql-case id="recover_table_with_id" value="RECOVER TABLE example_db.example_tbl 20002" db-types="Doris" />
+    <sql-case id="recover_table_as_new_name" value="RECOVER TABLE example_db.example_tbl 20002 AS new_tbl" db-types="Doris" />
+    <sql-case id="recover_partition" value="RECOVER PARTITION p1 FROM example_tbl" db-types="Doris" />
+    <sql-case id="recover_partition_with_db" value="RECOVER PARTITION p1 FROM example_db.example_tbl" db-types="Doris" />
+    <sql-case id="recover_partition_with_id" value="RECOVER PARTITION p1 30003 FROM example_db.example_tbl" db-types="Doris" />
+</sql-cases>
