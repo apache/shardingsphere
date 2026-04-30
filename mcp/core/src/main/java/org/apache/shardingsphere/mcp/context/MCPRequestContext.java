@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mcp.metadata.context.RequestScopedMetadataConte
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowProxyQueryService;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSessionContext;
 
 /**
  * MCP request context.
@@ -42,7 +42,7 @@ public final class MCPRequestContext implements MCPFeatureContext {
     
     private final RequestScopedMetadataContext metadataContext;
     
-    private final WorkflowContextStore workflowContextStore;
+    private final WorkflowSessionContext workflowSessionContext;
     
     private final MCPMetadataQueryFacade metadataQueryFacade;
     
@@ -53,17 +53,17 @@ public final class MCPRequestContext implements MCPFeatureContext {
     public MCPRequestContext(final MCPRuntimeContext runtimeContext) {
         this(runtimeContext.getSessionManager(), runtimeContext.getDatabaseCapabilityProvider(),
                 new RequestScopedMetadataContext(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getDatabaseCapabilityProvider()),
-                runtimeContext.getWorkflowContextStore(),
+                runtimeContext.getWorkflowSessionContext(),
                 null, null, null);
     }
     
     public MCPRequestContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final RequestScopedMetadataContext metadataContext,
-                             final WorkflowContextStore workflowContextStore, final MCPMetadataQueryFacade metadataQueryFacade,
+                             final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
                              final MCPFeatureExecutionFacade executionFacade, final MCPFeatureQueryFacade queryFacade) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;
         this.metadataContext = metadataContext;
-        this.workflowContextStore = workflowContextStore;
+        this.workflowSessionContext = workflowSessionContext;
         this.metadataQueryFacade = null == metadataQueryFacade ? new MetadataQueryService(databaseCapabilityProvider, metadataContext) : metadataQueryFacade;
         this.executionFacade = null == executionFacade ? new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager) : executionFacade;
         this.queryFacade = null == queryFacade ? new WorkflowProxyQueryService(sessionManager, databaseCapabilityProvider) : queryFacade;

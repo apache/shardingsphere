@@ -21,8 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,9 +46,31 @@ public final class MCPFeatureProviderRegistry {
     public static Collection<ToolHandler> loadToolHandlers() {
         Collection<ToolHandler> result = new ArrayList<>();
         for (MCPFeatureProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)) {
-            result.addAll(null == each.getToolHandlers() ? List.of() : each.getToolHandlers());
+            result.addAll(createToolHandlers(each));
         }
         return Collections.unmodifiableList(new ArrayList<>(result));
+    }
+    
+    static Collection<ToolHandler> createToolHandlers(final MCPFeatureProvider featureProvider) {
+        Collection<ToolHandler> result = new ArrayList<>();
+        Collection<ToolHandler> toolHandlers = featureProvider.getToolHandlers();
+        if (null != toolHandlers) {
+            result.addAll(toolHandlers);
+        }
+        Collection<MCPWorkflowToolContribution> workflowToolContributions = featureProvider.getWorkflowToolContributions();
+        if (null != workflowToolContributions) {
+            result.addAll(createWorkflowToolHandlers(workflowToolContributions));
+        }
+        return result;
+    }
+    
+    private static Collection<ToolHandler> createWorkflowToolHandlers(final Collection<MCPWorkflowToolContribution> workflowToolContributions) {
+        Collection<ToolHandler> result = new ArrayList<>(workflowToolContributions.size() * 2);
+        for (MCPWorkflowToolContribution each : workflowToolContributions) {
+            result.add(new WorkflowExecutionToolHandler(each.getApplyToolName()));
+            result.add(new WorkflowValidationToolHandler(each.getValidateToolName(), each.getWorkflowValidationHandler()));
+        }
+        return result;
     }
     
     /**

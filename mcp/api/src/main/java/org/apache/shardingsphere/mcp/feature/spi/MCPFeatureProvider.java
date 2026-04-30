@@ -41,6 +41,15 @@ public interface MCPFeatureProvider extends ShardingSphereSPI {
     }
     
     /**
+     * Get workflow tool contributions owned by the feature.
+     *
+     * @return workflow tool contributions
+     */
+    default Collection<MCPWorkflowToolContribution> getWorkflowToolContributions() {
+        return List.of();
+    }
+    
+    /**
      * Get resource handlers owned by the feature.
      *
      * @return resource handlers

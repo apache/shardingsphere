@@ -146,15 +146,15 @@ public final class WorkflowValidationSupport {
     /**
      * Persist validation result and create response payload.
      *
-     * @param contextStore workflow context store
+     * @param workflowSessionContext workflow session context
      * @param snapshot workflow snapshot
      * @param validationReport validation report
      * @return validation response
      */
-    public Map<String, Object> finalizeValidation(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot,
+    public Map<String, Object> finalizeValidation(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot,
                                                   final ValidationReport validationReport) {
         String validationStatus = resolveValidationStatus(validationReport);
-        contextStore.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
+        workflowSessionContext.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));

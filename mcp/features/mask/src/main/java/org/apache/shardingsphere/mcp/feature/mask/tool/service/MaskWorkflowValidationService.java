@@ -20,14 +20,15 @@ package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowValidationHandler;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationReport;
 import org.apache.shardingsphere.mcp.tool.model.workflow.ValidationSection;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowValidationSupport;
 
@@ -38,7 +39,7 @@ import java.util.Optional;
 /**
  * Mask workflow validation service.
  */
-public final class MaskWorkflowValidationService {
+public final class MaskWorkflowValidationService implements MCPWorkflowValidationHandler {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
@@ -47,7 +48,7 @@ public final class MaskWorkflowValidationService {
     /**
      * Validate workflow artifacts.
      *
-     * @param requestContextStore workflow context store
+     * @param workflowSessionContext workflow session context
      * @param metadataQueryFacade metadata query facade
      * @param queryFacade query facade
      * @param executionFacade execution facade
@@ -55,10 +56,10 @@ public final class MaskWorkflowValidationService {
      * @param planId plan identifier
      * @return validation payload
      */
-    public Map<String, Object> validate(final WorkflowContextStore requestContextStore, final MCPMetadataQueryFacade metadataQueryFacade,
-                                        final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade,
-                                        final String sessionId, final String planId) {
-        WorkflowContextSnapshot snapshot = requestContextStore.getRequired(planId);
+    @Override
+    public Map<String, Object> validate(final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
+                                        final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId, final String planId) {
+        WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(planId);
         Map<String, Object> rejectedResponse = validationSupport.checkValidatePreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
@@ -71,7 +72,7 @@ public final class MaskWorkflowValidationService {
         validationReport.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport));
         validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getDdlValidation(), validationReport.getRuleValidation(),
                 validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
-        return validationSupport.finalizeValidation(requestContextStore, snapshot, validationReport);
+        return validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
     }
     
     private ValidationSection validateDdl() {

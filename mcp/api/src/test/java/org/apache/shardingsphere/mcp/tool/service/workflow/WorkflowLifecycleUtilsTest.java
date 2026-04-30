@@ -30,20 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WorkflowLifecycleUtilsTest {
     
     @Test
-    void assertResolveContextStoreUsesRequestContextStore() {
-        WorkflowContextStore expectedContextStore = WorkflowContextStore.newInstance();
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(null, expectedContextStore);
-        assertThat(actualContextStore, is(expectedContextStore));
-    }
-    
-    @Test
-    void assertResolveContextStorePrefersConfiguredStore() {
-        WorkflowContextStore expectedContextStore = WorkflowContextStore.newInstance();
-        WorkflowContextStore actualContextStore = WorkflowLifecycleUtils.resolveContextStore(expectedContextStore, WorkflowContextStore.newInstance());
-        assertThat(actualContextStore, is(expectedContextStore));
-    }
-    
-    @Test
     void assertIsOwnedBySessionWithBlankSnapshotSession() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         assertTrue(WorkflowLifecycleUtils.isOwnedBySession("session-1", snapshot));

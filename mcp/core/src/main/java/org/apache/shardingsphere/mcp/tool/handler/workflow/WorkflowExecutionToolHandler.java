@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
@@ -32,12 +31,20 @@ import java.util.Map;
 /**
  * Generic workflow execution tool handler.
  */
-@RequiredArgsConstructor
 public final class WorkflowExecutionToolHandler implements ToolHandler {
     
     private final String toolName;
     
-    private final WorkflowExecutionService executionService = new WorkflowExecutionService();
+    private final WorkflowExecutionService executionService;
+    
+    public WorkflowExecutionToolHandler(final String toolName) {
+        this(toolName, new WorkflowExecutionService());
+    }
+    
+    WorkflowExecutionToolHandler(final String toolName, final WorkflowExecutionService executionService) {
+        this.toolName = toolName;
+        this.executionService = executionService;
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
@@ -47,7 +54,7 @@ public final class WorkflowExecutionToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(executionService.apply(requestContext.getWorkflowContextStore(), requestContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id"),
+        return new MCPMapResponse(executionService.apply(requestContext.getWorkflowSessionContext(), requestContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id"),
                 toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
     }
 }

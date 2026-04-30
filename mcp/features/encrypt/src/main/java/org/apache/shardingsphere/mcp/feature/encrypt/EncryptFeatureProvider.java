@@ -23,10 +23,9 @@ import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRul
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
-import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
-import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,11 +35,17 @@ import java.util.List;
  */
 public final class EncryptFeatureProvider implements MCPFeatureProvider {
     
+    private static final MCPWorkflowToolContribution WORKFLOW_TOOL_CONTRIBUTION = new MCPWorkflowToolContribution(
+            EncryptFeatureDefinition.APPLY_TOOL_NAME, EncryptFeatureDefinition.VALIDATE_TOOL_NAME, new EncryptWorkflowValidationService());
+    
     @Override
     public Collection<ToolHandler> getToolHandlers() {
-        return List.of(new PlanEncryptRuleToolHandler(),
-                new WorkflowExecutionToolHandler(EncryptFeatureDefinition.APPLY_TOOL_NAME),
-                new WorkflowValidationToolHandler(EncryptFeatureDefinition.VALIDATE_TOOL_NAME, new EncryptWorkflowValidationService()::validate));
+        return List.of(new PlanEncryptRuleToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPWorkflowToolContribution> getWorkflowToolContributions() {
+        return List.of(WORKFLOW_TOOL_CONTRIBUTION);
     }
     
     @Override

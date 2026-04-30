@@ -17,30 +17,30 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowValidationHandler;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
 
 import java.util.Map;
 
 /**
  * Generic workflow validation tool handler.
  */
-@RequiredArgsConstructor
 public final class WorkflowValidationToolHandler implements ToolHandler {
     
     private final String toolName;
     
-    private final WorkflowValidator workflowValidator;
+    private final MCPWorkflowValidationHandler workflowValidationHandler;
+    
+    public WorkflowValidationToolHandler(final String toolName, final MCPWorkflowValidationHandler workflowValidationHandler) {
+        this.toolName = toolName;
+        this.workflowValidationHandler = workflowValidationHandler;
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
@@ -50,28 +50,7 @@ public final class WorkflowValidationToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(workflowValidator.validate(requestContext.getWorkflowContextStore(), requestContext.getMetadataQueryFacade(),
+        return new MCPMapResponse(workflowValidationHandler.validate(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
                 requestContext.getQueryFacade(), requestContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id")));
-    }
-    
-    /**
-     * Validate one workflow plan.
-     */
-    @FunctionalInterface
-    public interface WorkflowValidator {
-        
-        /**
-         * Validate workflow.
-         *
-         * @param contextStore workflow context store
-         * @param metadataQueryFacade metadata query facade
-         * @param queryFacade direct query facade
-         * @param executionFacade execution facade
-         * @param sessionId session id
-         * @param planId plan id
-         * @return validation payload
-         */
-        Map<String, Object> validate(WorkflowContextStore contextStore, MCPMetadataQueryFacade metadataQueryFacade,
-                                     MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade, String sessionId, String planId);
     }
 }

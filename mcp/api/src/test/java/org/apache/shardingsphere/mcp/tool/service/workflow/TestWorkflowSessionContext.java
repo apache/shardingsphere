@@ -19,51 +19,16 @@ package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshots;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowLifecycle;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Session-local in-memory workflow context store.
- */
-final class InMemoryWorkflowContextStore implements WorkflowContextStore {
-    
-    private static final Duration DEFAULT_CONTEXT_TTL = Duration.ofHours(24);
-    
-    private static final int DEFAULT_MAX_ENTRIES = Integer.MAX_VALUE;
-    
-    private final Clock clock;
-    
-    private final Duration contextTtl;
-    
-    private final int maxEntries;
+final class TestWorkflowSessionContext implements WorkflowSessionContext {
     
     private final Map<String, WorkflowContextSnapshot> contexts = new ConcurrentHashMap<>();
-    
-    InMemoryWorkflowContextStore() {
-        this(Clock.systemUTC(), DEFAULT_CONTEXT_TTL, DEFAULT_MAX_ENTRIES);
-    }
-    
-    InMemoryWorkflowContextStore(final Clock clock, final Duration contextTtl, final int maxEntries) {
-        if (contextTtl.isZero() || contextTtl.isNegative()) {
-            throw new IllegalArgumentException("Context TTL must be positive.");
-        }
-        if (0 >= maxEntries) {
-            throw new IllegalArgumentException("Max entries must be positive.");
-        }
-        this.clock = clock;
-        this.contextTtl = contextTtl;
-        this.maxEntries = maxEntries;
-    }
     
     @Override
     public String createPlanId() {
@@ -72,9 +37,8 @@ final class InMemoryWorkflowContextStore implements WorkflowContextStore {
     
     @Override
     public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
-        String actualPlanId = WorkflowSqlUtils.trimToEmpty(planId);
-        if (!actualPlanId.isEmpty()) {
-            return getRequired(actualPlanId);
+        if (!WorkflowSqlUtils.trimToEmpty(planId).isEmpty()) {
+            return getRequired(planId);
         }
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(createPlanId());
@@ -85,17 +49,12 @@ final class InMemoryWorkflowContextStore implements WorkflowContextStore {
     
     @Override
     public void save(final WorkflowContextSnapshot snapshot) {
-        purgeExpiredContexts();
-        Instant now = clock.instant();
-        snapshot.setUpdateTime(now);
-        contexts.put(snapshot.getPlanId(), WorkflowContextSnapshots.copy(snapshot));
-        purgeOverflowContexts();
+        contexts.put(snapshot.getPlanId(), snapshot.copy());
     }
     
     @Override
     public Optional<WorkflowContextSnapshot> find(final String planId) {
-        purgeExpiredContexts();
-        return Optional.ofNullable(contexts.get(planId)).map(WorkflowContextSnapshots::copy);
+        return Optional.ofNullable(contexts.get(planId)).map(WorkflowContextSnapshot::copy);
     }
     
     @Override
@@ -116,23 +75,5 @@ final class InMemoryWorkflowContextStore implements WorkflowContextStore {
     @Override
     public void remove(final String planId) {
         contexts.remove(planId);
-    }
-    
-    private void purgeExpiredContexts() {
-        Instant expirationTime = clock.instant().minus(contextTtl);
-        contexts.entrySet().removeIf(each -> null == each.getValue().getUpdateTime() || each.getValue().getUpdateTime().isBefore(expirationTime));
-    }
-    
-    private void purgeOverflowContexts() {
-        while (contexts.size() > maxEntries) {
-            String planIdToEvict = contexts.entrySet().stream()
-                    .min(Comparator.comparing((Entry<String, WorkflowContextSnapshot> each) -> null == each.getValue().getUpdateTime() ? Instant.EPOCH : each.getValue().getUpdateTime())
-                            .thenComparing(Entry::getKey))
-                    .map(Entry::getKey).orElse(null);
-            if (null == planIdToEvict) {
-                return;
-            }
-            contexts.remove(planIdToEvict);
-        }
     }
 }

@@ -15,33 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.tool.model.workflow;
+package org.apache.shardingsphere.mcp.feature.spi;
 
 import lombok.Getter;
-import lombok.Setter;
-
-import java.util.LinkedList;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Workflow planning diagnostics.
+ * Workflow tool contribution owned by one feature.
  */
+@RequiredArgsConstructor
 @Getter
-final class WorkflowPlanningDiagnostics {
+public final class MCPWorkflowToolContribution {
     
-    private final List<WorkflowIssue> issues = new LinkedList<>();
+    private final String applyToolName;
     
-    private final List<AlgorithmCandidate> algorithmCandidates = new LinkedList<>();
+    private final String validateToolName;
     
-    private final List<AlgorithmPropertyRequirement> propertyRequirements = new LinkedList<>();
-    
-    @Setter
-    private ValidationReport validationReport;
-    
-    void clearPlanningState() {
-        issues.clear();
-        algorithmCandidates.clear();
-        propertyRequirements.clear();
-        validationReport = null;
-    }
+    private final MCPWorkflowValidationHandler workflowValidationHandler;
 }

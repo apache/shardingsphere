@@ -19,35 +19,12 @@ package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 
-import java.time.Clock;
-import java.time.Duration;
 import java.util.Optional;
 
 /**
- * Workflow context store.
+ * Workflow session context.
  */
-public interface WorkflowContextStore {
-    
-    /**
-     * Create default in-memory workflow context store.
-     *
-     * @return workflow context store
-     */
-    static WorkflowContextStore newInstance() {
-        return new InMemoryWorkflowContextStore();
-    }
-    
-    /**
-     * Create in-memory workflow context store.
-     *
-     * @param clock clock
-     * @param contextTtl context TTL
-     * @param maxEntries max entries
-     * @return workflow context store
-     */
-    static WorkflowContextStore newInstance(final Clock clock, final Duration contextTtl, final int maxEntries) {
-        return new InMemoryWorkflowContextStore(clock, contextTtl, maxEntries);
-    }
+public interface WorkflowSessionContext {
     
     /**
      * Create plan identifier.

@@ -35,7 +35,7 @@ class WorkflowContextSnapshotTest {
     @Test
     void assertCopyCreatesDetachedSnapshot() {
         WorkflowContextSnapshot originalSnapshot = createSnapshot();
-        WorkflowContextSnapshot actualSnapshot = WorkflowContextSnapshots.copy(originalSnapshot);
+        WorkflowContextSnapshot actualSnapshot = originalSnapshot.copy();
         assertThat(actualSnapshot.getPlanId(), is("plan-1"));
         originalSnapshot.getRequest().setTable("archived_orders");
         originalSnapshot.getClarifiedIntent().getPendingQuestions().add("another question");

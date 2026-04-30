@@ -17,13 +17,14 @@
 
 package org.apache.shardingsphere.mcp.tool.model.workflow;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Workflow context snapshot.
@@ -48,8 +49,14 @@ public final class WorkflowContextSnapshot {
     
     private InteractionPlan interactionPlan;
     
-    @Getter(AccessLevel.NONE)
-    private final WorkflowPlanningDiagnostics diagnostics = new WorkflowPlanningDiagnostics();
+    private final List<WorkflowIssue> issues = new LinkedList<>();
+    
+    private final List<AlgorithmCandidate> algorithmCandidates = new LinkedList<>();
+    
+    private final List<AlgorithmPropertyRequirement> propertyRequirements = new LinkedList<>();
+    
+    @Setter
+    private ValidationReport validationReport;
     
     private final List<DDLArtifact> ddlArtifacts = new LinkedList<>();
     
@@ -61,34 +68,123 @@ public final class WorkflowContextSnapshot {
      * Clear planning artifacts before rebuilding them.
      */
     public void clearPlanningState() {
-        diagnostics.clearPlanningState();
+        issues.clear();
+        algorithmCandidates.clear();
+        propertyRequirements.clear();
+        validationReport = null;
         ddlArtifacts.clear();
         ruleArtifacts.clear();
         indexPlans.clear();
     }
     
-    public List<WorkflowIssue> getIssues() {
-        return diagnostics.getIssues();
-    }
-    
-    public List<AlgorithmCandidate> getAlgorithmCandidates() {
-        return diagnostics.getAlgorithmCandidates();
-    }
-    
-    public List<AlgorithmPropertyRequirement> getPropertyRequirements() {
-        return diagnostics.getPropertyRequirements();
-    }
-    
-    public ValidationReport getValidationReport() {
-        return diagnostics.getValidationReport();
-    }
-    
     /**
-     * Set validation report.
+     * Create a defensive copy of the workflow snapshot.
      *
-     * @param validationReport validation report
+     * @return copied workflow snapshot
      */
-    public void setValidationReport(final ValidationReport validationReport) {
-        diagnostics.setValidationReport(validationReport);
+    public WorkflowContextSnapshot copy() {
+        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
+        result.setPlanId(planId);
+        result.setSessionId(sessionId);
+        result.setStatus(status);
+        result.setUpdateTime(copyInstant(updateTime));
+        result.setRequest(null == request ? null : request.copy());
+        result.setClarifiedIntent(copyClarifiedIntent(clarifiedIntent));
+        result.setFeatureData(null == featureData ? null : featureData.copy());
+        result.setInteractionPlan(copyInteractionPlan(interactionPlan));
+        issues.forEach(each -> result.getIssues().add(copyWorkflowIssue(each)));
+        algorithmCandidates.forEach(each -> result.getAlgorithmCandidates().add(copyAlgorithmCandidate(each)));
+        propertyRequirements.forEach(each -> result.getPropertyRequirements().add(copyPropertyRequirement(each)));
+        ddlArtifacts.forEach(each -> result.getDdlArtifacts().add(new DDLArtifact(each.getArtifactType(), each.getSql(), each.getExecutionOrder())));
+        ruleArtifacts.forEach(each -> result.getRuleArtifacts().add(new RuleArtifact(each.getOperationType(), each.getSql())));
+        indexPlans.forEach(each -> result.getIndexPlans().add(new IndexPlan(each.getIndexName(), each.getColumnName(), each.getReason(), each.getSql())));
+        result.setValidationReport(copyValidationReport(validationReport));
+        return result;
+    }
+    
+    private static Instant copyInstant(final Instant original) {
+        return null == original ? null : Instant.ofEpochMilli(original.toEpochMilli());
+    }
+    
+    private static ClarifiedIntent copyClarifiedIntent(final ClarifiedIntent original) {
+        if (null == original) {
+            return null;
+        }
+        ClarifiedIntent result = new ClarifiedIntent();
+        result.setOperationType(original.getOperationType());
+        result.setFieldSemantics(original.getFieldSemantics());
+        result.setReasoningNotes(original.getReasoningNotes());
+        result.getPendingQuestions().addAll(original.getPendingQuestions());
+        result.getUnresolvedFields().addAll(original.getUnresolvedFields());
+        original.getInferredValues().forEach((key, value) -> result.getInferredValues().put(key, copyValue(value)));
+        return result;
+    }
+    
+    private static InteractionPlan copyInteractionPlan(final InteractionPlan original) {
+        if (null == original) {
+            return null;
+        }
+        InteractionPlan result = new InteractionPlan();
+        result.setPlanId(original.getPlanId());
+        result.setSummary(original.getSummary());
+        result.setCurrentStep(original.getCurrentStep());
+        result.setDeliveryMode(original.getDeliveryMode());
+        result.setExecutionMode(original.getExecutionMode());
+        result.getSteps().addAll(original.getSteps());
+        result.getValidationStrategy().putAll(copyMap(original.getValidationStrategy()));
+        return result;
+    }
+    
+    private static WorkflowIssue copyWorkflowIssue(final WorkflowIssue original) {
+        return new WorkflowIssue(original.getCode(), original.getSeverity(), original.getStage(), original.getMessage(),
+                original.getUserAction(), original.isRetryable(), copyMap(original.getDetails()));
+    }
+    
+    private static AlgorithmCandidate copyAlgorithmCandidate(final AlgorithmCandidate original) {
+        return new AlgorithmCandidate(original.getAlgorithmRole(), original.getAlgorithmType(), original.getSource(), original.getSupportsDecrypt(),
+                original.getSupportsEquivalentFilter(), original.getSupportsLike(), original.getRecommendationScore(),
+                original.getRecommendationReason(), original.getRiskNotes());
+    }
+    
+    private static AlgorithmPropertyRequirement copyPropertyRequirement(final AlgorithmPropertyRequirement original) {
+        return new AlgorithmPropertyRequirement(original.getAlgorithmRole(), original.getPropertyKey(), original.isRequired(),
+                original.isSecret(), original.getDescription(), original.getDefaultValue());
+    }
+    
+    private static ValidationReport copyValidationReport(final ValidationReport original) {
+        if (null == original) {
+            return null;
+        }
+        ValidationReport result = new ValidationReport();
+        result.setDdlValidation(copyValidationSection(original.getDdlValidation()));
+        result.setRuleValidation(copyValidationSection(original.getRuleValidation()));
+        result.setLogicalMetadataValidation(copyValidationSection(original.getLogicalMetadataValidation()));
+        result.setSqlExecutabilityValidation(copyValidationSection(original.getSqlExecutabilityValidation()));
+        result.setOverallStatus(original.getOverallStatus());
+        original.getMismatches().forEach(each -> result.getMismatches().add(copyMap(each)));
+        return result;
+    }
+    
+    private static ValidationSection copyValidationSection(final ValidationSection original) {
+        if (null == original) {
+            return null;
+        }
+        return new ValidationSection(original.getStatus(), copyValue(original.getEvidence()), copyValue(original.getDetails()));
+    }
+    
+    private static Map<String, Object> copyMap(final Map<?, ?> original) {
+        Map<String, Object> result = new LinkedHashMap<>(original.size(), 1F);
+        original.forEach((key, value) -> result.put(String.valueOf(key), copyValue(value)));
+        return result;
+    }
+    
+    private static Object copyValue(final Object original) {
+        if (original instanceof Map) {
+            return copyMap((Map<?, ?>) original);
+        }
+        if (original instanceof List) {
+            return ((List<?>) original).stream().map(WorkflowContextSnapshot::copyValue).toList();
+        }
+        return original;
     }
 }

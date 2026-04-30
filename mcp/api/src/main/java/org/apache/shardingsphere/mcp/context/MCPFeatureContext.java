@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowContextStore;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSessionContext;
 
 /**
  * MCP feature request context.
@@ -57,11 +57,11 @@ public interface MCPFeatureContext extends AutoCloseable {
     MCPFeatureCapabilityFacade getCapabilityFacade();
     
     /**
-     * Get workflow context store.
+     * Get workflow session context.
      *
-     * @return workflow context store
+     * @return workflow session context
      */
-    WorkflowContextStore getWorkflowContextStore();
+    WorkflowSessionContext getWorkflowSessionContext();
     
     @Override
     default void close() {

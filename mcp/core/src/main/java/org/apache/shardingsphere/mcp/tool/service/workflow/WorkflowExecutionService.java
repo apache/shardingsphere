@@ -37,7 +37,7 @@ public final class WorkflowExecutionService {
     /**
      * Apply workflow artifacts.
      *
-     * @param requestContextStore request context store
+     * @param workflowSessionContext workflow session context
      * @param executionFacade execution facade
      * @param sessionId session id
      * @param planId plan identifier
@@ -45,9 +45,9 @@ public final class WorkflowExecutionService {
      * @param executionMode execution mode override
      * @return apply payload
      */
-    public Map<String, Object> apply(final WorkflowContextStore requestContextStore, final MCPFeatureExecutionFacade executionFacade, final String sessionId, final String planId,
+    public Map<String, Object> apply(final WorkflowSessionContext workflowSessionContext, final MCPFeatureExecutionFacade executionFacade, final String sessionId, final String planId,
                                      final List<String> approvedSteps, final String executionMode) {
-        WorkflowContextSnapshot snapshot = requestContextStore.getRequired(planId);
+        WorkflowContextSnapshot snapshot = workflowSessionContext.getRequired(planId);
         Map<String, Object> rejectedResponse = checkApplyPreconditions(sessionId, snapshot);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
@@ -55,9 +55,9 @@ public final class WorkflowExecutionService {
         String actualExecutionMode = resolveExecutionMode(executionMode, snapshot);
         WorkflowApplyOutcome applyOutcome = new WorkflowApplyOutcome();
         if (isManualOnly(actualExecutionMode)) {
-            return applyManualOnly(requestContextStore, snapshot, applyOutcome);
+            return applyManualOnly(workflowSessionContext, snapshot, applyOutcome);
         }
-        return applyAutomatically(requestContextStore, executionFacade, sessionId, snapshot, approvedSteps, applyOutcome);
+        return applyAutomatically(workflowSessionContext, executionFacade, sessionId, snapshot, approvedSteps, applyOutcome);
     }
     
     private Map<String, Object> checkApplyPreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {
@@ -99,15 +99,15 @@ public final class WorkflowExecutionService {
         return "manual-only".equalsIgnoreCase(executionMode);
     }
     
-    private Map<String, Object> applyManualOnly(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot, final WorkflowApplyOutcome applyOutcome) {
-        persistSnapshot(contextStore, snapshot, WorkflowLifecycle.STEP_MANUAL_EXECUTION, WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION);
+    private Map<String, Object> applyManualOnly(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot, final WorkflowApplyOutcome applyOutcome) {
+        persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_MANUAL_EXECUTION, WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION);
         applyOutcome.addIssue(new WorkflowIssue(WorkflowIssueCode.MANUAL_EXECUTION_PENDING, "warning", WorkflowLifecycle.STEP_REVIEW,
                 "Artifacts are generated in manual-only mode and will not be executed automatically.", "Execute artifacts manually and run validation afterwards.", true, Map.of()).toMap());
         return applyOutcome.createResponse(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION,
                 WorkflowArtifactPayloadUtils.createArtifactPayload(snapshot, getPropertySource(snapshot)));
     }
     
-    private Map<String, Object> applyAutomatically(final WorkflowContextStore contextStore, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
+    private Map<String, Object> applyAutomatically(final WorkflowSessionContext workflowSessionContext, final MCPFeatureExecutionFacade executionFacade, final String sessionId,
                                                    final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final WorkflowApplyOutcome applyOutcome) {
         String currentArtifactType = "";
         String currentArtifactSql = "";
@@ -122,32 +122,32 @@ public final class WorkflowExecutionService {
                 executeArtifact(executionFacade, sessionId, snapshot, each);
                 applyOutcome.addExecutedArtifact(each);
             }
-            return completeApply(contextStore, snapshot, applyOutcome);
+            return completeApply(workflowSessionContext, snapshot, applyOutcome);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
-            return failApply(contextStore, snapshot, applyOutcome, currentArtifactType, currentArtifactSql, ex);
+            return failApply(workflowSessionContext, snapshot, applyOutcome, currentArtifactType, currentArtifactSql, ex);
         }
     }
     
-    private Map<String, Object> completeApply(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot, final WorkflowApplyOutcome applyOutcome) {
-        persistSnapshot(contextStore, snapshot, WorkflowLifecycle.STEP_EXECUTED, WorkflowLifecycle.STATUS_EXECUTED);
+    private Map<String, Object> completeApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot, final WorkflowApplyOutcome applyOutcome) {
+        persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_EXECUTED, WorkflowLifecycle.STATUS_EXECUTED);
         return applyOutcome.createResponse(WorkflowLifecycle.STATUS_COMPLETED, Map.of());
     }
     
-    private Map<String, Object> failApply(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot, final WorkflowApplyOutcome applyOutcome,
+    private Map<String, Object> failApply(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot, final WorkflowApplyOutcome applyOutcome,
                                           final String artifactType, final String artifactSql, final RuntimeException ex) {
-        persistSnapshot(contextStore, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
+        persistSnapshot(workflowSessionContext, snapshot, WorkflowLifecycle.STEP_FAILED, WorkflowLifecycle.STATUS_FAILED);
         applyOutcome.addFailedArtifact(resolveIssueCode(artifactType), artifactType, artifactSql, ex.getMessage());
         return applyOutcome.createResponse(WorkflowLifecycle.STATUS_FAILED, Map.of());
     }
     
-    private void persistSnapshot(final WorkflowContextStore contextStore, final WorkflowContextSnapshot snapshot, final String currentStep, final String status) {
+    private void persistSnapshot(final WorkflowSessionContext workflowSessionContext, final WorkflowContextSnapshot snapshot, final String currentStep, final String status) {
         if (null != snapshot.getInteractionPlan()) {
             snapshot.getInteractionPlan().setCurrentStep(currentStep);
         }
         snapshot.setStatus(status);
-        contextStore.save(snapshot);
+        workflowSessionContext.save(snapshot);
     }
     
     private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {

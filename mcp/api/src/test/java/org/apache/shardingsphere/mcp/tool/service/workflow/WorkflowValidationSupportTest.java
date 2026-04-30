@@ -148,12 +148,12 @@ class WorkflowValidationSupportTest {
         snapshot.setInteractionPlan(interactionPlan);
         ValidationReport validationReport = new ValidationReport();
         validationReport.setOverallStatus("passed");
-        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
-        contextStore.save(snapshot);
-        Map<String, Object> actualResult = validationSupport.finalizeValidation(contextStore, snapshot, validationReport);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         assertThat(actualResult.get("status"), is("validated"));
-        assertThat(contextStore.getRequired("plan-1").getStatus(), is("validated"));
-        assertThat(contextStore.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
+        assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("validated"));
+        assertThat(workflowSessionContext.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
     }
     
     @Test
@@ -165,9 +165,9 @@ class WorkflowValidationSupportTest {
         Map<String, Object> mismatch = new LinkedHashMap<>(2, 1F);
         mismatch.put("code", WorkflowIssueCode.SQL_EXECUTABILITY_FAILED);
         validationReport.getMismatches().add(mismatch);
-        WorkflowContextStore contextStore = WorkflowContextStore.newInstance();
-        contextStore.save(snapshot);
-        Map<String, Object> actualResult = validationSupport.finalizeValidation(contextStore, snapshot, validationReport);
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
         assertThat(actualResult.get("status"), is("failed"));
     }
