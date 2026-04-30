@@ -125,8 +125,13 @@ class EncryptAlterTableTokenGeneratorTest {
     }
     
     private SQLStatement createAddColumnStatement() {
+        return createAddColumnStatement(false);
+    }
+    
+    private SQLStatement createAddColumnStatement(final boolean notNull) {
         ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
-                33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "");
+                33, 67, new ColumnSegment(33, 50, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, notNull,
+                notNull ? "certificate_number VARCHAR(10) DEFAULT 'foo' NOT NULL" : "");
         return AlterTableStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
                 .addColumnDefinition(new AddColumnDefinitionSegment(22, 67, Collections.singleton(columnDefinitionSegment))).build();

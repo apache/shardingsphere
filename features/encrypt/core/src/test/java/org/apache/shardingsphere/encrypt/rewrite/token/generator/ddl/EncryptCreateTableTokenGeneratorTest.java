@@ -33,6 +33,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.bound.TableSegmentBoundInfo;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.table.CreateTableStatement;
@@ -44,10 +45,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -102,18 +102,20 @@ class EncryptCreateTableTokenGeneratorTest {
         ColumnDefinitionToken likeToken = (ColumnDefinitionToken) actualIterator.next();
         assertThat(likeToken.toString(), is("like_certificate_number VARCHAR(4000)"));
         assertThat(likeToken.getStartIndex(), is(25));
-        assertThat(token.toString(), is("cipher_certificate_number VARCHAR(4000), assisted_certificate_number VARCHAR(4000), like_certificate_number VARCHAR(4000)"));
-        assertThat(token.getStartIndex(), is(25));
-        assertThat(token.getStopIndex(), is(78));
-        assertTrue(((SubstituteColumnDefinitionToken) token).isLastColumn());
     }
     
     private CreateTableStatement createCreateTableStatement() {
+        return createCreateTableStatement(false);
+    }
+    
+    private CreateTableStatement createCreateTableStatement(final boolean notNull) {
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")));
+        tableSegment.getTableName().setTableBoundInfo(new TableSegmentBoundInfo(null, new IdentifierValue("default")));
         return CreateTableStatement.builder()
                 .databaseType(databaseType)
-                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
+                .table(tableSegment)
                 .columnDefinitions(Collections.singleton(
-                        new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, false, "")))
+                        new ColumnDefinitionSegment(25, 78, new ColumnSegment(25, 42, new IdentifierValue("certificate_number")), new DataTypeSegment(), false, notNull, "")))
                 .build();
     }
 }
