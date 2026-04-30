@@ -84,12 +84,10 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     }
     
     private Optional<? extends SQLToken> getAssistedQueryColumnToken(final EncryptColumn encryptColumn, final ColumnDefinitionSegment column) {
-        return encryptColumn.getAssistedQuery()
-                .map(optional -> new ColumnDefinitionToken(encryptColumn.getAssistedQuery().get().getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE, column.getStartIndex()));
+        return encryptColumn.getAssistedQuery().map(optional -> new ColumnDefinitionToken(optional.getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE, column.getStartIndex()));
     }
     
     private Optional<? extends SQLToken> getLikeQueryColumnToken(final EncryptColumn encryptColumn, final ColumnDefinitionSegment column) {
-        return encryptColumn.getLikeQuery()
-                .map(optional -> new ColumnDefinitionToken(encryptColumn.getLikeQuery().get().getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE, column.getStartIndex()));
+        return encryptColumn.getLikeQuery().map(optional -> new ColumnDefinitionToken(optional.getName(), EncryptColumnDataType.DEFAULT_DATA_TYPE, column.getStartIndex()));
     }
 }

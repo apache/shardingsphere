@@ -32,7 +32,6 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.Rem
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
-import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
@@ -47,17 +46,21 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Optional;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class EncryptAlterTableTokenGeneratorTest {
     
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
+    
+    private final EncryptAlgorithm encryptAlgorithm = mock(EncryptAlgorithm.class, RETURNS_DEEP_STUBS);
     
     private EncryptAlterTableTokenGenerator generator;
     
@@ -80,21 +83,23 @@ class EncryptAlterTableTokenGeneratorTest {
         when(result.getEncryptColumn("certificate_number")).thenReturn(mockEncryptColumn());
         when(result.isEncryptColumn("certificate_number_new")).thenReturn(true);
         when(result.getEncryptColumn("certificate_number_new")).thenReturn(mockNewEncryptColumn());
+        when(result.findEncryptor("certificate_number")).thenReturn(Optional.of(encryptAlgorithm));
+        when(result.findEncryptor("certificate_number_new")).thenReturn(Optional.of(encryptAlgorithm));
         return result;
     }
     
     private EncryptColumn mockEncryptColumn() {
-        EncryptColumn result = new EncryptColumn("certificate_number", new CipherColumnItem("cipher_certificate_number", mock(EncryptAlgorithm.class)));
-        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number", mock(EncryptAlgorithm.class)));
-        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number", mock(EncryptAlgorithm.class)));
+        EncryptColumn result = new EncryptColumn("certificate_number", new CipherColumnItem("cipher_certificate_number", encryptAlgorithm));
+        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number", encryptAlgorithm));
+        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number", encryptAlgorithm));
         return result;
     }
     
     private EncryptColumn mockNewEncryptColumn() {
         EncryptColumn result = new EncryptColumn(
-                "certificate_number_new", new CipherColumnItem("cipher_certificate_number_new", mock(EncryptAlgorithm.class)));
-        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number_new", mock(EncryptAlgorithm.class)));
-        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number_new", mock(EncryptAlgorithm.class)));
+                "certificate_number_new", new CipherColumnItem("cipher_certificate_number_new", encryptAlgorithm));
+        result.setAssistedQuery(new AssistedQueryColumnItem("assisted_certificate_number_new", encryptAlgorithm));
+        result.setLikeQuery(new LikeQueryColumnItem("like_certificate_number_new", encryptAlgorithm));
         return result;
     }
     
@@ -137,19 +142,5 @@ class EncryptAlterTableTokenGeneratorTest {
         return AlterTableStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
                 .modifyColumnDefinition(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment)).build();
-    }
-    
-    @Test
-    void assertChangeEncryptColumnGenerateSQLTokens() {
-        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(createChangeColumnStatement())));
-    }
-    
-    private SQLStatement createChangeColumnStatement() {
-        ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
-                55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false, "");
-        ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, columnDefinitionSegment);
-        changeColumnDefinitionSegment.setPreviousColumn(new ColumnSegment(36, 53, new IdentifierValue("certificate_number")));
-        return AlterTableStatement.builder().databaseType(databaseType)
-                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))).changeColumnDefinition(changeColumnDefinitionSegment).build();
     }
 }

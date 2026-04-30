@@ -112,6 +112,7 @@ class OracleDatabaseMetaDataTest {
         assertTrue(actualAlterTableOption.isPresent());
         assertTrue(actualAlterTableOption.get().isSupportMergeDropColumns());
         assertTrue(actualAlterTableOption.get().isContainsParenthesesOnMergeDropColumns());
+        assertTrue(actualAlterTableOption.get().isContainsParenthesesOnColumnsClause());
     }
     
     @Test
