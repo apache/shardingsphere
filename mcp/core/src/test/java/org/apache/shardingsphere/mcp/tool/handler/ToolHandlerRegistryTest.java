@@ -34,7 +34,6 @@ import org.mockito.internal.configuration.plugins.Plugins;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +135,7 @@ class ToolHandlerRegistryTest {
     void assertLoadHandlersFromFeatureProviders() {
         ToolHandler firstHandler = createToolHandler("search_metadata");
         ToolHandler secondHandler = createToolHandler("execute_query");
-        Map<String, ToolHandler> actual = ToolHandlerRegistry.createRegisteredHandlers(List.copyOf(createFeatureProvider(List.of(firstHandler, secondHandler)).getToolHandlers()));
+        Map<String, ToolHandler> actual = ToolHandlerRegistry.createRegisteredHandlers(List.of(firstHandler, secondHandler));
         assertThat(actual.size(), is(2));
         assertThat(actual.keySet().stream().toList(), is(List.of("search_metadata", "execute_query")));
     }
@@ -146,12 +145,6 @@ class ToolHandlerRegistryTest {
         when(descriptor.getName()).thenReturn(toolName);
         ToolHandler result = mock(ToolHandler.class);
         when(result.getToolDescriptor()).thenReturn(descriptor);
-        return result;
-    }
-    
-    private static MCPFeatureProvider createFeatureProvider(final Collection<ToolHandler> toolHandlers) {
-        MCPFeatureProvider result = mock(MCPFeatureProvider.class);
-        when(result.getToolHandlers()).thenReturn(toolHandlers);
         return result;
     }
     

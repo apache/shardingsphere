@@ -22,12 +22,14 @@ import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRul
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
+import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
+import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -35,21 +37,28 @@ import java.util.List;
  */
 public final class EncryptFeatureProvider implements MCPFeatureProvider {
     
-    private static final MCPWorkflowToolContribution WORKFLOW_TOOL_CONTRIBUTION = new MCPWorkflowToolContribution(
-            EncryptFeatureDefinition.APPLY_TOOL_NAME, EncryptFeatureDefinition.VALIDATE_TOOL_NAME, new EncryptWorkflowValidationService());
-    
     @Override
-    public Collection<ToolHandler> getToolHandlers() {
-        return List.of(new PlanEncryptRuleToolHandler());
+    public Collection<MCPContribution> getContributions() {
+        Collection<MCPContribution> result = new LinkedList<>();
+        result.add(createWorkflowContribution());
+        result.addAll(createResourceContributions());
+        return List.copyOf(result);
     }
     
-    @Override
-    public Collection<MCPWorkflowToolContribution> getWorkflowToolContributions() {
-        return List.of(WORKFLOW_TOOL_CONTRIBUTION);
+    private static MCPWorkflowToolContribution createWorkflowContribution() {
+        PlanEncryptRuleToolHandler planToolHandler = new PlanEncryptRuleToolHandler();
+        return new MCPWorkflowToolContribution(planToolHandler.getToolDescriptor(), planToolHandler::handle,
+                EncryptFeatureDefinition.APPLY_TOOL_NAME, EncryptFeatureDefinition.VALIDATE_TOOL_NAME, new EncryptWorkflowValidationService());
     }
     
-    @Override
-    public Collection<ResourceHandler> getResourceHandlers() {
-        return List.of(new EncryptAlgorithmsHandler(), new EncryptRulesHandler(), new EncryptRuleHandler());
+    private static Collection<MCPContribution> createResourceContributions() {
+        return List.of(
+                createResourceContribution(new EncryptAlgorithmsHandler()),
+                createResourceContribution(new EncryptRulesHandler()),
+                createResourceContribution(new EncryptRuleHandler()));
+    }
+    
+    private static MCPDirectResourceContribution createResourceContribution(final ResourceHandler resourceHandler) {
+        return new MCPDirectResourceContribution(resourceHandler.getUriPattern(), resourceHandler::handle);
     }
 }

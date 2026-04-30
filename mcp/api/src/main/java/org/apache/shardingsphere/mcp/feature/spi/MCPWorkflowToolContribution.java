@@ -18,18 +18,41 @@
 package org.apache.shardingsphere.mcp.feature.spi;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+
+import java.util.Objects;
 
 /**
  * Workflow tool contribution owned by one feature.
  */
-@RequiredArgsConstructor
 @Getter
-public final class MCPWorkflowToolContribution {
+public final class MCPWorkflowToolContribution implements MCPToolContribution {
+    
+    private final MCPToolDescriptor planningToolDescriptor;
+    
+    private final MCPToolInvoker planningToolInvoker;
     
     private final String applyToolName;
     
     private final String validateToolName;
     
     private final MCPWorkflowValidationHandler workflowValidationHandler;
+    
+    /**
+     * Create workflow contribution with planning, execution and validation tools.
+     *
+     * @param planningToolDescriptor planning tool descriptor
+     * @param planningToolInvoker planning tool invoker
+     * @param applyToolName apply tool name
+     * @param validateToolName validate tool name
+     * @param workflowValidationHandler workflow validation handler
+     */
+    public MCPWorkflowToolContribution(final MCPToolDescriptor planningToolDescriptor, final MCPToolInvoker planningToolInvoker,
+                                       final String applyToolName, final String validateToolName, final MCPWorkflowValidationHandler workflowValidationHandler) {
+        this.planningToolDescriptor = Objects.requireNonNull(planningToolDescriptor, "planningToolDescriptor is required.");
+        this.planningToolInvoker = Objects.requireNonNull(planningToolInvoker, "planningToolInvoker is required.");
+        this.applyToolName = Objects.requireNonNull(applyToolName, "applyToolName is required.");
+        this.validateToolName = Objects.requireNonNull(validateToolName, "validateToolName is required.");
+        this.workflowValidationHandler = Objects.requireNonNull(workflowValidationHandler, "workflowValidationHandler is required.");
+    }
 }

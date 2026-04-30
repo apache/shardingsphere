@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.mcp.feature.spi;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-
-import java.util.Collection;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
 
 /**
- * MCP feature provider.
+ * Resource reader for MCP resource contribution.
  */
-@SingletonSPI
-public interface MCPFeatureProvider extends ShardingSphereSPI {
+@FunctionalInterface
+public interface MCPResourceReader {
     
     /**
-     * Get contributions owned by the feature.
+     * Read one MCP resource.
      *
-     * @return contributions
+     * @param requestContext request context
+     * @param uriVariables matched URI variables
+     * @return resource response
      */
-    Collection<MCPContribution> getContributions();
+    MCPResponse read(MCPFeatureContext requestContext, MCPUriVariables uriVariables);
 }

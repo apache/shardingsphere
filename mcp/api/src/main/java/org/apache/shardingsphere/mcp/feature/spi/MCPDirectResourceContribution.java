@@ -17,21 +17,17 @@
 
 package org.apache.shardingsphere.mcp.feature.spi;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * MCP feature provider.
+ * Direct MCP resource contribution.
  */
-@SingletonSPI
-public interface MCPFeatureProvider extends ShardingSphereSPI {
+@RequiredArgsConstructor
+@Getter
+public final class MCPDirectResourceContribution implements MCPResourceContribution {
     
-    /**
-     * Get contributions owned by the feature.
-     *
-     * @return contributions
-     */
-    Collection<MCPContribution> getContributions();
+    private final String uriPattern;
+    
+    private final MCPResourceReader resourceReader;
 }

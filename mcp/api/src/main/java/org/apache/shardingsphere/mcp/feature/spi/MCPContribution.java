@@ -17,21 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.spi;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-
-import java.util.Collection;
-
 /**
- * MCP feature provider.
+ * MCP contribution declared by one feature.
  */
-@SingletonSPI
-public interface MCPFeatureProvider extends ShardingSphereSPI {
-    
-    /**
-     * Get contributions owned by the feature.
-     *
-     * @return contributions
-     */
-    Collection<MCPContribution> getContributions();
+public interface MCPContribution {
 }

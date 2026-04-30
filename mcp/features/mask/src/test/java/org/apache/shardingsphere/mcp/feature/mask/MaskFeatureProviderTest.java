@@ -17,29 +17,39 @@
 
 package org.apache.shardingsphere.mcp.feature.mask;
 
+import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
+import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
 import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
 import org.junit.jupiter.api.Test;
 
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.isA;
 import static org.hamcrest.Matchers.is;
 
 class MaskFeatureProviderTest {
     
     @Test
-    void assertGetToolHandlers() {
-        MaskFeatureProvider featureProvider = new MaskFeatureProvider();
-        assertThat(featureProvider.getToolHandlers().stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_mask_rule")));
+    void assertGetContributionsWithResourceContributions() {
+        Collection<MCPContribution> contributions = new MaskFeatureProvider().getContributions();
+        List<String> actual = contributions.stream().filter(MCPDirectResourceContribution.class::isInstance).map(MCPDirectResourceContribution.class::cast)
+                .map(MCPDirectResourceContribution::getUriPattern).toList();
+        assertThat(actual, is(List.of(
+                "shardingsphere://features/mask/algorithms",
+                "shardingsphere://features/mask/databases/{database}/rules",
+                "shardingsphere://features/mask/databases/{database}/tables/{table}/rules")));
     }
     
     @Test
-    void assertGetWorkflowToolContributions() {
-        MaskFeatureProvider featureProvider = new MaskFeatureProvider();
-        assertThat(featureProvider.getWorkflowToolContributions().stream().map(MCPWorkflowToolContribution::getApplyToolName).toList(), is(List.of("apply_mask_rule")));
-        assertThat(featureProvider.getWorkflowToolContributions().stream().map(MCPWorkflowToolContribution::getValidateToolName).toList(), is(List.of("validate_mask_rule")));
-        assertThat(featureProvider.getWorkflowToolContributions().iterator().next().getWorkflowValidationHandler(),
-                org.hamcrest.Matchers.instanceOf(MaskWorkflowValidationService.class));
+    void assertGetContributionsWithWorkflowToolContribution() {
+        Collection<MCPContribution> contributions = new MaskFeatureProvider().getContributions();
+        MCPWorkflowToolContribution actual = contributions.stream().filter(MCPWorkflowToolContribution.class::isInstance).map(MCPWorkflowToolContribution.class::cast).findFirst().orElseThrow();
+        assertThat(actual.getPlanningToolDescriptor().getName(), is("plan_mask_rule"));
+        assertThat(actual.getApplyToolName(), is("apply_mask_rule"));
+        assertThat(actual.getValidateToolName(), is("validate_mask_rule"));
+        assertThat(actual.getWorkflowValidationHandler(), isA(MaskWorkflowValidationService.class));
     }
 }

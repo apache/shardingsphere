@@ -18,11 +18,13 @@
 package org.apache.shardingsphere.mcp.feature;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
+import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
+import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -39,50 +41,38 @@ import static org.mockito.Mockito.when;
 class MCPFeatureProviderRegistryTest {
     
     @Test
-    void assertLoadToolHandlers() {
+    void assertLoadToolHandlersWithContributions() {
         MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
-        ToolHandler toolHandler = createToolHandler("plan_encrypt_rule");
-        when(featureProvider.getToolHandlers()).thenReturn(List.of(toolHandler));
-        when(featureProvider.getWorkflowToolContributions()).thenReturn(
-                List.of(new MCPWorkflowToolContribution("apply_encrypt_rule", "validate_encrypt_rule",
+        MCPToolDescriptor toolDescriptor = createToolDescriptor("search_metadata");
+        MCPToolDescriptor planningToolDescriptor = createToolDescriptor("plan_encrypt_rule");
+        when(featureProvider.getContributions()).thenReturn(List.of(
+                new MCPDirectToolContribution(toolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of())),
+                new MCPWorkflowToolContribution(planningToolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of()),
+                        "apply_encrypt_rule", "validate_encrypt_rule",
                         (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of("status", "validated"))));
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
             List<String> actual = MCPFeatureProviderRegistry.loadToolHandlers().stream().map(each -> each.getToolDescriptor().getName()).toList();
-            assertThat(actual, is(List.of("plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule")));
+            assertThat(actual, is(List.of("search_metadata", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule")));
         }
     }
     
     @Test
-    void assertCreateToolHandlers() {
+    void assertLoadResourceHandlersWithContributions() {
         MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
-        ToolHandler toolHandler = createToolHandler("plan_mask_rule");
-        when(featureProvider.getToolHandlers()).thenReturn(List.of(toolHandler));
-        when(featureProvider.getWorkflowToolContributions()).thenReturn(
-                List.of(new MCPWorkflowToolContribution("apply_mask_rule", "validate_mask_rule",
-                        (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of())));
-        List<String> actual = MCPFeatureProviderRegistry.createToolHandlers(featureProvider).stream().map(each -> each.getToolDescriptor().getName()).toList();
-        assertThat(actual, is(List.of("plan_mask_rule", "apply_mask_rule", "validate_mask_rule")));
-    }
-    
-    @Test
-    void assertLoadResourceHandlers() {
-        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
-        ResourceHandler resourceHandler = mock(ResourceHandler.class);
-        when(featureProvider.getResourceHandlers()).thenReturn(List.of(resourceHandler));
+        when(featureProvider.getContributions()).thenReturn(List.of(
+                new MCPDirectResourceContribution("shardingsphere://foo", (requestContext, uriVariables) -> new MCPMapResponse(Map.of()))));
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
             List<ResourceHandler> actual = List.copyOf(MCPFeatureProviderRegistry.loadResourceHandlers());
-            assertThat(actual, is(List.of(resourceHandler)));
+            assertThat(actual.stream().map(ResourceHandler::getUriPattern).toList(), is(List.of("shardingsphere://foo")));
             assertThrows(UnsupportedOperationException.class, () -> MCPFeatureProviderRegistry.loadResourceHandlers().clear());
         }
     }
     
-    private static ToolHandler createToolHandler(final String toolName) {
-        MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
-        when(descriptor.getName()).thenReturn(toolName);
-        ToolHandler result = mock(ToolHandler.class);
-        when(result.getToolDescriptor()).thenReturn(descriptor);
+    private static MCPToolDescriptor createToolDescriptor(final String toolName) {
+        MCPToolDescriptor result = mock(MCPToolDescriptor.class);
+        when(result.getName()).thenReturn(toolName);
         return result;
     }
 }

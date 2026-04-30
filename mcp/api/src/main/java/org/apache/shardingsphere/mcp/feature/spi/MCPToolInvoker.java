@@ -17,21 +17,24 @@
 
 package org.apache.shardingsphere.mcp.feature.spi;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
-import java.util.Collection;
+import java.util.Map;
 
 /**
- * MCP feature provider.
+ * Tool invoker for MCP tool contribution.
  */
-@SingletonSPI
-public interface MCPFeatureProvider extends ShardingSphereSPI {
+@FunctionalInterface
+public interface MCPToolInvoker {
     
     /**
-     * Get contributions owned by the feature.
+     * Invoke one MCP tool.
      *
-     * @return contributions
+     * @param requestContext request context
+     * @param sessionId session id
+     * @param arguments normalized arguments
+     * @return tool response
      */
-    Collection<MCPContribution> getContributions();
+    MCPResponse invoke(MCPFeatureContext requestContext, String sessionId, Map<String, Object> arguments);
 }

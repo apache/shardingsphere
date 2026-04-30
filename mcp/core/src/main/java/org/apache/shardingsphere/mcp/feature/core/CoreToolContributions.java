@@ -15,36 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature;
+package org.apache.shardingsphere.mcp.feature.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
+import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
+import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
- * MCP feature provider registry.
+ * Core tool contributions.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MCPFeatureProviderRegistry {
+final class CoreToolContributions {
     
-    /**
-     * Load registered tool handlers from MCP feature providers.
-     *
-     * @return tool handlers
-     */
-    public static Collection<ToolHandler> loadToolHandlers() {
-        return MCPToolContributionMaterializer.materialize(MCPContributionRegistry.loadToolContributions());
-    }
-    
-    /**
-     * Load registered resource handlers from MCP feature providers.
-     *
-     * @return resource handlers
-     */
-    public static Collection<ResourceHandler> loadResourceHandlers() {
-        return MCPResourceContributionMaterializer.materialize(MCPContributionRegistry.loadResourceContributions());
+    static Collection<MCPContribution> createContributions() {
+        SearchMetadataToolHandler searchMetadataToolHandler = new SearchMetadataToolHandler();
+        ExecuteSQLToolHandler executeSQLToolHandler = new ExecuteSQLToolHandler();
+        return List.of(
+                new MCPDirectToolContribution(searchMetadataToolHandler.getToolDescriptor(), searchMetadataToolHandler::handle),
+                new MCPDirectToolContribution(executeSQLToolHandler.getToolDescriptor(), executeSQLToolHandler::handle));
     }
 }
