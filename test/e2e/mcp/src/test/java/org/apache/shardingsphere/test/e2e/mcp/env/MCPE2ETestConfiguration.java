@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.env;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.e2e.env.runtime.EnvironmentPropertiesLoader;
 
 import java.util.Locale;
 import java.util.Properties;
@@ -26,7 +25,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 final class MCPE2ETestConfiguration {
     
-    private static final MCPE2ETestConfiguration INSTANCE = new MCPE2ETestConfiguration(EnvironmentPropertiesLoader.loadProperties("env/e2e-env.properties"));
+    private static final MCPE2ETestConfiguration INSTANCE = new MCPE2ETestConfiguration(MCPE2EEnvironmentPropertiesLoader.loadProperties("env/e2e-env.properties"));
     
     private final Properties props;
     

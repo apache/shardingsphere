@@ -40,13 +40,6 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-test-e2e-env</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-mcp-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -104,6 +97,40 @@
                 <mcp.e2e.llm.excludedGroups />
                 <mcp.e2e.llm.enabled>true</mcp.e2e.llm.enabled>
             </properties>
+        </profile>
+        <profile>
+            <id>proxy-workflow-e2e</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.shardingsphere</groupId>
+                    <artifactId>shardingsphere-test-e2e-env</artifactId>
+                    <version>${project.version}</version>
+                    <type>test-jar</type>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>add-proxy-workflow-test-source</id>
+                                <goals>
+                                    <goal>add-test-source</goal>
+                                </goals>
+                                <phase>generate-test-sources</phase>
+                                <configuration>
+                                    <sources>
+                                        <source>src/proxy-workflow-test/java</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
