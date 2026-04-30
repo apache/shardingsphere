@@ -32,6 +32,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.pojo.generic.Rem
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.AddColumnDefinitionSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ChangeColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.column.alter.ModifyColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.DataTypeSegment;
@@ -142,5 +143,19 @@ class EncryptAlterTableTokenGeneratorTest {
         return AlterTableStatement.builder().databaseType(databaseType)
                 .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt"))))
                 .modifyColumnDefinition(new ModifyColumnDefinitionSegment(22, 70, columnDefinitionSegment)).build();
+    }
+    
+    @Test
+    void assertChangeEncryptColumnGenerateSQLTokens() {
+        assertThrows(UnsupportedOperationException.class, () -> generator.generateSQLTokens(new CommonSQLStatementContext(createChangeColumnStatement())));
+    }
+    
+    private SQLStatement createChangeColumnStatement() {
+        ColumnDefinitionSegment columnDefinitionSegment = new ColumnDefinitionSegment(
+                55, 93, new ColumnSegment(55, 76, new IdentifierValue("certificate_number_new")), new DataTypeSegment(), false, false, "");
+        ChangeColumnDefinitionSegment changeColumnDefinitionSegment = new ChangeColumnDefinitionSegment(22, 93, columnDefinitionSegment);
+        changeColumnDefinitionSegment.setPreviousColumn(new ColumnSegment(36, 53, new IdentifierValue("certificate_number")));
+        return AlterTableStatement.builder().databaseType(databaseType)
+                .table(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_encrypt")))).changeColumnDefinition(changeColumnDefinitionSegment).build();
     }
 }

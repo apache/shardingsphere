@@ -96,7 +96,7 @@ class SQLServerDatabaseMetaDataTest {
     void assertGetAlterTableOption() {
         Optional<DialectAlterTableOption> actual = dialectDatabaseMetaData.getAlterTableOption();
         assertTrue(actual.isPresent());
-        assertTrue(actual.map(DialectAlterTableOption::isSupportMergeDropColumns).orElse(false));
+        assertFalse(actual.map(DialectAlterTableOption::isSupportMergeDropColumns).orElse(true));
         assertFalse(actual.map(DialectAlterTableOption::isContainsParenthesesOnMergeDropColumns).orElse(true));
         assertFalse(actual.map(DialectAlterTableOption::isContainsParenthesesOnColumnsClause).orElse(true));
     }
