@@ -48,6 +48,7 @@ import java.util.Iterator;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -102,6 +103,10 @@ class EncryptCreateTableTokenGeneratorTest {
         ColumnDefinitionToken likeToken = (ColumnDefinitionToken) actualIterator.next();
         assertThat(likeToken.toString(), is("like_certificate_number VARCHAR(4000)"));
         assertThat(likeToken.getStartIndex(), is(25));
+        assertThat(token.toString(), is("cipher_certificate_number VARCHAR(4000), assisted_certificate_number VARCHAR(4000), like_certificate_number VARCHAR(4000)"));
+        assertThat(token.getStartIndex(), is(25));
+        assertThat(token.getStopIndex(), is(78));
+        assertTrue(((SubstituteColumnDefinitionToken) token).isLastColumn());
     }
     
     private CreateTableStatement createCreateTableStatement() {
