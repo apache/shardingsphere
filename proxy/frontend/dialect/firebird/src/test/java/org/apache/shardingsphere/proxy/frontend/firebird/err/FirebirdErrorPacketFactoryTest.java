@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.firebird.err;
 
+import org.apache.shardingsphere.database.exception.core.exception.syntax.database.UnknownDatabaseException;
 import org.apache.shardingsphere.database.protocol.firebird.packet.generic.FirebirdGenericResponsePacket;
 import org.junit.jupiter.api.Test;
 
@@ -46,5 +47,12 @@ class FirebirdErrorPacketFactoryTest {
         FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new SQLException("Invalid error", "HY000", 123));
         assertThat(actual.getErrorCode(), is(335544382));
         assertThat(actual.getErrorMessage(), is("Invalid error"));
+    }
+    
+    @Test
+    void assertNewInstanceWithUnknownDatabaseException() {
+        FirebirdGenericResponsePacket actual = (FirebirdGenericResponsePacket) FirebirdErrorPacketFactory.newInstance(new UnknownDatabaseException("logic_db"));
+        assertThat(actual.getErrorCode(), is(335544382));
+        assertThat(actual.getErrorMessage(), is("Database \"logic_db\" does not exist"));
     }
 }
