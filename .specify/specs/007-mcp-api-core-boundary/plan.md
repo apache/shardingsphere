@@ -1,86 +1,94 @@
-# Implementation Plan: MCP API Boundary Slimming
+# Implementation Plan: MCP Workflow Shared Module Extraction
 
-**Branch**: `[001-shardingsphere-mcp]` | **Date**: 2026-04-30 | **Spec**: `/.specify/specs/007-mcp-api-core-boundary/spec.md`
+**Branch**: `[001-shardingsphere-mcp]` | **Date**: 2026-05-01 | **Spec**: `/.specify/specs/007-mcp-api-core-boundary/spec.md`
 **Input**: Feature specification from `/.specify/specs/007-mcp-api-core-boundary/spec.md`
 
 ## Summary
 
-这次规划的目标不是再给 `mcp/api` 找一个“更合理的杂物间”，而是把它收紧成最小共享边界：
+这次规划的目标不是继续在 `mcp/api` 和 `mcp/core` 之间硬挤边界，而是把已经客观存在的 workflow 共享层显式抽出来：
 
-- `mcp/api` 只保留 shared contract、DTO、protocol model；
-- 所有 generic runtime helper、workflow execution/validation/store/payload/binder 等 concrete behavior 下沉到 `mcp/core`；
-- workflow model 能拆就拆，planning / execution / diagnostics / lifecycle / mutable runtime state 尽量收口到 `mcp/core`；
-- encrypt / mask feature 继续只依赖 `mcp/api`，不允许为了瘦身 `api` 而直接依赖 `mcp/core`；
-- 不引入新的 `support` / `workflow` 中间模块，现有边界只在 `mcp/api` 和 `mcp/core` 之间重新收束。
+- 新增 `shardingsphere-mcp-workflow`
+- `mcp/api` 保持基础共享契约
+- `mcp/workflow` 承担 workflow 专属共享 helper 和 workflow-specific SPI seam
+- `mcp/core` 保持 runtime-only ownership
+- `encrypt` / `mask` 依赖 `mcp/api + mcp/workflow`，不再直接依赖 `mcp/core`
 
-这次计划的关键不是“简单搬文件”，而是**先把每类类型的 ownership 讲清楚，再按 ownership 拆 contract 和 runtime implementation**。
+这次计划的关键不是“批量搬文件”，而是**先把 workflow 共享代码和 runtime-only 代码切开，再处理 feature-facing seam 上的 generic helper 泄漏**。
 
 ## Current Baseline
 
-- `mcp/api` 当前共有 `6048` 行生产代码、`86` 个 Java 文件。
-- 当前 workflow 相关代码已经占到 `mcp/api` 的主体：
-  - `tool/service/workflow`: `1930` 行
-  - `tool/model/workflow`: `1273` 行
-  - `tool/handler/workflow`: `134` 行
-  - 再加上 `WorkflowToolDescriptors` 与 `MCPToolArguments`，合计约 `3623` 行、`37` 个文件，约占 `mcp/api` 生产代码的 `60%`。
-- `WorkflowContextStore` 当前在 API 层暴露了静态工厂，并直接绑定 `InMemoryWorkflowContextStore`，说明 `api` 已经承载了 concrete runtime implementation factory。
-- `MCPRuntimeContext` 当前通过 `WorkflowContextStore.newInstance()` 获取默认 store，进一步放大了 API-to-runtime implementation 泄漏。
-- `RuntimeDatabaseProfile` 当前虽然放在 `mcp/api`，但实际只被 `mcp/core` 使用，是明显的 core-only runtime descriptor。
-- encrypt / mask 当前都直接实例化 `WorkflowExecutionToolHandler` 和 `WorkflowValidationToolHandler`，说明 feature 模块仍在消费 API 层的 shared concrete runtime helper。
-- `MCPFeatureContext` 当前直接暴露 `WorkflowContextStore`，使 feature-facing contract 带上了 core-owned runtime state concern。
+- `mcp/api` 当前 `76` 个生产 Java 文件，约 `4100` 行生产代码。
+- `mcp/core` 当前 `80` 个生产 Java 文件，约 `8246` 行生产代码。
+- `mcp/features/encrypt` 当前 `20` 个生产 Java 文件，约 `2245` 行生产代码。
+- `mcp/features/mask` 当前 `14` 个生产 Java 文件，约 `1112` 行生产代码。
+- `encrypt` / `mask` 对 MCP 共享层的 import 分布里：
+  - `tool.model.workflow`: `59`
+  - `tool.service.workflow`: `42`
+  - `feature.spi`: `22`
+  - `tool.descriptor`: `10`
+  - `resource.handler`: `8`
+  - `context`: `8`
+- 当前最核心的边界问题不是 workflow model，而是 shared helper 被放在 `mcp/core` 后，feature 被迫直接依赖 core。
+- 当前最明显的命名 / 边界风险点是 `MCPToolArguments`：
+  - workflow plan handler 在用
+  - generic execute / metadata handler 也在用
+  - 它不是纯 workflow helper
 
 ## Technical Context
 
-**Language/Version**: Java 17  
+**Language/Version**: Java 21  
 **Primary Dependencies**:
-- `mcp/api`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, `mcp/features/mask`
+- `mcp/api`
+- `mcp/workflow` (new)
+- `mcp/core`
+- `mcp/bootstrap`
+- `mcp/features/encrypt`
+- `mcp/features/mask`
 - `shardingsphere-infra-spi`
 - `shardingsphere-infra-exception`
 - `shardingsphere-infra-util`
-- current MCP workflow, metadata, resource, tool, and capability paths
 **Storage**:
-- in-memory runtime state owned by `mcp/core`
+- in-memory workflow session state remains core-owned
 - no new persistence
-- no new cross-process storage
 **Testing**:
 - JUnit 5
 - Mockito
 - module-scoped Maven tests
-- scoped Checkstyle verification for touched modules
+- scoped Checkstyle / Spotless verification
 **Target Platform**:
 - ShardingSphere MCP runtime
 - STDIO and Streamable HTTP transport paths
-**Project Type**: Multi-module Java architectural boundary cleanup
+**Project Type**: Multi-module Java architectural boundary refactor
 **Performance Goals**:
-- no regression in handler discovery or runtime dispatch
-- no new avoidable request-path indirection
+- no regression in handler discovery or workflow tool dispatch
 - startup wiring remains deterministic
+- no new request-path indirection beyond module ownership cleanup
 **Constraints**:
 - no branch switching
-- `mcp/api` must keep only shared contract, DTO, and protocol model surface
-- workflow model families must sink core state to `mcp/core` whenever they can be split
-- encrypt / mask must continue to depend only on `mcp/api`
-- no new shared support or workflow module
-- no redesign of external MCP semantics in this work
+- new module name is fixed as `shardingsphere-mcp-workflow`
+- feature modules must not depend directly on `mcp/core`
+- `mcp/workflow` must stay workflow-specific
+- this iteration prefers minimal API redraw
+- no redesign of external MCP semantics
 **Scale/Scope**:
-- covers `mcp/api`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, and `mcp/features/mask`
-- does not expand encrypt / mask business behavior
-- does not redesign external tool names, resource URIs, or protocol semantics
+- covers `mcp/api`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, `mcp/features/mask`
+- adds one new module under `mcp/`
+- does not redesign encrypt / mask business behavior
 
 ## Constitution Check
 
-*GATE: 通过；本次为内部架构收口，不改变 MCP 产品边界。*
+*GATE: 通过；本次为内部模块边界收口，不改变 MCP 外部产品语义。*
 
 - **Proxy-first logical abstraction**
-  - 不改变 Proxy-first 逻辑视图，不触碰业务工作流语义。
+  - 不改变逻辑视图，不触碰 feature 业务语义。
 - **Explicit operator control**
-  - 不改变 plan / apply / validate 的用户可见控制语义。
+  - 不改变 plan / apply / validate 的用户控制方式。
 - **Minimal safe automation**
-  - 不新增自动执行、迁移、回滚或额外自动化能力。
+  - 不新增自动迁移、自动执行或回滚机制。
 - **Deterministic naming and transparent changes**
-  - 模块归位、依赖方向、contract/runtime 拆分都必须可审计、可复核。
+  - 新模块名字、类归属、依赖方向都必须明确且可审计。
 - **Complete verification before completion**
-  - 完成标准包括模块边界、依赖关系、编译与测试验证，不只是“代码移动成功”。
+  - 完成标准包括模块依赖、编译、测试、Checkstyle、Spotless，而不只是“代码搬过去了”。
 
 ## Project Structure
 
@@ -91,7 +99,6 @@ specs/007-mcp-api-core-boundary/
 |-- spec.md
 |-- plan.md
 |-- research.md
-|-- data-model.md
 `-- checklists/
     `-- requirements.md
 ```
@@ -100,21 +107,9 @@ specs/007-mcp-api-core-boundary/
 
 ```text
 mcp/
-|-- api/src/main/java/org/apache/shardingsphere/mcp/
-|   |-- capability/
-|   |-- context/
-|   |-- feature/
-|   |-- metadata/
-|   |-- protocol/
-|   |-- resource/
-|   `-- tool/
-|-- core/src/main/java/org/apache/shardingsphere/mcp/
-|   |-- capability/
-|   |-- context/
-|   |-- feature/
-|   |-- metadata/
-|   |-- resource/
-|   `-- tool/
+|-- api/
+|-- workflow/
+|-- core/
 |-- bootstrap/
 `-- features/
     |-- encrypt/
@@ -122,106 +117,123 @@ mcp/
 ```
 
 **Structure Decision**:
-不新增任何中间 shared support 模块。`mcp/api` 只保留最小共享 contract surface，`mcp/core` 承接 generic runtime implementation，feature 模块只依赖 `mcp/api` 暴露的 contract seam。
+新增 `mcp/workflow`，但不进一步拆成多个 support 子模块。通过职责边界而不是继续加层数来控制复杂度。
 
 ## Design Focus
 
 ### Architectural direction
 
-- 先做 `mcp/api` 当前类型家族分类矩阵，再决定迁移顺序。
-- 任何“不确定是不是 contract”的类型，默认先按 runtime-suspect 处理，只有证明是多层共享 contract 才能留在 `mcp/api`。
-- feature-facing seam 必须保持 interface-only；feature 不得因为 generic runtime helper 下沉而反向依赖 `mcp/core`。
-- 当前直接由 feature 模块实例化的 generic workflow execution / validation helper，后续必须改成 core-owned runtime materialization，而 feature 只保留 API-level contribution seam。
-- 当前 workflow model family 不应整体留在 `mcp/api`；必须先拆出 minimal contract DTO，再把 mutable runtime state、diagnostics、lifecycle、artifact accumulation 等 core concern 下沉。
+- 以“基础契约 / workflow 共享 / runtime 核心”三层结构重画边界。
+- 任何被 feature 和 core 同时编译依赖、且明显属于 workflow 共享逻辑的类，优先进入 `mcp/workflow`。
+- 任何 runtime-only registry、handler、session-store、execution/query/service，继续留在 `mcp/core`。
+- `mcp/api` 本轮不再追求极致瘦身，而是优先保持基础契约稳定；workflow model / bridge contract 只在必须时调整。
+- `mcp/workflow` 必须 workflow-pure；遇到 generic helper 泄漏时，优先缩 seam，而不是把 generic helper 一起搬过去。
 
 ### First-pass family directions
 
 - **优先保留在 `mcp/api` 的家族**
-  - `capability/*` 中的 contract / SPI / capability model
-  - `metadata/model/*`
-  - `protocol/*`
-  - `protocol/response/*`
-  - `protocol/exception/*`
-  - `tool/descriptor/*` 中的 DTO contract
-  - `tool/request/*` 与 `tool/response/*` 中的 shared DTO
-  - `resource/handler/ResourceHandler`
+  - `feature/spi/*` 中的基础 SPI
   - `tool/handler/ToolHandler`
-  - `resource/uri/MCPUriVariables`
-  - `feature/spi/*`
-
-- **优先下沉到 `mcp/core` 的家族**
-  - `metadata/jdbc/RuntimeDatabaseProfile`
-  - `tool/handler/workflow/*`
-  - `tool/service/workflow/*` 中的 concrete helper、service、builder、binder、masking / payload / execution helper
-  - `tool/service/workflow/InMemoryWorkflowContextStore`
-  - `tool/service/workflow/WorkflowContextStore` 的 runtime factory responsibility
-  - `tool/descriptor/WorkflowToolDescriptors`
-  - `tool/request/MCPToolArguments`
-
-- **必须先拆再决定归宿的家族**
+  - `resource/handler/ResourceHandler`
+  - `protocol/*`
+  - `metadata/model/*`
+  - `tool/model/workflow/*`（本轮先保留）
+  - `tool/service/workflow/WorkflowSessionContext`
+  - `tool/service/workflow/WorkflowPropertySource`
   - `context/MCPFeatureContext`
-  - `tool/model/workflow/*`
-  - `tool/service/workflow/WorkflowContextStore`
-  - 任何既被 feature 编译依赖、又持有 core lifecycle / execution state 的 workflow family
+
+- **优先迁入 `mcp/workflow` 的家族**
+  - `WorkflowPlanningSupport`
+  - `WorkflowValidationSupport`
+  - `WorkflowRequestBinder`
+  - `WorkflowSqlUtils`
+  - `WorkflowIntentResolverSupport`
+  - `WorkflowPlanPayloadBuilder`
+  - `WorkflowArtifactPayloadUtils`
+  - `WorkflowArtifactMaskUtils`
+  - `WorkflowArtifactBundle`
+  - `WorkflowLifecycleUtils`
+  - `WorkflowRuleValueUtils`
+  - `WorkflowToolDescriptors`
+  - `MCPWorkflowToolContribution`
+  - `MCPWorkflowValidationHandler`
+
+- **优先保留在 `mcp/core` 的家族**
+  - `WorkflowExecutionService`
+  - `WorkflowProxyQueryService`
+  - `WorkflowExecutionToolHandler`
+  - `WorkflowValidationToolHandler`
+  - `InMemoryWorkflowSessionContext`
+  - tool / resource registry
+  - feature contribution materializer / registry
+  - generic execute / metadata handler
+
+- **必须先收 seam 再决定具体迁法的点**
+  - `MCPToolArguments`
+  - feature planning handler 的 binder API
 
 ### Behavior preservation
 
-- encrypt / mask 外部行为保持不变。
-- MCP tool names、resource URIs、protocol behavior 不在本计划中重开。
-- handler discovery 和 runtime feature loading 行为必须保持可用。
+- encrypt / mask 对外行为保持不变
+- workflow plan / apply / validate 外部语义保持不变
+- registry discovery 与 bootstrap wiring 保持不变
 
 ### Cleanup expectation
 
-- 删除 `mcp/api` 中所有 concrete runtime workflow helper、store implementation、builder、binder、registry-like helper。
-- 删除 API 层通过静态工厂直接 new runtime implementation 的做法。
-- 删除 feature 对 API 层 shared concrete runtime helper 的直接实例化依赖。
-- 删除当前只是历史遗留、实际只服务 `mcp/core` 的 API-side runtime descriptor。
+- 去掉 feature 对 `mcp/core` 的直接依赖
+- 去掉 `mcp/workflow` 对 generic non-workflow helper 的错误吸纳
+- 去掉 workflow binder 对 `MCPToolArguments` 的 feature-facing泄漏
+- 让 `mcp/api` 不再承载 workflow shared helper 实现
 
 ## Implementation Slices
 
-### Slice 1 - Classification matrix and ownership freeze
+### Slice 1 - Create module and dependency graph
 
-- 盘点 `mcp/api` 当前所有生产类型家族。
-- 为每个家族给出 retain / move / split 的唯一结论。
-- 明确哪些类型满足“shared contract / DTO / protocol model”标准，哪些不满足。
-- 单独标出 workflow family 的 contract data 与 runtime state 边界。
+- 新增 `mcp/workflow` 模块和 POM
+- 调整 `mcp/pom.xml` reactor 顺序
+- 建立依赖图：
+  - `workflow -> api`
+  - `core -> api + workflow`
+  - `features/encrypt -> api + workflow`
+  - `features/mask -> api + workflow`
 
-### Slice 2 - Feature-facing seam reduction
+### Slice 2 - Move workflow-shared helpers and workflow-specific SPI
 
-- 收紧 `MCPFeatureContext` 与相关 feature-facing seam，只暴露 API-owned contract。
-- 取消 feature 对 `WorkflowContextStore`、generic runtime helper、core concern 的直接持有或依赖。
-- 设计 API-level workflow contribution seam，让 core 可以接管 generic apply / validate runtime materialization，而 feature 仍只依赖 `mcp/api`。
+- 迁移 workflow 共享 helper 到 `mcp/workflow`
+- 迁移 workflow-specific SPI seam 到 `mcp/workflow`
+- 同步迁移对应单元测试
 
-### Slice 3 - Core runtime migration
+### Slice 3 - Seal the argument-binding seam
 
-- 将 core-only runtime descriptor、generic workflow handler、execution / validation service、payload / binder / parser helper、store implementation 等迁入 `mcp/core`。
-- 把默认 runtime store 创建职责从 API 层移回 core runtime context。
-- 保证 `mcp/core` 自己拥有 runtime wiring，不再依赖 API 层 concrete factory。
+- 处理 `WorkflowRequestBinder` 对 `MCPToolArguments` 的直接暴露
+- 目标是 feature planning handler 不再直接 import generic non-workflow helper
+- 优先通过缩 seam 解决，不优先复制一个新的通用参数工具类
 
-### Slice 4 - Workflow model decomposition
+### Slice 4 - Rewire core runtime ownership
 
-- 拆分 `tool/model/workflow/*` 中的 minimal contract DTO 与 core-owned mutable state。
-- 让 planning / execution / diagnostics / lifecycle / artifact accumulation / validation state 尽量归到 `mcp/core`。
-- 仅保留 feature 编译真正需要的 minimal shared workflow contract data 在 `mcp/api`。
+- 让 `mcp/core` 从 `mcp/workflow` 取 workflow-shared helper
+- 保持 runtime handler、materializer、registry、session-store 仍在 core
+- 校验 bootstrap / discovery 不回退
 
-### Slice 5 - Module cleanup and verification
+### Slice 5 - Clean feature dependencies and verify
 
-- 调整 `mcp/api`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, `mcp/features/mask` 的依赖与 imports。
-- 确保 encrypt / mask 继续只依赖 `mcp/api`。
-- 删除 API 中的 dead helper、过渡性 runtime factory 和已拆空的 runtime holder。
-- 验证 discovery、编译和测试链路不回退。
+- 删除 feature POM 对 `mcp/core` 的直接依赖
+- 清理 import 和 dead code
+- 执行模块级编译、测试、Checkstyle、Spotless
 
 ## Verification Strategy
 
-- `./mvnw -pl mcp/api -am test -DskipITs -Dspotless.skip=true`
+- `./mvnw -pl mcp/workflow -am test -DskipITs -Dspotless.skip=true`
 - `./mvnw -pl mcp/core -am test -DskipITs -Dspotless.skip=true`
-- `./mvnw -pl mcp/bootstrap -am test -DskipITs -Dspotless.skip=true`
 - `./mvnw -pl mcp/features/encrypt -am test -DskipITs -Dspotless.skip=true`
 - `./mvnw -pl mcp/features/mask -am test -DskipITs -Dspotless.skip=true`
-- `./mvnw checkstyle:check -pl <touched-modules> -am -Pcheck`
+- `./mvnw -pl mcp/bootstrap -am test -DskipITs -Dspotless.skip=true`
+- `./mvnw -pl mcp/api,mcp/workflow,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap -am checkstyle:check spotless:check -Pcheck`
 
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
-| No new support module allowed | Ownership must be clarified inside existing `mcp/api` and `mcp/core` boundary | Adding `support` would preserve the same architectural blur under another name |
+| Add one new module | Workflow shared behavior has become a distinct architectural layer | Keeping only `api` and `core` forces feature-to-core coupling or makes `api` heavy again |
+| Keep workflow model in `api` for now | Avoid reopening a larger SPI redesign in the same change | Full workflow API split is cleaner long-term but larger than this iteration |
+| Add a smaller workflow-facing binding seam | Prevent `MCPToolArguments` from polluting `mcp/workflow` | Moving `MCPToolArguments` into `mcp/workflow` would break workflow-only module scope |

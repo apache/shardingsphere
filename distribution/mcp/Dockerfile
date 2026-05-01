@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 
 ARG MCP_SERVER_NAME=io.github.apache/shardingsphere-mcp
 ARG MCP_IMAGE_VERSION=unknown

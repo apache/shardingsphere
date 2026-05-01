@@ -11,7 +11,7 @@
 - 本文档用于将前面的 PRD 和技术设计方案落到实现级别，目标是让 MCP 子系统能够直接进入开发，而不会在实现过程中因为模块结构、协议契约、测试落位或构建链不明确而返工。
 - 本文档重点回答：
   - 代码模块如何组织
-  - Maven / 模块 / JDK 17 子链路如何落地
+  - Maven / 模块 / JDK 21 子链路如何落地
   - MCP Streamable HTTP 如何实现
   - Session / transaction / savepoint 如何维护
   - capability / transaction matrix 如何建模
@@ -34,7 +34,7 @@
 - 截至 2026-03-21，当前实现与协议基线如下：
   - MCP 当前标准 HTTP transport 为 Streamable HTTP
   - 当前协议版本基线为 `2025-11-25`
-  - 仓库内实现采用 JDK 17 编译的自管 runtime
+  - 仓库内实现采用 JDK 21 编译的自管 runtime
   - 远程 HTTP listener 由 `mcp/bootstrap` 局部引入的 embedded Tomcat 与 MCP Java SDK servlet transport 承载
   - SDK 侧 JSON 绑定继续服从根工程 Jackson `2.16.1`
 - 来源：
@@ -48,7 +48,7 @@
   - 发布模块位于根目录 `distribution/mcp`
   - E2E 模块位于 `test/e2e/mcp`
   - 不引入 Spring AI
-  - 不推动全仓升级 JDK 17
+  - 不推动全仓升级 JDK 21
   - 不实现分布式会话存储
   - 不实现事务态无损 failover
 
@@ -127,15 +127,15 @@ shardingsphere
 - 这样可以保持：
   - `mcp`、`distribution/mcp`、`test/e2e/mcp` 与 JDBC、Proxy、agent 一致
   - 打包与 E2E 不依赖额外 profile
-  - Java 17 设置仍局部收敛在 MCP 子模块
+  - Java 21 设置仍局部收敛在 MCP 子模块
 
-### 5.4 JDK 17 隔离策略
+### 5.4 JDK 21 隔离策略
 - 建议：
-  - `mcp/pom.xml` 内局部声明 `maven.compiler.release=17`
+  - `mcp/pom.xml` 内局部声明 `maven.compiler.release=21`
   - 使用 Maven Toolchains
-  - JDK 17 子链路 CI lane 固定 JDK 17
+  - JDK 21 子链路 CI lane 固定 JDK 21
 - 禁止：
-  - 将 Java 17 相关设置扩散到根工程统一配置
+  - 将 Java 21 相关设置扩散到根工程统一配置
   - 将额外 HTTP 容器或 MCP SDK 依赖写入根工程统一依赖管理
   - 让 MCP Java SDK 类型进入 `mcp/core`
 
@@ -552,7 +552,7 @@ stateDiagram-v2
 - 和代码、distribution 一样，`test/e2e/mcp` 直接进入默认 `test/e2e` 模块链。
 - 也就是说：
   - `test/e2e/pom.xml` 默认 `<modules>` 直接加入 `<module>mcp</module>`
-  - JDK 17 要求通过 MCP 子模块局部配置和 JDK 17 子链路 CI 兜底
+  - JDK 21 要求通过 MCP 子模块局部配置和 JDK 21 子链路 CI 兜底
 - 这样 E2E 与代码、distribution 的聚合方式保持一致，不再依赖额外 profile。
 
 ### 13.6 E2E 依赖
@@ -647,7 +647,7 @@ apache-shardingsphere-mcp-<version>/
 - 开始写代码前必须全部满足：
   - `mcp` 与 `distribution/mcp` 的模块接入方式已定
   - `test/e2e/mcp` 的模块落位已定
-  - JDK 17 Toolchains 已定
+  - JDK 21 Toolchains 已定
   - Streamable HTTP 版本已固定为 `2025-11-25`
   - `MCP-Session-Id / MCP-Protocol-Version` 行为已定
   - `DELETE /mcp` 会话关闭行为已定
@@ -660,7 +660,7 @@ apache-shardingsphere-mcp-<version>/
 - 现在已经明确并固定了：
   - 仓库结构
   - Maven / 模块结构
-  - JDK 17 隔离策略
+  - JDK 21 隔离策略
   - Streamable HTTP 协议基线
   - session / transaction / savepoint 模型
   - capability / matrix 设计

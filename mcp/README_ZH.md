@@ -8,7 +8,7 @@ ShardingSphere MCP 为 Apache ShardingSphere 提供独立运行的 Model Context
 
 ### 前置条件
 
-- `JAVA_HOME` 或 `PATH` 中可用的 JDK 17
+- `JAVA_HOME` 或 `PATH` 中可用的 JDK 21
 - 仓库根目录下的 Maven Wrapper
 - 包含 `curl`、`find`、`mktemp`、`sed`、`tr` 的类 Unix Shell
 

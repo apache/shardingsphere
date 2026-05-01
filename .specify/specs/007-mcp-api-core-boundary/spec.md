@@ -1,138 +1,130 @@
-# Feature Specification: MCP API Boundary Slimming
+# Feature Specification: MCP Workflow Shared Module Extraction
 
 **Feature Branch**: `[001-shardingsphere-mcp]`
-**Created**: 2026-04-30
+**Created**: 2026-05-01
 **Status**: Draft
-**Input**: User description: "Analyze `shardingsphere-mcp-api` more carefully, identify what should sink to `mcp/core`, and use speckit to sort out the requirement without switching branches."
+**Input**: User description: "Use speckit to sort out the requirement for the MCP api/core boundary, keep working on the current branch, and use `shardingsphere-mcp-workflow` as the new shared workflow module."
 
 ## Clarifications
 
-### Session 2026-04-30
+### Session 2026-05-01
 
-- This requirement must be analyzed and documented on the current branch; no new branch may be created, checked out, or switched to.
-- This feature is a follow-up to `003-mcp-feature-spi` and focuses on the boundary between `mcp/api` and `mcp/core` rather than reopening the SPI-purity decision for `mcp/features/spi`.
-- The target state for `mcp/api` is a minimal neutral shared-contract module: only shared contracts, DTOs, and protocol models that are meaningfully compiled against by multiple MCP layers may remain there.
-- Concrete runtime behavior is not shared API. Workflow orchestration helpers, execution and validation handlers, request binders, payload builders, runtime stores, runtime registries, runtime parsers, and other runtime-only helpers are candidates to leave `mcp/api`.
-- Types used only by shared MCP runtime infrastructure belong in `mcp/core`.
-- If a current type family mixes neutral contract surface and concrete runtime behavior, the requirement is to decompose it so that only the neutral shared contract remains in `mcp/api` and runtime ownership moves to `mcp/core`.
-- Workflow model families should be split aggressively: if a current workflow model carries core planning, execution, diagnostics, or lifecycle state, that core state should sink to `mcp/core` and only minimal shared contract data may remain in `mcp/api`.
-- Shrinking `mcp/api` must not force feature modules to depend on core-private implementation packages.
-- Encrypt and mask feature modules must continue to depend only on `mcp/api` for shared MCP contracts and must not depend on `mcp/core` directly.
-- This requirement should be solved within the existing `mcp/api` and `mcp/core` boundary. Introducing a new shared support or workflow module is out of scope for this requirement analysis.
-- This feature is about module purity and dependency ownership. It does not redesign external MCP tool names, resource URIs, protocol semantics, or encrypt and mask workflow semantics.
+- This requirement analysis must stay on the current branch; no new branch may be created, checked out, or switched to.
+- The target design is no longer limited to only `mcp/api` and `mcp/core`; a new shared module named `shardingsphere-mcp-workflow` is explicitly allowed.
+- The new module name must be `shardingsphere-mcp-workflow`; alternative names such as `workflow-support` are rejected.
+- `encrypt` and `mask` feature modules may depend on `mcp/api` and `mcp/workflow`, but they must not depend on `mcp/core` directly.
+- `mcp/workflow` must stay workflow-specific and must not become a generic dumping ground for unrelated MCP helpers.
+- This iteration should prefer minimal API redraw. Shared workflow model and bridge contracts may remain in `mcp/api` if moving them would require a broader SPI redesign.
+- If a workflow helper currently exposes a generic non-workflow helper to features, the seam should be redesigned instead of moving that generic helper wholesale into `mcp/workflow`.
+- External MCP tool names, resource URIs, protocol semantics, feature loading behavior, and encrypt/mask business semantics are not being redesigned here.
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Make the shared API boundary obvious (Priority: P1)
+### User Story 1 - Introduce a clear shared workflow layer (Priority: P1)
 
-As an MCP maintainer, I want `mcp/api` to contain only shared contracts, DTOs, and protocol models so that anyone reading the module can immediately distinguish shared API from shared runtime implementation.
+As an MCP maintainer, I want workflow-specific shared code to live in one dedicated module so that `mcp/api` stays focused on contracts and `mcp/core` stays focused on runtime ownership.
 
-**Why this priority**: This is the core architectural intent. If runtime-only helpers still remain in `mcp/api`, the module is still too heavy and its ownership is still unclear.
+**Why this priority**: The current pain comes from workflow shared logic being split across `mcp/api` and `mcp/core`, which makes module ownership hard to read and easy to regress.
 
-**Independent Test**: Inspect production sources under `mcp/api` and verify that retained types are limited to neutral shared contracts, DTOs, and protocol models that are genuinely compiled against by multiple MCP layers, while runtime-only implementations and core-owned state holders are absent.
+**Independent Test**: Inspect the module graph and shared workflow classes after the refactor and verify that workflow-shared helpers are owned by `mcp/workflow`, not by `mcp/api` or by core-private runtime packages.
 
 **Acceptance Scenarios**:
 
-1. **Given** a reviewer opens `mcp/api`, **When** they inspect its production classes, **Then** they find neutral shared contracts rather than runtime-only workflow framework implementations.
-2. **Given** a class under `mcp/api` performs workflow orchestration, request binding, artifact payload shaping, runtime storage, registry assembly, runtime URI parsing, or other runtime-only behavior, **When** the cleanup is complete, **Then** that class no longer lives in `mcp/api`.
-3. **Given** a type under `mcp/api` is only used by shared runtime infrastructure, **When** the boundary cleanup is complete, **Then** its ownership has moved to `mcp/core`.
+1. **Given** a class provides workflow-specific shared binding, planning, validation, payload, masking, lifecycle, or rule utility behavior, **When** the refactor is complete, **Then** that class lives in `mcp/workflow`.
+2. **Given** a reviewer opens `mcp/api`, **When** they inspect its retained production types, **Then** they find foundational shared contracts and workflow bridge/model contracts rather than shared workflow helper implementations.
+3. **Given** a reviewer opens `mcp/core`, **When** they inspect its retained production types, **Then** they find runtime registries, runtime handlers, runtime execution services, and runtime stores rather than cross-feature shared workflow helper code.
 
 ---
 
-### User Story 2 - Give every API type family a deterministic destination (Priority: P1)
+### User Story 2 - Let feature modules reuse workflow behavior without depending on core (Priority: P1)
 
-As an MCP architect, I want every current `mcp/api` type family to have a clear retain, move, or decompose rule so that slimming the module does not become ad hoc or inconsistent.
+As an encrypt or mask feature maintainer, I want to compile against shared workflow behavior without importing `mcp/core` so that feature modules remain extensions rather than runtime-owned implementations.
 
-**Why this priority**: The module only becomes maintainable if every current family has a documented destination rule instead of case-by-case intuition.
+**Why this priority**: If features still need `mcp/core`, the new module does not actually solve the current ownership problem.
 
-**Independent Test**: For every production type family currently under `mcp/api`, verify that it is explicitly classified into one final outcome: retained shared API contract, moved to core runtime, or decomposed into shared API contract plus core runtime implementation.
+**Independent Test**: Verify that `mcp/features/encrypt` and `mcp/features/mask` compile using only `mcp/api` and `mcp/workflow` from the MCP shared layers, with no direct dependency on `mcp/core`.
 
 **Acceptance Scenarios**:
 
-1. **Given** a type family is compiled against by both `mcp/core` and at least one non-core MCP layer, **When** it is reclassified, **Then** it remains in or moves to `mcp/api` as a neutral shared contract.
-2. **Given** a type family is compiled against only by shared runtime infrastructure, **When** it is reclassified, **Then** it moves to `mcp/core`.
-3. **Given** a type family currently combines contract surface with runtime behavior, **When** it is reclassified, **Then** it is decomposed until only neutral contract remains shared and runtime ownership is clearly core-private.
+1. **Given** a feature planning handler needs workflow request binding and workflow descriptor helpers, **When** the refactor is complete, **Then** it obtains them from `mcp/workflow` rather than `mcp/core`.
+2. **Given** a feature planning or validation service needs shared workflow planning, validation, SQL, lifecycle, or payload support, **When** the refactor is complete, **Then** it obtains that support from `mcp/workflow` rather than `mcp/core`.
+3. **Given** a feature module participates in workflow apply or validate flows, **When** the refactor is complete, **Then** it does so through shared workflow contracts and workflow contribution seams rather than direct imports of core runtime handlers.
 
 ---
 
-### User Story 3 - Preserve feature extension boundaries while slimming `mcp/api` (Priority: P2)
+### User Story 3 - Keep the new workflow module narrowly focused (Priority: P2)
 
-As an encrypt or mask feature maintainer, I want feature modules to keep depending on neutral shared API only so that slimming `mcp/api` does not push me onto core-private implementation classes.
+As an MCP architect, I want the new shared workflow module to contain only workflow-specific shared code so that it does not become a renamed general-purpose support bucket.
 
-**Why this priority**: The cleanup is only useful if it improves architecture without creating a new feature-to-core coupling problem.
+**Why this priority**: Adding a new module only helps if its scope stays disciplined; otherwise the architecture just moves the blur to another place.
 
-**Independent Test**: Verify that feature modules can continue to compile and participate in shared MCP behavior without importing core-private implementation packages or constructing core-private runtime helpers directly.
+**Independent Test**: Inspect the contents of `mcp/workflow` and verify that non-workflow helpers used by generic execute or search-metadata handlers are not moved there.
 
 **Acceptance Scenarios**:
 
-1. **Given** a feature module needs shared MCP contract, DTO, or protocol model types, **When** the cleanup is complete, **Then** those neutral shared types are still available from `mcp/api` without importing `mcp/core`.
-2. **Given** a generic workflow behavior moves out of `mcp/api`, **When** a feature participates in that behavior, **Then** it does so through neutral shared contracts rather than direct dependence on core-private implementation packages.
-3. **Given** a future feature is added, **When** its author follows the documented boundary rules, **Then** they can extend MCP without placing new concrete runtime framework code back into `mcp/api`.
+1. **Given** a helper is used by non-workflow handlers such as generic SQL execution or metadata search, **When** the refactor is complete, **Then** it remains outside `mcp/workflow` unless it is first reduced to a workflow-specific abstraction.
+2. **Given** a workflow helper currently exposes a generic argument parser type to feature code, **When** the refactor is complete, **Then** the feature-facing seam is workflow-scoped rather than generic.
+3. **Given** a proposed migration would place unrelated generic support logic into `mcp/workflow`, **When** the design is reviewed, **Then** that migration is rejected as out of boundary.
 
 ---
 
 ### Edge Cases
 
-- What happens to a current `mcp/api` interface that also exposes a static factory for an in-memory runtime implementation?
-- What happens to a generic workflow handler that is reused by multiple features today but currently lives in `mcp/api` as a concrete implementation?
-- What happens if a workflow model is shared across modules but also carries core-only planning, execution, or diagnostics state?
-- What happens to a runtime descriptor that is physically located under `mcp/api` but is only consumed by `mcp/core`?
-- What happens if keeping a helper in `mcp/api` would be convenient but would blur the shared-contract and runtime-implementation boundary again?
-- What happens if someone proposes a new shared support or workflow module instead of clarifying ownership between `mcp/api` and `mcp/core`?
+- What happens if a current workflow helper depends on a generic helper that is also used by non-workflow handlers?
+- What happens if a workflow SPI type is currently in `mcp/api` but is only meaningful when the workflow layer exists?
+- What happens if a workflow model type is used by multiple layers but also carries obvious runtime aggregation state?
+- What happens if a runtime-only handler in `mcp/core` currently imports a helper that should become workflow-shared?
+- What happens if keeping a generic helper outside `mcp/workflow` requires introducing a smaller workflow-scoped adapter or accessor?
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: The system MUST treat `mcp/api` as a minimal neutral shared-contract module rather than a container for shared runtime implementation.
-- **FR-002**: Production code under `mcp/api` MUST NOT keep concrete runtime services, workflow orchestration helpers, request binders, payload builders, runtime stores, runtime registries, runtime parsers, or default runtime handler implementations.
-- **FR-003**: Every current production type family under `mcp/api` MUST be classified into exactly one destination category before code migration starts: retained shared API contract, moved to core runtime, or decomposed into shared API contract plus core runtime implementation.
-- **FR-004**: Type families used only by shared MCP runtime infrastructure MUST move to `mcp/core`.
-- **FR-005**: Only neutral shared contracts, DTOs, and protocol models that are compiled against by both `mcp/core` and at least one non-core MCP layer MUST remain in or move to `mcp/api` rather than `mcp/core`.
-- **FR-006**: If a current `mcp/api` type family mixes shared contract surface with runtime behavior, the design MUST decompose it so that only the neutral contract remains shared and runtime ownership moves to `mcp/core`.
-- **FR-007**: Feature-facing context and handler signatures MUST expose only neutral shared API contracts and MUST NOT expose core-private implementation classes.
-- **FR-008**: Shared interfaces under `mcp/api` MUST NOT provide static factories, default constructors, or other entry points that directly instantiate core-owned runtime implementations.
-- **FR-009**: Workflow state storage implementations MUST NOT remain in `mcp/api` once the boundary cleanup is complete.
-- **FR-010**: Generic workflow execution, workflow validation, workflow request-binding, artifact-payload shaping, and runtime-only helper behavior MUST NOT remain in `mcp/api` if that behavior is not itself a neutral shared contract.
-- **FR-011**: Core-only runtime descriptors, loaders, query helpers, and runtime coordination helpers MUST NOT remain in `mcp/api`.
-- **FR-012**: Shrinking `mcp/api` MUST NOT force encrypt or mask feature modules to import core-private implementation packages or construct core-private helpers directly.
-- **FR-013**: The cleanup MUST preserve existing external MCP tool names, resource URI layouts, protocol behavior, and encrypt and mask business semantics unless another specification explicitly changes them.
-- **FR-014**: The cleanup MUST preserve handler discovery and runtime feature loading behavior after type migrations are complete.
-- **FR-015**: This requirement MUST be solved within the existing `mcp/api` and `mcp/core` boundary and MUST NOT introduce a new shared support or workflow module.
-- **FR-016**: The resulting module graph MUST make it obvious whether a type is a shared API contract or a core runtime implementation.
-- **FR-017**: Requirement analysis and resulting specification updates MUST be completed on the current branch without branch switching.
-- **FR-018**: The resulting design MUST remain compatible with module-scoped build and test execution for `mcp/api`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, and `mcp/features/mask`.
-- **FR-019**: If a shared workflow model currently carries both neutral contract data and core-only planning, execution, or diagnostic state, the model MUST be reduced or split until the shared API surface is limited to contract-relevant data.
-- **FR-020**: If a workflow model family can be split, the design MUST prefer sinking core planning, execution, diagnostics, lifecycle, and mutable runtime state into `mcp/core` instead of retaining that state in `mcp/api`.
-- **FR-021**: Encrypt and mask feature modules MUST continue to depend only on `mcp/api` for shared MCP contracts and MUST NOT add a direct dependency on `mcp/core` as part of this cleanup.
+- **FR-001**: The system MUST introduce a new shared module named `shardingsphere-mcp-workflow`.
+- **FR-002**: `shardingsphere-mcp-workflow` MUST depend on `shardingsphere-mcp-api` and MUST NOT depend on `shardingsphere-mcp-core`.
+- **FR-003**: `shardingsphere-mcp-core` MUST depend on `shardingsphere-mcp-api` and `shardingsphere-mcp-workflow` for workflow-shared behavior.
+- **FR-004**: `shardingsphere-mcp-feature-encrypt` and `shardingsphere-mcp-feature-mask` MUST depend on `shardingsphere-mcp-api` and `shardingsphere-mcp-workflow`, and MUST NOT declare a direct dependency on `shardingsphere-mcp-core`.
+- **FR-005**: `shardingsphere-mcp-api` MUST remain the foundational shared-contract module for MCP handler contracts, base SPI contracts, protocol DTOs, metadata DTOs, and workflow bridge/model contracts that are still shared across multiple layers.
+- **FR-006**: Workflow-specific shared helpers currently split between `mcp/api` and `mcp/core` MUST move into `shardingsphere-mcp-workflow`.
+- **FR-007**: `shardingsphere-mcp-workflow` MUST own workflow-specific shared request binding, planning support, validation support, artifact payload shaping, masking, lifecycle, rule extraction, SQL utility, and workflow descriptor helper behavior.
+- **FR-008**: `shardingsphere-mcp-workflow` MUST own workflow-specific SPI contribution types and callbacks that are shared between feature modules and core runtime materialization.
+- **FR-009**: `shardingsphere-mcp-core` MUST remain the owner of runtime-only workflow execution handlers, runtime validation handlers, runtime registries, runtime materializers, runtime execution services, runtime query services, and workflow session-store implementations.
+- **FR-010**: The refactor MUST preserve existing MCP tool names, resource URI layouts, protocol behavior, workflow apply and validate behavior, and encrypt/mask business semantics.
+- **FR-011**: `shardingsphere-mcp-workflow` MUST remain workflow-specific and MUST NOT become a generic support module for unrelated MCP helpers.
+- **FR-012**: Generic helpers used by non-workflow handlers, including generic SQL execution and metadata search helpers, MUST remain outside `shardingsphere-mcp-workflow` unless they are first reduced to a workflow-specific abstraction.
+- **FR-013**: If a workflow-facing helper currently exposes a generic non-workflow helper type such as `MCPToolArguments` to feature code, the design MUST replace that seam with a workflow-scoped accessor, binder contract, or equivalent workflow-specific abstraction instead of moving the generic helper wholesale into `shardingsphere-mcp-workflow`.
+- **FR-014**: This iteration MUST prefer minimal API redraw and MUST NOT require a broad redesign of `MCPFeatureContext`, `WorkflowSessionContext`, `WorkflowPropertySource`, or shared workflow model contracts if feature-to-core decoupling can be achieved without that redesign.
+- **FR-015**: Feature-facing context and handler signatures MUST continue to expose only API-owned contracts and MUST NOT expose core-owned implementation classes.
+- **FR-016**: The resulting module graph MUST make the workflow ownership chain explicit: `mcp/api <- mcp/workflow <- mcp/core` and `mcp/api <- mcp/workflow <- mcp/features/encrypt|mask`.
+- **FR-017**: Requirement analysis and resulting specification updates MUST be completed on the current branch without branch creation or branch switching.
+- **FR-018**: The resulting design MUST remain compatible with module-scoped build and test execution for `mcp/api`, `mcp/workflow`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, and `mcp/features/mask`.
 
 ### Key Entities *(include if feature involves data)*
 
-- **Shared API Contract**: A neutral shared contract, DTO, or protocol model that is meaningfully compiled against by multiple MCP layers and does not own runtime-only behavior.
-- **Core Runtime Implementation**: A concrete type owned by `mcp/core` because it exists only to support shared MCP runtime behavior.
-- **Mixed Contract/Runtime Family**: A current type family that combines shared contract surface with concrete runtime behavior and therefore must be decomposed.
-- **Core-Only Runtime Descriptor**: A data or helper type physically located under `mcp/api` today but actually consumed only by shared runtime infrastructure.
-- **Feature-Facing Workflow Contract**: A minimal shared workflow-facing contract or DTO that features may compile against, provided it remains neutral and does not expose core-private implementation ownership or carry core runtime state.
-- **Type Classification Record**: The documented retain, move, or decompose outcome for each current `mcp/api` type family.
+- **MCP API Contract**: A foundational MCP contract, DTO, or protocol type shared across MCP layers and owned by `mcp/api`.
+- **MCP Workflow Shared Layer**: The new `mcp/workflow` module that owns workflow-specific shared helpers and workflow-specific SPI extensions without taking ownership of runtime-only implementations.
+- **Core Runtime Workflow Implementation**: A runtime-only class owned by `mcp/core`, such as handler materializers, apply/validate handlers, execution services, query services, registries, or in-memory workflow session stores.
+- **Workflow Bridge Contract**: A workflow-facing API type that may temporarily remain in `mcp/api` because multiple layers compile against it and moving it would require a larger SPI redesign.
+- **Workflow-Scoped Argument Accessor**: A workflow-specific binding abstraction that replaces direct feature dependence on generic non-workflow argument helpers.
+- **Workflow Contribution SPI**: Workflow-specific contribution and callback contracts shared between features and core runtime materialization.
 
 ## Success Criteria *(mandatory)*
 
 ### Measurable Outcomes
 
-- **SC-001**: After the cleanup, production code under `mcp/api` contains zero concrete runtime service, runtime store implementation, runtime registry, runtime parser, runtime payload builder, or default runtime handler implementation classes.
-- **SC-002**: Every current `mcp/api` production type family has a documented final ownership outcome with no unresolved destination gaps.
-- **SC-003**: Encrypt and mask feature modules do not need to import core-private implementation packages in order to compile after `mcp/api` is slimmed.
-- **SC-004**: Runtime-only workflow execution, validation, storage, and coordination behavior is owned by `mcp/core` rather than `mcp/api` after the cleanup is complete.
-- **SC-005**: No new shared support or workflow module is introduced as part of this requirement.
-- **SC-006**: This requirement analysis is completed on the existing branch only, with no branch creation or branch switching.
-- **SC-007**: Workflow model families that remain in `mcp/api` expose only minimal shared contract data and no longer retain core planning, execution, diagnostics, or lifecycle state.
+- **SC-001**: `shardingsphere-mcp-workflow` exists as a separate module in the MCP reactor and is used by both `mcp/core` and workflow feature modules.
+- **SC-002**: `shardingsphere-mcp-feature-encrypt` and `shardingsphere-mcp-feature-mask` declare no direct dependency on `shardingsphere-mcp-core`.
+- **SC-003**: Workflow-specific shared helpers for binding, planning, validation, artifact payload shaping, masking, lifecycle, SQL, and descriptor construction no longer live in `mcp/api`.
+- **SC-004**: Runtime-only workflow execution handlers, validation handlers, registries, materializers, and session-store implementations remain owned by `mcp/core`.
+- **SC-005**: No unrelated generic execute or metadata-search helper is moved into `shardingsphere-mcp-workflow`.
+- **SC-006**: Feature-facing workflow planning handlers no longer need to import generic non-workflow helper types directly in order to bind workflow requests.
+- **SC-007**: Module-scoped build and test verification passes for `mcp/api`, `mcp/workflow`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, and `mcp/features/mask`.
+- **SC-008**: This requirement work is completed on the existing branch only, with no branch creation or branch switching.
 
 ## Assumptions
 
-- This feature is a boundary-cleanup follow-up to `003-mcp-feature-spi`, not a redesign of the SPI module itself.
-- `mcp/api` should remain as small as possible and keep only shared contracts, DTOs, and protocol models that are genuinely shared across MCP layers.
-- Moving runtime-only workflow framework code into `mcp/core` is acceptable when that code is not part of a neutral shared API contract.
-- When a workflow model can be split, core planning, execution, diagnostics, lifecycle, and mutable runtime state should sink to `mcp/core`.
-- Introducing a new shared support or workflow module is out of scope for this requirement.
-- Encrypt and mask should continue to depend only on `mcp/api` for shared MCP contracts.
-- No branch changes are allowed while producing this requirement analysis.
+- `mcp/api` should remain the foundational contract module rather than a shared implementation bucket.
+- `mcp/workflow` is allowed because workflow shared behavior has become a distinct architectural layer rather than a small helper family.
+- Keeping workflow model and bridge contracts in `mcp/api` for this iteration is acceptable if it avoids reopening a larger SPI redesign.
+- Workflow-specific SPI contracts may move out of base `mcp/api` when they are only meaningful in the presence of the workflow shared layer.
+- External MCP behavior is preserved while module ownership and dependency direction are cleaned up.

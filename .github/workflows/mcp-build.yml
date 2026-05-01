@@ -60,7 +60,7 @@ jobs:
           ref: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
       - uses: ./.github/workflows/resources/actions/setup-build-environment
         with:
-          java-version: '17'
+          java-version: '21'
           cache-prefix: ${{ needs.global-environment.outputs.GLOBAL_CACHE_PREFIX }}
           cache-suffix: 'mcp-release'
           enable-docker-setup: 'true'
@@ -82,9 +82,9 @@ jobs:
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "identifier=${{ env.MCP_IMAGE }}:${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "tags=${TAGS}" >> "${GITHUB_OUTPUT}"
-      - name: Run JDK 17 Subchain Tests
+      - name: Run JDK 21 Subchain Tests
         run: ./mvnw -pl mcp,test/e2e/mcp -am test -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
-      - name: Package JDK 17 Subchain Distribution
+      - name: Package JDK 21 Subchain Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Run MCP Distribution Smoke
         shell: bash

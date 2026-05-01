@@ -241,8 +241,8 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 - MySQLSchemataQueryExecutorFactoryTest：public 方法分别测试，`accept` 与 `newInstance` 各自使用独立测试方法。
 
 ## Active Technologies
-- Java 17 MCP subchain integrated into the default reactor with module-local
-  JDK 17 build settings (`001-shardingsphere-mcp`)
+- Java 21 MCP subchain integrated into the default reactor with module-local
+  JDK 21 build settings (`001-shardingsphere-mcp`)
 - MCP Java SDK plus embedded Tomcat scoped to `mcp/bootstrap`, in-repo
   Streamable HTTP / STDIO runtime integration, Jackson 2.16.1 aligned through
   repository dependency management, Maven Toolchains, and
@@ -251,5 +251,5 @@ Always state which topology, registry, and engine versions (e.g., MySQL 5.7 vs 8
 
 ## Recent Changes
 - 001-shardingsphere-mcp: Added MCP planning context for the default-reactor
-  Java 17 subchain, scoped MCP Java SDK bootstrap runtime, Jackson-aligned
+  Java 21 subchain, scoped MCP Java SDK bootstrap runtime, Jackson-aligned
   transport packaging, and standalone MCP distribution path

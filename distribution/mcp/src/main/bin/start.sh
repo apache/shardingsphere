@@ -46,6 +46,17 @@ else
   exit 1
 fi
 
+TOTAL_VERSION=$("${JAVA}" -version 2>&1 | grep version | sed '1!d' | sed -e 's/"//g' | awk '{print $3}')
+INT_VERSION=${TOTAL_VERSION%%.*}
+if [ "${INT_VERSION}" = '1' ]; then
+  INT_VERSION=${TOTAL_VERSION%.*}
+  INT_VERSION=${INT_VERSION#1.}
+fi
+if [ "${INT_VERSION}" -lt 21 ] 2>/dev/null; then
+  echo "Error: ShardingSphere MCP requires Java 21 or higher. Current version: Java ${INT_VERSION}" 1>&2
+  exit 1
+fi
+
 CLASSPATH="${APP_HOME}/conf:${LIB_DIR}/*"
 if [ -d "${PLUGINS_DIR}" ]; then
   CLASSPATH="${CLASSPATH}:${PLUGINS_DIR}/*"

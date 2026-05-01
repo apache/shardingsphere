@@ -39,7 +39,6 @@ class MCPE2ETestConfigurationTest {
         assertTrue(config.isProductionH2Enabled());
         assertFalse(config.isProductionMySQLEnabled());
         assertFalse(config.isProductionStdioEnabled());
-        assertFalse(config.isProxyWorkflowEnabled());
         assertFalse(config.isDistributionEnabled());
         assertFalse(config.isLLMEnabled());
     }
@@ -51,7 +50,6 @@ class MCPE2ETestConfigurationTest {
         props.setProperty("mcp.e2e.production.h2.enabled", "false");
         props.setProperty("mcp.e2e.production.mysql.enabled", "true");
         props.setProperty("mcp.e2e.production.stdio.enabled", "true");
-        props.setProperty("mcp.e2e.proxy.workflow.enabled", "true");
         props.setProperty("mcp.e2e.distribution.enabled", "true");
         props.setProperty("mcp.e2e.llm.enabled", "true");
         MCPE2ETestConfiguration config = new MCPE2ETestConfiguration(props);
@@ -59,7 +57,6 @@ class MCPE2ETestConfigurationTest {
         assertFalse(config.isProductionH2Enabled());
         assertTrue(config.isProductionMySQLEnabled());
         assertTrue(config.isProductionStdioEnabled());
-        assertTrue(config.isProxyWorkflowEnabled());
         assertTrue(config.isDistributionEnabled());
         assertTrue(config.isLLMEnabled());
     }

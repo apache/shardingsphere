@@ -125,6 +125,18 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <id>reset-runtime-layout</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <target>
+                                <delete dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}" />
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>prepare-runtime-layout</id>
                         <goals>
                             <goal>run</goal>
@@ -132,7 +144,6 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <delete dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/ext-lib" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/data" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/plugins" />
                                 <mkdir dir="${project.build.directory}/apache-shardingsphere-mcp-${project.version}/logs" />

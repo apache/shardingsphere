@@ -1,357 +1,234 @@
-# Research: MCP API Boundary Slimming
+# Research: MCP Workflow Shared Module Extraction
 
 ## Fixed Constraints
 
-- 本次分析和后续实现都只能在当前分支完成，不切换分支。
-- `mcp/api` 的目标形态是最小 shared contract / DTO / protocol model 模块。
-- workflow model 能拆就拆，planning / execution / diagnostics / lifecycle / mutable runtime state 尽量下沉到 `mcp/core`。
-- 不接受新增 `support` / `workflow` 中间模块。
-- `encrypt` / `mask` 后续仍只能依赖 `mcp/api`，不能直接依赖 `mcp/core`。
+- 本次需求梳理和后续实现都只能在当前分支完成，不切换分支。
+- 新共享模块名字固定为 `shardingsphere-mcp-workflow`。
+- `encrypt` / `mask` 后续允许依赖 `mcp/api + mcp/workflow`，但不能直接依赖 `mcp/core`。
+- `mcp/workflow` 必须保持 workflow 专属，不能退化成新的通用 support 杂物间。
+- 这轮优先做最小安全重构，不主动重画整个 MCP SPI。
 
 ## Baseline
 
-本轮实现级分析确认了一件很关键的事：前面那版“可直接下沉列表”里，有一部分类确实应该离开 `mcp/api`，但还有一部分已经长在 feature 编译面上，不能直接搬。
+这轮重新核对后的关键事实有 5 个：
 
-当前最明显的编译耦合点有三类：
+1. 问题不是 `api` 和 `core` 两层，而是现在实际混了三层职责：
+   - 基础 MCP 契约层
+   - workflow 共享契约 / 共享 helper 层
+   - runtime core 层
+2. `mcp/api` 当前主要承担基础契约，同时还承载了一批 workflow model / bridge contract。
+3. `mcp/core` 当前除了 runtime registry / handler / execution 之外，还承载了一批被 feature 直接复用的 workflow helper。
+4. `encrypt` / `mask` 对 `mcp` 共享层的 import 里，`tool.model.workflow` 有 `59` 个，`tool.service.workflow` 有 `42` 个，说明 workflow 已经是一级领域层，不再只是几个 helper。
+5. 如果只做“把 support 从 api 搬到 core”，feature 就会被迫继续依赖 core；如果把 support 塞回 api，又会让 api 重新变重。
 
-- feature provider 直接实例化 generic workflow handler
-  - `EncryptFeatureProvider`
-  - `MaskFeatureProvider`
-- feature planning / validation / response 直接依赖 `mcp/api` 里的 workflow helper
-  - `WorkflowPlanningSupport`
-  - `WorkflowRequestBinder`
-  - `WorkflowValidationSupport`
-  - `WorkflowPlanPayloadBuilder`
-  - `WorkflowArtifactPayloadUtils`
-- feature planning / validation / intent resolver 直接依赖 workflow model
-  - `WorkflowRequest`
-  - `WorkflowContextSnapshot`
-  - `ClarifiedIntent`
-  - `ValidationReport`
-  - `ValidationSection`
-  - `WorkflowFeatureData`
+所以合理的答案不是合并 `api + core`，也不是把所有东西塞回 `api`，而是把 workflow 共享层显式独立出来。
 
-这意味着下一步不是“把所有 workflow 代码一起搬去 core”，而是要先把 feature 和 runtime 之间的 shared seam 做出来。
+## 1. 为什么 `mcp-workflow` 合理
 
-## 1. `feature -> api -> core` 接缝怎么落
+### Current split
 
-### Current state
+- `mcp/api`：
+  - `ToolHandler`
+  - `ResourceHandler`
+  - `MCPFeatureProvider`
+  - protocol / metadata DTO
+  - workflow model / bridge contract
+- `mcp/core`：
+  - `ToolHandlerRegistry`
+  - `ResourceHandlerRegistry`
+  - `MCPContributionRegistry`
+  - `WorkflowExecutionService`
+  - `WorkflowExecutionToolHandler`
+  - `WorkflowValidationToolHandler`
+  - `InMemoryWorkflowSessionContext`
+- feature：
+  - 直接依赖 workflow helper 做 planning / validation / response building
 
-- `EncryptFeatureProvider` 和 `MaskFeatureProvider` 当前都直接 new `WorkflowExecutionToolHandler` / `WorkflowValidationToolHandler`。
-- `ToolHandlerRegistry` 只知道从 `MCPFeatureProvider#getToolHandlers()` 收集 `ToolHandler` 实例。
-- `ToolHandlerRegistry` 是静态注册表，启动时就要拿到最终 handler 集合。
+这说明 `api` 和 `core` 的骨架其实已经存在，但 workflow 共享层被夹在中间，没有自己的归属。
 
-所以一旦把 generic apply / validate handler 挪到 `mcp/core`：
+### Why not merge
 
-- feature 模块不能 import core class；
-- core 也不能靠运行时反射猜测“这个 feature 应该补一个 apply/validate handler”；
-- 直接搬类会让 tool 注册链路断掉。
+如果合并 `api + core`：
 
-### Recommended seam
+- SPI 契约和默认 runtime 实现会继续揉在一起；
+- 未来第三方 feature 的扩展边界会更虚；
+- `core` 的实现细节会更容易变成事实公共 API。
 
-推荐引入一个新的 API-level workflow contribution seam，由 `MCPFeatureProvider` 暴露，core 负责 materialize：
+所以合并能减少模块数，但不能解决抽象层级问题。
 
-- feature 继续自己提供 planning `ToolHandler`
-- feature 不再直接 new generic apply / validate handler
-- feature 只提供 workflow contribution definition，例如：
-  - `applyToolName`
-  - `validateToolName`
-  - feature-owned validation callback
-  - 未来如果需要，也可以附加 plan response enrichment callback
-- core 在加载 `MCPFeatureProvider` 后，把这些 contribution 展开成 core-owned generic apply / validate handler，再交给 `ToolHandlerRegistry`
+### Why not keep feature -> api only
 
-### Why this is the safest option
+如果要求 `encrypt` / `mask` 只依赖 `api`，最直接的实现方式往往会把 workflow helper 再塞回 `api`。
 
-- 保住 `encrypt` / `mask` 只依赖 `mcp/api`
-- generic apply / validate handler 真正回到 `mcp/core`
-- registry 仍然保持显式注册，不引入按命名推断的隐式规则
-- bootstrap / tool descriptor 仍然通过现有 registry 工作，影响面可控
+这会让 `api` 再次承担：
 
-### What should not be done
+- 契约
+- workflow helper
+- workflow-specific SPI extension
 
-- 不要让 feature 通过字符串约定让 core “猜” 出 apply / validate tool
-- 不要在 core 里硬编码 encrypt / mask 特判
-- 不要为了图省事把 generic apply / validate handler 继续留在 `mcp/api`
+也就是重新变成“半契约半实现”的混层模块。
 
-## 2. workflow model 到底怎么拆
+## 2. `mcp-workflow` 该放什么
 
-### Revised classification
+### Shared workflow helpers
 
-经过实现面复核，workflow model 不能按“整包搬迁”处理，至少要分成三层。
-
-### A. 更适合继续留在 `mcp/api` 的 shared DTO / vocabulary
-
-这批类型本身主要是数据载体，feature 代码直接编译依赖它们，短期内不适合搬走：
-
-- `WorkflowRequest`
-- `WorkflowFeatureData`
-- `WorkflowPropertySource`
-- `WorkflowIssue`
-- `WorkflowIssueCode`
-- `WorkflowLifecycle`
-- `AlgorithmCandidate`
-- `AlgorithmPropertyRequirement`
-- `DDLArtifact`
-- `RuleArtifact`
-- `IndexPlan`
-- `DerivedColumnPlan`
-
-保留原因：
-
-- 它们是 feature planning / validation / response builder 直接消费的 shared data vocabulary
-- 它们本身不负责 runtime store、registry、factory、session ownership
-
-### B. 必须先拆再决定归宿的 aggregate state
-
-这批类型是当前真正的“大状态包”，不适合原样继续留在 `mcp/api`，但也不能直接整体搬走：
-
-- `WorkflowContextSnapshot`
-- `ClarifiedIntent`
-- `InteractionPlan`
-- `ValidationReport`
-- `ValidationSection`
-
-原因分别是：
-
-- `WorkflowContextSnapshot`
-  - 同时装了 request、featureData、interaction state、issues、algorithm candidates、property requirements、artifacts、validation report
-  - 这是典型 runtime aggregate，不是纯 DTO
-- `ClarifiedIntent`
-  - 既有 intent 推断结果，也有 pending questions / unresolved fields 这种交互过程状态
-- `InteractionPlan`
-  - 既有展示给用户的 steps，也有 `currentStep`、delivery/execution mode 这种 runtime lifecycle state
-- `ValidationReport` / `ValidationSection`
-  - 逻辑上偏 runtime validation state，但 feature validation service 当前还直接构造和消费它们
-
-这批类型的正确方向不是“整类移动”，而是：
-
-- 先把 user-facing contract data 和 core-owned mutable state 拆开
-- feature 继续拿 contract DTO
-- core 拿 aggregate state 和 storage lifecycle ownership
-
-### C. 可以直接认定为 core-owned state helper 的类型
-
-- `WorkflowPlanningDiagnostics`
-- `WorkflowContextSnapshots`
-
-这两个类几乎完全是 runtime state aggregation / defensive copy helper，没有保留在 API 面的必要。
-
-### Important correction
-
-这轮分析也修正了一个实现判断：
-
-- `WorkflowContextSnapshot` 现在虽然“看上去应该下沉到 core”，但它已经被 planning service、validation service、response builder、test fixture 全链路直接使用
-- 所以它不能作为第一刀直接搬迁对象
-- 它必须排在“先做 seam，再做 decomposition”的后面
-
-## 3. `MCPFeatureContext` 和 `WorkflowContextStore` 的边界怎么改
-
-### Current leakage
-
-当前有两个边界泄漏点最明显：
-
-- `MCPFeatureContext` 直接暴露 `WorkflowContextStore`
-- `WorkflowContextStore` 在 API 层自带 `newInstance(...)` 静态工厂，并直接返回 `InMemoryWorkflowContextStore`
-
-这相当于把：
-
-- runtime store contract
-- default implementation choice
-- object construction responsibility
-
-一起暴露给了 `mcp/api`。
-
-### Recommended boundary adjustment
-
-#### Short-term
-
-短期建议先做最小收口，不强行一次重命名所有接口：
-
-- `WorkflowContextStore` 可以暂时继续作为 API contract 暴露给 feature
-- 但它必须退化为纯 contract
-- 去掉所有 `newInstance(...)`
-- `InMemoryWorkflowContextStore` 下沉到 `mcp/core`
-- store 创建责任回到 `MCPRuntimeContext`
-
-这样先解决“API 直接 new runtime implementation”的问题。
-
-#### Medium-term
-
-中期再考虑进一步收紧 `MCPFeatureContext`：
-
-- 如果 feature planning 仍然自己持有 workflow 状态，则可以暂时保留 `getWorkflowContextStore()`
-- 但它应当被视为 repository-style contract，而不是 runtime implementation entry point
-- 如果后续 planning / validation 进一步 core-owned，则 `MCPFeatureContext` 可以继续缩成更窄的 workflow session / plan access seam
-
-### What this means for tests
-
-目前大量测试直接调用 `WorkflowContextStore.newInstance()`，包括：
-
-- `mcp/api` 下的 workflow helper tests
-- `mcp/features/encrypt` 下的 planning / validation / handler tests
-- `mcp/features/mask` 下的 planning / validation / handler tests
-
-所以 factory removal 不是不能做，而是不能作为第一刀来做。
-
-## 4. bootstrap 和发现链路会不会受影响
-
-### What is actually sensitive
-
-真正敏感的不是 transport 层，而是下面 4 个静态拼装点：
-
-- `MCPFeatureProviderRegistry`
-- `ToolHandlerRegistry`
-- `ResourceHandlerRegistry`
-- `MCPToolSpecificationFactory`
-
-其中最关键的是：
-
-- `ToolHandlerRegistry` 在类初始化时就固定 `REGISTERED_HANDLERS` 和 `SUPPORTED_TOOL_DESCRIPTORS`
-- `MCPToolSpecificationFactory` 只是消费 registry 的最终 descriptor 集
-
-### Risk analysis
-
-如果 generic apply / validate handler 的归属发生变化：
-
-- 只要最终注册到 `ToolHandlerRegistry` 的 tool name 和 descriptor 不变，bootstrap 层基本不用动
-- 真正需要改的是 handler materialization 的前置阶段
-
-也就是说，风险集中在：
-
-- feature provider load 阶段
-- handler collection 阶段
-- duplicate tool name check 阶段
-
-而不是：
-
-- STDIO transport
-- Streamable HTTP transport
-- MCP server factory
-
-### Safe wiring rule
-
-generic workflow handler 即使迁到 core，也必须满足下面两个条件：
-
-- handler 本身是无状态或仅持有 feature 提供的 callback
-- handler 的创建不依赖 `MCPRuntimeContext`
-
-原因很简单：
-
-- registry 是静态的
-- `MCPRuntimeContext` 是请求/启动运行时对象
-- 如果把 handler 注册依赖 runtimeContext，就会和当前 registry/bootstrap 时序冲突
-
-### Practical implication
-
-推荐把新的 workflow contribution expansion 放在 registry 装配之前，例如：
-
-- 在 `MCPFeatureProviderRegistry.loadToolHandlers()` 内展开
-- 或在 `ToolHandlerRegistry.createRegisteredHandlers(...)` 的输入侧展开
-
-但不要把这件事放到 transport factory 或 request context 里做。
-
-## 5. 迁移顺序和测试面怎么切
-
-### Main observation
-
-如果直接从 store 或 snapshot 下手，测试爆炸面会很大；如果先从 registry seam 下手，收益高、风险低。
-
-### Recommended implementation order
-
-#### Slice A - 先补 shared seam，不搬大状态
-
-- 在 `mcp/api` 新增 workflow contribution SPI
-- `MCPFeatureProvider` 增加对应 default method
-- feature provider 改成返回 planning handler + workflow contribution，而不是直接 new generic apply / validate handler
-
-这是最适合第一刀落地的地方。
-
-#### Slice B - 把 generic apply / validate handler 下沉到 core
-
-- `WorkflowExecutionToolHandler`
-- `WorkflowValidationToolHandler`
-
-迁到 `mcp/core`
-
-- core 根据 workflow contribution 创建它们
-- `ToolHandlerRegistry` 继续看到同样的 tool name / descriptor
-
-#### Slice C - 收回 runtime store ownership
-
-- `InMemoryWorkflowContextStore` 下沉到 `mcp/core`
-- `WorkflowContextStore` 去掉静态工厂
-- `MCPRuntimeContext` 自己负责默认 store 创建
-- feature tests 改成 mock / local test double，不再依赖 API factory
-
-#### Slice D - 处理当前仍长在 feature 编译面的 helper
-
-这一批目前不能直接搬，因为 feature 生产代码还在 import：
+这些类同时被 feature 和 core 使用，而且明显不是 runtime-only：
 
 - `WorkflowPlanningSupport`
-- `WorkflowRequestBinder`
 - `WorkflowValidationSupport`
+- `WorkflowRequestBinder`
+- `WorkflowSqlUtils`
+- `WorkflowIntentResolverSupport`
 - `WorkflowPlanPayloadBuilder`
 - `WorkflowArtifactPayloadUtils`
+- `WorkflowArtifactMaskUtils`
+- `WorkflowArtifactBundle`
+- `WorkflowLifecycleUtils`
+- `WorkflowRuleValueUtils`
 - `WorkflowToolDescriptors`
-- `MCPToolArguments`
 
-这一层要么：
+这批类应该进入 `mcp/workflow`。
 
-- 继续作为 API-side shared helper 暂留
+### Workflow-specific SPI
 
-要么：
+下面两类虽然现在在 `mcp/api`，但它们并不是“基础 MCP 通用 SPI”，而是 workflow 特化扩展：
 
-- 先用新的 API contract 替代，再搬到 core
+- `MCPWorkflowToolContribution`
+- `MCPWorkflowValidationHandler`
 
-它们不应该和 generic apply / validate handler 一起在第一刀中强搬。
+它们更适合进入 `mcp/workflow`，这样 workflow 扩展语义会更完整。
 
-#### Slice E - 最后拆 `WorkflowContextSnapshot` 这类 aggregate state
+### Workflow model / bridge contracts
 
-等 handler ownership、store ownership、feature seam 都稳定后，再动：
+这批类型本轮不建议强拆：
 
+- `WorkflowRequest`
 - `WorkflowContextSnapshot`
-- `ClarifiedIntent`
-- `InteractionPlan`
 - `ValidationReport`
 - `ValidationSection`
+- `ClarifiedIntent`
+- `WorkflowLifecycle`
+- `WorkflowSessionContext`
+- `WorkflowPropertySource`
 
-这是最后一刀，不是第一刀。
+原因不是它们最终一定属于 `api`，而是它们已经漏进现有 feature-facing API：
 
-### Test blast radius
+- `MCPFeatureContext` 直接暴露 `WorkflowSessionContext`
+- `WorkflowSessionContext` 又直接引用 `WorkflowContextSnapshot`
 
-这次最该预判的回归面有 4 组：
+如果本轮连它们一起迁，就不再是“抽 shared workflow layer”，而是开始重画 SPI。
 
-- `mcp/api` workflow helper 单测
-- `mcp/core` registry / controller / request context 单测
-- `mcp/features/encrypt` planning / validation / handler 单测
-- `mcp/features/mask` planning / validation / handler 单测
+## 3. `mcp-workflow` 不该放什么
 
-特别需要注意的现状依赖有：
+### Runtime-only classes stay in core
 
-- 大量测试直接调用 `WorkflowContextStore.newInstance()`
-- feature handler tests 直接实例化 `WorkflowExecutionToolHandler` / `WorkflowValidationToolHandler`
-- plan handler tests 直接依赖 `WorkflowToolDescriptors` / `MCPToolArguments` / `WorkflowRequestBinder`
+下面这些仍应留在 `mcp/core`：
 
-所以测试顺序应该跟代码迁移顺序一致，不能等全部迁完再补。
+- `WorkflowExecutionService`
+- `WorkflowProxyQueryService`
+- `WorkflowExecutionToolHandler`
+- `WorkflowValidationToolHandler`
+- `InMemoryWorkflowSessionContext`
+- contribution / handler / resource registries
+- runtime materializer
 
-## Recommended coding starting point
+它们是典型 runtime-owned 实现，不属于共享 workflow 层。
 
-如果下一步要开始写代码，最合理的起点不是 snapshot split，也不是 store removal，而是：
+### Generic non-workflow helper should not be dragged in
 
-1. 先引入 workflow contribution SPI
-2. 把 generic apply / validate handler 的创建责任从 feature provider 挪到 core registry
-3. 保持 tool name、descriptor、external MCP behavior 全不变
+`MCPToolArguments` 是这轮最容易误放的类。
 
-这样能先拿到最大的边界收益，同时不立刻引爆 workflow model 和测试面。
+它不仅被 workflow plan handler 用，还被：
 
-## Final conclusion
+- `ExecuteSQLToolHandler`
+- `SearchMetadataToolHandler`
 
-这 5 个实现级问题已经有明确答案：
+这类非 workflow handler 使用。
 
-- 可以开始写代码
-- 但第一刀不应该直接碰 `WorkflowContextSnapshot` 这种 aggregate state
-- 最先落地的应该是 feature-to-core workflow contribution seam
-- `WorkflowContextStore` 的 factory 下沉应排在第二批
-- `WorkflowPlanningSupport` / `WorkflowRequestBinder` / `WorkflowValidationSupport` / `WorkflowPlanPayloadBuilder` / `WorkflowArtifactPayloadUtils` 这批类需要先解耦 feature compile surface，再决定是否下沉
+所以它不是“workflow helper”，不该因为当前模块拆分方便就直接搬进 `mcp/workflow`。
 
-换句话说，后续实现应该是“先收所有权，再拆状态”，而不是“先搬状态，再补接缝”。
+## 4. 方案三还能怎么优化
+
+### Key optimization
+
+方案三最值得优化的一点是：
+
+- 不要把 `MCPToolArguments` 直接搬进 `mcp/workflow`
+- 要把 feature 对它的直接编译依赖切断
+
+当前耦合点在：
+
+- `WorkflowRequestBinder` 公开使用 `MCPToolArguments`
+- `PlanEncryptRuleToolHandler`
+- `PlanMaskRuleToolHandler`
+
+这会导致只要 feature 要用 workflow binder，就必须 import 一个非 workflow 通用 helper。
+
+### Better seam
+
+更合理的做法是二选一：
+
+1. 在 `mcp/workflow` 引入更小的 workflow-scoped argument accessor
+2. 或者把 `WorkflowRequestBinder` 改成只对外暴露 raw `Map<String, Object>` 和 workflow-specific binding seam
+
+两种方式的共同目标都是：
+
+- feature 不再直接 import `MCPToolArguments`
+- `mcp/workflow` 的边界保持 workflow-pure
+- `MCPToolArguments` 若仍有价值，只留给 core 的通用 handler 使用
+
+### Recommended choice
+
+推荐第二种方向优先：
+
+- 从 feature-facing API 上隐藏 `MCPToolArguments`
+- 如果之后仍需要提炼，再在 `mcp/workflow` 引入一个更小的 workflow-scoped accessor
+
+这样比直接复制一个 `WorkflowToolArguments` 更稳，也更符合“最少代码解决问题”。
+
+## 5. 最终边界建议
+
+### Module graph
+
+- `mcp/api`
+- `mcp/workflow` -> `mcp/api`
+- `mcp/core` -> `mcp/api + mcp/workflow`
+- `mcp/features/encrypt` -> `mcp/api + mcp/workflow`
+- `mcp/features/mask` -> `mcp/api + mcp/workflow`
+- `mcp/bootstrap` -> `mcp/core`
+
+### Responsibility summary
+
+- `mcp/api`
+  - foundational contracts
+  - base SPI
+  - protocol / metadata DTO
+  - retained workflow bridge / model contracts
+- `mcp/workflow`
+  - workflow-specific shared helper
+  - workflow-specific SPI contribution seam
+  - workflow descriptor / binder helper
+- `mcp/core`
+  - runtime registry
+  - runtime materializer
+  - runtime execution / validation / query service
+  - workflow session-store implementation
+
+## 6. What is explicitly not solved in this iteration
+
+- 不重画 `MCPFeatureContext` 的全部层次
+- 不把 workflow model 全量从 `api` 拿走
+- 不把基础 `feature/spi` 全部拆成 base SPI 和 workflow SPI 两层子模块
+- 不重新命名外部 MCP tool / resource / protocol
+
+## Conclusion
+
+这轮最稳的 Speckit 结论是：
+
+- 保留 `api` 和 `core`
+- 新增 `mcp/workflow`
+- 让 feature 依赖 `api + workflow`
+- 让 core 依赖 `api + workflow`
+- 通过更小的 workflow-facing binder seam 避免把 `MCPToolArguments` 这类非 workflow 通用 helper 错搬进新模块
+
+这样既能解决当前 feature -> core 的编译耦合，又不会把 `mcp/workflow` 做成另一个语义含混的 support 杂物间。

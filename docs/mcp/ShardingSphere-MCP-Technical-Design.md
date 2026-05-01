@@ -20,7 +20,7 @@
   - embedded Tomcat 11
 - 本地调试采用：
   - STDIO
-- 同时通过 JDK 17 子链路 + 常规 reactor 模块接入 + JDK 17 子链路 CI + 独立 distribution 与当前主仓库主线共存。
+- 同时通过 JDK 21 子链路 + 常规 reactor 模块接入 + JDK 21 子链路 CI + 独立 distribution 与当前主仓库主线共存。
 
 ## 3. 背景
 - 根据前期 PRD，ShardingSphere MCP 要解决的不是“把 MCP 跑起来”，而是形成正式的数据库统一 AI/Agent 接入面，覆盖：
@@ -41,7 +41,7 @@
     - `proxy`
     - `proxy-native`
   - 见 `distribution/pom.xml`（line 30）
-  - MCP 子链路当前实现固定在 Java 17
+  - MCP 子链路当前实现固定在 Java 21
 - 因此，技术方案必须同时满足：
   - MCP 进入主仓库
   - 不破坏根工程 Java 8 默认构建
@@ -52,7 +52,7 @@
 - 本方案目标如下：
   - 将 MCP 作为 ShardingSphere 的正式接入子系统落地。
 - `mcp/core` 继续使用仓库内自管 runtime 与领域模型，`mcp/bootstrap` 局部引入 MCP Java SDK。
-  - 在不推动全仓升级到 JDK 17 的前提下，引入 MCP 子链路的 Java 17 能力。
+  - 在不推动全仓升级到 JDK 21 的前提下，引入 MCP 子链路的 Java 21 能力。
   - 形成独立部署、独立运行、独立发布的 MCP 服务。
   - 支撑 PRD 中定义的：
     - `capability`
@@ -64,7 +64,7 @@
 ## 5. 非目标
 - 本方案不包括以下内容：
   - 不展开类图、接口签名、方法级实现细节。
-  - 不推动整个主仓库统一升级到 JDK 17。
+  - 不推动整个主仓库统一升级到 JDK 21。
   - 不引入 Spring AI 或 Spring Boot 作为主实现框架。
   - 不把 MCP 嵌入 proxy 或 jdbc。
   - 不在 V1 实现分布式会话存储。
@@ -81,7 +81,7 @@
 
 ### 6.2 运行时约束
 - 截至 2026-03-21：
-  - MCP 子链路实现固定为 Java 17
+  - MCP 子链路实现固定为 Java 21
   - Streamable HTTP 与 STDIO 双 transport 由仓库内 runtime 提供
 
 ### 6.3 HTTP Runtime 约束
@@ -125,11 +125,11 @@
   - 根 `pom.xml` 直接加入 `mcp`
   - `distribution/pom.xml` 直接加入 `distribution/mcp`
   - `test/e2e/pom.xml` 直接加入 `test/e2e/mcp`
-  - JDK 17 子链路 CI 继续保留独立 lane
+  - JDK 21 子链路 CI 继续保留独立 lane
 - 原因：
   - 这样可以让 MCP 与 JDBC、Proxy、agent 保持一致的模块接入方式
   - 打包、测试和发布链路不再依赖额外 profile
-  - Java 17 约束仍局部收敛在 MCP 子模块
+  - Java 21 约束仍局部收敛在 MCP 子模块
 
 ### 7.4 不使用 Spring AI
 - 最终决策：
@@ -307,11 +307,11 @@ shardingsphere
 - 本方案不修改 Proxy/JDBC 运行链，因此回滚边界限定在 MCP 子链路及其 reactor 聚合改动。
 
 ### 9.2 总体策略
-- 采用“与 JDBC、Proxy、agent 一致的常规模块接入 + JDK 17 子链路 CI”的方案：
+- 采用“与 JDBC、Proxy、agent 一致的常规模块接入 + JDK 21 子链路 CI”的方案：
   - 根工程默认构建链直接包含 `mcp`
   - 根 distribution 默认构建链直接包含 `distribution/mcp`
   - 根 `test/e2e` 默认构建链直接包含 `test/e2e/mcp`
-  - MCP 继续保留 JDK 17 子链路 CI lane，但不依赖独立 Maven profile
+  - MCP 继续保留 JDK 21 子链路 CI lane，但不依赖独立 Maven profile
 
 ### 9.3 模块接入方式
 
@@ -331,22 +331,22 @@ shardingsphere
 
 #### 默认构建链
 - 默认 reactor 直接包含 `mcp`、`distribution/mcp` 与 `test/e2e/mcp`
-- 需要为 MCP 子模块提供 JDK 17 编译环境
-- Java 17 相关依赖与编译参数局部收敛在 MCP 子链路
+- 需要为 MCP 子模块提供 JDK 21 编译环境
+- Java 21 相关依赖与编译参数局部收敛在 MCP 子链路
 
 #### MCP 构建链
-- 固定 JDK 17
+- 固定 JDK 21
 - 构建：
   - `mcp/core`
   - `mcp/bootstrap`
   - `test/e2e/mcp`
   - `distribution/mcp`
 
-### 9.5 JDK 17 隔离策略
+### 9.5 JDK 21 隔离策略
 - 推荐：
   - Maven Toolchains
-  - `mcp/pom.xml` 明确 `maven.compiler.release=17`
-  - JDK 17 子链路 CI lane 固定 JDK 17
+  - `mcp/pom.xml` 明确 `maven.compiler.release=21`
+  - JDK 21 子链路 CI lane 固定 JDK 21
 
 ### 9.6 依赖管理隔离
 - 必须遵守：
@@ -355,8 +355,8 @@ shardingsphere
   - MCP Java SDK transitive Jackson 版本必须服从根工程 Jackson `2.16.1`
 
 ### 9.7 为什么 `distribution/mcp` 仍需局部隔离
-- 因为 `distribution/mcp` 依赖的是 Java 17 的 `mcp/bootstrap`。
-- 现在 `distribution/mcp` 已进入默认构建链，因此必须把 Java 17 约束局部收敛在 MCP 子链路内部，而不是重新引入独立 profile。
+- 因为 `distribution/mcp` 依赖的是 Java 21 的 `mcp/bootstrap`。
+- 现在 `distribution/mcp` 已进入默认构建链，因此必须把 Java 21 约束局部收敛在 MCP 子链路内部，而不是重新引入独立 profile。
 
 ## 10. 技术选型明细
 
@@ -766,17 +766,17 @@ apache-shardingsphere-mcp-<version>/
 
 ### 20.1 JDK 双基线风险
 - 风险：
-  - 主仓库常规构建环境与 MCP 的 Java 17 需求并存
-  - MCP Java 17
+  - 主仓库常规构建环境与 MCP 的 Java 21 需求并存
+  - MCP Java 21
 - 缓解：
   - `mcp`、`distribution/mcp` 与 `test/e2e/mcp` 直接进入默认 reactor
-  - MCP 子模块局部声明 Java 17
-  - JDK 17 子链路 CI 固定 JDK 17
+  - MCP 子模块局部声明 Java 21
+  - JDK 21 子链路 CI 固定 JDK 21
 
 ### 20.2 依赖冲突风险
 - 风险：
   - MCP 子链路局部运行时依赖
-  - JDK 17 runtime 边界
+  - JDK 21 runtime 边界
 - 缓解：
   - MCP 子链路内部独立管理
   - 不引额外根 BOM
@@ -808,7 +808,7 @@ apache-shardingsphere-mcp-<version>/
   - 建立 `mcp` 子项目
   - 建立 `core / bootstrap`
   - 在根 distribution 下建立 `distribution/mcp`
-  - 建立 MCP 专用 JDK 17 构建链
+  - 建立 MCP 专用 JDK 21 构建链
 - 阶段 2：协议公共面
   - 完成 resources / tools 框架
   - 完成 capability 组装链
@@ -839,4 +839,4 @@ apache-shardingsphere-mcp-<version>/
   - MCP 进入 ShardingSphere 主仓库，但代码模块与发布模块分层组织。
   - 代码模块位于 `mcp/core` 与 `mcp/bootstrap`，发布模块位于根 `distribution/mcp`，`artifactId` 为 `shardingsphere-mcp-distribution`。
   - `mcp/core` 继续自管领域模型，`mcp/bootstrap` 局部使用 MCP Java SDK 与 embedded Tomcat 承载 Streamable HTTP，STDIO 用于本地调试。
-  - MCP 子链路通过 JDK 17、常规 reactor 模块接入、JDK 17 子链路 CI 和独立 distribution 与主仓库主线共存。
+  - MCP 子链路通过 JDK 21、常规 reactor 模块接入、JDK 21 子链路 CI 和独立 distribution 与主仓库主线共存。

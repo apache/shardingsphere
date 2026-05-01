@@ -8,7 +8,7 @@ Additional notes cover how to replace the demo runtime with a real JDBC-backed d
 
 ### Prerequisites
 
-- JDK 17 available from `JAVA_HOME` or `PATH`
+- JDK 21 available from `JAVA_HOME` or `PATH`
 - Maven wrapper from the repository root
 - A Unix-like shell with `curl`, `find`, `mktemp`, `sed`, and `tr`
 

@@ -63,14 +63,6 @@ public final class MCPE2ECondition {
         return config.isProductionMySQLEnabled() && config.isProductionStdioEnabled();
     }
     
-    public static boolean isProxyWorkflowEnabled() {
-        return isProxyWorkflowEnabled(MCPE2ETestConfiguration.getInstance());
-    }
-    
-    static boolean isProxyWorkflowEnabled(final MCPE2ETestConfiguration config) {
-        return config.isProxyWorkflowEnabled();
-    }
-    
     public static boolean isDistributionEnabled() {
         return isDistributionEnabled(MCPE2ETestConfiguration.getInstance());
     }

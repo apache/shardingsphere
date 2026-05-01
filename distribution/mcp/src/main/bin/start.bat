@@ -64,6 +64,19 @@ if not defined JAVA (
     exit /b 1
 )
 
+for /f "tokens=3" %%a in ('"%JAVA%" -version 2^>^&1 ^| findstr /i "version"') do set total_version=%%a
+for /f "tokens=1,2 delims=." %%a in (%total_version%) do (
+    if %%a == 1 (
+        set int_version=%%b
+    ) else (
+        set int_version=%%a
+    )
+)
+if %int_version% LSS 21 (
+    >&2 echo Error: ShardingSphere MCP requires Java 21 or higher. Current version: Java %int_version%
+    exit /b 1
+)
+
 set "CLASSPATH=%APP_HOME%\conf;%LIB_DIR%\*"
 if exist "%PLUGINS_DIR%" (
     set "CLASSPATH=%CLASSPATH%;%PLUGINS_DIR%\*"
