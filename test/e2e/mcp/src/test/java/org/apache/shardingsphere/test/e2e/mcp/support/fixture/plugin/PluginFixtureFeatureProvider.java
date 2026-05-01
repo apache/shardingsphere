@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,11 +30,12 @@ import java.util.List;
 public final class PluginFixtureFeatureProvider implements MCPFeatureProvider {
     
     @Override
-    public Collection<MCPContribution> getContributions() {
-        PluginFixturePingToolHandler pingToolHandler = new PluginFixturePingToolHandler();
-        PluginFixtureStatusResourceHandler statusResourceHandler = new PluginFixtureStatusResourceHandler();
-        return List.of(
-                new MCPDirectToolContribution(pingToolHandler.getToolDescriptor(), pingToolHandler::handle),
-                new MCPDirectResourceContribution(statusResourceHandler.getUriPattern(), statusResourceHandler::handle));
+    public Collection<ToolHandler> getToolHandlers() {
+        return List.of(new PluginFixturePingToolHandler());
+    }
+    
+    @Override
+    public Collection<ResourceHandler> getResourceHandlers() {
+        return List.of(new PluginFixtureStatusResourceHandler());
     }
 }
