@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;

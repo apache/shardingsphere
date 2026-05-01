@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.mcp.workflow;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 
 /**
  * Workflow-aware MCP feature context.
  */
-public interface MCPWorkflowContext extends MCPFeatureContext {
+public interface MCPWorkflowContext extends MCPDatabaseContext {
     
     /**
      * Get workflow session context.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedHashMap;

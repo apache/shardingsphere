@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
 import org.apache.shardingsphere.mcp.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.workflow.model.ValidationSection;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
@@ -35,7 +36,7 @@ public final class MetadataResourceHandler implements ResourceHandler {
     
     private final String uriPattern;
     
-    private final BiFunction<MCPFeatureContext, MCPUriVariables, List<?>> metadataLoader;
+    private final BiFunction<MCPDatabaseContext, MCPUriVariables, List<?>> metadataLoader;
     
     @Override
     public String getUriPattern() {
@@ -44,6 +45,6 @@ public final class MetadataResourceHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPMetadataResponse(metadataLoader.apply(requestContext, uriVariables));
+        return new MCPMetadataResponse(metadataLoader.apply(MCPDatabaseContext.getRequired(requestContext), uriVariables));
     }
 }

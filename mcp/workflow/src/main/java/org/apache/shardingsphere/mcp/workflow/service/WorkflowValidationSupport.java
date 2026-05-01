@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.workflow.service;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.workflow.model.ValidationSection;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 
 import java.util.LinkedHashMap;
 import java.util.List;

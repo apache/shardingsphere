@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mcp.feature.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
@@ -99,7 +99,7 @@ final class CoreResourceContributions {
     }
     
     private static MCPDirectResourceContribution createMetadataResourceContribution(final String uriPattern,
-                                                                                    final BiFunction<MCPFeatureContext, MCPUriVariables, List<?>> metadataLoader) {
+                                                                                    final BiFunction<MCPDatabaseContext, MCPUriVariables, List<?>> metadataLoader) {
         return createResourceContribution(new MetadataResourceHandler(uriPattern, metadataLoader));
     }
 }

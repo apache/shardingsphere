@@ -29,6 +29,7 @@
     
     <modules>
         <module>api</module>
+        <module>database</module>
         <module>workflow</module>
         <module>core</module>
         <module>features</module>

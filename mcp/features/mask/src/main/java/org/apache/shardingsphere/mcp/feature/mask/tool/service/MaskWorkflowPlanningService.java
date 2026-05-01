@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;

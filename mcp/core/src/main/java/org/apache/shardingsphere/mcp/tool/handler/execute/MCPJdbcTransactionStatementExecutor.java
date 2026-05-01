@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
 

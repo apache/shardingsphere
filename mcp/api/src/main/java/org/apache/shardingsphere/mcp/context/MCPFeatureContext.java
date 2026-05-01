@@ -17,43 +17,10 @@
 
 package org.apache.shardingsphere.mcp.context;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureCapabilityFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
-
 /**
  * MCP feature request context.
  */
 public interface MCPFeatureContext extends AutoCloseable {
-    
-    /**
-     * Get metadata query facade.
-     *
-     * @return metadata query facade
-     */
-    MCPMetadataQueryFacade getMetadataQueryFacade();
-    
-    /**
-     * Get SQL execution facade.
-     *
-     * @return SQL execution facade
-     */
-    MCPFeatureExecutionFacade getExecutionFacade();
-    
-    /**
-     * Get direct query facade.
-     *
-     * @return direct query facade
-     */
-    MCPFeatureQueryFacade getQueryFacade();
-    
-    /**
-     * Get capability facade.
-     *
-     * @return capability facade
-     */
-    MCPFeatureCapabilityFacade getCapabilityFacade();
     
     @Override
     default void close() {

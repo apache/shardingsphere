@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
@@ -39,6 +40,7 @@ public final class EncryptAlgorithmsHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPMetadataResponse(ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(requestContext.getQueryFacade())));
+        return new MCPMetadataResponse(ruleInspectionService.enrichEncryptAlgorithms(
+                ruleInspectionService.queryEncryptAlgorithms(MCPDatabaseContext.getRequired(requestContext).getQueryFacade())));
     }
 }

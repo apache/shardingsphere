@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;

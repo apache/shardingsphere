@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;

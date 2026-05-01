@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
@@ -39,6 +40,7 @@ public final class MaskRulesHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPMetadataResponse(ruleInspectionService.queryMaskRules(requestContext.getQueryFacade(), uriVariables.getVariable("database"), ""));
+        return new MCPMetadataResponse(ruleInspectionService.queryMaskRules(
+                MCPDatabaseContext.getRequired(requestContext).getQueryFacade(), uriVariables.getVariable("database"), ""));
     }
 }

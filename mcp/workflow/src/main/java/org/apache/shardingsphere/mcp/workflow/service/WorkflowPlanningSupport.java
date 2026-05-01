@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.workflow.service;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
-import org.apache.shardingsphere.mcp.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.database.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;

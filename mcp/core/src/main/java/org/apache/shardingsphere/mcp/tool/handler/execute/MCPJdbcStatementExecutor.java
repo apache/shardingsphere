@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.database.SchemaExecutionSemantics;
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.database.capability.SchemaExecutionSemantics;
+import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.database.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTimeoutException;
@@ -30,8 +30,8 @@ import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.exception.QueryDidNotReturnResultSetException;
 import org.apache.shardingsphere.mcp.protocol.exception.StatementClassNotSupportedException;
-import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

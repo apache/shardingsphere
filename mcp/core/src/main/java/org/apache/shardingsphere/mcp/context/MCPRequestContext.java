@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.mcp.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureCapabilityFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.metadata.context.RequestScopedMetadataContext;
-import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureCapabilityFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.metadata.context.RequestScopedMetadataContext;
+import org.apache.shardingsphere.mcp.database.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;

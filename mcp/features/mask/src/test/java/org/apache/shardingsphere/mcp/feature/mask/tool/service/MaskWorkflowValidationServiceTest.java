@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;

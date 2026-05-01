@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 
 /**
@@ -36,7 +37,7 @@ public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        var databaseCapabilityProvider = requestContext.getCapabilityFacade();
+        var databaseCapabilityProvider = MCPDatabaseContext.getRequired(requestContext).getCapabilityFacade();
         String databaseName = uriVariables.getVariable("database");
         return databaseCapabilityProvider.provide(databaseName).<MCPResponse>map(MCPDatabaseCapabilityResponse::new).orElseThrow(DatabaseCapabilityNotFoundException::new);
     }

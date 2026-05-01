@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ClassificationResult;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPJdbcTransactionStatementExecutor;
 import org.apache.shardingsphere.mcp.tool.handler.execute.StatementClassifier;
-import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

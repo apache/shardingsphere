@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;

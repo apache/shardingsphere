@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
-import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;

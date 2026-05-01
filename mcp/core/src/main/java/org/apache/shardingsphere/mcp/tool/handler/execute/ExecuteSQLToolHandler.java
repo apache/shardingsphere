@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
@@ -25,7 +27,6 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -51,7 +52,8 @@ public final class ExecuteSQLToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return requestContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId,
+        MCPDatabaseContext databaseContext = MCPDatabaseContext.getRequired(requestContext);
+        return databaseContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId,
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),
                 toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0)));
     }

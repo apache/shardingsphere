@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
 
 import java.util.ArrayList;
 import java.util.Collection;

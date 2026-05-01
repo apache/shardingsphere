@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.workflow.service.WorkflowArtifactBundle;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

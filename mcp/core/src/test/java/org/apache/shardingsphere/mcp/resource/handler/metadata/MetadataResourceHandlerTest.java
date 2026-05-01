@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class MetadataResourceHandlerTest {
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getVariable("database"))));
         MCPUriVariables uriVariables = mock(MCPUriVariables.class);
         when(uriVariables.getVariable("database")).thenReturn("logic_db");
-        MCPResponse actual = handler.handle(mock(MCPFeatureContext.class), uriVariables);
+        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), uriVariables);
         assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")))));
     }
 }

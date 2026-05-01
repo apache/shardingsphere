@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.DDLArtifact;
@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

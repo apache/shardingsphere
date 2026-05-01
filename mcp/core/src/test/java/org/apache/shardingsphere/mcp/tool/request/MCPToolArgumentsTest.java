@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.request;
 
-import org.apache.shardingsphere.mcp.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

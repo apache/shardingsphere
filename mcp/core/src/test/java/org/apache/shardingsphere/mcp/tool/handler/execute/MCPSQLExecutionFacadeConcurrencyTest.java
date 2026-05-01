@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
-import org.apache.shardingsphere.mcp.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
