@@ -204,7 +204,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", secondPlanId)).get("status")), is("completed"));
             assertThat(countPhysicalColumn("status_cipher"), is(1));
             assertThat(countPhysicalColumn("amount_cipher"), is(1));
-            assertValidationEventuallyPassed(interactionClient, VALIDATE_TOOL_NAME, secondPlanId);
+            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", secondPlanId)));
             List<Map<String, Object>> actualEncryptRules = getPayloadItems(
                     interactionClient.readResource(String.format(TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName(), "orders")));
             assertThat(actualEncryptRules.size(), is(2));
@@ -288,7 +288,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(getStringList(actualApplyResponse.get("executed_distsql")).size(), is(1));
             assertThat(countPhysicalColumn("status_cipher"), is(1));
             assertThat(countPhysicalColumn("status_assisted_query"), is(1));
-            assertValidationEventuallyPassed(interactionClient, VALIDATE_TOOL_NAME, planId);
+            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
         }
     }
     
@@ -328,7 +328,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER ENCRYPT RULE orders"));
             String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
             assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId)).get("status")), is("completed"));
-            assertValidationEventuallyPassed(interactionClient, VALIDATE_TOOL_NAME, planId);
+            assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualEncryptRules = getPayloadItems(
                     interactionClient.readResource(String.format(TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName(), "orders")));
             assertThat(actualEncryptRules.size(), is(1));

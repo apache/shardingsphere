@@ -223,7 +223,13 @@ public final class WorkflowValidationSupport {
         return result;
     }
     
-    private String resolveValidationIssueCode(final ValidationReport validationReport) {
+    /**
+     * Resolve validation issue code from mismatches.
+     *
+     * @param validationReport validation report
+     * @return issue code
+     */
+    public String resolveValidationIssueCode(final ValidationReport validationReport) {
         for (Map<String, Object> each : validationReport.getMismatches()) {
             String actualCode = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("code")));
             if (!actualCode.isEmpty()) {

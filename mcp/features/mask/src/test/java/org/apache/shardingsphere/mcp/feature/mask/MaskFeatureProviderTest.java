@@ -50,6 +50,7 @@ class MaskFeatureProviderTest {
         assertThat(actual.getPlanningToolDescriptor().getName(), is("plan_mask_rule"));
         assertThat(actual.getApplyToolName(), is("apply_mask_rule"));
         assertThat(actual.getValidateToolName(), is("validate_mask_rule"));
+        assertThat(actual.getWorkflowApplySynchronizationHandler(), isA(MaskWorkflowValidationService.class));
         assertThat(actual.getWorkflowValidationHandler(), isA(MaskWorkflowValidationService.class));
     }
 }

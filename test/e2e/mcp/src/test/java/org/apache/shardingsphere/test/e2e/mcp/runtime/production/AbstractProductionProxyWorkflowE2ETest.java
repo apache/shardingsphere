@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.MySQLRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.ProxyEncryptWorkflowRuntimeTestSupport.ProxyEncryptWorkflowRuntimeFixture;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
-import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 
@@ -30,7 +29,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -87,19 +85,6 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     protected final void assertValidationFailed(final Map<String, Object> actualValidationResponse) {
         assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("status")), is("failed"));
         assertThat(actualValidationResponse.toString(), String.valueOf(actualValidationResponse.get("overall_status")), is("failed"));
-    }
-    
-    protected final void assertValidationEventuallyPassed(final MCPInteractionClient interactionClient, final String validateToolName, final String planId) throws IOException, InterruptedException {
-        Map<String, Object> actualValidationResponse = Map.of();
-        for (int i = 0; i < 10; i++) {
-            actualValidationResponse = interactionClient.call(validateToolName, Map.of("plan_id", planId));
-            if ("validated".equals(String.valueOf(actualValidationResponse.get("status")))) {
-                assertValidationPassed(actualValidationResponse);
-                return;
-            }
-            TimeUnit.SECONDS.sleep(1L);
-        }
-        assertValidationPassed(actualValidationResponse);
     }
     
     protected final List<String> getIssueCodes(final Map<String, Object> payload) {

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
 import org.apache.shardingsphere.mcp.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.workflow.model.ValidationSection;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowValidationSupport;
@@ -39,12 +41,23 @@ import java.util.Optional;
 /**
  * Mask workflow validation service.
  */
-public final class MaskWorkflowValidationService implements MCPWorkflowValidationHandler {
-    
+public final class MaskWorkflowValidationService implements MCPWorkflowValidationHandler, MCPWorkflowApplySynchronizationHandler {
+
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
-    
-    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
-    
+
+    private final MaskRuleInspectionService ruleInspectionService;
+
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
+
+    public MaskWorkflowValidationService() {
+        this(new MaskRuleInspectionService(), new WorkflowSynchronizationSupport());
+    }
+
+    MaskWorkflowValidationService(final MaskRuleInspectionService ruleInspectionService, final WorkflowSynchronizationSupport workflowSynchronizationSupport) {
+        this.ruleInspectionService = ruleInspectionService;
+        this.workflowSynchronizationSupport = workflowSynchronizationSupport;
+    }
+
     /**
      * Validate workflow artifacts.
      *
@@ -64,21 +77,34 @@ public final class MaskWorkflowValidationService implements MCPWorkflowValidatio
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
         }
-        ValidationReport validationReport = validationSupport.createValidationReport(snapshot);
-        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
-        validationReport.setDdlValidation(validateDdl());
-        validationReport.setRuleValidation(validateRules(snapshot, maskRules, validationReport));
-        validationReport.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, validationReport));
-        validationReport.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport));
-        validationReport.setOverallStatus(validationSupport.resolveOverallStatus(validationReport.getDdlValidation(), validationReport.getRuleValidation(),
-                validationReport.getLogicalMetadataValidation(), validationReport.getSqlExecutabilityValidation()));
+        ValidationReport validationReport = createValidationReport(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId);
+        snapshot.setValidationReport(validationReport);
         return validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
     }
-    
+
+    @Override
+    public void synchronize(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
+                            final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
+        workflowSynchronizationSupport.synchronize(() -> createValidationReport(snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId));
+    }
+
+    private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
+                                                    final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
+        ValidationReport result = new ValidationReport();
+        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
+        result.setDdlValidation(validateDdl());
+        result.setRuleValidation(validateRules(snapshot, maskRules, result));
+        result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));
+        result.setSqlExecutabilityValidation(validateSqlExecutability(executionFacade, sessionId, snapshot, result));
+        result.setOverallStatus(validationSupport.resolveOverallStatus(result.getDdlValidation(), result.getRuleValidation(),
+                result.getLogicalMetadataValidation(), result.getSqlExecutabilityValidation()));
+        return result;
+    }
+
     private ValidationSection validateDdl() {
         return new ValidationSection(WorkflowLifecycle.STATUS_SKIPPED, List.of(), "Mask workflows do not require physical DDL validation.");
     }
-    
+
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules,
                                             final ValidationReport validationReport) {
         Optional<Map<String, Object>> actualRule = maskRules.stream()
@@ -104,7 +130,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowValidatio
         }
         return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, actualRule.get(), "Mask rule matches the planned algorithm.");
     }
-    
+
     private ValidationSection validateSqlExecutability(final MCPFeatureExecutionFacade executionFacade, final String sessionId,
                                                        final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
         return validationSupport.validateSqlExecutability(executionFacade, sessionId, snapshot, validationReport,

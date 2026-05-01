@@ -48,7 +48,8 @@ class MCPFeatureProviderRegistryTest {
         when(featureProvider.getContributions()).thenReturn(List.of(
                 new MCPDirectToolContribution(toolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of())),
                 new MCPWorkflowToolContribution(planningToolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of()),
-                        "apply_encrypt_rule", "validate_encrypt_rule",
+                        "apply_encrypt_rule", "validate_encrypt_rule", (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
+                        },
                         (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of("status", "validated"))));
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));

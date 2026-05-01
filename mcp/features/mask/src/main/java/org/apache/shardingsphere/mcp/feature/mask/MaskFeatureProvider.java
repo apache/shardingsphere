@@ -47,8 +47,9 @@ public final class MaskFeatureProvider implements MCPFeatureProvider {
     
     private static MCPWorkflowToolContribution createWorkflowContribution() {
         PlanMaskRuleToolHandler planToolHandler = new PlanMaskRuleToolHandler();
+        MaskWorkflowValidationService workflowValidationService = new MaskWorkflowValidationService();
         return new MCPWorkflowToolContribution(planToolHandler.getToolDescriptor(), planToolHandler::handle,
-                MaskFeatureDefinition.APPLY_TOOL_NAME, MaskFeatureDefinition.VALIDATE_TOOL_NAME, new MaskWorkflowValidationService());
+                MaskFeatureDefinition.APPLY_TOOL_NAME, MaskFeatureDefinition.VALIDATE_TOOL_NAME, workflowValidationService, workflowValidationService);
     }
     
     private static Collection<MCPContribution> createResourceContributions() {

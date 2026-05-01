@@ -50,6 +50,7 @@ class EncryptFeatureProviderTest {
         assertThat(actual.getPlanningToolDescriptor().getName(), is("plan_encrypt_rule"));
         assertThat(actual.getApplyToolName(), is("apply_encrypt_rule"));
         assertThat(actual.getValidateToolName(), is("validate_encrypt_rule"));
+        assertThat(actual.getWorkflowApplySynchronizationHandler(), isA(EncryptWorkflowValidationService.class));
         assertThat(actual.getWorkflowValidationHandler(), isA(EncryptWorkflowValidationService.class));
     }
 }

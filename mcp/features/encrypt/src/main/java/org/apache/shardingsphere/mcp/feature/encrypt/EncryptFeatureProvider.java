@@ -47,8 +47,9 @@ public final class EncryptFeatureProvider implements MCPFeatureProvider {
     
     private static MCPWorkflowToolContribution createWorkflowContribution() {
         PlanEncryptRuleToolHandler planToolHandler = new PlanEncryptRuleToolHandler();
+        EncryptWorkflowValidationService workflowValidationService = new EncryptWorkflowValidationService();
         return new MCPWorkflowToolContribution(planToolHandler.getToolDescriptor(), planToolHandler::handle,
-                EncryptFeatureDefinition.APPLY_TOOL_NAME, EncryptFeatureDefinition.VALIDATE_TOOL_NAME, new EncryptWorkflowValidationService());
+                EncryptFeatureDefinition.APPLY_TOOL_NAME, EncryptFeatureDefinition.VALIDATE_TOOL_NAME, workflowValidationService, workflowValidationService);
     }
     
     private static Collection<MCPContribution> createResourceContributions() {

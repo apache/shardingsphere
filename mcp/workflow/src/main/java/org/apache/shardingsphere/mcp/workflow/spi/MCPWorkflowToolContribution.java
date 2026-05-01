@@ -29,17 +29,19 @@ import java.util.Objects;
  */
 @Getter
 public final class MCPWorkflowToolContribution implements MCPToolContribution {
-    
+
     private final MCPToolDescriptor planningToolDescriptor;
-    
+
     private final MCPToolInvoker planningToolInvoker;
-    
+
     private final String applyToolName;
-    
+
     private final String validateToolName;
-    
+
+    private final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler;
+
     private final MCPWorkflowValidationHandler workflowValidationHandler;
-    
+
     /**
      * Create workflow contribution with planning, execution and validation tools.
      *
@@ -47,14 +49,17 @@ public final class MCPWorkflowToolContribution implements MCPToolContribution {
      * @param planningToolInvoker planning tool invoker
      * @param applyToolName apply tool name
      * @param validateToolName validate tool name
+     * @param workflowApplySynchronizationHandler workflow apply synchronization handler
      * @param workflowValidationHandler workflow validation handler
      */
     public MCPWorkflowToolContribution(final MCPToolDescriptor planningToolDescriptor, final MCPToolInvoker planningToolInvoker,
-                                       final String applyToolName, final String validateToolName, final MCPWorkflowValidationHandler workflowValidationHandler) {
+                                       final String applyToolName, final String validateToolName, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
+                                       final MCPWorkflowValidationHandler workflowValidationHandler) {
         this.planningToolDescriptor = Objects.requireNonNull(planningToolDescriptor, "planningToolDescriptor is required.");
         this.planningToolInvoker = Objects.requireNonNull(planningToolInvoker, "planningToolInvoker is required.");
         this.applyToolName = Objects.requireNonNull(applyToolName, "applyToolName is required.");
         this.validateToolName = Objects.requireNonNull(validateToolName, "validateToolName is required.");
+        this.workflowApplySynchronizationHandler = Objects.requireNonNull(workflowApplySynchronizationHandler, "workflowApplySynchronizationHandler is required.");
         this.workflowValidationHandler = Objects.requireNonNull(workflowValidationHandler, "workflowValidationHandler is required.");
     }
 }

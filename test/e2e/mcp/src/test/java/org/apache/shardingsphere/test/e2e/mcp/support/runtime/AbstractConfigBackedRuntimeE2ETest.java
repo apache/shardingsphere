@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.bootstrap.config.loader.MCPConfigurationLoa
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper.YamlMCPLaunchConfigurationSwapper;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
-import org.apache.shardingsphere.mcp.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPStdioInteractionClient;

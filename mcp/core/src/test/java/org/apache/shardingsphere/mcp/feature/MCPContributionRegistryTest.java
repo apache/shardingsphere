@@ -52,7 +52,8 @@ class MCPContributionRegistryTest {
                 new MCPDirectToolContribution(toolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of())),
                 new MCPDirectResourceContribution("shardingsphere://foo", (requestContext, uriVariables) -> new MCPMapResponse(Map.of())),
                 new MCPWorkflowToolContribution(planningToolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of()),
-                        "apply_encrypt_rule", "validate_encrypt_rule",
+                        "apply_encrypt_rule", "validate_encrypt_rule", (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
+                        },
                         (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of())));
         Collection<MCPToolContribution> actual = MCPContributionRegistry.createToolContributions(featureProvider);
         assertThat(actual.size(), is(2));

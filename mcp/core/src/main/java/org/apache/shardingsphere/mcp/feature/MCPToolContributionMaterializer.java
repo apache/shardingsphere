@@ -60,7 +60,7 @@ public final class MCPToolContributionMaterializer {
     private static Collection<ToolHandler> materialize(final MCPWorkflowToolContribution contribution) {
         Collection<ToolHandler> result = new LinkedList<>();
         result.add(new DelegatingToolHandler(contribution.getPlanningToolDescriptor(), contribution.getPlanningToolInvoker()));
-        result.add(new WorkflowExecutionToolHandler(contribution.getApplyToolName()));
+        result.add(new WorkflowExecutionToolHandler(contribution.getApplyToolName(), contribution.getWorkflowApplySynchronizationHandler()));
         result.add(new WorkflowValidationToolHandler(contribution.getValidateToolName(), contribution.getWorkflowValidationHandler()));
         return List.copyOf(result);
     }

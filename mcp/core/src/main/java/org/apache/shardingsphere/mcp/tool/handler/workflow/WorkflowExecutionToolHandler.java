@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 
 import java.util.Map;
 
@@ -33,30 +34,39 @@ import java.util.Map;
  * Generic workflow execution tool handler.
  */
 public final class WorkflowExecutionToolHandler implements ToolHandler {
-    
+
     private final String toolName;
-    
+
     private final WorkflowExecutionService executionService;
-    
+
+    private final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler;
+
     public WorkflowExecutionToolHandler(final String toolName) {
-        this(toolName, new WorkflowExecutionService());
+        this(toolName, new WorkflowExecutionService(), MCPWorkflowApplySynchronizationHandler.NO_OP);
     }
-    
-    WorkflowExecutionToolHandler(final String toolName, final WorkflowExecutionService executionService) {
+
+    public WorkflowExecutionToolHandler(final String toolName, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler) {
+        this(toolName, new WorkflowExecutionService(), workflowApplySynchronizationHandler);
+    }
+
+    WorkflowExecutionToolHandler(final String toolName, final WorkflowExecutionService executionService,
+                                 final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler) {
         this.toolName = toolName;
         this.executionService = executionService;
+        this.workflowApplySynchronizationHandler = workflowApplySynchronizationHandler;
     }
-    
+
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return WorkflowToolDescriptors.createExecution(toolName);
     }
-    
+
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
-        return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), workflowContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id"),
+        return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(), workflowContext.getQueryFacade(),
+                workflowContext.getExecutionFacade(), workflowApplySynchronizationHandler, sessionId, toolArguments.getStringArgument("plan_id"),
                 toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
     }
 }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
 import org.junit.jupiter.api.Test;
 
@@ -51,11 +52,13 @@ class WorkflowToolHandlerTest {
     @Test
     void assertHandleExecution() {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
-        when(executionService.apply(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
+        when(executionService.apply(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
         RequestContextFixture fixture = createRequestContextFixture();
-        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler("apply_encrypt_rule", executionService);
+        MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
+        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler("apply_encrypt_rule", executionService, workflowApplySynchronizationHandler);
         MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of("plan_id", "plan-1", "approved_steps", List.of("ddl"), "execution_mode", "manual-only"));
-        verify(executionService).apply(eq(fixture.workflowSessionContext), eq(fixture.executionFacade), eq("session-1"), eq("plan-1"), eq(List.of("ddl")), eq("manual-only"));
+        verify(executionService).apply(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq(fixture.executionFacade),
+                eq(workflowApplySynchronizationHandler), eq("session-1"), eq("plan-1"), eq(List.of("ddl")), eq("manual-only"));
         assertThat(actual.toPayload().get("status"), is("completed"));
     }
     

@@ -1,234 +1,161 @@
-# Research: MCP Workflow Shared Module Extraction
+# Research: MCP Public API Flattening
 
 ## Fixed Constraints
 
-- 本次需求梳理和后续实现都只能在当前分支完成，不切换分支。
-- 新共享模块名字固定为 `shardingsphere-mcp-workflow`。
-- `encrypt` / `mask` 后续允许依赖 `mcp/api + mcp/workflow`，但不能直接依赖 `mcp/core`。
-- `mcp/workflow` 必须保持 workflow 专属，不能退化成新的通用 support 杂物间。
-- 这轮优先做最小安全重构，不主动重画整个 MCP SPI。
+- 本次需求梳理和后续实现都必须留在当前分支完成，不切换分支。
+- `mcp/api` 必须保持纯 API 语义，不允许保留生产实现类。
+- 公开抽象必须同层；`tool` 和 `resource` 是公开能力分类，`workflow contribution` 不是。
+- workflow 仍然可以作为共享层存在，但它是内部架构层，不是公开 API 顶层分类。
+- 兼容当前外部 workflow tool 名称不是本轮需求约束。
+- 公开 workflow apply / validate 允许收敛成 generic platform tools。
+- 保留 `mcp/workflow` 作为内部共享模块，不在本轮移除。
+- 本轮不继续把 `mcp/api` 细拆成多个 API 子模块。
 
 ## Baseline
 
-这轮重新核对后的关键事实有 5 个：
+重新梳理后，当前问题不只是模块摆放，而是同时存在 3 个结构性问题：
 
-1. 问题不是 `api` 和 `core` 两层，而是现在实际混了三层职责：
-   - 基础 MCP 契约层
-   - workflow 共享契约 / 共享 helper 层
-   - runtime core 层
-2. `mcp/api` 当前主要承担基础契约，同时还承载了一批 workflow model / bridge contract。
-3. `mcp/core` 当前除了 runtime registry / handler / execution 之外，还承载了一批被 feature 直接复用的 workflow helper。
-4. `encrypt` / `mask` 对 `mcp` 共享层的 import 里，`tool.model.workflow` 有 `59` 个，`tool.service.workflow` 有 `42` 个，说明 workflow 已经是一级领域层，不再只是几个 helper。
-5. 如果只做“把 support 从 api 搬到 core”，feature 就会被迫继续依赖 core；如果把 support 塞回 api，又会让 api 重新变重。
+1. `mcp/api` 混了 API 契约和实现辅助类。
+2. 公开名词体系混了同层能力概念和内部装配概念。
+3. workflow 共享行为真实存在，但被错误地表现成公开顶层能力类别。
 
-所以合理的答案不是合并 `api + core`，也不是把所有东西塞回 `api`，而是把 workflow 共享层显式独立出来。
+当前典型症状包括：
 
-## 1. 为什么 `mcp-workflow` 合理
+- `MCPDirectToolContribution`、`MCPDirectResourceContribution` 是公开具体类，但本质上只是内部装配辅助。
+- `MCPWorkflowToolContribution` 也是公开概念，但最终仍然会被展开成普通 tool handler。
+- `ToolHandler` / `ResourceHandler` 已经是稳定抽象，却又被 `descriptor + invoker`、`uriPattern + reader` 再拆一层。
 
-### Current split
+所以根因不是“实现类放错模块”这么简单，而是 **API 泄漏了内部装配模型**。
 
-- `mcp/api`：
-  - `ToolHandler`
-  - `ResourceHandler`
-  - `MCPFeatureProvider`
-  - protocol / metadata DTO
-  - workflow model / bridge contract
-- `mcp/core`：
-  - `ToolHandlerRegistry`
-  - `ResourceHandlerRegistry`
-  - `MCPContributionRegistry`
-  - `WorkflowExecutionService`
-  - `WorkflowExecutionToolHandler`
-  - `WorkflowValidationToolHandler`
-  - `InMemoryWorkflowSessionContext`
-- feature：
-  - 直接依赖 workflow helper 做 planning / validation / response building
+## What the public API should look like
 
-这说明 `api` 和 `core` 的骨架其实已经存在，但 workflow 共享层被夹在中间，没有自己的归属。
+### Same-level public nouns
 
-### Why not merge
+公开 API 顶层应该只保留两类能力：
 
-如果合并 `api + core`：
+- public tool
+- public resource
 
-- SPI 契约和默认 runtime 实现会继续揉在一起；
-- 未来第三方 feature 的扩展边界会更虚；
-- `core` 的实现细节会更容易变成事实公共 API。
+这两类概念：
 
-所以合并能减少模块数，但不能解决抽象层级问题。
+- 对应 MCP 最终暴露给调用方的能力面；
+- 在语义层级上对齐；
+- 足以覆盖 feature 公开行为。
 
-### Why not keep feature -> api only
+### What should not be public nouns
 
-如果要求 `encrypt` / `mask` 只依赖 `api`，最直接的实现方式往往会把 workflow helper 再塞回 `api`。
+下面这些都不应作为公开 API 顶层概念存在：
 
-这会让 `api` 再次承担：
+- contribution
+- direct contribution
+- workflow contribution
+- invoker
+- reader
+- materializer
+- default wrapper
 
-- 契约
-- workflow helper
-- workflow-specific SPI extension
+它们不是调用方视角的能力，而是框架内部装配语言。
 
-也就是重新变成“半契约半实现”的混层模块。
+## Why workflow is not a public top-level category
 
-## 2. `mcp-workflow` 该放什么
+workflow 是真实存在的共享能力，但它不应该和 tool/resource 并列为公开 API 分类。
 
-### Shared workflow helpers
+原因有三点：
 
-这些类同时被 feature 和 core 使用，而且明显不是 runtime-only：
+1. 当前 workflow 最终暴露给外部的仍然是 tools。
+2. workflow 更像“工具之间的编排模式”，不是新的协议实体。
+3. 把 workflow 做成公开顶层分类，会导致公开抽象层级失衡。
 
-- `WorkflowPlanningSupport`
-- `WorkflowValidationSupport`
-- `WorkflowRequestBinder`
-- `WorkflowSqlUtils`
-- `WorkflowIntentResolverSupport`
-- `WorkflowPlanPayloadBuilder`
-- `WorkflowArtifactPayloadUtils`
-- `WorkflowArtifactMaskUtils`
-- `WorkflowArtifactBundle`
-- `WorkflowLifecycleUtils`
-- `WorkflowRuleValueUtils`
-- `WorkflowToolDescriptors`
+因此更合理的公共模型是：
 
-这批类应该进入 `mcp/workflow`。
+- feature-specific planning 仍然是 tool
+- platform-scoped workflow apply 是 generic tool
+- platform-scoped workflow validate 是 generic tool
 
-### Workflow-specific SPI
+这样 workflow 仍然存在，但它只以 tool 的形式出现在公开 API 里。
 
-下面两类虽然现在在 `mcp/api`，但它们并不是“基础 MCP 通用 SPI”，而是 workflow 特化扩展：
+## Internal architecture that still remains necessary
 
-- `MCPWorkflowToolContribution`
-- `MCPWorkflowValidationHandler`
+即使公开 API 被压平，内部仍然需要 workflow 专属共享层。
 
-它们更适合进入 `mcp/workflow`，这样 workflow 扩展语义会更完整。
+这个共享层需要承载的不是公开能力分类，而是内部 workflow 运行定义：
 
-### Workflow model / bridge contracts
+- workflow kind
+- workflow snapshot
+- workflow validation strategy
+- workflow apply synchronization strategy
+- workflow-shared binding and helper contracts
 
-这批类型本轮不建议强拆：
+这里的关键是：**这些概念可以是内部共享架构的一等概念，但不能是公开 API 的一等概念。**
 
-- `WorkflowRequest`
-- `WorkflowContextSnapshot`
-- `ValidationReport`
-- `ValidationSection`
-- `ClarifiedIntent`
-- `WorkflowLifecycle`
-- `WorkflowSessionContext`
-- `WorkflowPropertySource`
+## Why explicit workflow identity is required
 
-原因不是它们最终一定属于 `api`，而是它们已经漏进现有 feature-facing API：
+一旦 apply / validate 收敛成 generic public tools，runtime 就不能再靠工具名或 Java 类型猜测 workflow 家族。
 
-- `MCPFeatureContext` 直接暴露 `WorkflowSessionContext`
-- `WorkflowSessionContext` 又直接引用 `WorkflowContextSnapshot`
+因此需要显式的 workflow identity：
 
-如果本轮连它们一起迁，就不再是“抽 shared workflow layer”，而是开始重画 SPI。
+- workflow plan 创建时写入 `workflowKind`
+- apply / validate 通过 `plan_id` 读出 `workflowKind`
+- runtime 再用 `workflowKind` 找到对应内部 workflow definition
 
-## 3. `mcp-workflow` 不该放什么
+如果没有这条显式链路，generic public workflow tools 会退化成“表面统一、内部靠猜”。
 
-### Runtime-only classes stay in core
+## Recommended ownership split
 
-下面这些仍应留在 `mcp/core`：
+### `mcp/api`
 
-- `WorkflowExecutionService`
-- `WorkflowProxyQueryService`
-- `WorkflowExecutionToolHandler`
-- `WorkflowValidationToolHandler`
-- `InMemoryWorkflowSessionContext`
-- contribution / handler / resource registries
-- runtime materializer
+只保留：
 
-它们是典型 runtime-owned 实现，不属于共享 workflow 层。
+- public tool contracts
+- public resource contracts
+- shared descriptors
+- protocol DTOs
+- context capability contracts
+- exception contracts
 
-### Generic non-workflow helper should not be dragged in
+不保留：
 
-`MCPToolArguments` 是这轮最容易误放的类。
+- direct contribution
+- workflow contribution
+- invoker / reader
+- materializer-like helper
+- default wrapper implementations
 
-它不仅被 workflow plan handler 用，还被：
+### `mcp/workflow`
 
-- `ExecuteSQLToolHandler`
-- `SearchMetadataToolHandler`
+保留：
 
-这类非 workflow handler 使用。
+- workflow-shared contracts
+- workflow runtime definition seams
+- workflow planning and validation shared helpers
+- workflow-specific context capability or workflow-scoped binding seams
 
-所以它不是“workflow helper”，不该因为当前模块拆分方便就直接搬进 `mcp/workflow`。
+### `mcp/core`
 
-## 4. 方案三还能怎么优化
+保留：
 
-### Key optimization
+- runtime registry
+- dispatch
+- session store
+- generic workflow apply / validate runtime implementation
+- generic tool and resource registration runtime
 
-方案三最值得优化的一点是：
+## Key implication
 
-- 不要把 `MCPToolArguments` 直接搬进 `mcp/workflow`
-- 要把 feature 对它的直接编译依赖切断
+这条路线的真正代价不是模块数，而是：
 
-当前耦合点在：
+- 需要把 public API 和 internal workflow architecture 明确分开；
+- 需要为 generic apply / validate 建立显式 workflow kind dispatch；
+- 需要把 feature integration 从“公开 contribution 类”改为“公开 tool/resource + 内部 workflow definition”。
 
-- `WorkflowRequestBinder` 公开使用 `MCPToolArguments`
-- `PlanEncryptRuleToolHandler`
-- `PlanMaskRuleToolHandler`
-
-这会导致只要 feature 要用 workflow binder，就必须 import 一个非 workflow 通用 helper。
-
-### Better seam
-
-更合理的做法是二选一：
-
-1. 在 `mcp/workflow` 引入更小的 workflow-scoped argument accessor
-2. 或者把 `WorkflowRequestBinder` 改成只对外暴露 raw `Map<String, Object>` 和 workflow-specific binding seam
-
-两种方式的共同目标都是：
-
-- feature 不再直接 import `MCPToolArguments`
-- `mcp/workflow` 的边界保持 workflow-pure
-- `MCPToolArguments` 若仍有价值，只留给 core 的通用 handler 使用
-
-### Recommended choice
-
-推荐第二种方向优先：
-
-- 从 feature-facing API 上隐藏 `MCPToolArguments`
-- 如果之后仍需要提炼，再在 `mcp/workflow` 引入一个更小的 workflow-scoped accessor
-
-这样比直接复制一个 `WorkflowToolArguments` 更稳，也更符合“最少代码解决问题”。
-
-## 5. 最终边界建议
-
-### Module graph
-
-- `mcp/api`
-- `mcp/workflow` -> `mcp/api`
-- `mcp/core` -> `mcp/api + mcp/workflow`
-- `mcp/features/encrypt` -> `mcp/api + mcp/workflow`
-- `mcp/features/mask` -> `mcp/api + mcp/workflow`
-- `mcp/bootstrap` -> `mcp/core`
-
-### Responsibility summary
-
-- `mcp/api`
-  - foundational contracts
-  - base SPI
-  - protocol / metadata DTO
-  - retained workflow bridge / model contracts
-- `mcp/workflow`
-  - workflow-specific shared helper
-  - workflow-specific SPI contribution seam
-  - workflow descriptor / binder helper
-- `mcp/core`
-  - runtime registry
-  - runtime materializer
-  - runtime execution / validation / query service
-  - workflow session-store implementation
-
-## 6. What is explicitly not solved in this iteration
-
-- 不重画 `MCPFeatureContext` 的全部层次
-- 不把 workflow model 全量从 `api` 拿走
-- 不把基础 `feature/spi` 全部拆成 base SPI 和 workflow SPI 两层子模块
-- 不重新命名外部 MCP tool / resource / protocol
+但这是符合用户目标的代价，因为用户的目标不是“少改代码”，而是“API 纯净且同层”。
 
 ## Conclusion
 
-这轮最稳的 Speckit 结论是：
+本轮 Speckit 研究结论是：
 
-- 保留 `api` 和 `core`
-- 新增 `mcp/workflow`
-- 让 feature 依赖 `api + workflow`
-- 让 core 依赖 `api + workflow`
-- 通过更小的 workflow-facing binder seam 避免把 `MCPToolArguments` 这类非 workflow 通用 helper 错搬进新模块
-
-这样既能解决当前 feature -> core 的编译耦合，又不会把 `mcp/workflow` 做成另一个语义含混的 support 杂物间。
+- `mcp/api` 不应继续承载任何生产实现类；
+- public API 顶层只应保留 `tool` 和 `resource`；
+- workflow 不应作为公开顶层能力分类；
+- 更彻底的设计是保留 feature-specific planning tools，并把 workflow apply / validate 收敛成 generic public tools；
+- 为了支撑这套公开 API，需要在内部引入显式 `workflowKind` 和 internal workflow definition，而这些都应离开 `mcp/api`。
