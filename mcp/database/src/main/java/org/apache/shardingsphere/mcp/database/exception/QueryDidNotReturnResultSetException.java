@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.protocol.exception;
+package org.apache.shardingsphere.mcp.database.exception;
+
+import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
 
 /**
- * Exception for invalid pagination tokens.
+ * Exception for queries that should return a result set but do not.
  */
-public final class InvalidPageTokenException extends MCPInvalidRequestException {
+public final class QueryDidNotReturnResultSetException extends MCPQueryFailedException {
     
-    private static final long serialVersionUID = -501528649216015044L;
+    private static final long serialVersionUID = -5900542930019870563L;
     
-    public InvalidPageTokenException() {
-        super("Invalid page token.");
+    public QueryDidNotReturnResultSetException() {
+        super("Query did not return a result set.");
     }
 }

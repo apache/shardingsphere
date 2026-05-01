@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.protocol.exception;
+package org.apache.shardingsphere.mcp.database.exception;
+
+import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 
 /**
- * Exception for queries that should return a result set but do not.
+ * Exception for unsupported statement classes.
  */
-public final class QueryDidNotReturnResultSetException extends MCPQueryFailedException {
+public final class StatementClassNotSupportedException extends MCPUnsupportedException {
     
-    private static final long serialVersionUID = -5900542930019870563L;
+    private static final long serialVersionUID = 3648275985803132887L;
     
-    public QueryDidNotReturnResultSetException() {
-        super("Query did not return a result set.");
+    public StatementClassNotSupportedException() {
+        super("Statement class is not supported.");
     }
 }

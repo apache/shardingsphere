@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.protocol.exception;
+package org.apache.shardingsphere.mcp.database.exception;
+
+import org.apache.shardingsphere.mcp.protocol.exception.MCPNotFoundException;
 
 /**
- * Exception for unsupported statement classes.
+ * Exception for absent database capabilities.
  */
-public final class StatementClassNotSupportedException extends MCPUnsupportedException {
+public final class DatabaseCapabilityNotFoundException extends MCPNotFoundException {
     
-    private static final long serialVersionUID = 3648275985803132887L;
+    private static final long serialVersionUID = 1272153261931319286L;
     
-    public StatementClassNotSupportedException() {
-        super("Statement class is not supported.");
+    public DatabaseCapabilityNotFoundException() {
+        super("Database capability does not exist.");
     }
 }

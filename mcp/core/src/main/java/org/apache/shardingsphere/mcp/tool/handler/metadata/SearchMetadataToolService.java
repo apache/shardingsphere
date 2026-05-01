@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.database.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
@@ -25,12 +27,10 @@ import org.apache.shardingsphere.mcp.database.metadata.model.MCPSequenceMetadata
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.protocol.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
+import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchResult;
 
 import java.util.Arrays;

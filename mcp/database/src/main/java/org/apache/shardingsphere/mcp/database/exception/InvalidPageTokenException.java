@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.protocol.exception;
+package org.apache.shardingsphere.mcp.database.exception;
+
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 
 /**
- * Exception for absent database capabilities.
+ * Exception for invalid pagination tokens.
  */
-public final class DatabaseCapabilityNotFoundException extends MCPNotFoundException {
+public final class InvalidPageTokenException extends MCPInvalidRequestException {
     
-    private static final long serialVersionUID = 1272153261931319286L;
+    private static final long serialVersionUID = -501528649216015044L;
     
-    public DatabaseCapabilityNotFoundException() {
-        super("Database capability does not exist.");
+    public InvalidPageTokenException() {
+        super("Invalid page token.");
     }
 }

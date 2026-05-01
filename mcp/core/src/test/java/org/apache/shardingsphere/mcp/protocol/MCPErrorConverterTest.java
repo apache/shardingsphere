@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.protocol;
 
+import org.apache.shardingsphere.mcp.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
