@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.infra.util.props.PropertiesUtils;
-import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedList;
 import java.util.List;

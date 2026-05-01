@@ -21,10 +21,10 @@ import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 
 import java.util.Map;
 

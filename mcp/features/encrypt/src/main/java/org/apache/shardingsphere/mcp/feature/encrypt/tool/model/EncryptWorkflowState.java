@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowFeatureData;
+import org.apache.shardingsphere.mcp.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowFeatureData;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

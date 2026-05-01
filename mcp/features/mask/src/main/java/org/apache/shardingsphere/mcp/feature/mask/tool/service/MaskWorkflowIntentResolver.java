@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowIntentResolverSupport;
+import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowIntentResolverSupport;
 
 /**
  * Mask workflow intent resolver.

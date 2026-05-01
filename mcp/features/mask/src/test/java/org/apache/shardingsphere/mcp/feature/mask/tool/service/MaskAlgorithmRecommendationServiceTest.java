@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.tool.model.workflow.AlgorithmCandidate;
-import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
+import org.apache.shardingsphere.mcp.workflow.model.AlgorithmCandidate;
+import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

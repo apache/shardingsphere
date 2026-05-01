@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.model.workflow.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowIntentResolverSupport;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowIntentResolverSupport;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
 
 import java.util.Locale;
 

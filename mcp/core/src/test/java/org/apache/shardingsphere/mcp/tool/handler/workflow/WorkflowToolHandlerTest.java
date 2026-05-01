@@ -21,12 +21,12 @@ import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowExecutionService;
-import org.apache.shardingsphere.mcp.tool.service.workflow.InMemoryWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

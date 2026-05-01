@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssue;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt;
 import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
-import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.feature.spi.MCPResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPToolContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;

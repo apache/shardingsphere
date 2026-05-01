@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mcp.context;
 import lombok.Getter;
 import org.apache.shardingsphere.mcp.capability.database.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.tool.service.workflow.InMemoryWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 
 /**
  * MCP runtime context.

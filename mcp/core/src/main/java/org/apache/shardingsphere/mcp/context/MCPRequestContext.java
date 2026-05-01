@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mcp.metadata.context.RequestScopedMetadataConte
 import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowProxyQueryService;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
+import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 
 /**
  * MCP request context.

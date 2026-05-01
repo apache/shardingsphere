@@ -27,12 +27,12 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningArguments;
-import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRequestBinder;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningArguments;
+import org.apache.shardingsphere.mcp.workflow.service.WorkflowRequestBinder;
 
 import java.util.List;
 import java.util.Map;

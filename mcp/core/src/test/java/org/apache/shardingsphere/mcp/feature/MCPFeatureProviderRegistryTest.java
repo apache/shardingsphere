@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
-import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;

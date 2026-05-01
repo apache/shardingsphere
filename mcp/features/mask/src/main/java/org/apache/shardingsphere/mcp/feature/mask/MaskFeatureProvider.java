@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValid
 import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
-import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
 
 import java.util.Collection;

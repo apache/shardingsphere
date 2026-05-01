@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPToolContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPWorkflowToolContribution;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.tool.handler.DelegatingToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;

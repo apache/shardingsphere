@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.model.workflow.DerivedColumnPlan;
-import org.apache.shardingsphere.mcp.tool.model.workflow.RuleArtifact;
+import org.apache.shardingsphere.mcp.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.workflow.model.RuleArtifact;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
