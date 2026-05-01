@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-util</artifactId>
+            <artifactId>shardingsphere-mcp-workflow</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

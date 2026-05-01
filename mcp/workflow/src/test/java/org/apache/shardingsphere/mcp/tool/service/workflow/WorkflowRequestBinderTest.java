@@ -48,9 +48,9 @@ class WorkflowRequestBinderTest {
         AtomicReference<String> actualFeatureAlgorithm = new AtomicReference<>();
         AtomicReference<Map<String, Object>> actualStructuredIntentEvidence = new AtomicReference<>();
         AtomicReference<Map<String, Object>> actualUserOverrides = new AtomicReference<>();
-        WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(arguments, (request, toolArguments) -> {
-            request.setAlgorithmType(toolArguments.getStringArgument("algorithm_type"));
-            actualFeatureAlgorithm.set(toolArguments.getStringArgument("algorithm_type"));
+        WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(arguments, (request, workflowPlanningArguments) -> {
+            request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type"));
+            actualFeatureAlgorithm.set(workflowPlanningArguments.getStringArgument("algorithm_type"));
         }, (request, structuredIntentEvidence) -> {
             request.setFieldSemantics(String.valueOf(structuredIntentEvidence.get("field_semantics")));
             actualStructuredIntentEvidence.set(structuredIntentEvidence);
@@ -81,7 +81,7 @@ class WorkflowRequestBinderTest {
         WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(Map.of(
                 "database", "logic_db",
                 "structured_intent_evidence", "invalid",
-                "user_overrides", 1), (request, toolArguments) -> request.setAlgorithmType("AES"),
+                "user_overrides", 1), (request, workflowPlanningArguments) -> request.setAlgorithmType("AES"),
                 (request, structuredIntentEvidence) -> actualStructuredIntentCount.incrementAndGet(),
                 (request, userOverrides) -> actualUserOverrideCount.incrementAndGet());
         assertThat(actual.getDatabase(), is("logic_db"));

@@ -29,8 +29,9 @@
     
     <modules>
         <module>api</module>
-        <module>features</module>
+        <module>workflow</module>
         <module>core</module>
+        <module>features</module>
         <module>bootstrap</module>
     </modules>
     

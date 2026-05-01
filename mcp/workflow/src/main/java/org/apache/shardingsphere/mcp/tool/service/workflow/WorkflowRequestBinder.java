@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.tool.service.workflow;
 
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +45,7 @@ public final class WorkflowRequestBinder {
      * @return bound workflow request
      */
     public static <T extends WorkflowRequest> T bindPlanningRequest(final Supplier<T> requestSupplier, final Map<String, Object> arguments,
-                                                                    final BiConsumer<T, MCPToolArguments> featureArgumentBinder,
+                                                                    final BiConsumer<T, WorkflowPlanningArguments> featureArgumentBinder,
                                                                     final BiConsumer<T, Map<String, Object>> structuredIntentBinder,
                                                                     final BiConsumer<T, Map<String, Object>> userOverrideBinder) {
         Objects.requireNonNull(requestSupplier);
@@ -54,11 +53,11 @@ public final class WorkflowRequestBinder {
         Objects.requireNonNull(featureArgumentBinder);
         Objects.requireNonNull(structuredIntentBinder);
         Objects.requireNonNull(userOverrideBinder);
-        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
+        WorkflowPlanningArguments workflowPlanningArguments = new WorkflowPlanningArguments(arguments);
         T result = requestSupplier.get();
-        bindCommonPlanningFields(result, toolArguments);
+        bindCommonPlanningFields(result, workflowPlanningArguments);
         applyObjectMap(arguments.get("structured_intent_evidence"), actualValue -> structuredIntentBinder.accept(result, actualValue));
-        featureArgumentBinder.accept(result, toolArguments);
+        featureArgumentBinder.accept(result, workflowPlanningArguments);
         applyObjectMap(arguments.get("user_overrides"), actualValue -> userOverrideBinder.accept(result, actualValue));
         return result;
     }
@@ -73,22 +72,22 @@ public final class WorkflowRequestBinder {
      * @return bound workflow request
      */
     public static WorkflowRequest bindPlanningRequest(final Map<String, Object> arguments,
-                                                      final BiConsumer<WorkflowRequest, MCPToolArguments> featureArgumentBinder,
+                                                      final BiConsumer<WorkflowRequest, WorkflowPlanningArguments> featureArgumentBinder,
                                                       final BiConsumer<WorkflowRequest, Map<String, Object>> structuredIntentBinder,
                                                       final BiConsumer<WorkflowRequest, Map<String, Object>> userOverrideBinder) {
         return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder, userOverrideBinder);
     }
     
-    private static void bindCommonPlanningFields(final WorkflowRequest request, final MCPToolArguments toolArguments) {
-        request.setPlanId(toolArguments.getStringArgument("plan_id"));
-        request.setDatabase(toolArguments.getStringArgument("database"));
-        request.setSchema(toolArguments.getStringArgument("schema"));
-        request.setTable(toolArguments.getStringArgument("table"));
-        request.setColumn(toolArguments.getStringArgument("column"));
-        request.setOperationType(toolArguments.getStringArgument("operation_type"));
-        request.setNaturalLanguageIntent(toolArguments.getStringArgument("natural_language_intent"));
-        request.setDeliveryMode(toolArguments.getStringArgument("delivery_mode"));
-        request.setExecutionMode(toolArguments.getStringArgument("execution_mode"));
+    private static void bindCommonPlanningFields(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
+        request.setPlanId(workflowPlanningArguments.getStringArgument("plan_id"));
+        request.setDatabase(workflowPlanningArguments.getStringArgument("database"));
+        request.setSchema(workflowPlanningArguments.getStringArgument("schema"));
+        request.setTable(workflowPlanningArguments.getStringArgument("table"));
+        request.setColumn(workflowPlanningArguments.getStringArgument("column"));
+        request.setOperationType(workflowPlanningArguments.getStringArgument("operation_type"));
+        request.setNaturalLanguageIntent(workflowPlanningArguments.getStringArgument("natural_language_intent"));
+        request.setDeliveryMode(workflowPlanningArguments.getStringArgument("delivery_mode"));
+        request.setExecutionMode(workflowPlanningArguments.getStringArgument("execution_mode"));
     }
     
     @SuppressWarnings("unchecked")

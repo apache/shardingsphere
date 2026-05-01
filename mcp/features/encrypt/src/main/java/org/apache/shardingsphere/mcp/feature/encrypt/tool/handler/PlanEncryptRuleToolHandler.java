@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type
 import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRequestBinder;
 
 import java.util.List;
@@ -74,20 +74,20 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
-    private void bindFeatureArguments(final EncryptWorkflowRequest request, final MCPToolArguments toolArguments) {
-        String allowIndexDDL = toolArguments.getStringArgument("allow_index_ddl");
+    private void bindFeatureArguments(final EncryptWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
+        String allowIndexDDL = workflowPlanningArguments.getStringArgument("allow_index_ddl");
         if (!allowIndexDDL.isEmpty()) {
-            request.getOptions().setAllowIndexDDL(toolArguments.getBooleanArgument("allow_index_ddl", true));
+            request.getOptions().setAllowIndexDDL(workflowPlanningArguments.getBooleanArgument("allow_index_ddl", true));
         }
-        request.setAlgorithmType(toolArguments.getStringArgument("algorithm_type"));
-        request.getOptions().setAssistedQueryAlgorithmType(toolArguments.getStringArgument("assisted_query_algorithm_type"));
-        request.getOptions().setLikeQueryAlgorithmType(toolArguments.getStringArgument("like_query_algorithm_type"));
-        request.getOptions().setCipherColumnName(toolArguments.getStringArgument("cipher_column_name"));
-        request.getOptions().setAssistedQueryColumnName(toolArguments.getStringArgument("assisted_query_column_name"));
-        request.getOptions().setLikeQueryColumnName(toolArguments.getStringArgument("like_query_column_name"));
-        request.getPrimaryAlgorithmProperties().putAll(toolArguments.getMapArgument("primary_algorithm_properties"));
-        request.getOptions().getAssistedQueryAlgorithmProperties().putAll(toolArguments.getMapArgument("assisted_query_algorithm_properties"));
-        request.getOptions().getLikeQueryAlgorithmProperties().putAll(toolArguments.getMapArgument("like_query_algorithm_properties"));
+        request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type"));
+        request.getOptions().setAssistedQueryAlgorithmType(workflowPlanningArguments.getStringArgument("assisted_query_algorithm_type"));
+        request.getOptions().setLikeQueryAlgorithmType(workflowPlanningArguments.getStringArgument("like_query_algorithm_type"));
+        request.getOptions().setCipherColumnName(workflowPlanningArguments.getStringArgument("cipher_column_name"));
+        request.getOptions().setAssistedQueryColumnName(workflowPlanningArguments.getStringArgument("assisted_query_column_name"));
+        request.getOptions().setLikeQueryColumnName(workflowPlanningArguments.getStringArgument("like_query_column_name"));
+        request.getPrimaryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument("primary_algorithm_properties"));
+        request.getOptions().getAssistedQueryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument("assisted_query_algorithm_properties"));
+        request.getOptions().getLikeQueryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument("like_query_algorithm_properties"));
     }
     
     private void applyStructuredIntentEvidence(final EncryptWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {

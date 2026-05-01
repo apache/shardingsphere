@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mcp.tool.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.tool.model.workflow.WorkflowRequest;
-import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.tool.service.workflow.WorkflowRequestBinder;
 
 import java.util.List;
@@ -65,9 +65,9 @@ public final class PlanMaskRuleToolHandler implements ToolHandler {
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     
-    private void bindFeatureArguments(final WorkflowRequest request, final MCPToolArguments toolArguments) {
-        request.setAlgorithmType(toolArguments.getStringArgument("algorithm_type"));
-        request.getPrimaryAlgorithmProperties().putAll(toolArguments.getMapArgument("primary_algorithm_properties"));
+    private void bindFeatureArguments(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
+        request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type"));
+        request.getPrimaryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument("primary_algorithm_properties"));
     }
     
     private void applyStructuredIntentEvidence(final WorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
