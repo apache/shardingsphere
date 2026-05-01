@@ -15,24 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.spi;
+package org.apache.shardingsphere.mcp.workflow;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 
 /**
- * Resource reader for MCP resource contribution.
+ * Workflow-aware MCP feature context.
  */
-@FunctionalInterface
-public interface MCPResourceReader {
+public interface MCPWorkflowContext extends MCPFeatureContext {
     
     /**
-     * Read one MCP resource.
+     * Get workflow session context.
      *
-     * @param requestContext request context
-     * @param uriVariables matched URI variables
-     * @return resource response
+     * @return workflow session context
      */
-    MCPResponse read(MCPFeatureContext requestContext, MCPUriVariables uriVariables);
+    WorkflowSessionContext getWorkflowSessionContext();
+    
+    /**
+     * Get required workflow-aware request context.
+     *
+     * @param requestContext feature context
+     * @return workflow-aware request context
+     * @throws IllegalStateException workflow-aware context is unavailable
+     */
+    static MCPWorkflowContext getRequired(final MCPFeatureContext requestContext) {
+        if (requestContext instanceof MCPWorkflowContext) {
+            return (MCPWorkflowContext) requestContext;
+        }
+        throw new IllegalStateException("Workflow-aware request context is required.");
+    }
 }

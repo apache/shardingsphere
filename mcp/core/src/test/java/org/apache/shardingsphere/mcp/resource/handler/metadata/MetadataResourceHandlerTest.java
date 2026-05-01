@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

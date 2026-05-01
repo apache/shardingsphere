@@ -22,8 +22,8 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 
 /**
  * Handler for encrypt algorithm plugins resource URI.

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
 import org.apache.shardingsphere.mcp.feature.mask.TestWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
@@ -26,6 +25,7 @@ import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.workflow.model.RuleArtifact;
@@ -132,7 +132,7 @@ class MaskToolHandlerTest {
     }
     
     private RequestContextFixture createRequestContextFixture() {
-        MCPFeatureContext result = mock(MCPFeatureContext.class);
+        MCPWorkflowContext result = mock(MCPWorkflowContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -144,7 +144,7 @@ class MaskToolHandlerTest {
         return new RequestContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record RequestContextFixture(MCPFeatureContext requestContext, WorkflowSessionContext workflowSessionContext,
+    private record RequestContextFixture(MCPWorkflowContext requestContext, WorkflowSessionContext workflowSessionContext,
                                          MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
                                          MCPFeatureExecutionFacade executionFacade) {
     }

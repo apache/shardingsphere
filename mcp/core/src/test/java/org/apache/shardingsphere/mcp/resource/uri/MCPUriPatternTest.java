@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.resource.uri;
 
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

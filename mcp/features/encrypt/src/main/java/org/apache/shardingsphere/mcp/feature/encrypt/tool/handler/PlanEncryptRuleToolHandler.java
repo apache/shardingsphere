@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
@@ -67,10 +68,11 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
+        MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
         EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, arguments,
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.plan(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
-                requestContext.getQueryFacade(), sessionId, request);
+        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(),
+                workflowContext.getQueryFacade(), sessionId, request);
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     

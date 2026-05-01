@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 

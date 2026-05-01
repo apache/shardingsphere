@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
@@ -36,7 +37,7 @@ import org.apache.shardingsphere.mcp.resource.handler.metadata.MetadataResourceH
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

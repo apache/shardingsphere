@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Collection;

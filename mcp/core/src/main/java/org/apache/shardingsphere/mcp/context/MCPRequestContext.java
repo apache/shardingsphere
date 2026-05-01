@@ -28,13 +28,14 @@ import org.apache.shardingsphere.mcp.metadata.query.MetadataQueryService;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 
 /**
  * MCP request context.
  */
 @Getter
-public final class MCPRequestContext implements MCPFeatureContext {
+public final class MCPRequestContext implements MCPWorkflowContext {
     
     private final MCPSessionManager sessionManager;
     
@@ -51,22 +52,13 @@ public final class MCPRequestContext implements MCPFeatureContext {
     private final MCPFeatureQueryFacade queryFacade;
     
     public MCPRequestContext(final MCPRuntimeContext runtimeContext) {
-        this(runtimeContext.getSessionManager(), runtimeContext.getDatabaseCapabilityProvider(),
-                new RequestScopedMetadataContext(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases(), runtimeContext.getDatabaseCapabilityProvider()),
-                runtimeContext.getWorkflowSessionContext(),
-                null, null, null);
-    }
-    
-    public MCPRequestContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final RequestScopedMetadataContext metadataContext,
-                             final WorkflowSessionContext workflowSessionContext, final MCPMetadataQueryFacade metadataQueryFacade,
-                             final MCPFeatureExecutionFacade executionFacade, final MCPFeatureQueryFacade queryFacade) {
-        this.sessionManager = sessionManager;
-        this.databaseCapabilityProvider = databaseCapabilityProvider;
-        this.metadataContext = metadataContext;
-        this.workflowSessionContext = workflowSessionContext;
-        this.metadataQueryFacade = null == metadataQueryFacade ? new MetadataQueryService(databaseCapabilityProvider, metadataContext) : metadataQueryFacade;
-        this.executionFacade = null == executionFacade ? new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager) : executionFacade;
-        this.queryFacade = null == queryFacade ? new WorkflowProxyQueryService(sessionManager, databaseCapabilityProvider) : queryFacade;
+        sessionManager = runtimeContext.getSessionManager();
+        databaseCapabilityProvider = runtimeContext.getDatabaseCapabilityProvider();
+        metadataContext = new RequestScopedMetadataContext(sessionManager.getTransactionResourceManager().getRuntimeDatabases(), databaseCapabilityProvider);
+        workflowSessionContext = runtimeContext.getWorkflowSessionContext();
+        metadataQueryFacade = new MetadataQueryService(databaseCapabilityProvider, metadataContext);
+        executionFacade = new MCPSQLExecutionFacade(databaseCapabilityProvider, sessionManager);
+        queryFacade = new WorkflowProxyQueryService(sessionManager, databaseCapabilityProvider);
     }
     
     @Override

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 
 import java.util.List;
 import java.util.Map;

@@ -21,7 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPResourceReader;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 
 /**
  * Delegating resource handler backed by contribution metadata.

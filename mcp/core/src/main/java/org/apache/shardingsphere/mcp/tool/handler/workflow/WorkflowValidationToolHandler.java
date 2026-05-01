@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 
 import java.util.Map;
 
@@ -50,7 +51,8 @@ public final class WorkflowValidationToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(workflowValidationHandler.validate(requestContext.getWorkflowSessionContext(), requestContext.getMetadataQueryFacade(),
-                requestContext.getQueryFacade(), requestContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id")));
+        MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
+        return new MCPMapResponse(workflowValidationHandler.validate(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(),
+                workflowContext.getQueryFacade(), workflowContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id")));
     }
 }

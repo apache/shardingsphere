@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 
 import java.util.Map;
 
@@ -54,7 +55,8 @@ public final class WorkflowExecutionToolHandler implements ToolHandler {
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        return new MCPMapResponse(executionService.apply(requestContext.getWorkflowSessionContext(), requestContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id"),
+        MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
+        return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), workflowContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id"),
                 toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
     }
 }

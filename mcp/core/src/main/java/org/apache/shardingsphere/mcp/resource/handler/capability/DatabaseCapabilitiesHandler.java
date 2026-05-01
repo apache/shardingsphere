@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.resource.handler.capability;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.protocol.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.uri.MCPUriVariables;
+import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 
 /**
  * Handler for database capabilities resource URI.

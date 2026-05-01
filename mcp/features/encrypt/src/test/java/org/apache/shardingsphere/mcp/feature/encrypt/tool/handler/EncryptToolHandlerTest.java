@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.workflow.model.DerivedColumnPlan;
@@ -153,7 +153,7 @@ class EncryptToolHandlerTest {
     }
     
     private RequestContextFixture createRequestContextFixture() {
-        MCPFeatureContext result = mock(MCPFeatureContext.class);
+        MCPWorkflowContext result = mock(MCPWorkflowContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -165,7 +165,7 @@ class EncryptToolHandlerTest {
         return new RequestContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record RequestContextFixture(MCPFeatureContext requestContext, WorkflowSessionContext workflowSessionContext,
+    private record RequestContextFixture(MCPWorkflowContext requestContext, WorkflowSessionContext workflowSessionContext,
                                          MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
                                          MCPFeatureExecutionFacade executionFacade) {
     }

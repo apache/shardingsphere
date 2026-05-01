@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;

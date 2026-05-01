@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
-import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -79,7 +79,7 @@ class WorkflowToolHandlerTest {
     }
     
     private RequestContextFixture createRequestContextFixture() {
-        MCPFeatureContext result = mock(MCPFeatureContext.class);
+        MCPWorkflowContext result = mock(MCPWorkflowContext.class);
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -91,7 +91,7 @@ class WorkflowToolHandlerTest {
         return new RequestContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record RequestContextFixture(MCPFeatureContext requestContext, WorkflowSessionContext workflowSessionContext,
+    private record RequestContextFixture(MCPWorkflowContext requestContext, WorkflowSessionContext workflowSessionContext,
                                          MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
                                          MCPFeatureExecutionFacade executionFacade) {
     }

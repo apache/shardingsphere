@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

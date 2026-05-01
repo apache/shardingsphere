@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPResourceContribution;
 import org.apache.shardingsphere.mcp.resource.handler.DelegatingResourceHandler;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandler;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;

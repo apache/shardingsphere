@@ -15,32 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.uri;
+package org.apache.shardingsphere.mcp.resource;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-
-import java.util.Map;
+import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 
 /**
- * MCP URI variables.
+ * Handler for one MCP resource URI pattern.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPUriVariables {
-    
-    private final Map<String, String> variables;
+public interface ResourceHandler {
     
     /**
-     * Get variable.
+     * Get URI pattern.
      *
-     * @param variableName variable name
-     * @return variable value
+     * @return URI pattern
      */
-    public String getVariable(final String variableName) {
-        String result = variables.get(variableName);
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing URI variable `%s`.", variableName)));
-        return result;
-    }
+    String getUriPattern();
+    
+    /**
+     * Handle one matched resource URI.
+     *
+     * @param requestContext request context
+     * @param uriVariables matched URI variables
+     * @return resource response
+     */
+    MCPResponse handle(MCPFeatureContext requestContext, MCPUriVariables uriVariables);
 }
