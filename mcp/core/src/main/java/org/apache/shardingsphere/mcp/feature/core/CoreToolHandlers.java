@@ -19,25 +19,28 @@ package org.apache.shardingsphere.mcp.feature.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
+import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowValidationToolHandler;
 
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Core tool contributions.
+ * Core tool handlers.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class CoreToolContributions {
+final class CoreToolHandlers {
     
-    static Collection<MCPContribution> createContributions() {
-        SearchMetadataToolHandler searchMetadataToolHandler = new SearchMetadataToolHandler();
-        ExecuteSQLToolHandler executeSQLToolHandler = new ExecuteSQLToolHandler();
+    static Collection<ToolHandler> createHandlers() {
+        WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry = WorkflowRuntimeDefinitionRegistry.load();
         return List.of(
-                new MCPDirectToolContribution(searchMetadataToolHandler.getToolDescriptor(), searchMetadataToolHandler::handle),
-                new MCPDirectToolContribution(executeSQLToolHandler.getToolDescriptor(), executeSQLToolHandler::handle));
+                new SearchMetadataToolHandler(),
+                new ExecuteSQLToolHandler(),
+                new WorkflowExecutionToolHandler(workflowRuntimeDefinitionRegistry),
+                new WorkflowValidationToolHandler(workflowRuntimeDefinitionRegistry));
     }
 }

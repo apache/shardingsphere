@@ -122,7 +122,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 说明：
 
 - metadata 的 list / detail / capability discovery 统一走 `resources/read`。
-- 当前 public tools 包括 `search_metadata`、`execute_query`、`plan_encrypt_rule`、`apply_encrypt_rule`、`validate_encrypt_rule`、`plan_mask_rule`、`apply_mask_rule` 和 `validate_mask_rule`。
+- 当前 public tools 包括 `search_metadata`、`execute_query`、`plan_encrypt_rule`、`plan_mask_rule`、`apply_workflow` 和 `validate_workflow`。
 - 加密与脱敏 workflow 面向由 ShardingSphere-Proxy 暴露的逻辑库；下文会单独说明这部分的前置条件和使用方式。
 - `search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。
 
@@ -320,23 +320,22 @@ encrypt 和 mask 模块本身就是最直接的参考实现。
 
 ### 相关 tools 与 resources
 
-加密 feature 对外暴露 3 个 tools：
+加密 feature 对外暴露 1 个 planning tool：
 
 - `plan_encrypt_rule`
   - 识别加密意图，补全缺失参数，生成派生列方案、DDL、DistSQL、索引计划和校验策略。
-- `apply_encrypt_rule`
-  - 执行加密 plan 生成的 artifacts，或在 `manual-only` 模式下导出人工执行包。
-- `validate_encrypt_rule`
-  - 从 DDL、规则状态、逻辑元数据和 SQL 可执行性 4 个层面校验加密结果。
 
-脱敏 feature 对外暴露 3 个 tools：
+脱敏 feature 对外暴露 1 个 planning tool：
 
 - `plan_mask_rule`
   - 识别脱敏意图，补全缺失参数，生成 DistSQL 和校验策略。
-- `apply_mask_rule`
-  - 执行脱敏 plan 生成的 artifacts，或在 `manual-only` 模式下导出人工执行包。
-- `validate_mask_rule`
-  - 从规则状态、逻辑元数据和 SQL 可执行性层面校验脱敏结果。
+
+workflow runtime 额外提供 2 个 encrypt / mask 共用的 generic tools：
+
+- `apply_workflow`
+  - 按当前 `plan_id` 执行生成的 artifacts，或在 `manual-only` 模式下导出人工执行包。
+- `validate_workflow`
+  - 按 workflow 自身的校验层级检查当前 plan 的最终结果。
 
 Workflow 同时补充了以下 feature resources：
 
@@ -353,8 +352,8 @@ Workflow 同时补充了以下 feature resources：
 
 - 整个 workflow 必须复用同一个 `MCP-Session-Id`。`plan`、`apply`、`validate` 如果切换到别的 session，后续调用会因为 plan 归属不一致而失败。
 - 第一次调用 `plan_encrypt_rule` 或 `plan_mask_rule` 时不需要 `plan_id`；只要拿到 `plan_id`，后续所有补问、继续规划、执行和校验都继续使用这个 `plan_id`，但只在当前 feature 的 workflow 内复用。
-- `plan_encrypt_rule` 和 `plan_mask_rule` 只负责规划，不会执行任何 DDL 或 DistSQL；真正执行发生在各自的 `apply_*_rule`。
-- `validate_encrypt_rule` 和 `validate_mask_rule` 只做校验，不会修改规则，也不会补执行遗漏步骤。
+- `plan_encrypt_rule` 和 `plan_mask_rule` 只负责规划，不会执行任何 DDL 或 DistSQL；真正执行统一通过 `apply_workflow`。
+- `validate_workflow` 只做校验，不会修改规则，也不会补执行遗漏步骤。
 - 用户始终面向逻辑库、逻辑表、逻辑列发起请求。对加密场景，MCP 可能会自动规划并创建物理派生列，但对用户暴露的目标仍然是 Proxy 里的逻辑对象。
 - `schema` 是可选的；如果 Proxy 逻辑库下只有一个 schema，MCP 会自动补齐；如果无法唯一定位，MCP 会明确返回 `请明确 schema。`。
 - `delivery_mode` 只影响客户端如何组织对话和展示步骤，不影响最终生成的 artifacts；真正影响执行行为的是 `execution_mode`。
@@ -368,9 +367,9 @@ Workflow 同时补充了以下 feature resources：
 1. 先调用对应 feature 的 planner：加密用 `plan_encrypt_rule`，脱敏用 `plan_mask_rule`，不要直接从 `apply` 开始。
 2. 如果返回 `status = clarifying`，读取 `pending_questions`，带上同一个 `plan_id` 再次调用同一个 `plan_*_rule` 补齐缺失信息。
 3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
-4. 调用对应的 `apply_*_rule` 执行 artifacts；如果要人工执行，就把 `execution_mode` 设为 `manual-only`。
+4. 调用 `apply_workflow` 执行 artifacts；如果要人工执行，就把 `execution_mode` 设为 `manual-only`。
 5. 如果 `apply` 返回 `awaiting-manual-execution`，先把 `manual_artifact_package` 里的 SQL / DistSQL 在 Proxy 上手工执行完，再进入下一步。
-6. 调用对应的 `validate_*_rule`，确认返回中的校验层级都通过。
+6. 调用 `validate_workflow`，确认返回中的校验层级都通过。
 7. 如果 `validate` 失败，优先看 `issues` 和 `mismatches`，修复后再继续补执行或重新规划。
 
 ### 整体交互方式
@@ -393,11 +392,11 @@ Workflow 同时补充了以下 feature resources：
 - `planned`
   - artifacts 已生成，可以进入 apply。
 - `completed`
-  - `apply_encrypt_rule` 或 `apply_mask_rule` 已执行完成。
+  - `apply_workflow` 已执行完成。
 - `awaiting-manual-execution`
   - 选择了 `manual-only`，系统只导出了 artifacts，没有自动执行。
 - `validated`
-  - `validate_encrypt_rule` 或 `validate_mask_rule` 已通过。
+  - `validate_workflow` 已通过。
 
 另外：
 
@@ -411,9 +410,9 @@ Workflow 同时补充了以下 feature resources：
 - `clarifying`
   - 说明信息还不够。直接读取 `pending_questions`，带上同一个 `plan_id` 继续调用对应的 `plan_*_rule`。
 - `planned`
-  - 说明执行包已经生成好了。此时不要再补问，应该 review artifacts，然后进入对应的 `apply_*_rule`。
+  - 说明执行包已经生成好了。此时不要再补问，应该 review artifacts，然后进入 `apply_workflow`。
 - `completed`
-  - 说明自动执行已经结束。下一步就是对应的 `validate_*_rule`。
+  - 说明自动执行已经结束。下一步就是 `validate_workflow`。
 - `awaiting-manual-execution`
   - 说明你选择了 `manual-only`。下一步不是重新 `apply`，而是先手工执行返回的 artifacts，然后再 `validate`。
 - `validated`
@@ -442,7 +441,7 @@ Workflow 同时补充了以下 feature resources：
 - `index_plan`
   - 只对加密出现，且仅在等值查询或模糊查询需要派生索引时返回。
 
-`apply_encrypt_rule` 和 `apply_mask_rule` 返回里，最值得优先看的字段是：
+`apply_workflow` 返回里，最值得优先看的字段是：
 
 - `status`
 - `issues`
@@ -452,7 +451,7 @@ Workflow 同时补充了以下 feature resources：
 - `skipped_artifacts`
 - `manual_artifact_package`
 
-`validate_encrypt_rule` 和 `validate_mask_rule` 返回里，最值得优先看的字段是：
+`validate_workflow` 返回里，最值得优先看的字段是：
 
 - `status`
 - `overall_status`
@@ -632,7 +631,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 典型响应片段如下：
@@ -658,7 +657,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 典型响应片段如下：
@@ -704,7 +703,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 如果只想让 MCP 生成 SQL 和 DistSQL，不自动执行，可以改为：
@@ -715,7 +714,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
 ```
 
 `manual-only` 会返回 `manual_artifact_package`，里面包含：
@@ -725,7 +724,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `distsql_artifacts`
 
 如果要分步执行，可以通过 `approved_steps` 只执行一部分步骤，例如只执行 `ddl`、`index_ddl` 或 `rule_distsql`。
-这类分步执行主要用于 review 或灰度流程；如果只执行了一部分，`validate_encrypt_rule` 很可能会先失败，直到剩余步骤也补执行完成。
+这类分步执行主要用于 review 或灰度流程；如果只执行了一部分，`validate_workflow` 很可能会先失败，直到剩余步骤也补执行完成。
 
 执行完成后，建议立刻调用：
 
@@ -735,7 +734,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_encrypt_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-validate-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 校验会覆盖 4 层：
@@ -935,7 +934,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 第 4 步：校验脱敏规则
@@ -946,7 +945,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_mask_rule\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-validate-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"validate_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
 ```
 
 只要 `rule_validation`、`logical_metadata_validation` 和 `sql_executability_validation` 都通过，这次脱敏 workflow 就可以认为生效了。

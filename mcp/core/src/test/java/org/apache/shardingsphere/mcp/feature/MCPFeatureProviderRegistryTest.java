@@ -18,18 +18,15 @@
 package org.apache.shardingsphere.mcp.feature;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
-import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -41,28 +38,22 @@ import static org.mockito.Mockito.when;
 class MCPFeatureProviderRegistryTest {
     
     @Test
-    void assertLoadToolHandlersWithContributions() {
+    void assertLoadToolHandlers() {
         MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
-        MCPToolDescriptor toolDescriptor = createToolDescriptor("search_metadata");
-        MCPToolDescriptor planningToolDescriptor = createToolDescriptor("plan_encrypt_rule");
-        when(featureProvider.getContributions()).thenReturn(List.of(
-                new MCPDirectToolContribution(toolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of())),
-                new MCPWorkflowToolContribution(planningToolDescriptor, (requestContext, sessionId, arguments) -> new MCPMapResponse(Map.of()),
-                        "apply_encrypt_rule", "validate_encrypt_rule", (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
-                        },
-                        (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of("status", "validated"))));
+        List<ToolHandler> toolHandlers = List.of(createToolHandler("search_metadata"), createToolHandler("plan_encrypt_rule"));
+        when(featureProvider.getToolHandlers()).thenReturn(toolHandlers);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
             List<String> actual = MCPFeatureProviderRegistry.loadToolHandlers().stream().map(each -> each.getToolDescriptor().getName()).toList();
-            assertThat(actual, is(List.of("search_metadata", "plan_encrypt_rule", "apply_encrypt_rule", "validate_encrypt_rule")));
+            assertThat(actual, is(List.of("search_metadata", "plan_encrypt_rule")));
         }
     }
     
     @Test
-    void assertLoadResourceHandlersWithContributions() {
+    void assertLoadResourceHandlers() {
         MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
-        when(featureProvider.getContributions()).thenReturn(List.of(
-                new MCPDirectResourceContribution("shardingsphere://foo", (requestContext, uriVariables) -> new MCPMapResponse(Map.of()))));
+        List<ResourceHandler> resourceHandlers = List.of(createResourceHandler("shardingsphere://foo"));
+        when(featureProvider.getResourceHandlers()).thenReturn(resourceHandlers);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
             List<ResourceHandler> actual = List.copyOf(MCPFeatureProviderRegistry.loadResourceHandlers());
@@ -71,9 +62,60 @@ class MCPFeatureProviderRegistryTest {
         }
     }
     
+    @Test
+    void assertCreateToolHandlersWithNullHandlers() {
+        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        when(featureProvider.getToolHandlers()).thenReturn(null);
+        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPFeatureProviderRegistry.createToolHandlers(featureProvider));
+        assertThat(actual.getMessage(), is(String.format("Tool handlers are required for `%s`.", featureProvider.getClass().getName())));
+    }
+    
+    @Test
+    void assertCreateToolHandlersWithNullHandler() {
+        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        List<ToolHandler> toolHandlers = new ArrayList<>();
+        toolHandlers.add(createToolHandler("search_metadata"));
+        toolHandlers.add(null);
+        when(featureProvider.getToolHandlers()).thenReturn(toolHandlers);
+        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPFeatureProviderRegistry.createToolHandlers(featureProvider));
+        assertThat(actual.getMessage(), is(String.format("Tool handler is required for `%s`.", featureProvider.getClass().getName())));
+    }
+    
+    @Test
+    void assertCreateResourceHandlersWithNullHandlers() {
+        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        when(featureProvider.getResourceHandlers()).thenReturn(null);
+        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPFeatureProviderRegistry.createResourceHandlers(featureProvider));
+        assertThat(actual.getMessage(), is(String.format("Resource handlers are required for `%s`.", featureProvider.getClass().getName())));
+    }
+    
+    @Test
+    void assertCreateResourceHandlersWithNullHandler() {
+        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        List<ResourceHandler> resourceHandlers = new ArrayList<>();
+        resourceHandlers.add(createResourceHandler("shardingsphere://foo"));
+        resourceHandlers.add(null);
+        when(featureProvider.getResourceHandlers()).thenReturn(resourceHandlers);
+        NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPFeatureProviderRegistry.createResourceHandlers(featureProvider));
+        assertThat(actual.getMessage(), is(String.format("Resource handler is required for `%s`.", featureProvider.getClass().getName())));
+    }
+    
+    private static ToolHandler createToolHandler(final String toolName) {
+        MCPToolDescriptor descriptor = createToolDescriptor(toolName);
+        ToolHandler result = mock(ToolHandler.class);
+        when(result.getToolDescriptor()).thenReturn(descriptor);
+        return result;
+    }
+    
     private static MCPToolDescriptor createToolDescriptor(final String toolName) {
         MCPToolDescriptor result = mock(MCPToolDescriptor.class);
         when(result.getName()).thenReturn(toolName);
+        return result;
+    }
+    
+    private static ResourceHandler createResourceHandler(final String uriPattern) {
+        ResourceHandler result = mock(ResourceHandler.class);
+        when(result.getUriPattern()).thenReturn(uriPattern);
         return result;
     }
 }

@@ -20,8 +20,6 @@ package org.apache.shardingsphere.mcp.feature.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
@@ -36,55 +34,72 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 /**
- * Core resource contributions.
+ * Core resource handlers.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class CoreResourceContributions {
+final class CoreResourceHandlers {
     
-    static Collection<MCPContribution> createContributions() {
-        Collection<MCPContribution> result = new LinkedList<>();
-        result.add(createResourceContribution(new ServiceCapabilitiesHandler()));
-        result.add(createResourceContribution(new DatabaseCapabilitiesHandler()));
-        result.add(createMetadataResourceContribution("shardingsphere://databases",
+    static Collection<ResourceHandler> createHandlers() {
+        Collection<ResourceHandler> result = new LinkedList<>();
+        result.add(new ServiceCapabilitiesHandler());
+        result.add(new DatabaseCapabilitiesHandler());
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabases()));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}",
-                (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getVariable("database")))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}",
+                (requestContext, uriVariables) -> singletonOrEmpty(
+                        requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getVariable("database")))));
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySchemas(uriVariables.getVariable("database"))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}",
                 (requestContext, uriVariables) -> singletonOrEmpty(
                         requestContext.getMetadataQueryFacade().querySchema(uriVariables.getVariable("database"), uriVariables.getVariable("schema")))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/sequences",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySequences(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().querySequence(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("sequence")))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/tables",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/tables",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTables(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/views",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/views",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViews(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTable(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table")))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTableColumns(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTableColumn(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("column")))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryView(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view")))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViewColumns(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryViewColumn(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"), uriVariables.getVariable("column")))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryIndexes(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))));
-        result.add(createMetadataResourceContribution("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
+        result.add(createMetadataResourceHandler(
+                "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryIndex(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("index")))));
         return List.copyOf(result);
@@ -94,12 +109,8 @@ final class CoreResourceContributions {
         return metadata.map(Collections::singletonList).orElse(Collections.emptyList());
     }
     
-    private static MCPDirectResourceContribution createResourceContribution(final ResourceHandler resourceHandler) {
-        return new MCPDirectResourceContribution(resourceHandler.getUriPattern(), resourceHandler::handle);
-    }
-    
-    private static MCPDirectResourceContribution createMetadataResourceContribution(final String uriPattern,
-                                                                                    final BiFunction<MCPDatabaseContext, MCPUriVariables, List<?>> metadataLoader) {
-        return createResourceContribution(new MetadataResourceHandler(uriPattern, metadataLoader));
+    private static MetadataResourceHandler createMetadataResourceHandler(final String uriPattern,
+                                                                         final BiFunction<MCPDatabaseContext, MCPUriVariables, List<?>> metadataLoader) {
+        return new MetadataResourceHandler(uriPattern, metadataLoader);
     }
 }

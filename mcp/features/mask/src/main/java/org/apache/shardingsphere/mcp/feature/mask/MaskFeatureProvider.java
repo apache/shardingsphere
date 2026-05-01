@@ -22,44 +22,36 @@ import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandl
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.handler.PlanMaskRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowDefinitionProvider;
+import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Mask MCP feature provider.
  */
-public final class MaskFeatureProvider implements MCPFeatureProvider {
+public final class MaskFeatureProvider implements MCPFeatureProvider, MCPWorkflowDefinitionProvider {
     
     @Override
-    public Collection<MCPContribution> getContributions() {
-        Collection<MCPContribution> result = new LinkedList<>();
-        result.add(createWorkflowContribution());
-        result.addAll(createResourceContributions());
-        return List.copyOf(result);
+    public Collection<ToolHandler> getToolHandlers() {
+        return List.of(new PlanMaskRuleToolHandler());
     }
     
-    private static MCPWorkflowToolContribution createWorkflowContribution() {
-        PlanMaskRuleToolHandler planToolHandler = new PlanMaskRuleToolHandler();
-        MaskWorkflowValidationService workflowValidationService = new MaskWorkflowValidationService();
-        return new MCPWorkflowToolContribution(planToolHandler.getToolDescriptor(), planToolHandler::handle,
-                MaskFeatureDefinition.APPLY_TOOL_NAME, MaskFeatureDefinition.VALIDATE_TOOL_NAME, workflowValidationService, workflowValidationService);
-    }
-    
-    private static Collection<MCPContribution> createResourceContributions() {
+    @Override
+    public Collection<ResourceHandler> getResourceHandlers() {
         return List.of(
-                createResourceContribution(new MaskAlgorithmsHandler()),
-                createResourceContribution(new MaskRulesHandler()),
-                createResourceContribution(new MaskRuleHandler()));
+                new MaskAlgorithmsHandler(),
+                new MaskRulesHandler(),
+                new MaskRuleHandler());
     }
     
-    private static MCPDirectResourceContribution createResourceContribution(final ResourceHandler resourceHandler) {
-        return new MCPDirectResourceContribution(resourceHandler.getUriPattern(), resourceHandler::handle);
+    @Override
+    public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
+        MaskWorkflowValidationService workflowValidationService = new MaskWorkflowValidationService();
+        return List.of(new WorkflowRuntimeDefinition(MaskFeatureDefinition.WORKFLOW_KIND, workflowValidationService, workflowValidationService));
     }
 }

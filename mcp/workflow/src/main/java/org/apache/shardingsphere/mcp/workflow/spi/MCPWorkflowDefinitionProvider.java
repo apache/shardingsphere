@@ -15,19 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.spi;
+package org.apache.shardingsphere.mcp.workflow.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
- * Direct MCP resource contribution.
+ * Workflow runtime definition provider.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPDirectResourceContribution implements MCPResourceContribution {
+@SingletonSPI
+public interface MCPWorkflowDefinitionProvider extends ShardingSphereSPI {
     
-    private final String uriPattern;
-    
-    private final MCPResourceReader resourceReader;
+    /**
+     * Get workflow runtime definitions.
+     *
+     * @return workflow runtime definitions
+     */
+    default Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
+        return List.of();
+    }
 }

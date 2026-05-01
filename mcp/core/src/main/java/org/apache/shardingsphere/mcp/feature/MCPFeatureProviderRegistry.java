@@ -19,10 +19,15 @@ package org.apache.shardingsphere.mcp.feature;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * MCP feature provider registry.
@@ -36,7 +41,11 @@ public final class MCPFeatureProviderRegistry {
      * @return tool handlers
      */
     public static Collection<ToolHandler> loadToolHandlers() {
-        return MCPToolContributionMaterializer.materialize(MCPContributionRegistry.loadToolContributions());
+        Collection<ToolHandler> result = new LinkedList<>();
+        for (MCPFeatureProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)) {
+            result.addAll(createToolHandlers(each));
+        }
+        return List.copyOf(result);
     }
     
     /**
@@ -45,6 +54,26 @@ public final class MCPFeatureProviderRegistry {
      * @return resource handlers
      */
     public static Collection<ResourceHandler> loadResourceHandlers() {
-        return MCPResourceContributionMaterializer.materialize(MCPContributionRegistry.loadResourceContributions());
+        Collection<ResourceHandler> result = new LinkedList<>();
+        for (MCPFeatureProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)) {
+            result.addAll(createResourceHandlers(each));
+        }
+        return List.copyOf(result);
+    }
+    
+    static Collection<ToolHandler> createToolHandlers(final MCPFeatureProvider featureProvider) {
+        Collection<ToolHandler> handlers = Objects.requireNonNull(featureProvider.getToolHandlers(),
+                () -> String.format("Tool handlers are required for `%s`.", featureProvider.getClass().getName()));
+        handlers.forEach(each -> Objects.requireNonNull(each,
+                () -> String.format("Tool handler is required for `%s`.", featureProvider.getClass().getName())));
+        return List.copyOf(handlers);
+    }
+    
+    static Collection<ResourceHandler> createResourceHandlers(final MCPFeatureProvider featureProvider) {
+        Collection<ResourceHandler> handlers = Objects.requireNonNull(featureProvider.getResourceHandlers(),
+                () -> String.format("Resource handlers are required for `%s`.", featureProvider.getClass().getName()));
+        handlers.forEach(each -> Objects.requireNonNull(each,
+                () -> String.format("Resource handler is required for `%s`.", featureProvider.getClass().getName())));
+        return List.copyOf(handlers);
     }
 }

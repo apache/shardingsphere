@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.mask;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 
 /**
  * Mask MCP feature definition.
@@ -28,9 +29,7 @@ public final class MaskFeatureDefinition {
     
     public static final String PLAN_TOOL_NAME = "plan_mask_rule";
     
-    public static final String APPLY_TOOL_NAME = "apply_mask_rule";
-    
-    public static final String VALIDATE_TOOL_NAME = "validate_mask_rule";
+    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("mask.rule");
     
     public static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/mask/algorithms";
     

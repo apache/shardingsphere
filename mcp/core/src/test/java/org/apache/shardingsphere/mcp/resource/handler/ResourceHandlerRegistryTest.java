@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
@@ -131,11 +129,7 @@ class ResourceHandlerRegistryTest {
     
     private static MCPFeatureProvider createFeatureProvider(final Collection<ResourceHandler> resourceHandlers) {
         MCPFeatureProvider result = mock(MCPFeatureProvider.class);
-        Collection<MCPContribution> contributions = resourceHandlers.stream()
-                .map(each -> new MCPDirectResourceContribution(each.getUriPattern(), each::handle))
-                .map(MCPContribution.class::cast)
-                .toList();
-        when(result.getContributions()).thenReturn(contributions);
+        when(result.getResourceHandlers()).thenReturn(resourceHandlers);
         return result;
     }
     
@@ -175,16 +169,21 @@ class ResourceHandlerRegistryTest {
     }
     
     private static String getRequiredUriPatternMessage() {
-        return String.format("Resource URI pattern is required for `%s`.", DelegatingResourceHandler.class.getName());
+        ResourceHandler handler = createResourceHandler(null);
+        return String.format("Resource URI pattern is required for `%s`.", handler.getClass().getName());
     }
     
     private static String getDuplicateUriPatternMessage() {
+        ResourceHandler firstHandler = createResourceHandler("shardingsphere://foo/{id}");
+        ResourceHandler secondHandler = createResourceHandler("shardingsphere://foo/{id}");
         return String.format("Duplicate resource URI pattern `shardingsphere://foo/{id}` with `%s` and `%s`.",
-                DelegatingResourceHandler.class.getName(), DelegatingResourceHandler.class.getName());
+                firstHandler.getClass().getName(), secondHandler.getClass().getName());
     }
     
     private static String getOverlappingUriPatternMessage() {
+        ResourceHandler firstHandler = createResourceHandler("shardingsphere://foo/{id}");
+        ResourceHandler secondHandler = createResourceHandler("shardingsphere://foo/bar");
         return String.format("Overlapping resource URI patterns `shardingsphere://foo/{id}` with `%s` and `%s`.",
-                DelegatingResourceHandler.class.getName(), DelegatingResourceHandler.class.getName());
+                firstHandler.getClass().getName(), secondHandler.getClass().getName());
     }
 }

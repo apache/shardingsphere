@@ -48,8 +48,8 @@ class WorkflowToolDescriptorsTest {
     
     @Test
     void assertCreateExecutionBuildsExpectedFields() {
-        MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution("apply_encrypt_rule");
-        assertThat(actual.getName(), is("apply_encrypt_rule"));
+        MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
+        assertThat(actual.getName(), is("apply_workflow"));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id", "execution_mode", "approved_steps")));
         assertThat(actual.getFields().get(2).getValueDefinition().toSchemaFragment(), is(new MCPToolValueDefinition(
                 MCPToolValueDefinition.Type.ARRAY, "Approved execution steps.", new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "Step name.", null)).toSchemaFragment()));
@@ -57,8 +57,8 @@ class WorkflowToolDescriptorsTest {
     
     @Test
     void assertCreateValidationBuildsExpectedFields() {
-        MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation("validate_encrypt_rule");
-        assertThat(actual.getName(), is("validate_encrypt_rule"));
+        MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation();
+        assertThat(actual.getName(), is("validate_workflow"));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id")));
         assertTrue(actual.getFields().get(0).isRequired());
     }

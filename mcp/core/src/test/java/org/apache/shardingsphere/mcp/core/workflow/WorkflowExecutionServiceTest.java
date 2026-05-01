@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.workflow;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.DDLArtifact;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.mcp.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.junit.jupiter.api.Test;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WorkflowExecutionServiceTest {
-
+    
     @Test
     void assertApplyMasksManualArtifactPackage() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -58,25 +58,25 @@ class WorkflowExecutionServiceTest {
         workflowSessionContext.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", "plan-1", List.of(), "manual-only");
+                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "manual-only");
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
         Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).get(0);
         assertThat(actualResponse.get("status"), is("awaiting-manual-execution"));
         assertThat(actualArtifact.get("sql"), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
     }
-
+    
     @Test
     void assertApplyRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot());
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-2", "plan-1", List.of(), "");
+                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-2", workflowSessionContext.getRequired("plan-1"), List.of(), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
-
+    
     @Test
     void assertApplyRejectsInvalidLifecycleStatus() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -85,12 +85,12 @@ class WorkflowExecutionServiceTest {
         workflowSessionContext.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", "plan-1", List.of(), "");
+                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
     }
-
+    
     @Test
     void assertApplyExecutesApprovedArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -103,14 +103,14 @@ class WorkflowExecutionServiceTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", "plan-1", List.of("ddl", "index_ddl", "rule_distsql"), "");
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl", "index_ddl", "rule_distsql"), "");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("executed_ddl")).size(), is(2));
         assertThat(((List<?>) actualResponse.get("executed_distsql")).size(), is(1));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("executed"));
         verify(executionFacade, times(3)).execute(any());
     }
-
+    
     @Test
     void assertApplyCompletesWhenArtifactsAreNotApproved() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -123,7 +123,7 @@ class WorkflowExecutionServiceTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, workflowApplySynchronizationHandler, "session-1", "plan-1", List.of("review"), "");
+                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of("review"), "");
         List<?> actualStepResults = (List<?>) actualResponse.get("step_results");
         assertThat(actualResponse.get("status"), is("completed"));
         assertThat(((List<?>) actualResponse.get("skipped_artifacts")).size(), is(3));
@@ -132,7 +132,7 @@ class WorkflowExecutionServiceTest {
         verify(executionFacade, never()).execute(any());
         verify(workflowApplySynchronizationHandler, never()).synchronize(any(), any(), any(), any(), any());
     }
-
+    
     @Test
     void assertApplyFailsWhenSynchronizationDoesNotConverge() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -146,13 +146,13 @@ class WorkflowExecutionServiceTest {
         doThrow(new WorkflowSynchronizationException(WorkflowIssueCode.RULE_STATE_MISMATCH, "Mask rule is missing.",
                 List.of(Map.of("code", WorkflowIssueCode.RULE_STATE_MISMATCH)))).when(workflowApplySynchronizationHandler).synchronize(any(), any(), any(), any(), any());
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, workflowApplySynchronizationHandler, "session-1", "plan-1", List.of("rule_distsql"), "");
+                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of("rule_distsql"), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("failed"));
     }
-
+    
     @Test
     void assertApplyReturnsDdlExecutionFailureForDdlArtifact() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -163,14 +163,14 @@ class WorkflowExecutionServiceTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("ddl failed"));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", "plan-1", List.of("ddl"), "");
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl"), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
         assertThat(actualStep.get("artifact_type"), is("add-column"));
     }
-
+    
     @Test
     void assertApplyReturnsDdlExecutionFailureForIndexArtifact() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -181,14 +181,14 @@ class WorkflowExecutionServiceTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("index failed"));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", "plan-1", List.of("index_ddl"), "");
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("index_ddl"), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         Map<?, ?> actualStep = (Map<?, ?>) ((List<?>) actualResponse.get("step_results")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
         assertThat(actualStep.get("artifact_type"), is("create-index"));
     }
-
+    
     @Test
     void assertApplyReturnsRuleExecutionFailureForRuleArtifact() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -199,12 +199,12 @@ class WorkflowExecutionServiceTest {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("rule failed"));
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", "plan-1", List.of("rule_distsql"), "");
+                executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("rule_distsql"), "");
         Map<?, ?> actualIssue = (Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0);
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
     }
-
+    
     private WorkflowContextSnapshot createSnapshot() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId("plan-1");

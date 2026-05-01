@@ -35,6 +35,8 @@ public final class WorkflowContextSnapshot {
     
     private String planId;
     
+    private WorkflowKind workflowKind;
+    
     private String sessionId;
     
     private String status;
@@ -85,6 +87,7 @@ public final class WorkflowContextSnapshot {
     public WorkflowContextSnapshot copy() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
+        result.setWorkflowKind(workflowKind);
         result.setSessionId(sessionId);
         result.setStatus(status);
         result.setUpdateTime(copyInstant(updateTime));

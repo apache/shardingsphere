@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 
 /**
  * Encrypt MCP feature definition.
@@ -28,9 +29,7 @@ public final class EncryptFeatureDefinition {
     
     public static final String PLAN_TOOL_NAME = "plan_encrypt_rule";
     
-    public static final String APPLY_TOOL_NAME = "apply_encrypt_rule";
-    
-    public static final String VALIDATE_TOOL_NAME = "validate_encrypt_rule";
+    public static final WorkflowKind WORKFLOW_KIND = WorkflowKind.valueOf("encrypt.rule");
     
     public static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/encrypt/algorithms";
     

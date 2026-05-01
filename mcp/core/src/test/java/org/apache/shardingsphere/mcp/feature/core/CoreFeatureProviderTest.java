@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.core;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectToolContribution;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -32,20 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CoreFeatureProviderTest {
     
     @Test
-    void assertGetContributionsWithToolContributions() {
-        Collection<MCPContribution> contributions = new CoreFeatureProvider().getContributions();
-        List<String> actual = contributions.stream().filter(MCPDirectToolContribution.class::isInstance).map(MCPDirectToolContribution.class::cast)
-                .map(each -> each.getToolDescriptor().getName()).toList();
-        assertThat(actual, is(List.of("search_metadata", "execute_query")));
+    void assertGetToolHandlers() {
+        Collection<ToolHandler> actual = new CoreFeatureProvider().getToolHandlers();
+        assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(),
+                is(List.of("search_metadata", "execute_query", "apply_workflow", "validate_workflow")));
     }
     
     @Test
-    void assertGetContributionsWithResourceContributions() {
-        Collection<MCPContribution> contributions = new CoreFeatureProvider().getContributions();
-        List<String> actual = contributions.stream().filter(MCPDirectResourceContribution.class::isInstance).map(MCPDirectResourceContribution.class::cast)
-                .map(MCPDirectResourceContribution::getUriPattern).toList();
+    void assertGetResourceHandlers() {
+        Collection<ResourceHandler> actual = new CoreFeatureProvider().getResourceHandlers();
         assertThat(actual.size(), is(18));
-        assertTrue(actual.contains("shardingsphere://capabilities"));
-        assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
+        List<String> actualUriPatterns = actual.stream().map(ResourceHandler::getUriPattern).toList();
+        assertTrue(actualUriPatterns.contains("shardingsphere://capabilities"));
+        assertTrue(actualUriPatterns.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }
 }

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mcp.feature.core;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
 import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Core MCP feature provider.
@@ -30,10 +29,12 @@ import java.util.List;
 public final class CoreFeatureProvider implements MCPFeatureProvider {
     
     @Override
-    public Collection<MCPContribution> getContributions() {
-        Collection<MCPContribution> result = new LinkedList<>();
-        result.addAll(CoreToolContributions.createContributions());
-        result.addAll(CoreResourceContributions.createContributions());
-        return List.copyOf(result);
+    public Collection<ToolHandler> getToolHandlers() {
+        return CoreToolHandlers.createHandlers();
+    }
+    
+    @Override
+    public Collection<ResourceHandler> getResourceHandlers() {
+        return CoreResourceHandlers.createHandlers();
     }
 }

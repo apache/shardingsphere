@@ -37,6 +37,7 @@ class WorkflowPlanPayloadBuilderTest {
     void assertBuildIncludesIntentInference() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(org.apache.shardingsphere.mcp.workflow.model.WorkflowKind.valueOf("encrypt.rule"));
         snapshot.setStatus("clarifying");
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         clarifiedIntent.setOperationType("create");
@@ -58,6 +59,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(interactionPlan);
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         assertThat(actual.get("plan_id"), is("plan-1"));
+        assertThat(actual.get("workflow_kind"), is("encrypt.rule"));
         assertThat(actual.get("pending_questions"), is(clarifiedIntent.getPendingQuestions()));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("operation_type"), is("create"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("field_semantics"), is("phone"));

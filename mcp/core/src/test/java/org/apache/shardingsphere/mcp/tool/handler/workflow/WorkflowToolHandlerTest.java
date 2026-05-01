@@ -17,17 +17,21 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -35,6 +39,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -45,45 +50,59 @@ class WorkflowToolHandlerTest {
     
     @Test
     void assertGetExecutionToolDescriptor() {
-        MCPToolDescriptor actual = new WorkflowExecutionToolHandler("apply_encrypt_rule").getToolDescriptor();
-        assertThat(actual.getName(), is("apply_encrypt_rule"));
+        MCPToolDescriptor actual = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(createDefinition("encrypt.rule")))).getToolDescriptor();
+        assertThat(actual.getName(), is("apply_workflow"));
     }
     
     @Test
     void assertHandleExecution() {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
         when(executionService.apply(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
-        RequestContextFixture fixture = createRequestContextFixture();
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        RequestContextFixture fixture = createRequestContextFixture(snapshot);
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
-        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler("apply_encrypt_rule", executionService, workflowApplySynchronizationHandler);
+        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(executionService, new WorkflowRuntimeDefinitionRegistry(List.of(
+                new WorkflowRuntimeDefinition(WorkflowKind.valueOf("encrypt.rule"), mock(MCPWorkflowValidationHandler.class), workflowApplySynchronizationHandler))));
         MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of("plan_id", "plan-1", "approved_steps", List.of("ddl"), "execution_mode", "manual-only"));
         verify(executionService).apply(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq(fixture.executionFacade),
-                eq(workflowApplySynchronizationHandler), eq("session-1"), eq("plan-1"), eq(List.of("ddl")), eq("manual-only"));
+                eq(workflowApplySynchronizationHandler), eq("session-1"), eq(snapshot), eq(List.of("ddl")), eq("manual-only"));
         assertThat(actual.toPayload().get("status"), is("completed"));
     }
     
     @Test
+    void assertHandleExecutionWithMissingWorkflowKind() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        RequestContextFixture fixture = createRequestContextFixture(snapshot);
+        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(createDefinition("encrypt.rule"))));
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
+                () -> handler.handle(fixture.requestContext, "session-1", Map.of("plan_id", "plan-1")));
+        assertThat(actual.getMessage(), is("Workflow kind is required for plan_id `plan-1`."));
+    }
+    
+    @Test
     void assertGetValidationToolDescriptor() {
-        MCPToolDescriptor actual = new WorkflowValidationToolHandler("validate_encrypt_rule",
-                (contextStore, metadataQueryFacade, queryFacade, executionFacade, sessionId, planId) -> Map.of()).getToolDescriptor();
-        assertThat(actual.getName(), is("validate_encrypt_rule"));
+        MCPToolDescriptor actual = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(createDefinition("encrypt.rule")))).getToolDescriptor();
+        assertThat(actual.getName(), is("validate_workflow"));
     }
     
     @Test
     void assertHandleValidation() {
         MCPWorkflowValidationHandler workflowValidationHandler = mock(MCPWorkflowValidationHandler.class);
         when(workflowValidationHandler.validate(any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "validated"));
-        RequestContextFixture fixture = createRequestContextFixture();
-        WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler("validate_encrypt_rule", workflowValidationHandler);
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        RequestContextFixture fixture = createRequestContextFixture(snapshot);
+        WorkflowValidationToolHandler handler = new WorkflowValidationToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(
+                new WorkflowRuntimeDefinition(WorkflowKind.valueOf("encrypt.rule"), workflowValidationHandler, mock(MCPWorkflowApplySynchronizationHandler.class)))));
         MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of("plan_id", "plan-1"));
         verify(workflowValidationHandler).validate(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade),
-                eq(fixture.queryFacade), eq(fixture.executionFacade), eq("session-1"), eq("plan-1"));
+                eq(fixture.queryFacade), eq(fixture.executionFacade), eq("session-1"), eq(snapshot));
         assertThat(actual.toPayload().get("status"), is("validated"));
     }
     
-    private RequestContextFixture createRequestContextFixture() {
+    private RequestContextFixture createRequestContextFixture(final WorkflowContextSnapshot snapshot) {
         MCPWorkflowContext result = mock(MCPWorkflowContext.class);
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -91,7 +110,21 @@ class WorkflowToolHandlerTest {
         when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         when(result.getQueryFacade()).thenReturn(queryFacade);
         when(result.getExecutionFacade()).thenReturn(executionFacade);
+        when(workflowSessionContext.getRequired("plan-1")).thenReturn(snapshot);
         return new RequestContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
+    }
+    
+    private WorkflowContextSnapshot createSnapshot() {
+        WorkflowContextSnapshot result = new WorkflowContextSnapshot();
+        result.setPlanId("plan-1");
+        result.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        return result;
+    }
+    
+    private static WorkflowRuntimeDefinition createDefinition(final String workflowKind) {
+        return new WorkflowRuntimeDefinition(WorkflowKind.valueOf(workflowKind), (workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, sessionId, snapshot) -> Map.of(),
+                (snapshot, metadataQueryFacade, queryFacade, executionFacade, sessionId) -> {
+                });
     }
     
     private record RequestContextFixture(MCPWorkflowContext requestContext, WorkflowSessionContext workflowSessionContext,

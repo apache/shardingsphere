@@ -37,6 +37,7 @@ class WorkflowContextSnapshotTest {
         WorkflowContextSnapshot originalSnapshot = createSnapshot();
         WorkflowContextSnapshot actualSnapshot = originalSnapshot.copy();
         assertThat(actualSnapshot.getPlanId(), is("plan-1"));
+        assertThat(actualSnapshot.getWorkflowKind(), is(WorkflowKind.valueOf("encrypt.rule")));
         originalSnapshot.getRequest().setTable("archived_orders");
         originalSnapshot.getClarifiedIntent().getPendingQuestions().add("another question");
         originalSnapshot.getClarifiedIntent().getUnresolvedFields().add("schema");
@@ -74,6 +75,7 @@ class WorkflowContextSnapshotTest {
     private WorkflowContextSnapshot createSnapshot() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId("plan-1");
+        result.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         result.setStatus("planned");
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("logic_db");

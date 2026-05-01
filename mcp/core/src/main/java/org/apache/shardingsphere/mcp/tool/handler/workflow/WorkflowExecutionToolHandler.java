@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowApplySynchronizationHandler;
+import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 
 import java.util.Map;
 
@@ -34,39 +37,40 @@ import java.util.Map;
  * Generic workflow execution tool handler.
  */
 public final class WorkflowExecutionToolHandler implements ToolHandler {
-
-    private final String toolName;
-
+    
     private final WorkflowExecutionService executionService;
-
-    private final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler;
-
-    public WorkflowExecutionToolHandler(final String toolName) {
-        this(toolName, new WorkflowExecutionService(), MCPWorkflowApplySynchronizationHandler.NO_OP);
+    
+    private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
+    
+    public WorkflowExecutionToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
+        this(new WorkflowExecutionService(), workflowRuntimeDefinitionRegistry);
     }
-
-    public WorkflowExecutionToolHandler(final String toolName, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler) {
-        this(toolName, new WorkflowExecutionService(), workflowApplySynchronizationHandler);
-    }
-
-    WorkflowExecutionToolHandler(final String toolName, final WorkflowExecutionService executionService,
-                                 final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler) {
-        this.toolName = toolName;
+    
+    WorkflowExecutionToolHandler(final WorkflowExecutionService executionService, final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
         this.executionService = executionService;
-        this.workflowApplySynchronizationHandler = workflowApplySynchronizationHandler;
+        this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
     }
-
+    
     @Override
     public MCPToolDescriptor getToolDescriptor() {
-        return WorkflowToolDescriptors.createExecution(toolName);
+        return WorkflowToolDescriptors.createExecution();
     }
-
+    
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
+        WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));
+        WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(), workflowContext.getQueryFacade(),
-                workflowContext.getExecutionFacade(), workflowApplySynchronizationHandler, sessionId, toolArguments.getStringArgument("plan_id"),
+                workflowContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), sessionId, snapshot,
                 toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
+    }
+    
+    private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
+        if (null != snapshot.getWorkflowKind()) {
+            return snapshot.getWorkflowKind();
+        }
+        throw new MCPInvalidRequestException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()));
     }
 }

@@ -44,6 +44,7 @@ public final class WorkflowPlanPayloadBuilder {
     public static Map<String, Object> build(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("plan_id", snapshot.getPlanId());
+        result.put("workflow_kind", null == snapshot.getWorkflowKind() ? "" : snapshot.getWorkflowKind().getValue());
         result.put("status", snapshot.getStatus());
         result.put("pending_questions", null == snapshot.getClarifiedIntent() ? List.of() : snapshot.getClarifiedIntent().getPendingQuestions());
         result.put("issues", snapshot.getIssues().stream().map(WorkflowIssue::toMap).toList());

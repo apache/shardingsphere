@@ -15,21 +15,4 @@
 # limitations under the License.
 #
 
-databaseName: logic_db
-
-dataSources:
-  ds_0:
-    url: jdbc:mysql://mysql.workflow.host:3306/orders?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf-8
-    driverClassName: com.mysql.cj.jdbc.Driver
-    username: mcp
-    password: mcp
-    connectionTimeoutMilliseconds: 30000
-    idleTimeoutMilliseconds: 60000
-    maxLifetimeMilliseconds: 1800000
-    maxPoolSize: 2
-    minPoolSize: 1
-
-rules:
-- !SINGLE
-  tables:
-    - "*.*"
+org.apache.shardingsphere.mcp.feature.mask.MaskFeatureProvider

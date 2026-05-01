@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
-import org.apache.shardingsphere.mcp.feature.spi.MCPContribution;
-import org.apache.shardingsphere.mcp.feature.spi.MCPDirectResourceContribution;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowToolContribution;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -33,24 +33,25 @@ import static org.hamcrest.Matchers.is;
 class EncryptFeatureProviderTest {
     
     @Test
-    void assertGetContributionsWithResourceContributions() {
-        Collection<MCPContribution> contributions = new EncryptFeatureProvider().getContributions();
-        List<String> actual = contributions.stream().filter(MCPDirectResourceContribution.class::isInstance).map(MCPDirectResourceContribution.class::cast)
-                .map(MCPDirectResourceContribution::getUriPattern).toList();
-        assertThat(actual, is(List.of(
+    void assertGetResourceHandlers() {
+        Collection<ResourceHandler> actual = new EncryptFeatureProvider().getResourceHandlers();
+        assertThat(actual.stream().map(ResourceHandler::getUriPattern).toList(), is(List.of(
                 "shardingsphere://features/encrypt/algorithms",
                 "shardingsphere://features/encrypt/databases/{database}/rules",
                 "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules")));
     }
     
     @Test
-    void assertGetContributionsWithWorkflowToolContribution() {
-        Collection<MCPContribution> contributions = new EncryptFeatureProvider().getContributions();
-        MCPWorkflowToolContribution actual = contributions.stream().filter(MCPWorkflowToolContribution.class::isInstance).map(MCPWorkflowToolContribution.class::cast).findFirst().orElseThrow();
-        assertThat(actual.getPlanningToolDescriptor().getName(), is("plan_encrypt_rule"));
-        assertThat(actual.getApplyToolName(), is("apply_encrypt_rule"));
-        assertThat(actual.getValidateToolName(), is("validate_encrypt_rule"));
-        assertThat(actual.getWorkflowApplySynchronizationHandler(), isA(EncryptWorkflowValidationService.class));
-        assertThat(actual.getWorkflowValidationHandler(), isA(EncryptWorkflowValidationService.class));
+    void assertGetToolHandlers() {
+        Collection<ToolHandler> actual = new EncryptFeatureProvider().getToolHandlers();
+        assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_encrypt_rule")));
+    }
+    
+    @Test
+    void assertGetWorkflowDefinitions() {
+        WorkflowRuntimeDefinition actual = new EncryptFeatureProvider().getWorkflowDefinitions().iterator().next();
+        assertThat(actual.getWorkflowKind(), is(EncryptFeatureDefinition.WORKFLOW_KIND));
+        assertThat(actual.getApplySynchronizationHandler(), isA(EncryptWorkflowValidationService.class));
+        assertThat(actual.getValidationHandler(), isA(EncryptWorkflowValidationService.class));
     }
 }

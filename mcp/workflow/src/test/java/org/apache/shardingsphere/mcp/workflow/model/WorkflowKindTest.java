@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.spi;
+package org.apache.shardingsphere.mcp.workflow.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.junit.jupiter.api.Test;
 
-/**
- * Direct MCP tool contribution.
- */
-@RequiredArgsConstructor
-@Getter
-public final class MCPDirectToolContribution implements MCPToolContribution {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class WorkflowKindTest {
     
-    private final MCPToolDescriptor toolDescriptor;
+    @Test
+    void assertValueOf() {
+        WorkflowKind actual = WorkflowKind.valueOf("encrypt.rule");
+        assertThat(actual.getValue(), is("encrypt.rule"));
+        assertThat(actual.toString(), is("encrypt.rule"));
+    }
     
-    private final MCPToolInvoker toolInvoker;
+    @Test
+    void assertValueOfWithInvalidValue() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> WorkflowKind.valueOf("encrypt_rule"));
+        assertThat(actual.getMessage(), is("Invalid workflow kind `encrypt_rule`."));
+    }
 }

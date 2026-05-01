@@ -30,6 +30,10 @@ import java.util.List;
  */
 public final class WorkflowToolDescriptors {
     
+    public static final String APPLY_TOOL_NAME = "apply_workflow";
+    
+    public static final String VALIDATE_TOOL_NAME = "validate_workflow";
+    
     private static final List<MCPToolFieldDefinition> COMMON_PLANNING_FIELDS = List.of(
             new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Optional existing workflow plan identifier.", null), false),
             new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), false),
@@ -70,20 +74,18 @@ public final class WorkflowToolDescriptors {
     /**
      * Create workflow execution descriptor.
      *
-     * @param toolName tool name
      * @return MCP tool descriptor
      */
-    public static MCPToolDescriptor createExecution(final String toolName) {
-        return new MCPToolDescriptor(toolName, EXECUTION_FIELDS);
+    public static MCPToolDescriptor createExecution() {
+        return new MCPToolDescriptor(APPLY_TOOL_NAME, EXECUTION_FIELDS);
     }
     
     /**
      * Create workflow validation descriptor.
      *
-     * @param toolName tool name
      * @return MCP tool descriptor
      */
-    public static MCPToolDescriptor createValidation(final String toolName) {
-        return new MCPToolDescriptor(toolName, VALIDATION_FIELDS);
+    public static MCPToolDescriptor createValidation() {
+        return new MCPToolDescriptor(VALIDATE_TOOL_NAME, VALIDATION_FIELDS);
     }
 }

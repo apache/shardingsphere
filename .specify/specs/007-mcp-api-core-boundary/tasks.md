@@ -1,7 +1,7 @@
 # Tasks: MCP Public API Flattening
 
 **Input**: Design documents from `/.specify/specs/007-mcp-api-core-boundary/`
-**Prerequisites**: `plan.md`, `spec.md`, `research.md`
+**Prerequisites**: `plan.md`, `spec.md`, `research.md`, `decisions.md`
 **Tests**: Update or add module-scoped tests for `mcp/api`, `mcp/workflow`, `mcp/core`, `mcp/features/encrypt`, `mcp/features/mask`, and `mcp/bootstrap`.
 
 **Organization**: Tasks are grouped by user story so the API flattening and workflow routing redesign can land in reviewable slices.
@@ -32,9 +32,9 @@
 
 ## Phase 2: Foundational boundary changes
 
-- [ ] T004 Redesign `mcp/api/src/main/java/org/apache/shardingsphere/mcp/feature/spi/MCPFeatureProvider.java` so feature contribution is expressed directly through public tool and public resource contracts, and remove the public contribution hierarchy from `mcp/api/src/main/java/org/apache/shardingsphere/mcp/feature/spi/`.
+- [ ] T004 Redesign `mcp/api/src/main/java/org/apache/shardingsphere/mcp/feature/spi/MCPFeatureProvider.java` so feature contribution is expressed directly through `getToolHandlers()` and `getResourceHandlers()` with non-null default empty collections, and remove the public contribution hierarchy from `mcp/api/src/main/java/org/apache/shardingsphere/mcp/feature/spi/`.
 - [ ] T005 [P] Update `mcp/core/src/main/java/org/apache/shardingsphere/mcp/feature/MCPContributionRegistry.java`, `mcp/core/src/main/java/org/apache/shardingsphere/mcp/feature/MCPFeatureProviderRegistry.java`, `mcp/core/src/main/java/org/apache/shardingsphere/mcp/feature/MCPToolContributionMaterializer.java`, and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/feature/MCPResourceContributionMaterializer.java` so core loads public tool/resource contracts directly instead of materializing contribution wrappers.
-- [ ] T006 [P] Introduce explicit workflow identity and internal workflow definition seams by updating `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/model/WorkflowContextSnapshot.java` and adding workflow-definition contracts under `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/`.
+- [ ] T006 [P] Introduce explicit workflow identity and internal workflow definition seams by adding a typed `WorkflowKind`, updating `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/model/WorkflowContextSnapshot.java`, and adding workflow-definition contracts plus provider SPI under `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/`.
 - [ ] T007 [P] Update `mcp/api/pom.xml`, `mcp/workflow/pom.xml`, `mcp/core/pom.xml`, `mcp/features/encrypt/pom.xml`, `mcp/features/mask/pom.xml`, and `mcp/bootstrap/pom.xml` so dependency edges match the pure-API and workflow-shared ownership split.
 
 **Checkpoint**: The base contract/runtime boundary is redrawn; user story work can proceed without reintroducing public assembly types.
@@ -73,9 +73,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Replace `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/spi/MCPWorkflowToolContribution.java` with internal workflow definition seams under `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/` that bind workflow kind to planning continuation, validation behavior, and post-apply synchronization.
+- [ ] T015 [US2] Replace `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/spi/MCPWorkflowToolContribution.java` with a separate workflow-scoped SPI under `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/`, including `MCPWorkflowDefinitionProvider` and a small `WorkflowRuntimeDefinition` aggregate that binds workflow kind to validation behavior and post-apply synchronization.
 - [ ] T016 [US2] Rewrite `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/descriptor/WorkflowToolDescriptors.java`, `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/WorkflowExecutionToolHandler.java`, and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/WorkflowValidationToolHandler.java` so apply and validate are platform-scoped generic public tools.
-- [ ] T017 [US2] Rewire `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/EncryptFeatureProvider.java`, `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/MaskFeatureProvider.java`, and workflow-shared validation/synchronization seams so encrypt and mask contribute planning tools plus internal workflow definitions rather than public workflow contribution wrappers.
+- [ ] T017 [US2] Rewire `mcp/features/encrypt/src/main/java/org/apache/shardingsphere/mcp/feature/encrypt/EncryptFeatureProvider.java`, `mcp/features/mask/src/main/java/org/apache/shardingsphere/mcp/feature/mask/MaskFeatureProvider.java`, and new workflow definition providers so encrypt and mask contribute planning tools through `MCPFeatureProvider` plus internal workflow definitions through the workflow-scoped SPI rather than public workflow contribution wrappers.
 
 **Checkpoint**: Workflow remains reusable, but it is visible to the outside world only through tools, not through a separate public workflow category.
 
@@ -93,7 +93,7 @@
 
 ### Implementation for User Story 3
 
-- [ ] T020 [US3] Add `workflowKind` and any required lifecycle metadata to `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/model/WorkflowContextSnapshot.java` and any related workflow payload or binder classes that persist and copy workflow state.
+- [ ] T020 [US3] Add typed `WorkflowKind` and any required lifecycle metadata to `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/model/WorkflowContextSnapshot.java` and related workflow payload or binder classes that persist and copy canonical `workflow_kind`.
 - [ ] T021 [US3] Introduce a runtime workflow-definition registry across `mcp/workflow/src/main/java/org/apache/shardingsphere/mcp/workflow/` and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow/` so generic apply/validate resolves validation and synchronization behavior from explicit workflow kind.
 - [ ] T022 [US3] Rework `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow/WorkflowExecutionService.java`, `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/WorkflowExecutionToolHandler.java`, and `mcp/core/src/main/java/org/apache/shardingsphere/mcp/tool/handler/workflow/WorkflowValidationToolHandler.java` so runtime dispatch happens exclusively through workflow kind plus internal workflow definitions.
 

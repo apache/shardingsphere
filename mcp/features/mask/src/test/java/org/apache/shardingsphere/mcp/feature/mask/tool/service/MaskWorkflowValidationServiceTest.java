@@ -45,18 +45,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MaskWorkflowValidationServiceTest {
-
+    
     @Test
     void assertValidateRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
         final MaskWorkflowValidationService service = new MaskWorkflowValidationService(mock(MaskRuleInspectionService.class), new WorkflowSynchronizationSupport(1, 0L));
         Map<String, Object> actual = service.validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                mock(MCPFeatureExecutionFacade.class), "session-2", "plan-1");
+                mock(MCPFeatureExecutionFacade.class), "session-2", workflowSessionContext.getRequired("plan-1"));
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
-
+    
     @Test
     void assertValidateHappyPath() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -70,12 +70,12 @@ class MaskWorkflowValidationServiceTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(actual.get("overall_status"), is("passed"));
         assertThat(((Map<?, ?>) actual.get("ddl_validation")).get("status"), is("skipped"));
     }
-
+    
     @Test
     void assertSynchronize() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
@@ -89,7 +89,7 @@ class MaskWorkflowValidationServiceTest {
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
         service.synchronize(snapshot, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1");
     }
-
+    
     @Test
     void assertSynchronizeWhenStateDoesNotConverge() {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
@@ -101,7 +101,7 @@ class MaskWorkflowValidationServiceTest {
                 () -> service.synchronize(snapshot, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1"));
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
-
+    
     @Test
     void assertValidateDropWorkflowAfterRuleRemoval() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -114,11 +114,11 @@ class MaskWorkflowValidationServiceTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("validated"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("passed"));
     }
-
+    
     @Test
     void assertValidateWhenAlgorithmMismatch() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -132,11 +132,11 @@ class MaskWorkflowValidationServiceTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
-        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("rule_validation")).get("status"), is("failed"));
     }
-
+    
     @Test
     void assertValidateWhenSqlExecutionFails() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -150,11 +150,11 @@ class MaskWorkflowValidationServiceTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenThrow(new IllegalStateException("sql failed"));
-        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", "plan-1");
+        Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, mock(MCPFeatureQueryFacade.class), executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("sql_executability_validation")).get("status"), is("failed"));
     }
-
+    
     private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String status, final String operationType) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);

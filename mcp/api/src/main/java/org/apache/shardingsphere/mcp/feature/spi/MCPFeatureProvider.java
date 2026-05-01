@@ -19,8 +19,11 @@ package org.apache.shardingsphere.mcp.feature.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * MCP feature provider.
@@ -29,9 +32,20 @@ import java.util.Collection;
 public interface MCPFeatureProvider extends ShardingSphereSPI {
     
     /**
-     * Get contributions owned by the feature.
+     * Get tool handlers owned by the feature.
      *
-     * @return contributions
+     * @return tool handlers
      */
-    Collection<MCPContribution> getContributions();
+    default Collection<ToolHandler> getToolHandlers() {
+        return List.of();
+    }
+    
+    /**
+     * Get resource handlers owned by the feature.
+     *
+     * @return resource handlers
+     */
+    default Collection<ResourceHandler> getResourceHandlers() {
+        return List.of();
+    }
 }

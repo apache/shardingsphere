@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 
 import java.util.Map;
 
@@ -38,9 +39,9 @@ public interface MCPWorkflowValidationHandler {
      * @param queryFacade direct query facade
      * @param executionFacade execution facade
      * @param sessionId session id
-     * @param planId plan id
+     * @param snapshot workflow snapshot
      * @return validation payload
      */
     Map<String, Object> validate(WorkflowSessionContext workflowSessionContext, MCPMetadataQueryFacade metadataQueryFacade,
-                                 MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade, String sessionId, String planId);
+                                 MCPFeatureQueryFacade queryFacade, MCPFeatureExecutionFacade executionFacade, String sessionId, WorkflowContextSnapshot snapshot);
 }

@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
+import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
@@ -26,6 +27,8 @@ import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 
 import java.util.Map;
 
@@ -34,25 +37,31 @@ import java.util.Map;
  */
 public final class WorkflowValidationToolHandler implements ToolHandler {
     
-    private final String toolName;
+    private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
     
-    private final MCPWorkflowValidationHandler workflowValidationHandler;
-    
-    public WorkflowValidationToolHandler(final String toolName, final MCPWorkflowValidationHandler workflowValidationHandler) {
-        this.toolName = toolName;
-        this.workflowValidationHandler = workflowValidationHandler;
+    public WorkflowValidationToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
+        this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
     }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
-        return WorkflowToolDescriptors.createValidation(toolName);
+        return WorkflowToolDescriptors.createValidation();
     }
     
     @Override
     public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
         MCPToolArguments toolArguments = new MCPToolArguments(arguments);
         MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
-        return new MCPMapResponse(workflowValidationHandler.validate(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(),
-                workflowContext.getQueryFacade(), workflowContext.getExecutionFacade(), sessionId, toolArguments.getStringArgument("plan_id")));
+        WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));
+        WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
+        return new MCPMapResponse(workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getValidationHandler().validate(workflowContext.getWorkflowSessionContext(),
+                workflowContext.getMetadataQueryFacade(), workflowContext.getQueryFacade(), workflowContext.getExecutionFacade(), sessionId, snapshot));
+    }
+    
+    private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
+        if (null != snapshot.getWorkflowKind()) {
+            return snapshot.getWorkflowKind();
+        }
+        throw new MCPInvalidRequestException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()));
     }
 }

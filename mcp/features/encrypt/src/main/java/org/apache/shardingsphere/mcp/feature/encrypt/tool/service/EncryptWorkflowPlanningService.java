@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
@@ -118,7 +119,8 @@ public final class EncryptWorkflowPlanningService {
         EncryptWorkflowRequest result = EncryptWorkflowRequest.merge(snapshot.getRequest(), request);
         EncryptWorkflowState workflowState = getWorkflowState(snapshot);
         workflowState.setDerivedColumnPlan(null);
-        return planningSupport.prepareSnapshot(snapshot, result, workflowState, intentResolver.resolve(result), "Encrypt workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
+        return planningSupport.prepareSnapshot(snapshot, EncryptFeatureDefinition.WORKFLOW_KIND, result, workflowState,
+                intentResolver.resolve(result), "Encrypt workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
     }
     
     private EncryptWorkflowState getWorkflowState(final WorkflowContextSnapshot snapshot) {

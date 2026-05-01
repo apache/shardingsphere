@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mcp.workflow.model.WorkflowFeatureData;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
 
 import java.util.LinkedList;
@@ -56,6 +57,7 @@ public final class WorkflowPlanningSupport {
      * Prepare workflow snapshot for planning.
      *
      * @param snapshot workflow snapshot
+     * @param workflowKind workflow kind
      * @param request merged request
      * @param featureData feature-scoped workflow data
      * @param clarifiedIntent clarified intent
@@ -65,9 +67,10 @@ public final class WorkflowPlanningSupport {
      * @param <T> request type
      * @return prepared request
      */
-    public <T extends WorkflowRequest> T prepareSnapshot(final WorkflowContextSnapshot snapshot, final T request, final WorkflowFeatureData featureData,
+    public <T extends WorkflowRequest> T prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowKind workflowKind, final T request, final WorkflowFeatureData featureData,
                                                          final ClarifiedIntent clarifiedIntent, final String summary,
                                                          final List<String> interactionSteps, final List<String> validationLayers) {
+        snapshot.setWorkflowKind(workflowKind);
         snapshot.setRequest(request);
         snapshot.setFeatureData(featureData);
         snapshot.setInteractionPlan(InteractionPlan.create(snapshot.getPlanId(), request, summary, interactionSteps, validationLayers));

@@ -15,32 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.resource.handler;
+package org.apache.shardingsphere.mcp.workflow.spi;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.spi.MCPResourceReader;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 
 /**
- * Delegating resource handler backed by contribution metadata.
+ * Workflow runtime definition.
  */
 @RequiredArgsConstructor
-public final class DelegatingResourceHandler implements ResourceHandler {
+@Getter
+public final class WorkflowRuntimeDefinition {
     
-    private final String uriPattern;
+    private final WorkflowKind workflowKind;
     
-    private final MCPResourceReader resourceReader;
+    private final MCPWorkflowValidationHandler validationHandler;
     
-    @Override
-    public String getUriPattern() {
-        return uriPattern;
-    }
-    
-    @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return resourceReader.read(requestContext, uriVariables);
-    }
+    private final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler;
 }
