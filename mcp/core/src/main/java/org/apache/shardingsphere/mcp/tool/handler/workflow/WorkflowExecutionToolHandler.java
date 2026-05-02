@@ -57,12 +57,12 @@ public final class WorkflowExecutionToolHandler implements WorkflowToolHandler {
     
     @Override
     public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.arguments());
+        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
-                databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.sessionId(), snapshot,
+                databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.getSessionId(), snapshot,
                 toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
     }
     

@@ -45,6 +45,6 @@ public final class PluginFixturePingToolHandler implements ServerToolHandler {
     
     @Override
     public MCPResponse handle(final MCPToolCall toolCall) {
-        return new MCPMapResponse(Map.of("status", "ready", "echo", String.valueOf(toolCall.arguments().get("message"))));
+        return new MCPMapResponse(Map.of("status", "ready", "echo", String.valueOf(toolCall.getArguments().get("message"))));
     }
 }

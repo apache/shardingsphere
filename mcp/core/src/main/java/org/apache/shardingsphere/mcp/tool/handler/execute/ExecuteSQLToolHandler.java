@@ -51,8 +51,8 @@ public final class ExecuteSQLToolHandler implements DatabaseToolHandler {
     
     @Override
     public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.arguments());
-        return databaseContext.getExecutionFacade().execute(new SQLExecutionRequest(toolCall.sessionId(),
+        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
+        return databaseContext.getExecutionFacade().execute(new SQLExecutionRequest(toolCall.getSessionId(),
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),
                 toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0)));
     }

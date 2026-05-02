@@ -49,12 +49,12 @@ public final class WorkflowValidationToolHandler implements WorkflowToolHandler 
     
     @Override
     public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.arguments());
+        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getValidationHandler().validate(workflowContext.getWorkflowSessionContext(),
-                databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(), databaseContext.getExecutionFacade(), toolCall.sessionId(), snapshot));
+                databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(), databaseContext.getExecutionFacade(), toolCall.getSessionId(), snapshot));
     }
     
     private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {

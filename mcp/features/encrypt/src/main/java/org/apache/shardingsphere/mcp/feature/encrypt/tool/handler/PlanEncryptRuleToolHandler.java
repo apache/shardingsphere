@@ -71,10 +71,10 @@ public final class PlanEncryptRuleToolHandler implements WorkflowToolHandler {
     @Override
     public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
         MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
-        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, toolCall.arguments(),
+        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, toolCall.getArguments(),
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(),
-                databaseContext.getQueryFacade(), toolCall.sessionId(), request);
+                databaseContext.getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     

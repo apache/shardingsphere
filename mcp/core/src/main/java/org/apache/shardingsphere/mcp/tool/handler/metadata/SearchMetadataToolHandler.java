@@ -66,7 +66,7 @@ public final class SearchMetadataToolHandler implements DatabaseToolHandler {
     
     @Override
     public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPToolCall toolCall) {
-        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.arguments());
+        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));

@@ -17,43 +17,19 @@
 
 package org.apache.shardingsphere.mcp.api.tool;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Map;
 
 /**
  * MCP tool call.
  */
+@RequiredArgsConstructor
+@Getter
 public final class MCPToolCall {
     
     private final String sessionId;
     
     private final Map<String, Object> arguments;
-    
-    /**
-     * Create MCP tool call.
-     *
-     * @param sessionId session identifier
-     * @param arguments normalized tool arguments
-     */
-    public MCPToolCall(final String sessionId, final Map<String, Object> arguments) {
-        this.sessionId = sessionId;
-        this.arguments = arguments;
-    }
-    
-    /**
-     * Get session identifier.
-     *
-     * @return session identifier
-     */
-    public String sessionId() {
-        return sessionId;
-    }
-    
-    /**
-     * Get normalized tool arguments.
-     *
-     * @return normalized tool arguments
-     */
-    public Map<String, Object> arguments() {
-        return arguments;
-    }
 }
