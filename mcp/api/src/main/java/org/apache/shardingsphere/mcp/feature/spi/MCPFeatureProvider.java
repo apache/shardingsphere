@@ -32,7 +32,7 @@ import java.util.List;
 public interface MCPFeatureProvider extends ShardingSphereSPI {
     
     /**
-     * Get tool handlers owned by the feature.
+     * Get tool handlers.
      *
      * @return tool handlers
      */
@@ -41,7 +41,7 @@ public interface MCPFeatureProvider extends ShardingSphereSPI {
     }
     
     /**
-     * Get resource handlers owned by the feature.
+     * Get resource handlers.
      *
      * @return resource handlers
      */
