@@ -17,41 +17,17 @@
 
 package org.apache.shardingsphere.mcp.api.resource;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * MCP resource request.
  */
+@RequiredArgsConstructor
+@Getter
 public final class MCPResourceRequest {
     
     private final String resourceUri;
     
     private final MCPUriVariables uriVariables;
-    
-    /**
-     * Create MCP resource request.
-     *
-     * @param resourceUri requested resource URI
-     * @param uriVariables matched URI variables
-     */
-    public MCPResourceRequest(final String resourceUri, final MCPUriVariables uriVariables) {
-        this.resourceUri = resourceUri;
-        this.uriVariables = uriVariables;
-    }
-    
-    /**
-     * Get requested resource URI.
-     *
-     * @return requested resource URI
-     */
-    public String resourceUri() {
-        return resourceUri;
-    }
-    
-    /**
-     * Get matched URI variables.
-     *
-     * @return matched URI variables
-     */
-    public MCPUriVariables uriVariables() {
-        return uriVariables;
-    }
 }

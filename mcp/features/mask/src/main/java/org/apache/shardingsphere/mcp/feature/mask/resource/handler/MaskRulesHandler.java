@@ -40,6 +40,6 @@ public final class MaskRulesHandler implements DatabaseResourceHandler {
     @Override
     public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
         return new MCPItemsResponse(ruleInspectionService.queryMaskRules(
-                databaseContext.getQueryFacade(), request.uriVariables().getVariable("database"), ""));
+                databaseContext.getQueryFacade(), request.getUriVariables().getVariable("database"), ""));
     }
 }

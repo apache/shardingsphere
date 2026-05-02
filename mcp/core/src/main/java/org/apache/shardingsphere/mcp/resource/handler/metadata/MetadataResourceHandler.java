@@ -45,6 +45,6 @@ public final class MetadataResourceHandler implements DatabaseResourceHandler {
     
     @Override
     public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
-        return new MCPItemsResponse(metadataLoader.apply(databaseContext, request.uriVariables()));
+        return new MCPItemsResponse(metadataLoader.apply(databaseContext, request.getUriVariables()));
     }
 }
