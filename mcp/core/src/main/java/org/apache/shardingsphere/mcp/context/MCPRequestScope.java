@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.context;
 
 import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.database.metadata.context.RequestScopedMetadataContext;
 import org.apache.shardingsphere.mcp.database.metadata.query.MetadataQueryService;
@@ -29,13 +29,13 @@ import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.tool.handler.execute.MCPSQLExecutionFacade;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 
 /**
  * MCP request scope.
  */
-public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatabaseContext, MCPWorkflowContext, AutoCloseable {
+public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatabaseHandlerContext, MCPWorkflowHandlerContext, AutoCloseable {
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     
@@ -65,7 +65,7 @@ public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatab
     }
     
     @Override
-    public MCPDatabaseContext getDatabaseContext() {
+    public MCPDatabaseHandlerContext getDatabaseContext() {
         return this;
     }
     

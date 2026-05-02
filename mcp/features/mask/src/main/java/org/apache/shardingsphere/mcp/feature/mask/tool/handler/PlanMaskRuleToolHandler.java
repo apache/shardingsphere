@@ -25,11 +25,11 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * Tool handler for mask workflow planning.
  */
-public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflowContext> {
+public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(MaskFeatureDefinition.PLAN_TOOL_NAME, "Plan Mask Rule",
             "Plan a ShardingSphere mask rule workflow for a logical table column.",
@@ -56,8 +56,8 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
     private final MaskAlgorithmPropertyTemplateService propertyTemplateService = new MaskAlgorithmPropertyTemplateService();
     
     @Override
-    public Class<MCPWorkflowContext> getContextType() {
-        return MCPWorkflowContext.class;
+    public Class<MCPWorkflowHandlerContext> getContextType() {
+        return MCPWorkflowHandlerContext.class;
     }
     
     @Override
@@ -66,8 +66,8 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
-        MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
+    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
+        MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(toolCall.getArguments(), this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
         WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(),
                 databaseContext.getQueryFacade(), toolCall.getSessionId(), request);

@@ -22,14 +22,14 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowR
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.workflow.model.DerivedColumnPlan;
@@ -155,8 +155,8 @@ class EncryptToolHandlerTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture() {
-        MCPWorkflowContext result = mock(MCPWorkflowContext.class);
-        MCPDatabaseContext databaseContext = mock(MCPDatabaseContext.class);
+        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -169,7 +169,7 @@ class EncryptToolHandlerTest {
         return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record WorkflowContextFixture(MCPWorkflowContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
                                           MCPFeatureExecutionFacade executionFacade) {
     }

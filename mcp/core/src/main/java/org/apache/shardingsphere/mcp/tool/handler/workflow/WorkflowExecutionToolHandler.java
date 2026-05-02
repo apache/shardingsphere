@@ -25,9 +25,9 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
@@ -35,7 +35,7 @@ import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 /**
  * Generic workflow execution tool handler.
  */
-public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowContext> {
+public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
     
     private final WorkflowExecutionService executionService;
     
@@ -51,8 +51,8 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public Class<MCPWorkflowContext> getContextType() {
-        return MCPWorkflowContext.class;
+    public Class<MCPWorkflowHandlerContext> getContextType() {
+        return MCPWorkflowHandlerContext.class;
     }
     
     @Override
@@ -61,9 +61,9 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     }
     
     @Override
-    public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
+    public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
-        MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
+        MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),

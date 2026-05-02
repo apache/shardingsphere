@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
 
 /**
  * MCP handler context utilities.
@@ -58,7 +58,7 @@ public final class MCPHandlerContexts {
     }
     
     private static boolean isSupportedContextType(final Class<?> contextType) {
-        return MCPServiceHandlerContext.class == contextType || MCPDatabaseContext.class == contextType || MCPWorkflowContext.class == contextType;
+        return MCPServiceHandlerContext.class == contextType || MCPDatabaseHandlerContext.class == contextType || MCPWorkflowHandlerContext.class == contextType;
     }
     
     private static String getContextTypeName(final Class<?> contextType) {

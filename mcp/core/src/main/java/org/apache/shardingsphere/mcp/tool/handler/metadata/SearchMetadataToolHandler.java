@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * Handler for search-metadata tool.
  */
-public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseContext> {
+public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
@@ -60,8 +60,8 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
                     new MCPToolFieldDefinition("page_token", new MCPToolValueDefinition(Type.STRING, "Opaque pagination token.", null), false)));
     
     @Override
-    public Class<MCPDatabaseContext> getContextType() {
-        return MCPDatabaseContext.class;
+    public Class<MCPDatabaseHandlerContext> getContextType() {
+        return MCPDatabaseHandlerContext.class;
     }
     
     @Override
@@ -70,7 +70,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPToolCall toolCall) {
+    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),

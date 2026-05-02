@@ -18,19 +18,19 @@
 package org.apache.shardingsphere.mcp.workflow;
 
 import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 
 /**
- * Workflow-aware MCP context.
+ * Workflow-aware MCP handler context.
  */
-public interface MCPWorkflowContext extends MCPHandlerContext {
+public interface MCPWorkflowHandlerContext extends MCPHandlerContext {
     
     /**
      * Get database context.
      *
      * @return database context
      */
-    MCPDatabaseContext getDatabaseContext();
+    MCPDatabaseHandlerContext getDatabaseContext();
     
     /**
      * Get workflow session context.

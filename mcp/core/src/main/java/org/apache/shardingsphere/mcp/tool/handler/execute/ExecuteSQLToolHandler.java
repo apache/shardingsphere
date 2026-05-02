@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
 /**
  * Execute SQL tool handler.
  */
-public final class ExecuteSQLToolHandler implements MCPToolHandler<MCPDatabaseContext> {
+public final class ExecuteSQLToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query", "Execute Query",
             "Execute one SQL statement against a logical database.",
@@ -45,8 +45,8 @@ public final class ExecuteSQLToolHandler implements MCPToolHandler<MCPDatabaseCo
                     new MCPToolFieldDefinition("timeout_ms", new MCPToolValueDefinition(Type.INTEGER, "Optional timeout in milliseconds.", null), false)));
     
     @Override
-    public Class<MCPDatabaseContext> getContextType() {
-        return MCPDatabaseContext.class;
+    public Class<MCPDatabaseHandlerContext> getContextType() {
+        return MCPDatabaseHandlerContext.class;
     }
     
     @Override
@@ -55,7 +55,7 @@ public final class ExecuteSQLToolHandler implements MCPToolHandler<MCPDatabaseCo
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPToolCall toolCall) {
+    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         return databaseContext.getExecutionFacade().execute(new SQLExecutionRequest(toolCall.getSessionId(),
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),

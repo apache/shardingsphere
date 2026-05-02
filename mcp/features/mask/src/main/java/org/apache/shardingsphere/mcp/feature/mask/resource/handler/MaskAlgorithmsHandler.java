@@ -21,20 +21,20 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 
 /**
  * Handler for mask algorithm plugins resource URI.
  */
-public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseContext> {
+public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseContext> getContextType() {
-        return MCPDatabaseContext.class;
+    public Class<MCPDatabaseHandlerContext> getContextType() {
+        return MCPDatabaseHandlerContext.class;
     }
     
     @Override
@@ -43,7 +43,7 @@ public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDataba
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.enrichMaskAlgorithms(
                 ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade())));
     }

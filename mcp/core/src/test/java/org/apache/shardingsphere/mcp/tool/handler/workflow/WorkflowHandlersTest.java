@@ -23,11 +23,11 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
@@ -104,8 +104,8 @@ class WorkflowHandlersTest {
     }
     
     private WorkflowContextFixture createWorkflowContextFixture(final WorkflowContextSnapshot snapshot) {
-        MCPWorkflowContext result = mock(MCPWorkflowContext.class);
-        MCPDatabaseContext databaseContext = mock(MCPDatabaseContext.class);
+        MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -132,7 +132,7 @@ class WorkflowHandlersTest {
                 });
     }
     
-    private record WorkflowContextFixture(MCPWorkflowContext workflowContext, WorkflowSessionContext workflowSessionContext,
+    private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
                                           MCPFeatureExecutionFacade executionFacade) {
     }

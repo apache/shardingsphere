@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -31,15 +31,15 @@ import java.util.function.BiFunction;
  * Metadata resource handler backed by one metadata loader function.
  */
 @RequiredArgsConstructor
-public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseContext> {
+public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private final String uriPattern;
     
-    private final BiFunction<MCPDatabaseContext, MCPUriVariables, List<?>> metadataLoader;
+    private final BiFunction<MCPDatabaseHandlerContext, MCPUriVariables, List<?>> metadataLoader;
     
     @Override
-    public Class<MCPDatabaseContext> getContextType() {
-        return MCPDatabaseContext.class;
+    public Class<MCPDatabaseHandlerContext> getContextType() {
+        return MCPDatabaseHandlerContext.class;
     }
     
     @Override
@@ -48,7 +48,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(metadataLoader.apply(databaseContext, uriVariables));
     }
 }

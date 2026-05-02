@@ -21,20 +21,20 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 
 /**
  * Handler for encrypt rules resource URI.
  */
-public final class EncryptRulesHandler implements MCPResourceHandler<MCPDatabaseContext> {
+public final class EncryptRulesHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
     private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
     @Override
-    public Class<MCPDatabaseContext> getContextType() {
-        return MCPDatabaseContext.class;
+    public Class<MCPDatabaseHandlerContext> getContextType() {
+        return MCPDatabaseHandlerContext.class;
     }
     
     @Override
@@ -43,7 +43,7 @@ public final class EncryptRulesHandler implements MCPResourceHandler<MCPDatabase
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(
                 databaseContext.getQueryFacade(), uriVariables.getVariable("database"), ""));
     }
