@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.workflow;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
@@ -27,11 +28,10 @@ import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinit
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Workflow runtime definition registry.
@@ -70,8 +70,7 @@ public final class WorkflowRuntimeDefinitionRegistry {
      * @return workflow runtime definition
      */
     public WorkflowRuntimeDefinition getRequired(final WorkflowKind workflowKind) {
-        return findRegisteredDefinition(workflowKind).orElseThrow(
-                () -> new MCPInvalidRequestException(String.format("Unknown workflow_kind `%s`.", workflowKind.getValue())));
+        return findRegisteredDefinition(workflowKind).orElseThrow(() -> new MCPInvalidRequestException(String.format("Unknown workflow_kind `%s`.", workflowKind.getValue())));
     }
     
     Collection<WorkflowRuntimeDefinition> getRegisteredDefinitions() {
@@ -79,19 +78,15 @@ public final class WorkflowRuntimeDefinitionRegistry {
     }
     
     static Collection<WorkflowRuntimeDefinition> loadDefinitions() {
-        Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
-        for (MCPWorkflowDefinitionProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPWorkflowDefinitionProvider.class)) {
-            result.addAll(createDefinitions(each));
-        }
-        return List.copyOf(result);
+        return ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream()
+                .filter(each -> each instanceof MCPWorkflowDefinitionProvider).flatMap(each -> createDefinitions((MCPWorkflowDefinitionProvider) each).stream()).collect(Collectors.toList());
     }
     
     static Collection<WorkflowRuntimeDefinition> createDefinitions(final MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
-        Collection<WorkflowRuntimeDefinition> definitions = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
+        Collection<WorkflowRuntimeDefinition> result = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
                 () -> String.format("Workflow definitions are required for `%s`.", workflowDefinitionProvider.getClass().getName()));
-        definitions.forEach(each -> Objects.requireNonNull(each,
-                () -> String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
-        return List.copyOf(definitions);
+        result.forEach(each -> Objects.requireNonNull(each, () -> String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
+        return result;
     }
     
     static Map<WorkflowKind, WorkflowRuntimeDefinition> createRegisteredDefinitions(final Collection<WorkflowRuntimeDefinition> definitions) {
