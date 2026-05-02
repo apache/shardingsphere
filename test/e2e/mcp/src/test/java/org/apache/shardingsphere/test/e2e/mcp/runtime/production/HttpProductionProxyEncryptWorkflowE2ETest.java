@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
@@ -35,9 +36,9 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     
     private static final String PLAN_TOOL_NAME = "plan_encrypt_rule";
     
-    private static final String APPLY_TOOL_NAME = "apply_encrypt_rule";
+    private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
-    private static final String VALIDATE_TOOL_NAME = "validate_encrypt_rule";
+    private static final String VALIDATE_TOOL_NAME = WorkflowToolDescriptors.VALIDATE_TOOL_NAME;
     
     private static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/encrypt/algorithms";
     

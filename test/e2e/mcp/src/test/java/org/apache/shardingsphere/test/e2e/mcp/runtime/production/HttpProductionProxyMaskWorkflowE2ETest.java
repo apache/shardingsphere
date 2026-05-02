@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
+import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.Test;
@@ -34,9 +35,9 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     
     private static final String PLAN_TOOL_NAME = "plan_mask_rule";
     
-    private static final String APPLY_TOOL_NAME = "apply_mask_rule";
+    private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
     
-    private static final String VALIDATE_TOOL_NAME = "validate_mask_rule";
+    private static final String VALIDATE_TOOL_NAME = WorkflowToolDescriptors.VALIDATE_TOOL_NAME;
     
     private static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/mask/algorithms";
     

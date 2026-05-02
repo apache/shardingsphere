@@ -59,19 +59,20 @@ public final class ProxyEncryptWorkflowRuntimeTestSupport {
     public static ProxyEncryptWorkflowRuntimeFixture createFixture() throws SQLException {
         int proxyPort = allocateProxyPort();
         GenericContainer<?> storageContainer = MySQLRuntimeTestSupport.createContainer().withNetworkAliases(STORAGE_NETWORK_ALIAS);
-        ShardingSphereProxyEmbeddedContainer proxyContainer = null;
+        ShardingSphereProxyEmbeddedContainer proxyContainer = createProxyContainer(proxyPort);
         boolean success = false;
+        boolean proxyContainerStarted = false;
         storageContainer.start();
         try {
             MySQLRuntimeTestSupport.initializeDatabase(storageContainer);
-            proxyContainer = createProxyContainer(proxyPort);
             proxyContainer.dependsOn(storageContainer);
             proxyContainer.start();
+            proxyContainerStarted = true;
             success = true;
             return new ProxyEncryptWorkflowRuntimeFixture(storageContainer, proxyContainer, createRuntimeDatabases(proxyPort));
         } finally {
             if (!success) {
-                if (null != proxyContainer) {
+                if (proxyContainerStarted) {
                     proxyContainer.stop();
                 }
                 storageContainer.stop();
