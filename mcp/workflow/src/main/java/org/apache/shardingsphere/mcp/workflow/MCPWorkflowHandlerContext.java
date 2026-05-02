@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.workflow;
 
-import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 
 /**

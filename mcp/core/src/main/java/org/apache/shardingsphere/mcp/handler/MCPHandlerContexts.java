@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;

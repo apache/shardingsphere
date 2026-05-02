@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.context;
 
-import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 
 /**
  * Service-level MCP handler context.

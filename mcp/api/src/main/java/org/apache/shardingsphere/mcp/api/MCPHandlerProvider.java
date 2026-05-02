@@ -15,10 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.handler;
+package org.apache.shardingsphere.mcp.api;
+
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+
+import java.util.Collection;
 
 /**
- * Marker interface for MCP handler execution context.
+ * MCP handler provider.
  */
-public interface MCPHandlerContext {
+@SingletonSPI
+public interface MCPHandlerProvider extends ShardingSphereSPI {
+    
+    /**
+     * Get resource handlers.
+     *
+     * @return resource handlers
+     */
+    Collection<MCPResourceHandler<?>> getResourceHandlers();
+    
+    /**
+     * Get tool handlers.
+     *
+     * @return tool handlers
+     */
+    Collection<MCPToolHandler<?>> getToolHandlers();
 }
