@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandl
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.handler.PlanMaskRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
-import org.apache.shardingsphere.mcp.feature.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.feature.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowDefinitionProvider;
@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Mask MCP feature provider.
  */
-public final class MaskFeatureProvider implements MCPFeatureProvider, MCPWorkflowDefinitionProvider {
+public final class MaskFeatureProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<ToolHandler> getToolHandlers() {

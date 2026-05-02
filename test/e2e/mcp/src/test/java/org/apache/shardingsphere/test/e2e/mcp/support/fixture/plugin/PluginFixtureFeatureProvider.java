@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.feature.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.feature.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Test-only MCP feature provider used to prove packaged distribution plugin discovery.
  */
-public final class PluginFixtureFeatureProvider implements MCPFeatureProvider {
+public final class PluginFixtureFeatureProvider implements MCPHandlerProvider {
     
     @Override
     public Collection<ToolHandler> getToolHandlers() {

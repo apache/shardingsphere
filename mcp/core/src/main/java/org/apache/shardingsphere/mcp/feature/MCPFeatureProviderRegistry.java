@@ -41,7 +41,7 @@ public final class MCPFeatureProviderRegistry {
      */
     public static Collection<ToolHandler> loadToolHandlers() {
         Collection<ToolHandler> result = new LinkedList<>();
-        for (MCPFeatureProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)) {
+        for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
             result.addAll(createToolHandlers(each));
         }
         return List.copyOf(result);
@@ -54,13 +54,13 @@ public final class MCPFeatureProviderRegistry {
      */
     public static Collection<ResourceHandler> loadResourceHandlers() {
         Collection<ResourceHandler> result = new LinkedList<>();
-        for (MCPFeatureProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)) {
+        for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
             result.addAll(createResourceHandlers(each));
         }
         return List.copyOf(result);
     }
     
-    static Collection<ToolHandler> createToolHandlers(final MCPFeatureProvider featureProvider) {
+    static Collection<ToolHandler> createToolHandlers(final MCPHandlerProvider featureProvider) {
         Collection<ToolHandler> handlers = Objects.requireNonNull(featureProvider.getToolHandlers(),
                 () -> String.format("Tool handlers are required for `%s`.", featureProvider.getClass().getName()));
         handlers.forEach(each -> Objects.requireNonNull(each,
@@ -68,7 +68,7 @@ public final class MCPFeatureProviderRegistry {
         return List.copyOf(handlers);
     }
     
-    static Collection<ResourceHandler> createResourceHandlers(final MCPFeatureProvider featureProvider) {
+    static Collection<ResourceHandler> createResourceHandlers(final MCPHandlerProvider featureProvider) {
         Collection<ResourceHandler> handlers = Objects.requireNonNull(featureProvider.getResourceHandlers(),
                 () -> String.format("Resource handlers are required for `%s`.", featureProvider.getClass().getName()));
         handlers.forEach(each -> Objects.requireNonNull(each,

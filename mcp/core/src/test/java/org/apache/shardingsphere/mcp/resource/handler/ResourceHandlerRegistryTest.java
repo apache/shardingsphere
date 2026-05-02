@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.feature.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.junit.jupiter.api.Test;
@@ -72,8 +72,8 @@ class ResourceHandlerRegistryTest {
     void assertGetRegisteredHandlersFailure(final String name, final Collection<ResourceHandler> handlers,
                                             final Class<? extends Throwable> expectedCauseType, final String expectedMessage) throws ReflectiveOperationException {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            MCPFeatureProvider featureProvider = createFeatureProvider(handlers);
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
+            MCPHandlerProvider featureProvider = createFeatureProvider(handlers);
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(featureProvider));
             Class<?> registryClass = Class.forName(ResourceHandlerRegistry.class.getName(), false, createIsolatedResourceHandlerRegistryClassLoader());
             var getRegisteredHandlersMethod = registryClass.getDeclaredMethod("getRegisteredHandlers");
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
@@ -127,8 +127,8 @@ class ResourceHandlerRegistryTest {
         return result;
     }
     
-    private static MCPFeatureProvider createFeatureProvider(final Collection<ResourceHandler> resourceHandlers) {
-        MCPFeatureProvider result = mock(MCPFeatureProvider.class);
+    private static MCPHandlerProvider createFeatureProvider(final Collection<ResourceHandler> resourceHandlers) {
+        MCPHandlerProvider result = mock(MCPHandlerProvider.class);
         when(result.getResourceHandlers()).thenReturn(resourceHandlers);
         return result;
     }

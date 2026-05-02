@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.core;
 
-import org.apache.shardingsphere.mcp.feature.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.feature.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
@@ -26,7 +26,7 @@ import java.util.Collection;
 /**
  * Core MCP feature provider.
  */
-public final class CoreFeatureProvider implements MCPFeatureProvider {
+public final class CoreFeatureProvider implements MCPHandlerProvider {
     
     @Override
     public Collection<ToolHandler> getToolHandlers() {

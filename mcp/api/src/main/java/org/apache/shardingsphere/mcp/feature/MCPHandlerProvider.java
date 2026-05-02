@@ -25,10 +25,10 @@ import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import java.util.Collection;
 
 /**
- * MCP feature provider.
+ * MCP handler provider.
  */
 @SingletonSPI
-public interface MCPFeatureProvider extends ShardingSphereSPI {
+public interface MCPHandlerProvider extends ShardingSphereSPI {
     
     /**
      * Get tool handlers.

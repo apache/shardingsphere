@@ -38,11 +38,11 @@ class MCPFeatureProviderRegistryTest {
     
     @Test
     void assertLoadToolHandlers() {
-        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        MCPHandlerProvider featureProvider = mock(MCPHandlerProvider.class);
         List<ToolHandler> toolHandlers = List.of(createToolHandler("search_metadata"), createToolHandler("plan_encrypt_rule"));
         when(featureProvider.getToolHandlers()).thenReturn(toolHandlers);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(featureProvider));
             List<String> actual = MCPFeatureProviderRegistry.loadToolHandlers().stream().map(each -> each.getToolDescriptor().getName()).toList();
             assertThat(actual, is(List.of("search_metadata", "plan_encrypt_rule")));
         }
@@ -50,11 +50,11 @@ class MCPFeatureProviderRegistryTest {
     
     @Test
     void assertLoadResourceHandlers() {
-        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        MCPHandlerProvider featureProvider = mock(MCPHandlerProvider.class);
         List<ResourceHandler> resourceHandlers = List.of(createResourceHandler("shardingsphere://foo"));
         when(featureProvider.getResourceHandlers()).thenReturn(resourceHandlers);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPFeatureProvider.class)).thenReturn(List.of(featureProvider));
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(featureProvider));
             List<ResourceHandler> actual = List.copyOf(MCPFeatureProviderRegistry.loadResourceHandlers());
             assertThat(actual.stream().map(ResourceHandler::getUriPattern).toList(), is(List.of("shardingsphere://foo")));
             assertThrows(UnsupportedOperationException.class, () -> MCPFeatureProviderRegistry.loadResourceHandlers().clear());
@@ -63,7 +63,7 @@ class MCPFeatureProviderRegistryTest {
     
     @Test
     void assertCreateToolHandlersWithNullHandlers() {
-        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        MCPHandlerProvider featureProvider = mock(MCPHandlerProvider.class);
         when(featureProvider.getToolHandlers()).thenReturn(null);
         NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPFeatureProviderRegistry.createToolHandlers(featureProvider));
         assertThat(actual.getMessage(), is(String.format("Tool handlers are required for `%s`.", featureProvider.getClass().getName())));
@@ -71,7 +71,7 @@ class MCPFeatureProviderRegistryTest {
     
     @Test
     void assertCreateToolHandlersWithNullHandler() {
-        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        MCPHandlerProvider featureProvider = mock(MCPHandlerProvider.class);
         List<ToolHandler> toolHandlers = new ArrayList<>();
         toolHandlers.add(createToolHandler("search_metadata"));
         toolHandlers.add(null);
@@ -82,7 +82,7 @@ class MCPFeatureProviderRegistryTest {
     
     @Test
     void assertCreateResourceHandlersWithNullHandlers() {
-        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        MCPHandlerProvider featureProvider = mock(MCPHandlerProvider.class);
         when(featureProvider.getResourceHandlers()).thenReturn(null);
         NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPFeatureProviderRegistry.createResourceHandlers(featureProvider));
         assertThat(actual.getMessage(), is(String.format("Resource handlers are required for `%s`.", featureProvider.getClass().getName())));
@@ -90,7 +90,7 @@ class MCPFeatureProviderRegistryTest {
     
     @Test
     void assertCreateResourceHandlersWithNullHandler() {
-        MCPFeatureProvider featureProvider = mock(MCPFeatureProvider.class);
+        MCPHandlerProvider featureProvider = mock(MCPHandlerProvider.class);
         List<ResourceHandler> resourceHandlers = new ArrayList<>();
         resourceHandlers.add(createResourceHandler("shardingsphere://foo"));
         resourceHandlers.add(null);
