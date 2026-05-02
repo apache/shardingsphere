@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
-import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPItemsResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;
@@ -52,7 +52,7 @@ class ToolHandlerTest {
             MCPResponse actual =
                     new SearchMetadataToolHandler().handle(requestContext, "session-1", Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name())));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertThat(actual, isA(MCPMetadataResponse.class));
+            assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_idx"));
         }
@@ -64,7 +64,7 @@ class ToolHandlerTest {
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, "session-1",
                     Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name())));
             Map<String, Object> actualPayload = actual.toPayload();
-            assertThat(actual, isA(MCPMetadataResponse.class));
+            assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_seq"));
         }
@@ -79,7 +79,7 @@ class ToolHandlerTest {
             for (Object each : (List<?>) actualPayload.get("items")) {
                 actualNames.add(((MetadataSearchHit) each).getName());
             }
-            assertThat(actual, isA(MCPMetadataResponse.class));
+            assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(actualNames.size(), is(9));
             assertTrue(actualNames.contains("logic_db"));
             assertTrue(actualNames.contains("order_idx"));

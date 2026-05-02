@@ -24,23 +24,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Response for tool metadata requests.
+ * MCP items response.
  */
 @RequiredArgsConstructor
-public final class MCPMetadataResponse implements MCPResponse {
+public final class MCPItemsResponse implements MCPResponse {
     
-    private final List<?> metadataItems;
+    private final List<?> items;
     
     private final String nextPageToken;
     
-    public MCPMetadataResponse(final List<?> metadataItems) {
-        this(metadataItems, "");
+    public MCPItemsResponse(final List<?> items) {
+        this(items, "");
     }
     
     @Override
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(metadataItems.size() + 1, 1F);
-        result.put("items", metadataItems);
+        Map<String, Object> result = new LinkedHashMap<>(items.size() + 1, 1F);
+        result.put("items", items);
         if (null != nextPageToken && !nextPageToken.isEmpty()) {
             result.put("next_page_token", nextPageToken);
         }

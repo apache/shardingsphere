@@ -27,7 +27,7 @@ import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
@@ -80,7 +80,7 @@ class ResourceHandlerTest {
                 assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
                 return;
             }
-            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMetadataResponse.class));
+            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPItemsResponse.class));
             assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));
         }
     }

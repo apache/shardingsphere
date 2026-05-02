@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Map;
 
 /**
- * Response backed by an arbitrary payload map.
+ * MCP map response.
  */
 @RequiredArgsConstructor
 public final class MCPMapResponse implements MCPResponse {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.tool.handler.metadata;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.protocol.response.MCPMetadataResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
@@ -69,6 +69,6 @@ public final class SearchMetadataToolHandler implements ToolHandler {
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));
         MCPDatabaseContext databaseContext = MCPDatabaseContext.getRequired(requestContext);
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
-        return new MCPMetadataResponse(searchResult.getItems(), searchResult.getNextPageToken());
+        return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken());
     }
 }
