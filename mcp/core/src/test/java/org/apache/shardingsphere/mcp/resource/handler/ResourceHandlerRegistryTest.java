@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider;
+import org.apache.shardingsphere.mcp.feature.MCPFeatureProvider;
 import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.junit.jupiter.api.Test;
