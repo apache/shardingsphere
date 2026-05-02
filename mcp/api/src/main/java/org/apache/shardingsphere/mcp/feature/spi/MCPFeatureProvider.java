@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * MCP feature provider.
@@ -36,16 +35,12 @@ public interface MCPFeatureProvider extends ShardingSphereSPI {
      *
      * @return tool handlers
      */
-    default Collection<ToolHandler> getToolHandlers() {
-        return List.of();
-    }
+    Collection<ToolHandler> getToolHandlers();
     
     /**
      * Get resource handlers.
      *
      * @return resource handlers
      */
-    default Collection<ResourceHandler> getResourceHandlers() {
-        return List.of();
-    }
+    Collection<ResourceHandler> getResourceHandlers();
 }
