@@ -30,13 +30,4 @@ public interface MCPResponse {
      * @return payload
      */
     Map<String, Object> toPayload();
-    
-    /**
-     * Judge whether this response represents an error.
-     *
-     * @return true if this response represents an error, otherwise false
-     */
-    default boolean isError() {
-        return false;
-    }
 }

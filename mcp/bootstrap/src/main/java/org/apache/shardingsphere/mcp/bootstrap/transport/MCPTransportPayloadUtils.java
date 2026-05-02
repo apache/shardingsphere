@@ -19,8 +19,11 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -28,12 +31,10 @@ import java.util.Map;
 /**
  * MCP transport payload utility methods.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPTransportPayloadUtils {
     
     public static final String JSON_CONTENT_TYPE = "application/json";
-    
-    private MCPTransportPayloadUtils() {
-    }
     
     /**
      * Create MCP tool result for a structured payload.
@@ -42,7 +43,7 @@ public final class MCPTransportPayloadUtils {
      * @return MCP tool result
      */
     public static McpSchema.CallToolResult createCallToolResult(final MCPResponse response) {
-        return createCallToolResult(response.toPayload(), response.isError());
+        return createCallToolResult(response.toPayload(), response instanceof MCPErrorResponse);
     }
     
     /**

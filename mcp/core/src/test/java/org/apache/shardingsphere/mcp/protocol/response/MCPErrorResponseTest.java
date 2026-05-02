@@ -23,7 +23,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPErrorResponseTest {
     
@@ -31,11 +30,6 @@ class MCPErrorResponseTest {
     void assertToPayload() {
         Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message").toPayload();
         assertThat(actual, is(Map.of("error_code", "invalid_request", "message", "foo_message")));
-    }
-    
-    @Test
-    void assertIsError() {
-        assertTrue(new MCPErrorResponse("invalid_request", "foo_message").isError());
     }
     
     @Test

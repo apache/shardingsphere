@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -96,29 +97,16 @@ class MCPToolSpecificationFactoryTest {
     @Test
     void assertCreateToolSpecificationsHandleErrorResponse() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
-            Map<String, Object> expectedPayload = Map.of("error_code", "invalid_request");
-            MCPResponse response = new MCPResponse() {
-                
-                @Override
-                public Map<String, Object> toPayload() {
-                    return expectedPayload;
-                }
-                
-                @Override
-                public boolean isError() {
-                    return true;
-                }
-            };
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor()));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("search_metadata"), eq(Map.of("query", "foo_query"))))
-                    .thenReturn(Optional.of(response));
+                    .thenReturn(Optional.of(new MCPErrorResponse("invalid_request", "")));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
             when(exchange.sessionId()).thenReturn("session-id");
             CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("search_metadata", Map.of("query", "foo_query")));
-            assertThat(actual.structuredContent(), is(expectedPayload));
+            assertThat(actual.structuredContent(), is(Map.of("error_code", "invalid_request", "message", "")));
             assertTrue(actual.isError());
         }
     }

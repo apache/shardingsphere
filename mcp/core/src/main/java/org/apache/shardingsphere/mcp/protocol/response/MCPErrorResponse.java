@@ -38,9 +38,4 @@ public final class MCPErrorResponse implements MCPResponse {
     public Map<String, Object> toPayload() {
         return Map.of("error_code", errorCode, "message", message);
     }
-    
-    @Override
-    public boolean isError() {
-        return true;
-    }
 }

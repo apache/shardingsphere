@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -49,19 +49,7 @@ class MCPTransportPayloadUtilsTest {
     
     @Test
     void assertCreateCallToolResultWithErrorResponse() {
-        MCPResponse response = new MCPResponse() {
-            
-            @Override
-            public Map<String, Object> toPayload() {
-                return Map.of("error_code", "invalid_request");
-            }
-            
-            @Override
-            public boolean isError() {
-                return true;
-            }
-        };
-        assertTrue(MCPTransportPayloadUtils.createCallToolResult(response).isError());
+        assertTrue(MCPTransportPayloadUtils.createCallToolResult(new MCPErrorResponse("invalid_request", "")).isError());
     }
     
     @Test

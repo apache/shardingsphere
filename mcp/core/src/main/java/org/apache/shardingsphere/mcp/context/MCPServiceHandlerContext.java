@@ -15,19 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.response;
+package org.apache.shardingsphere.mcp.context;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-class MCPResponseTest {
-    
-    @Test
-    void assertIsError() {
-        MCPResponse actual = () -> Map.of("error_code", "foo_error");
-        assertFalse(actual.isError());
-    }
+/**
+ * Service-level MCP handler context.
+ */
+public interface MCPServiceHandlerContext extends MCPHandlerContext {
 }
