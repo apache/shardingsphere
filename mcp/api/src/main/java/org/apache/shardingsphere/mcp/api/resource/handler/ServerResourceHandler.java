@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.api.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 
 /**
  * Handler for MCP server resources that do not need request-scoped database or workflow capabilities.
@@ -29,8 +29,8 @@ public interface ServerResourceHandler extends MCPResourceContribution {
     /**
      * Handle one server-level resource request.
      *
-     * @param request resource request
+     * @param uriVariables URI variables
      * @return resource response
      */
-    MCPResponse handle(MCPResourceRequest request);
+    MCPResponse handle(MCPUriVariables uriVariables);
 }

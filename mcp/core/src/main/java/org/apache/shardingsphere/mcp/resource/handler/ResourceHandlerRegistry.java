@@ -22,7 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
@@ -119,18 +118,18 @@ public final class ResourceHandlerRegistry {
         for (Entry<MCPUriPattern, MCPResourceContribution> each : REGISTERED_RESOURCES.entrySet()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
-                return Optional.of(dispatch(requestScope, each.getValue(), new MCPResourceRequest(resourceUri, matchedUriVariables.get())));
+                return Optional.of(dispatch(requestScope, each.getValue(), matchedUriVariables.get()));
             }
         }
         return Optional.empty();
     }
     
-    private static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceContribution resourceContribution, final MCPResourceRequest request) {
+    private static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceContribution resourceContribution, final MCPUriVariables uriVariables) {
         if (resourceContribution instanceof DatabaseResourceHandler) {
-            return ((DatabaseResourceHandler) resourceContribution).handle(requestScope, request);
+            return ((DatabaseResourceHandler) resourceContribution).handle(requestScope, uriVariables);
         }
         if (resourceContribution instanceof ServerResourceHandler) {
-            return ((ServerResourceHandler) resourceContribution).handle(request);
+            return ((ServerResourceHandler) resourceContribution).handle(uriVariables);
         }
         throw new IllegalArgumentException(String.format("Unsupported resource contribution type `%s`.", resourceContribution.getClass().getName()));
     }

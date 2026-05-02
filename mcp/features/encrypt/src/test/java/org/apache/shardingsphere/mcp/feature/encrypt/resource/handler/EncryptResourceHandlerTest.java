@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -51,7 +50,7 @@ class EncryptResourceHandlerTest {
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(Map.of("type", "AES")));
         when(ruleInspectionService.enrichEncryptAlgorithms(List.of(Map.of("type", "AES")))).thenReturn(List.of(Map.of("type", "AES", "source", "builtin")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createRequest(Map.of()));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createUriVariables(Map.of()));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
     
@@ -66,7 +65,7 @@ class EncryptResourceHandlerTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createRequest(Map.of("database", "logic_db")));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createUriVariables(Map.of("database", "logic_db")));
         verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"), eq(""));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
@@ -82,7 +81,7 @@ class EncryptResourceHandlerTest {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createRequest(Map.of("database", "logic_db", "table", "orders")));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createUriVariables(Map.of("database", "logic_db", "table", "orders")));
         verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"), eq("orders"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
@@ -92,7 +91,7 @@ class EncryptResourceHandlerTest {
         Plugins.getMemberAccessor().set(field, target, value);
     }
     
-    private MCPResourceRequest createRequest(final Map<String, String> variables) {
-        return new MCPResourceRequest("shardingsphere://features/encrypt/test", new MCPUriVariables(variables));
+    private MCPUriVariables createUriVariables(final Map<String, String> variables) {
+        return new MCPUriVariables(variables);
     }
 }

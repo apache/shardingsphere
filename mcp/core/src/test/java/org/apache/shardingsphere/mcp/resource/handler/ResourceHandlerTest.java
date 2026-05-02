@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedExcept
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
@@ -70,7 +70,7 @@ class ResourceHandlerTest {
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
-            MCPResponse actual = handle(handlerCase.getHandler(), requestContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
+            MCPResponse actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
             Map<String, Object> actualPayload = actual.toPayload();
             if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
                 assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
@@ -95,7 +95,7 @@ class ResourceHandlerTest {
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().queryIndexes(
                             uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table")))
                     .handle(requestContext,
-                            match("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
+                            parseUriVariables("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                                     "shardingsphere://databases/warehouse/schemas/warehouse/tables/facts/indexes")));
             assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
         }
@@ -109,21 +109,21 @@ class ResourceHandlerTest {
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
                             uriVariables.getVariable("database"), uriVariables.getVariable("schema")))
                     .handle(requestContext,
-                            match("shardingsphere://databases/{database}/schemas/{schema}/sequences",
+                            parseUriVariables("shardingsphere://databases/{database}/schemas/{schema}/sequences",
                                     "shardingsphere://databases/warehouse/schemas/warehouse/sequences")));
             assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
         }
     }
     
-    private MCPResourceRequest match(final String uriPattern, final String resourceUri) {
-        return new MCPResourceRequest(resourceUri, new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow());
+    private MCPUriVariables parseUriVariables(final String uriPattern, final String resourceUri) {
+        return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
     }
     
-    private MCPResponse handle(final MCPResourceContribution handler, final MCPRequestScope requestContext, final MCPResourceRequest request) {
+    private MCPResponse handle(final MCPResourceContribution handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
         if (handler instanceof ServerResourceHandler) {
-            return ((ServerResourceHandler) handler).handle(request);
+            return ((ServerResourceHandler) handler).handle(uriVariables);
         }
-        return ((DatabaseResourceHandler) handler).handle(requestContext, request);
+        return ((DatabaseResourceHandler) handler).handle(requestContext, uriVariables);
     }
     
     private List<String> extractMetadataNames(final Map<String, Object> payload) {

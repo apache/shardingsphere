@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
@@ -38,7 +38,7 @@ public final class MaskAlgorithmsHandler implements DatabaseResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.enrichMaskAlgorithms(
                 ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade())));
     }

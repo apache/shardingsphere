@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
@@ -44,7 +43,7 @@ public final class MetadataResourceHandler implements DatabaseResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
-        return new MCPItemsResponse(metadataLoader.apply(databaseContext, request.getUriVariables()));
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPUriVariables uriVariables) {
+        return new MCPItemsResponse(metadataLoader.apply(databaseContext, uriVariables));
     }
 }

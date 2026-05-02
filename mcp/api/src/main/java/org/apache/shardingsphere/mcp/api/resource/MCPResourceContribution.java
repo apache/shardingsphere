@@ -18,8 +18,7 @@
 package org.apache.shardingsphere.mcp.api.resource;
 
 /**
- * Contribution contract for one MCP resource URI pattern. It describes the resource exposed by an MCP provider, while runtime execution is defined by a narrower handler interface when server,
- * database, or workflow context is needed.
+ * MCP resource contribution.
  */
 public interface MCPResourceContribution {
     

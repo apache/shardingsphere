@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
 import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
@@ -39,7 +39,7 @@ public final class ServerCapabilitiesHandler implements ServerResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPResourceRequest request) {
+    public MCPResponse handle(final MCPUriVariables uriVariables) {
         return new MCPServiceCapabilityResponse(createServiceCapability());
     }
     

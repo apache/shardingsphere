@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
 
 import java.util.List;
@@ -38,7 +38,7 @@ public final class PluginFixtureStatusResourceHandler implements ServerResourceH
     }
     
     @Override
-    public MCPResponse handle(final MCPResourceRequest request) {
+    public MCPResponse handle(final MCPUriVariables uriVariables) {
         return new MCPMapResponse(Map.of("items", List.of(Map.of("feature", "test-fixture", "status", "ready"))));
     }
 }

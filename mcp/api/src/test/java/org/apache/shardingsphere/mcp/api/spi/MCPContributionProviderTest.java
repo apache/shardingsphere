@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.api.spi;
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
@@ -97,7 +97,7 @@ class MCPContributionProviderTest {
         }
         
         @Override
-        public MCPResponse handle(final MCPResourceRequest request) {
+        public MCPResponse handle(final MCPUriVariables uriVariables) {
             return () -> Map.of("foo_key", "foo_value");
         }
     }

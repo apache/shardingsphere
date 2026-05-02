@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.database.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 
 /**
@@ -31,8 +31,8 @@ public interface DatabaseResourceHandler extends MCPResourceContribution {
      * Handle one database-aware resource request.
      *
      * @param databaseContext database context
-     * @param request resource request
+     * @param uriVariables URI variables
      * @return resource response
      */
-    MCPResponse handle(MCPDatabaseContext databaseContext, MCPResourceRequest request);
+    MCPResponse handle(MCPDatabaseContext databaseContext, MCPUriVariables uriVariables);
 }
