@@ -15,30 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
+package org.apache.shardingsphere.mcp.api.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
-import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
-
-import java.util.List;
-import java.util.Map;
 
 /**
- * Test-only resource handler used to prove packaged distribution plugin discovery.
+ * Handler for MCP server resources that do not need request-scoped database or workflow capabilities.
  */
-public final class PluginFixtureStatusResourceHandler implements ServerResourceHandler {
+public interface ServerResourceHandler extends MCPResourceContribution {
     
-    private static final String URI_PATTERN = "shardingsphere://features/test-fixture/status";
-    
-    @Override
-    public String getUriPattern() {
-        return URI_PATTERN;
-    }
-    
-    @Override
-    public MCPResponse handle(final MCPResourceRequest request) {
-        return new MCPMapResponse(Map.of("items", List.of(Map.of("feature", "test-fixture", "status", "ready"))));
-    }
+    /**
+     * Handle one server-level resource request.
+     *
+     * @param request resource request
+     * @return resource response
+     */
+    MCPResponse handle(MCPResourceRequest request);
 }

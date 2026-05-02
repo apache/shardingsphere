@@ -17,8 +17,15 @@
 
 package org.apache.shardingsphere.mcp.resource.handler;
 
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
@@ -26,18 +33,13 @@ import org.apache.shardingsphere.mcp.database.metadata.model.MCPSequenceMetadata
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.database.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.MetadataResourceHandler;
-import org.apache.shardingsphere.mcp.database.resource.response.MCPDatabaseCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -67,8 +69,8 @@ class ResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
-        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
-            MCPResponse actual = handlerCase.getHandler().handle(requestContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
+        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
+            MCPResponse actual = handle(handlerCase.getHandler(), requestContext, match(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
             Map<String, Object> actualPayload = actual.toPayload();
             if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
                 assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
@@ -87,7 +89,7 @@ class ResourceHandlerTest {
     
     @Test
     void assertHandleWithUnsupportedIndexResource() {
-        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
             MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                     "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().queryIndexes(
@@ -101,7 +103,7 @@ class ResourceHandlerTest {
     
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
-        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
+        try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
             MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new MetadataResourceHandler(
                     "shardingsphere://databases/{database}/schemas/{schema}/sequences",
                     (featureContext, uriVariables) -> featureContext.getMetadataQueryFacade().querySequences(
@@ -113,8 +115,15 @@ class ResourceHandlerTest {
         }
     }
     
-    private MCPUriVariables match(final String uriPattern, final String resourceUri) {
-        return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
+    private MCPResourceRequest match(final String uriPattern, final String resourceUri) {
+        return new MCPResourceRequest(resourceUri, new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow());
+    }
+    
+    private MCPResponse handle(final MCPResourceContribution handler, final MCPRequestScope requestContext, final MCPResourceRequest request) {
+        if (handler instanceof ServerResourceHandler) {
+            return ((ServerResourceHandler) handler).handle(request);
+        }
+        return ((DatabaseResourceHandler) handler).handle(requestContext, request);
     }
     
     private List<String> extractMetadataNames(final Map<String, Object> payload) {
@@ -158,7 +167,7 @@ class ResourceHandlerTest {
     
     private static Stream<HandlerCase> handlerCases() {
         return Stream.of(
-                new HandlerCase("service capabilities", new ServiceCapabilitiesHandler(), "shardingsphere://capabilities",
+                new HandlerCase("server capabilities", new ServerCapabilitiesHandler(), "shardingsphere://capabilities",
                         "shardingsphere://capabilities", HandlerResultType.SERVICE_CAPABILITY, "", List.of()),
                 new HandlerCase("databases", new MetadataResourceHandler("shardingsphere://databases",
                         (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryDatabases()), "shardingsphere://databases",
@@ -254,7 +263,7 @@ class ResourceHandlerTest {
         
         private final String description;
         
-        private final ResourceHandler handler;
+        private final MCPResourceContribution handler;
         
         private final String expectedUriPattern;
         
@@ -266,7 +275,7 @@ class ResourceHandlerTest {
         
         private final List<String> expectedObjectNames;
         
-        private HandlerCase(final String description, final ResourceHandler handler, final String expectedUriPattern, final String resourceUri,
+        private HandlerCase(final String description, final MCPResourceContribution handler, final String expectedUriPattern, final String resourceUri,
                             final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
             this.description = description;
             this.handler = handler;
@@ -277,7 +286,7 @@ class ResourceHandlerTest {
             this.expectedObjectNames = expectedObjectNames;
         }
         
-        private ResourceHandler getHandler() {
+        private MCPResourceContribution getHandler() {
             return handler;
         }
         

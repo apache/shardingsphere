@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.tool;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ class MCPToolControllerTest {
         Map<String, Object> payload = Map.of("items", 1);
         when(response.toPayload()).thenReturn(payload);
         try (MockedStatic<ToolHandlerRegistry> mocked = mockStatic(ToolHandlerRegistry.class)) {
-            mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPFeatureContext.class), eq("session-1"), eq("search_metadata"), eq(Map.of("query", "order"))))
+            mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("search_metadata"), eq(Map.of("query", "order"))))
                     .thenReturn(Optional.of(response));
             Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("query", "order")).toPayload();
             assertThat(actual, is(payload));
@@ -54,7 +54,7 @@ class MCPToolControllerTest {
     @Test
     void assertHandleWithUnsupportedTool() {
         try (MockedStatic<ToolHandlerRegistry> mocked = mockStatic(ToolHandlerRegistry.class)) {
-            mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPFeatureContext.class), eq("session-1"), eq("unsupported_tool"), eq(Map.of()))).thenReturn(Optional.empty());
+            mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("unsupported_tool"), eq(Map.of()))).thenReturn(Optional.empty());
             Map<String, Object> actual = createController().handle("session-1", "unsupported_tool", Map.of()).toPayload();
             assertThat(actual.get("error_code"), is("invalid_request"));
             assertThat(actual.get("message"), is("Unsupported tool."));
@@ -64,7 +64,7 @@ class MCPToolControllerTest {
     @Test
     void assertHandleWithHandlerException() {
         try (MockedStatic<ToolHandlerRegistry> mocked = mockStatic(ToolHandlerRegistry.class)) {
-            mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPFeatureContext.class), eq("session-1"), eq("search_metadata"), eq(Map.of("query", "order"))))
+            mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("search_metadata"), eq(Map.of("query", "order"))))
                     .thenThrow(new MCPUnsupportedException("Search is not supported."));
             Map<String, Object> actual = createController().handle("session-1", "search_metadata", Map.of("query", "order")).toPayload();
             assertThat(actual.get("error_code"), is("unsupported"));

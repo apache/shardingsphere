@@ -17,26 +17,25 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
+import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.workflow.handler.WorkflowToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
-
-import java.util.Map;
 
 /**
  * Generic workflow execution tool handler.
  */
-public final class WorkflowExecutionToolHandler implements ToolHandler {
+public final class WorkflowExecutionToolHandler implements WorkflowToolHandler {
     
     private final WorkflowExecutionService executionService;
     
@@ -57,13 +56,13 @@ public final class WorkflowExecutionToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
-        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
+    public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
+        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.arguments());
+        MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
-        return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(), workflowContext.getQueryFacade(),
-                workflowContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), sessionId, snapshot,
+        return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
+                databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.sessionId(), snapshot,
                 toolArguments.getStringCollectionArgument("approved_steps"), toolArguments.getStringArgument("execution_mode")));
     }
     

@@ -36,8 +36,10 @@ class WorkflowToolDescriptorsTest {
         List<MCPToolFieldDefinition> featureFields = List.of(
                 new MCPToolFieldDefinition("algorithm_type", new MCPToolValueDefinition(Type.STRING, "Algorithm type.", null), false),
                 new MCPToolFieldDefinition("user_overrides", new MCPToolValueDefinition(Type.OBJECT, "User overrides.", null), false));
-        MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("plan_encrypt_rule", featureFields);
+        MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("plan_encrypt_rule", "Plan Encrypt Rule", "Plan an encrypt rule workflow.", featureFields);
         assertThat(actual.getName(), is("plan_encrypt_rule"));
+        assertThat(actual.getTitle(), is("Plan Encrypt Rule"));
+        assertThat(actual.getDescription(), is("Plan an encrypt rule workflow."));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of(
                 "plan_id", "database", "schema", "table", "column", "operation_type",
                 "natural_language_intent", "structured_intent_evidence", "delivery_mode",
@@ -53,6 +55,8 @@ class WorkflowToolDescriptorsTest {
     void assertCreateExecutionBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
         assertThat(actual.getName(), is("apply_workflow"));
+        assertThat(actual.getTitle(), is("Apply Workflow"));
+        assertThat(actual.getDescription(), is("Apply an approved workflow plan."));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id", "execution_mode", "approved_steps")));
         assertThat(actual.getFields().get(1).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("auto-execute", "review-then-execute", "manual-only")));
         assertThat(actual.getFields().get(2).getValueDefinition().toSchemaFragment(), is(new MCPToolValueDefinition(
@@ -63,6 +67,8 @@ class WorkflowToolDescriptorsTest {
     void assertCreateValidationBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation();
         assertThat(actual.getName(), is("validate_workflow"));
+        assertThat(actual.getTitle(), is("Validate Workflow"));
+        assertThat(actual.getDescription(), is("Validate a workflow plan without applying changes."));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id")));
         assertTrue(actual.getFields().get(0).isRequired());
     }

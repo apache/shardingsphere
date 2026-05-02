@@ -23,7 +23,7 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
@@ -68,7 +68,7 @@ class MCPResourceSpecificationFactoryTest {
             Map<String, Object> expectedPayload = Map.of("status", "ok");
             MCPResponse response = () -> expectedPayload;
             mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResources).thenReturn(List.of("shardingsphere://capabilities"));
-            mockedResourceHandlerRegistry.when(() -> ResourceHandlerRegistry.dispatch(any(MCPFeatureContext.class), eq("shardingsphere://capabilities")))
+            mockedResourceHandlerRegistry.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities")))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());

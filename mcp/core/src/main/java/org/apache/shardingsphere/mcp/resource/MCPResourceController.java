@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.resource;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedResourceUriException;
@@ -40,8 +40,8 @@ public final class MCPResourceController {
      * @return MCP response
      */
     public MCPResponse handle(final String resourceUri) {
-        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
-            return ResourceHandlerRegistry.dispatch(requestContext, resourceUri).orElseThrow(UnsupportedResourceUriException::new);
+        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
+            return ResourceHandlerRegistry.dispatch(requestScope, resourceUri).orElseThrow(UnsupportedResourceUriException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

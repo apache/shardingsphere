@@ -17,26 +17,26 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.handler.DatabaseToolHandler;
+import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Execute SQL tool handler.
  */
-public final class ExecuteSQLToolHandler implements ToolHandler {
+public final class ExecuteSQLToolHandler implements DatabaseToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query",
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query", "Execute Query",
+            "Execute one SQL statement against a logical database.",
             Arrays.asList(
                     new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), true),
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name used as a namespace hint for unqualified object names.", null), false),
@@ -50,10 +50,9 @@ public final class ExecuteSQLToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
-        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
-        MCPDatabaseContext databaseContext = MCPDatabaseContext.getRequired(requestContext);
-        return databaseContext.getExecutionFacade().execute(new SQLExecutionRequest(sessionId,
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPToolCall toolCall) {
+        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.arguments());
+        return databaseContext.getExecutionFacade().execute(new SQLExecutionRequest(toolCall.sessionId(),
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("sql"),
                 toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0)));
     }

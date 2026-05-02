@@ -68,13 +68,15 @@ public final class WorkflowToolDescriptors {
      * Create workflow planning descriptor.
      *
      * @param toolName tool name
+     * @param title tool title
+     * @param description tool description
      * @param featureFields feature-specific fields
      * @return MCP tool descriptor
      */
-    public static MCPToolDescriptor createPlanning(final String toolName, final List<MCPToolFieldDefinition> featureFields) {
+    public static MCPToolDescriptor createPlanning(final String toolName, final String title, final String description, final List<MCPToolFieldDefinition> featureFields) {
         List<MCPToolFieldDefinition> result = new LinkedList<>(COMMON_PLANNING_FIELDS);
         result.addAll(featureFields);
-        return new MCPToolDescriptor(toolName, List.copyOf(result));
+        return new MCPToolDescriptor(toolName, title, description, List.copyOf(result));
     }
     
     /**
@@ -83,7 +85,7 @@ public final class WorkflowToolDescriptors {
      * @return MCP tool descriptor
      */
     public static MCPToolDescriptor createExecution() {
-        return new MCPToolDescriptor(APPLY_TOOL_NAME, EXECUTION_FIELDS);
+        return new MCPToolDescriptor(APPLY_TOOL_NAME, "Apply Workflow", "Apply an approved workflow plan.", EXECUTION_FIELDS);
     }
     
     /**
@@ -92,6 +94,6 @@ public final class WorkflowToolDescriptors {
      * @return MCP tool descriptor
      */
     public static MCPToolDescriptor createValidation() {
-        return new MCPToolDescriptor(VALIDATE_TOOL_NAME, VALIDATION_FIELDS);
+        return new MCPToolDescriptor(VALIDATE_TOOL_NAME, "Validate Workflow", "Validate a workflow plan without applying changes.", VALIDATION_FIELDS);
     }
 }

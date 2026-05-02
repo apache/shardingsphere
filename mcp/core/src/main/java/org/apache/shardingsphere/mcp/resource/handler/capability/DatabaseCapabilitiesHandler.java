@@ -17,18 +17,17 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 import org.apache.shardingsphere.mcp.database.resource.response.MCPDatabaseCapabilityResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
 
 /**
  * Handler for database capabilities resource URI.
  */
-public final class DatabaseCapabilitiesHandler implements ResourceHandler {
+public final class DatabaseCapabilitiesHandler implements DatabaseResourceHandler {
     
     @Override
     public String getUriPattern() {
@@ -36,9 +35,9 @@ public final class DatabaseCapabilitiesHandler implements ResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        var databaseCapabilityProvider = MCPDatabaseContext.getRequired(requestContext).getCapabilityFacade();
-        String databaseName = uriVariables.getVariable("database");
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
+        var databaseCapabilityProvider = databaseContext.getCapabilityFacade();
+        String databaseName = request.uriVariables().getVariable("database");
         return databaseCapabilityProvider.provide(databaseName).<MCPResponse>map(MCPDatabaseCapabilityResponse::new).orElseThrow(DatabaseCapabilityNotFoundException::new);
     }
 }

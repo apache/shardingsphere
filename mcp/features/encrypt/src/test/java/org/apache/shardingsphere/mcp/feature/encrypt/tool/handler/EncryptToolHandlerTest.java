@@ -22,10 +22,12 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowR
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
@@ -70,15 +72,15 @@ class EncryptToolHandlerTest {
         when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createSnapshot("plan-1", "planned"));
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        RequestContextFixture fixture = createRequestContextFixture();
-        MCPResponse actual = handler.handle(fixture.requestContext, "session-1", Map.of(
+        WorkflowContextFixture fixture = createWorkflowContextFixture();
+        MCPResponse actual = handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of(
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone",
                 "allow_index_ddl", false,
                 "algorithm_type", "AES",
                 "structured_intent_evidence", Map.of("field_semantics", "phone", "requires_decrypt", true),
-                "user_overrides", Map.of("cipher_column_name", "phone_cipher")));
+                "user_overrides", Map.of("cipher_column_name", "phone_cipher"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
         ArgumentCaptor<EncryptWorkflowRequest> requestCaptor = ArgumentCaptor.forClass(EncryptWorkflowRequest.class);
         verify(planningService).plan(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade), eq(fixture.queryFacade), eq("session-1"), requestCaptor.capture());
@@ -96,10 +98,10 @@ class EncryptToolHandlerTest {
         when(planningService.plan(any(), any(), any(), any(), any())).thenReturn(createDetailedSnapshot());
         setField(handler, "planningService", planningService);
         setField(handler, "propertyTemplateService", new EncryptAlgorithmPropertyTemplateService());
-        MCPResponse actual = handler.handle(createRequestContextFixture().requestContext, "session-1", Map.of(
+        MCPResponse actual = handler.handle(createWorkflowContextFixture().workflowContext, new MCPToolCall("session-1", Map.of(
                 "database", "logic_db",
                 "table", "orders",
-                "column", "phone"));
+                "column", "phone")));
         Map<String, Object> actualPayload = actual.toPayload();
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualPayload.get("masked_property_preview")).get("primary")).get("aes-key-value"), is("******"));
         assertThat(((Map<?, ?>) actualPayload.get("derived_column_plan")).get("cipher_column_name"), is("phone_cipher"));
@@ -152,21 +154,23 @@ class EncryptToolHandlerTest {
         Plugins.getMemberAccessor().set(field, target, value);
     }
     
-    private RequestContextFixture createRequestContextFixture() {
+    private WorkflowContextFixture createWorkflowContextFixture() {
         MCPWorkflowContext result = mock(MCPWorkflowContext.class);
+        MCPDatabaseContext databaseContext = mock(MCPDatabaseContext.class);
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(result.getDatabaseContext()).thenReturn(databaseContext);
         when(result.getWorkflowSessionContext()).thenReturn(workflowSessionContext);
-        when(result.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
-        when(result.getQueryFacade()).thenReturn(queryFacade);
-        when(result.getExecutionFacade()).thenReturn(executionFacade);
-        return new RequestContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
+        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
     
-    private record RequestContextFixture(MCPWorkflowContext requestContext, WorkflowSessionContext workflowSessionContext,
-                                         MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
-                                         MCPFeatureExecutionFacade executionFacade) {
+    private record WorkflowContextFixture(MCPWorkflowContext workflowContext, WorkflowSessionContext workflowSessionContext,
+                                          MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
+                                          MCPFeatureExecutionFacade executionFacade) {
     }
 }

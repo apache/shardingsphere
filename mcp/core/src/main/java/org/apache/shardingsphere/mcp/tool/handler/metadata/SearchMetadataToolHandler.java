@@ -17,29 +17,28 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.database.handler.DatabaseToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchResult;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
  * Handler for search-metadata tool.
  */
-public final class SearchMetadataToolHandler implements ToolHandler {
+public final class SearchMetadataToolHandler implements DatabaseToolHandler {
     
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
@@ -47,7 +46,8 @@ public final class SearchMetadataToolHandler implements ToolHandler {
     
     private static final List<String> SUPPORTED_OBJECT_TYPE_NAMES = List.of("DATABASE", "SCHEMA", "TABLE", "VIEW", "COLUMN", "INDEX", "SEQUENCE");
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata",
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata", "Search Metadata",
+            "Search logical database metadata by object type, name, or pagination arguments.",
             Arrays.asList(
                     new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Optional logical database name.", null), false),
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
@@ -65,12 +65,11 @@ public final class SearchMetadataToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
-        MCPToolArguments toolArguments = new MCPToolArguments(arguments);
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPToolCall toolCall) {
+        MCPToolArguments toolArguments = new MCPToolArguments(toolCall.arguments());
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));
-        MCPDatabaseContext databaseContext = MCPDatabaseContext.getRequired(requestContext);
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
         return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken());
     }

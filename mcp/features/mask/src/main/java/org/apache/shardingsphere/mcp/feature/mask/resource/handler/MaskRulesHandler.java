@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
+import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 
 /**
  * Handler for mask rules resource URI.
  */
-public final class MaskRulesHandler implements ResourceHandler {
+public final class MaskRulesHandler implements DatabaseResourceHandler {
     
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
     
@@ -39,8 +38,8 @@ public final class MaskRulesHandler implements ResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
         return new MCPItemsResponse(ruleInspectionService.queryMaskRules(
-                MCPDatabaseContext.getRequired(requestContext).getQueryFacade(), uriVariables.getVariable("database"), ""));
+                databaseContext.getQueryFacade(), request.uriVariables().getVariable("database"), ""));
     }
 }

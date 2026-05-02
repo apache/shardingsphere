@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.core;
+package org.apache.shardingsphere.mcp.api.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
-
-import java.util.Collection;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 
 /**
- * Core MCP feature provider.
+ * Handler for MCP server tools that do not need request-scoped database or workflow capabilities.
  */
-public final class CoreFeatureProvider implements MCPHandlerProvider {
+public interface ServerToolHandler extends MCPToolContribution {
     
-    @Override
-    public Collection<ToolHandler> getToolHandlers() {
-        return CoreToolHandlers.createHandlers();
-    }
-    
-    @Override
-    public Collection<ResourceHandler> getResourceHandlers() {
-        return CoreResourceHandlers.createHandlers();
-    }
+    /**
+     * Handle one server-level tool call.
+     *
+     * @param toolCall tool call
+     * @return tool response
+     */
+    MCPResponse handle(MCPToolCall toolCall);
 }

@@ -22,9 +22,9 @@ import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandl
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.handler.PlanMaskRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
-import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 
@@ -34,15 +34,15 @@ import java.util.List;
 /**
  * Mask MCP feature provider.
  */
-public final class MaskFeatureProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class MaskFeatureProvider implements MCPContributionProvider, MCPWorkflowDefinitionProvider {
     
     @Override
-    public Collection<ToolHandler> getToolHandlers() {
+    public Collection<MCPToolContribution> getToolContributions() {
         return List.of(new PlanMaskRuleToolHandler());
     }
     
     @Override
-    public Collection<ResourceHandler> getResourceHandlers() {
+    public Collection<MCPResourceContribution> getResourceContributions() {
         return List.of(
                 new MaskAlgorithmsHandler(),
                 new MaskRulesHandler(),

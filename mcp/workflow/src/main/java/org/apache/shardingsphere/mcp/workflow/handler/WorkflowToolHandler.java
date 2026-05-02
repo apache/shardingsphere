@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
+package org.apache.shardingsphere.mcp.workflow.handler;
 
-import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
-
-import java.util.Collection;
-import java.util.List;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 
 /**
- * Test-only MCP feature provider used to prove packaged distribution plugin discovery.
+ * Handler for MCP tools that require workflow capabilities.
  */
-public final class PluginFixtureFeatureProvider implements MCPHandlerProvider {
+public interface WorkflowToolHandler extends MCPToolContribution {
     
-    @Override
-    public Collection<ToolHandler> getToolHandlers() {
-        return List.of(new PluginFixturePingToolHandler());
-    }
-    
-    @Override
-    public Collection<ResourceHandler> getResourceHandlers() {
-        return List.of(new PluginFixtureStatusResourceHandler());
-    }
+    /**
+     * Handle one workflow-aware tool call.
+     *
+     * @param workflowContext workflow context
+     * @param toolCall tool call
+     * @return tool response
+     */
+    MCPResponse handle(MCPWorkflowContext workflowContext, MCPToolCall toolCall);
 }

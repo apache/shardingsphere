@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.mcp.tool.handler;
 
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
@@ -48,9 +49,10 @@ class ToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadata() {
-        try (MCPRequestContext requestContext = new MCPRequestContext(createSearchRuntimeContext())) {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
             MCPResponse actual =
-                    new SearchMetadataToolHandler().handle(requestContext, "session-1", Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name())));
+                    new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                            Map.of("query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.INDEX.name()))));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
@@ -60,9 +62,9 @@ class ToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithSequence() {
-        try (MCPRequestContext requestContext = new MCPRequestContext(createSearchRuntimeContext())) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, "session-1",
-                    Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name())));
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "runtime_db", "query", "order", "object_types", List.of(SupportedMCPMetadataObjectType.SEQUENCE.name()))));
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
@@ -72,8 +74,8 @@ class ToolHandlerTest {
     
     @Test
     void assertHandleSearchMetadataWithEmptyQuery() {
-        try (MCPRequestContext requestContext = new MCPRequestContext(createSearchRuntimeContext())) {
-            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, "session-1", Map.of("database", "logic_db"));
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db")));
             Map<String, Object> actualPayload = actual.toPayload();
             List<String> actualNames = new LinkedList<>();
             for (Object each : (List<?>) actualPayload.get("items")) {

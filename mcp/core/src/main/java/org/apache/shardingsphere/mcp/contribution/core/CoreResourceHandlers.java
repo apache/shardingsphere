@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.core;
+package org.apache.shardingsphere.mcp.contribution.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.resource.handler.capability.DatabaseCapabilitiesHandler;
-import org.apache.shardingsphere.mcp.resource.handler.capability.ServiceCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.resource.handler.metadata.MetadataResourceHandler;
 
 import java.util.Collection;
@@ -39,9 +39,9 @@ import java.util.function.BiFunction;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class CoreResourceHandlers {
     
-    static Collection<ResourceHandler> createHandlers() {
-        Collection<ResourceHandler> result = new LinkedList<>();
-        result.add(new ServiceCapabilitiesHandler());
+    static Collection<MCPResourceContribution> createHandlers() {
+        Collection<MCPResourceContribution> result = new LinkedList<>();
+        result.add(new ServerCapabilitiesHandler());
         result.add(new DatabaseCapabilitiesHandler());
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases",

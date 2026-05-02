@@ -17,19 +17,20 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
-import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
+import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.workflow.handler.WorkflowToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningArguments;
@@ -41,9 +42,10 @@ import java.util.Map;
 /**
  * Tool handler for mask workflow planning.
  */
-public final class PlanMaskRuleToolHandler implements ToolHandler {
+public final class PlanMaskRuleToolHandler implements WorkflowToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(MaskFeatureDefinition.PLAN_TOOL_NAME,
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(MaskFeatureDefinition.PLAN_TOOL_NAME, "Plan Mask Rule",
+            "Plan a ShardingSphere mask rule workflow for a logical table column.",
             List.of(
                     new MCPToolFieldDefinition("user_overrides", new MCPToolValueDefinition(Type.OBJECT, "Optional user overrides for mask algorithm fields.", null), false),
                     new MCPToolFieldDefinition("algorithm_type", new MCPToolValueDefinition(Type.STRING, "Primary mask algorithm type override.", null), false),
@@ -59,11 +61,11 @@ public final class PlanMaskRuleToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
-        MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
-        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(arguments, this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(),
-                workflowContext.getQueryFacade(), sessionId, request);
+    public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
+        MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
+        WorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(toolCall.arguments(), this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
+        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(),
+                databaseContext.getQueryFacade(), toolCall.sessionId(), request);
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     

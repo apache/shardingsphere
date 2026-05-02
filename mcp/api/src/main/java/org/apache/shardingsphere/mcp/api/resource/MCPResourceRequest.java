@@ -15,26 +15,43 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.workflow;
-
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+package org.apache.shardingsphere.mcp.api.resource;
 
 /**
- * Workflow-aware MCP context.
+ * MCP resource request.
  */
-public interface MCPWorkflowContext {
+public final class MCPResourceRequest {
+    
+    private final String resourceUri;
+    
+    private final MCPUriVariables uriVariables;
     
     /**
-     * Get database context.
+     * Create MCP resource request.
      *
-     * @return database context
+     * @param resourceUri requested resource URI
+     * @param uriVariables matched URI variables
      */
-    MCPDatabaseContext getDatabaseContext();
+    public MCPResourceRequest(final String resourceUri, final MCPUriVariables uriVariables) {
+        this.resourceUri = resourceUri;
+        this.uriVariables = uriVariables;
+    }
     
     /**
-     * Get workflow session context.
+     * Get requested resource URI.
      *
-     * @return workflow session context
+     * @return requested resource URI
      */
-    WorkflowSessionContext getWorkflowSessionContext();
+    public String resourceUri() {
+        return resourceUri;
+    }
+    
+    /**
+     * Get matched URI variables.
+     *
+     * @return matched URI variables
+     */
+    public MCPUriVariables uriVariables() {
+        return uriVariables;
+    }
 }

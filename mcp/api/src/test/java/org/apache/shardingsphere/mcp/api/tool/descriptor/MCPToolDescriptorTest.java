@@ -18,12 +18,8 @@
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -32,34 +28,26 @@ class MCPToolDescriptorTest {
     
     @Test
     void assertGetName() {
-        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", List.of());
+        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo description.", List.of());
         assertThat(actual.getName(), is("foo_tool"));
     }
     
     @Test
     void assertGetFields() {
         List<MCPToolFieldDefinition> expectedFields = List.of(new MCPToolFieldDefinition("foo_field", new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "foo description", null), true));
-        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", expectedFields);
+        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo description.", expectedFields);
         assertThat(actual.getFields(), is(expectedFields));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertGetTitleCases")
-    void assertGetTitle(final String name, final String toolName, final String expectedTitle) {
-        MCPToolDescriptor actual = new MCPToolDescriptor(toolName, List.of());
-        assertThat(actual.getTitle(), is(expectedTitle));
-    }
-    
-    static Stream<Arguments> assertGetTitleCases() {
-        return Stream.of(
-                Arguments.of("multiple words", "foo_bar", "Foo Bar"),
-                Arguments.of("single word", "foo", "Foo"),
-                Arguments.of("empty segments", "_foo__bar", "Foo Bar"));
+    @Test
+    void assertGetTitle() {
+        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo description.", List.of());
+        assertThat(actual.getTitle(), is("Foo Tool"));
     }
     
     @Test
     void assertGetDescription() {
-        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", List.of());
-        assertThat(actual.getDescription(), is("ShardingSphere MCP tool: foo_tool"));
+        MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo description.", List.of());
+        assertThat(actual.getDescription(), is("Foo description."));
     }
 }

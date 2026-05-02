@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.tool;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
@@ -44,8 +44,8 @@ public final class MCPToolController {
      * @return MCP response
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        try (MCPRequestContext requestContext = new MCPRequestContext(runtimeContext)) {
-            return ToolHandlerRegistry.dispatch(requestContext, sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
+        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
+            return ToolHandlerRegistry.dispatch(requestScope, sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

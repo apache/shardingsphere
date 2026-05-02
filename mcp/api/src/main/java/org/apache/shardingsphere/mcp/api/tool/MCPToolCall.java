@@ -15,33 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool.handler;
-
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+package org.apache.shardingsphere.mcp.api.tool;
 
 import java.util.Map;
 
 /**
- * Handler for one MCP tool.
+ * MCP tool call.
  */
-public interface ToolHandler {
+public final class MCPToolCall {
+    
+    private final String sessionId;
+    
+    private final Map<String, Object> arguments;
     
     /**
-     * Get tool descriptor.
+     * Create MCP tool call.
      *
-     * @return tool descriptor
-     */
-    MCPToolDescriptor getToolDescriptor();
-    
-    /**
-     * Handle one tool call.
-     *
-     * @param requestContext request context
      * @param sessionId session identifier
      * @param arguments normalized tool arguments
-     * @return tool response
      */
-    MCPResponse handle(MCPFeatureContext requestContext, String sessionId, Map<String, Object> arguments);
+    public MCPToolCall(final String sessionId, final Map<String, Object> arguments) {
+        this.sessionId = sessionId;
+        this.arguments = arguments;
+    }
+    
+    /**
+     * Get session identifier.
+     *
+     * @return session identifier
+     */
+    public String sessionId() {
+        return sessionId;
+    }
+    
+    /**
+     * Get normalized tool arguments.
+     *
+     * @return normalized tool arguments
+     */
+    public Map<String, Object> arguments() {
+        return arguments;
+    }
 }

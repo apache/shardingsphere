@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.database.exception.InvalidPageTokenException;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
@@ -215,8 +215,8 @@ class SearchMetadataToolServiceTest {
     }
     
     private MetadataSearchResult execute(final List<MCPDatabaseMetadata> databaseMetadata, final MetadataSearchRequest request) {
-        try (MCPRequestContext requestContext = ResourceTestDataFactory.createRequestContext(databaseMetadata)) {
-            return new SearchMetadataToolService(requestContext.getMetadataQueryFacade()).execute(request);
+        try (MCPRequestScope requestScope = ResourceTestDataFactory.createRequestScope(databaseMetadata)) {
+            return new SearchMetadataToolService(requestScope.getMetadataQueryFacade()).execute(request);
         }
     }
     

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.core;
+package org.apache.shardingsphere.mcp.contribution.core;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;
@@ -35,7 +35,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class CoreToolHandlers {
     
-    static Collection<ToolHandler> createHandlers() {
+    static Collection<MCPToolContribution> createHandlers() {
         WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry = WorkflowRuntimeDefinitionRegistry.load();
         return List.of(
                 new SearchMetadataToolHandler(),

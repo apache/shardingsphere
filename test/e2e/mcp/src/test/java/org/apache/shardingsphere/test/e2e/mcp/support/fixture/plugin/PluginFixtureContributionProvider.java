@@ -15,14 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.context;
+package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
+
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
- * MCP feature request context.
+ * Test-only MCP contribution provider used to prove packaged distribution plugin discovery.
  */
-public interface MCPFeatureContext extends AutoCloseable {
+public final class PluginFixtureContributionProvider implements MCPContributionProvider {
     
     @Override
-    default void close() {
+    public Collection<MCPToolContribution> getToolContributions() {
+        return List.of(new PluginFixturePingToolHandler());
+    }
+    
+    @Override
+    public Collection<MCPResourceContribution> getResourceContributions() {
+        return List.of(new PluginFixtureStatusResourceHandler());
     }
 }

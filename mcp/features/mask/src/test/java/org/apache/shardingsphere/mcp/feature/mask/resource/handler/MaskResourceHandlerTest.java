@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -50,7 +51,7 @@ class MaskResourceHandlerTest {
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MD5")));
         when(ruleInspectionService.enrichMaskAlgorithms(List.of(Map.of("type", "MD5")))).thenReturn(List.of(Map.of("type", "MD5", "source", "builtin")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), new MCPUriVariables(Map.of()));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createRequest(Map.of()));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
     
@@ -65,7 +66,7 @@ class MaskResourceHandlerTest {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), new MCPUriVariables(Map.of("database", "logic_db")));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createRequest(Map.of("database", "logic_db")));
         verify(ruleInspectionService).queryMaskRules(any(), eq("logic_db"), eq(""));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
@@ -81,7 +82,7 @@ class MaskResourceHandlerTest {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseContext.class), createRequest(Map.of("database", "logic_db", "table", "orders")));
         verify(ruleInspectionService).queryMaskRules(any(), eq("logic_db"), eq("orders"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
@@ -89,5 +90,9 @@ class MaskResourceHandlerTest {
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
+    }
+    
+    private MCPResourceRequest createRequest(final Map<String, String> variables) {
+        return new MCPResourceRequest("shardingsphere://features/mask/test", new MCPUriVariables(variables));
     }
 }

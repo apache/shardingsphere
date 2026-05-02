@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.core;
+package org.apache.shardingsphere.mcp.contribution.core;
 
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -28,20 +28,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CoreFeatureProviderTest {
+class CoreContributionProviderTest {
     
     @Test
-    void assertGetToolHandlers() {
-        Collection<ToolHandler> actual = new CoreFeatureProvider().getToolHandlers();
+    void assertGetToolContributions() {
+        Collection<MCPToolContribution> actual = new CoreContributionProvider().getToolContributions();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(),
                 is(List.of("search_metadata", "execute_query", "apply_workflow", "validate_workflow")));
     }
     
     @Test
-    void assertGetResourceHandlers() {
-        Collection<ResourceHandler> actual = new CoreFeatureProvider().getResourceHandlers();
+    void assertGetResourceContributions() {
+        Collection<MCPResourceContribution> actual = new CoreContributionProvider().getResourceContributions();
         assertThat(actual.size(), is(18));
-        List<String> actualUriPatterns = actual.stream().map(ResourceHandler::getUriPattern).toList();
+        List<String> actualUriPatterns = actual.stream().map(MCPResourceContribution::getUriPattern).toList();
         assertTrue(actualUriPatterns.contains("shardingsphere://capabilities"));
         assertTrue(actualUriPatterns.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }

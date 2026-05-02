@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.resource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRequestContext;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
@@ -77,36 +77,16 @@ public final class ResourceTestDataFactory {
     }
     
     /**
-     * Create runtime databases from metadata.
-     *
-     * @param databaseMetadataList database metadata list
-     * @return runtime databases
-     */
-    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final List<MCPDatabaseMetadata> databaseMetadataList) {
-        Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(databaseMetadataList.size(), 1F);
-        for (MCPDatabaseMetadata each : databaseMetadataList) {
-            result.put(each.getDatabase(), createRuntimeDatabaseConfiguration(each));
-        }
-        return result;
-    }
-    
-    /**
-     * Create default runtime databases.
-     *
-     * @return runtime databases
-     */
-    public static Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases() {
-        return createRuntimeDatabases(createDatabaseMetadata());
-    }
-    
-    /**
      * Create runtime context from metadata.
      *
      * @param databaseMetadataList database metadata list
      * @return runtime context
      */
     public static MCPRuntimeContext createRuntimeContext(final List<MCPDatabaseMetadata> databaseMetadataList) {
-        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = createRuntimeDatabases(databaseMetadataList);
+        Map<String, RuntimeDatabaseConfiguration> runtimeDatabases = new LinkedHashMap<>(databaseMetadataList.size(), 1F);
+        for (MCPDatabaseMetadata each : databaseMetadataList) {
+            runtimeDatabases.put(each.getDatabase(), createRuntimeDatabaseConfiguration(each));
+        }
         return new MCPRuntimeContext(new MCPSessionManager(runtimeDatabases), new MCPDatabaseCapabilityProvider(runtimeDatabases));
     }
     
@@ -120,13 +100,13 @@ public final class ResourceTestDataFactory {
     }
     
     /**
-     * Create request context from metadata.
+     * Create request scope from metadata.
      *
      * @param databaseMetadataList database metadata list
-     * @return request context
+     * @return request scope
      */
-    public static MCPRequestContext createRequestContext(final List<MCPDatabaseMetadata> databaseMetadataList) {
-        return new MCPRequestContext(createRuntimeContext(databaseMetadataList));
+    public static MCPRequestScope createRequestScope(final List<MCPDatabaseMetadata> databaseMetadataList) {
+        return new MCPRequestScope(createRuntimeContext(databaseMetadataList));
     }
     
     private static RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final MCPDatabaseMetadata databaseMetadata) {

@@ -17,19 +17,18 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 
 /**
  * Handler for one logical table encrypt rule resource URI.
  */
-public final class EncryptRuleHandler implements ResourceHandler {
+public final class EncryptRuleHandler implements DatabaseResourceHandler {
     
     private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
@@ -39,8 +38,8 @@ public final class EncryptRuleHandler implements ResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
         return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(
-                MCPDatabaseContext.getRequired(requestContext).getQueryFacade(), uriVariables.getVariable("database"), uriVariables.getVariable("table")));
+                databaseContext.getQueryFacade(), request.uriVariables().getVariable("database"), request.uriVariables().getVariable("table")));
     }
 }

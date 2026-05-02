@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.mask;
 
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -33,17 +33,17 @@ import static org.hamcrest.Matchers.is;
 class MaskFeatureProviderTest {
     
     @Test
-    void assertGetResourceHandlers() {
-        Collection<ResourceHandler> actual = new MaskFeatureProvider().getResourceHandlers();
-        assertThat(actual.stream().map(ResourceHandler::getUriPattern).toList(), is(List.of(
+    void assertGetResourceContributions() {
+        Collection<MCPResourceContribution> actual = new MaskFeatureProvider().getResourceContributions();
+        assertThat(actual.stream().map(MCPResourceContribution::getUriPattern).toList(), is(List.of(
                 "shardingsphere://features/mask/algorithms",
                 "shardingsphere://features/mask/databases/{database}/rules",
                 "shardingsphere://features/mask/databases/{database}/tables/{table}/rules")));
     }
     
     @Test
-    void assertGetToolHandlers() {
-        Collection<ToolHandler> actual = new MaskFeatureProvider().getToolHandlers();
+    void assertGetToolContributions() {
+        Collection<MCPToolContribution> actual = new MaskFeatureProvider().getToolContributions();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_mask_rule")));
     }
     

@@ -17,22 +17,21 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
+import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
+import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.Set;
 
 /**
- * Handler for service capabilities resource URI.
+ * Handler for server capabilities resource URI.
  */
-public final class ServiceCapabilitiesHandler implements ResourceHandler {
+public final class ServerCapabilitiesHandler implements ServerResourceHandler {
     
     @Override
     public String getUriPattern() {
@@ -40,7 +39,7 @@ public final class ServiceCapabilitiesHandler implements ResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
+    public MCPResponse handle(final MCPResourceRequest request) {
         return new MCPServiceCapabilityResponse(createServiceCapability());
     }
     

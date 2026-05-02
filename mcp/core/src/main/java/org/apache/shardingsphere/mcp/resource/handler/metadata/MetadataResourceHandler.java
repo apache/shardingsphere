@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -32,7 +32,7 @@ import java.util.function.BiFunction;
  * Metadata resource handler backed by one metadata loader function.
  */
 @RequiredArgsConstructor
-public final class MetadataResourceHandler implements ResourceHandler {
+public final class MetadataResourceHandler implements DatabaseResourceHandler {
     
     private final String uriPattern;
     
@@ -44,7 +44,7 @@ public final class MetadataResourceHandler implements ResourceHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(metadataLoader.apply(MCPDatabaseContext.getRequired(requestContext), uriVariables));
+    public MCPResponse handle(final MCPDatabaseContext databaseContext, final MCPResourceRequest request) {
+        return new MCPItemsResponse(metadataLoader.apply(databaseContext, request.uriVariables()));
     }
 }

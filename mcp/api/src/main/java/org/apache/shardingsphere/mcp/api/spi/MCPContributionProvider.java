@@ -15,29 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource;
+package org.apache.shardingsphere.mcp.api.spi;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+
+import java.util.Collection;
 
 /**
- * Handler for one MCP resource URI pattern.
+ * MCP contribution provider. A provider owns a cohesive set of MCP tools and resources and contributes their protocol surface to the MCP runtime.
  */
-public interface ResourceHandler {
+@SingletonSPI
+public interface MCPContributionProvider extends ShardingSphereSPI {
     
     /**
-     * Get URI pattern.
+     * Get tool contributions.
      *
-     * @return URI pattern
+     * @return tool contributions
      */
-    String getUriPattern();
+    Collection<MCPToolContribution> getToolContributions();
     
     /**
-     * Handle one matched resource URI.
+     * Get resource contributions.
      *
-     * @param requestContext request context
-     * @param uriVariables matched URI variables
-     * @return resource response
+     * @return resource contributions
      */
-    MCPResponse handle(MCPFeatureContext requestContext, MCPUriVariables uriVariables);
+    Collection<MCPResourceContribution> getResourceContributions();
 }

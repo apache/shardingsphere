@@ -17,20 +17,21 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
+import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.workflow.handler.WorkflowToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowRequestBinder;
@@ -41,9 +42,10 @@ import java.util.Map;
 /**
  * Tool handler for encrypt workflow planning.
  */
-public final class PlanEncryptRuleToolHandler implements ToolHandler {
+public final class PlanEncryptRuleToolHandler implements WorkflowToolHandler {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(EncryptFeatureDefinition.PLAN_TOOL_NAME,
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(EncryptFeatureDefinition.PLAN_TOOL_NAME, "Plan Encrypt Rule",
+            "Plan a ShardingSphere encrypt rule workflow for a logical table column.",
             List.of(
                     new MCPToolFieldDefinition("allow_index_ddl", new MCPToolValueDefinition(Type.BOOLEAN, "Whether index DDL may be auto-generated.", null), false),
                     new MCPToolFieldDefinition("user_overrides", new MCPToolValueDefinition(Type.OBJECT, "Optional user overrides for algorithm and naming fields.", null), false),
@@ -67,12 +69,12 @@ public final class PlanEncryptRuleToolHandler implements ToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPFeatureContext requestContext, final String sessionId, final Map<String, Object> arguments) {
-        MCPWorkflowContext workflowContext = MCPWorkflowContext.getRequired(requestContext);
-        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, arguments,
+    public MCPResponse handle(final MCPWorkflowContext workflowContext, final MCPToolCall toolCall) {
+        MCPDatabaseContext databaseContext = workflowContext.getDatabaseContext();
+        EncryptWorkflowRequest request = WorkflowRequestBinder.bindPlanningRequest(EncryptWorkflowRequest::new, toolCall.arguments(),
                 this::bindFeatureArguments, this::applyStructuredIntentEvidence, this::applyUserOverrides);
-        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), workflowContext.getMetadataQueryFacade(),
-                workflowContext.getQueryFacade(), sessionId, request);
+        WorkflowContextSnapshot snapshot = planningService.plan(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(),
+                databaseContext.getQueryFacade(), toolCall.sessionId(), request);
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
     

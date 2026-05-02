@@ -22,12 +22,12 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class MCPToolSpecificationFactoryTest {
             assertThat(actual.size(), is(1));
             assertThat(actual.get(0).tool().name(), is("search_metadata"));
             assertThat(actual.get(0).tool().title(), is("Search Metadata"));
-            assertThat(actual.get(0).tool().description(), is("ShardingSphere MCP tool: search_metadata"));
+            assertThat(actual.get(0).tool().description(), is("Search database metadata."));
             assertThat(actual.get(0).tool().inputSchema().type(), is("object"));
             assertThat(actual.get(0).tool().inputSchema().required(), is(List.of("query")));
             assertThat(actual.get(0).tool().inputSchema().properties().get("query"), is(Map.of("type", "string", "description", "Search query.")));
@@ -79,7 +79,7 @@ class MCPToolSpecificationFactoryTest {
             Map<String, Object> expectedPayload = Map.of("status", "ok");
             MCPResponse response = () -> expectedPayload;
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor()));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPFeatureContext.class), eq("session-id"), eq("search_metadata"), eq(Map.of())))
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("search_metadata"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
@@ -110,7 +110,7 @@ class MCPToolSpecificationFactoryTest {
                 }
             };
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor()));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPFeatureContext.class), eq("session-id"), eq("search_metadata"), eq(Map.of("query", "foo_query"))))
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("search_metadata"), eq(Map.of("query", "foo_query"))))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
@@ -124,7 +124,7 @@ class MCPToolSpecificationFactoryTest {
     }
     
     private MCPToolDescriptor createToolDescriptor() {
-        return new MCPToolDescriptor("search_metadata", List.of(
+        return new MCPToolDescriptor("search_metadata", "Search Metadata", "Search database metadata.", List.of(
                 new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
                 new MCPToolFieldDefinition("object_types", new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter.",
                         new MCPToolValueDefinition(Type.STRING, "Object type.", null, List.of("TABLE", "VIEW"))), false)));

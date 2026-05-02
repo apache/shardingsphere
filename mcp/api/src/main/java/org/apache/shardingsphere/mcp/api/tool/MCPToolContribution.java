@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.context;
+package org.apache.shardingsphere.mcp.api.tool;
 
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
-class MCPFeatureContextTest {
+/**
+ * Contribution contract for one MCP tool. It describes the tool exposed by an MCP provider, while runtime execution is defined by a narrower handler interface when server, database, or workflow
+ * context is needed.
+ */
+public interface MCPToolContribution {
     
-    @Test
-    void assertClose() {
-        MCPFeatureContext actual = new MCPFeatureContext() {
-        };
-        assertDoesNotThrow(actual::close);
-    }
+    /**
+     * Get tool descriptor.
+     *
+     * @return tool descriptor
+     */
+    MCPToolDescriptor getToolDescriptor();
 }

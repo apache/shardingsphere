@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
-import org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin.PluginFixtureFeatureProvider;
 import org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin.PluginFixturePingToolHandler;
+import org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin.PluginFixtureContributionProvider;
 import org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin.PluginFixtureStatusResourceHandler;
 
 import java.io.IOException;
@@ -36,12 +36,12 @@ import java.util.stream.Stream;
  */
 public final class PackagedDistributionPluginFixtureSupport {
     
-    private static final String FEATURE_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider";
+    private static final String CONTRIBUTION_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider";
     
     private static final List<String> OFFICIAL_FEATURE_ARTIFACT_IDS = List.of("shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
     
     private static final List<Class<?>> FIXTURE_PLUGIN_CLASSES = List.of(
-            PluginFixtureFeatureProvider.class, PluginFixturePingToolHandler.class, PluginFixtureStatusResourceHandler.class);
+            PluginFixtureContributionProvider.class, PluginFixturePingToolHandler.class, PluginFixtureStatusResourceHandler.class);
     
     private PackagedDistributionPluginFixtureSupport() {
     }
@@ -57,7 +57,7 @@ public final class PackagedDistributionPluginFixtureSupport {
         Files.createDirectories(pluginsDirectory);
         Path result = pluginsDirectory.resolve("shardingsphere-mcp-test-fixture-plugin.jar");
         try (JarOutputStream output = new JarOutputStream(Files.newOutputStream(result))) {
-            writeEntry(output, FEATURE_PROVIDER_SERVICE_ENTRY, (PluginFixtureFeatureProvider.class.getName() + '\n').getBytes(StandardCharsets.UTF_8));
+            writeEntry(output, CONTRIBUTION_PROVIDER_SERVICE_ENTRY, (PluginFixtureContributionProvider.class.getName() + '\n').getBytes(StandardCharsets.UTF_8));
             for (Class<?> each : FIXTURE_PLUGIN_CLASSES) {
                 writeClassEntry(output, each);
             }

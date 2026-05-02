@@ -285,9 +285,9 @@ The current MCP subchain is organized as `api + workflow + features + core + boo
 - `mcp/core`
   - provides capability, metadata, session, execute-query, and shared runtime services
 - `mcp/bootstrap`
-  - aggregates registered features through the MCP Java SDK and exposes HTTP / STDIO transports
+  - aggregates contributed features through the MCP Java SDK and exposes HTTP / STDIO transports
 
-Encrypt and mask are not special cases hardcoded in bootstrap. They are pluggable MCP features registered through the MCP handler provider SPI.
+Encrypt and mask are not special cases hardcoded in bootstrap. They are pluggable MCP features contributed through the MCP contribution provider SPI.
 
 ## How to Add a New MCP Feature
 
@@ -295,13 +295,13 @@ If you want to add another feature beyond encrypt and mask, keep the implementat
 
 - Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/workflow` when workflow support is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
-- For each public tool, implement `ToolHandler` and provide a unique `MCPToolDescriptor`
-- For each public resource, implement `ResourceHandler` and provide a unique URI pattern
-- Implement one `MCPHandlerProvider` that returns the feature-owned tool and resource handlers
-- Register `org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider` under `src/main/resources/META-INF/services/`
+- For each public tool, implement the narrowest matching handler contract: `ServerToolHandler`, `DatabaseToolHandler`, or `WorkflowToolHandler`; always provide a unique `MCPToolDescriptor`
+- For each public resource, implement the narrowest matching handler contract: `ServerResourceHandler` or `DatabaseResourceHandler`; always provide a unique URI pattern
+- Implement one `MCPContributionProvider` that returns the feature-owned contributions through `getToolContributions()` and `getResourceContributions()`
+- Register `org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider` under `src/main/resources/META-INF/services/`
 - Keep feature URIs under `shardingsphere://features/<feature>/...` so they do not leak into shared metadata paths
-- `mcp/core` discovers feature providers through `ShardingSphereServiceLoader`, flattens their handlers, and validates global uniqueness; `mcp/bootstrap` only publishes the final protocol surface
-- Tool names and resource URI patterns must stay globally unique; duplicate registrations are rejected during startup validation
+- `mcp/core` discovers contribution providers through `ShardingSphereServiceLoader`, flattens their contributions, and validates global uniqueness; `mcp/bootstrap` only publishes the final protocol surface
+- Tool names and resource URI patterns must stay globally unique; duplicate contributions are rejected during startup validation
 
 The encrypt and mask modules are the recommended reference implementations.
 

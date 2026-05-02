@@ -15,25 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool.descriptor;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+package org.apache.shardingsphere.mcp.api.resource;
 
 /**
- * MCP tool descriptor.
+ * Contribution contract for one MCP resource URI pattern. It describes the resource exposed by an MCP provider, while runtime execution is defined by a narrower handler interface when server,
+ * database, or workflow context is needed.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPToolDescriptor {
+public interface MCPResourceContribution {
     
-    private final String name;
-    
-    private final String title;
-    
-    private final String description;
-    
-    private final List<MCPToolFieldDefinition> fields;
+    /**
+     * Get URI pattern.
+     *
+     * @return URI pattern
+     */
+    String getUriPattern();
 }

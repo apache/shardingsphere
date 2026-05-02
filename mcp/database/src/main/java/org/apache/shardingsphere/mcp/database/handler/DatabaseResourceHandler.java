@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.spi;
+package org.apache.shardingsphere.mcp.database.handler;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
-
-import java.util.Collection;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceRequest;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 
 /**
- * MCP handler provider.
+ * Handler for MCP resources that require database capabilities.
  */
-@SingletonSPI
-public interface MCPHandlerProvider extends ShardingSphereSPI {
+public interface DatabaseResourceHandler extends MCPResourceContribution {
     
     /**
-     * Get tool handlers.
+     * Handle one database-aware resource request.
      *
-     * @return tool handlers
+     * @param databaseContext database context
+     * @param request resource request
+     * @return resource response
      */
-    Collection<ToolHandler> getToolHandlers();
-    
-    /**
-     * Get resource handlers.
-     *
-     * @return resource handlers
-     */
-    Collection<ResourceHandler> getResourceHandlers();
+    MCPResponse handle(MCPDatabaseContext databaseContext, MCPResourceRequest request);
 }

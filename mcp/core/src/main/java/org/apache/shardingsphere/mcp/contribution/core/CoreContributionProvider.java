@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool.descriptor;
+package org.apache.shardingsphere.mcp.contribution.core;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
- * MCP tool descriptor.
+ * Core MCP contribution provider.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPToolDescriptor {
+public final class CoreContributionProvider implements MCPContributionProvider {
     
-    private final String name;
+    @Override
+    public Collection<MCPToolContribution> getToolContributions() {
+        return CoreToolHandlers.createHandlers();
+    }
     
-    private final String title;
-    
-    private final String description;
-    
-    private final List<MCPToolFieldDefinition> fields;
+    @Override
+    public Collection<MCPResourceContribution> getResourceContributions() {
+        return CoreResourceHandlers.createHandlers();
+    }
 }

@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
-import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
 
@@ -33,17 +33,17 @@ import static org.hamcrest.Matchers.is;
 class EncryptFeatureProviderTest {
     
     @Test
-    void assertGetResourceHandlers() {
-        Collection<ResourceHandler> actual = new EncryptFeatureProvider().getResourceHandlers();
-        assertThat(actual.stream().map(ResourceHandler::getUriPattern).toList(), is(List.of(
+    void assertGetResourceContributions() {
+        Collection<MCPResourceContribution> actual = new EncryptFeatureProvider().getResourceContributions();
+        assertThat(actual.stream().map(MCPResourceContribution::getUriPattern).toList(), is(List.of(
                 "shardingsphere://features/encrypt/algorithms",
                 "shardingsphere://features/encrypt/databases/{database}/rules",
                 "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules")));
     }
     
     @Test
-    void assertGetToolHandlers() {
-        Collection<ToolHandler> actual = new EncryptFeatureProvider().getToolHandlers();
+    void assertGetToolContributions() {
+        Collection<MCPToolContribution> actual = new EncryptFeatureProvider().getToolContributions();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_encrypt_rule")));
     }
     

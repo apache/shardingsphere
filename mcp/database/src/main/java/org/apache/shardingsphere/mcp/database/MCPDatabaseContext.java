@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.mcp.database;
 
-import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 
 /**
- * Database-aware MCP feature context.
+ * Database-aware MCP context.
  */
-public interface MCPDatabaseContext extends MCPFeatureContext {
+public interface MCPDatabaseContext {
     
     /**
      * Get metadata query facade.
@@ -55,18 +54,4 @@ public interface MCPDatabaseContext extends MCPFeatureContext {
      * @return capability facade
      */
     MCPFeatureCapabilityFacade getCapabilityFacade();
-    
-    /**
-     * Get required database-aware request context.
-     *
-     * @param requestContext feature context
-     * @return database-aware request context
-     * @throws IllegalStateException database-aware context is unavailable
-     */
-    static MCPDatabaseContext getRequired(final MCPFeatureContext requestContext) {
-        if (requestContext instanceof MCPDatabaseContext) {
-            return (MCPDatabaseContext) requestContext;
-        }
-        throw new IllegalStateException("Database-aware request context is required.");
-    }
 }

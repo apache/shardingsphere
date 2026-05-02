@@ -15,25 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool.descriptor;
+package org.apache.shardingsphere.mcp.database.handler;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 
 /**
- * MCP tool descriptor.
+ * Handler for MCP tools that require database capabilities.
  */
-@RequiredArgsConstructor
-@Getter
-public final class MCPToolDescriptor {
+public interface DatabaseToolHandler extends MCPToolContribution {
     
-    private final String name;
-    
-    private final String title;
-    
-    private final String description;
-    
-    private final List<MCPToolFieldDefinition> fields;
+    /**
+     * Handle one database-aware tool call.
+     *
+     * @param databaseContext database context
+     * @param toolCall tool call
+     * @return tool response
+     */
+    MCPResponse handle(MCPDatabaseContext databaseContext, MCPToolCall toolCall);
 }
