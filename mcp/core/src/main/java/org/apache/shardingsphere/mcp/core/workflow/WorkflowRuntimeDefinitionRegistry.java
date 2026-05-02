@@ -45,6 +45,24 @@ public final class WorkflowRuntimeDefinitionRegistry {
         registeredDefinitions = createRegisteredDefinitions(definitions);
     }
     
+    private static Map<WorkflowKind, WorkflowRuntimeDefinition> createRegisteredDefinitions(final Collection<WorkflowRuntimeDefinition> definitions) {
+        final Map<WorkflowKind, WorkflowRuntimeDefinition> result = new LinkedHashMap<>(Math.max(definitions.size(), 1), 1F);
+        for (WorkflowRuntimeDefinition each : definitions) {
+            Objects.requireNonNull(each, "Workflow definition is required.");
+            final WorkflowKind workflowKind = Objects.requireNonNull(each.getWorkflowKind(),
+                    () -> String.format("Workflow kind is required for `%s`.", each.getClass().getName()));
+            ShardingSpherePreconditions.checkNotNull(each.getValidationHandler(),
+                    () -> new IllegalArgumentException(String.format("Workflow validation handler is required for `%s`.", workflowKind.getValue())));
+            ShardingSpherePreconditions.checkNotNull(each.getApplySynchronizationHandler(),
+                    () -> new IllegalArgumentException(String.format("Workflow apply synchronization handler is required for `%s`.", workflowKind.getValue())));
+            final WorkflowRuntimeDefinition previousDefinition = result.putIfAbsent(workflowKind, each);
+            ShardingSpherePreconditions.checkState(null == previousDefinition,
+                    () -> new IllegalArgumentException(String.format("Duplicate workflow kind `%s` with `%s` and `%s`.",
+                            workflowKind.getValue(), previousDefinition.getClass().getName(), each.getClass().getName())));
+        }
+        return Collections.unmodifiableMap(result);
+    }
+    
     /**
      * Load workflow runtime definitions from providers.
      *
@@ -52,6 +70,23 @@ public final class WorkflowRuntimeDefinitionRegistry {
      */
     public static WorkflowRuntimeDefinitionRegistry load() {
         return new WorkflowRuntimeDefinitionRegistry(loadDefinitions());
+    }
+    
+    private static Collection<WorkflowRuntimeDefinition> loadDefinitions() {
+        final Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
+        for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
+            if (each instanceof MCPWorkflowDefinitionProvider) {
+                result.addAll(createDefinitions((MCPWorkflowDefinitionProvider) each));
+            }
+        }
+        return List.copyOf(result);
+    }
+    
+    private static Collection<WorkflowRuntimeDefinition> createDefinitions(final MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
+        final Collection<WorkflowRuntimeDefinition> result = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
+                () -> String.format("Workflow definitions are required for `%s`.", workflowDefinitionProvider.getClass().getName()));
+        result.forEach(each -> Objects.requireNonNull(each, () -> String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
+        return List.copyOf(result);
     }
     
     /**
@@ -72,44 +107,5 @@ public final class WorkflowRuntimeDefinitionRegistry {
      */
     public WorkflowRuntimeDefinition getRequired(final WorkflowKind workflowKind) {
         return findRegisteredDefinition(workflowKind).orElseThrow(() -> new MCPInvalidRequestException(String.format("Unknown workflow_kind `%s`.", workflowKind.getValue())));
-    }
-    
-    Collection<WorkflowRuntimeDefinition> getRegisteredDefinitions() {
-        return registeredDefinitions.values();
-    }
-    
-    static Collection<WorkflowRuntimeDefinition> loadDefinitions() {
-        Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
-        for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
-            if (each instanceof MCPWorkflowDefinitionProvider) {
-                result.addAll(createDefinitions((MCPWorkflowDefinitionProvider) each));
-            }
-        }
-        return List.copyOf(result);
-    }
-    
-    static Collection<WorkflowRuntimeDefinition> createDefinitions(final MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
-        Collection<WorkflowRuntimeDefinition> result = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
-                () -> String.format("Workflow definitions are required for `%s`.", workflowDefinitionProvider.getClass().getName()));
-        result.forEach(each -> Objects.requireNonNull(each, () -> String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
-        return List.copyOf(result);
-    }
-    
-    static Map<WorkflowKind, WorkflowRuntimeDefinition> createRegisteredDefinitions(final Collection<WorkflowRuntimeDefinition> definitions) {
-        Map<WorkflowKind, WorkflowRuntimeDefinition> result = new LinkedHashMap<>(Math.max(definitions.size(), 1), 1F);
-        for (WorkflowRuntimeDefinition each : definitions) {
-            Objects.requireNonNull(each, "Workflow definition is required.");
-            WorkflowKind workflowKind = Objects.requireNonNull(each.getWorkflowKind(),
-                    () -> String.format("Workflow kind is required for `%s`.", each.getClass().getName()));
-            ShardingSpherePreconditions.checkNotNull(each.getValidationHandler(),
-                    () -> new IllegalArgumentException(String.format("Workflow validation handler is required for `%s`.", workflowKind.getValue())));
-            ShardingSpherePreconditions.checkNotNull(each.getApplySynchronizationHandler(),
-                    () -> new IllegalArgumentException(String.format("Workflow apply synchronization handler is required for `%s`.", workflowKind.getValue())));
-            WorkflowRuntimeDefinition previousDefinition = result.putIfAbsent(workflowKind, each);
-            ShardingSpherePreconditions.checkState(null == previousDefinition,
-                    () -> new IllegalArgumentException(String.format("Duplicate workflow kind `%s` with `%s` and `%s`.",
-                            workflowKind.getValue(), previousDefinition.getClass().getName(), each.getClass().getName())));
-        }
-        return Collections.unmodifiableMap(result);
     }
 }
