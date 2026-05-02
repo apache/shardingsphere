@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.workflow.service;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.props.PropertiesUtils;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 import java.util.LinkedHashMap;
 import java.util.List;

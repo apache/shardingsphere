@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.database.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.database.protocol.ExecuteQueryResultKind;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

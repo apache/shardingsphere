@@ -22,9 +22,9 @@ import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandl
 import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.handler.PlanMaskRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
-import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
-import org.apache.shardingsphere.mcp.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 

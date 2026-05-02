@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.session;
 
-import org.apache.shardingsphere.mcp.protocol.exception.MCPNotFoundException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPNotFoundException;
 
 /**
  * MCP session not existed exception.

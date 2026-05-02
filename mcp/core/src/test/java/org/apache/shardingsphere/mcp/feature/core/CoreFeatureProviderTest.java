@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.core;
 
-import org.apache.shardingsphere.mcp.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

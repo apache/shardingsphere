@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.workflow.descriptor;
 
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -42,8 +42,11 @@ class WorkflowToolDescriptorsTest {
                 "plan_id", "database", "schema", "table", "column", "operation_type",
                 "natural_language_intent", "structured_intent_evidence", "delivery_mode",
                 "execution_mode", "algorithm_type", "user_overrides")));
+        assertThat(actual.getFields().get(5).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("create", "alter", "drop")));
         assertThat(actual.getFields().get(7).getValueDefinition().toSchemaFragment(),
                 is(new MCPToolValueDefinition(Type.OBJECT, "Structured intent evidence extracted by the caller.", null).toSchemaFragment()));
+        assertThat(actual.getFields().get(8).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("all-at-once", "step-by-step")));
+        assertThat(actual.getFields().get(9).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("auto-execute", "review-then-execute", "manual-only")));
     }
     
     @Test
@@ -51,6 +54,7 @@ class WorkflowToolDescriptorsTest {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
         assertThat(actual.getName(), is("apply_workflow"));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id", "execution_mode", "approved_steps")));
+        assertThat(actual.getFields().get(1).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("auto-execute", "review-then-execute", "manual-only")));
         assertThat(actual.getFields().get(2).getValueDefinition().toSchemaFragment(), is(new MCPToolValueDefinition(
                 MCPToolValueDefinition.Type.ARRAY, "Approved execution steps.", new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "Step name.", null)).toSchemaFragment()));
     }

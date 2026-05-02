@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -37,11 +38,25 @@ public final class MCPTransportPayloadUtils {
     /**
      * Create MCP tool result for a structured payload.
      *
+     * @param response MCP response
+     * @return MCP tool result
+     */
+    public static McpSchema.CallToolResult createCallToolResult(final MCPResponse response) {
+        return createCallToolResult(response.toPayload(), response.isError());
+    }
+    
+    /**
+     * Create MCP tool result for a structured payload.
+     *
      * @param payload MCP payload
      * @return MCP tool result
      */
     public static McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload) {
-        return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(payload.containsKey("error_code")).build();
+        return createCallToolResult(payload, false);
+    }
+    
+    private static McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean error) {
+        return CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(error).build();
     }
     
     /**

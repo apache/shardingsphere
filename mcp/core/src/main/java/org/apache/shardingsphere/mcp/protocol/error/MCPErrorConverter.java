@@ -19,8 +19,9 @@ package org.apache.shardingsphere.mcp.protocol.error;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPProtocolException;
+import org.apache.shardingsphere.mcp.api.protocol.error.MCPError;
+import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPProtocolException;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;

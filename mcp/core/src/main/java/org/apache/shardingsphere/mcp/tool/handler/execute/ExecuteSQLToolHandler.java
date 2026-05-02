@@ -17,15 +17,15 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
 import java.util.Arrays;

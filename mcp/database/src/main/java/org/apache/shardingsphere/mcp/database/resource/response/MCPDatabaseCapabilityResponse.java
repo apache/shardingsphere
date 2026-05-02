@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.database.resource.response;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

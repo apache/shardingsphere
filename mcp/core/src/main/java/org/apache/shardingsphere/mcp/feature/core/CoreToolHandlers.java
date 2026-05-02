@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.feature.core;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.execute.ExecuteSQLToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
 import org.apache.shardingsphere.mcp.tool.handler.workflow.WorkflowExecutionToolHandler;

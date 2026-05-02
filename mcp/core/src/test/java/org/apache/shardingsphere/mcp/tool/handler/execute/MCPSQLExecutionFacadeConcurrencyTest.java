@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;

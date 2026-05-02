@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mcp.resource;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;

@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mcp.database.exception.DatabaseCapabilityNotFou
 import org.apache.shardingsphere.mcp.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
-import org.apache.shardingsphere.mcp.protocol.error.MCPError;
+import org.apache.shardingsphere.mcp.api.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;

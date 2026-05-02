@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.workflow;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 
 /**

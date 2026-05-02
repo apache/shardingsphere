@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
-import org.apache.shardingsphere.mcp.protocol.response.MCPMapResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningArguments;

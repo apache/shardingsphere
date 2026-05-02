@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.tool.handler.execute.audit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.protocol.error.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
 
 import java.util.Optional;
 

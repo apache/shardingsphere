@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.database.metadata.model.MCPSequenceMetadata
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlann
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.workflow.model.InteractionPlan;

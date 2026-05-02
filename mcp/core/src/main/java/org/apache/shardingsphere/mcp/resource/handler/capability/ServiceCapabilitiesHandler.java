@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mcp.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;
-import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
 import java.util.Set;

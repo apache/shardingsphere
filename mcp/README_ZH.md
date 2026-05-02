@@ -272,10 +272,12 @@ bin\start.bat conf\mcp-stdio.yaml
 
 ## Feature SPI 结构
 
-当前 MCP 子链路按 `features + core + bootstrap` 分层组织：
+当前 MCP 子链路按 `api + workflow + features + core + bootstrap` 分层组织：
 
-- `mcp/features/spi`
-  - 定义 feature SPI、workflow 公共模型、descriptor 与共享 issue / response 语义
+- `mcp/api`
+  - 定义 public tool / resource handler 契约、共享 descriptor、协议 response 与 MCP 协议异常
+- `mcp/workflow`
+  - 定义内部 workflow 契约、workflow snapshot、workflow descriptor 与 workflow 校验 helper
 - `mcp/features/encrypt`
   - 提供 encrypt MCP tools、resources 与 workflow 实现
 - `mcp/features/mask`
@@ -285,20 +287,20 @@ bin\start.bat conf\mcp-stdio.yaml
 - `mcp/bootstrap`
   - 通过 MCP Java SDK 汇总各 feature 注册结果，并暴露 HTTP / STDIO transport
 
-encrypt 和 mask 在 MCP 里不是 bootstrap 内硬编码的特殊功能，而是通过 feature SPI 注册到 MCP runtime 的可插拔 feature。
+encrypt 和 mask 在 MCP 里不是 bootstrap 内硬编码的特殊功能，而是通过 MCP handler provider SPI 注册到 MCP runtime 的可插拔 feature。
 
 ## 如何新增一个 MCP Feature
 
 如果你要在现有 encrypt / mask 之外再新增一个 feature，建议保持下面这条最小路径：
 
-- 在 `mcp/features/<feature>` 新建模块，只依赖 `mcp/features/spi` 和必要的领域模块，不要依赖 `mcp/bootstrap`
+- 在 `mcp/features/<feature>` 新建模块，依赖 `mcp/api`、需要 workflow 能力时依赖 `mcp/workflow`，再加必要的领域模块；不要依赖 `mcp/bootstrap`
 - 如果是新增 feature 模块，还要把它接入构建与运行时 classpath：先加入 `mcp/features/pom.xml`，然后按目标形态接入运行时
 - 如果要作为官方默认能力随发行包提供，就把它加入 `distribution/mcp/pom.xml`
 - 如果要保持可选插件，就在构建完成后把对应 jar 放到 `plugins/`，再启动 runtime
 - 对外新增 tool 时，实现 `ToolHandler`，并提供唯一的 `MCPToolDescriptor`
 - 对外新增 resource 时，实现 `ResourceHandler`，并提供唯一的 URI pattern
-- 实现一个 `MCPFeatureProvider`，统一返回该 feature 自己暴露的 tool handlers 和 resource handlers
-- 在 `src/main/resources/META-INF/services/` 下注册 `org.apache.shardingsphere.mcp.feature.spi.MCPFeatureProvider`
+- 实现一个 `MCPHandlerProvider`，统一返回该 feature 自己暴露的 tool handlers 和 resource handlers
+- 在 `src/main/resources/META-INF/services/` 下注册 `org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider`
 - feature URI 统一使用 `shardingsphere://features/<feature>/...` 命名空间，避免和公共 metadata path 混用
 - `mcp/core` 会通过 `ShardingSphereServiceLoader` 自动发现 feature provider，展开并校验其中的 handlers，`mcp/bootstrap` 只负责把最终结果发布到协议层
 - tool 名和 resource URI pattern 必须在全局范围内保持唯一；重复注册会在启动期校验时被拒绝
@@ -1090,7 +1092,8 @@ MCP_LLM_MODEL=qwen3:1.7b \
 
 - LLM smoke 的 artifact 会落到 `test/e2e/mcp/target/llm-e2e/`。
 - 对应的 GitHub Actions 入口是 `.github/workflows/mcp-llm-e2e.yml`，第一轮按 `workflow_dispatch` 和 nightly schedule 交付，不进 PR gate。
-- `mcp/features/spi`：feature SPI、workflow 公共模型、descriptor、共享 issue / response 语义
+- `mcp/api`：public tool / resource handler 契约、共享 descriptor、协议 response 与 MCP 协议异常
+- `mcp/workflow`：内部 workflow 契约、workflow snapshot、workflow descriptor 与 workflow 校验 helper
 - `mcp/features/encrypt`：encrypt tools、resources、planning / apply / validation 与算法可见性装配
 - `mcp/features/mask`：mask tools、resources、planning / apply / validation 与算法可见性装配
 - `mcp/core`：capability、metadata、session、audit、execute-query 契约、runtime service 聚合，以及 JDBC runtime 配置模型、metadata 发现、`DatabaseRuntime` 装配与 JDBC-backed runtime context factory

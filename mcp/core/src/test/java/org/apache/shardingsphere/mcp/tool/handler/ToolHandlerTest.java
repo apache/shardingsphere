@@ -20,12 +20,12 @@ package org.apache.shardingsphere.mcp.tool.handler;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.metadata.SearchMetadataToolHandler;
-import org.apache.shardingsphere.mcp.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedList;

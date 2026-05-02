@@ -21,8 +21,8 @@ import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 

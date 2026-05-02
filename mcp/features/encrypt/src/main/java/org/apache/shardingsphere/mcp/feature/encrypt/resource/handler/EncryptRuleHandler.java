@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
-import org.apache.shardingsphere.mcp.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.ResourceHandler;
-import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 
 /**
  * Handler for one logical table encrypt rule resource URI.

@@ -17,21 +17,22 @@
 
 package org.apache.shardingsphere.mcp.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.api.tool.handler.ToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchResult;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,14 +45,16 @@ public final class SearchMetadataToolHandler implements ToolHandler {
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
             SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
     
+    private static final List<String> SUPPORTED_OBJECT_TYPE_NAMES = List.of("DATABASE", "SCHEMA", "TABLE", "VIEW", "COLUMN", "INDEX", "SEQUENCE");
+    
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata",
             Arrays.asList(
                     new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Optional logical database name.", null), false),
                     new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
                     new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
                     new MCPToolFieldDefinition("object_types",
-                            new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter. Allowed values: database, schema, table, view, column, index, sequence.",
-                                    new MCPToolValueDefinition(Type.STRING, "Allowed values: database, schema, table, view, column, index, sequence.", null)),
+                            new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter. Allowed values: DATABASE, SCHEMA, TABLE, VIEW, COLUMN, INDEX, SEQUENCE.",
+                                    new MCPToolValueDefinition(Type.STRING, "Allowed values: DATABASE, SCHEMA, TABLE, VIEW, COLUMN, INDEX, SEQUENCE.", null, SUPPORTED_OBJECT_TYPE_NAMES)),
                             false),
                     new MCPToolFieldDefinition("page_size", new MCPToolValueDefinition(Type.INTEGER, "Requested page size.", null), false),
                     new MCPToolFieldDefinition("page_token", new MCPToolValueDefinition(Type.STRING, "Opaque pagination token.", null), false)));

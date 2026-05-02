@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mcp.resource.handler.metadata;
 
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.database.exception;
 
-import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 
 /**
  * Exception for unsupported statement classes.

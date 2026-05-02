@@ -21,11 +21,11 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.feature.MCPFeatureProviderRegistry;
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
-import org.apache.shardingsphere.mcp.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
-import org.apache.shardingsphere.mcp.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 
 import java.util.ArrayList;
 import java.util.Collection;

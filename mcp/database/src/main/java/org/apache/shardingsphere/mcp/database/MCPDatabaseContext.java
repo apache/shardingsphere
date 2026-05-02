@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.database;
 
-import org.apache.shardingsphere.mcp.context.MCPFeatureContext;
+import org.apache.shardingsphere.mcp.api.context.MCPFeatureContext;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;

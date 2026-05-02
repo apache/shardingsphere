@@ -28,7 +28,7 @@ import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchResult;

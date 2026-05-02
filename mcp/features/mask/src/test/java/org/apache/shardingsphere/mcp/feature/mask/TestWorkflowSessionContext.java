@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask;
 
-import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;

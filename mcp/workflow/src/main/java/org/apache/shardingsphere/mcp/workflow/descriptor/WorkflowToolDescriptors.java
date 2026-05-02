@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mcp.workflow.descriptor;
 
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,21 +34,27 @@ public final class WorkflowToolDescriptors {
     
     public static final String VALIDATE_TOOL_NAME = "validate_workflow";
     
+    private static final List<String> OPERATION_TYPES = List.of("create", "alter", "drop");
+    
+    private static final List<String> DELIVERY_MODES = List.of("all-at-once", "step-by-step");
+    
+    private static final List<String> EXECUTION_MODES = List.of("auto-execute", "review-then-execute", "manual-only");
+    
     private static final List<MCPToolFieldDefinition> COMMON_PLANNING_FIELDS = List.of(
             new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Optional existing workflow plan identifier.", null), false),
             new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), false),
             new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional logical schema name.", null), false),
             new MCPToolFieldDefinition("table", new MCPToolValueDefinition(Type.STRING, "Target logical table name.", null), false),
             new MCPToolFieldDefinition("column", new MCPToolValueDefinition(Type.STRING, "Target logical column name.", null), false),
-            new MCPToolFieldDefinition("operation_type", new MCPToolValueDefinition(Type.STRING, "Lifecycle operation: create, alter or drop.", null), false),
+            new MCPToolFieldDefinition("operation_type", new MCPToolValueDefinition(Type.STRING, "Lifecycle operation: create, alter or drop.", null, OPERATION_TYPES), false),
             new MCPToolFieldDefinition("natural_language_intent", new MCPToolValueDefinition(Type.STRING, "Natural-language request used for intent clarification.", null), false),
             new MCPToolFieldDefinition("structured_intent_evidence", new MCPToolValueDefinition(Type.OBJECT, "Structured intent evidence extracted by the caller.", null), false),
-            new MCPToolFieldDefinition("delivery_mode", new MCPToolValueDefinition(Type.STRING, "Delivery mode: all-at-once or step-by-step.", null), false),
-            new MCPToolFieldDefinition("execution_mode", new MCPToolValueDefinition(Type.STRING, "Execution mode: auto-execute, review-then-execute or manual-only.", null), false));
+            new MCPToolFieldDefinition("delivery_mode", new MCPToolValueDefinition(Type.STRING, "Delivery mode: all-at-once or step-by-step.", null, DELIVERY_MODES), false),
+            new MCPToolFieldDefinition("execution_mode", new MCPToolValueDefinition(Type.STRING, "Execution mode: auto-execute, review-then-execute or manual-only.", null, EXECUTION_MODES), false));
     
     private static final List<MCPToolFieldDefinition> EXECUTION_FIELDS = List.of(
             new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Workflow plan identifier.", null), true),
-            new MCPToolFieldDefinition("execution_mode", new MCPToolValueDefinition(Type.STRING, "Optional execution mode override.", null), false),
+            new MCPToolFieldDefinition("execution_mode", new MCPToolValueDefinition(Type.STRING, "Optional execution mode override.", null, EXECUTION_MODES), false),
             new MCPToolFieldDefinition("approved_steps",
                     new MCPToolValueDefinition(Type.ARRAY, "Approved execution steps.", new MCPToolValueDefinition(Type.STRING, "Step name.", null)), false));
     

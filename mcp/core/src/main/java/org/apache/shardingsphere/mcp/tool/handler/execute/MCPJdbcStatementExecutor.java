@@ -26,12 +26,12 @@ import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfi
 import org.apache.shardingsphere.mcp.database.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPQueryFailedException;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPTimeoutException;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPTransactionStateException;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPUnavailableException;
-import org.apache.shardingsphere.mcp.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
