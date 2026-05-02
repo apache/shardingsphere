@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.session;
 
-import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;

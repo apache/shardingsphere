@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Map;
 

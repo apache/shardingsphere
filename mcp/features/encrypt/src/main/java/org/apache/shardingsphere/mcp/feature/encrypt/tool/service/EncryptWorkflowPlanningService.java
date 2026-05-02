@@ -17,27 +17,27 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
-import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.workflow.model.AlgorithmCandidate;
-import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
-import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.workflow.model.DDLArtifact;
-import org.apache.shardingsphere.mcp.workflow.model.DerivedColumnPlan;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssue;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowArtifactPayloadUtils;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningSupport;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedHashSet;
 import java.util.List;

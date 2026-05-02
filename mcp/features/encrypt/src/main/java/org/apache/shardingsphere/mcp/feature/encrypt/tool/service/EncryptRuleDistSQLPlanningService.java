@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
-import org.apache.shardingsphere.mcp.workflow.model.DerivedColumnPlan;
-import org.apache.shardingsphere.mcp.workflow.model.RuleArtifact;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedList;
 import java.util.List;

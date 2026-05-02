@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.workflow.WorkflowPropertySource;
-import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssue;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowArtifactBundle;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowArtifactPayloadUtils;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowLifecycleUtils;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowSynchronizationException;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowApplySynchronizationHandler;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBundle;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 
 /**
  * MCP handler context utilities.

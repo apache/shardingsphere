@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.workflow.model.AlgorithmCandidate;
-import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssue;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
+import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.List;
 import java.util.Locale;

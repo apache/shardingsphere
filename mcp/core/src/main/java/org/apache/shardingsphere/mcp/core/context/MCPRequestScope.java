@@ -18,18 +18,18 @@
 package org.apache.shardingsphere.mcp.core.context;
 
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.database.metadata.context.RequestScopedMetadataContext;
-import org.apache.shardingsphere.mcp.database.metadata.query.MetadataQueryService;
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureCapabilityFacade;
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.metadata.context.RequestScopedMetadataContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.query.MetadataQueryService;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureCapabilityFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.MCPSQLExecutionFacade;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
-import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
 /**
  * MCP request scope.

@@ -17,18 +17,18 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
-import org.apache.shardingsphere.mcp.workflow.model.AlgorithmCandidate;
-import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
-import org.apache.shardingsphere.mcp.workflow.model.ClarifiedIntent;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningSupport;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 
 import java.util.List;
 import java.util.Map;

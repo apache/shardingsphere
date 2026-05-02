@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.database.exception.DatabaseCapabilityNotFoundException;
-import org.apache.shardingsphere.mcp.database.exception.StatementClassNotSupportedException;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.audit.AuditRecorder;
-import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.internal.configuration.plugins.Plugins;

@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
-import org.apache.shardingsphere.mcp.workflow.model.AlgorithmPropertyRequirement;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowArtifactPayloadUtils;
-import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanPayloadBuilder;
-import org.apache.shardingsphere.mcp.workflow.WorkflowPropertySource;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 
 import java.util.List;
 import java.util.Map;

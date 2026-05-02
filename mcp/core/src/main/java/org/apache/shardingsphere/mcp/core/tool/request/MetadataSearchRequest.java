@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.request;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 
 import java.util.Set;
 

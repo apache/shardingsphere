@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityOption;
-import org.apache.shardingsphere.mcp.database.exception.QueryDidNotReturnResultSetException;
-import org.apache.shardingsphere.mcp.database.exception.StatementClassNotSupportedException;
-import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.database.protocol.ExecuteQueryColumnDefinition;
-import org.apache.shardingsphere.mcp.database.protocol.ExecuteQueryResultKind;
-import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityOption;
+import org.apache.shardingsphere.mcp.support.database.exception.QueryDidNotReturnResultSetException;
+import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryColumnDefinition;
+import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryResultKind;
+import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;

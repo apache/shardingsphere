@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.e2e.mcp.support.runtime;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 
 import java.util.Map;
 

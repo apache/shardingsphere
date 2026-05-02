@@ -24,12 +24,12 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
-import org.apache.shardingsphere.mcp.workflow.MCPWorkflowHandlerContext;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Generic workflow validation tool handler.

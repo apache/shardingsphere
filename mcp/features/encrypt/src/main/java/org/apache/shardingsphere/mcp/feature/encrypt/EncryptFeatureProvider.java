@@ -25,8 +25,8 @@ import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRul
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowDefinitionProvider;
-import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
+import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.Collection;
 import java.util.List;

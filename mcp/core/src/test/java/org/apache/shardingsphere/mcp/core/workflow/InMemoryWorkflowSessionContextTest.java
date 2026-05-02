@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mcp.core.workflow;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
-import org.apache.shardingsphere.mcp.workflow.model.InteractionPlan;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

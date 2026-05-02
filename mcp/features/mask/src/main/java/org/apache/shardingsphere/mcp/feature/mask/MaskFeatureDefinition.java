@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.mask;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 
 /**
  * Mask MCP feature definition.

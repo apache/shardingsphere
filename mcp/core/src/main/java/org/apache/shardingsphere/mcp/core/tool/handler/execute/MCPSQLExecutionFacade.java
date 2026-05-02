@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.database.exception.DatabaseCapabilityNotFoundException;
-import org.apache.shardingsphere.mcp.database.exception.StatementClassNotSupportedException;
-import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
-import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
+import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
+import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
+import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;

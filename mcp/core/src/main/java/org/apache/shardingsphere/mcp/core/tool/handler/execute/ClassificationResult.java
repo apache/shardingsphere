@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 
 import java.util.Optional;
 

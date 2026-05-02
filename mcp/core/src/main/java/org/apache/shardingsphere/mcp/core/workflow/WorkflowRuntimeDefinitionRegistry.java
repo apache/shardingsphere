@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.core.workflow;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
-import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowDefinitionProvider;
-import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
+import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.Collection;
 import java.util.Collections;

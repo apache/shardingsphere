@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.database.exception.InvalidPageTokenException;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPViewMetadata;
-import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.database.exception.InvalidPageTokenException;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;

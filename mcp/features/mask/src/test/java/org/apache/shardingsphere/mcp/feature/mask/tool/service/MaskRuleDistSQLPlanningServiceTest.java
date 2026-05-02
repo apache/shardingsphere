@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
-import org.apache.shardingsphere.mcp.workflow.model.RuleArtifact;
-import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

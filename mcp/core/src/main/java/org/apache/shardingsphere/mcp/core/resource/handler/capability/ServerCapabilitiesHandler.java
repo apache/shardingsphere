@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.core.capability.MCPServiceCapability;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
-import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.core.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;

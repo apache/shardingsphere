@@ -19,17 +19,17 @@ package org.apache.shardingsphere.mcp.core.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPDatabaseMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPSequenceMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPSchemaMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPTableMetadata;
-import org.apache.shardingsphere.mcp.database.metadata.model.MCPViewMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPColumnMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
 import java.sql.Connection;
