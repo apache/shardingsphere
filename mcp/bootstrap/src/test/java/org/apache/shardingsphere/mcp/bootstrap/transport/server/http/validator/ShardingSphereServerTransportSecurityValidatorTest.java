@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator;
 import io.modelcontextprotocol.server.transport.ServerTransportSecurityException;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

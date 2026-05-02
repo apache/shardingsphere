@@ -23,7 +23,7 @@ import io.modelcontextprotocol.spec.HttpHeaders;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.SessionRequiredTransportHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
 import java.util.List;
 import java.util.Map;

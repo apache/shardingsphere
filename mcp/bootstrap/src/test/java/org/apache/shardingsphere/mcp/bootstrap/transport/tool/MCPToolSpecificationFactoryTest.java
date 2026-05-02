@@ -27,10 +27,10 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 

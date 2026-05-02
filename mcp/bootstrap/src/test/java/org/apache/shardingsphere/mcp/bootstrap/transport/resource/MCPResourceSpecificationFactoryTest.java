@@ -23,10 +23,10 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
-import org.apache.shardingsphere.mcp.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 

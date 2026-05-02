@@ -23,7 +23,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 
 import java.util.List;
 import java.util.Map;

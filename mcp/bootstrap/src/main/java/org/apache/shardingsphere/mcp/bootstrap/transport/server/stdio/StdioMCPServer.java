@@ -22,7 +22,7 @@ import io.modelcontextprotocol.server.McpSyncServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPSyncServerFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperFactory;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 
 /**
  * SDK-backed STDIO MCP server.

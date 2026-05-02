@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

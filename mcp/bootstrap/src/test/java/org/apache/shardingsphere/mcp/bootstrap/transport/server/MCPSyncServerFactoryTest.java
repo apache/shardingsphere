@@ -32,7 +32,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportJsonMapperF
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 import reactor.core.publisher.Mono;

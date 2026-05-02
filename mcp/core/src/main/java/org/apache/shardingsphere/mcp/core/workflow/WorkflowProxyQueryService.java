@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mcp.database.metadata.jdbc.RuntimeDatabaseConfi
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowSqlUtils;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

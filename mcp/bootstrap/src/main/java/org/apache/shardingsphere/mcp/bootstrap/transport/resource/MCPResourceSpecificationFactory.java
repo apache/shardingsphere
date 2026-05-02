@@ -22,9 +22,9 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpec
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.resource.MCPResourceController;
-import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
+import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 
 import java.util.List;
 import java.util.stream.Collectors;

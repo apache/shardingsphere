@@ -25,8 +25,8 @@ import io.modelcontextprotocol.spec.McpServerSession;
 import io.modelcontextprotocol.spec.McpServerTransport;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
-import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import reactor.core.publisher.Mono;
 
 import java.util.List;

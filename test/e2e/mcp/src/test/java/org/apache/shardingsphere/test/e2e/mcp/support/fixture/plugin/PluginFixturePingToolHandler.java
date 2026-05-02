@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.context.MCPServiceHandlerContext;
+import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 
 import java.util.List;
 import java.util.Map;

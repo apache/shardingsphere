@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mcp.handler.core.CoreHandlerProvider
+org.apache.shardingsphere.mcp.core.handler.core.CoreHandlerProvider

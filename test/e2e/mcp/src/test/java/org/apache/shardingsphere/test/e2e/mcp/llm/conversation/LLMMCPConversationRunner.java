@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatCompletion;

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.tool.MCPToolController;
-import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 
 import java.util.ArrayList;
 import java.util.Collections;

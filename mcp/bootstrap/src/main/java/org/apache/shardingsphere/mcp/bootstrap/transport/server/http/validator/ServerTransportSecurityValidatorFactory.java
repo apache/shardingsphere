@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.c
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.LoopbackOriginHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.ProtocolVersionHeaderConstraint;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.validator.constraint.TransportHeaderConstraint;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
 import java.util.LinkedList;
 import java.util.List;

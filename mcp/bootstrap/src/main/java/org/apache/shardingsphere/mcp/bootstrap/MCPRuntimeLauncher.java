@@ -23,8 +23,8 @@ import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 
 import java.io.IOException;
 
