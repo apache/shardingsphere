@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.database.protocol;
 
 /**
- * Unified result kinds for {@code execute_query}.
+ * Execute query result kind.
  */
 public enum ExecuteQueryResultKind {
     

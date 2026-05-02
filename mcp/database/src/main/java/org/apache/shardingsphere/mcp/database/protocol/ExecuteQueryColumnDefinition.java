@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Column metadata definition for result sets.
+ * Execute query column definition.
  */
 @RequiredArgsConstructor
 @Getter
