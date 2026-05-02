@@ -37,16 +37,16 @@ import java.util.List;
 public final class MaskFeatureProvider implements MCPContributionProvider, MCPWorkflowDefinitionProvider {
     
     @Override
-    public Collection<MCPToolContribution> getToolContributions() {
-        return List.of(new PlanMaskRuleToolHandler());
-    }
-    
-    @Override
     public Collection<MCPResourceContribution> getResourceContributions() {
         return List.of(
                 new MaskAlgorithmsHandler(),
                 new MaskRulesHandler(),
                 new MaskRuleHandler());
+    }
+    
+    @Override
+    public Collection<MCPToolContribution> getToolContributions() {
+        return List.of(new PlanMaskRuleToolHandler());
     }
     
     @Override

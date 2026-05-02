@@ -37,16 +37,16 @@ import java.util.List;
 public final class EncryptFeatureProvider implements MCPContributionProvider, MCPWorkflowDefinitionProvider {
     
     @Override
-    public Collection<MCPToolContribution> getToolContributions() {
-        return List.of(new PlanEncryptRuleToolHandler());
-    }
-    
-    @Override
     public Collection<MCPResourceContribution> getResourceContributions() {
         return List.of(
                 new EncryptAlgorithmsHandler(),
                 new EncryptRulesHandler(),
                 new EncryptRuleHandler());
+    }
+    
+    @Override
+    public Collection<MCPToolContribution> getToolContributions() {
+        return List.of(new PlanEncryptRuleToolHandler());
     }
     
     @Override

@@ -29,12 +29,12 @@ import java.util.Collection;
 public final class CoreContributionProvider implements MCPContributionProvider {
     
     @Override
-    public Collection<MCPToolContribution> getToolContributions() {
-        return CoreToolHandlers.createHandlers();
+    public Collection<MCPResourceContribution> getResourceContributions() {
+        return CoreResourceHandlers.createHandlers();
     }
     
     @Override
-    public Collection<MCPResourceContribution> getResourceContributions() {
-        return CoreResourceHandlers.createHandlers();
+    public Collection<MCPToolContribution> getToolContributions() {
+        return CoreToolHandlers.createHandlers();
     }
 }

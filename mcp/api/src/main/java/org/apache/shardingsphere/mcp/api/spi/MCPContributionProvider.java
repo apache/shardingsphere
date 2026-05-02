@@ -25,17 +25,10 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 import java.util.Collection;
 
 /**
- * MCP contribution provider. A provider owns a cohesive set of MCP tools and resources and contributes their protocol surface to the MCP runtime.
+ * MCP contribution provider.
  */
 @SingletonSPI
 public interface MCPContributionProvider extends ShardingSphereSPI {
-    
-    /**
-     * Get tool contributions.
-     *
-     * @return tool contributions
-     */
-    Collection<MCPToolContribution> getToolContributions();
     
     /**
      * Get resource contributions.
@@ -43,4 +36,11 @@ public interface MCPContributionProvider extends ShardingSphereSPI {
      * @return resource contributions
      */
     Collection<MCPResourceContribution> getResourceContributions();
+    
+    /**
+     * Get tool contributions.
+     *
+     * @return tool contributions
+     */
+    Collection<MCPToolContribution> getToolContributions();
 }
