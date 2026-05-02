@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
 import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Workflow runtime definition provider.
@@ -34,7 +33,5 @@ public interface MCPWorkflowDefinitionProvider extends ShardingSphereSPI {
      *
      * @return workflow runtime definitions
      */
-    default Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
-        return List.of();
-    }
+    Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions();
 }
