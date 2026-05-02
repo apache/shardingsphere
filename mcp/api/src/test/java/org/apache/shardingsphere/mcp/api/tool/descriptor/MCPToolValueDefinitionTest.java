@@ -33,8 +33,7 @@ class MCPToolValueDefinitionTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertToSchemaFragmentCases")
     void assertToSchemaFragment(final String name, final MCPToolValueDefinition valueDefinition, final Map<String, Object> expectedSchemaFragment) {
-        Map<String, Object> actual = valueDefinition.toSchemaFragment();
-        assertThat(actual, is(expectedSchemaFragment));
+        assertThat(valueDefinition.toSchemaFragment(), is(expectedSchemaFragment));
     }
     
     private static Stream<Arguments> assertToSchemaFragmentCases() {
