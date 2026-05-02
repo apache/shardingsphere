@@ -18,15 +18,17 @@
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * MCP tool value definition.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolValueDefinition {
     
@@ -39,14 +41,7 @@ public final class MCPToolValueDefinition {
     private final Collection<String> enumValues;
     
     public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition) {
-        this(type, description, itemDefinition, List.of());
-    }
-    
-    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues) {
-        this.type = type;
-        this.description = description;
-        this.itemDefinition = itemDefinition;
-        this.enumValues = enumValues;
+        this(type, description, itemDefinition, Collections.emptyList());
     }
     
     /**
@@ -65,7 +60,7 @@ public final class MCPToolValueDefinition {
     }
     
     private Map<String, Object> toScalarSchemaFragment(final String type) {
-        Map<String, Object> result = new LinkedHashMap<>();
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("type", type);
         result.put("description", description);
         if (!enumValues.isEmpty()) {
