@@ -32,9 +32,9 @@
 
 - Rename `MCPContributionProvider` to `MCPHandlerProvider` together with the resource and tool handler contract renames.
 - Use explicit context type declaration on each handler via `Class<T> getContextType()`.
-- Let `MCPRequestScope` implement `MCPServiceHandlerContext`, `MCPDatabaseContext`, and `MCPWorkflowContext`, so dispatch can pass the same request-scope instance through the required context interface.
+- Let `MCPRequestScope` implement `MCPServiceHandlerContext`, `MCPDatabaseHandlerContext`, and `MCPWorkflowHandlerContext`, so dispatch can pass the same request-scope instance through the required context interface.
 - Delete the old context-specific handler subinterfaces directly. Do not keep deprecated compatibility aliases.
-- Place `MCPHandlerContext` and `MCPServiceHandlerContext` in `org.apache.shardingsphere.mcp.api.handler`.
+- Place `MCPHandlerContext` in `org.apache.shardingsphere.mcp.api.handler` and `MCPServiceHandlerContext` in `org.apache.shardingsphere.mcp.context`.
 - Keep `MCPResourceHandler` in `org.apache.shardingsphere.mcp.api.resource` and `MCPToolHandler` in `org.apache.shardingsphere.mcp.api.tool`.
 - Keep the renamed provider SPI in `org.apache.shardingsphere.mcp.api.spi` as `MCPHandlerProvider`.
 - Use `IllegalArgumentException` for unsupported handler context type registration errors.
@@ -89,21 +89,21 @@ Acceptance checks:
 
 ### Scenario 2: Feature author implements a database-aware resource
 
-Given a feature needs metadata or database capability access, when the author creates the resource handler, then they implement `MCPResourceHandler<MCPDatabaseContext>`.
+Given a feature needs metadata or database capability access, when the author creates the resource handler, then they implement `MCPResourceHandler<MCPDatabaseHandlerContext>`.
 
 Acceptance checks:
 
-- The handler receives a non-null `MCPDatabaseContext`.
+- The handler receives a non-null `MCPDatabaseHandlerContext`.
 - Existing database-aware resource behavior remains unchanged.
 - No `DatabaseResourceHandler` type is required.
 
 ### Scenario 3: Feature author implements a workflow-aware tool
 
-Given a feature needs workflow session access, when the author creates the tool handler, then they implement `MCPToolHandler<MCPWorkflowContext>`.
+Given a feature needs workflow session access, when the author creates the tool handler, then they implement `MCPToolHandler<MCPWorkflowHandlerContext>`.
 
 Acceptance checks:
 
-- The handler receives a non-null `MCPWorkflowContext`.
+- The handler receives a non-null `MCPWorkflowHandlerContext`.
 - Existing workflow validation and execution tools continue to use workflow context capabilities.
 - No `WorkflowToolHandler` type is required.
 
@@ -122,11 +122,11 @@ Acceptance checks:
 
 - **FR-001**: Introduce `MCPHandlerContext` as an empty marker interface in the MCP API layer.
 - **FR-001a**: `MCPHandlerContext` must be located in `org.apache.shardingsphere.mcp.api.handler`.
-- **FR-002**: Update `MCPDatabaseContext` to extend `MCPHandlerContext`.
-- **FR-003**: Update `MCPWorkflowContext` to extend `MCPHandlerContext`.
+- **FR-002**: Update `MCPDatabaseHandlerContext` to extend `MCPHandlerContext`.
+- **FR-003**: Update `MCPWorkflowHandlerContext` to extend `MCPHandlerContext`.
 - **FR-004**: Introduce `MCPServiceHandlerContext` as the service-level context for handlers that do not need database or workflow capabilities.
-- **FR-004a**: `MCPServiceHandlerContext` must be located in `org.apache.shardingsphere.mcp.api.handler`.
-- **FR-005**: Update `MCPRequestScope` to implement `MCPServiceHandlerContext`, `MCPDatabaseContext`, and `MCPWorkflowContext`.
+- **FR-004a**: `MCPServiceHandlerContext` must be located in `org.apache.shardingsphere.mcp.context`.
+- **FR-005**: Update `MCPRequestScope` to implement `MCPServiceHandlerContext`, `MCPDatabaseHandlerContext`, and `MCPWorkflowHandlerContext`.
 - **FR-006**: Rename `MCPResourceContribution` to `MCPResourceHandler<T extends MCPHandlerContext>`.
 - **FR-006a**: `MCPResourceHandler` must remain in `org.apache.shardingsphere.mcp.api.resource`.
 - **FR-007**: `MCPResourceHandler` must expose `Class<T> getContextType()`.
@@ -159,8 +159,8 @@ Acceptance checks:
 
 - **MCPHandlerContext**: Marker interface for all MCP runtime contexts used by handlers.
 - **MCPServiceHandlerContext**: Context for handlers that only need service-level MCP request information.
-- **MCPDatabaseContext**: Database-aware handler context with metadata, execution, query, and capability facades.
-- **MCPWorkflowContext**: Workflow-aware handler context with workflow session access and database context access.
+- **MCPDatabaseHandlerContext**: Database-aware handler context with metadata, execution, query, and capability facades.
+- **MCPWorkflowHandlerContext**: Workflow-aware handler context with workflow session access and database context access.
 - **MCPResourceHandler**: Generic runtime handler for one resource URI pattern.
 - **MCPToolHandler**: Generic runtime handler for one tool descriptor.
 - **MCPHandlerProvider**: SPI provider that exposes handler collections for discovery.

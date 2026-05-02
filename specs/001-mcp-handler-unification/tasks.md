@@ -30,7 +30,7 @@
 ## Phase 1: API Contracts
 
 - [x] T005 Add `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/handler/MCPHandlerContext.java`.
-- [x] T006 Add `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/handler/MCPServiceHandlerContext.java`.
+- [x] T006 Add `mcp/core/src/main/java/org/apache/shardingsphere/mcp/context/MCPServiceHandlerContext.java`.
 - [x] T007 Rename `MCPResourceContribution` to `MCPResourceHandler<T extends MCPHandlerContext>`.
 - [x] T008 Add `Class<T> getContextType()` and generic `handle(T, MCPUriVariables)` to `MCPResourceHandler`.
 - [x] T009 Rename `MCPToolContribution` to `MCPToolHandler<T extends MCPHandlerContext>`.
@@ -44,9 +44,9 @@
 
 ## Phase 2: Context Integration
 
-- [x] T014 Update `MCPDatabaseContext` to extend `MCPHandlerContext`.
-- [x] T015 Update `MCPWorkflowContext` to extend `MCPHandlerContext`.
-- [x] T016 Update `MCPRequestScope` to implement `MCPServiceHandlerContext`, `MCPDatabaseContext`, and `MCPWorkflowContext`.
+- [x] T014 Update `MCPDatabaseHandlerContext` to extend `MCPHandlerContext`.
+- [x] T015 Update `MCPWorkflowHandlerContext` to extend `MCPHandlerContext`.
+- [x] T016 Update `MCPRequestScope` to implement `MCPServiceHandlerContext`, `MCPDatabaseHandlerContext`, and `MCPWorkflowHandlerContext`.
 - [x] T017 Ensure no handler receives nullable context values.
 - [x] T018 Keep request-scope creation behavior unchanged in `MCPToolController` and `MCPResourceController`; do not optimize service-level dispatch in this refactor.
 
@@ -73,9 +73,9 @@
 ## Phase 4: Built-in Core Handlers
 
 - [x] T034 Update `ServerCapabilitiesHandler` to implement `MCPResourceHandler<MCPServiceHandlerContext>`.
-- [x] T035 Update `DatabaseCapabilitiesHandler` and `MetadataResourceHandler` to implement `MCPResourceHandler<MCPDatabaseContext>`.
-- [x] T036 Update `ExecuteSQLToolHandler` and `SearchMetadataToolHandler` to implement `MCPToolHandler<MCPDatabaseContext>`.
-- [x] T037 Update `WorkflowValidationToolHandler` and `WorkflowExecutionToolHandler` to implement `MCPToolHandler<MCPWorkflowContext>`.
+- [x] T035 Update `DatabaseCapabilitiesHandler` and `MetadataResourceHandler` to implement `MCPResourceHandler<MCPDatabaseHandlerContext>`.
+- [x] T036 Update `ExecuteSQLToolHandler` and `SearchMetadataToolHandler` to implement `MCPToolHandler<MCPDatabaseHandlerContext>`.
+- [x] T037 Update `WorkflowValidationToolHandler` and `WorkflowExecutionToolHandler` to implement `MCPToolHandler<MCPWorkflowHandlerContext>`.
 - [x] T038 Update core handler factory classes to return handler collections.
 - [x] T039 Rename `CoreContributionProvider` to `CoreHandlerProvider`.
 - [x] T040 Update core provider and core provider tests to `MCPHandlerProvider`.
@@ -84,12 +84,12 @@
 
 ## Phase 5: Feature Modules
 
-- [x] T043 Update encrypt resource handlers to implement `MCPResourceHandler<MCPDatabaseContext>`.
-- [x] T044 Update encrypt workflow tool handler to implement `MCPToolHandler<MCPWorkflowContext>`.
+- [x] T043 Update encrypt resource handlers to implement `MCPResourceHandler<MCPDatabaseHandlerContext>`.
+- [x] T044 Update encrypt workflow tool handler to implement `MCPToolHandler<MCPWorkflowHandlerContext>`.
 - [x] T045 Update `EncryptFeatureProvider` and tests to `MCPHandlerProvider`.
 - [x] T046 Update encrypt service discovery file to the renamed provider SPI.
-- [x] T047 Update mask resource handlers to implement `MCPResourceHandler<MCPDatabaseContext>`.
-- [x] T048 Update mask workflow tool handler to implement `MCPToolHandler<MCPWorkflowContext>`.
+- [x] T047 Update mask resource handlers to implement `MCPResourceHandler<MCPDatabaseHandlerContext>`.
+- [x] T048 Update mask workflow tool handler to implement `MCPToolHandler<MCPWorkflowHandlerContext>`.
 - [x] T049 Update `MaskFeatureProvider` and tests to `MCPHandlerProvider`.
 - [x] T050 Update mask service discovery file to the renamed provider SPI.
 

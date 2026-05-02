@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mcp.context;
 
-import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;

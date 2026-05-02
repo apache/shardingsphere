@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
-import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.capability.service.MCPServiceCapability;
+import org.apache.shardingsphere.mcp.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.resource.response.MCPServiceCapabilityResponse;

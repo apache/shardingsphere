@@ -293,11 +293,11 @@ Encrypt and mask are not special cases hardcoded in bootstrap. They are pluggabl
 
 If you want to add another feature beyond encrypt and mask, keep the implementation path minimal:
 
-- Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/workflow` when workflow support is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
+- Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/core` for service-level handlers, `mcp/database` for database metadata or execution handlers, `mcp/workflow` when workflow support is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
 - For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type; always provide a unique `MCPToolDescriptor`
 - For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type; always provide a unique URI pattern
-- Use `MCPServiceHandlerContext` for service-level handlers, `MCPDatabaseContext` for database metadata or execution handlers, and `MCPWorkflowContext` for workflow handlers
+- Use `MCPServiceHandlerContext` for service-level handlers, `MCPDatabaseHandlerContext` for database metadata or execution handlers, and `MCPWorkflowHandlerContext` for workflow handlers
 - Implement one `MCPHandlerProvider` that returns the feature-owned handlers through `getToolHandlers()` and `getResourceHandlers()`
 - Register `org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider` under `src/main/resources/META-INF/services/`
 - Keep feature URIs under `shardingsphere://features/<feature>/...` so they do not leak into shared metadata paths

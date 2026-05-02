@@ -62,7 +62,7 @@ Implementation decision:
 
 - Validate `getContextType()` during handler registration.
 - Reject `null` context type.
-- Accept exact context types only: `MCPServiceHandlerContext.class`, `MCPDatabaseContext.class`, and `MCPWorkflowContext.class`.
+- Accept exact context types only: `MCPServiceHandlerContext.class`, `MCPDatabaseHandlerContext.class`, and `MCPWorkflowHandlerContext.class`.
 - Resolve context through a small helper and keep any unchecked generic cast local to that helper.
 - Throw `IllegalArgumentException` for unsupported context type registration errors.
 - Include handler class and context type in unsupported-context error messages, for example `Unsupported handler context type `%s` for `%s`.`.
@@ -74,7 +74,7 @@ The API should keep resource and tool concepts in their existing semantic packag
 Implementation decision:
 
 - Place `MCPHandlerContext` in `org.apache.shardingsphere.mcp.api.handler`.
-- Place `MCPServiceHandlerContext` in `org.apache.shardingsphere.mcp.api.handler`.
+- Place `MCPServiceHandlerContext` in `org.apache.shardingsphere.mcp.context`.
 - Keep `MCPResourceHandler` in `org.apache.shardingsphere.mcp.api.resource`.
 - Keep `MCPToolHandler` in `org.apache.shardingsphere.mcp.api.tool`.
 - Keep `MCPHandlerProvider` in `org.apache.shardingsphere.mcp.api.spi`.
@@ -144,11 +144,11 @@ public interface MCPServiceHandlerContext extends MCPHandlerContext {
 Update existing contexts:
 
 ```java
-public interface MCPDatabaseContext extends MCPHandlerContext {
+public interface MCPDatabaseHandlerContext extends MCPHandlerContext {
     ...
 }
 
-public interface MCPWorkflowContext extends MCPHandlerContext {
+public interface MCPWorkflowHandlerContext extends MCPHandlerContext {
     ...
 }
 ```
@@ -254,7 +254,7 @@ Unsupported context type validation should use `IllegalArgumentException`, match
 - Add `MCPServiceHandlerContext`.
 - Rename resource and tool contribution interfaces to generic handler interfaces.
 - Rename provider SPI and method names.
-- Update `MCPDatabaseContext`, `MCPWorkflowContext`, and `MCPRequestScope`.
+- Update `MCPDatabaseHandlerContext`, `MCPWorkflowHandlerContext`, and `MCPRequestScope`.
 - Keep API class package placement aligned with the confirmed package decisions.
 
 ### Phase 2: Core Discovery and Dispatch
@@ -291,8 +291,8 @@ Unsupported context type validation should use `IllegalArgumentException`, match
 Supported mappings:
 
 - `MCPServiceHandlerContext.class` -> request scope as `MCPServiceHandlerContext`
-- `MCPDatabaseContext.class` -> request scope as `MCPDatabaseContext`
-- `MCPWorkflowContext.class` -> request scope as `MCPWorkflowContext`
+- `MCPDatabaseHandlerContext.class` -> request scope as `MCPDatabaseHandlerContext`
+- `MCPWorkflowHandlerContext.class` -> request scope as `MCPWorkflowHandlerContext`
 
 Supported mappings use exact class equality. Unsupported or null mappings must fail with a clear exception that includes the handler class and context type.
 

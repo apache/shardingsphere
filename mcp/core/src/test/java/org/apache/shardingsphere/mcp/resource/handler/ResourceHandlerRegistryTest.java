@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
-import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.context.MCPServiceHandlerContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

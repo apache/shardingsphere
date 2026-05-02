@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.api.spi;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -75,11 +75,11 @@ class MCPHandlerProviderTest {
         }
     }
     
-    private static final class FixtureToolHandler implements MCPToolHandler<MCPServiceHandlerContext> {
+    private static final class FixtureToolHandler implements MCPToolHandler<MCPHandlerContext> {
         
         @Override
-        public Class<MCPServiceHandlerContext> getContextType() {
-            return MCPServiceHandlerContext.class;
+        public Class<MCPHandlerContext> getContextType() {
+            return MCPHandlerContext.class;
         }
         
         @Override
@@ -88,16 +88,16 @@ class MCPHandlerProviderTest {
         }
         
         @Override
-        public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPToolCall toolCall) {
+        public MCPResponse handle(final MCPHandlerContext handlerContext, final MCPToolCall toolCall) {
             return () -> Map.of("foo_key", "foo_value");
         }
     }
     
-    private static final class FixtureResourceHandler implements MCPResourceHandler<MCPServiceHandlerContext> {
+    private static final class FixtureResourceHandler implements MCPResourceHandler<MCPHandlerContext> {
         
         @Override
-        public Class<MCPServiceHandlerContext> getContextType() {
-            return MCPServiceHandlerContext.class;
+        public Class<MCPHandlerContext> getContextType() {
+            return MCPHandlerContext.class;
         }
         
         @Override
@@ -106,7 +106,7 @@ class MCPHandlerProviderTest {
         }
         
         @Override
-        public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPUriVariables uriVariables) {
+        public MCPResponse handle(final MCPHandlerContext handlerContext, final MCPUriVariables uriVariables) {
             return () -> Map.of("foo_key", "foo_value");
         }
     }
