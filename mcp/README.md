@@ -299,7 +299,8 @@ If you want to add another feature beyond encrypt and mask, keep the implementat
 - For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type; always provide a unique URI pattern
 - Use `MCPServiceHandlerContext` for service-level handlers, `MCPDatabaseHandlerContext` for database metadata or execution handlers, and `MCPWorkflowHandlerContext` for workflow handlers
 - Implement one `MCPHandlerProvider` that returns the feature-owned handlers through `getToolHandlers()` and `getResourceHandlers()`
-- Register `org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider` under `src/main/resources/META-INF/services/`
+- If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider
+- Register `org.apache.shardingsphere.mcp.api.MCPHandlerProvider` under `src/main/resources/META-INF/services/`
 - Keep feature URIs under `shardingsphere://features/<feature>/...` so they do not leak into shared metadata paths
 - `mcp/core` discovers handler providers through `ShardingSphereServiceLoader`, flattens their handlers, and validates global uniqueness; `mcp/bootstrap` only publishes the final protocol surface
 - Tool names and resource URI patterns must stay globally unique; duplicate handlers are rejected during startup validation

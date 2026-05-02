@@ -28,10 +28,11 @@ import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinit
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Workflow runtime definition registry.
@@ -78,15 +79,20 @@ public final class WorkflowRuntimeDefinitionRegistry {
     }
     
     static Collection<WorkflowRuntimeDefinition> loadDefinitions() {
-        return ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class).stream()
-                .filter(each -> each instanceof MCPWorkflowDefinitionProvider).flatMap(each -> createDefinitions((MCPWorkflowDefinitionProvider) each).stream()).collect(Collectors.toList());
+        Collection<WorkflowRuntimeDefinition> result = new LinkedList<>();
+        for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
+            if (each instanceof MCPWorkflowDefinitionProvider) {
+                result.addAll(createDefinitions((MCPWorkflowDefinitionProvider) each));
+            }
+        }
+        return List.copyOf(result);
     }
     
     static Collection<WorkflowRuntimeDefinition> createDefinitions(final MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
         Collection<WorkflowRuntimeDefinition> result = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
                 () -> String.format("Workflow definitions are required for `%s`.", workflowDefinitionProvider.getClass().getName()));
         result.forEach(each -> Objects.requireNonNull(each, () -> String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
-        return result;
+        return List.copyOf(result);
     }
     
     static Map<WorkflowKind, WorkflowRuntimeDefinition> createRegisteredDefinitions(final Collection<WorkflowRuntimeDefinition> definitions) {

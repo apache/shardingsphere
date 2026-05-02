@@ -36,7 +36,7 @@ import java.util.stream.Stream;
  */
 public final class PackagedDistributionPluginFixtureSupport {
     
-    private static final String HANDLER_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider";
+    private static final String HANDLER_PROVIDER_SERVICE_ENTRY = "META-INF/services/org.apache.shardingsphere.mcp.api.MCPHandlerProvider";
     
     private static final List<String> OFFICIAL_FEATURE_ARTIFACT_IDS = List.of("shardingsphere-mcp-feature-encrypt", "shardingsphere-mcp-feature-mask");
     

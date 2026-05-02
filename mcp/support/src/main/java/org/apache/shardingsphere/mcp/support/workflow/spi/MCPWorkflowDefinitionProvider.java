@@ -17,16 +17,12 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
-import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
-import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
-
 import java.util.Collection;
 
 /**
  * Workflow runtime definition provider.
  */
-@SingletonSPI
-public interface MCPWorkflowDefinitionProvider extends ShardingSphereSPI {
+public interface MCPWorkflowDefinitionProvider {
     
     /**
      * Get workflow runtime definitions.

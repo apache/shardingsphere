@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.core.workflow;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
@@ -27,8 +28,8 @@ import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinit
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,18 +39,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 class WorkflowRuntimeDefinitionRegistryTest {
     
     @Test
     void assertLoadDefinitions() {
-        MCPWorkflowDefinitionProvider workflowDefinitionProvider = mock(MCPWorkflowDefinitionProvider.class);
+        MCPHandlerProvider handlerProvider = mock(MCPHandlerProvider.class, withSettings().extraInterfaces(MCPWorkflowDefinitionProvider.class));
+        MCPWorkflowDefinitionProvider workflowDefinitionProvider = (MCPWorkflowDefinitionProvider) handlerProvider;
         when(workflowDefinitionProvider.getWorkflowDefinitions()).thenReturn(List.of(createDefinition("encrypt.rule")));
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPWorkflowDefinitionProvider.class)).thenReturn(List.of(workflowDefinitionProvider));
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
             Collection<WorkflowRuntimeDefinition> actual = WorkflowRuntimeDefinitionRegistry.loadDefinitions();
             assertThat(actual.size(), is(1));
             assertThat(actual.iterator().next().getWorkflowKind(), is(WorkflowKind.valueOf("encrypt.rule")));
+            assertThrows(UnsupportedOperationException.class, actual::clear);
+        }
+    }
+    
+    @Test
+    void assertLoadDefinitionsWithoutWorkflowDefinitionProvider() {
+        MCPHandlerProvider handlerProvider = mock(MCPHandlerProvider.class);
+        try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(handlerProvider));
+            Collection<WorkflowRuntimeDefinition> actual = WorkflowRuntimeDefinitionRegistry.loadDefinitions();
+            assertThat(actual.size(), is(0));
             assertThrows(UnsupportedOperationException.class, actual::clear);
         }
     }
@@ -65,7 +79,7 @@ class WorkflowRuntimeDefinitionRegistryTest {
     @Test
     void assertCreateDefinitionsWithNullDefinition() {
         MCPWorkflowDefinitionProvider workflowDefinitionProvider = mock(MCPWorkflowDefinitionProvider.class);
-        List<WorkflowRuntimeDefinition> definitions = new ArrayList<>();
+        List<WorkflowRuntimeDefinition> definitions = new LinkedList<>();
         definitions.add(createDefinition("encrypt.rule"));
         definitions.add(null);
         when(workflowDefinitionProvider.getWorkflowDefinitions()).thenReturn(definitions);
@@ -82,7 +96,7 @@ class WorkflowRuntimeDefinitionRegistryTest {
     
     @Test
     void assertCreateRegisteredDefinitionsWithNullDefinition() {
-        List<WorkflowRuntimeDefinition> definitions = new ArrayList<>();
+        List<WorkflowRuntimeDefinition> definitions = new LinkedList<>();
         definitions.add(createDefinition("encrypt.rule"));
         definitions.add(null);
         NullPointerException actual = assertThrows(NullPointerException.class, () -> WorkflowRuntimeDefinitionRegistry.createRegisteredDefinitions(definitions));
