@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.feature;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
+import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 import org.junit.jupiter.api.Test;

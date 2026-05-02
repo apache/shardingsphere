@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.feature.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.spi.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.resource.ResourceHandler;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandler;
 
