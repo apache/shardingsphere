@@ -73,18 +73,6 @@ public final class WorkflowValidationSupport {
     }
     
     /**
-     * Create one validation report and attach it to the workflow snapshot.
-     *
-     * @param snapshot workflow snapshot
-     * @return validation report
-     */
-    public ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot) {
-        ValidationReport result = new ValidationReport();
-        snapshot.setValidationReport(result);
-        return result;
-    }
-    
-    /**
      * Validate logical metadata visibility for the planned logical column.
      *
      * @param snapshot workflow snapshot

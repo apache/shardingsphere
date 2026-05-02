@@ -272,12 +272,12 @@ Reference:
 
 ## Feature SPI Layout
 
-The current MCP subchain is organized as `api + workflow + features + core + bootstrap`:
+The current MCP subchain is organized as `api + support + features + core + bootstrap`:
 
 - `mcp/api`
   - defines public tool / resource handler contracts, shared descriptors, protocol responses, and MCP protocol exceptions
-- `mcp/workflow`
-  - defines internal workflow contracts, workflow snapshots, workflow descriptors, and workflow validation helpers
+- `mcp/support`
+  - provides database metadata, execution, capability, and workflow contexts, models, facades, SPI, and reusable helpers for MCP core and pluggable features
 - `mcp/features/encrypt`
   - provides encrypt MCP tools, resources, and workflow implementation
 - `mcp/features/mask`
@@ -293,7 +293,7 @@ Encrypt and mask are not special cases hardcoded in bootstrap. They are pluggabl
 
 If you want to add another feature beyond encrypt and mask, keep the implementation path minimal:
 
-- Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/core` for service-level handlers, `mcp/database` for database metadata or execution handlers, `mcp/workflow` when workflow support is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
+- Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/support` for database metadata, execution, or workflow handlers, `mcp/core` only when service-level handler context is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
 - For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type; always provide a unique `MCPToolDescriptor`
 - For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type; always provide a unique URI pattern
@@ -1092,10 +1092,10 @@ MCP_LLM_MODEL=qwen3:1.7b \
 - The LLM smoke artifacts are written under `test/e2e/mcp/target/llm-e2e/`.
 - The dedicated GitHub Actions entry point is `.github/workflows/mcp-llm-e2e.yml`, delivered as `workflow_dispatch` plus nightly schedule instead of a PR gate.
 - `mcp/api`: public tool / resource handler contracts, shared descriptors, protocol responses, and MCP protocol exceptions
-- `mcp/workflow`: internal workflow contracts, workflow snapshots, workflow descriptors, and workflow validation helpers
+- `mcp/support`: database metadata, execution, capability, and workflow contexts, models, facades, SPI, and reusable helpers for MCP core and pluggable features
 - `mcp/features/encrypt`: encrypt tools, resources, planning / apply / validation, and algorithm visibility assembly
 - `mcp/features/mask`: mask tools, resources, planning / apply / validation, and algorithm visibility assembly
-- `mcp/core`: capability, metadata, session, audit, execute-query contracts, shared runtime service assembly, JDBC runtime configuration, metadata discovery, `DatabaseRuntime` assembly, and the JDBC-backed runtime context factory
+- `mcp/core`: handler discovery, registry, request scope implementation, session, audit, execute-query runtime service assembly, JDBC runtime configuration, metadata discovery, `DatabaseRuntime` assembly, and the JDBC-backed runtime context factory
 - `mcp/bootstrap`: MCP Java SDK based bootstrap, HTTP / STDIO transport, top-level config loading, feature SPI aggregation, and lifecycle management
 - `distribution/mcp`: standalone packaging, scripts, config, Dockerfile
 - `test/e2e/mcp`: end-to-end contract validation

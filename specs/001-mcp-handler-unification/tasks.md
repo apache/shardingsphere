@@ -135,19 +135,19 @@
 - [x] T074 Run scoped MCP unit tests:
 
 ```bash
-./mvnw -pl mcp/api,mcp/database,mcp/workflow,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
 - [x] T075 Run scoped Checkstyle:
 
 ```bash
-./mvnw -pl mcp/api,mcp/database,mcp/workflow,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck checkstyle:check
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck checkstyle:check
 ```
 
 - [x] T076 Run scoped Spotless check:
 
 ```bash
-./mvnw -pl mcp/api,mcp/database,mcp/workflow,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck spotless:check
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck spotless:check
 ```
 
 - [x] T077 Run old-name search outside generated paths:

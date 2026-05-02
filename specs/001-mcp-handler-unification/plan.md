@@ -19,12 +19,12 @@
 
 **Branch Constraint**: Stay on `001-shardingsphere-mcp`; do not switch or create branches.  
 **Spec**: `specs/001-mcp-handler-unification/spec.md`  
-**Scope**: MCP API contract refactor across API, core, database, workflow, features, tests, documentation, and service discovery metadata.
+**Scope**: MCP API contract refactor across API, support, core, features, tests, documentation, and service discovery metadata.
 
 ## Technical Context
 
 - **Language/runtime**: Java, MCP subchain integrated with JDK 21.
-- **Primary modules**: `mcp/api`, `mcp/database`, `mcp/workflow`, `mcp/core`, `mcp/features/encrypt`, `mcp/features/mask`, `test/e2e/mcp`.
+- **Primary modules**: `mcp/api`, `mcp/support`, `mcp/core`, `mcp/features/encrypt`, `mcp/features/mask`, `test/e2e/mcp`.
 - **Current extension path**: `MCPContributionProvider` is discovered by `ShardingSphereServiceLoader`; it returns resource and tool contributions; registries validate and dispatch them.
 - **Target extension path**: `MCPHandlerProvider` is discovered by `ShardingSphereServiceLoader`; it returns resource and tool handlers; registries use `getContextType()` to select the request-scope context view and call a single generic `handle` method.
 - **Generated paths**: Ignore everything under `target/`.
@@ -312,15 +312,15 @@ Supported mappings use exact class equality. Unsupported or null mappings must f
 Prefer scoped commands. Candidate commands after implementation:
 
 ```bash
-./mvnw -pl mcp/api,mcp/database,mcp/workflow,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
 ```
 
 ```bash
-./mvnw -pl mcp/api,mcp/database,mcp/workflow,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck checkstyle:check
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck checkstyle:check
 ```
 
 ```bash
-./mvnw -pl mcp/api,mcp/database,mcp/workflow,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck spotless:check
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -Pcheck spotless:check
 ```
 
 Search verification:
