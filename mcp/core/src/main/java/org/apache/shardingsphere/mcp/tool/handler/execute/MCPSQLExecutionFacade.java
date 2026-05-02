@@ -26,9 +26,9 @@ import org.apache.shardingsphere.mcp.database.exception.DatabaseCapabilityNotFou
 import org.apache.shardingsphere.mcp.database.exception.StatementClassNotSupportedException;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.session.MCPSessionExecutionCoordinator;
 import org.apache.shardingsphere.mcp.session.MCPSessionNotExistedException;
@@ -116,8 +116,8 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
     }
     
     private <T extends RuntimeException> T recordFailure(final SQLExecutionRequest executionRequest, final String statementMarker, final T ex) {
-        MCPError error = MCPErrorConverter.convert(ex);
-        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, error.getCode(), statementMarker);
+        MCPErrorResponse error = MCPErrorConverter.convert(ex);
+        auditRecorder.recordQueryExecution(executionRequest.getSessionId(), executionRequest.getDatabase(), executionRequest.getSql(), false, error.getErrorCode(), statementMarker);
         return ex;
     }
 }

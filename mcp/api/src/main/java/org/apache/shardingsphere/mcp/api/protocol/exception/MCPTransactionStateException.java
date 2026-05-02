@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
-
 /**
  * Exception for MCP transaction state errors.
  */
-public class MCPTransactionStateException extends MCPProtocolException {
+public class MCPTransactionStateException extends ShardingSphereMCPException {
     
     private static final long serialVersionUID = 4334035448011961475L;
     
-    public MCPTransactionStateException(final String message, final Throwable cause) {
-        super(MCPErrorCode.TRANSACTION_STATE_ERROR, message, cause);
+    public MCPTransactionStateException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

@@ -17,26 +17,20 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
+import org.apache.shardingsphere.infra.exception.external.ShardingSphereExternalException;
 
 /**
- * Base runtime exception for MCP protocol errors.
+ * ShardingSphere MCP exception.
  */
-@Getter
-public abstract class MCPProtocolException extends RuntimeException {
+public abstract class ShardingSphereMCPException extends ShardingSphereExternalException {
     
-    private static final long serialVersionUID = -7954139596323843321L;
+    private static final long serialVersionUID = -4717990456012914364L;
     
-    private final MCPErrorCode errorCode;
-    
-    protected MCPProtocolException(final MCPErrorCode errorCode, final String message) {
+    protected ShardingSphereMCPException(final String message) {
         super(message);
-        this.errorCode = errorCode;
     }
     
-    protected MCPProtocolException(final MCPErrorCode errorCode, final String message, final Throwable cause) {
+    protected ShardingSphereMCPException(final String message, final Exception cause) {
         super(message, cause);
-        this.errorCode = errorCode;
     }
 }

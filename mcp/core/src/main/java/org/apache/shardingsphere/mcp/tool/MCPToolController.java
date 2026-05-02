@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mcp.context.MCPRequestContext;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.tool.handler.ToolHandlerRegistry;
 
@@ -50,7 +49,7 @@ public final class MCPToolController {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            return new MCPErrorResponse(MCPErrorConverter.convert(ex));
+            return MCPErrorConverter.convert(ex);
         }
     }
 }

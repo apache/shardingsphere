@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
-
 /**
  * Exception for MCP resources that do not exist.
  */
-public class MCPNotFoundException extends MCPProtocolException {
+public class MCPNotFoundException extends ShardingSphereMCPException {
     
     private static final long serialVersionUID = 3956075105502101218L;
     
     public MCPNotFoundException(final String message) {
-        super(MCPErrorCode.NOT_FOUND, message);
+        super(message);
     }
 }

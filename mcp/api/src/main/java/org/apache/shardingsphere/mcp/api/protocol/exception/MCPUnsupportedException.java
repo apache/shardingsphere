@@ -17,20 +17,18 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
-
 /**
  * Exception for unsupported MCP operations.
  */
-public class MCPUnsupportedException extends MCPProtocolException {
+public class MCPUnsupportedException extends ShardingSphereMCPException {
     
     private static final long serialVersionUID = 7488172893235310016L;
     
     public MCPUnsupportedException(final String message) {
-        super(MCPErrorCode.UNSUPPORTED, message);
+        super(message);
     }
     
-    public MCPUnsupportedException(final String message, final Throwable cause) {
-        super(MCPErrorCode.UNSUPPORTED, message, cause);
+    public MCPUnsupportedException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

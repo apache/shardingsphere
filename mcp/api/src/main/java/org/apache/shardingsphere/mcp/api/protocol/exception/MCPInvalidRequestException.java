@@ -17,20 +17,18 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
-
 /**
  * Exception for invalid MCP requests.
  */
-public class MCPInvalidRequestException extends MCPProtocolException {
+public class MCPInvalidRequestException extends ShardingSphereMCPException {
     
     private static final long serialVersionUID = -8436073259040535745L;
     
     public MCPInvalidRequestException(final String message) {
-        super(MCPErrorCode.INVALID_REQUEST, message);
+        super(message);
     }
     
-    public MCPInvalidRequestException(final String message, final Throwable cause) {
-        super(MCPErrorCode.INVALID_REQUEST, message, cause);
+    public MCPInvalidRequestException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

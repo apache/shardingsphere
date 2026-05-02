@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
-
 /**
  * Exception for MCP timeouts.
  */
-public class MCPTimeoutException extends MCPProtocolException {
+public class MCPTimeoutException extends ShardingSphereMCPException {
     
     private static final long serialVersionUID = -2906226731211074383L;
     
-    public MCPTimeoutException(final String message, final Throwable cause) {
-        super(MCPErrorCode.TIMEOUT, message, cause);
+    public MCPTimeoutException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

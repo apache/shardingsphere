@@ -29,8 +29,8 @@ import org.apache.shardingsphere.mcp.database.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.database.tool.response.SQLExecutionResponse;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPProtocolException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.ShardingSphereMCPException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
@@ -219,7 +219,7 @@ class MCPJdbcStatementExecutorTest {
     void assertExecuteWithUnsupportedStatementClass() throws SQLException {
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         when(transactionResourceManager.findTransactionConnection(anyString(), anyString())).thenReturn(Optional.empty());
-        final Connection connection = createStatementConnection(false, 0, null);
+        Connection connection = createStatementConnection(false, 0, null);
         RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
         when(databaseConfig.openConnection(anyString())).thenReturn(connection);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
@@ -231,18 +231,18 @@ class MCPJdbcStatementExecutorTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertExecuteWithSQLExceptionCases")
-    void assertExecuteWithSQLException(final String name, final SQLException sqlException, final Class<? extends MCPProtocolException> expectedExceptionClass,
+    void assertExecuteWithSQLException(final String name, final SQLException sqlException, final Class<? extends ShardingSphereMCPException> expectedExceptionClass,
                                        final String expectedMessage) throws SQLException {
         Statement statement = mock(Statement.class);
         when(statement.execute(anyString())).thenThrow(sqlException);
         doThrow(new SQLException("statement close failed")).when(statement).close();
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         when(transactionResourceManager.findTransactionConnection(anyString(), anyString())).thenReturn(Optional.empty());
-        final Connection connection = createStatementConnection(statement);
+        Connection connection = createStatementConnection(statement);
         RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
         when(databaseConfig.openConnection(anyString())).thenReturn(connection);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);
-        MCPProtocolException actual = assertThrows(expectedExceptionClass, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
+        ShardingSphereMCPException actual = assertThrows(expectedExceptionClass, () -> statementExecutor.execute(new SQLExecutionRequest("session-1",
                 "logic_db", "public", "SELECT status FROM orders", 10, 1000),
                 new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT status FROM orders", "", ""), createDatabaseCapability("H2")));
         assertThat(actual.getClass(), is(expectedExceptionClass));
@@ -282,7 +282,7 @@ class MCPJdbcStatementExecutorTest {
         doThrow(new SQLException("statement close failed")).when(statement).close();
         MCPJdbcTransactionResourceManager transactionResourceManager = mock(MCPJdbcTransactionResourceManager.class);
         when(transactionResourceManager.findTransactionConnection(anyString(), anyString())).thenReturn(Optional.empty());
-        final Connection connection = createStatementConnection(statement);
+        Connection connection = createStatementConnection(statement);
         RuntimeDatabaseConfiguration databaseConfig = mock(RuntimeDatabaseConfiguration.class);
         when(databaseConfig.openConnection(anyString())).thenReturn(connection);
         MCPJdbcStatementExecutor statementExecutor = new MCPJdbcStatementExecutor(Map.of("logic_db", databaseConfig), transactionResourceManager);

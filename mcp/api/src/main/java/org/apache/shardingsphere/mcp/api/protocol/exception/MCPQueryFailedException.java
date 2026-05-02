@@ -17,20 +17,18 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
-
 /**
  * Exception for failed MCP queries.
  */
-public class MCPQueryFailedException extends MCPProtocolException {
+public class MCPQueryFailedException extends ShardingSphereMCPException {
     
     private static final long serialVersionUID = -3225015901985083126L;
     
     public MCPQueryFailedException(final String message) {
-        super(MCPErrorCode.QUERY_FAILED, message);
+        super(message);
     }
     
-    public MCPQueryFailedException(final String message, final Throwable cause) {
-        super(MCPErrorCode.QUERY_FAILED, message, cause);
+    public MCPQueryFailedException(final String message, final Exception cause) {
+        super(message, cause);
     }
 }

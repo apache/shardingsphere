@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.tool.handler.execute.audit;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
 
 import java.util.Optional;
 
@@ -45,7 +44,7 @@ public final class AuditRecord {
     private final boolean errorCodePresent;
     
     @Getter(AccessLevel.NONE)
-    private final MCPErrorCode errorCode;
+    private final String errorCode;
     
     private final String statementMarker;
     
@@ -56,7 +55,7 @@ public final class AuditRecord {
      *
      * @return optional error code
      */
-    public Optional<MCPErrorCode> getErrorCode() {
+    public Optional<String> getErrorCode() {
         return errorCodePresent ? Optional.of(errorCode) : Optional.empty();
     }
 }

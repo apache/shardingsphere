@@ -17,16 +17,14 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
-
 /**
  * Exception for unavailable MCP services.
  */
-public class MCPUnavailableException extends MCPProtocolException {
+public class MCPUnavailableException extends ShardingSphereMCPException {
     
     private static final long serialVersionUID = 5302834723598338378L;
     
     public MCPUnavailableException(final String message) {
-        super(MCPErrorCode.UNAVAILABLE, message);
+        super(message);
     }
 }

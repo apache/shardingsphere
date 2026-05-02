@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mcp.protocol.response;
 
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError;
-import org.apache.shardingsphere.mcp.api.protocol.error.MCPError.MCPErrorCode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -31,12 +29,17 @@ class MCPErrorResponseTest {
     
     @Test
     void assertToPayload() {
-        Map<String, Object> actual = new MCPErrorResponse(new MCPError(MCPErrorCode.INVALID_REQUEST, "foo_message")).toPayload();
+        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message").toPayload();
         assertThat(actual, is(Map.of("error_code", "invalid_request", "message", "foo_message")));
     }
     
     @Test
     void assertIsError() {
-        assertTrue(new MCPErrorResponse(new MCPError(MCPErrorCode.INVALID_REQUEST, "foo_message")).isError());
+        assertTrue(new MCPErrorResponse("invalid_request", "foo_message").isError());
+    }
+    
+    @Test
+    void assertGetErrorCode() {
+        assertThat(new MCPErrorResponse("invalid_request", "foo_message").getErrorCode(), is("invalid_request"));
     }
 }
