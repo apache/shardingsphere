@@ -20,9 +20,9 @@ package org.apache.shardingsphere.mcp.resource.handler.metadata;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -31,11 +31,16 @@ import java.util.function.BiFunction;
  * Metadata resource handler backed by one metadata loader function.
  */
 @RequiredArgsConstructor
-public final class MetadataResourceHandler implements DatabaseResourceHandler {
+public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseContext> {
     
     private final String uriPattern;
     
     private final BiFunction<MCPDatabaseContext, MCPUriVariables, List<?>> metadataLoader;
+    
+    @Override
+    public Class<MCPDatabaseContext> getContextType() {
+        return MCPDatabaseContext.class;
+    }
     
     @Override
     public String getUriPattern() {

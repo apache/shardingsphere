@@ -15,24 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.database.handler;
-
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
+package org.apache.shardingsphere.mcp.api.handler;
 
 /**
- * Handler for MCP resources that require database capabilities.
+ * Marker interface for MCP handler execution context.
  */
-public interface DatabaseResourceHandler extends MCPResourceContribution {
-    
-    /**
-     * Handle one database-aware resource request.
-     *
-     * @param databaseContext database context
-     * @param uriVariables URI variables
-     * @return resource response
-     */
-    MCPResponse handle(MCPDatabaseContext databaseContext, MCPUriVariables uriVariables);
+public interface MCPHandlerContext {
 }

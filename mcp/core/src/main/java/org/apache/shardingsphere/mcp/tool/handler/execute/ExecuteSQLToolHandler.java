@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mcp.tool.handler.execute;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.database.handler.DatabaseToolHandler;
 import org.apache.shardingsphere.mcp.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
 /**
  * Execute SQL tool handler.
  */
-public final class ExecuteSQLToolHandler implements DatabaseToolHandler {
+public final class ExecuteSQLToolHandler implements MCPToolHandler<MCPDatabaseContext> {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("execute_query", "Execute Query",
             "Execute one SQL statement against a logical database.",
@@ -43,6 +43,11 @@ public final class ExecuteSQLToolHandler implements DatabaseToolHandler {
                     new MCPToolFieldDefinition("sql", new MCPToolValueDefinition(Type.STRING, "Single SQL statement.", null), true),
                     new MCPToolFieldDefinition("max_rows", new MCPToolValueDefinition(Type.INTEGER, "Optional maximum row count.", null), false),
                     new MCPToolFieldDefinition("timeout_ms", new MCPToolValueDefinition(Type.INTEGER, "Optional timeout in milliseconds.", null), false)));
+    
+    @Override
+    public Class<MCPDatabaseContext> getContextType() {
+        return MCPDatabaseContext.class;
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

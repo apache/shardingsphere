@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.contribution.core;
+package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
- * Core MCP contribution provider.
+ * Test-only MCP handler provider used to prove packaged distribution plugin discovery.
  */
-public final class CoreContributionProvider implements MCPContributionProvider {
+public final class PluginFixtureHandlerProvider implements MCPHandlerProvider {
     
     @Override
-    public Collection<MCPResourceContribution> getResourceContributions() {
-        return CoreResourceHandlers.createHandlers();
+    public Collection<MCPToolHandler<?>> getToolHandlers() {
+        return List.of(new PluginFixturePingToolHandler());
     }
     
     @Override
-    public Collection<MCPToolContribution> getToolContributions() {
-        return CoreToolHandlers.createHandlers();
+    public Collection<MCPResourceHandler<?>> getResourceHandlers() {
+        return List.of(new PluginFixtureStatusResourceHandler());
     }
 }

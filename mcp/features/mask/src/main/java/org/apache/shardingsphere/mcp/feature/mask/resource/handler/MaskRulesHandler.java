@@ -19,18 +19,23 @@ package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
-import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 
 /**
  * Handler for mask rules resource URI.
  */
-public final class MaskRulesHandler implements DatabaseResourceHandler {
+public final class MaskRulesHandler implements MCPResourceHandler<MCPDatabaseContext> {
     
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
+    
+    @Override
+    public Class<MCPDatabaseContext> getContextType() {
+        return MCPDatabaseContext.class;
+    }
     
     @Override
     public String getUriPattern() {

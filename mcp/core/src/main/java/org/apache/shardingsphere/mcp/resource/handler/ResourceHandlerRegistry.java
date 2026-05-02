@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mcp.resource.handler;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
-import org.apache.shardingsphere.mcp.contribution.MCPContributionLoader;
+import org.apache.shardingsphere.mcp.handler.MCPHandlerContexts;
+import org.apache.shardingsphere.mcp.handler.MCPHandlerLoader;
 import org.apache.shardingsphere.mcp.resource.uri.MCPUriPattern;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceHandlerRegistry {
     
-    private static final Map<MCPUriPattern, MCPResourceContribution> REGISTERED_RESOURCES;
+    private static final Map<MCPUriPattern, MCPResourceHandler<?>> REGISTERED_RESOURCES;
     
     private static final List<String> SUPPORTED_RESOURCES;
     
@@ -55,42 +55,37 @@ public final class ResourceHandlerRegistry {
         SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).toList();
     }
     
-    private static Map<MCPUriPattern, MCPResourceContribution> createRegisteredResources() {
-        return createRegisteredResources(MCPContributionLoader.loadResourceContributions());
+    private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources() {
+        return createRegisteredResources(MCPHandlerLoader.loadResourceHandlers());
     }
     
-    static Map<MCPUriPattern, MCPResourceContribution> createRegisteredResources(final Collection<MCPResourceContribution> contributions) {
-        ShardingSpherePreconditions.checkNotEmpty(contributions, () -> new IllegalStateException("No resource contributions are registered."));
-        Map<MCPUriPattern, MCPResourceContribution> result = new LinkedHashMap<>(contributions.size(), 1F);
-        for (MCPResourceContribution each : contributions) {
+    static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
+        ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
+        Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
+        for (MCPResourceHandler<?> each : handlers) {
             String uriPattern = each.getUriPattern();
             ShardingSpherePreconditions.checkState(null != uriPattern && !uriPattern.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI pattern is required for `%s`.", each.getClass().getName())));
-            validateHandlerType(each);
+            MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
             result.put(new MCPUriPattern(uriPattern), each);
         }
         return Collections.unmodifiableMap(result);
     }
     
-    private static void validateHandlerType(final MCPResourceContribution contribution) {
-        ShardingSpherePreconditions.checkState(contribution instanceof ServerResourceHandler || contribution instanceof DatabaseResourceHandler,
-                () -> new IllegalArgumentException(String.format("Unsupported resource contribution type `%s`.", contribution.getClass().getName())));
-    }
-    
     private static void validateRegisteredResources() {
         Map<String, Class<?>> registeredPatterns = new HashMap<>(REGISTERED_RESOURCES.size(), 1F);
-        for (Entry<MCPUriPattern, MCPResourceContribution> entry : REGISTERED_RESOURCES.entrySet()) {
+        for (Entry<MCPUriPattern, MCPResourceHandler<?>> entry : REGISTERED_RESOURCES.entrySet()) {
             String pattern = entry.getKey().getPattern();
             Class<?> previousPatternClass = registeredPatterns.putIfAbsent(pattern, entry.getValue().getClass());
             ShardingSpherePreconditions.checkState(null == previousPatternClass,
                     () -> new IllegalArgumentException(String.format("Duplicate resource URI pattern `%s` with `%s` and `%s`.",
                             pattern, previousPatternClass.getName(), entry.getValue().getClass().getName())));
         }
-        List<Entry<MCPUriPattern, MCPResourceContribution>> entries = new ArrayList<>(REGISTERED_RESOURCES.entrySet());
+        List<Entry<MCPUriPattern, MCPResourceHandler<?>>> entries = new ArrayList<>(REGISTERED_RESOURCES.entrySet());
         for (int i = 0; i < entries.size(); i++) {
-            Entry<MCPUriPattern, MCPResourceContribution> current = entries.get(i);
+            Entry<MCPUriPattern, MCPResourceHandler<?>> current = entries.get(i);
             for (int j = i + 1; j < entries.size(); j++) {
-                Entry<MCPUriPattern, MCPResourceContribution> other = entries.get(j);
+                Entry<MCPUriPattern, MCPResourceHandler<?>> other = entries.get(j);
                 ShardingSpherePreconditions.checkState(!current.getKey().isOverlaps(other.getKey()), () -> new IllegalArgumentException(
                         String.format("Overlapping resource URI patterns `%s` with `%s` and `%s`.",
                                 current.getKey().getPattern(), current.getValue().getClass().getName(), other.getValue().getClass().getName())));
@@ -103,7 +98,7 @@ public final class ResourceHandlerRegistry {
      *
      * @return registered resources
      */
-    static Map<MCPUriPattern, MCPResourceContribution> getRegisteredResources() {
+    static Map<MCPUriPattern, MCPResourceHandler<?>> getRegisteredResources() {
         return REGISTERED_RESOURCES;
     }
     
@@ -115,7 +110,7 @@ public final class ResourceHandlerRegistry {
      * @return handled response
      */
     public static Optional<MCPResponse> dispatch(final MCPRequestScope requestScope, final String resourceUri) {
-        for (Entry<MCPUriPattern, MCPResourceContribution> each : REGISTERED_RESOURCES.entrySet()) {
+        for (Entry<MCPUriPattern, MCPResourceHandler<?>> each : REGISTERED_RESOURCES.entrySet()) {
             Optional<MCPUriVariables> matchedUriVariables = each.getKey().parse(resourceUri);
             if (matchedUriVariables.isPresent()) {
                 return Optional.of(dispatch(requestScope, each.getValue(), matchedUriVariables.get()));
@@ -124,14 +119,8 @@ public final class ResourceHandlerRegistry {
         return Optional.empty();
     }
     
-    private static MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceContribution resourceContribution, final MCPUriVariables uriVariables) {
-        if (resourceContribution instanceof DatabaseResourceHandler) {
-            return ((DatabaseResourceHandler) resourceContribution).handle(requestScope, uriVariables);
-        }
-        if (resourceContribution instanceof ServerResourceHandler) {
-            return ((ServerResourceHandler) resourceContribution).handle(uriVariables);
-        }
-        throw new IllegalArgumentException(String.format("Unsupported resource contribution type `%s`.", resourceContribution.getClass().getName()));
+    private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
+        return resourceHandler.handle(MCPHandlerContexts.resolve(requestScope, resourceHandler.getContextType(), resourceHandler.getClass()), uriVariables);
     }
     
     /**

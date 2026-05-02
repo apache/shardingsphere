@@ -15,20 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool;
+package org.apache.shardingsphere.mcp.handler.core;
 
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+
+import java.util.Collection;
 
 /**
- * Contribution contract for one MCP tool. It describes the tool exposed by an MCP provider, while runtime execution is defined by a narrower handler interface when server, database, or workflow
- * context is needed.
+ * Core MCP handler provider.
  */
-public interface MCPToolContribution {
+public final class CoreHandlerProvider implements MCPHandlerProvider {
     
-    /**
-     * Get tool descriptor.
-     *
-     * @return tool descriptor
-     */
-    MCPToolDescriptor getToolDescriptor();
+    @Override
+    public Collection<MCPResourceHandler<?>> getResourceHandlers() {
+        return CoreResourceHandlers.createHandlers();
+    }
+    
+    @Override
+    public Collection<MCPToolHandler<?>> getToolHandlers() {
+        return CoreToolHandlers.createHandlers();
+    }
 }

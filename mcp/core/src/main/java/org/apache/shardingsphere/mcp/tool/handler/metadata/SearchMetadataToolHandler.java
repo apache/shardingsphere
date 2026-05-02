@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mcp.tool.handler.metadata;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.database.handler.DatabaseToolHandler;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.tool.response.MetadataSearchResult;
@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * Handler for search-metadata tool.
  */
-public final class SearchMetadataToolHandler implements DatabaseToolHandler {
+public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseContext> {
     
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
@@ -58,6 +58,11 @@ public final class SearchMetadataToolHandler implements DatabaseToolHandler {
                             false),
                     new MCPToolFieldDefinition("page_size", new MCPToolValueDefinition(Type.INTEGER, "Requested page size.", null), false),
                     new MCPToolFieldDefinition("page_token", new MCPToolValueDefinition(Type.STRING, "Opaque pagination token.", null), false)));
+    
+    @Override
+    public Class<MCPDatabaseContext> getContextType() {
+        return MCPDatabaseContext.class;
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

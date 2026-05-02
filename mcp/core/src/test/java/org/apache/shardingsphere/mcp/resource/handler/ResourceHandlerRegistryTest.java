@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.mcp.resource.handler;
 
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
-import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -70,11 +71,11 @@ class ResourceHandlerRegistryTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getRegisteredResourcesFailureCases")
-    void assertGetRegisteredResourcesFailure(final String name, final Collection<MCPResourceContribution> contributions,
+    void assertGetRegisteredResourcesFailure(final String name, final Collection<MCPResourceHandler<?>> handlers,
                                              final Class<? extends Throwable> expectedCauseType, final String expectedMessage) throws ReflectiveOperationException {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            MCPContributionProvider provider = createContributionProvider(contributions);
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPContributionProvider.class)).thenReturn(List.of(provider));
+            MCPHandlerProvider provider = createHandlerProvider(handlers);
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             Class<?> registryClass = Class.forName(ResourceHandlerRegistry.class.getName(), false, createIsolatedResourceHandlerRegistryClassLoader());
             var getRegisteredResourcesMethod = registryClass.getDeclaredMethod("getRegisteredResources");
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
@@ -99,46 +100,48 @@ class ResourceHandlerRegistryTest {
     }
     
     private static Stream<Arguments> getRegisteredResourcesFailureCases() {
-        MCPResourceContribution nullPatternContribution = createResourceContribution(null);
-        MCPResourceContribution emptyPatternContribution = createResourceContribution("");
-        MCPResourceContribution blankPatternContribution = createResourceContribution("   ");
-        MCPResourceContribution duplicatePatternContribution = createResourceContribution("shardingsphere://foo/{id}");
-        MCPResourceContribution otherDuplicatePatternContribution = createResourceContribution("shardingsphere://foo/{id}");
-        MCPResourceContribution overlappingPatternContribution = createResourceContribution("shardingsphere://foo/{id}");
-        MCPResourceContribution otherOverlappingPatternContribution = createResourceContribution("shardingsphere://foo/bar");
+        MCPResourceHandler<?> nullPatternHandler = createResourceHandler(null);
+        MCPResourceHandler<?> emptyPatternHandler = createResourceHandler("");
+        MCPResourceHandler<?> blankPatternHandler = createResourceHandler("   ");
+        MCPResourceHandler<?> duplicatePatternHandler = createResourceHandler("shardingsphere://foo/{id}");
+        MCPResourceHandler<?> otherDuplicatePatternHandler = createResourceHandler("shardingsphere://foo/{id}");
+        MCPResourceHandler<?> overlappingPatternHandler = createResourceHandler("shardingsphere://foo/{id}");
+        MCPResourceHandler<?> otherOverlappingPatternHandler = createResourceHandler("shardingsphere://foo/bar");
         return Stream.of(
-                Arguments.of("no resource contributions", Collections.emptyList(), IllegalStateException.class, "No resource contributions are registered."),
-                Arguments.of("null resource URI pattern", List.of(nullPatternContribution), IllegalArgumentException.class,
+                Arguments.of("no resource handlers", Collections.emptyList(), IllegalStateException.class, "No resource handlers are registered."),
+                Arguments.of("null resource URI pattern", List.of(nullPatternHandler), IllegalArgumentException.class,
                         getRequiredUriPatternMessage()),
-                Arguments.of("empty resource URI pattern", List.of(emptyPatternContribution), IllegalArgumentException.class,
+                Arguments.of("empty resource URI pattern", List.of(emptyPatternHandler), IllegalArgumentException.class,
                         getRequiredUriPatternMessage()),
-                Arguments.of("blank resource URI pattern", List.of(blankPatternContribution), IllegalArgumentException.class,
+                Arguments.of("blank resource URI pattern", List.of(blankPatternHandler), IllegalArgumentException.class,
                         getRequiredUriPatternMessage()),
                 Arguments.of("duplicate resource URI pattern",
-                        List.of(duplicatePatternContribution, otherDuplicatePatternContribution), IllegalArgumentException.class,
+                        List.of(duplicatePatternHandler, otherDuplicatePatternHandler), IllegalArgumentException.class,
                         getDuplicateUriPatternMessage()),
                 Arguments.of("overlapping resource URI pattern",
-                        List.of(overlappingPatternContribution, otherOverlappingPatternContribution), IllegalArgumentException.class,
+                        List.of(overlappingPatternHandler, otherOverlappingPatternHandler), IllegalArgumentException.class,
                         getOverlappingUriPatternMessage()),
-                Arguments.of("unsupported resource contribution type", List.of(createUnsupportedResourceContribution()), IllegalArgumentException.class,
-                        getUnsupportedResourceContributionMessage()));
+                Arguments.of("unsupported resource handler context", List.of(createUnsupportedResourceHandler()), IllegalArgumentException.class,
+                        getUnsupportedResourceHandlerMessage()));
     }
     
-    private static MCPResourceContribution createResourceContribution(final String uriPattern) {
-        MCPResourceContribution result = mock(ServerResourceHandler.class);
+    private static MCPResourceHandler<?> createResourceHandler(final String uriPattern) {
+        MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
         when(result.getUriPattern()).thenReturn(uriPattern);
         return result;
     }
     
-    private static MCPResourceContribution createUnsupportedResourceContribution() {
-        MCPResourceContribution result = mock(MCPResourceContribution.class);
+    private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
+        MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
+        when(result.getContextType()).thenReturn(MCPHandlerContext.class);
         when(result.getUriPattern()).thenReturn("shardingsphere://unsupported");
         return result;
     }
     
-    private static MCPContributionProvider createContributionProvider(final Collection<MCPResourceContribution> resourceContributions) {
-        MCPContributionProvider result = mock(MCPContributionProvider.class);
-        when(result.getResourceContributions()).thenReturn(resourceContributions);
+    private static MCPHandlerProvider createHandlerProvider(final Collection<MCPResourceHandler<?>> resourceHandlers) {
+        MCPHandlerProvider result = mock(MCPHandlerProvider.class);
+        when(result.getResourceHandlers()).thenReturn(resourceHandlers);
         return result;
     }
     
@@ -178,26 +181,26 @@ class ResourceHandlerRegistryTest {
     }
     
     private static String getRequiredUriPatternMessage() {
-        MCPResourceContribution contribution = createResourceContribution(null);
-        return String.format("Resource URI pattern is required for `%s`.", contribution.getClass().getName());
+        MCPResourceHandler<?> handler = createResourceHandler(null);
+        return String.format("Resource URI pattern is required for `%s`.", handler.getClass().getName());
     }
     
     private static String getDuplicateUriPatternMessage() {
-        MCPResourceContribution firstContribution = createResourceContribution("shardingsphere://foo/{id}");
-        MCPResourceContribution secondContribution = createResourceContribution("shardingsphere://foo/{id}");
+        MCPResourceHandler<?> firstHandler = createResourceHandler("shardingsphere://foo/{id}");
+        MCPResourceHandler<?> secondHandler = createResourceHandler("shardingsphere://foo/{id}");
         return String.format("Duplicate resource URI pattern `shardingsphere://foo/{id}` with `%s` and `%s`.",
-                firstContribution.getClass().getName(), secondContribution.getClass().getName());
+                firstHandler.getClass().getName(), secondHandler.getClass().getName());
     }
     
     private static String getOverlappingUriPatternMessage() {
-        MCPResourceContribution firstContribution = createResourceContribution("shardingsphere://foo/{id}");
-        MCPResourceContribution secondContribution = createResourceContribution("shardingsphere://foo/bar");
+        MCPResourceHandler<?> firstHandler = createResourceHandler("shardingsphere://foo/{id}");
+        MCPResourceHandler<?> secondHandler = createResourceHandler("shardingsphere://foo/bar");
         return String.format("Overlapping resource URI patterns `shardingsphere://foo/{id}` with `%s` and `%s`.",
-                firstContribution.getClass().getName(), secondContribution.getClass().getName());
+                firstHandler.getClass().getName(), secondHandler.getClass().getName());
     }
     
-    private static String getUnsupportedResourceContributionMessage() {
-        MCPResourceContribution contribution = createUnsupportedResourceContribution();
-        return String.format("Unsupported resource contribution type `%s`.", contribution.getClass().getName());
+    private static String getUnsupportedResourceHandlerMessage() {
+        MCPResourceHandler<?> handler = createUnsupportedResourceHandler();
+        return String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), handler.getClass().getName());
     }
 }

@@ -17,15 +17,14 @@
 
 package org.apache.shardingsphere.mcp.resource.handler;
 
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.api.resource.handler.ServerResourceHandler;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPColumnMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.database.metadata.model.MCPIndexMetadata;
@@ -119,11 +118,8 @@ class ResourceHandlerTest {
         return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
     }
     
-    private MCPResponse handle(final MCPResourceContribution handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
-        if (handler instanceof ServerResourceHandler) {
-            return ((ServerResourceHandler) handler).handle(uriVariables);
-        }
-        return ((DatabaseResourceHandler) handler).handle(requestContext, uriVariables);
+    private <T extends MCPHandlerContext> MCPResponse handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
+        return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
     
     private List<String> extractMetadataNames(final Map<String, Object> payload) {
@@ -263,7 +259,7 @@ class ResourceHandlerTest {
         
         private final String description;
         
-        private final MCPResourceContribution handler;
+        private final MCPResourceHandler<?> handler;
         
         private final String expectedUriPattern;
         
@@ -275,7 +271,7 @@ class ResourceHandlerTest {
         
         private final List<String> expectedObjectNames;
         
-        private HandlerCase(final String description, final MCPResourceContribution handler, final String expectedUriPattern, final String resourceUri,
+        private HandlerCase(final String description, final MCPResourceHandler<?> handler, final String expectedUriPattern, final String resourceUri,
                             final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
             this.description = description;
             this.handler = handler;
@@ -286,7 +282,7 @@ class ResourceHandlerTest {
             this.expectedObjectNames = expectedObjectNames;
         }
         
-        private MCPResourceContribution getHandler() {
+        private MCPResourceHandler<?> getHandler() {
             return handler;
         }
         

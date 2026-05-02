@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.database;
 
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureCapabilityFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.database.spi.MCPFeatureQueryFacade;
@@ -25,7 +26,7 @@ import org.apache.shardingsphere.mcp.database.spi.MCPMetadataQueryFacade;
 /**
  * Database-aware MCP context.
  */
-public interface MCPDatabaseContext {
+public interface MCPDatabaseContext extends MCPHandlerContext {
     
     /**
      * Get metadata query facade.

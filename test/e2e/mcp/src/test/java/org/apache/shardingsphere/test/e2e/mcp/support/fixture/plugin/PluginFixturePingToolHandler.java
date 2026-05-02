@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 
+import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-import org.apache.shardingsphere.mcp.api.tool.handler.ServerToolHandler;
 
 import java.util.List;
 import java.util.Map;
@@ -32,11 +33,16 @@ import java.util.Map;
 /**
  * Test-only tool handler used to prove packaged distribution plugin discovery.
  */
-public final class PluginFixturePingToolHandler implements ServerToolHandler {
+public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPServiceHandlerContext> {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping",
             "Return a fixture ping response for packaged plugin discovery.",
             List.of(new MCPToolFieldDefinition("message", new MCPToolValueDefinition(Type.STRING, "Fixture message.", null), true)));
+    
+    @Override
+    public Class<MCPServiceHandlerContext> getContextType() {
+        return MCPServiceHandlerContext.class;
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
@@ -44,7 +50,7 @@ public final class PluginFixturePingToolHandler implements ServerToolHandler {
     }
     
     @Override
-    public MCPResponse handle(final MCPToolCall toolCall) {
+    public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPToolCall toolCall) {
         return new MCPMapResponse(Map.of("status", "ready", "echo", String.valueOf(toolCall.getArguments().get("message"))));
     }
 }

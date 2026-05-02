@@ -17,10 +17,22 @@
 
 package org.apache.shardingsphere.mcp.api.resource;
 
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+
 /**
- * MCP resource contribution.
+ * MCP resource handler.
+ *
+ * @param <T> type of handler context
  */
-public interface MCPResourceContribution {
+public interface MCPResourceHandler<T extends MCPHandlerContext> {
+    
+    /**
+     * Get handler context type.
+     *
+     * @return handler context type
+     */
+    Class<T> getContextType();
     
     /**
      * Get URI pattern.
@@ -28,4 +40,13 @@ public interface MCPResourceContribution {
      * @return URI pattern
      */
     String getUriPattern();
+    
+    /**
+     * Handle one resource request.
+     *
+     * @param handlerContext handler context
+     * @param uriVariables URI variables
+     * @return resource response
+     */
+    MCPResponse handle(T handlerContext, MCPUriVariables uriVariables);
 }

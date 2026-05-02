@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.mcp.workflow;
 
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 
 /**
  * Workflow-aware MCP context.
  */
-public interface MCPWorkflowContext {
+public interface MCPWorkflowContext extends MCPHandlerContext {
     
     /**
      * Get database context.

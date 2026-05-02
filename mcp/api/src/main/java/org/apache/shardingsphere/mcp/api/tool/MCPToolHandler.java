@@ -15,22 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource.handler;
+package org.apache.shardingsphere.mcp.api.tool;
 
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 /**
- * Handler for MCP server resources that do not need request-scoped database or workflow capabilities.
+ * MCP tool handler.
+ *
+ * @param <T> type of handler context
  */
-public interface ServerResourceHandler extends MCPResourceContribution {
+public interface MCPToolHandler<T extends MCPHandlerContext> {
     
     /**
-     * Handle one server-level resource request.
+     * Get handler context type.
      *
-     * @param uriVariables URI variables
-     * @return resource response
+     * @return handler context type
      */
-    MCPResponse handle(MCPUriVariables uriVariables);
+    Class<T> getContextType();
+    
+    /**
+     * Get tool descriptor.
+     *
+     * @return tool descriptor
+     */
+    MCPToolDescriptor getToolDescriptor();
+    
+    /**
+     * Handle one tool call.
+     *
+     * @param handlerContext handler context
+     * @param toolCall tool call
+     * @return tool response
+     */
+    MCPResponse handle(T handlerContext, MCPToolCall toolCall);
 }

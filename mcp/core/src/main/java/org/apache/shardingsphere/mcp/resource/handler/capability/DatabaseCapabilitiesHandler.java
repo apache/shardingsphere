@@ -18,16 +18,21 @@
 package org.apache.shardingsphere.mcp.resource.handler.capability;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.exception.DatabaseCapabilityNotFoundException;
-import org.apache.shardingsphere.mcp.database.handler.DatabaseResourceHandler;
 import org.apache.shardingsphere.mcp.database.resource.response.MCPDatabaseCapabilityResponse;
 
 /**
  * Handler for database capabilities resource URI.
  */
-public final class DatabaseCapabilitiesHandler implements DatabaseResourceHandler {
+public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCPDatabaseContext> {
+    
+    @Override
+    public Class<MCPDatabaseContext> getContextType() {
+        return MCPDatabaseContext.class;
+    }
     
     @Override
     public String getUriPattern() {

@@ -19,12 +19,13 @@ package org.apache.shardingsphere.mcp.tool.handler;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.mcp.api.handler.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.handler.ServerToolHandler;
 import org.apache.shardingsphere.mcp.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.resource.ResourceTestDataFactory;
@@ -68,7 +69,7 @@ class ToolHandlerRegistryTest {
     
     @Test
     void assertFindRegisteredTool() {
-        Optional<MCPToolContribution> actual = ToolHandlerRegistry.findRegisteredTool("search_metadata");
+        Optional<MCPToolHandler<?>> actual = ToolHandlerRegistry.findRegisteredTool("search_metadata");
         assertTrue(actual.isPresent());
         assertThat(actual.orElseThrow().getToolDescriptor().getName(), is("search_metadata"));
     }
@@ -102,54 +103,56 @@ class ToolHandlerRegistryTest {
     }
     
     @Test
-    void assertGetSupportedToolsWithNoToolContributions() {
+    void assertGetSupportedToolsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
-            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPContributionProvider.class)).thenReturn(Collections.emptyList());
+            mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(Collections.emptyList());
             Class<?> registryClass = assertDoesNotThrow(() -> Class.forName(ToolHandlerRegistry.class.getName(), false, createIsolatedToolHandlerRegistryClassLoader()));
             InvocationTargetException actual = assertThrows(InvocationTargetException.class,
                     () -> Plugins.getMemberAccessor().invoke(registryClass.getMethod("getSupportedTools"), null));
             assertThat(actual.getCause().getClass(), is(ExceptionInInitializerError.class));
             Throwable actualCause = actual.getCause().getCause();
             assertThat(actualCause.getClass(), is(IllegalStateException.class));
-            assertThat(actualCause.getMessage(), is("No tool contributions are registered."));
+            assertThat(actualCause.getMessage(), is("No tool handlers are registered."));
         }
     }
     
     @Test
-    void assertCreateRegisteredToolsWithInvalidContributions() {
-        MCPToolContribution firstContribution = createToolContribution("search_metadata");
-        MCPToolContribution secondContribution = createToolContribution("search_metadata");
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(firstContribution, secondContribution)));
+    void assertCreateRegisteredToolsWithInvalidHandlers() {
+        MCPToolHandler<?> firstHandler = createToolHandler("search_metadata");
+        MCPToolHandler<?> secondHandler = createToolHandler("search_metadata");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(firstHandler, secondHandler)));
         assertThat(actual.getMessage(), is(String.format("Duplicate tool name `search_metadata` with `%s` and `%s`.",
-                firstContribution.getClass().getName(), secondContribution.getClass().getName())));
-        MCPToolContribution contribution = mock(MCPToolContribution.class);
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(contribution)));
-        assertThat(actual.getMessage(), is(String.format("Tool descriptor is required for `%s`.", contribution.getClass().getName())));
-        MCPToolContribution nullNameContribution = createToolContribution(null);
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(nullNameContribution)));
-        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", nullNameContribution.getClass().getName())));
-        MCPToolContribution blankNameContribution = createToolContribution("   ");
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(blankNameContribution)));
-        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", blankNameContribution.getClass().getName())));
-        MCPToolContribution unsupportedContribution = mock(MCPToolContribution.class);
-        when(unsupportedContribution.getToolDescriptor()).thenReturn(new MCPToolDescriptor("unsupported", "Unsupported", "Unsupported tool.", List.of()));
-        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(unsupportedContribution)));
-        assertThat(actual.getMessage(), is(String.format("Unsupported tool contribution type `%s`.", unsupportedContribution.getClass().getName())));
+                firstHandler.getClass().getName(), secondHandler.getClass().getName())));
+        MCPToolHandler<?> handler = mock(MCPToolHandler.class);
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(handler)));
+        assertThat(actual.getMessage(), is(String.format("Tool descriptor is required for `%s`.", handler.getClass().getName())));
+        MCPToolHandler<?> nullNameHandler = createToolHandler(null);
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(nullNameHandler)));
+        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", nullNameHandler.getClass().getName())));
+        MCPToolHandler<?> blankNameHandler = createToolHandler("   ");
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(blankNameHandler)));
+        assertThat(actual.getMessage(), is(String.format("Tool name is required for `%s`.", blankNameHandler.getClass().getName())));
+        MCPToolHandler<MCPHandlerContext> unsupportedHandler = mock(MCPToolHandler.class);
+        when(unsupportedHandler.getContextType()).thenReturn(MCPHandlerContext.class);
+        when(unsupportedHandler.getToolDescriptor()).thenReturn(new MCPToolDescriptor("unsupported", "Unsupported", "Unsupported tool.", List.of()));
+        actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(unsupportedHandler)));
+        assertThat(actual.getMessage(), is(String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), unsupportedHandler.getClass().getName())));
     }
     
     @Test
     void assertCreateRegisteredTools() {
-        MCPToolContribution firstContribution = createToolContribution("search_metadata");
-        MCPToolContribution secondContribution = createToolContribution("execute_query");
-        Map<String, MCPToolContribution> actual = ToolHandlerRegistry.createRegisteredTools(List.of(firstContribution, secondContribution));
+        MCPToolHandler<?> firstHandler = createToolHandler("search_metadata");
+        MCPToolHandler<?> secondHandler = createToolHandler("execute_query");
+        Map<String, MCPToolHandler<?>> actual = ToolHandlerRegistry.createRegisteredTools(List.of(firstHandler, secondHandler));
         assertThat(actual.size(), is(2));
         assertThat(actual.keySet().stream().toList(), is(List.of("search_metadata", "execute_query")));
     }
     
-    private static MCPToolContribution createToolContribution(final String toolName) {
+    private static MCPToolHandler<?> createToolHandler(final String toolName) {
         MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
         when(descriptor.getName()).thenReturn(toolName);
-        MCPToolContribution result = mock(ServerToolHandler.class);
+        MCPToolHandler<MCPServiceHandlerContext> result = mock(MCPToolHandler.class);
+        when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
         when(result.getToolDescriptor()).thenReturn(descriptor);
         return result;
     }

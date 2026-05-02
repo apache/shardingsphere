@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.tool.handler;
-
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+package org.apache.shardingsphere.mcp.api.handler;
 
 /**
- * Handler for MCP server tools that do not need request-scoped database or workflow capabilities.
+ * Service-level MCP handler context.
  */
-public interface ServerToolHandler extends MCPToolContribution {
-    
-    /**
-     * Handle one server-level tool call.
-     *
-     * @param toolCall tool call
-     * @return tool response
-     */
-    MCPResponse handle(MCPToolCall toolCall);
+public interface MCPServiceHandlerContext extends MCPHandlerContext {
 }

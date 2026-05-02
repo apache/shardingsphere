@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt;
 
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.spi.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptAlgorithmsHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRuleHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
-import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
 import org.apache.shardingsphere.mcp.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.workflow.spi.WorkflowRuntimeDefinition;
 
@@ -34,10 +34,10 @@ import java.util.List;
 /**
  * Encrypt MCP feature provider.
  */
-public final class EncryptFeatureProvider implements MCPContributionProvider, MCPWorkflowDefinitionProvider {
+public final class EncryptFeatureProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
     
     @Override
-    public Collection<MCPResourceContribution> getResourceContributions() {
+    public Collection<MCPResourceHandler<?>> getResourceHandlers() {
         return List.of(
                 new EncryptAlgorithmsHandler(),
                 new EncryptRulesHandler(),
@@ -45,7 +45,7 @@ public final class EncryptFeatureProvider implements MCPContributionProvider, MC
     }
     
     @Override
-    public Collection<MCPToolContribution> getToolContributions() {
+    public Collection<MCPToolHandler<?>> getToolHandlers() {
         return List.of(new PlanEncryptRuleToolHandler());
     }
     

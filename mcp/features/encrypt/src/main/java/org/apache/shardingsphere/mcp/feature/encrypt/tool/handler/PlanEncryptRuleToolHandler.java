@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
@@ -31,7 +32,6 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorit
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.mcp.workflow.handler.WorkflowToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningArguments;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowRequestBinder;
@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * Tool handler for encrypt workflow planning.
  */
-public final class PlanEncryptRuleToolHandler implements WorkflowToolHandler {
+public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkflowContext> {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(EncryptFeatureDefinition.PLAN_TOOL_NAME, "Plan Encrypt Rule",
             "Plan a ShardingSphere encrypt rule workflow for a logical table column.",
@@ -62,6 +62,11 @@ public final class PlanEncryptRuleToolHandler implements WorkflowToolHandler {
     private final EncryptWorkflowPlanningService planningService = new EncryptWorkflowPlanningService();
     
     private final EncryptAlgorithmPropertyTemplateService propertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
+    
+    @Override
+    public Class<MCPWorkflowContext> getContextType() {
+        return MCPWorkflowContext.class;
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {

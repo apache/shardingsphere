@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.contribution.core;
+package org.apache.shardingsphere.mcp.handler.core;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -28,20 +28,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CoreContributionProviderTest {
+class CoreHandlerProviderTest {
     
     @Test
-    void assertGetToolContributions() {
-        Collection<MCPToolContribution> actual = new CoreContributionProvider().getToolContributions();
+    void assertGetToolHandlers() {
+        Collection<MCPToolHandler<?>> actual = new CoreHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(),
                 is(List.of("search_metadata", "execute_query", "apply_workflow", "validate_workflow")));
     }
     
     @Test
-    void assertGetResourceContributions() {
-        Collection<MCPResourceContribution> actual = new CoreContributionProvider().getResourceContributions();
+    void assertGetResourceHandlers() {
+        Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
         assertThat(actual.size(), is(18));
-        List<String> actualUriPatterns = actual.stream().map(MCPResourceContribution::getUriPattern).toList();
+        List<String> actualUriPatterns = actual.stream().map(MCPResourceHandler::getUriPattern).toList();
         assertTrue(actualUriPatterns.contains("shardingsphere://capabilities"));
         assertTrue(actualUriPatterns.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }

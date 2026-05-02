@@ -15,27 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
+package org.apache.shardingsphere.mcp.api.spi;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPResourceContribution;
-import org.apache.shardingsphere.mcp.api.spi.MCPContributionProvider;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolContribution;
+import org.apache.shardingsphere.infra.spi.ShardingSphereSPI;
+import org.apache.shardingsphere.infra.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Test-only MCP contribution provider used to prove packaged distribution plugin discovery.
+ * MCP handler provider.
  */
-public final class PluginFixtureContributionProvider implements MCPContributionProvider {
+@SingletonSPI
+public interface MCPHandlerProvider extends ShardingSphereSPI {
     
-    @Override
-    public Collection<MCPToolContribution> getToolContributions() {
-        return List.of(new PluginFixturePingToolHandler());
-    }
+    /**
+     * Get resource handlers.
+     *
+     * @return resource handlers
+     */
+    Collection<MCPResourceHandler<?>> getResourceHandlers();
     
-    @Override
-    public Collection<MCPResourceContribution> getResourceContributions() {
-        return List.of(new PluginFixtureStatusResourceHandler());
-    }
+    /**
+     * Get tool handlers.
+     *
+     * @return tool handlers
+     */
+    Collection<MCPToolHandler<?>> getToolHandlers();
 }

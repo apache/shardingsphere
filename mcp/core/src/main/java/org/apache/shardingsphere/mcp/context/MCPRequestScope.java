@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.context;
 
+import org.apache.shardingsphere.mcp.api.handler.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowProxyQueryService;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.database.capability.MCPDatabaseCapabilityProvider;
@@ -34,7 +35,7 @@ import org.apache.shardingsphere.mcp.workflow.WorkflowSessionContext;
 /**
  * MCP request scope.
  */
-public final class MCPRequestScope implements MCPDatabaseContext, MCPWorkflowContext, AutoCloseable {
+public final class MCPRequestScope implements MCPServiceHandlerContext, MCPDatabaseContext, MCPWorkflowContext, AutoCloseable {
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
     

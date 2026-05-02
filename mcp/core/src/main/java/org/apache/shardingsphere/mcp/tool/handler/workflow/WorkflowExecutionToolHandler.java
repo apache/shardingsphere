@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
@@ -28,14 +29,13 @@ import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.mcp.workflow.handler.WorkflowToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowKind;
 
 /**
  * Generic workflow execution tool handler.
  */
-public final class WorkflowExecutionToolHandler implements WorkflowToolHandler {
+public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowContext> {
     
     private final WorkflowExecutionService executionService;
     
@@ -48,6 +48,11 @@ public final class WorkflowExecutionToolHandler implements WorkflowToolHandler {
     WorkflowExecutionToolHandler(final WorkflowExecutionService executionService, final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
         this.executionService = executionService;
         this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
+    }
+    
+    @Override
+    public Class<MCPWorkflowContext> getContextType() {
+        return MCPWorkflowContext.class;
     }
     
     @Override

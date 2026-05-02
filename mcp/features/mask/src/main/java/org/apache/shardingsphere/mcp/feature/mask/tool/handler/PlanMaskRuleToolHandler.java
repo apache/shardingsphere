@@ -24,13 +24,13 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.database.MCPDatabaseContext;
 import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowPlanningService;
 import org.apache.shardingsphere.mcp.workflow.MCPWorkflowContext;
 import org.apache.shardingsphere.mcp.workflow.descriptor.WorkflowToolDescriptors;
-import org.apache.shardingsphere.mcp.workflow.handler.WorkflowToolHandler;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.workflow.service.WorkflowPlanningArguments;
@@ -42,7 +42,7 @@ import java.util.Map;
 /**
  * Tool handler for mask workflow planning.
  */
-public final class PlanMaskRuleToolHandler implements WorkflowToolHandler {
+public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflowContext> {
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(MaskFeatureDefinition.PLAN_TOOL_NAME, "Plan Mask Rule",
             "Plan a ShardingSphere mask rule workflow for a logical table column.",
@@ -54,6 +54,11 @@ public final class PlanMaskRuleToolHandler implements WorkflowToolHandler {
     private final MaskWorkflowPlanningService planningService = new MaskWorkflowPlanningService();
     
     private final MaskAlgorithmPropertyTemplateService propertyTemplateService = new MaskAlgorithmPropertyTemplateService();
+    
+    @Override
+    public Class<MCPWorkflowContext> getContextType() {
+        return MCPWorkflowContext.class;
+    }
     
     @Override
     public MCPToolDescriptor getToolDescriptor() {
