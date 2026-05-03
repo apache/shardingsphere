@@ -54,10 +54,10 @@ class EncryptRuleInspectionServiceTest {
     }
     
     @Test
-    void assertEnrichEncryptAlgorithms() {
+    void assertQueryEncryptAlgorithms() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES"), Map.of("type", "CUSTOM")));
-        List<Map<String, Object>> actual = service.enrichEncryptAlgorithms(queryFacade);
+        List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
         assertThat(actual.get(0).get("source"), is("builtin"));
         assertTrue((Boolean) actual.get(0).get("supports_decrypt"));
         assertThat(actual.get(1).get("source"), is("custom-spi"));

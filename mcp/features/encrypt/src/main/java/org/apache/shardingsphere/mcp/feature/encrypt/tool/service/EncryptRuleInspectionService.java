@@ -68,12 +68,12 @@ public final class EncryptRuleInspectionService {
     }
     
     /**
-     * Enrich encrypt algorithm plugins with MCP-specific metadata.
+     * Query encrypt algorithms.
      *
      * @param queryFacade query facade
-     * @return enriched plugin rows
+     * @return encrypt algorithms
      */
-    public List<Map<String, Object>> enrichEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
+    public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")) {
             String type = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("type"))).toUpperCase(Locale.ENGLISH);

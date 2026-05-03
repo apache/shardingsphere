@@ -107,7 +107,7 @@ class EncryptWorkflowPlanningServiceTest {
                                                 final boolean expectedHasPendingQuestions) throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
-        when(ruleInspectionService.enrichEncryptAlgorithms(any())).thenReturn(List.of(
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
                 Map.of("type", "AES", "supports_like", false),
                 Map.of("type", "MD5", "supports_like", false)));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -126,7 +126,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.enrichEncryptAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any())).thenAnswer(invocation -> {
             List<WorkflowIssue> issues = invocation.getArgument(2);
@@ -146,7 +146,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanInfersEncryptCapabilitiesFromNaturalLanguage() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.enrichEncryptAlgorithms(any())).thenReturn(List.of(
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
                 Map.of("type", "AES", "supports_like", false),
                 Map.of("type", "MD5", "supports_like", false)));
         DerivedColumnNamingService derivedColumnNamingService = mock(DerivedColumnNamingService.class);
@@ -177,7 +177,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.enrichEncryptAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))
                 .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", "builtin", true, true, false, 100, "reason", "")));
@@ -198,7 +198,7 @@ class EncryptWorkflowPlanningServiceTest {
     void assertPlanCreatesArtifactsWithoutIndexDdl() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.enrichEncryptAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))
                 .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", "builtin", true, true, false, 100, "reason", "")));
