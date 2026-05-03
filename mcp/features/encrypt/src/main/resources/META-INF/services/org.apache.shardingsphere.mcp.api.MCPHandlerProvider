@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureProvider
+org.apache.shardingsphere.mcp.feature.encrypt.EncryptMCPHandlerProvider

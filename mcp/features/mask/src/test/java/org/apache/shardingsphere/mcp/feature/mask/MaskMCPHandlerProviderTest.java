@@ -30,11 +30,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
-class MaskFeatureProviderTest {
+class MaskMCPHandlerProviderTest {
     
     @Test
     void assertGetResourceHandlers() {
-        Collection<MCPResourceHandler<?>> actual = new MaskFeatureProvider().getResourceHandlers();
+        Collection<MCPResourceHandler<?>> actual = new MaskMCPHandlerProvider().getResourceHandlers();
         assertThat(actual.stream().map(MCPResourceHandler::getUriPattern).toList(), is(List.of(
                 "shardingsphere://features/mask/algorithms",
                 "shardingsphere://features/mask/databases/{database}/rules",
@@ -43,13 +43,13 @@ class MaskFeatureProviderTest {
     
     @Test
     void assertGetToolHandlers() {
-        Collection<MCPToolHandler<?>> actual = new MaskFeatureProvider().getToolHandlers();
+        Collection<MCPToolHandler<?>> actual = new MaskMCPHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_mask_rule")));
     }
     
     @Test
     void assertGetWorkflowDefinitions() {
-        WorkflowRuntimeDefinition actual = new MaskFeatureProvider().getWorkflowDefinitions().iterator().next();
+        WorkflowRuntimeDefinition actual = new MaskMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(MaskFeatureDefinition.WORKFLOW_KIND));
         assertThat(actual.getApplySynchronizationHandler(), isA(MaskWorkflowValidationService.class));
         assertThat(actual.getValidationHandler(), isA(MaskWorkflowValidationService.class));

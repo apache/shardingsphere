@@ -30,11 +30,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
-class EncryptFeatureProviderTest {
+class EncryptMCPHandlerProviderTest {
     
     @Test
     void assertGetResourceHandlers() {
-        Collection<MCPResourceHandler<?>> actual = new EncryptFeatureProvider().getResourceHandlers();
+        Collection<MCPResourceHandler<?>> actual = new EncryptMCPHandlerProvider().getResourceHandlers();
         assertThat(actual.stream().map(MCPResourceHandler::getUriPattern).toList(), is(List.of(
                 "shardingsphere://features/encrypt/algorithms",
                 "shardingsphere://features/encrypt/databases/{database}/rules",
@@ -43,13 +43,13 @@ class EncryptFeatureProviderTest {
     
     @Test
     void assertGetToolHandlers() {
-        Collection<MCPToolHandler<?>> actual = new EncryptFeatureProvider().getToolHandlers();
+        Collection<MCPToolHandler<?>> actual = new EncryptMCPHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_encrypt_rule")));
     }
     
     @Test
     void assertGetWorkflowDefinitions() {
-        WorkflowRuntimeDefinition actual = new EncryptFeatureProvider().getWorkflowDefinitions().iterator().next();
+        WorkflowRuntimeDefinition actual = new EncryptMCPHandlerProvider().getWorkflowDefinitions().iterator().next();
         assertThat(actual.getWorkflowKind(), is(EncryptFeatureDefinition.WORKFLOW_KIND));
         assertThat(actual.getApplySynchronizationHandler(), isA(EncryptWorkflowValidationService.class));
         assertThat(actual.getValidationHandler(), isA(EncryptWorkflowValidationService.class));

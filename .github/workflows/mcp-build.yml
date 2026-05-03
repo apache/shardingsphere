@@ -82,8 +82,8 @@ jobs:
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "identifier=${{ env.MCP_IMAGE }}:${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "tags=${TAGS}" >> "${GITHUB_OUTPUT}"
-      - name: Run JDK 21 Subchain Tests
-        run: ./mvnw -pl mcp,test/e2e/mcp -am test -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+      - name: Run and Install JDK 21 Subchain Tests
+        run: ./mvnw -pl mcp,test/e2e/mcp -am install -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
       - name: Package JDK 21 Subchain Distribution
         run: ./mvnw -pl distribution/mcp -am -DskipTests package -B -ntp
       - name: Run MCP Distribution Smoke

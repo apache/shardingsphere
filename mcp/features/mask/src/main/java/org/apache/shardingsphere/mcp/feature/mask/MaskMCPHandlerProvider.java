@@ -15,42 +15,41 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.feature.encrypt;
+package org.apache.shardingsphere.mcp.feature.mask;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
-import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptAlgorithmsHandler;
-import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRuleHandler;
-import org.apache.shardingsphere.mcp.feature.encrypt.resource.handler.EncryptRulesHandler;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.handler.PlanEncryptRuleToolHandler;
-import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptWorkflowValidationService;
+import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskAlgorithmsHandler;
+import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRuleHandler;
+import org.apache.shardingsphere.mcp.feature.mask.resource.handler.MaskRulesHandler;
+import org.apache.shardingsphere.mcp.feature.mask.tool.handler.PlanMaskRuleToolHandler;
+import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskWorkflowValidationService;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionProvider;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Encrypt MCP feature provider.
+ * Mask MCP mask provider.
  */
-public final class EncryptFeatureProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
+public final class MaskMCPHandlerProvider implements MCPHandlerProvider, MCPWorkflowDefinitionProvider {
     
     @Override
     public Collection<MCPResourceHandler<?>> getResourceHandlers() {
-        return List.of(
-                new EncryptAlgorithmsHandler(),
-                new EncryptRulesHandler(),
-                new EncryptRuleHandler());
+        return Arrays.asList(new MaskAlgorithmsHandler(), new MaskRulesHandler(), new MaskRuleHandler());
     }
     
     @Override
     public Collection<MCPToolHandler<?>> getToolHandlers() {
-        return List.of(new PlanEncryptRuleToolHandler());
+        return Collections.singleton(new PlanMaskRuleToolHandler());
     }
     
     @Override
     public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
-        return List.of(new WorkflowRuntimeDefinition(EncryptFeatureDefinition.WORKFLOW_KIND, new EncryptWorkflowValidationService()));
+        return List.of(new WorkflowRuntimeDefinition(MaskFeatureDefinition.WORKFLOW_KIND, new MaskWorkflowValidationService()));
     }
 }
