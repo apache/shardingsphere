@@ -73,7 +73,7 @@ class EncryptWorkflowPlanningServiceTest {
     @Test
     void assertPlanRejectsLifecycleMismatchForCreate() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         EncryptWorkflowPlanningService service = createService(ruleInspectionService, mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class),
@@ -86,7 +86,7 @@ class EncryptWorkflowPlanningServiceTest {
     @Test
     void assertPlanDropWorkflow() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
         when(ruleDistSQLPlanningService.planEncryptDropRule(any(), any())).thenReturn(new RuleArtifact("drop", "DROP ENCRYPT RULE orders"));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -106,7 +106,7 @@ class EncryptWorkflowPlanningServiceTest {
                                                 final String expectedOperationType, final String expectedFieldSemantics, final String expectedStatus,
                                                 final boolean expectedHasPendingQuestions) throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
                 Map.of("type", "AES", "supports_like", false),
                 Map.of("type", "MD5", "supports_like", false)));
@@ -125,7 +125,7 @@ class EncryptWorkflowPlanningServiceTest {
     @Test
     void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any())).thenAnswer(invocation -> {
@@ -145,7 +145,7 @@ class EncryptWorkflowPlanningServiceTest {
     @Test
     void assertPlanInfersEncryptCapabilitiesFromNaturalLanguage() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
                 Map.of("type", "AES", "supports_like", false),
                 Map.of("type", "MD5", "supports_like", false)));
@@ -176,7 +176,7 @@ class EncryptWorkflowPlanningServiceTest {
     @Test
     void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))
@@ -197,7 +197,7 @@ class EncryptWorkflowPlanningServiceTest {
     @Test
     void assertPlanCreatesArtifactsWithoutIndexDdl() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))

@@ -55,7 +55,8 @@ class MaskResourceHandlerTest {
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(ruleInspectionService.queryMaskRules(queryFacade, expectedDatabase, expectedTable)).thenReturn(maskRules);
+        when(ruleInspectionService.queryMaskRules(queryFacade, expectedDatabase)).thenReturn(maskRules);
+        when(ruleInspectionService.queryMaskRule(queryFacade, expectedDatabase, expectedTable)).thenReturn(maskRules);
         when(ruleInspectionService.queryMaskAlgorithms(queryFacade)).thenReturn(maskAlgorithms);
         MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(uriVariables));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));

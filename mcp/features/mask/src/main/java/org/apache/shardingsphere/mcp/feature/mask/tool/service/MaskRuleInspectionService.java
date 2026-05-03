@@ -33,14 +33,22 @@ public final class MaskRuleInspectionService {
      *
      * @param queryFacade query facade
      * @param databaseName database name
-     * @param tableName table name
      * @return mask rules
      */
-    public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        String sql = tableName.isEmpty()
-                ? String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName))
-                : String.format("SHOW MASK RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName));
-        return queryFacade.query(databaseName, "", sql);
+    public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
+        return queryFacade.query(databaseName, "", String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+    }
+
+    /**
+     * Query mask rule.
+     *
+     * @param queryFacade query facade
+     * @param databaseName database name
+     * @param tableName table name
+     * @return mask rule
+     */
+    public List<Map<String, Object>> queryMaskRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
+        return queryFacade.query(databaseName, "", String.format("SHOW MASK RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**

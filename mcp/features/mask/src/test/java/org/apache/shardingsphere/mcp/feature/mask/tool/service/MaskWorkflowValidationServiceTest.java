@@ -66,7 +66,7 @@ class MaskWorkflowValidationServiceTest {
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
+        when(ruleInspectionService.queryMaskRule(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
         MaskWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
@@ -83,7 +83,7 @@ class MaskWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
+        when(ruleInspectionService.queryMaskRule(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -97,7 +97,7 @@ class MaskWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskRule(any(), any(), any())).thenReturn(List.of());
         MaskWorkflowValidationService service = createService(ruleInspectionService);
         WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
                 () -> service.synchronize(snapshot, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1"));
@@ -110,7 +110,7 @@ class MaskWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskRule(any(), any(), any())).thenReturn(List.of());
         MaskWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
@@ -128,7 +128,7 @@ class MaskWorkflowValidationServiceTest {
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
+        when(ruleInspectionService.queryMaskRule(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
         MaskWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
@@ -146,7 +146,7 @@ class MaskWorkflowValidationServiceTest {
         snapshot.getRequest().setAlgorithmType("MASK_FROM_X_TO_Y");
         workflowSessionContext.save(snapshot);
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
+        when(ruleInspectionService.queryMaskRule(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y")));
         MaskWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));

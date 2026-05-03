@@ -39,35 +39,35 @@ class EncryptRuleInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW ENCRYPT RULES FROM logic_db"))
                 .thenReturn(List.of(Map.of("logic_column", "phone", "assisted_query_column", "phone_assisted")));
-        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "");
+        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).get("assisted_query_column"), is("phone_assisted"));
     }
     
     @Test
-    void assertQueryEncryptRulesForTable() {
+    void assertQueryEncryptRule() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW ENCRYPT TABLE RULE orders FROM logic_db"))
                 .thenReturn(List.of(Map.of("logic_column", "phone", "like_query_column", "phone_like")));
-        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "orders");
+        List<Map<String, Object>> actual = service.queryEncryptRule(queryFacade, "logic_db", "orders");
         assertThat(actual.get(0).get("like_query_column"), is("phone_like"));
     }
     
     @Test
-    void assertQueryEncryptRulesQuotesUnicodeNames() {
+    void assertQueryEncryptRuleQuotesUnicodeNames() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("逻辑库", "", "SHOW ENCRYPT TABLE RULE `订单` FROM `逻辑库`"))
                 .thenReturn(List.of(Map.of("logic_column", "phone")));
-        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "逻辑库", "订单");
+        List<Map<String, Object>> actual = service.queryEncryptRule(queryFacade, "逻辑库", "订单");
         assertThat(actual.get(0).get("logic_column"), is("phone"));
     }
     
     @Test
-    void assertQueryEncryptRulesEscapesQuoteDelimiter() {
+    void assertQueryEncryptRuleEscapesQuoteDelimiter() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("逻`辑库", "", "SHOW ENCRYPT TABLE RULE `订``单` FROM `逻``辑库`"))
                 .thenReturn(List.of(Map.of("logic_column", "phone")));
-        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "逻`辑库", "订`单");
+        List<Map<String, Object>> actual = service.queryEncryptRule(queryFacade, "逻`辑库", "订`单");
         assertThat(actual.get(0).get("logic_column"), is("phone"));
     }
     

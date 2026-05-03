@@ -37,7 +37,7 @@ class MaskRuleInspectionServiceTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW MASK RULES FROM logic_db"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y", "algorithm_props", "from-x=4")));
-        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db", "");
+        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).get("column"), is("phone"));
         assertThat(actual.get(0).get("algorithm_type"), is("MASK_FROM_X_TO_Y"));
@@ -45,29 +45,29 @@ class MaskRuleInspectionServiceTest {
     }
     
     @Test
-    void assertQueryMaskRulesForTable() {
+    void assertQueryMaskRule() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW MASK RULE orders FROM logic_db"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db", "orders");
+        List<Map<String, Object>> actual = service.queryMaskRule(queryFacade, "logic_db", "orders");
         assertThat(actual.get(0).get("column"), is("phone"));
     }
     
     @Test
-    void assertQueryMaskRulesQuotesUnicodeNames() {
+    void assertQueryMaskRuleQuotesUnicodeNames() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("逻辑库", "", "SHOW MASK RULE `订单` FROM `逻辑库`"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "逻辑库", "订单");
+        List<Map<String, Object>> actual = service.queryMaskRule(queryFacade, "逻辑库", "订单");
         assertThat(actual.get(0).get("column"), is("phone"));
     }
     
     @Test
-    void assertQueryMaskRulesEscapesQuoteDelimiter() {
+    void assertQueryMaskRuleEscapesQuoteDelimiter() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("逻`辑库", "", "SHOW MASK RULE `订``单` FROM `逻``辑库`"))
                 .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
-        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "逻`辑库", "订`单");
+        List<Map<String, Object>> actual = service.queryMaskRule(queryFacade, "逻`辑库", "订`单");
         assertThat(actual.get(0).get("column"), is("phone"));
     }
     

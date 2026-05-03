@@ -65,10 +65,10 @@ class EncryptResourceHandlerTest {
     void assertHandleEncryptRules() throws ReflectiveOperationException {
         EncryptRulesHandler handler = new EncryptRulesHandler();
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
+        when(ruleInspectionService.queryEncryptRules(any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of("database", "logic_db")));
-        verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"), eq(""));
+        verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
     
@@ -81,10 +81,10 @@ class EncryptResourceHandlerTest {
     void assertHandleEncryptRule() throws ReflectiveOperationException {
         EncryptRuleHandler handler = new EncryptRuleHandler();
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
+        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
-        verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"), eq("orders"));
+        verify(ruleInspectionService).queryEncryptRule(any(), eq("logic_db"), eq("orders"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
 }

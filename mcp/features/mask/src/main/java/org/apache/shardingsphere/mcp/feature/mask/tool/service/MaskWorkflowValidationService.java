@@ -85,7 +85,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     private ValidationReport createValidationReport(final WorkflowContextSnapshot snapshot, final MCPMetadataQueryFacade metadataQueryFacade,
                                                     final MCPFeatureQueryFacade queryFacade, final MCPFeatureExecutionFacade executionFacade, final String sessionId) {
         ValidationReport result = new ValidationReport();
-        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRules(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
+        List<Map<String, Object>> maskRules = ruleInspectionService.queryMaskRule(queryFacade, snapshot.getRequest().getDatabase(), snapshot.getRequest().getTable());
         result.setDdlValidation(validateDdl());
         result.setRuleValidation(validateRules(snapshot, maskRules, result));
         result.setLogicalMetadataValidation(validationSupport.validateLogicalMetadata(snapshot, metadataQueryFacade, result));

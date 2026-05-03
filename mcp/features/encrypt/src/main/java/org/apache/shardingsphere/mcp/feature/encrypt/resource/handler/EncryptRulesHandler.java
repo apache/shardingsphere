@@ -44,6 +44,6 @@ public final class EncryptRulesHandler implements MCPResourceHandler<MCPDatabase
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getVariable("database"), ""));
+        return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getVariable("database")));
     }
 }
