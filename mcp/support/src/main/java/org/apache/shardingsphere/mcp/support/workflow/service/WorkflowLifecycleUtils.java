@@ -36,7 +36,7 @@ public final class WorkflowLifecycleUtils {
      * @return whether the snapshot belongs to the session
      */
     public static boolean isOwnedBySession(final String sessionId, final WorkflowContextSnapshot snapshot) {
-        return WorkflowSqlUtils.trimToEmpty(snapshot.getSessionId()).isEmpty() || snapshot.getSessionId().equals(sessionId);
+        return null == snapshot.getSessionId() || snapshot.getSessionId().isBlank() || snapshot.getSessionId().equals(sessionId);
     }
     
     /**
@@ -46,7 +46,7 @@ public final class WorkflowLifecycleUtils {
      * @return current interaction step
      */
     public static String resolveCurrentStep(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getInteractionPlan() ? "" : WorkflowSqlUtils.trimToEmpty(snapshot.getInteractionPlan().getCurrentStep());
+        return null == snapshot.getInteractionPlan() || null == snapshot.getInteractionPlan().getCurrentStep() ? "" : snapshot.getInteractionPlan().getCurrentStep();
     }
     
     /**
@@ -56,7 +56,7 @@ public final class WorkflowLifecycleUtils {
      * @return workflow operation type
      */
     public static String resolveOperationType(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getClarifiedIntent() ? "" : WorkflowSqlUtils.trimToEmpty(snapshot.getClarifiedIntent().getOperationType());
+        return null == snapshot.getClarifiedIntent() ? "" : snapshot.getClarifiedIntent().getOperationType();
     }
     
     /**

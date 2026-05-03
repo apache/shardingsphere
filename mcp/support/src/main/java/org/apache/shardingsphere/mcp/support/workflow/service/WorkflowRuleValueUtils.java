@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Workflow rule value utility methods.
@@ -38,7 +39,7 @@ public final class WorkflowRuleValueUtils {
     public static String findRuleValue(final Map<String, Object> rule, final String... keys) {
         for (String each : keys) {
             Object value = rule.get(each);
-            String actualValue = null == value ? "" : WorkflowSqlUtils.trimToEmpty(String.valueOf(value));
+            String actualValue = Objects.toString(value, "").trim();
             if (!actualValue.isEmpty()) {
                 return actualValue;
             }

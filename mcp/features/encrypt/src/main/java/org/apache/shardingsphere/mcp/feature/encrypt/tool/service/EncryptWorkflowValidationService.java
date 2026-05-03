@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
@@ -215,9 +214,8 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private void addIfPresent(final Set<String> target, final String value) {
-        String actualValue = WorkflowSqlUtils.trimToEmpty(value);
-        if (!actualValue.isEmpty()) {
-            target.add(actualValue);
+        if (!value.isEmpty()) {
+            target.add(value);
         }
     }
     
@@ -272,16 +270,15 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private boolean matchesValue(final String expected, final String actual) {
-        return WorkflowSqlUtils.trimToEmpty(expected).equalsIgnoreCase(WorkflowSqlUtils.trimToEmpty(actual));
+        return expected.equalsIgnoreCase(actual);
     }
     
     private String formatFieldValue(final String fieldName, final String value) {
-        return String.format("%s=%s", fieldName, WorkflowSqlUtils.trimToEmpty(value));
+        return String.format("%s=%s", fieldName, value);
     }
     
     private String createExpectedDerivedColumnSummary(final EncryptWorkflowState workflowState) {
         return String.format("cipher=%s, assisted_query=%s, like_query=%s", workflowState.getDerivedColumnPlan().getCipherColumnName(),
-                WorkflowSqlUtils.trimToEmpty(workflowState.getDerivedColumnPlan().getAssistedQueryColumnName()),
-                WorkflowSqlUtils.trimToEmpty(workflowState.getDerivedColumnPlan().getLikeQueryColumnName()));
+                workflowState.getDerivedColumnPlan().getAssistedQueryColumnName(), workflowState.getDerivedColumnPlan().getLikeQueryColumnName());
     }
 }

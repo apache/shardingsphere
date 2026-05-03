@@ -22,11 +22,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -59,7 +59,7 @@ public final class MaskAlgorithmRecommendationService {
      */
     public List<AlgorithmCandidate> recommendMaskAlgorithms(final ClarifiedIntent intent, final WorkflowRequest request,
                                                             final List<Map<String, Object>> maskAlgorithms, final List<WorkflowIssue> issues) {
-        String actualAlgorithmType = WorkflowSqlUtils.trimToEmpty(request.getAlgorithmType()).toUpperCase(Locale.ENGLISH);
+        String actualAlgorithmType = request.getAlgorithmType().toUpperCase(Locale.ENGLISH);
         if (!actualAlgorithmType.isEmpty()) {
             if (containsAlgorithm(maskAlgorithms, actualAlgorithmType)) {
                 return List.of(new AlgorithmCandidate("primary", actualAlgorithmType, detectSource(actualAlgorithmType), null, null, null, 100, "User specified algorithm.", ""));
@@ -79,8 +79,8 @@ public final class MaskAlgorithmRecommendationService {
     }
     
     private String resolveRecommendedAlgorithm(final ClarifiedIntent intent, final WorkflowRequest request, final List<Map<String, Object>> maskAlgorithms) {
-        String fieldSemantics = WorkflowSqlUtils.trimToEmpty(intent.getFieldSemantics()).toLowerCase(Locale.ENGLISH);
-        String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
+        String fieldSemantics = intent.getFieldSemantics().toLowerCase(Locale.ENGLISH);
+        String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
         if ((fieldSemantics.contains("phone") || naturalLanguageIntent.contains("前") || naturalLanguageIntent.contains("后"))
                 && containsAlgorithm(maskAlgorithms, "MASK_FROM_X_TO_Y")) {
             return "MASK_FROM_X_TO_Y";
@@ -88,14 +88,18 @@ public final class MaskAlgorithmRecommendationService {
         if (containsAlgorithm(maskAlgorithms, "KEEP_FIRST_N_LAST_M")) {
             return "KEEP_FIRST_N_LAST_M";
         }
-        return maskAlgorithms.isEmpty() ? "" : String.valueOf(maskAlgorithms.get(0).get("type")).toUpperCase(Locale.ENGLISH);
+        return maskAlgorithms.isEmpty() ? "" : getAlgorithmType(maskAlgorithms.get(0));
     }
     
     private boolean containsAlgorithm(final List<Map<String, Object>> algorithmRows, final String algorithmType) {
-        return algorithmRows.stream().map(each -> String.valueOf(each.get("type")).toUpperCase(Locale.ENGLISH)).anyMatch(algorithmType::equals);
+        return algorithmRows.stream().map(this::getAlgorithmType).anyMatch(algorithmType::equals);
     }
     
     private String detectSource(final String algorithmType) {
         return isKnownMaskAlgorithm(algorithmType) ? "builtin" : "custom-spi";
+    }
+    
+    private String getAlgorithmType(final Map<String, Object> algorithmRow) {
+        return Objects.toString(algorithmRow.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
     }
 }

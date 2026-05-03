@@ -21,13 +21,13 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowR
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmCandidate;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -73,7 +73,7 @@ public final class EncryptAlgorithmRecommendationService {
                                                                final List<Map<String, Object>> encryptAlgorithms, final List<WorkflowIssue> issues) {
         List<AlgorithmCandidate> result = new LinkedList<>();
         String primaryType = resolvePrimaryEncryptAlgorithm(request, encryptAlgorithms, issues);
-        if (!WorkflowSqlUtils.trimToEmpty(primaryType).isEmpty()) {
+        if (!primaryType.isEmpty()) {
             AlgorithmCandidate primaryCandidate = createEncryptCandidate("primary", primaryType, request);
             result.add(primaryCandidate);
             addCustomCapabilityWarning(primaryCandidate, issues);
@@ -89,7 +89,7 @@ public final class EncryptAlgorithmRecommendationService {
     
     private String resolvePrimaryEncryptAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
                                                   final List<WorkflowIssue> issues) {
-        String actualAlgorithmType = WorkflowSqlUtils.trimToEmpty(request.getAlgorithmType()).toUpperCase(Locale.ENGLISH);
+        String actualAlgorithmType = request.getAlgorithmType().toUpperCase(Locale.ENGLISH);
         if (!actualAlgorithmType.isEmpty()) {
             if (containsAlgorithm(encryptAlgorithms, actualAlgorithmType)) {
                 return actualAlgorithmType;
@@ -101,14 +101,14 @@ public final class EncryptAlgorithmRecommendationService {
         if (Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery())) {
             for (Map<String, Object> each : encryptAlgorithms) {
                 if (Boolean.TRUE.equals(each.get("supports_like"))) {
-                    return String.valueOf(each.get("type")).toUpperCase(Locale.ENGLISH);
+                    return getAlgorithmType(each);
                 }
             }
         }
         if (containsAlgorithm(encryptAlgorithms, "AES")) {
             return "AES";
         }
-        return encryptAlgorithms.isEmpty() ? "" : String.valueOf(encryptAlgorithms.get(0).get("type")).toUpperCase(Locale.ENGLISH);
+        return encryptAlgorithms.isEmpty() ? "" : getAlgorithmType(encryptAlgorithms.get(0));
     }
     
     private void addAssistedQueryCandidate(final List<AlgorithmCandidate> result, final EncryptWorkflowRequest request,
@@ -138,7 +138,7 @@ public final class EncryptAlgorithmRecommendationService {
     }
     
     private void addCapabilityConflictIssue(final List<WorkflowIssue> issues, final String specifiedAlgorithmType, final String message, final String userAction) {
-        if (!WorkflowSqlUtils.trimToEmpty(specifiedAlgorithmType).isEmpty()) {
+        if (!specifiedAlgorithmType.isEmpty()) {
             return;
         }
         issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT, "error", "selecting-algorithm", message, userAction, false, Map.of()));
@@ -146,7 +146,7 @@ public final class EncryptAlgorithmRecommendationService {
     
     private String resolveAssistedQueryAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
                                                  final List<WorkflowIssue> issues) {
-        String actualAlgorithmType = WorkflowSqlUtils.trimToEmpty(request.getOptions().getAssistedQueryAlgorithmType()).toUpperCase(Locale.ENGLISH);
+        String actualAlgorithmType = request.getOptions().getAssistedQueryAlgorithmType().toUpperCase(Locale.ENGLISH);
         if (!actualAlgorithmType.isEmpty()) {
             if (containsAlgorithm(encryptAlgorithms, actualAlgorithmType)) {
                 return actualAlgorithmType;
@@ -161,7 +161,7 @@ public final class EncryptAlgorithmRecommendationService {
     
     private String resolveLikeQueryAlgorithm(final EncryptWorkflowRequest request, final List<Map<String, Object>> encryptAlgorithms,
                                              final List<WorkflowIssue> issues) {
-        String actualAlgorithmType = WorkflowSqlUtils.trimToEmpty(request.getOptions().getLikeQueryAlgorithmType()).toUpperCase(Locale.ENGLISH);
+        String actualAlgorithmType = request.getOptions().getLikeQueryAlgorithmType().toUpperCase(Locale.ENGLISH);
         if (!actualAlgorithmType.isEmpty()) {
             if (containsAlgorithm(encryptAlgorithms, actualAlgorithmType)) {
                 return actualAlgorithmType;
@@ -173,20 +173,20 @@ public final class EncryptAlgorithmRecommendationService {
         }
         for (Map<String, Object> each : encryptAlgorithms) {
             if (Boolean.TRUE.equals(each.get("supports_like"))) {
-                return String.valueOf(each.get("type")).toUpperCase(Locale.ENGLISH);
+                return getAlgorithmType(each);
             }
         }
         return "";
     }
     
     private boolean containsAlgorithm(final List<Map<String, Object>> algorithmRows, final String algorithmType) {
-        return algorithmRows.stream().map(each -> String.valueOf(each.get("type")).toUpperCase(Locale.ENGLISH)).anyMatch(algorithmType::equals);
+        return algorithmRows.stream().map(this::getAlgorithmType).anyMatch(algorithmType::equals);
     }
     
     private AlgorithmCandidate createEncryptCandidate(final String role, final String algorithmType, final EncryptWorkflowRequest request) {
         Map<String, Boolean> capability = findEncryptCapability(algorithmType);
-        return new AlgorithmCandidate(role, algorithmType, detectSource(algorithmType, true), capability.get("supports_decrypt"), capability.get("supports_equivalent_filter"),
-                capability.get("supports_like"), calculateEncryptScore(role, capability), createEncryptReason(role, algorithmType, request), createEncryptRisk(role, capability));
+        return new AlgorithmCandidate(role, algorithmType, isKnownEncryptAlgorithm(algorithmType) ? "builtin" : "custom-spi", capability.get("supports_decrypt"), capability.get("supports_equivalent_filter"),
+                capability.get("supports_like"), calculateEncryptScore(role, capability), createEncryptReason(role, algorithmType, request), createEncryptRisk(capability));
     }
     
     private int calculateEncryptScore(final String role, final Map<String, Boolean> capability) {
@@ -209,18 +209,18 @@ public final class EncryptAlgorithmRecommendationService {
         if ("like_query".equals(role)) {
             return "Selected as a like-query capable algorithm.";
         }
-        return WorkflowSqlUtils.trimToEmpty(request.getAlgorithmType()).isEmpty() ? "Recommended by current intent." : "User specified algorithm.";
+        return request.getAlgorithmType().isEmpty() ? "Recommended by current intent." : "User specified algorithm.";
     }
     
-    private String createEncryptRisk(final String role, final Map<String, Boolean> capability) {
+    private String createEncryptRisk(final Map<String, Boolean> capability) {
         if (null == capability.get("supports_decrypt") || null == capability.get("supports_equivalent_filter") || null == capability.get("supports_like")) {
             return "Capability is discoverable from plugins but not fully confirmed.";
         }
         return "";
     }
     
-    private String detectSource(final String algorithmType, final boolean encrypt) {
-        return encrypt && isKnownEncryptAlgorithm(algorithmType) ? "builtin" : "custom-spi";
+    private String getAlgorithmType(final Map<String, Object> algorithmRow) {
+        return Objects.toString(algorithmRow.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
     }
     
     private void addCustomCapabilityWarning(final AlgorithmCandidate algorithmCandidate, final List<WorkflowIssue> issues) {

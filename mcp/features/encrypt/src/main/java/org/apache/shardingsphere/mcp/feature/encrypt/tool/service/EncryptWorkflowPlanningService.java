@@ -37,11 +37,11 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPa
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -230,15 +230,13 @@ public final class EncryptWorkflowPlanningService {
         String actualAssistedQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "assisted_query_column", "assisted_query");
         String actualLikeQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "like_query_column", "like_query");
         if ("alter".equalsIgnoreCase(request.getOperationType())) {
-            if (WorkflowSqlUtils.trimToEmpty(request.getOptions().getCipherColumnName()).isEmpty() && !actualCipherColumn.isEmpty()) {
+            if (request.getOptions().getCipherColumnName().isEmpty() && !actualCipherColumn.isEmpty()) {
                 result.setCipherColumnName(actualCipherColumn);
             }
-            if (result.isAssistedQueryColumnRequired() && WorkflowSqlUtils.trimToEmpty(request.getOptions().getAssistedQueryColumnName()).isEmpty()
-                    && !actualAssistedQueryColumn.isEmpty()) {
+            if (result.isAssistedQueryColumnRequired() && request.getOptions().getAssistedQueryColumnName().isEmpty() && !actualAssistedQueryColumn.isEmpty()) {
                 result.setAssistedQueryColumnName(actualAssistedQueryColumn);
             }
-            if (result.isLikeQueryColumnRequired() && WorkflowSqlUtils.trimToEmpty(request.getOptions().getLikeQueryColumnName()).isEmpty()
-                    && !actualLikeQueryColumn.isEmpty()) {
+            if (result.isLikeQueryColumnRequired() && request.getOptions().getLikeQueryColumnName().isEmpty() && !actualLikeQueryColumn.isEmpty()) {
                 result.setLikeQueryColumnName(actualLikeQueryColumn);
             }
         }
@@ -284,7 +282,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private void addIfPresent(final Set<String> target, final Object value) {
-        String actualValue = null == value ? "" : WorkflowSqlUtils.trimToEmpty(String.valueOf(value));
+        String actualValue = Objects.toString(value, "").trim();
         if (!actualValue.isEmpty()) {
             target.add(actualValue);
         }

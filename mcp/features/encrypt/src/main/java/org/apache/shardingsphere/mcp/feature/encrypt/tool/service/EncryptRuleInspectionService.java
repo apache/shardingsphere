@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Encrypt rule inspection service.
@@ -52,13 +53,9 @@ public final class EncryptRuleInspectionService {
     }
     
     private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
-        String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
-        String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
-        WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
-        WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
-        return actualTableName.isEmpty()
-                ? String.format("SHOW ENCRYPT RULES FROM %s", actualDatabaseName)
-                : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", actualTableName, actualDatabaseName);
+        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
+        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
+        return tableName.isEmpty() ? String.format("SHOW ENCRYPT RULES FROM %s", databaseName) : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", tableName, databaseName);
     }
     
     private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
@@ -76,7 +73,7 @@ public final class EncryptRuleInspectionService {
     public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")) {
-            String type = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("type"))).toUpperCase(Locale.ENGLISH);
+            String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
             Map<String, Boolean> capability = EncryptAlgorithmRecommendationService.findEncryptCapability(type);
             Map<String, Object> row = new LinkedHashMap<>(each);
             row.put("source", EncryptAlgorithmRecommendationService.isKnownEncryptAlgorithm(type) ? "builtin" : "custom-spi");

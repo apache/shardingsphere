@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * Mask algorithm property template service.
@@ -42,7 +42,7 @@ public final class MaskAlgorithmPropertyTemplateService {
      */
     public List<AlgorithmPropertyRequirement> findRequirements(final String algorithmType) {
         List<AlgorithmPropertyRequirement> result = new LinkedList<>();
-        String actualAlgorithmType = WorkflowSqlUtils.trimToEmpty(algorithmType).toUpperCase(Locale.ENGLISH);
+        String actualAlgorithmType = Objects.toString(algorithmType, "").trim().toUpperCase(Locale.ENGLISH);
         if (actualAlgorithmType.isEmpty()) {
             return result;
         }

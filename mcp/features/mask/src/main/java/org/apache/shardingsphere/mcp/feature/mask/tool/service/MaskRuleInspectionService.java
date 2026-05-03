@@ -18,13 +18,14 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Mask rule inspection service.
@@ -53,11 +54,9 @@ public final class MaskRuleInspectionService {
     }
     
     private String buildShowMaskRulesSQL(final String databaseName, final String tableName) {
-        String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
-        String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
-        WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
-        WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
-        return actualTableName.isEmpty() ? String.format("SHOW MASK RULES FROM %s", actualDatabaseName) : String.format("SHOW MASK RULE %s FROM %s", actualTableName, actualDatabaseName);
+        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
+        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
+        return tableName.isEmpty() ? String.format("SHOW MASK RULES FROM %s", databaseName) : String.format("SHOW MASK RULE %s FROM %s", tableName, databaseName);
     }
     
     private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
@@ -75,7 +74,7 @@ public final class MaskRuleInspectionService {
     public List<Map<String, Object>> enrichMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")) {
-            String type = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("type"))).toUpperCase(Locale.ENGLISH);
+            String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
             Map<String, Object> row = new LinkedHashMap<>(each);
             row.put("source", MaskAlgorithmRecommendationService.isKnownMaskAlgorithm(type) ? "builtin" : "custom-spi");
             result.add(row);

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.util.props.PropertiesUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -67,8 +67,8 @@ public final class MaskRuleDistSQLPlanningService {
     }
     
     private void validateMaskIdentifiers(final WorkflowRequest request) {
-        WorkflowSqlUtils.checkSafeIdentifier("table", request.getTable());
-        WorkflowSqlUtils.checkSafeIdentifier("column", request.getColumn());
+        WorkflowSQLUtils.checkSafeIdentifier("table", request.getTable());
+        WorkflowSQLUtils.checkSafeIdentifier("column", request.getColumn());
     }
     
     private List<String> buildMaskColumnSegments(final WorkflowRequest request, final List<Map<String, Object>> existingRules) {
@@ -89,27 +89,27 @@ public final class MaskRuleDistSQLPlanningService {
     }
     
     private String createTargetMaskColumnSegment(final WorkflowRequest request) {
-        String type = WorkflowSqlUtils.trimToEmpty(request.getAlgorithmType()).toLowerCase(Locale.ENGLISH);
+        String type = request.getAlgorithmType().toLowerCase(Locale.ENGLISH);
         String algorithmFragment = request.getPrimaryAlgorithmProperties().isEmpty()
                 ? String.format("TYPE(NAME='%s')", type)
-                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", type, PropertiesUtils.toString(WorkflowSqlUtils.createProperties(request.getPrimaryAlgorithmProperties())));
+                : String.format("TYPE(NAME='%s', PROPERTIES(%s))", type, PropertiesUtils.toString(WorkflowSQLUtils.createProperties(request.getPrimaryAlgorithmProperties())));
         return String.format("(NAME=%s, %s)", request.getColumn(), algorithmFragment);
     }
     
     private String createExistingMaskColumnSegment(final Map<String, Object> rule) {
         String columnName = WorkflowRuleValueUtils.findRuleValue(rule, "column", "logic_column");
-        WorkflowSqlUtils.checkSafeIdentifier("column", columnName);
+        WorkflowSQLUtils.checkSafeIdentifier("column", columnName);
         String algorithmType = WorkflowRuleValueUtils.findRuleValue(rule, "algorithm_type", "mask_algorithm");
-        Map<String, String> algorithmProperties = WorkflowSqlUtils.createPropertyMap(null == rule.get("algorithm_props") ? rule.get("props") : rule.get("algorithm_props"));
+        Map<String, String> algorithmProperties = WorkflowSQLUtils.createPropertyMap(null == rule.get("algorithm_props") ? rule.get("props") : rule.get("algorithm_props"));
         String algorithmFragment = algorithmProperties.isEmpty()
                 ? String.format("TYPE(NAME='%s')", algorithmType.toLowerCase(Locale.ENGLISH))
                 : String.format("TYPE(NAME='%s', PROPERTIES(%s))", algorithmType.toLowerCase(Locale.ENGLISH),
-                        PropertiesUtils.toString(WorkflowSqlUtils.createProperties(algorithmProperties)));
+                        PropertiesUtils.toString(WorkflowSQLUtils.createProperties(algorithmProperties)));
         return String.format("(NAME=%s, %s)", columnName, algorithmFragment);
     }
     
     private String createMaskRuleSql(final String prefix, final String tableName, final List<String> columnSegments) {
-        WorkflowSqlUtils.checkSafeIdentifier("table", tableName);
+        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
         return String.format("%s %s (%sCOLUMNS(%s%s%s))", prefix, tableName, System.lineSeparator(), System.lineSeparator(),
                 String.join(", " + System.lineSeparator(), columnSegments), System.lineSeparator());
     }

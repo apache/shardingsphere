@@ -30,7 +30,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleU
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
 
 import java.util.List;
@@ -118,7 +117,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Mask rule is missing.");
         }
         String actualAlgorithmType = WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "algorithm_type", "mask_algorithm");
-        if (!WorkflowSqlUtils.trimToEmpty(snapshot.getRequest().getAlgorithmType()).equalsIgnoreCase(actualAlgorithmType)) {
+        if (!snapshot.getRequest().getAlgorithmType().equalsIgnoreCase(actualAlgorithmType)) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
                     "Mask algorithm type does not match.", "Re-apply the intended mask rule."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Mask algorithm type does not match.");

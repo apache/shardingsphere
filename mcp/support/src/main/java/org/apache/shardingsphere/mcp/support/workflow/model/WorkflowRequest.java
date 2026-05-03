@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 
 import java.util.LinkedHashMap;
@@ -30,30 +29,29 @@ import java.util.Map;
  * Workflow request.
  */
 @Getter
-@Setter
 public class WorkflowRequest implements WorkflowPropertySource {
     
-    private String planId;
+    private String planId = "";
     
-    private String database;
+    private String database = "";
     
-    private String schema;
+    private String schema = "";
     
-    private String table;
+    private String table = "";
     
-    private String column;
+    private String column = "";
     
-    private String operationType;
+    private String operationType = "";
     
-    private String naturalLanguageIntent;
+    private String naturalLanguageIntent = "";
     
-    private String fieldSemantics;
+    private String fieldSemantics = "";
     
     private String deliveryMode = "all-at-once";
     
     private String executionMode = "review-then-execute";
     
-    private String algorithmType;
+    private String algorithmType = "";
     
     private final Map<String, String> primaryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
@@ -66,6 +64,50 @@ public class WorkflowRequest implements WorkflowPropertySource {
      */
     public WorkflowRequest copy() {
         return copyTo(new WorkflowRequest());
+    }
+    
+    public void setPlanId(final String planId) {
+        this.planId = normalize(planId);
+    }
+    
+    public void setDatabase(final String database) {
+        this.database = normalize(database);
+    }
+    
+    public void setSchema(final String schema) {
+        this.schema = normalize(schema);
+    }
+    
+    public void setTable(final String table) {
+        this.table = normalize(table);
+    }
+    
+    public void setColumn(final String column) {
+        this.column = normalize(column);
+    }
+    
+    public void setOperationType(final String operationType) {
+        this.operationType = normalize(operationType);
+    }
+    
+    public void setNaturalLanguageIntent(final String naturalLanguageIntent) {
+        this.naturalLanguageIntent = normalize(naturalLanguageIntent);
+    }
+    
+    public void setFieldSemantics(final String fieldSemantics) {
+        this.fieldSemantics = normalize(fieldSemantics);
+    }
+    
+    public void setDeliveryMode(final String deliveryMode) {
+        this.deliveryMode = normalize(deliveryMode);
+    }
+    
+    public void setExecutionMode(final String executionMode) {
+        this.executionMode = normalize(executionMode);
+    }
+    
+    public void setAlgorithmType(final String algorithmType) {
+        this.algorithmType = normalize(algorithmType);
     }
     
     /**
@@ -158,6 +200,10 @@ public class WorkflowRequest implements WorkflowPropertySource {
     }
     
     private static boolean hasText(final String value) {
-        return null != value && !value.trim().isEmpty();
+        return !value.isEmpty();
+    }
+    
+    private static String normalize(final String value) {
+        return null == value ? "" : value.trim();
     }
 }

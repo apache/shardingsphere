@@ -25,7 +25,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapa
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -39,6 +39,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -74,10 +75,10 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public String queryColumnDefinition(final String databaseName, final String schemaName, final String tableName, final String columnName) {
-        WorkflowSqlUtils.checkSafeIdentifier("database", databaseName);
-        WorkflowSqlUtils.checkSafeIdentifier("schema", schemaName);
-        WorkflowSqlUtils.checkSafeIdentifier("table", tableName);
-        WorkflowSqlUtils.checkSafeIdentifier("column", columnName);
+        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
+        WorkflowSQLUtils.checkSafeIdentifier("schema", schemaName);
+        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
+        WorkflowSQLUtils.checkSafeIdentifier("column", columnName);
         String sql = String.format("SELECT %s FROM %s WHERE 1 = 0", columnName, tableName);
         try (
                 Connection connection = openConnection(databaseName);
@@ -96,24 +97,24 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     @Override
     public Set<String> queryInformationSchemaColumnNames(final String databaseName, final String schemaName, final String tableName, final Collection<String> columnNames) {
-        WorkflowSqlUtils.checkSafeIdentifier("database", databaseName);
-        WorkflowSqlUtils.checkSafeIdentifier("schema", schemaName);
-        WorkflowSqlUtils.checkSafeIdentifier("table", tableName);
+        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
+        WorkflowSQLUtils.checkSafeIdentifier("schema", schemaName);
+        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
         if (columnNames.isEmpty()) {
             return Set.of();
         }
         StringBuilder result = new StringBuilder(columnNames.size() * 8);
         for (String each : columnNames) {
-            WorkflowSqlUtils.checkSafeIdentifier("column", each);
+            WorkflowSQLUtils.checkSafeIdentifier("column", each);
             if (!result.isEmpty()) {
                 result.append(", ");
             }
-            result.append('\'').append(WorkflowSqlUtils.escapeLiteral(each)).append('\'');
+            result.append('\'').append(WorkflowSQLUtils.escapeLiteral(each)).append('\'');
         }
         String sql = createInformationSchemaColumnQuery(databaseName, schemaName, tableName, result.toString());
         Set<String> actualResult = new LinkedHashSet<>(columnNames.size(), 1F);
         for (Map<String, Object> each : query(databaseName, "", sql)) {
-            String actualColumnName = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("column_name")));
+            String actualColumnName = Objects.toString(each.get("column_name"), "").trim();
             if (!actualColumnName.isEmpty()) {
                 actualResult.add(actualColumnName);
             }
@@ -124,15 +125,15 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     private String createInformationSchemaColumnQuery(final String databaseName, final String schemaName, final String tableName, final String columnList) {
         if (!shouldFilterBySchema(databaseName, schemaName)) {
             return String.format("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_name = '%s' AND column_name IN (%s)",
-                    WorkflowSqlUtils.escapeLiteral(tableName), columnList);
+                    WorkflowSQLUtils.escapeLiteral(tableName), columnList);
         }
-        String actualSchemaName = WorkflowSqlUtils.trimToEmpty(schemaName);
+        String actualSchemaName = normalize(schemaName);
         return String.format("SELECT DISTINCT column_name FROM information_schema.columns WHERE table_schema = '%s' AND table_name = '%s' AND column_name IN (%s)",
-                WorkflowSqlUtils.escapeLiteral(actualSchemaName), WorkflowSqlUtils.escapeLiteral(tableName), columnList);
+                WorkflowSQLUtils.escapeLiteral(actualSchemaName), WorkflowSQLUtils.escapeLiteral(tableName), columnList);
     }
     
     private boolean shouldFilterBySchema(final String databaseName, final String schemaName) {
-        String actualSchemaName = WorkflowSqlUtils.trimToEmpty(schemaName);
+        String actualSchemaName = normalize(schemaName);
         if (actualSchemaName.isEmpty()) {
             return false;
         }
@@ -149,7 +150,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     }
     
     private ResultSet executeQuery(final Connection connection, final Statement statement, final String schemaName, final String sql) throws SQLException {
-        String actualSchemaName = WorkflowSqlUtils.trimToEmpty(schemaName);
+        String actualSchemaName = normalize(schemaName);
         if (!actualSchemaName.isEmpty()) {
             connection.setSchema(actualSchemaName);
         }
@@ -170,7 +171,7 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     }
     
     private String formatColumnDefinition(final int columnType, final String columnTypeName, final int precision, final int scale) {
-        String actualColumnTypeName = WorkflowSqlUtils.trimToEmpty(columnTypeName);
+        String actualColumnTypeName = normalize(columnTypeName);
         if (actualColumnTypeName.isEmpty()) {
             return DEFAULT_COLUMN_DEFINITION;
         }
@@ -199,5 +200,9 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
             default:
                 return actualColumnTypeName;
         }
+    }
+    
+    private String normalize(final String value) {
+        return null == value ? "" : value.trim();
     }
 }

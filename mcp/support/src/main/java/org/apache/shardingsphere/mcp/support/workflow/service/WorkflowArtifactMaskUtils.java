@@ -66,7 +66,7 @@ public final class WorkflowArtifactMaskUtils {
                 continue;
             }
             result = result.replace(each, "******");
-            result = result.replace(WorkflowSqlUtils.escapeLiteral(each), "******");
+            result = result.replace(WorkflowSQLUtils.escapeLiteral(each), "******");
         }
         return result;
     }
@@ -80,9 +80,9 @@ public final class WorkflowArtifactMaskUtils {
             if (!each.isSecret()) {
                 continue;
             }
-            String actualValue = WorkflowSqlUtils.trimToEmpty(getPropertyValue(propertySource, each));
-            if (!actualValue.isEmpty()) {
-                result.add(actualValue);
+            String value = getPropertyValue(propertySource, each);
+            if (null != value && !value.isBlank()) {
+                result.add(value.trim());
             }
         }
         return result;

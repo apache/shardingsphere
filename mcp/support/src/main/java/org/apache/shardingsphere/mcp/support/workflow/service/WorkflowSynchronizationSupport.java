@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -94,7 +95,7 @@ public final class WorkflowSynchronizationSupport {
     
     private String resolveFailureMessage(final ValidationReport validationReport) {
         for (Map<String, Object> each : validationReport.getMismatches()) {
-            String impact = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("impact")));
+            String impact = Objects.toString(each.get("impact"), "").trim();
             if (!impact.isEmpty()) {
                 return impact;
             }

@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionR
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Workflow validation support.
@@ -99,8 +100,8 @@ public final class WorkflowValidationSupport {
      * @return projection validation SQL
      */
     public String createProjectionValidationSql(final WorkflowContextSnapshot snapshot) {
-        WorkflowSqlUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
-        WorkflowSqlUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
+        WorkflowSQLUtils.checkSafeIdentifier("table", snapshot.getRequest().getTable());
+        WorkflowSQLUtils.checkSafeIdentifier("column", snapshot.getRequest().getColumn());
         return String.format("SELECT %s FROM %s", snapshot.getRequest().getColumn(), snapshot.getRequest().getTable());
     }
     
@@ -187,7 +188,7 @@ public final class WorkflowValidationSupport {
     }
     
     private boolean isValidatableStatus(final WorkflowContextSnapshot snapshot) {
-        String actualStatus = WorkflowSqlUtils.trimToEmpty(snapshot.getStatus());
+        String actualStatus = null == snapshot.getStatus() ? "" : snapshot.getStatus();
         if (WorkflowLifecycle.STATUS_VALIDATED.equalsIgnoreCase(actualStatus)
                 || WorkflowLifecycle.STATUS_EXECUTED.equalsIgnoreCase(actualStatus)
                 || WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equalsIgnoreCase(actualStatus)) {
@@ -219,7 +220,7 @@ public final class WorkflowValidationSupport {
      */
     public String resolveValidationIssueCode(final ValidationReport validationReport) {
         for (Map<String, Object> each : validationReport.getMismatches()) {
-            String actualCode = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("code")));
+            String actualCode = Objects.toString(each.get("code"), "").trim();
             if (!actualCode.isEmpty()) {
                 return actualCode;
             }

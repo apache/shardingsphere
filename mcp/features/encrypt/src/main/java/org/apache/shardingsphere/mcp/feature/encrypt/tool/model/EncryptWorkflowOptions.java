@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Shared encrypt workflow options.
  */
-@lombok.Getter
-@lombok.Setter
+@Getter
+@Setter
 public final class EncryptWorkflowOptions {
     
     private Boolean allowIndexDDL;
@@ -35,19 +38,39 @@ public final class EncryptWorkflowOptions {
     
     private Boolean requiresLikeQuery;
     
-    private String assistedQueryAlgorithmType;
+    private String assistedQueryAlgorithmType = "";
     
-    private String likeQueryAlgorithmType;
+    private String likeQueryAlgorithmType = "";
     
-    private String cipherColumnName;
+    private String cipherColumnName = "";
     
-    private String assistedQueryColumnName;
+    private String assistedQueryColumnName = "";
     
-    private String likeQueryColumnName;
+    private String likeQueryColumnName = "";
     
     private final Map<String, String> assistedQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
     
     private final Map<String, String> likeQueryAlgorithmProperties = new LinkedHashMap<>(8, 1F);
+    
+    public void setAssistedQueryAlgorithmType(final String assistedQueryAlgorithmType) {
+        this.assistedQueryAlgorithmType = normalize(assistedQueryAlgorithmType);
+    }
+    
+    public void setLikeQueryAlgorithmType(final String likeQueryAlgorithmType) {
+        this.likeQueryAlgorithmType = normalize(likeQueryAlgorithmType);
+    }
+    
+    public void setCipherColumnName(final String cipherColumnName) {
+        this.cipherColumnName = normalize(cipherColumnName);
+    }
+    
+    public void setAssistedQueryColumnName(final String assistedQueryColumnName) {
+        this.assistedQueryColumnName = normalize(assistedQueryColumnName);
+    }
+    
+    public void setLikeQueryColumnName(final String likeQueryColumnName) {
+        this.likeQueryColumnName = normalize(likeQueryColumnName);
+    }
     
     Map<String, String> getAlgorithmProperties(final String algorithmRole) {
         if ("assisted_query".equals(algorithmRole)) {
@@ -114,6 +137,10 @@ public final class EncryptWorkflowOptions {
     }
     
     private static boolean hasText(final String value) {
-        return null != value && !value.trim().isEmpty();
+        return !value.isEmpty();
+    }
+    
+    private static String normalize(final String value) {
+        return null == value ? "" : value.trim();
     }
 }

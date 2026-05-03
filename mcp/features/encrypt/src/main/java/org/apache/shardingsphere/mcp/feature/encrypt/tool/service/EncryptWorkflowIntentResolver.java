@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowIntentResolverSupport;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.util.Locale;
 
@@ -47,7 +46,7 @@ final class EncryptWorkflowIntentResolver {
         if (null != request.getOptions().getRequiresDecrypt()) {
             return request.getOptions().getRequiresDecrypt();
         }
-        String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
+        String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不可逆")) {
             return inferOption(clarifiedIntent, "requires_decrypt", false);
         }
@@ -65,7 +64,7 @@ final class EncryptWorkflowIntentResolver {
         if (null != request.getOptions().getRequiresEqualityFilter()) {
             return request.getOptions().getRequiresEqualityFilter();
         }
-        String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
+        String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不需要等值")) {
             return inferOption(clarifiedIntent, "requires_equality_filter", false);
         }
@@ -83,7 +82,7 @@ final class EncryptWorkflowIntentResolver {
         if (null != request.getOptions().getRequiresLikeQuery()) {
             return request.getOptions().getRequiresLikeQuery();
         }
-        String naturalLanguageIntent = WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
+        String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("不需要like") || naturalLanguageIntent.contains("不需要模糊")) {
             return inferOption(clarifiedIntent, "requires_like_query", false);
         }

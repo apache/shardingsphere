@@ -93,4 +93,17 @@ class WorkflowRequestTest {
         assertThat(actualRequest, is(target));
         assertThat(target.getPlanId(), is("plan-1"));
     }
+    
+    @Test
+    void assertNormalizeStringValues() {
+        WorkflowRequest actualRequest = new WorkflowRequest();
+        actualRequest.setPlanId(" plan-1 ");
+        actualRequest.setDatabase(null);
+        actualRequest.setColumn(" phone ");
+        actualRequest.setAlgorithmType(" AES ");
+        assertThat(actualRequest.getPlanId(), is("plan-1"));
+        assertThat(actualRequest.getDatabase(), is(""));
+        assertThat(actualRequest.getColumn(), is("phone"));
+        assertThat(actualRequest.getAlgorithmType(), is("AES"));
+    }
 }

@@ -61,4 +61,15 @@ class EncryptWorkflowOptionsTest {
         assertThat(previousOptions.getAssistedQueryAlgorithmProperties().get("digest-algorithm-name"), is("SHA-256"));
         assertThat(previousOptions.getLikeQueryAlgorithmProperties().get("delta"), is("1"));
     }
+    
+    @Test
+    void assertNormalizeStringValues() {
+        EncryptWorkflowOptions actualOptions = new EncryptWorkflowOptions();
+        actualOptions.setAssistedQueryAlgorithmType(" MD5 ");
+        actualOptions.setLikeQueryAlgorithmType(null);
+        actualOptions.setCipherColumnName(" phone_cipher ");
+        assertThat(actualOptions.getAssistedQueryAlgorithmType(), is("MD5"));
+        assertThat(actualOptions.getLikeQueryAlgorithmType(), is(""));
+        assertThat(actualOptions.getCipherColumnName(), is("phone_cipher"));
+    }
 }

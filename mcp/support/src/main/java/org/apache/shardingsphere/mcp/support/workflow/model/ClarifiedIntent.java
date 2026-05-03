@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.support.workflow.model;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -29,18 +28,33 @@ import java.util.Map;
  * Clarified workflow intent.
  */
 @Getter
-@Setter
 public final class ClarifiedIntent {
     
-    private String operationType;
+    private String operationType = "";
     
-    private String fieldSemantics;
+    private String fieldSemantics = "";
     
-    private String reasoningNotes;
+    private String reasoningNotes = "";
     
     private final Map<String, Object> inferredValues = new LinkedHashMap<>(4, 1F);
     
     private final List<String> unresolvedFields = new LinkedList<>();
     
     private final List<String> pendingQuestions = new LinkedList<>();
+    
+    public void setOperationType(final String operationType) {
+        this.operationType = normalize(operationType);
+    }
+    
+    public void setFieldSemantics(final String fieldSemantics) {
+        this.fieldSemantics = normalize(fieldSemantics);
+    }
+    
+    public void setReasoningNotes(final String reasoningNotes) {
+        this.reasoningNotes = normalize(reasoningNotes);
+    }
+    
+    private static String normalize(final String value) {
+        return null == value ? "" : value.trim();
+    }
 }

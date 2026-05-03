@@ -38,7 +38,7 @@ final class TestWorkflowSessionContext implements WorkflowSessionContext {
     
     @Override
     public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
-        if (!WorkflowSqlUtils.trimToEmpty(planId).isEmpty()) {
+        if (null != planId && !planId.isBlank()) {
             return getRequired(planId);
         }
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();

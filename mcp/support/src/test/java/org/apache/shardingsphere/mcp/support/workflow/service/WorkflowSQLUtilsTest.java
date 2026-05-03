@@ -29,57 +29,51 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class WorkflowSqlUtilsTest {
+class WorkflowSQLUtilsTest {
     
     @Test
     void assertIsSafeIdentifier() {
-        assertTrue(WorkflowSqlUtils.isSafeIdentifier("orders_01"));
+        assertTrue(WorkflowSQLUtils.isSafeIdentifier("orders_01"));
     }
     
     @Test
     void assertCheckSafeIdentifierAllowsSafeIdentifier() {
-        assertDoesNotThrow(() -> WorkflowSqlUtils.checkSafeIdentifier("table", "orders_01"));
+        assertDoesNotThrow(() -> WorkflowSQLUtils.checkSafeIdentifier("table", "orders_01"));
     }
     
     @Test
     void assertCheckSafeIdentifierRejectsUnsafeIdentifier() {
-        Exception actualException = assertThrows(RuntimeException.class, () -> WorkflowSqlUtils.checkSafeIdentifier("table", "bad table"));
+        Exception actualException = assertThrows(RuntimeException.class, () -> WorkflowSQLUtils.checkSafeIdentifier("table", "bad table"));
         assertThat(actualException.getMessage(), is("table `bad table` contains unsupported characters. Only unquoted SQL identifiers are supported in V1."));
     }
     
     @Test
-    void assertTrimToEmptyReturnsEmptyForNull() {
-        String actualValue = WorkflowSqlUtils.trimToEmpty(null);
-        assertThat(actualValue, is(""));
-    }
-    
-    @Test
     void assertEscapeLiteralEscapesSingleQuote() {
-        String actualValue = WorkflowSqlUtils.escapeLiteral("O'Brien");
+        String actualValue = WorkflowSQLUtils.escapeLiteral("O'Brien");
         assertThat(actualValue, is("O''Brien"));
     }
     
     @Test
     void assertCreatePropertiesTrimsValues() {
-        Properties actualProperties = WorkflowSqlUtils.createProperties(Map.of("aes-key-value", " 123456 "));
+        Properties actualProperties = WorkflowSQLUtils.createProperties(Map.of("aes-key-value", " 123456 "));
         assertThat(actualProperties.getProperty("aes-key-value"), is("123456"));
     }
     
     @Test
     void assertCreateAlgorithmFragmentFormatsProperties() {
-        String actualFragment = WorkflowSqlUtils.createAlgorithmFragment(" AES ", Map.of("aes-key-value", " 123456 "));
+        String actualFragment = WorkflowSQLUtils.createAlgorithmFragment(" AES ", Map.of("aes-key-value", " 123456 "));
         assertThat(actualFragment, is("TYPE(NAME='aes', PROPERTIES('aes-key-value'='123456'))"));
     }
     
     @Test
     void assertCreateAlgorithmFragmentReturnsEmptyForBlankType() {
-        String actualFragment = WorkflowSqlUtils.createAlgorithmFragment(" ", Map.of("aes-key-value", "123456"));
+        String actualFragment = WorkflowSQLUtils.createAlgorithmFragment(" ", Map.of("aes-key-value", "123456"));
         assertThat(actualFragment, is(""));
     }
     
     @Test
     void assertParsePropertyEntriesSkipsMalformedEntriesAndTrimsValues() {
-        Map<String, String> actualEntries = WorkflowSqlUtils.parsePropertyEntries(List.of("aes-key-value = 123456 ", " malformed ", " iv = abc "));
+        Map<String, String> actualEntries = WorkflowSQLUtils.parsePropertyEntries(List.of("aes-key-value = 123456 ", " malformed ", " iv = abc "));
         assertThat(actualEntries.size(), is(2));
         assertThat(actualEntries.get("aes-key-value"), is("123456"));
         assertThat(actualEntries.get("iv"), is("abc"));
@@ -87,7 +81,7 @@ class WorkflowSqlUtilsTest {
     
     @Test
     void assertCreatePropertyMapReturnsEmptyForNull() {
-        Map<String, String> actualEntries = WorkflowSqlUtils.createPropertyMap(null);
+        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(null);
         assertThat(actualEntries, is(Map.of()));
     }
     
@@ -95,19 +89,19 @@ class WorkflowSqlUtilsTest {
     void assertCreatePropertyMapHandlesProperties() {
         Properties props = new Properties();
         props.setProperty("aes-key-value", " 123456 ");
-        Map<String, String> actualEntries = WorkflowSqlUtils.createPropertyMap(props);
+        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(props);
         assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
     }
     
     @Test
     void assertCreatePropertyMapHandlesMap() {
-        Map<String, String> actualEntries = WorkflowSqlUtils.createPropertyMap(Map.of("aes-key-value", " 123456 "));
+        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap(Map.of("aes-key-value", " 123456 "));
         assertThat(actualEntries, is(Map.of("aes-key-value", "123456")));
     }
     
     @Test
     void assertCreatePropertyMapHandlesString() {
-        Map<String, String> actualEntries = WorkflowSqlUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}");
+        Map<String, String> actualEntries = WorkflowSQLUtils.createPropertyMap("{'aes-key-value':'123456','iv':'abc'}");
         assertThat(actualEntries, is(Map.of("aes-key-value", "123456", "iv", "abc")));
     }
 }

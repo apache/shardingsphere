@@ -21,7 +21,6 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestExc
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -73,7 +72,7 @@ public final class InMemoryWorkflowSessionContext implements WorkflowSessionCont
     
     @Override
     public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
-        String actualPlanId = WorkflowSqlUtils.trimToEmpty(planId);
+        String actualPlanId = null == planId ? "" : planId.trim();
         if (!actualPlanId.isEmpty()) {
             return getRequired(actualPlanId);
         }

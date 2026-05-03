@@ -21,7 +21,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowR
 import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -44,7 +44,7 @@ public final class DerivedColumnNamingService {
         boolean requiresAssistedQuery = Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter());
         boolean requiresLikeQuery = Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery());
         DerivedColumnPlan result = new DerivedColumnPlan();
-        String logicalColumn = WorkflowSqlUtils.trimToEmpty(request.getColumn());
+        String logicalColumn = request.getColumn();
         result.setLogicalColumn(logicalColumn);
         result.setCipherColumnRequired(true);
         result.setAssistedQueryColumnRequired(requiresAssistedQuery);
@@ -61,8 +61,8 @@ public final class DerivedColumnNamingService {
     
     private String resolveName(final String defaultName, final String overrideName, final Set<String> existingNames,
                                final java.util.List<WorkflowIssue> issues, final DerivedColumnPlan plan) {
-        String candidate = WorkflowSqlUtils.trimToEmpty(overrideName).isEmpty() ? defaultName : overrideName.trim();
-        if (!WorkflowSqlUtils.isSafeIdentifier(candidate)) {
+        String candidate = overrideName.isEmpty() ? defaultName : overrideName;
+        if (!WorkflowSQLUtils.isSafeIdentifier(candidate)) {
             issues.add(new WorkflowIssue(WorkflowIssueCode.USER_OVERRIDE_NAME_UNSAFE, "error", "planning-artifacts",
                     String.format("Generated column name `%s` is unsafe.", candidate), "Use standard SQL identifiers only.", false, Map.of("candidate", candidate)));
             candidate = defaultName;

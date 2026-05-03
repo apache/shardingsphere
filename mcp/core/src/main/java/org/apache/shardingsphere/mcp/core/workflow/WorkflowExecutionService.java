@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactBu
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 
 import java.util.LinkedHashMap;
@@ -87,7 +86,7 @@ public final class WorkflowExecutionService {
     }
     
     private boolean isApplicableStatus(final WorkflowContextSnapshot snapshot) {
-        String actualStatus = WorkflowSqlUtils.trimToEmpty(snapshot.getStatus());
+        String actualStatus = null == snapshot.getStatus() ? "" : snapshot.getStatus();
         if (WorkflowLifecycle.STATUS_PLANNED.equalsIgnoreCase(actualStatus)
                 || WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equalsIgnoreCase(actualStatus)) {
             return true;
@@ -105,7 +104,7 @@ public final class WorkflowExecutionService {
     }
     
     private String resolveExecutionMode(final String executionMode, final WorkflowContextSnapshot snapshot) {
-        return WorkflowSqlUtils.trimToEmpty(executionMode).isEmpty() ? snapshot.getRequest().getExecutionMode() : executionMode;
+        return executionMode.isEmpty() ? snapshot.getRequest().getExecutionMode() : executionMode;
     }
     
     private boolean isManualOnly(final String executionMode) {

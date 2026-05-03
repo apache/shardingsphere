@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,19 +39,19 @@ public final class IndexPlanningService {
      * @return index plans
      */
     public List<IndexPlan> planIndexes(final String tableName, final DerivedColumnPlan derivedColumnPlan, final Set<String> existingIndexes) {
-        WorkflowSqlUtils.checkSafeIdentifier("table", tableName);
+        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
         List<IndexPlan> result = new LinkedList<>();
-        if (derivedColumnPlan.isAssistedQueryColumnRequired() && !WorkflowSqlUtils.trimToEmpty(derivedColumnPlan.getAssistedQueryColumnName()).isEmpty()) {
+        if (derivedColumnPlan.isAssistedQueryColumnRequired() && !derivedColumnPlan.getAssistedQueryColumnName().isEmpty()) {
             result.add(createIndexPlan(tableName, derivedColumnPlan.getAssistedQueryColumnName(), "Recommended for assisted query performance.", existingIndexes));
         }
-        if (derivedColumnPlan.isLikeQueryColumnRequired() && !WorkflowSqlUtils.trimToEmpty(derivedColumnPlan.getLikeQueryColumnName()).isEmpty()) {
+        if (derivedColumnPlan.isLikeQueryColumnRequired() && !derivedColumnPlan.getLikeQueryColumnName().isEmpty()) {
             result.add(createIndexPlan(tableName, derivedColumnPlan.getLikeQueryColumnName(), "Recommended for like-query performance.", existingIndexes));
         }
         return result;
     }
     
     private IndexPlan createIndexPlan(final String tableName, final String columnName, final String reason, final Set<String> existingIndexes) {
-        WorkflowSqlUtils.checkSafeIdentifier("column", columnName);
+        WorkflowSQLUtils.checkSafeIdentifier("column", columnName);
         String baseIndexName = "idx_" + tableName + "_" + columnName;
         String actualIndexName = baseIndexName;
         int suffix = 1;

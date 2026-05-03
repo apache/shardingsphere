@@ -28,13 +28,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
  * Workflow SQL utilities.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class WorkflowSqlUtils {
+public final class WorkflowSQLUtils {
     
     private static final String SAFE_IDENTIFIER_PATTERN = "[A-Za-z0-9_$]+";
     
@@ -59,16 +60,6 @@ public final class WorkflowSqlUtils {
         String actualIdentifier = trimToEmpty(identifier);
         ShardingSpherePreconditions.checkState(actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier),
                 () -> new MCPInvalidRequestException(String.format("%s `%s` contains unsupported characters. Only unquoted SQL identifiers are supported in V1.", fieldName, actualIdentifier)));
-    }
-    
-    /**
-     * Trim a string and convert {@code null} to an empty string.
-     *
-     * @param value value to normalize
-     * @return normalized string
-     */
-    public static String trimToEmpty(final String value) {
-        return null == value ? "" : value.trim();
     }
     
     /**
@@ -165,9 +156,9 @@ public final class WorkflowSqlUtils {
     private static Map<String, String> createPropertyMap(final Map<?, ?> props) {
         Map<String, String> result = new LinkedHashMap<>(props.size(), 1F);
         for (Entry<?, ?> entry : props.entrySet()) {
-            String key = trimToEmpty(String.valueOf(entry.getKey()));
+            String key = trimToEmpty(Objects.toString(entry.getKey(), ""));
             if (!key.isEmpty()) {
-                result.put(key, trimToEmpty(null == entry.getValue() ? "" : String.valueOf(entry.getValue())));
+                result.put(key, trimToEmpty(Objects.toString(entry.getValue(), "")));
             }
         }
         return result;
@@ -192,7 +183,7 @@ public final class WorkflowSqlUtils {
     
     private static int findPropertySeparatorIndex(final String entry) {
         int equalsIndex = entry.indexOf('=');
-        return -1 != equalsIndex ? equalsIndex : entry.indexOf(':');
+        return -1 == equalsIndex ? entry.indexOf(':') : equalsIndex;
     }
     
     private static String stripQuotes(final String value) {
@@ -206,5 +197,9 @@ public final class WorkflowSqlUtils {
             return actualValue.substring(1, actualValue.length() - 1);
         }
         return actualValue;
+    }
+    
+    private static String trimToEmpty(final String value) {
+        return null == value ? "" : value.trim();
     }
 }

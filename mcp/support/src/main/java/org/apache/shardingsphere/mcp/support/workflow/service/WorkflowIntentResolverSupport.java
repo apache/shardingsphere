@@ -49,7 +49,7 @@ public final class WorkflowIntentResolverSupport {
      * @return resolved operation type
      */
     public static String resolveOperationType(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        String actualOperationType = WorkflowSqlUtils.trimToEmpty(request.getOperationType()).toLowerCase(Locale.ENGLISH);
+        String actualOperationType = request.getOperationType().toLowerCase(Locale.ENGLISH);
         if (!actualOperationType.isEmpty()) {
             return actualOperationType;
         }
@@ -81,12 +81,12 @@ public final class WorkflowIntentResolverSupport {
      * @return resolved field semantics
      */
     public static String resolveFieldSemantics(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        String actualFieldSemantics = WorkflowSqlUtils.trimToEmpty(request.getFieldSemantics()).toLowerCase(Locale.ENGLISH);
+        String actualFieldSemantics = request.getFieldSemantics().toLowerCase(Locale.ENGLISH);
         if (!actualFieldSemantics.isEmpty()) {
             return actualFieldSemantics;
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
-        String columnName = WorkflowSqlUtils.trimToEmpty(request.getColumn()).toLowerCase(Locale.ENGLISH);
+        String columnName = request.getColumn().toLowerCase(Locale.ENGLISH);
         if (naturalLanguageIntent.contains("手机号") || columnName.contains("phone") || columnName.contains("mobile") || columnName.contains("tel")) {
             return recordInferredValue(clarifiedIntent, "field_semantics", "phone");
         }
@@ -118,7 +118,7 @@ public final class WorkflowIntentResolverSupport {
     }
     
     private static String getNaturalLanguageIntent(final WorkflowRequest request) {
-        return WorkflowSqlUtils.trimToEmpty(request.getNaturalLanguageIntent()).toLowerCase(Locale.ENGLISH);
+        return request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
     }
     
     private static String recordInferredValue(final ClarifiedIntent clarifiedIntent, final String fieldName, final String value) {

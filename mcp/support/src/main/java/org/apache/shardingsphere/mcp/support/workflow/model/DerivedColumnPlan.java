@@ -32,13 +32,13 @@ import java.util.Map;
 @Setter
 public final class DerivedColumnPlan {
     
-    private String logicalColumn;
+    private String logicalColumn = "";
     
-    private String cipherColumnName;
+    private String cipherColumnName = "";
     
-    private String assistedQueryColumnName;
+    private String assistedQueryColumnName = "";
     
-    private String likeQueryColumnName;
+    private String likeQueryColumnName = "";
     
     private boolean cipherColumnRequired;
     
@@ -49,6 +49,26 @@ public final class DerivedColumnPlan {
     private String dataTypeStrategy = "shardingsphere-default";
     
     private final List<Map<String, String>> nameCollisions = new LinkedList<>();
+    
+    public void setLogicalColumn(final String logicalColumn) {
+        this.logicalColumn = normalize(logicalColumn);
+    }
+    
+    public void setCipherColumnName(final String cipherColumnName) {
+        this.cipherColumnName = normalize(cipherColumnName);
+    }
+    
+    public void setAssistedQueryColumnName(final String assistedQueryColumnName) {
+        this.assistedQueryColumnName = normalize(assistedQueryColumnName);
+    }
+    
+    public void setLikeQueryColumnName(final String likeQueryColumnName) {
+        this.likeQueryColumnName = normalize(likeQueryColumnName);
+    }
+    
+    public void setDataTypeStrategy(final String dataTypeStrategy) {
+        this.dataTypeStrategy = normalize(dataTypeStrategy);
+    }
     
     /**
      * Convert to map.
@@ -67,5 +87,9 @@ public final class DerivedColumnPlan {
         result.put("data_type_strategy", dataTypeStrategy);
         result.put("name_collisions", nameCollisions);
         return result;
+    }
+    
+    private static String normalize(final String value) {
+        return null == value ? "" : value.trim();
     }
 }

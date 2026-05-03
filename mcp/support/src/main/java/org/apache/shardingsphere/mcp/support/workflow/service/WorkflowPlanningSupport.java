@@ -90,7 +90,7 @@ public final class WorkflowPlanningSupport {
      */
     public boolean ensureLifecycleState(final String ruleLabel, final ClarifiedIntent clarifiedIntent,
                                         final boolean ruleExists, final WorkflowContextSnapshot snapshot) {
-        String actualOperationType = WorkflowSqlUtils.trimToEmpty(clarifiedIntent.getOperationType()).toLowerCase(Locale.ENGLISH);
+        String actualOperationType = clarifiedIntent.getOperationType().toLowerCase(Locale.ENGLISH);
         if ("create".equals(actualOperationType) && ruleExists) {
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.RULE_STATE_MISMATCH, "error", "discovering",
                     String.format("%s already exists for the target column.", ruleLabel), "Use alter instead of create.", false, Map.of()));
@@ -179,7 +179,7 @@ public final class WorkflowPlanningSupport {
      */
     public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
-        if (WorkflowSqlUtils.trimToEmpty(request.getDatabase()).isEmpty()) {
+        if (request.getDatabase().isEmpty()) {
             clarifiedIntent.getPendingQuestions().add("请先提供 logical database。");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
                     "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
@@ -198,9 +198,7 @@ public final class WorkflowPlanningSupport {
             return false;
         }
         addMissingQuestions(request, clarifiedIntent);
-        if (WorkflowSqlUtils.trimToEmpty(request.getSchema()).isEmpty()
-                || WorkflowSqlUtils.trimToEmpty(request.getTable()).isEmpty()
-                || WorkflowSqlUtils.trimToEmpty(request.getColumn()).isEmpty()) {
+        if (request.getSchema().isEmpty() || request.getTable().isEmpty() || request.getColumn().isEmpty()) {
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
             return false;
         }
@@ -212,30 +210,29 @@ public final class WorkflowPlanningSupport {
     }
     
     private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
-        if (WorkflowSqlUtils.trimToEmpty(request.getSchema()).isEmpty()) {
+        if (request.getSchema().isEmpty()) {
             clarifiedIntent.getPendingQuestions().add("请明确 schema。");
         }
-        if (WorkflowSqlUtils.trimToEmpty(request.getTable()).isEmpty()) {
+        if (request.getTable().isEmpty()) {
             clarifiedIntent.getPendingQuestions().add("请明确目标表。");
         }
-        if (WorkflowSqlUtils.trimToEmpty(request.getColumn()).isEmpty()) {
+        if (request.getColumn().isEmpty()) {
             clarifiedIntent.getPendingQuestions().add("请明确目标列。");
         }
     }
     
     private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
-        String actualIdentifier = WorkflowSqlUtils.trimToEmpty(identifier);
-        if (actualIdentifier.isEmpty() || WorkflowSqlUtils.isSafeIdentifier(actualIdentifier)) {
+        if (identifier.isEmpty() || WorkflowSQLUtils.isSafeIdentifier(identifier)) {
             return true;
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER, "error", "discovering",
-                String.format("%s identifier `%s` contains unsupported characters.", fieldName, actualIdentifier),
-                "Use unquoted SQL identifiers only in V1.", false, Map.of("field", fieldName, "identifier", actualIdentifier)));
+                String.format("%s identifier `%s` contains unsupported characters.", fieldName, identifier),
+                "Use unquoted SQL identifiers only in V1.", false, Map.of("field", fieldName, "identifier", identifier)));
         return false;
     }
     
     private String resolveSchema(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request) {
-        String actualSchema = WorkflowSqlUtils.trimToEmpty(request.getSchema());
+        String actualSchema = request.getSchema();
         if (!actualSchema.isEmpty()) {
             return actualSchema;
         }
@@ -243,7 +240,7 @@ public final class WorkflowPlanningSupport {
         if (databaseMetadata.isEmpty()) {
             return "";
         }
-        String tableName = WorkflowSqlUtils.trimToEmpty(request.getTable());
+        String tableName = request.getTable();
         if (!tableName.isEmpty()) {
             List<String> result = new LinkedList<>();
             for (MCPSchemaMetadata each : databaseMetadata.get().getSchemas()) {
@@ -290,7 +287,7 @@ public final class WorkflowPlanningSupport {
         List<String> result = new LinkedList<>();
         for (AlgorithmPropertyRequirement each : propertyRequirements) {
             String actualValue = request.getAlgorithmProperties(each.getAlgorithmRole()).get(each.getPropertyKey());
-            if (each.isRequired() && WorkflowSqlUtils.trimToEmpty(actualValue).isEmpty()) {
+            if (each.isRequired() && (null == actualValue || actualValue.isBlank())) {
                 result.add(each.getPropertyKey());
             }
         }

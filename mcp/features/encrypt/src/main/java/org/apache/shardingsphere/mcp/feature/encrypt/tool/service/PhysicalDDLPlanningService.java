@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.service;
 
 import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,18 +43,18 @@ public final class PhysicalDDLPlanningService {
      */
     public List<DDLArtifact> planAddColumnArtifacts(final String tableName, final DerivedColumnPlan derivedColumnPlan,
                                                     final Set<String> existingPhysicalNames, final String derivedColumnDefinition) {
-        WorkflowSqlUtils.checkSafeIdentifier("table", tableName);
+        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
         validateDerivedColumnIdentifiers(derivedColumnPlan);
-        String actualDerivedColumnDefinition = WorkflowSqlUtils.trimToEmpty(derivedColumnDefinition).isEmpty() ? DEFAULT_DERIVED_COLUMN_DATA_TYPE : derivedColumnDefinition;
+        String actualDerivedColumnDefinition = null == derivedColumnDefinition || derivedColumnDefinition.isBlank() ? DEFAULT_DERIVED_COLUMN_DATA_TYPE : derivedColumnDefinition;
         List<String> clauses = new LinkedList<>();
         if (derivedColumnPlan.isCipherColumnRequired() && !existingPhysicalNames.contains(derivedColumnPlan.getCipherColumnName())) {
             clauses.add(String.format("ADD COLUMN %s %s", derivedColumnPlan.getCipherColumnName(), actualDerivedColumnDefinition));
         }
-        if (derivedColumnPlan.isAssistedQueryColumnRequired() && !WorkflowSqlUtils.trimToEmpty(derivedColumnPlan.getAssistedQueryColumnName()).isEmpty()
+        if (derivedColumnPlan.isAssistedQueryColumnRequired() && !derivedColumnPlan.getAssistedQueryColumnName().isEmpty()
                 && !existingPhysicalNames.contains(derivedColumnPlan.getAssistedQueryColumnName())) {
             clauses.add(String.format("ADD COLUMN %s %s", derivedColumnPlan.getAssistedQueryColumnName(), actualDerivedColumnDefinition));
         }
-        if (derivedColumnPlan.isLikeQueryColumnRequired() && !WorkflowSqlUtils.trimToEmpty(derivedColumnPlan.getLikeQueryColumnName()).isEmpty()
+        if (derivedColumnPlan.isLikeQueryColumnRequired() && !derivedColumnPlan.getLikeQueryColumnName().isEmpty()
                 && !existingPhysicalNames.contains(derivedColumnPlan.getLikeQueryColumnName())) {
             clauses.add(String.format("ADD COLUMN %s %s", derivedColumnPlan.getLikeQueryColumnName(), actualDerivedColumnDefinition));
         }
@@ -65,8 +65,8 @@ public final class PhysicalDDLPlanningService {
     }
     
     private void validateDerivedColumnIdentifiers(final DerivedColumnPlan derivedColumnPlan) {
-        WorkflowSqlUtils.checkSafeIdentifier("cipher_column", derivedColumnPlan.getCipherColumnName());
-        WorkflowSqlUtils.checkSafeIdentifier("assisted_query_column", derivedColumnPlan.getAssistedQueryColumnName());
-        WorkflowSqlUtils.checkSafeIdentifier("like_query_column", derivedColumnPlan.getLikeQueryColumnName());
+        WorkflowSQLUtils.checkSafeIdentifier("cipher_column", derivedColumnPlan.getCipherColumnName());
+        WorkflowSQLUtils.checkSafeIdentifier("assisted_query_column", derivedColumnPlan.getAssistedQueryColumnName());
+        WorkflowSQLUtils.checkSafeIdentifier("like_query_column", derivedColumnPlan.getLikeQueryColumnName());
     }
 }
