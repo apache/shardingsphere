@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -46,9 +47,7 @@ public final class WorkflowKind {
      */
     public static WorkflowKind valueOf(final String value) {
         String actualValue = Objects.requireNonNull(value, "workflowKind is required.").trim();
-        if (!IDENTIFIER_PATTERN.matcher(actualValue).matches()) {
-            throw new IllegalArgumentException(String.format("Invalid workflow kind `%s`.", value));
-        }
+        ShardingSpherePreconditions.checkState(IDENTIFIER_PATTERN.matcher(actualValue).matches(), () -> new IllegalArgumentException(String.format("Invalid workflow kind `%s`.", value)));
         return new WorkflowKind(actualValue);
     }
     
