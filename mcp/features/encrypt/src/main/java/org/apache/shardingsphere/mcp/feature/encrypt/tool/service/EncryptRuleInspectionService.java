@@ -43,10 +43,10 @@ public final class EncryptRuleInspectionService {
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName))) {
-            Map<String, Object> actualRow = new LinkedHashMap<>(each);
-            putAliasIfAbsent(actualRow, "assisted_query_column", "assisted_query");
-            putAliasIfAbsent(actualRow, "like_query_column", "like_query");
-            result.add(actualRow);
+            Map<String, Object> row = new LinkedHashMap<>(each);
+            putAliasIfAbsent(row, "assisted_query_column", "assisted_query");
+            putAliasIfAbsent(row, "like_query_column", "like_query");
+            result.add(row);
         }
         return result;
     }
