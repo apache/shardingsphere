@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 
 /**
- * Handler for one logical table encrypt rule resource URI.
+ * Encrypt rule handler.
  */
 public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
@@ -44,7 +44,6 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseH
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(
-                databaseContext.getQueryFacade(), uriVariables.getVariable("database"), uriVariables.getVariable("table")));
+        return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getVariable("database"), uriVariables.getVariable("table")));
     }
 }

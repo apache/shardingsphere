@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 
 /**
- * Handler for mask algorithm plugins resource URI.
+ * Mask algorithms handler.
  */
 public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
@@ -44,7 +44,6 @@ public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDataba
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.enrichMaskAlgorithms(
-                ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade())));
+        return new MCPItemsResponse(ruleInspectionService.enrichMaskAlgorithms(ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade())));
     }
 }

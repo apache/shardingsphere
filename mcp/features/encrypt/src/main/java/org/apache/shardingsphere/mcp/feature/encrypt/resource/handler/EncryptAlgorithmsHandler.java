@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
 
 /**
- * Handler for encrypt algorithm plugins resource URI.
+ * Encrypt algorithms handler.
  */
 public final class EncryptAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
@@ -44,7 +44,6 @@ public final class EncryptAlgorithmsHandler implements MCPResourceHandler<MCPDat
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.enrichEncryptAlgorithms(
-                ruleInspectionService.queryEncryptAlgorithms(databaseContext.getQueryFacade())));
+        return new MCPItemsResponse(ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(databaseContext.getQueryFacade())));
     }
 }

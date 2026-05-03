@@ -26,7 +26,7 @@ import org.apache.shardingsphere.mcp.feature.mask.MaskFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
 
 /**
- * Handler for mask rules resource URI.
+ * Mask rules handler.
  */
 public final class MaskRulesHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
     
@@ -44,7 +44,6 @@ public final class MaskRulesHandler implements MCPResourceHandler<MCPDatabaseHan
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.queryMaskRules(
-                databaseContext.getQueryFacade(), uriVariables.getVariable("database"), ""));
+        return new MCPItemsResponse(ruleInspectionService.queryMaskRules(databaseContext.getQueryFacade(), uriVariables.getVariable("database"), ""));
     }
 }
