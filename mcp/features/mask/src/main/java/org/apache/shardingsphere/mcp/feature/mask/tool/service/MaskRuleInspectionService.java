@@ -52,18 +52,18 @@ public final class MaskRuleInspectionService {
         return result;
     }
     
-    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
-        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
-            row.put(targetKey, row.get(sourceKey));
-        }
-    }
-    
     private String buildShowMaskRulesSQL(final String databaseName, final String tableName) {
         String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
         String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
         WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
         WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
         return actualTableName.isEmpty() ? String.format("SHOW MASK RULES FROM %s", actualDatabaseName) : String.format("SHOW MASK RULE %s FROM %s", actualTableName, actualDatabaseName);
+    }
+    
+    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
+        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
+            row.put(targetKey, row.get(sourceKey));
+        }
     }
     
     /**

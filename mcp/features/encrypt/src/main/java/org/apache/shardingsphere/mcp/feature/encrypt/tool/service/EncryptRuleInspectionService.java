@@ -51,12 +51,6 @@ public final class EncryptRuleInspectionService {
         return result;
     }
     
-    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
-        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
-            row.put(targetKey, row.get(sourceKey));
-        }
-    }
-    
     private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
         String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
         String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
@@ -65,6 +59,12 @@ public final class EncryptRuleInspectionService {
         return actualTableName.isEmpty()
                 ? String.format("SHOW ENCRYPT RULES FROM %s", actualDatabaseName)
                 : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", actualTableName, actualDatabaseName);
+    }
+    
+    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
+        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
+            row.put(targetKey, row.get(sourceKey));
+        }
     }
     
     /**

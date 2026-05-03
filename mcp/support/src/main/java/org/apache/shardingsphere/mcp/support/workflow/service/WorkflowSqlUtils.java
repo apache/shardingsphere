@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.props.PropertiesUtils;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
@@ -56,11 +57,8 @@ public final class WorkflowSqlUtils {
      */
     public static void checkSafeIdentifier(final String fieldName, final String identifier) {
         String actualIdentifier = trimToEmpty(identifier);
-        if (actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier)) {
-            return;
-        }
-        throw new MCPInvalidRequestException(String.format("%s `%s` contains unsupported characters. Only unquoted SQL identifiers are supported in V1.",
-                fieldName, actualIdentifier));
+        ShardingSpherePreconditions.checkState(actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier),
+                () -> new MCPInvalidRequestException(String.format("%s `%s` contains unsupported characters. Only unquoted SQL identifiers are supported in V1.", fieldName, actualIdentifier)));
     }
     
     /**
