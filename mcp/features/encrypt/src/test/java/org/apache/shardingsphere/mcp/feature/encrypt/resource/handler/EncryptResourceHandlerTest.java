@@ -19,13 +19,12 @@ package org.apache.shardingsphere.mcp.feature.encrypt.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -52,8 +51,8 @@ class EncryptResourceHandlerTest {
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
         when(ruleInspectionService.enrichEncryptAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "AES", "source", "builtin")));
-        setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(databaseContext, createUriVariables(Map.of()));
+        Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
+        MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of()));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
     
@@ -67,8 +66,8 @@ class EncryptResourceHandlerTest {
         EncryptRulesHandler handler = new EncryptRulesHandler();
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
-        setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), createUriVariables(Map.of("database", "logic_db")));
+        Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
+        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of("database", "logic_db")));
         verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"), eq(""));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
@@ -83,18 +82,9 @@ class EncryptResourceHandlerTest {
         EncryptRuleHandler handler = new EncryptRuleHandler();
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
-        setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), createUriVariables(Map.of("database", "logic_db", "table", "orders")));
+        Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
+        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
         verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"), eq("orders"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
-    }
-    
-    private MCPUriVariables createUriVariables(final Map<String, String> variables) {
-        return new MCPUriVariables(variables);
     }
 }

@@ -28,7 +28,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -52,13 +51,13 @@ class MaskResourceHandlerTest {
                       final String expectedDatabase, final String expectedTable, final List<Map<String, Object>> maskRules,
                       final List<Map<String, Object>> maskAlgorithms) throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        setField(handler, "ruleInspectionService", ruleInspectionService);
+        Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
         when(ruleInspectionService.queryMaskRules(queryFacade, expectedDatabase, expectedTable)).thenReturn(maskRules);
         when(ruleInspectionService.enrichMaskAlgorithms(queryFacade)).thenReturn(maskAlgorithms);
-        MCPResponse actual = handler.handle(databaseContext, createUriVariables(uriVariables));
+        MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(uriVariables));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
     
@@ -73,16 +72,6 @@ class MaskResourceHandlerTest {
         return Stream.of(
                 Arguments.of("mask algorithms", new MaskAlgorithmsHandler(), Map.of(), "", "", List.of(), List.of(Map.of("type", "MD5", "source", "builtin"))),
                 Arguments.of("mask rules", new MaskRulesHandler(), Map.of("database", "logic_db"), "logic_db", "", List.of(Map.of("column", "phone")), List.of()),
-                Arguments.of("mask table rule", new MaskRuleHandler(), Map.of("database", "logic_db", "table", "orders"), "logic_db", "orders",
-                        List.of(Map.of("column", "phone")), List.of()));
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
-    }
-    
-    private MCPUriVariables createUriVariables(final Map<String, String> variables) {
-        return new MCPUriVariables(variables);
+                Arguments.of("mask table rule", new MaskRuleHandler(), Map.of("database", "logic_db", "table", "orders"), "logic_db", "orders", List.of(Map.of("column", "phone")), List.of()));
     }
 }
