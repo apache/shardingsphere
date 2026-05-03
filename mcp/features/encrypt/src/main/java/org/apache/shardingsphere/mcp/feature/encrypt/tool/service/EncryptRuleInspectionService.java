@@ -41,13 +41,10 @@ public final class EncryptRuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName));
-    }
-    
-    private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
-        return tableName.isEmpty()
+        String sql = tableName.isEmpty()
                 ? String.format("SHOW ENCRYPT RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName))
                 : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName));
+        return queryFacade.query(databaseName, "", sql);
     }
     
     /**
