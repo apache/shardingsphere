@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.configuration.plugins.Plugins;
 
@@ -47,10 +48,12 @@ class EncryptResourceHandlerTest {
     void assertHandleEncryptAlgorithms() throws ReflectiveOperationException {
         EncryptAlgorithmsHandler handler = new EncryptAlgorithmsHandler();
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(Map.of("type", "AES")));
-        when(ruleInspectionService.enrichEncryptAlgorithms(List.of(Map.of("type", "AES")))).thenReturn(List.of(Map.of("type", "AES", "source", "builtin")));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+        when(ruleInspectionService.enrichEncryptAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "AES", "source", "builtin")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), createUriVariables(Map.of()));
+        MCPResponse actual = handler.handle(databaseContext, createUriVariables(Map.of()));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
     

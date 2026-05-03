@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -64,10 +65,12 @@ class EncryptRuleInspectionServiceTest {
     
     @Test
     void assertEnrichEncryptAlgorithms() {
-        List<Map<String, Object>> actual = service.enrichEncryptAlgorithms(List.of(Map.of("type", "AES"), Map.of("type", "CUSTOM")));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES"), Map.of("type", "CUSTOM")));
+        List<Map<String, Object>> actual = service.enrichEncryptAlgorithms(queryFacade);
         assertThat(actual.get(0).get("source"), is("builtin"));
         assertTrue((Boolean) actual.get(0).get("supports_decrypt"));
         assertThat(actual.get(1).get("source"), is("custom-spi"));
-        assertThat(actual.get(1).get("supports_like"), is((Object) null));
+        assertNull(actual.get(1).get("supports_like"));
     }
 }

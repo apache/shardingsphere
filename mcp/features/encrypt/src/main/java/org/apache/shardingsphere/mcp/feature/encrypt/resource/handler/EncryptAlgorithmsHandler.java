@@ -44,6 +44,6 @@ public final class EncryptAlgorithmsHandler implements MCPResourceHandler<MCPDat
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(databaseContext.getQueryFacade())));
+        return new MCPItemsResponse(ruleInspectionService.enrichEncryptAlgorithms(databaseContext.getQueryFacade()));
     }
 }

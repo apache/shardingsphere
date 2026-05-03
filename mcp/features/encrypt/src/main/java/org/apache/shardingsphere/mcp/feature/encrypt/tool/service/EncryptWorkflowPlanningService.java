@@ -156,7 +156,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {
-        List<Map<String, Object>> encryptAlgorithms = ruleInspectionService.enrichEncryptAlgorithms(ruleInspectionService.queryEncryptAlgorithms(queryFacade));
+        List<Map<String, Object>> encryptAlgorithms = ruleInspectionService.enrichEncryptAlgorithms(queryFacade);
         List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendEncryptAlgorithms(request, encryptAlgorithms, snapshot.getIssues());
         snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
         applyRecommendedAlgorithms(request, algorithmCandidates);
