@@ -38,7 +38,7 @@ class EncryptRuleInspectionServiceTest {
     void assertQueryEncryptRulesForDatabase() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW ENCRYPT RULES FROM logic_db"))
-                .thenReturn(List.of(Map.of("logic_column", "phone", "assisted_query", "phone_assisted")));
+                .thenReturn(List.of(Map.of("logic_column", "phone", "assisted_query_column", "phone_assisted")));
         List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).get("assisted_query_column"), is("phone_assisted"));
@@ -48,7 +48,7 @@ class EncryptRuleInspectionServiceTest {
     void assertQueryEncryptRulesForTable() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW ENCRYPT TABLE RULE orders FROM logic_db"))
-                .thenReturn(List.of(Map.of("logic_column", "phone", "like_query", "phone_like")));
+                .thenReturn(List.of(Map.of("logic_column", "phone", "like_query_column", "phone_like")));
         List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "orders");
         assertThat(actual.get(0).get("like_query_column"), is("phone_like"));
     }

@@ -102,7 +102,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
     private ValidationSection validateRules(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> maskRules,
                                             final ValidationReport validationReport) {
         Optional<Map<String, Object>> actualRule = maskRules.stream()
-                .filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column", "logic_column"))).findFirst();
+                .filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column"))).findFirst();
         if (WorkflowLifecycleUtils.isDropWorkflow(snapshot)) {
             if (actualRule.isEmpty()) {
                 return new ValidationSection(WorkflowLifecycle.STATUS_PASSED, List.of(), "Mask rule has been removed.");
@@ -116,7 +116,7 @@ public final class MaskWorkflowValidationService implements MCPWorkflowRuntimeHa
                     "Mask rule is missing.", "Create or alter the mask rule again."));
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, List.of(), "Mask rule is missing.");
         }
-        String actualAlgorithmType = WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "algorithm_type", "mask_algorithm");
+        String actualAlgorithmType = WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "algorithm_type");
         if (!snapshot.getRequest().getAlgorithmType().equalsIgnoreCase(actualAlgorithmType)) {
             validationReport.getMismatches().add(validationSupport.createMismatch(WorkflowIssueCode.RULE_STATE_MISMATCH, "rule", snapshot.getRequest().getAlgorithmType(), actualAlgorithmType,
                     "Mask algorithm type does not match.", "Re-apply the intended mask rule."));

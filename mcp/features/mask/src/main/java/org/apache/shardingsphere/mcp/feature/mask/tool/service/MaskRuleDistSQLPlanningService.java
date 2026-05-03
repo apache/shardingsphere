@@ -57,7 +57,7 @@ public final class MaskRuleDistSQLPlanningService {
         validateMaskIdentifiers(request);
         List<String> remainingColumnSegments = new LinkedList<>();
         for (Map<String, Object> each : existingRules) {
-            if (!request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column", "logic_column"))) {
+            if (!request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column"))) {
                 remainingColumnSegments.add(createExistingMaskColumnSegment(each));
             }
         }
@@ -75,7 +75,7 @@ public final class MaskRuleDistSQLPlanningService {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
-            if (request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column", "logic_column"))) {
+            if (request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "column"))) {
                 result.add(createTargetMaskColumnSegment(request));
                 targetColumnHandled = true;
                 continue;
@@ -97,10 +97,10 @@ public final class MaskRuleDistSQLPlanningService {
     }
     
     private String createExistingMaskColumnSegment(final Map<String, Object> rule) {
-        String columnName = WorkflowRuleValueUtils.findRuleValue(rule, "column", "logic_column");
+        String columnName = WorkflowRuleValueUtils.findRuleValue(rule, "column");
         WorkflowSQLUtils.checkSafeIdentifier("column", columnName);
-        String algorithmType = WorkflowRuleValueUtils.findRuleValue(rule, "algorithm_type", "mask_algorithm");
-        Map<String, String> algorithmProperties = WorkflowSQLUtils.createPropertyMap(null == rule.get("algorithm_props") ? rule.get("props") : rule.get("algorithm_props"));
+        String algorithmType = WorkflowRuleValueUtils.findRuleValue(rule, "algorithm_type");
+        Map<String, String> algorithmProperties = WorkflowSQLUtils.createPropertyMap(rule.get("algorithm_props"));
         String algorithmFragment = algorithmProperties.isEmpty()
                 ? String.format("TYPE(NAME='%s')", algorithmType.toLowerCase(Locale.ENGLISH))
                 : String.format("TYPE(NAME='%s', PROPERTIES(%s))", algorithmType.toLowerCase(Locale.ENGLISH),

@@ -36,11 +36,12 @@ class MaskRuleInspectionServiceTest {
     void assertQueryMaskRulesForDatabase() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.query("logic_db", "", "SHOW MASK RULES FROM logic_db"))
-                .thenReturn(List.of(Map.of("logic_column", "phone", "mask_algorithm", "MASK_FROM_X_TO_Y", "props", "from-x=4")));
+                .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MASK_FROM_X_TO_Y", "algorithm_props", "from-x=4")));
         List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "logic_db", "");
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).get("column"), is("phone"));
         assertThat(actual.get(0).get("algorithm_type"), is("MASK_FROM_X_TO_Y"));
+        assertThat(actual.get(0).get("algorithm_props"), is("from-x=4"));
     }
     
     @Test

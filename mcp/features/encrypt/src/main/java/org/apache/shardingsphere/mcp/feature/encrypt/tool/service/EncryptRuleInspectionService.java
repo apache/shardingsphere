@@ -41,26 +41,13 @@ public final class EncryptRuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName))) {
-            Map<String, Object> row = new LinkedHashMap<>(each);
-            putAliasIfAbsent(row, "assisted_query_column", "assisted_query");
-            putAliasIfAbsent(row, "like_query_column", "like_query");
-            result.add(row);
-        }
-        return result;
+        return queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName));
     }
     
     private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
         return tableName.isEmpty()
                 ? String.format("SHOW ENCRYPT RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName))
                 : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName));
-    }
-    
-    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
-        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
-            row.put(targetKey, row.get(sourceKey));
-        }
     }
     
     /**

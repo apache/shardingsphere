@@ -129,7 +129,7 @@ public final class EncryptWorkflowPlanningService {
     
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request,
                                          final List<Map<String, Object>> encryptRules, final WorkflowContextSnapshot snapshot) {
-        boolean ruleExists = encryptRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column", "column")));
+        boolean ruleExists = encryptRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column")));
         return planningSupport.ensureLifecycleState("Encrypt rule", clarifiedIntent, ruleExists, snapshot);
     }
     
@@ -228,8 +228,8 @@ public final class EncryptWorkflowPlanningService {
         DerivedColumnPlan result = derivedColumnNamingService.createPlan(request, existingNames, snapshot.getIssues());
         Map<String, Object> existingRule = findEncryptRule(encryptRules, request.getColumn()).orElse(Map.of());
         String actualCipherColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "cipher_column");
-        String actualAssistedQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "assisted_query_column", "assisted_query");
-        String actualLikeQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "like_query_column", "like_query");
+        String actualAssistedQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "assisted_query_column");
+        String actualLikeQueryColumn = WorkflowRuleValueUtils.findRuleValue(existingRule, "like_query_column");
         if ("alter".equalsIgnoreCase(request.getOperationType())) {
             if (request.getOptions().getCipherColumnName().isEmpty() && !actualCipherColumn.isEmpty()) {
                 result.setCipherColumnName(actualCipherColumn);
@@ -257,9 +257,9 @@ public final class EncryptWorkflowPlanningService {
             return;
         }
         boolean removesAssistedQuery = Boolean.FALSE.equals(request.getOptions().getRequiresEqualityFilter())
-                && !WorkflowRuleValueUtils.findRuleValue(existingRule.get(), "assisted_query_column", "assisted_query").isEmpty();
+                && !WorkflowRuleValueUtils.findRuleValue(existingRule.get(), "assisted_query_column").isEmpty();
         boolean removesLikeQuery = Boolean.FALSE.equals(request.getOptions().getRequiresLikeQuery())
-                && !WorkflowRuleValueUtils.findRuleValue(existingRule.get(), "like_query_column", "like_query").isEmpty();
+                && !WorkflowRuleValueUtils.findRuleValue(existingRule.get(), "like_query_column").isEmpty();
         if (!removesAssistedQuery && !removesLikeQuery) {
             return;
         }
@@ -276,8 +276,8 @@ public final class EncryptWorkflowPlanningService {
         }
         for (Map<String, Object> each : encryptRules) {
             addIfPresent(result, WorkflowRuleValueUtils.findRuleValue(each, "cipher_column"));
-            addIfPresent(result, WorkflowRuleValueUtils.findRuleValue(each, "assisted_query_column", "assisted_query"));
-            addIfPresent(result, WorkflowRuleValueUtils.findRuleValue(each, "like_query_column", "like_query"));
+            addIfPresent(result, WorkflowRuleValueUtils.findRuleValue(each, "assisted_query_column"));
+            addIfPresent(result, WorkflowRuleValueUtils.findRuleValue(each, "like_query_column"));
         }
         return result;
     }
@@ -303,7 +303,7 @@ public final class EncryptWorkflowPlanningService {
     }
     
     private Optional<Map<String, Object>> findEncryptRule(final List<Map<String, Object>> encryptRules, final String columnName) {
-        return encryptRules.stream().filter(each -> columnName.equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column", "column"))).findFirst();
+        return encryptRules.stream().filter(each -> columnName.equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column"))).findFirst();
     }
     
     private String resolveDerivedColumnDefinition(final MCPFeatureQueryFacade queryFacade, final EncryptWorkflowRequest request, final WorkflowContextSnapshot snapshot) {

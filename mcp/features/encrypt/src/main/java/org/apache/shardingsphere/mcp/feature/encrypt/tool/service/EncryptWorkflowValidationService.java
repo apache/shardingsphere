@@ -129,10 +129,10 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                 WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "cipher_column"), "Cipher column mapping does not match.");
         addDerivedColumnMismatch(mismatches, "assisted_query_column",
                 workflowState.getDerivedColumnPlan().isAssistedQueryColumnRequired() ? workflowState.getDerivedColumnPlan().getAssistedQueryColumnName() : "",
-                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "assisted_query_column", "assisted_query"), "Assisted-query column mapping does not match.");
+                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "assisted_query_column"), "Assisted-query column mapping does not match.");
         addDerivedColumnMismatch(mismatches, "like_query_column",
                 workflowState.getDerivedColumnPlan().isLikeQueryColumnRequired() ? workflowState.getDerivedColumnPlan().getLikeQueryColumnName() : "",
-                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "like_query_column", "like_query"), "LIKE-query column mapping does not match.");
+                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "like_query_column"), "LIKE-query column mapping does not match.");
         addMissingPhysicalDerivedColumnMismatches(queryFacade, snapshot, workflowState, mismatches);
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
@@ -164,10 +164,10 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
                 WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "encryptor_type"), "Encrypt algorithm type does not match.");
         addAlgorithmTypeMismatch(mismatches, "assisted_query_type",
                 Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter()) ? request.getOptions().getAssistedQueryAlgorithmType() : "",
-                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "assisted_query_type", "assisted_query_encryptor_type"), "Assisted-query algorithm type does not match.");
+                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "assisted_query_type"), "Assisted-query algorithm type does not match.");
         addAlgorithmTypeMismatch(mismatches, "like_query_type",
                 Boolean.TRUE.equals(request.getOptions().getRequiresLikeQuery()) ? request.getOptions().getLikeQueryAlgorithmType() : "",
-                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "like_query_type", "like_query_encryptor_type"), "LIKE-query algorithm type does not match.");
+                WorkflowRuleValueUtils.findRuleValue(actualRule.get(), "like_query_type"), "LIKE-query algorithm type does not match.");
         if (!mismatches.isEmpty()) {
             validationReport.getMismatches().addAll(mismatches);
             return new ValidationSection(WorkflowLifecycle.STATUS_FAILED, actualRule.get(), "Encrypt algorithm configuration does not match.");
@@ -250,7 +250,7 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     }
     
     private Optional<Map<String, Object>> findEncryptRule(final WorkflowContextSnapshot snapshot, final List<Map<String, Object>> encryptRules) {
-        return encryptRules.stream().filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column", "column"))).findFirst();
+        return encryptRules.stream().filter(each -> snapshot.getRequest().getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column"))).findFirst();
     }
     
     private void addDerivedColumnMismatch(final List<Map<String, Object>> mismatches, final String fieldName, final String expected, final String actual, final String impact) {
