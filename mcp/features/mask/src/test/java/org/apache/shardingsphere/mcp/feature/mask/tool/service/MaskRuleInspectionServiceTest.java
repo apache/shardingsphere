@@ -53,6 +53,24 @@ class MaskRuleInspectionServiceTest {
     }
     
     @Test
+    void assertQueryMaskRulesQuotesUnicodeNames() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("逻辑库", "", "SHOW MASK RULE `订单` FROM `逻辑库`"))
+                .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
+        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "逻辑库", "订单");
+        assertThat(actual.get(0).get("column"), is("phone"));
+    }
+    
+    @Test
+    void assertQueryMaskRulesEscapesQuoteDelimiter() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("逻`辑库", "", "SHOW MASK RULE `订``单` FROM `逻``辑库`"))
+                .thenReturn(List.of(Map.of("column", "phone", "algorithm_type", "MD5")));
+        List<Map<String, Object>> actual = service.queryMaskRules(queryFacade, "逻`辑库", "订`单");
+        assertThat(actual.get(0).get("column"), is("phone"));
+    }
+    
+    @Test
     void assertEnrichMaskAlgorithms() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MD5"), Map.of("type", "CUSTOM")));

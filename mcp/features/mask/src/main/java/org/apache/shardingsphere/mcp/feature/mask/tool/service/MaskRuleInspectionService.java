@@ -53,9 +53,9 @@ public final class MaskRuleInspectionService {
     }
     
     private String buildShowMaskRulesSQL(final String databaseName, final String tableName) {
-        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
-        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
-        return tableName.isEmpty() ? String.format("SHOW MASK RULES FROM %s", databaseName) : String.format("SHOW MASK RULE %s FROM %s", tableName, databaseName);
+        return tableName.isEmpty()
+                ? String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName))
+                : String.format("SHOW MASK RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName));
     }
     
     private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
