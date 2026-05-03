@@ -22,7 +22,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowS
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -30,10 +30,10 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowRuleValueUtils;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowValidationSupport;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,18 +50,9 @@ public final class EncryptWorkflowValidationService implements MCPWorkflowRuntim
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     
-    private final EncryptRuleInspectionService ruleInspectionService;
+    private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
     
-    private final WorkflowSynchronizationSupport workflowSynchronizationSupport;
-    
-    public EncryptWorkflowValidationService() {
-        this(new EncryptRuleInspectionService(), new WorkflowSynchronizationSupport());
-    }
-    
-    EncryptWorkflowValidationService(final EncryptRuleInspectionService ruleInspectionService, final WorkflowSynchronizationSupport workflowSynchronizationSupport) {
-        this.ruleInspectionService = ruleInspectionService;
-        this.workflowSynchronizationSupport = workflowSynchronizationSupport;
-    }
+    private final WorkflowSynchronizationSupport workflowSynchronizationSupport = new WorkflowSynchronizationSupport();
     
     /**
      * Validate workflow artifacts.

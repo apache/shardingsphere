@@ -34,7 +34,9 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationSupport;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,10 +54,10 @@ import static org.mockito.Mockito.when;
 class EncryptWorkflowValidationServiceTest {
     
     @Test
-    void assertValidateRejectsDifferentSession() {
+    void assertValidateRejectsDifferentSession() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(createSnapshot("plan-1", "session-1", "executed", "create"));
-        final EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(mock(EncryptRuleInspectionService.class), new WorkflowSynchronizationSupport(1, 0L));
+        EncryptWorkflowValidationService service = createService(mock(EncryptRuleInspectionService.class));
         Map<String, Object> actual = service.validate(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 mock(MCPFeatureExecutionFacade.class), "session-2", workflowSessionContext.getRequired("plan-1"));
         assertThat(actual.get("status"), is("failed"));
@@ -63,7 +65,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateHappyPath() {
+    void assertValidateHappyPath() throws ReflectiveOperationException {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         EncryptWorkflowRequest request = (EncryptWorkflowRequest) snapshot.getRequest();
         request.setAlgorithmType("AES");
@@ -85,7 +87,7 @@ class EncryptWorkflowValidationServiceTest {
                 "encryptor_type", "AES",
                 "assisted_query_type", "MD5",
                 "like_query_type", "FPE")));
-        final EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(ruleInspectionService, new WorkflowSynchronizationSupport(1, 0L));
+        EncryptWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -100,7 +102,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertSynchronize() {
+    void assertSynchronize() throws ReflectiveOperationException {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         EncryptWorkflowRequest request = (EncryptWorkflowRequest) snapshot.getRequest();
         request.setAlgorithmType("AES");
@@ -112,38 +114,38 @@ class EncryptWorkflowValidationServiceTest {
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES")));
-        final EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(ruleInspectionService, new WorkflowSynchronizationSupport(1, 0L));
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryInformationSchemaColumnNames("logic_db", "public", "orders", Set.of("phone_cipher"))).thenReturn(Set.of("phone_cipher"));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
+        EncryptWorkflowValidationService service = createService(ruleInspectionService);
         service.synchronize(snapshot, metadataQueryFacade, queryFacade, executionFacade, "session-1");
     }
     
     @Test
-    void assertSynchronizeWhenStateDoesNotConverge() {
+    void assertSynchronizeWhenStateDoesNotConverge() throws ReflectiveOperationException {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
         snapshot.setFeatureData(workflowState);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        final EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(ruleInspectionService, new WorkflowSynchronizationSupport(1, 0L));
+        EncryptWorkflowValidationService service = createService(ruleInspectionService);
         WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
                 () -> service.synchronize(snapshot, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1"));
         assertThat(actual.getIssueCode(), is(WorkflowIssueCode.DDL_STATE_MISMATCH));
     }
     
     @Test
-    void assertValidateDropWorkflowAfterRuleRemoval() {
+    void assertValidateDropWorkflowAfterRuleRemoval() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        final EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(ruleInspectionService, new WorkflowSynchronizationSupport(1, 0L));
+        EncryptWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -155,7 +157,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateWhenRuleMissing() {
+    void assertValidateWhenRuleMissing() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         EncryptWorkflowState workflowState = new EncryptWorkflowState();
@@ -164,7 +166,7 @@ class EncryptWorkflowValidationServiceTest {
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
-        final EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(ruleInspectionService, new WorkflowSynchronizationSupport(1, 0L));
+        EncryptWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -175,7 +177,7 @@ class EncryptWorkflowValidationServiceTest {
     }
     
     @Test
-    void assertValidateWhenSqlExecutionFails() {
+    void assertValidateWhenSqlExecutionFails() throws ReflectiveOperationException {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "create");
         EncryptWorkflowRequest request = (EncryptWorkflowRequest) snapshot.getRequest();
         request.setAlgorithmType("AES");
@@ -189,7 +191,7 @@ class EncryptWorkflowValidationServiceTest {
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES")));
-        final EncryptWorkflowValidationService service = new EncryptWorkflowValidationService(ruleInspectionService, new WorkflowSynchronizationSupport(1, 0L));
+        EncryptWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
@@ -199,6 +201,18 @@ class EncryptWorkflowValidationServiceTest {
         Map<String, Object> actual = service.validate(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, "session-1", snapshot);
         assertThat(actual.get("status"), is("failed"));
         assertThat(((Map<?, ?>) actual.get("sql_executability_validation")).get("status"), is("failed"));
+    }
+    
+    private EncryptWorkflowValidationService createService(final EncryptRuleInspectionService ruleInspectionService) throws ReflectiveOperationException {
+        EncryptWorkflowValidationService result = new EncryptWorkflowValidationService();
+        setField(result, "ruleInspectionService", ruleInspectionService);
+        setField(result, "workflowSynchronizationSupport", new WorkflowSynchronizationSupport(1, 0L));
+        return result;
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String status, final String operationType) {

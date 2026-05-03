@@ -40,17 +40,7 @@ public final class EncryptRuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return normalizeEncryptRuleRows(queryFacade.query(databaseName, "", buildShowEncryptRulesSql(databaseName, tableName)));
-    }
-    
-    /**
-     * Query encrypt algorithms.
-     *
-     * @param queryFacade query facade
-     * @return encrypt algorithm plugins
-     */
-    public List<Map<String, Object>> queryEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        return queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
+        return normalizeEncryptRuleRows(queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName)));
     }
     
     /**
@@ -61,7 +51,7 @@ public final class EncryptRuleInspectionService {
      */
     public List<Map<String, Object>> enrichEncryptAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : queryEncryptAlgorithms(queryFacade)) {
+        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")) {
             String type = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("type"))).toUpperCase(Locale.ENGLISH);
             Map<String, Boolean> capability = EncryptAlgorithmRecommendationService.findEncryptCapability(type);
             Map<String, Object> row = new LinkedHashMap<>(each);
@@ -74,7 +64,7 @@ public final class EncryptRuleInspectionService {
         return result;
     }
     
-    private String buildShowEncryptRulesSql(final String databaseName, final String tableName) {
+    private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
         String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
         String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
         WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);

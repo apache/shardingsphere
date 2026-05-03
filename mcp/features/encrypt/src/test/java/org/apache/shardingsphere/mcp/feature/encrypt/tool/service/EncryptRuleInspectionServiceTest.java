@@ -28,7 +28,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EncryptRuleInspectionServiceTest {
@@ -52,15 +51,6 @@ class EncryptRuleInspectionServiceTest {
                 .thenReturn(List.of(Map.of("logic_column", "phone", "like_query", "phone_like")));
         List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "logic_db", "orders");
         assertThat(actual.get(0).get("like_query_column"), is("phone_like"));
-    }
-    
-    @Test
-    void assertQueryEncryptAlgorithms() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES")));
-        List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
-        assertThat(actual.size(), is(1));
-        verify(queryFacade).queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS");
     }
     
     @Test

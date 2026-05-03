@@ -35,7 +35,9 @@ import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchr
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -57,13 +59,13 @@ class WorkflowHandlersTest {
     }
     
     @Test
-    void assertHandleExecution() {
+    void assertHandleExecution() throws ReflectiveOperationException {
         WorkflowExecutionService executionService = mock(WorkflowExecutionService.class);
         when(executionService.apply(any(), any(), any(), any(), any(), any(), any(), any(), any())).thenReturn(Map.of("status", "completed"));
         WorkflowContextSnapshot snapshot = createSnapshot();
         WorkflowContextFixture fixture = createWorkflowContextFixture(snapshot);
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
-        WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(executionService, new WorkflowRuntimeDefinitionRegistry(List.of(
+        WorkflowExecutionToolHandler handler = createExecutionToolHandler(executionService, new WorkflowRuntimeDefinitionRegistry(List.of(
                 new WorkflowRuntimeDefinition(WorkflowKind.valueOf("encrypt.rule"), mock(MCPWorkflowValidationHandler.class), workflowApplySynchronizationHandler))));
         MCPResponse actual = handler.handle(fixture.workflowContext, new MCPToolCall("session-1",
                 Map.of("plan_id", "plan-1", "approved_steps", List.of("ddl"), "execution_mode", "manual-only")));
@@ -101,6 +103,18 @@ class WorkflowHandlersTest {
         verify(workflowValidationHandler).validate(eq(fixture.workflowSessionContext), eq(fixture.metadataQueryFacade),
                 eq(fixture.queryFacade), eq(fixture.executionFacade), eq("session-1"), eq(snapshot));
         assertThat(actual.toPayload().get("status"), is("validated"));
+    }
+    
+    private WorkflowExecutionToolHandler createExecutionToolHandler(final WorkflowExecutionService executionService,
+                                                                    final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) throws ReflectiveOperationException {
+        WorkflowExecutionToolHandler result = new WorkflowExecutionToolHandler(workflowRuntimeDefinitionRegistry);
+        setField(result, "executionService", executionService);
+        return result;
+    }
+    
+    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
+        Field field = target.getClass().getDeclaredField(fieldName);
+        Plugins.getMemberAccessor().set(field, target, value);
     }
     
     private WorkflowContextFixture createWorkflowContextFixture(final WorkflowContextSnapshot snapshot) {

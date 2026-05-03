@@ -42,11 +42,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
     
     public WorkflowExecutionToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
-        this(new WorkflowExecutionService(), workflowRuntimeDefinitionRegistry);
-    }
-    
-    WorkflowExecutionToolHandler(final WorkflowExecutionService executionService, final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
-        this.executionService = executionService;
+        executionService = new WorkflowExecutionService();
         this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
     }
     

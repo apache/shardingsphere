@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
-import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
-import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSqlUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -43,6 +44,7 @@ import java.util.Set;
 /**
  * Direct query service for Proxy-backed workflow reads.
  */
+@RequiredArgsConstructor
 public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     
     private static final String DEFAULT_COLUMN_DEFINITION = "VARCHAR(4000)";
@@ -50,11 +52,6 @@ public final class WorkflowProxyQueryService implements MCPFeatureQueryFacade {
     private final MCPSessionManager sessionManager;
     
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
-    
-    public WorkflowProxyQueryService(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
-        this.sessionManager = sessionManager;
-        this.databaseCapabilityProvider = databaseCapabilityProvider;
-    }
     
     @Override
     public List<Map<String, Object>> query(final String databaseName, final String schemaName, final String sql) {
