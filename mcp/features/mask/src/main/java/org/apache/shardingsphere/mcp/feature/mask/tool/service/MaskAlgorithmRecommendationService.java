@@ -81,7 +81,7 @@ public final class MaskAlgorithmRecommendationService {
     private String resolveRecommendedAlgorithm(final ClarifiedIntent intent, final WorkflowRequest request, final List<Map<String, Object>> maskAlgorithms) {
         String fieldSemantics = intent.getFieldSemantics().toLowerCase(Locale.ENGLISH);
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if ((fieldSemantics.contains("phone") || naturalLanguageIntent.contains("前") || naturalLanguageIntent.contains("后"))
+        if ((fieldSemantics.contains("phone") || naturalLanguageIntent.contains("first") || naturalLanguageIntent.contains("last"))
                 && containsAlgorithm(maskAlgorithms, "MASK_FROM_X_TO_Y")) {
             return "MASK_FROM_X_TO_Y";
         }

@@ -45,7 +45,7 @@ class WorkflowPlanPayloadBuilderTest {
         clarifiedIntent.setReasoningNotes("Resolved from explicit arguments, heuristic inference for requires_decrypt.");
         clarifiedIntent.getInferredValues().put("requires_decrypt", true);
         clarifiedIntent.getUnresolvedFields().add("requires_like_query");
-        clarifiedIntent.getPendingQuestions().add("是否需要 LIKE 查询？");
+        clarifiedIntent.getPendingQuestions().add("Do you need LIKE query?");
         snapshot.setClarifiedIntent(clarifiedIntent);
         snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true, Map.of()));
         snapshot.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", "heuristic", true, true, false, 95, "reason", ""));

@@ -45,9 +45,9 @@ class WorkflowIntentResolverSupportTest {
         WorkflowRequest explicitRequest = new WorkflowRequest();
         explicitRequest.setOperationType("alter");
         WorkflowRequest dropRequest = new WorkflowRequest();
-        dropRequest.setNaturalLanguageIntent("请删除现有规则");
+        dropRequest.setNaturalLanguageIntent("delete existing rule");
         WorkflowRequest alterRequest = new WorkflowRequest();
-        alterRequest.setNaturalLanguageIntent("补一个规则配置");
+        alterRequest.setNaturalLanguageIntent("update one rule configuration");
         WorkflowRequest defaultRequest = new WorkflowRequest();
         return Stream.of(
                 Arguments.of("explicit operation type", explicitRequest, "alter"),
@@ -62,7 +62,7 @@ class WorkflowIntentResolverSupportTest {
         WorkflowRequest phoneRequest = new WorkflowRequest();
         phoneRequest.setColumn("customer_phone");
         WorkflowRequest idCardRequest = new WorkflowRequest();
-        idCardRequest.setNaturalLanguageIntent("对身份证做脱敏");
+        idCardRequest.setNaturalLanguageIntent("mask the identity card");
         idCardRequest.setColumn("identity");
         WorkflowRequest defaultRequest = new WorkflowRequest();
         defaultRequest.setColumn("customer_name");

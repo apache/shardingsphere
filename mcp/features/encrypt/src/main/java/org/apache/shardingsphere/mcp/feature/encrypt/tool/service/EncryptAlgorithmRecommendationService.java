@@ -185,8 +185,9 @@ public final class EncryptAlgorithmRecommendationService {
     
     private AlgorithmCandidate createEncryptCandidate(final String role, final String algorithmType, final EncryptWorkflowRequest request) {
         Map<String, Boolean> capability = findEncryptCapability(algorithmType);
-        return new AlgorithmCandidate(role, algorithmType, isKnownEncryptAlgorithm(algorithmType) ? "builtin" : "custom-spi", capability.get("supports_decrypt"), capability.get("supports_equivalent_filter"),
-                capability.get("supports_like"), calculateEncryptScore(role, capability), createEncryptReason(role, algorithmType, request), createEncryptRisk(capability));
+        return new AlgorithmCandidate(role, algorithmType, isKnownEncryptAlgorithm(algorithmType) ? "builtin" : "custom-spi",
+                capability.get("supports_decrypt"), capability.get("supports_equivalent_filter"), capability.get("supports_like"),
+                calculateEncryptScore(role, capability), createEncryptReason(role, algorithmType, request), createEncryptRisk(capability));
     }
     
     private int calculateEncryptScore(final String role, final Map<String, Boolean> capability) {

@@ -30,7 +30,7 @@ class MaskWorkflowIntentResolverTest {
     void assertResolveRecordsSharedInference() {
         WorkflowRequest request = new WorkflowRequest();
         request.setColumn("customer_phone");
-        request.setNaturalLanguageIntent("请删除现有脱敏规则");
+        request.setNaturalLanguageIntent("delete existing mask rule");
         ClarifiedIntent actual = new MaskWorkflowIntentResolver().resolve(request);
         assertThat(actual.getOperationType(), is("drop"));
         assertThat(actual.getFieldSemantics(), is("phone"));

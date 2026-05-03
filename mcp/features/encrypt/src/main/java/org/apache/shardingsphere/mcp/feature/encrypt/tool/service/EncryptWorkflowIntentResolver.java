@@ -47,13 +47,13 @@ final class EncryptWorkflowIntentResolver {
             return request.getOptions().getRequiresDecrypt();
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("不可逆")) {
+        if (naturalLanguageIntent.contains("irreversible") || naturalLanguageIntent.contains("not reversible")) {
             return inferOption(clarifiedIntent, "requires_decrypt", false);
         }
-        if (naturalLanguageIntent.contains("可逆") || naturalLanguageIntent.contains("解密") || naturalLanguageIntent.contains("decrypt")) {
+        if (naturalLanguageIntent.contains("reversible") || naturalLanguageIntent.contains("decrypt")) {
             return inferOption(clarifiedIntent, "requires_decrypt", true);
         }
-        addPendingQuestion(clarifiedIntent, "requires_decrypt", "是否需要可逆解密？");
+        addPendingQuestion(clarifiedIntent, "requires_decrypt", "Do you need reversible decryption?");
         return null;
     }
     
@@ -65,13 +65,13 @@ final class EncryptWorkflowIntentResolver {
             return request.getOptions().getRequiresEqualityFilter();
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("不需要等值")) {
+        if (naturalLanguageIntent.contains("no equality") || naturalLanguageIntent.contains("without equality")) {
             return inferOption(clarifiedIntent, "requires_equality_filter", false);
         }
-        if (naturalLanguageIntent.contains("等值") || naturalLanguageIntent.contains("精确") || naturalLanguageIntent.contains("equality")) {
+        if (naturalLanguageIntent.contains("equality") || naturalLanguageIntent.contains("exact")) {
             return inferOption(clarifiedIntent, "requires_equality_filter", true);
         }
-        addPendingQuestion(clarifiedIntent, "requires_equality_filter", "是否需要等值查询？");
+        addPendingQuestion(clarifiedIntent, "requires_equality_filter", "Do you need equality query?");
         return null;
     }
     
@@ -83,13 +83,14 @@ final class EncryptWorkflowIntentResolver {
             return request.getOptions().getRequiresLikeQuery();
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("不需要like") || naturalLanguageIntent.contains("不需要模糊")) {
+        if (naturalLanguageIntent.contains("no like") || naturalLanguageIntent.contains("without like")
+                || naturalLanguageIntent.contains("no fuzzy") || naturalLanguageIntent.contains("without fuzzy")) {
             return inferOption(clarifiedIntent, "requires_like_query", false);
         }
-        if (naturalLanguageIntent.contains("like") || naturalLanguageIntent.contains("模糊")) {
+        if (naturalLanguageIntent.contains("like") || naturalLanguageIntent.contains("fuzzy")) {
             return inferOption(clarifiedIntent, "requires_like_query", true);
         }
-        addPendingQuestion(clarifiedIntent, "requires_like_query", "是否需要 LIKE 查询？");
+        addPendingQuestion(clarifiedIntent, "requires_like_query", "Do you need LIKE query?");
         return null;
     }
     

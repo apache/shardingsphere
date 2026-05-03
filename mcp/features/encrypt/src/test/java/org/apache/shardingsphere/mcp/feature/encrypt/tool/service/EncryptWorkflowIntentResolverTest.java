@@ -51,7 +51,7 @@ class EncryptWorkflowIntentResolverTest {
     void assertResolveRecordsHeuristicInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setColumn("customer_phone");
-        request.setNaturalLanguageIntent("请新增可逆加密，并支持等值和模糊查询");
+        request.setNaturalLanguageIntent("create reversible encryption with equality and LIKE query");
         ClarifiedIntent actual = new EncryptWorkflowIntentResolver().resolve(request);
         assertThat(actual.getOperationType(), is("create"));
         assertThat(actual.getFieldSemantics(), is("phone"));
@@ -67,9 +67,9 @@ class EncryptWorkflowIntentResolverTest {
     void assertResolveAddsUnresolvedFieldsWhenRequirementsNeedClarification() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setColumn("customer_phone");
-        request.setNaturalLanguageIntent("请新增加密规则");
+        request.setNaturalLanguageIntent("create encrypt rule");
         ClarifiedIntent actual = new EncryptWorkflowIntentResolver().resolve(request);
-        assertThat(actual.getPendingQuestions(), is(List.of("是否需要可逆解密？", "是否需要等值查询？", "是否需要 LIKE 查询？")));
+        assertThat(actual.getPendingQuestions(), is(List.of("Do you need reversible decryption?", "Do you need equality query?", "Do you need LIKE query?")));
         assertThat(actual.getUnresolvedFields(), is(List.of("requires_decrypt", "requires_equality_filter", "requires_like_query")));
         assertThat(actual.getReasoningNotes(),
                 is("Resolved from explicit arguments, heuristic inference for operation_type, field_semantics, unresolved fields: requires_decrypt, requires_equality_filter, requires_like_query."));

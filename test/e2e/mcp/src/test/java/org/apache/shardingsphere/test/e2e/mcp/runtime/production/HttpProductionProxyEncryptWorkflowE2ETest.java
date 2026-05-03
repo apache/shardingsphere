@@ -50,9 +50,9 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     void assertPlanApplyAndValidateEncryptWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
-                    Map.of("table", "orders", "column", "status", "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊"));
+                    Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
             assertThat(String.valueOf(clarifyingResponse.get("status")), is("clarifying"));
-            assertThat(getStringList(clarifyingResponse.get("pending_questions")), is(List.of("请先提供 logical database。")));
+            assertThat(getStringList(clarifyingResponse.get("pending_questions")), is(List.of("Please provide logical database first.")));
             String planId = String.valueOf(clarifyingResponse.get("plan_id"));
             Map<String, Object> plannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("plan_id", planId, "database", getLogicalDatabaseName(), "algorithm_type", "AES",
@@ -102,10 +102,10 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualClarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，需要等值，不需要模糊"));
+                            "natural_language_intent", "encrypt status with reversible encryption, requires equality, no like"));
             assertThat(String.valueOf(actualClarifyingResponse.get("status")), is("clarifying"));
             assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
-            assertThat(getStringList(actualClarifyingResponse.get("pending_questions")), is(List.of("请提供属性 `aes-key-value`。")));
+            assertThat(getStringList(actualClarifyingResponse.get("pending_questions")), is(List.of("Please provide property `aes-key-value`.")));
             List<Map<String, Object>> actualRecommendations = getMapList(actualClarifyingResponse.get("algorithm_recommendations"));
             assertThat(actualRecommendations.size(), is(2));
             assertThat(String.valueOf(actualRecommendations.get(0).get("algorithm_role")), is("primary"));
@@ -148,7 +148,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，需要等值，需要模糊"));
+                            "natural_language_intent", "encrypt status with reversible encryption, requires equality and LIKE query"));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("clarifying"));
             List<String> actualIssueCodes = getIssueCodes(actualPlanResponse);
             assertThat(actualIssueCodes, hasItem(WorkflowIssueCode.ALGORITHM_CAPABILITY_CONFLICT));
@@ -169,7 +169,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertThat(countPhysicalColumn("status_cipher_1"), is(1));
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊", "algorithm_type", "AES",
+                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
                             "primary_algorithm_properties", Map.of("aes-key-value", "renamed-secret")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
             assertThat(getIssueCodes(actualPlannedResponse), hasItem(WorkflowIssueCode.AUTO_RENAMED_DUE_TO_CONFLICT));
@@ -189,7 +189,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualFirstPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊", "algorithm_type", "AES",
+                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
                             "primary_algorithm_properties", Map.of("aes-key-value", "first-secret")));
             assertThat(String.valueOf(actualFirstPlanResponse.get("status")), is("planned"));
             String firstPlanId = String.valueOf(actualFirstPlanResponse.get("plan_id"));
@@ -197,7 +197,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", firstPlanId)));
             Map<String, Object> actualSecondPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "amount",
-                            "natural_language_intent", "给 amount 做可逆加密，不需要等值，不需要模糊", "algorithm_type", "AES",
+                            "natural_language_intent", "encrypt amount with reversible encryption, no equality, no like", "algorithm_type", "AES",
                             "primary_algorithm_properties", Map.of("aes-key-value", "second-secret")));
             assertThat(String.valueOf(actualSecondPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualSecondPlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER ENCRYPT RULE orders"));
@@ -219,7 +219,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊", "algorithm_type", "AES",
+                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
                             "primary_algorithm_properties", Map.of("aes-key-value", "manual-secret")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlannedResponse.get("plan_id"));
@@ -243,7 +243,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊", "algorithm_type", "AES",
+                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "AES",
                             "primary_algorithm_properties", Map.of("aes-key-value", "approved-secret")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlannedResponse.get("plan_id"));
@@ -273,7 +273,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             createEncryptRuleWithoutEquality(interactionClient);
             Map<String, Object> actualAlterPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，修改成需要等值，不需要模糊", "operation_type", "alter",
+                            "natural_language_intent", "encrypt status with reversible encryption, update to require equality and no like", "operation_type", "alter",
                             "primary_algorithm_properties", Map.of("aes-key-value", "alter-secret")));
             assertThat(String.valueOf(actualAlterPlanResponse.get("status")), is("planned"));
             List<Map<String, Object>> actualDdlArtifacts = getMapList(actualAlterPlanResponse.get("ddl_artifacts"));
@@ -344,7 +344,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊", "algorithm_type", "MCP_CUSTOM_REVERSIBLE"));
+                            "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "MCP_CUSTOM_REVERSIBLE"));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             assertThat(getIssueCodes(actualPlanResponse), hasItem(WorkflowIssueCode.CUSTOM_ALGORITHM_CAPABILITY_UNCONFIRMED));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
@@ -371,7 +371,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     private void createEncryptRuleWithoutEquality(final MCPInteractionClient interactionClient, final String columnName, final String secret) throws Exception {
         Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                 Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", columnName,
-                        "natural_language_intent", String.format("给 %s 做可逆加密，不需要等值，不需要模糊", columnName), "algorithm_type", "AES",
+                        "natural_language_intent", String.format("encrypt %s with reversible encryption, no equality, no like", columnName), "algorithm_type", "AES",
                         "primary_algorithm_properties", Map.of("aes-key-value", secret)));
         assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
         String planId = String.valueOf(actualCreatePlanResponse.get("plan_id"));

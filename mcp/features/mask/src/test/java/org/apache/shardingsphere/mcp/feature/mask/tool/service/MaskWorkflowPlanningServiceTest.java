@@ -122,7 +122,7 @@ class MaskWorkflowPlanningServiceTest {
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(workflowSessionContext, createResolvedMetadataQueryFacade(), mock(MCPFeatureQueryFacade.class), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getClarifiedIntent().getPendingQuestions().get(0), is("请改用当前 Proxy 可见的脱敏算法。"));
+        assertThat(actual.getClarifiedIntent().getPendingQuestions().get(0), is("Please use a mask algorithm visible in the current Proxy."));
     }
     
     @Test
@@ -220,8 +220,8 @@ class MaskWorkflowPlanningServiceTest {
     
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
         return Stream.of(
-                Arguments.of("create from default verb", "给 phone 列做脱敏", false, "create", "phone", "clarifying"),
-                Arguments.of("alter from chinese verb", "修改手机号脱敏规则", true, "alter", "phone", "clarifying"),
-                Arguments.of("drop from chinese verb", "删除手机号脱敏规则", true, "drop", "phone", "planned"));
+                Arguments.of("create from default verb", "mask phone column", false, "create", "phone", "clarifying"),
+                Arguments.of("alter from english verb", "update phone number mask rule", true, "alter", "phone", "clarifying"),
+                Arguments.of("drop from english verb", "delete phone number mask rule", true, "drop", "phone", "planned"));
     }
 }

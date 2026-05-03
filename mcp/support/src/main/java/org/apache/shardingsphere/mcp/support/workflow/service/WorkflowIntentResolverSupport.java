@@ -54,10 +54,10 @@ public final class WorkflowIntentResolverSupport {
             return actualOperationType;
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
-        if (naturalLanguageIntent.contains("drop") || naturalLanguageIntent.contains("删除")) {
+        if (naturalLanguageIntent.contains("drop") || naturalLanguageIntent.contains("delete") || naturalLanguageIntent.contains("remove")) {
             return recordInferredValue(clarifiedIntent, "operation_type", WorkflowLifecycle.OPERATION_DROP);
         }
-        if (naturalLanguageIntent.contains("alter") || naturalLanguageIntent.contains("修改") || naturalLanguageIntent.contains("补")) {
+        if (naturalLanguageIntent.contains("alter") || naturalLanguageIntent.contains("modify") || naturalLanguageIntent.contains("update")) {
             return recordInferredValue(clarifiedIntent, "operation_type", "alter");
         }
         return recordInferredValue(clarifiedIntent, "operation_type", "create");
@@ -87,10 +87,10 @@ public final class WorkflowIntentResolverSupport {
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
         String columnName = request.getColumn().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("手机号") || columnName.contains("phone") || columnName.contains("mobile") || columnName.contains("tel")) {
+        if (naturalLanguageIntent.contains("phone number") || columnName.contains("phone") || columnName.contains("mobile") || columnName.contains("tel")) {
             return recordInferredValue(clarifiedIntent, "field_semantics", "phone");
         }
-        if (naturalLanguageIntent.contains("身份证") || columnName.contains("id_card")) {
+        if (naturalLanguageIntent.contains("identity card") || naturalLanguageIntent.contains("id card") || columnName.contains("id_card")) {
             return recordInferredValue(clarifiedIntent, "field_semantics", "id_card");
         }
         return recordInferredValue(clarifiedIntent, "field_semantics", columnName);

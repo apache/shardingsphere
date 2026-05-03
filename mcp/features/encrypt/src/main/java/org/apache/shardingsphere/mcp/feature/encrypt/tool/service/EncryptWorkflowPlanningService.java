@@ -148,7 +148,8 @@ public final class EncryptWorkflowPlanningService {
                                 final ClarifiedIntent clarifiedIntent, final EncryptWorkflowRequest request, final List<Map<String, Object>> existingRules,
                                 final WorkflowContextSnapshot snapshot) {
         planAlgorithms(queryFacade, request, snapshot);
-        if (!planningSupport.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, findPropertyRequirements(request), "请改用当前 Proxy 可见且满足需求的加密算法。")) {
+        if (!planningSupport.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, findPropertyRequirements(request),
+                "Please use an encrypt algorithm that is visible in the current Proxy and satisfies the requirements.")) {
             return false;
         }
         planArtifacts(metadataQueryFacade, queryFacade, workflowState, clarifiedIntent, request, existingRules, snapshot);

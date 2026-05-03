@@ -126,13 +126,13 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualClarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
-                            "natural_language_intent", "把 status 当作手机号做脱敏，保留前3后4"));
+                            "natural_language_intent", "mask status as phone number, keep first 3 and last 4"));
             assertThat(String.valueOf(actualClarifyingResponse.get("status")), is("clarifying"));
             assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
             List<Map<String, Object>> actualRecommendations = getMapList(actualClarifyingResponse.get("algorithm_recommendations"));
             assertThat(actualRecommendations.size(), is(1));
             assertThat(String.valueOf(actualRecommendations.get(0).get("algorithm_type")).toUpperCase(Locale.ENGLISH), is("MASK_FROM_X_TO_Y"));
-            assertThat(getStringList(actualClarifyingResponse.get("pending_questions")), is(List.of("请提供属性 `from-x`。", "请提供属性 `to-y`。")));
+            assertThat(getStringList(actualClarifyingResponse.get("pending_questions")), is(List.of("Please provide property `from-x`.", "Please provide property `to-y`.")));
             String planId = String.valueOf(actualClarifyingResponse.get("plan_id"));
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("plan_id", planId, "primary_algorithm_properties", Map.of("from-x", "4", "to-y", "7")));

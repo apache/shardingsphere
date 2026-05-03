@@ -57,7 +57,7 @@ class WorkflowPlanningSupportTest {
         boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
-        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("请先提供 logical database。")));
+        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("Please provide logical database first.")));
         assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
     
@@ -142,9 +142,9 @@ class WorkflowPlanningSupportTest {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm", "message", "action", false, java.util.Map.of()));
-        boolean actual = planningSupport.hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, "请改用当前 Proxy 可见算法。");
+        boolean actual = planningSupport.hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, "Please use an algorithm visible in the current Proxy.");
         assertTrue(actual);
-        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("请改用当前 Proxy 可见算法。")));
+        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("Please use an algorithm visible in the current Proxy.")));
     }
     
     @Test
@@ -158,7 +158,7 @@ class WorkflowPlanningSupportTest {
         boolean actual = planningSupport.collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);
         assertFalse(actual);
         assertThat(request.getPrimaryAlgorithmProperties().get("mask-char"), is("*"));
-        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("请提供属性 `from-x`。")));
+        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("Please provide property `from-x`.")));
         assertThat(snapshot.getPropertyRequirements().size(), is(2));
         assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
     }

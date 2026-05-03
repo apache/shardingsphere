@@ -115,7 +115,7 @@ public final class MaskWorkflowPlanningService {
     private boolean planNonDrop(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                 final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
         planAlgorithms(queryFacade, clarifiedIntent, request, snapshot);
-        if (!planningSupport.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, findPropertyRequirements(request), "请改用当前 Proxy 可见的脱敏算法。")) {
+        if (!planningSupport.isReadyForArtifactPlanning(request, clarifiedIntent, snapshot, findPropertyRequirements(request), "Please use a mask algorithm visible in the current Proxy.")) {
             return false;
         }
         planArtifacts(clarifiedIntent, request, existingRules, snapshot);

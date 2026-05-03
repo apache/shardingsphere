@@ -139,7 +139,7 @@ class EncryptWorkflowPlanningServiceTest {
                 mock(IndexPlanningService.class), mock(EncryptRuleDistSQLPlanningService.class));
         WorkflowContextSnapshot actual = service.plan(workflowSessionContext, createResolvedMetadataQueryFacade(), createQueryFacade(), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
-        assertThat(actual.getClarifiedIntent().getPendingQuestions().get(0), is("请改用当前 Proxy 可见且满足需求的加密算法。"));
+        assertThat(actual.getClarifiedIntent().getPendingQuestions().get(0), is("Please use an encrypt algorithm that is visible in the current Proxy and satisfies the requirements."));
     }
     
     @Test
@@ -153,7 +153,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(derivedColumnNamingService.createPlan(any(), any(), any())).thenReturn(createDerivedColumnPlan());
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
         when(ruleDistSQLPlanningService.planEncryptRule(any(), any(), any())).thenReturn(new RuleArtifact("create", "CREATE ENCRYPT RULE orders"));
-        EncryptWorkflowRequest request = createNaturalLanguageRequest("给手机号加密，需要可逆和等值查询，不需要like");
+        EncryptWorkflowRequest request = createNaturalLanguageRequest("encrypt phone number, requires reversible and equality query, no like");
         request.setAlgorithmType("AES");
         request.getOptions().setAssistedQueryAlgorithmType("MD5");
         request.getPrimaryAlgorithmProperties().put("aes-key-value", "123456");
@@ -191,7 +191,7 @@ class EncryptWorkflowPlanningServiceTest {
         WorkflowContextSnapshot actual = service.plan(workflowSessionContext, createResolvedMetadataQueryFacade(), createQueryFacade(), "session-1", createRequest("create"));
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
-        assertThat(actual.getClarifiedIntent().getPendingQuestions().get(0), is("请提供属性 `aes-key-value`。"));
+        assertThat(actual.getClarifiedIntent().getPendingQuestions().get(0), is("Please provide property `aes-key-value`."));
     }
     
     @Test
@@ -305,8 +305,8 @@ class EncryptWorkflowPlanningServiceTest {
     
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
         return Stream.of(
-                Arguments.of("create from default verb", "给 phone 列加密", false, "create", "phone", "clarifying", true),
-                Arguments.of("alter from chinese verb", "修改手机号加密规则", true, "alter", "phone", "clarifying", true),
-                Arguments.of("drop from chinese verb", "删除手机号加密规则", true, "drop", "phone", "planned", false));
+                Arguments.of("create from default verb", "encrypt phone column", false, "create", "phone", "clarifying", true),
+                Arguments.of("alter from english verb", "update phone number encrypt rule", true, "alter", "phone", "clarifying", true),
+                Arguments.of("drop from english verb", "delete phone number encrypt rule", true, "drop", "phone", "planned", false));
     }
 }

@@ -143,7 +143,7 @@ public final class WorkflowPlanningSupport {
             return true;
         }
         for (String each : missingRequiredProperties) {
-            clarifiedIntent.getPendingQuestions().add(String.format("请提供属性 `%s`。", each));
+            clarifiedIntent.getPendingQuestions().add(String.format("Please provide property `%s`.", each));
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING, "error", "collecting-properties",
                 "Required algorithm properties are still missing.", "Provide all required algorithm properties.", true, Map.of("missing_properties", missingRequiredProperties)));
@@ -180,7 +180,7 @@ public final class WorkflowPlanningSupport {
     public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("请先提供 logical database。");
+            clarifiedIntent.getPendingQuestions().add("Please provide logical database first.");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
                     "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
@@ -211,13 +211,13 @@ public final class WorkflowPlanningSupport {
     
     private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (request.getSchema().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("请明确 schema。");
+            clarifiedIntent.getPendingQuestions().add("Please specify schema.");
         }
         if (request.getTable().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("请明确目标表。");
+            clarifiedIntent.getPendingQuestions().add("Please specify target table.");
         }
         if (request.getColumn().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("请明确目标列。");
+            clarifiedIntent.getPendingQuestions().add("Please specify target column.");
         }
     }
     

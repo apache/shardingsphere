@@ -121,16 +121,16 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Test
-    void assertPreserveUtf8ToolArgumentsForChineseWorkflowIntent() throws IOException, InterruptedException {
+    void assertPreserveUtf8ToolArgumentsForWorkflowIntent() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "plan_encrypt_rule",
-                Map.of("table", "orders", "column", "status", "natural_language_intent", "给 status 做可逆加密，不需要等值，不需要模糊"));
+                Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
         assertThat(String.valueOf(structuredContent.get("status")), is("clarifying"));
-        assertThat(((List<?>) structuredContent.get("pending_questions")).stream().map(String::valueOf).toList(), is(List.of("请先提供 logical database。")));
+        assertThat(((List<?>) structuredContent.get("pending_questions")).stream().map(String::valueOf).toList(), is(List.of("Please provide logical database first.")));
     }
     
     @Test
