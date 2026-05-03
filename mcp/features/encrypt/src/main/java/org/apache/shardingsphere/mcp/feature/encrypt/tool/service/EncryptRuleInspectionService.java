@@ -43,6 +43,33 @@ public final class EncryptRuleInspectionService {
         return normalizeEncryptRuleRows(queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName)));
     }
     
+    private List<Map<String, Object>> normalizeEncryptRuleRows(final List<Map<String, Object>> rawRows) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : rawRows) {
+            Map<String, Object> actualRow = new LinkedHashMap<>(each);
+            putAliasIfAbsent(actualRow, "assisted_query_column", "assisted_query");
+            putAliasIfAbsent(actualRow, "like_query_column", "like_query");
+            result.add(actualRow);
+        }
+        return result;
+    }
+    
+    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
+        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
+            row.put(targetKey, row.get(sourceKey));
+        }
+    }
+    
+    private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
+        String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
+        String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
+        WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
+        WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
+        return actualTableName.isEmpty()
+                ? String.format("SHOW ENCRYPT RULES FROM %s", actualDatabaseName)
+                : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", actualTableName, actualDatabaseName);
+    }
+    
     /**
      * Enrich encrypt algorithm plugins with MCP-specific metadata.
      *
@@ -62,32 +89,5 @@ public final class EncryptRuleInspectionService {
             result.add(row);
         }
         return result;
-    }
-    
-    private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
-        String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
-        String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
-        WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
-        WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
-        return actualTableName.isEmpty()
-                ? String.format("SHOW ENCRYPT RULES FROM %s", actualDatabaseName)
-                : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", actualTableName, actualDatabaseName);
-    }
-    
-    private List<Map<String, Object>> normalizeEncryptRuleRows(final List<Map<String, Object>> rawRows) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : rawRows) {
-            Map<String, Object> actualRow = new LinkedHashMap<>(each);
-            putAliasIfAbsent(actualRow, "assisted_query_column", "assisted_query");
-            putAliasIfAbsent(actualRow, "like_query_column", "like_query");
-            result.add(actualRow);
-        }
-        return result;
-    }
-    
-    private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
-        if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
-            row.put(targetKey, row.get(sourceKey));
-        }
     }
 }

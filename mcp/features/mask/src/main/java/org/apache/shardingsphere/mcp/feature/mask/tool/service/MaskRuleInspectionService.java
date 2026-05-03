@@ -40,32 +40,7 @@ public final class MaskRuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return normalizeMaskRuleRows(queryFacade.query(databaseName, "", buildShowMaskRulesSql(databaseName, tableName)));
-    }
-    
-    /**
-     * Enrich mask algorithm plugins with MCP-specific metadata.
-     *
-     * @param queryFacade query facade
-     * @return enriched plugin rows
-     */
-    public List<Map<String, Object>> enrichMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")) {
-            String type = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("type"))).toUpperCase(Locale.ENGLISH);
-            Map<String, Object> row = new LinkedHashMap<>(each);
-            row.put("source", MaskAlgorithmRecommendationService.isKnownMaskAlgorithm(type) ? "builtin" : "custom-spi");
-            result.add(row);
-        }
-        return result;
-    }
-    
-    private String buildShowMaskRulesSql(final String databaseName, final String tableName) {
-        String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
-        String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
-        WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
-        WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
-        return actualTableName.isEmpty() ? String.format("SHOW MASK RULES FROM %s", actualDatabaseName) : String.format("SHOW MASK RULE %s FROM %s", actualTableName, actualDatabaseName);
+        return normalizeMaskRuleRows(queryFacade.query(databaseName, "", buildShowMaskRulesSQL(databaseName, tableName)));
     }
     
     private List<Map<String, Object>> normalizeMaskRuleRows(final List<Map<String, Object>> rawRows) {
@@ -84,5 +59,30 @@ public final class MaskRuleInspectionService {
         if (!row.containsKey(targetKey) && row.containsKey(sourceKey)) {
             row.put(targetKey, row.get(sourceKey));
         }
+    }
+    
+    private String buildShowMaskRulesSQL(final String databaseName, final String tableName) {
+        String actualDatabaseName = WorkflowSqlUtils.trimToEmpty(databaseName);
+        String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
+        WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
+        WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
+        return actualTableName.isEmpty() ? String.format("SHOW MASK RULES FROM %s", actualDatabaseName) : String.format("SHOW MASK RULE %s FROM %s", actualTableName, actualDatabaseName);
+    }
+    
+    /**
+     * Enrich mask algorithm plugins with MCP-specific metadata.
+     *
+     * @param queryFacade query facade
+     * @return enriched plugin rows
+     */
+    public List<Map<String, Object>> enrichMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")) {
+            String type = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("type"))).toUpperCase(Locale.ENGLISH);
+            Map<String, Object> row = new LinkedHashMap<>(each);
+            row.put("source", MaskAlgorithmRecommendationService.isKnownMaskAlgorithm(type) ? "builtin" : "custom-spi");
+            result.add(row);
+        }
+        return result;
     }
 }
