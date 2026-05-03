@@ -96,7 +96,7 @@ class WorkflowContextSnapshotTest {
         Map<String, Object> issueDetails = new LinkedHashMap<>(1, 1F);
         issueDetails.put("missing_fields", new LinkedList<>(List.of("column")));
         result.getIssues().add(new WorkflowIssue("code", "error", "stage", "message", "action", true, issueDetails));
-        result.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", "heuristic", true, true, false, 90, "reason", ""));
+        result.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", true, true, false, 90, "reason", ""));
         result.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "key", true, true, "desc", ""));
         result.getDdlArtifacts().add(new DDLArtifact("ddl", "ALTER TABLE t ADD c VARCHAR(32)", 1));
         result.getRuleArtifacts().add(new RuleArtifact("create", "CREATE ENCRYPT RULE t"));

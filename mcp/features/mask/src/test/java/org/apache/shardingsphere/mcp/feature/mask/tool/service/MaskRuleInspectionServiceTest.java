@@ -72,11 +72,11 @@ class MaskRuleInspectionServiceTest {
     }
     
     @Test
-    void assertEnrichMaskAlgorithms() {
+    void assertQueryMaskAlgorithms() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MD5"), Map.of("type", "CUSTOM")));
-        List<Map<String, Object>> actual = service.enrichMaskAlgorithms(queryFacade);
-        assertThat(actual.get(0).get("source"), is("builtin"));
-        assertThat(actual.get(1).get("source"), is("custom-spi"));
+        List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
+        assertThat(actual.get(0).get("type"), is("MD5"));
+        assertThat(actual.get(1).get("type"), is("CUSTOM"));
     }
 }

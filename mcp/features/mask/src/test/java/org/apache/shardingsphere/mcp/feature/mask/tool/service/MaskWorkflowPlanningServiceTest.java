@@ -95,7 +95,7 @@ class MaskWorkflowPlanningServiceTest {
                                                 final String expectedStatus) throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("column", "phone")) : List.of());
-        when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MaskWorkflowPlanningService service = createService(ruleInspectionService, new MaskAlgorithmRecommendationService(),
                 new MaskAlgorithmPropertyTemplateService(), new MaskRuleDistSQLPlanningService());
@@ -110,7 +110,7 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
         MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any())).thenAnswer(invocation -> {
             List<WorkflowIssue> issues = invocation.getArgument(3);
@@ -129,10 +129,10 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
         MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any()))
-                .thenReturn(List.of(new AlgorithmCandidate("primary", "MASK_FROM_X_TO_Y", "builtin", null, null, null, 100, "reason", "")));
+                .thenReturn(List.of(new AlgorithmCandidate("primary", "MASK_FROM_X_TO_Y", null, null, null, 100, "reason", "")));
         MaskAlgorithmPropertyTemplateService propertyTemplateService = mock(MaskAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements("MASK_FROM_X_TO_Y")).thenReturn(List.of(
                 new AlgorithmPropertyRequirement("primary", "from-x", true, false, "from", "")));
@@ -148,10 +148,10 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanCreatesRuleArtifact() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of());
+        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
         MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any()))
-                .thenReturn(List.of(new AlgorithmCandidate("primary", "MASK_FROM_X_TO_Y", "builtin", null, null, null, 100, "reason", "")));
+                .thenReturn(List.of(new AlgorithmCandidate("primary", "MASK_FROM_X_TO_Y", null, null, null, 100, "reason", "")));
         MaskAlgorithmPropertyTemplateService propertyTemplateService = mock(MaskAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements("MASK_FROM_X_TO_Y")).thenReturn(List.of());
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);

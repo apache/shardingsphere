@@ -340,19 +340,17 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     }
     
     @Test
-    void assertPlanApplyValidateAndReadEncryptResourcesWithCustomSpiAlgorithmThroughProxy() throws Exception {
+    void assertPlanApplyValidateAndReadEncryptResourcesWithCustomAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
                             "natural_language_intent", "encrypt status with reversible encryption, no equality, no like", "algorithm_type", "MCP_CUSTOM_REVERSIBLE"));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
-            assertThat(getIssueCodes(actualPlanResponse), hasItem(WorkflowIssueCode.CUSTOM_ALGORITHM_CAPABILITY_UNCONFIRMED));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
             assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId)).get("status")), is("completed"));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualEncryptPluginItems = getPayloadItems(interactionClient.readResource(ALGORITHMS_RESOURCE_URI));
-            Map<String, Object> actualEncryptPlugin = findItemByField(actualEncryptPluginItems, "type", "MCP_CUSTOM_REVERSIBLE");
-            assertThat(String.valueOf(actualEncryptPlugin.get("source")), is("custom-spi"));
+            assertThat(String.valueOf(findItemByField(actualEncryptPluginItems, "type", "MCP_CUSTOM_REVERSIBLE").get("type")), is("MCP_CUSTOM_REVERSIBLE"));
             List<Map<String, Object>> actualEncryptRules = getPayloadItems(
                     interactionClient.readResource(String.format(RULES_RESOURCE_URI, getLogicalDatabaseName())));
             Map<String, Object> actualEncryptRule = findItemByField(actualEncryptRules, "logic_column", "status");

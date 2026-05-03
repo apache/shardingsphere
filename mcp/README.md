@@ -348,7 +348,7 @@ The workflow also adds these feature resources:
 - `shardingsphere://features/mask/databases/{database}/rules`
 - `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
 
-The `features/*/algorithms` resources include both built-in algorithms and custom SPI algorithms visible from the current Proxy instance, so a model can recommend from the actual runtime pool.
+The `features/*/algorithms` resources expose the algorithm plugins visible from the current Proxy instance, so a model can recommend from the actual runtime pool.
 
 ### Keep these rules in mind before you start
 

@@ -60,7 +60,7 @@ public final class EncryptRuleDistSQLPlanningService {
         validateEncryptDropIdentifiers(request);
         List<String> remainingColumnSegments = new LinkedList<>();
         for (Map<String, Object> each : existingRules) {
-            if (!request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column"))) {
+            if (!request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))) {
                 remainingColumnSegments.add(createExistingEncryptColumnSegment(each));
             }
         }
@@ -88,7 +88,7 @@ public final class EncryptRuleDistSQLPlanningService {
         List<String> result = new LinkedList<>();
         boolean targetColumnHandled = false;
         for (Map<String, Object> each : existingRules) {
-            if (request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.findRuleValue(each, "logic_column"))) {
+            if (request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "logic_column"))) {
                 result.add(createTargetEncryptColumnSegment(request, derivedColumnPlan));
                 targetColumnHandled = true;
                 continue;
@@ -124,10 +124,10 @@ public final class EncryptRuleDistSQLPlanningService {
     }
     
     private String createExistingEncryptColumnSegment(final Map<String, Object> rule) {
-        String logicColumn = WorkflowRuleValueUtils.findRuleValue(rule, "logic_column");
-        String cipherColumn = WorkflowRuleValueUtils.findRuleValue(rule, "cipher_column");
-        String assistedQueryColumn = WorkflowRuleValueUtils.findRuleValue(rule, "assisted_query_column");
-        String likeQueryColumn = WorkflowRuleValueUtils.findRuleValue(rule, "like_query_column");
+        String logicColumn = WorkflowRuleValueUtils.getRuleValue(rule, "logic_column");
+        String cipherColumn = WorkflowRuleValueUtils.getRuleValue(rule, "cipher_column");
+        String assistedQueryColumn = WorkflowRuleValueUtils.getRuleValue(rule, "assisted_query_column");
+        String likeQueryColumn = WorkflowRuleValueUtils.getRuleValue(rule, "like_query_column");
         WorkflowSQLUtils.checkSafeIdentifier("column", logicColumn);
         WorkflowSQLUtils.checkSafeIdentifier("cipher_column", cipherColumn);
         WorkflowSQLUtils.checkSafeIdentifier("assisted_query_column", assistedQueryColumn);
@@ -140,13 +140,13 @@ public final class EncryptRuleDistSQLPlanningService {
             result.append(String.format(", LIKE_QUERY=%s", likeQueryColumn));
         }
         result.append(String.format(", ENCRYPT_ALGORITHM(%s)",
-                WorkflowSQLUtils.createAlgorithmFragment(WorkflowRuleValueUtils.findRuleValue(rule, "encryptor_type"), WorkflowSQLUtils.createPropertyMap(rule.get("encryptor_props")))));
-        String assistedQueryType = WorkflowRuleValueUtils.findRuleValue(rule, "assisted_query_type");
+                WorkflowSQLUtils.createAlgorithmFragment(WorkflowRuleValueUtils.getRuleValue(rule, "encryptor_type"), WorkflowSQLUtils.createPropertyMap(rule.get("encryptor_props")))));
+        String assistedQueryType = WorkflowRuleValueUtils.getRuleValue(rule, "assisted_query_type");
         if (!assistedQueryType.isEmpty()) {
             result.append(String.format(", ASSISTED_QUERY_ALGORITHM(%s)",
                     WorkflowSQLUtils.createAlgorithmFragment(assistedQueryType, WorkflowSQLUtils.createPropertyMap(rule.get("assisted_query_props")))));
         }
-        String likeQueryType = WorkflowRuleValueUtils.findRuleValue(rule, "like_query_type");
+        String likeQueryType = WorkflowRuleValueUtils.getRuleValue(rule, "like_query_type");
         if (!likeQueryType.isEmpty()) {
             result.append(String.format(", LIKE_QUERY_ALGORITHM(%s)",
                     WorkflowSQLUtils.createAlgorithmFragment(likeQueryType, WorkflowSQLUtils.createPropertyMap(rule.get("like_query_props")))));

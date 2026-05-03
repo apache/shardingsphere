@@ -144,7 +144,7 @@ public final class WorkflowContextSnapshot {
     }
     
     private static AlgorithmCandidate copyAlgorithmCandidate(final AlgorithmCandidate original) {
-        return new AlgorithmCandidate(original.getAlgorithmRole(), original.getAlgorithmType(), original.getSource(), original.getSupportsDecrypt(),
+        return new AlgorithmCandidate(original.getAlgorithmRole(), original.getAlgorithmType(), original.getSupportsDecrypt(),
                 original.getSupportsEquivalentFilter(), original.getSupportsLike(), original.getRecommendationScore(),
                 original.getRecommendationReason(), original.getRiskNotes());
     }

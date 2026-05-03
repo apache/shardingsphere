@@ -20,12 +20,8 @@ package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Mask rule inspection service.
@@ -48,19 +44,12 @@ public final class MaskRuleInspectionService {
     }
     
     /**
-     * Enrich mask algorithm plugins with MCP-specific metadata.
+     * Query mask algorithms.
      *
      * @param queryFacade query facade
-     * @return enriched plugin rows
+     * @return mask algorithms
      */
-    public List<Map<String, Object>> enrichMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")) {
-            String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
-            Map<String, Object> row = new LinkedHashMap<>(each);
-            row.put("source", MaskAlgorithmRecommendationService.isKnownMaskAlgorithm(type) ? "builtin" : "custom-spi");
-            result.add(row);
-        }
-        return result;
+    public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
+        return queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
     }
 }

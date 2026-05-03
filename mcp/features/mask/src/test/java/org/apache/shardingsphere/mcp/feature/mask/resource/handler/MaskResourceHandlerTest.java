@@ -56,7 +56,7 @@ class MaskResourceHandlerTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
         when(ruleInspectionService.queryMaskRules(queryFacade, expectedDatabase, expectedTable)).thenReturn(maskRules);
-        when(ruleInspectionService.enrichMaskAlgorithms(queryFacade)).thenReturn(maskAlgorithms);
+        when(ruleInspectionService.queryMaskAlgorithms(queryFacade)).thenReturn(maskAlgorithms);
         MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(uriVariables));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
@@ -70,7 +70,7 @@ class MaskResourceHandlerTest {
     
     private static Stream<Arguments> assertHandleArguments() {
         return Stream.of(
-                Arguments.of("mask algorithms", new MaskAlgorithmsHandler(), Map.of(), "", "", List.of(), List.of(Map.of("type", "MD5", "source", "builtin"))),
+                Arguments.of("mask algorithms", new MaskAlgorithmsHandler(), Map.of(), "", "", List.of(), List.of(Map.of("type", "MD5"))),
                 Arguments.of("mask rules", new MaskRulesHandler(), Map.of("database", "logic_db"), "logic_db", "", List.of(Map.of("column", "phone")), List.of()),
                 Arguments.of("mask table rule", new MaskRuleHandler(), Map.of("database", "logic_db", "table", "orders"), "logic_db", "orders", List.of(Map.of("column", "phone")), List.of()));
     }

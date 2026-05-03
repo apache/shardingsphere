@@ -180,7 +180,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))
-                .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", "builtin", true, true, false, 100, "reason", "")));
+                .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", true, true, false, 100, "reason", "")));
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of(
                 new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "key", "")));
@@ -201,7 +201,7 @@ class EncryptWorkflowPlanningServiceTest {
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
         EncryptAlgorithmRecommendationService algorithmRecommendationService = mock(EncryptAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendEncryptAlgorithms(any(), any(), any()))
-                .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", "builtin", true, true, false, 100, "reason", "")));
+                .thenReturn(List.of(new AlgorithmCandidate("primary", "AES", true, true, false, 100, "reason", "")));
         EncryptAlgorithmPropertyTemplateService propertyTemplateService = mock(EncryptAlgorithmPropertyTemplateService.class);
         when(propertyTemplateService.findRequirements(any(), any(), any())).thenReturn(List.of());
         DerivedColumnNamingService derivedColumnNamingService = mock(DerivedColumnNamingService.class);

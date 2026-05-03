@@ -59,7 +59,6 @@ public final class EncryptRuleInspectionService {
             String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
             Map<String, Boolean> capability = EncryptAlgorithmRecommendationService.findEncryptCapability(type);
             Map<String, Object> row = new LinkedHashMap<>(each);
-            row.put("source", EncryptAlgorithmRecommendationService.isKnownEncryptAlgorithm(type) ? "builtin" : "custom-spi");
             row.put("supports_decrypt", capability.get("supports_decrypt"));
             row.put("supports_equivalent_filter", capability.get("supports_equivalent_filter"));
             row.put("supports_like", capability.get("supports_like"));

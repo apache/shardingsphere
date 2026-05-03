@@ -30,20 +30,13 @@ import java.util.Objects;
 public final class WorkflowRuleValueUtils {
     
     /**
-     * Find the first non-empty rule value.
+     * Get rule value.
      *
      * @param rule rule row
-     * @param keys candidate keys
-     * @return first non-empty value
+     * @param key rule key
+     * @return rule value
      */
-    public static String findRuleValue(final Map<String, Object> rule, final String... keys) {
-        for (String each : keys) {
-            Object value = rule.get(each);
-            String actualValue = Objects.toString(value, "").trim();
-            if (!actualValue.isEmpty()) {
-                return actualValue;
-            }
-        }
-        return "";
+    public static String getRuleValue(final Map<String, Object> rule, final String key) {
+        return Objects.toString(rule.get(key), "").trim();
     }
 }

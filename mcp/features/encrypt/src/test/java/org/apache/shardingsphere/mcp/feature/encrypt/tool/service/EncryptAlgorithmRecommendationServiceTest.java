@@ -42,12 +42,6 @@ class EncryptAlgorithmRecommendationServiceTest {
     private final EncryptAlgorithmRecommendationService service = new EncryptAlgorithmRecommendationService();
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("assertIsKnownEncryptAlgorithmArguments")
-    void assertIsKnownEncryptAlgorithm(final String name, final String algorithmType, final boolean expectedKnown) {
-        assertThat(EncryptAlgorithmRecommendationService.isKnownEncryptAlgorithm(algorithmType), is(expectedKnown));
-    }
-    
-    @ParameterizedTest(name = "{0}")
     @MethodSource("assertFindEncryptCapabilityArguments")
     void assertFindEncryptCapability(final String name, final String algorithmType, final Boolean expectedDecrypt,
                                      final Boolean expectedEquivalentFilter, final Boolean expectedLike) {
@@ -58,7 +52,7 @@ class EncryptAlgorithmRecommendationServiceTest {
     }
     
     @Test
-    void assertRecommendEncryptAlgorithmsWithSpecifiedBuiltinPrimary() {
+    void assertRecommendEncryptAlgorithmsWithSpecifiedPrimary() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.getOptions().setRequiresDecrypt(true);
         request.setAlgorithmType("AES");
@@ -67,7 +61,6 @@ class EncryptAlgorithmRecommendationServiceTest {
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getAlgorithmRole(), is("primary"));
         assertThat(actual.get(0).getAlgorithmType(), is("AES"));
-        assertThat(actual.get(0).getSource(), is("builtin"));
         assertTrue(issues.isEmpty());
     }
     
@@ -93,14 +86,14 @@ class EncryptAlgorithmRecommendationServiceTest {
     }
     
     @Test
-    void assertRecommendEncryptAlgorithmsWithCustomPrimaryWarning() {
+    void assertRecommendEncryptAlgorithmsWithUnconfirmedCapability() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setAlgorithmType("FPE");
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendEncryptAlgorithms(request, List.of(createAlgorithmRow("FPE", null, null, null)), issues);
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(0).getSource(), is("custom-spi"));
-        assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.CUSTOM_ALGORITHM_CAPABILITY_UNCONFIRMED));
+        assertFalse(actual.get(0).getRiskNotes().isEmpty());
+        assertTrue(issues.isEmpty());
     }
     
     @Test
@@ -115,14 +108,7 @@ class EncryptAlgorithmRecommendationServiceTest {
         assertThat(actual.get(0).getAlgorithmType(), is("FPE"));
         assertThat(actual.get(1).getAlgorithmRole(), is("like_query"));
         assertThat(actual.get(1).getAlgorithmType(), is("FPE"));
-        assertFalse(issues.isEmpty());
-    }
-    
-    private static Stream<Arguments> assertIsKnownEncryptAlgorithmArguments() {
-        return Stream.of(
-                Arguments.of("aes is built in", "AES", true),
-                Arguments.of("md5 is built in", "MD5", true),
-                Arguments.of("sm4 is custom", "SM4", false));
+        assertTrue(issues.isEmpty());
     }
     
     private static Stream<Arguments> assertFindEncryptCapabilityArguments() {

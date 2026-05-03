@@ -350,7 +350,7 @@ Workflow 同时补充了以下 feature resources：
 - `shardingsphere://features/mask/databases/{database}/rules`
 - `shardingsphere://features/mask/databases/{database}/tables/{table}/rules`
 
-其中 `features/*/algorithms` 会同时展示内建算法和当前 Proxy 可见的自定义 SPI 算法，方便大模型做算法推荐。
+其中 `features/*/algorithms` 会展示当前 Proxy 可见的算法插件，方便大模型基于实际运行时集合做算法推荐。
 
 ### 使用前先记住这几条
 

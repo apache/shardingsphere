@@ -27,26 +27,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Mask algorithm recommendation service.
  */
 public final class MaskAlgorithmRecommendationService {
-    
-    private static final Set<String> KNOWN_MASK_ALGORITHMS = Set.of(
-            "MD5", "KEEP_FIRST_N_LAST_M", "KEEP_FROM_X_TO_Y", "MASK_FIRST_N_LAST_M", "MASK_FROM_X_TO_Y",
-            "MASK_AFTER_SPECIAL_CHARS", "MASK_BEFORE_SPECIAL_CHARS", "GENERIC_TABLE_RANDOM_REPLACE");
-    
-    /**
-     * Judge whether mask algorithm is known built-in.
-     *
-     * @param algorithmType algorithm type
-     * @return known built-in or not
-     */
-    public static boolean isKnownMaskAlgorithm(final String algorithmType) {
-        return KNOWN_MASK_ALGORITHMS.contains(algorithmType);
-    }
     
     /**
      * Recommend mask algorithm.
@@ -62,7 +47,7 @@ public final class MaskAlgorithmRecommendationService {
         String actualAlgorithmType = request.getAlgorithmType().toUpperCase(Locale.ENGLISH);
         if (!actualAlgorithmType.isEmpty()) {
             if (containsAlgorithm(maskAlgorithms, actualAlgorithmType)) {
-                return List.of(new AlgorithmCandidate("primary", actualAlgorithmType, detectSource(actualAlgorithmType), null, null, null, 100, "User specified algorithm.", ""));
+                return List.of(new AlgorithmCandidate("primary", actualAlgorithmType, null, null, null, 100, "User specified algorithm.", ""));
             }
             issues.add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm",
                     String.format("Mask algorithm `%s` is not visible from the current Proxy.", actualAlgorithmType), "Choose an available mask algorithm.", false, Map.of()));
@@ -74,7 +59,7 @@ public final class MaskAlgorithmRecommendationService {
                     "No mask algorithm is available from the current Proxy.", "Install or register at least one visible mask algorithm.", false, Map.of()));
             return List.of();
         }
-        return List.of(new AlgorithmCandidate("primary", recommendedType, detectSource(recommendedType), null, null, null, 100,
+        return List.of(new AlgorithmCandidate("primary", recommendedType, null, null, null, 100,
                 "Recommended by field semantics and current algorithm availability.", ""));
     }
     
@@ -93,10 +78,6 @@ public final class MaskAlgorithmRecommendationService {
     
     private boolean containsAlgorithm(final List<Map<String, Object>> algorithmRows, final String algorithmType) {
         return algorithmRows.stream().map(this::getAlgorithmType).anyMatch(algorithmType::equals);
-    }
-    
-    private String detectSource(final String algorithmType) {
-        return isKnownMaskAlgorithm(algorithmType) ? "builtin" : "custom-spi";
     }
     
     private String getAlgorithmType(final Map<String, Object> algorithmRow) {

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Algorithm recommendation service.
@@ -37,19 +36,7 @@ public final class EncryptAlgorithmRecommendationService {
     
     private static final Map<String, Boolean> UNKNOWN_ENCRYPT_CAPABILITY = createUnknownEncryptCapability();
     
-    private static final Set<String> KNOWN_ENCRYPT_ALGORITHMS = Set.of("AES", "MD5");
-    
     private static final Map<String, Map<String, Boolean>> ENCRYPT_CAPABILITIES = createEncryptCapabilities();
-    
-    /**
-     * Judge whether encrypt algorithm is known built-in.
-     *
-     * @param algorithmType algorithm type
-     * @return known built-in or not
-     */
-    public static boolean isKnownEncryptAlgorithm(final String algorithmType) {
-        return KNOWN_ENCRYPT_ALGORITHMS.contains(algorithmType);
-    }
     
     /**
      * Find encrypt capability map.
@@ -74,9 +61,7 @@ public final class EncryptAlgorithmRecommendationService {
         List<AlgorithmCandidate> result = new LinkedList<>();
         String primaryType = resolvePrimaryEncryptAlgorithm(request, encryptAlgorithms, issues);
         if (!primaryType.isEmpty()) {
-            AlgorithmCandidate primaryCandidate = createEncryptCandidate("primary", primaryType, request);
-            result.add(primaryCandidate);
-            addCustomCapabilityWarning(primaryCandidate, issues);
+            result.add(createEncryptCandidate("primary", primaryType, request));
         }
         if (Boolean.TRUE.equals(request.getOptions().getRequiresEqualityFilter())) {
             addAssistedQueryCandidate(result, request, encryptAlgorithms, issues);
@@ -121,7 +106,6 @@ public final class EncryptAlgorithmRecommendationService {
         }
         AlgorithmCandidate assistedQueryCandidate = createEncryptCandidate("assisted_query", assistedQueryType, request);
         result.add(assistedQueryCandidate);
-        addCustomCapabilityWarning(assistedQueryCandidate, issues);
     }
     
     private void addLikeQueryCandidate(final List<AlgorithmCandidate> result, final EncryptWorkflowRequest request,
@@ -134,7 +118,6 @@ public final class EncryptAlgorithmRecommendationService {
         }
         AlgorithmCandidate likeQueryCandidate = createEncryptCandidate("like_query", likeQueryType, request);
         result.add(likeQueryCandidate);
-        addCustomCapabilityWarning(likeQueryCandidate, issues);
     }
     
     private void addCapabilityConflictIssue(final List<WorkflowIssue> issues, final String specifiedAlgorithmType, final String message, final String userAction) {
@@ -185,8 +168,7 @@ public final class EncryptAlgorithmRecommendationService {
     
     private AlgorithmCandidate createEncryptCandidate(final String role, final String algorithmType, final EncryptWorkflowRequest request) {
         Map<String, Boolean> capability = findEncryptCapability(algorithmType);
-        return new AlgorithmCandidate(role, algorithmType, isKnownEncryptAlgorithm(algorithmType) ? "builtin" : "custom-spi",
-                capability.get("supports_decrypt"), capability.get("supports_equivalent_filter"), capability.get("supports_like"),
+        return new AlgorithmCandidate(role, algorithmType, capability.get("supports_decrypt"), capability.get("supports_equivalent_filter"), capability.get("supports_like"),
                 calculateEncryptScore(role, capability), createEncryptReason(role, algorithmType, request), createEncryptRisk(capability));
     }
     
@@ -222,16 +204,6 @@ public final class EncryptAlgorithmRecommendationService {
     
     private String getAlgorithmType(final Map<String, Object> algorithmRow) {
         return Objects.toString(algorithmRow.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
-    }
-    
-    private void addCustomCapabilityWarning(final AlgorithmCandidate algorithmCandidate, final List<WorkflowIssue> issues) {
-        if (!"custom-spi".equals(algorithmCandidate.getSource()) || algorithmCandidate.getRiskNotes().isEmpty()) {
-            return;
-        }
-        issues.add(new WorkflowIssue(WorkflowIssueCode.CUSTOM_ALGORITHM_CAPABILITY_UNCONFIRMED, "warning", "selecting-algorithm",
-                String.format("Capability for custom algorithm `%s` cannot be fully confirmed from SPI metadata only.", algorithmCandidate.getAlgorithmType()),
-                "Review plugin capability and validate after execution.", true, Map.of("algorithm_role", algorithmCandidate.getAlgorithmRole(),
-                        "algorithm_type", algorithmCandidate.getAlgorithmType())));
     }
     
     private static Map<String, Map<String, Boolean>> createEncryptCapabilities() {

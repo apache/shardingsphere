@@ -48,7 +48,7 @@ class WorkflowPlanPayloadBuilderTest {
         clarifiedIntent.getPendingQuestions().add("Do you need LIKE query?");
         snapshot.setClarifiedIntent(clarifiedIntent);
         snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true, Map.of()));
-        snapshot.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", "heuristic", true, true, false, 95, "reason", ""));
+        snapshot.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", true, true, false, 95, "reason", ""));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "desc", ""));
         InteractionPlan interactionPlan = new InteractionPlan();
         interactionPlan.setCurrentStep("review");

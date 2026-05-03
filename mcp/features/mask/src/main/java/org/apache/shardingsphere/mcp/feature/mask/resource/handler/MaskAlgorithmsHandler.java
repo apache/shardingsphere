@@ -44,6 +44,6 @@ public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDataba
     
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(ruleInspectionService.enrichMaskAlgorithms(databaseContext.getQueryFacade()));
+        return new MCPItemsResponse(ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade()));
     }
 }

@@ -23,14 +23,10 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -40,12 +36,6 @@ class MaskAlgorithmRecommendationServiceTest {
     
     private final MaskAlgorithmRecommendationService service = new MaskAlgorithmRecommendationService();
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertIsKnownMaskAlgorithmArguments")
-    void assertIsKnownMaskAlgorithm(final String name, final String algorithmType, final boolean expectedKnown) {
-        assertThat(MaskAlgorithmRecommendationService.isKnownMaskAlgorithm(algorithmType), is(expectedKnown));
-    }
-    
     @Test
     void assertRecommendMaskAlgorithmsWithSpecifiedAlgorithm() {
         WorkflowRequest request = new WorkflowRequest();
@@ -54,7 +44,6 @@ class MaskAlgorithmRecommendationServiceTest {
         List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), request, List.of(Map.of("type", "MD5")), issues);
         assertThat(actual.size(), is(1));
         assertThat(actual.get(0).getAlgorithmType(), is("MD5"));
-        assertThat(actual.get(0).getSource(), is("builtin"));
         assertTrue(issues.isEmpty());
     }
     
@@ -87,12 +76,5 @@ class MaskAlgorithmRecommendationServiceTest {
         List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), new WorkflowRequest(), List.of(), issues);
         assertTrue(actual.isEmpty());
         assertThat(issues.get(0).getCode(), is(WorkflowIssueCode.ALGORITHM_NOT_FOUND));
-    }
-    
-    private static Stream<Arguments> assertIsKnownMaskAlgorithmArguments() {
-        return Stream.of(
-                Arguments.of("md5 is built in", "MD5", true),
-                Arguments.of("keep first and last is built in", "KEEP_FIRST_N_LAST_M", true),
-                Arguments.of("custom is not built in", "CUSTOM", false));
     }
 }

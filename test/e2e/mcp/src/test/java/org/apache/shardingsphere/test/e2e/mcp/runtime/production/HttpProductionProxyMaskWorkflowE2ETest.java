@@ -146,7 +146,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
     }
     
     @Test
-    void assertPlanApplyValidateAndReadMaskResourcesWithCustomSpiAlgorithmThroughProxy() throws Exception {
+    void assertPlanApplyValidateAndReadMaskResourcesWithCustomAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             Map<String, Object> actualPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -156,8 +156,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId)).get("status")), is("completed"));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualMaskPluginItems = getPayloadItems(interactionClient.readResource(ALGORITHMS_RESOURCE_URI));
-            Map<String, Object> actualMaskPlugin = findItemByField(actualMaskPluginItems, "type", "MCP_MASK_CUSTOM");
-            assertThat(String.valueOf(actualMaskPlugin.get("source")), is("custom-spi"));
+            assertThat(String.valueOf(findItemByField(actualMaskPluginItems, "type", "MCP_MASK_CUSTOM").get("type")), is("MCP_MASK_CUSTOM"));
             List<Map<String, Object>> actualMaskRules = getPayloadItems(
                     interactionClient.readResource(String.format(RULES_RESOURCE_URI, getLogicalDatabaseName())));
             Map<String, Object> actualMaskRule = findItemByField(actualMaskRules, "column", "status");

@@ -42,8 +42,6 @@ public final class WorkflowIssueCode {
     
     public static final String ALGORITHM_CAPABILITY_CONFLICT = "WF-ALGO-002";
     
-    public static final String CUSTOM_ALGORITHM_CAPABILITY_UNCONFIRMED = "WF-ALGO-003";
-    
     public static final String REQUIRED_PROPERTY_MISSING = "WF-PROP-001";
     
     public static final String SECRET_PROPERTY_REQUIRED = "WF-PROP-002";

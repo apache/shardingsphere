@@ -50,7 +50,7 @@ class EncryptResourceHandlerTest {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
-        when(ruleInspectionService.queryEncryptAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "AES", "source", "builtin")));
+        when(ruleInspectionService.queryEncryptAlgorithms(queryFacade)).thenReturn(List.of(Map.of("type", "AES")));
         Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
         MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of()));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
