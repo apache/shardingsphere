@@ -44,16 +44,16 @@ public final class EncryptRuleInspectionService {
     }
 
     /**
-     * Query encrypt rule.
+     * Query encrypt rules.
      *
      * @param queryFacade query facade
      * @param databaseName database name
      * @param tableName table name
-     * @return encrypt rule
+     * @return encrypt rules
      */
-    public List<Map<String, Object>> queryEncryptRule(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW ENCRYPT TABLE RULE %s FROM %s",
-                WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+    public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
+        return queryFacade.query(
+                databaseName, "", String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
     
     /**

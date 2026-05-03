@@ -79,7 +79,7 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of(Map.of(
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "assisted_query_column", "phone_assisted_query",
@@ -110,7 +110,7 @@ class EncryptWorkflowValidationServiceTest {
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
         snapshot.setFeatureData(workflowState);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of(Map.of(
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES")));
@@ -131,7 +131,7 @@ class EncryptWorkflowValidationServiceTest {
         workflowState.setDerivedColumnPlan(createDerivedColumnPlan(false, false));
         snapshot.setFeatureData(workflowState);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowValidationService service = createService(ruleInspectionService);
         WorkflowSynchronizationException actual = assertThrows(WorkflowSynchronizationException.class,
                 () -> service.synchronize(snapshot, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), "session-1"));
@@ -144,7 +144,7 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowContextSnapshot snapshot = createSnapshot("plan-1", "session-1", "executed", "drop");
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
@@ -165,7 +165,7 @@ class EncryptWorkflowValidationServiceTest {
         snapshot.setFeatureData(workflowState);
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of());
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         EncryptWorkflowValidationService service = createService(ruleInspectionService);
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(new MCPColumnMetadata("logic_db", "public", "orders", "", "phone")));
@@ -187,7 +187,7 @@ class EncryptWorkflowValidationServiceTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(snapshot);
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
-        when(ruleInspectionService.queryEncryptRule(any(), any(), any())).thenReturn(List.of(Map.of(
+        when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of(
                 "logic_column", "phone",
                 "cipher_column", "phone_cipher",
                 "encryptor_type", "AES")));
