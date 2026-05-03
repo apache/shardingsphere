@@ -40,10 +40,7 @@ public final class MaskRuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return normalizeMaskRuleRows(queryFacade.query(databaseName, "", buildShowMaskRulesSQL(databaseName, tableName)));
-    }
-    
-    private List<Map<String, Object>> normalizeMaskRuleRows(final List<Map<String, Object>> rawRows) {
+        List<Map<String, Object>> rawRows = queryFacade.query(databaseName, "", buildShowMaskRulesSQL(databaseName, tableName));
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rawRows) {
             Map<String, Object> actualRow = new LinkedHashMap<>(each);

@@ -40,10 +40,7 @@ public final class EncryptRuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return normalizeEncryptRuleRows(queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName)));
-    }
-    
-    private List<Map<String, Object>> normalizeEncryptRuleRows(final List<Map<String, Object>> rawRows) {
+        List<Map<String, Object>> rawRows = queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName));
         List<Map<String, Object>> result = new LinkedList<>();
         for (Map<String, Object> each : rawRows) {
             Map<String, Object> actualRow = new LinkedHashMap<>(each);
