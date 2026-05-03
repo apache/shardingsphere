@@ -51,7 +51,6 @@ public final class EncryptFeatureProvider implements MCPHandlerProvider, MCPWork
     
     @Override
     public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
-        EncryptWorkflowValidationService workflowValidationService = new EncryptWorkflowValidationService();
-        return List.of(new WorkflowRuntimeDefinition(EncryptFeatureDefinition.WORKFLOW_KIND, workflowValidationService, workflowValidationService));
+        return List.of(new WorkflowRuntimeDefinition(EncryptFeatureDefinition.WORKFLOW_KIND, new EncryptWorkflowValidationService()));
     }
 }

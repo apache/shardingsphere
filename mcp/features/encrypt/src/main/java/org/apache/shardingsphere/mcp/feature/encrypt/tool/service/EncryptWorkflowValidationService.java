@@ -22,8 +22,7 @@ import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowS
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
-import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowValidationHandler;
+import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowRuntimeHandler;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -47,7 +46,7 @@ import java.util.Set;
 /**
  * Encrypt workflow validation service.
  */
-public final class EncryptWorkflowValidationService implements MCPWorkflowValidationHandler, MCPWorkflowApplySynchronizationHandler {
+public final class EncryptWorkflowValidationService implements MCPWorkflowRuntimeHandler {
     
     private final WorkflowValidationSupport validationSupport = new WorkflowValidationSupport();
     

@@ -51,7 +51,6 @@ public final class MaskFeatureProvider implements MCPHandlerProvider, MCPWorkflo
     
     @Override
     public Collection<WorkflowRuntimeDefinition> getWorkflowDefinitions() {
-        MaskWorkflowValidationService workflowValidationService = new MaskWorkflowValidationService();
-        return List.of(new WorkflowRuntimeDefinition(MaskFeatureDefinition.WORKFLOW_KIND, workflowValidationService, workflowValidationService));
+        return List.of(new WorkflowRuntimeDefinition(MaskFeatureDefinition.WORKFLOW_KIND, new MaskWorkflowValidationService()));
     }
 }

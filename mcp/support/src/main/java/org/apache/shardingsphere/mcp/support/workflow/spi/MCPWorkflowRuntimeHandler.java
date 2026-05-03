@@ -17,30 +17,8 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.spi;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
-
 /**
- * Workflow runtime definition.
+ * Workflow runtime handler for validation and apply synchronization.
  */
-@RequiredArgsConstructor
-@Getter
-public final class WorkflowRuntimeDefinition {
-    
-    private final WorkflowKind workflowKind;
-    
-    private final MCPWorkflowValidationHandler validationHandler;
-    
-    private final MCPWorkflowApplySynchronizationHandler applySynchronizationHandler;
-    
-    /**
-     * Create workflow runtime definition with one handler for validation and apply synchronization.
-     *
-     * @param workflowKind workflow kind
-     * @param runtimeHandler workflow runtime handler
-     */
-    public WorkflowRuntimeDefinition(final WorkflowKind workflowKind, final MCPWorkflowRuntimeHandler runtimeHandler) {
-        this(workflowKind, runtimeHandler, runtimeHandler);
-    }
+public interface MCPWorkflowRuntimeHandler extends MCPWorkflowValidationHandler, MCPWorkflowApplySynchronizationHandler {
 }
