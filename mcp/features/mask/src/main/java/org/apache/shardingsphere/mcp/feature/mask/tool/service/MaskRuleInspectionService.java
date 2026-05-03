@@ -41,9 +41,8 @@ public final class MaskRuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        List<Map<String, Object>> rawRows = queryFacade.query(databaseName, "", buildShowMaskRulesSQL(databaseName, tableName));
         List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : rawRows) {
+        for (Map<String, Object> each : queryFacade.query(databaseName, "", buildShowMaskRulesSQL(databaseName, tableName))) {
             Map<String, Object> actualRow = new LinkedHashMap<>(each);
             putAliasIfAbsent(actualRow, "column", "logic_column");
             putAliasIfAbsent(actualRow, "algorithm_type", "mask_algorithm");

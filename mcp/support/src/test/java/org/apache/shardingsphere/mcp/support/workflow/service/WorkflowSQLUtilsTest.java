@@ -48,6 +48,24 @@ class WorkflowSQLUtilsTest {
     }
     
     @Test
+    void assertFormatDistSQLIdentifierKeepsSafeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("orders_01");
+        assertThat(actualValue, is("orders_01"));
+    }
+    
+    @Test
+    void assertFormatDistSQLIdentifierQuotesUnicodeIdentifier() {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("订单");
+        assertThat(actualValue, is("`订单`"));
+    }
+    
+    @Test
+    void assertFormatDistSQLIdentifierEscapesQuoteDelimiter() {
+        String actualValue = WorkflowSQLUtils.formatDistSQLIdentifier("bad`table");
+        assertThat(actualValue, is("`bad``table`"));
+    }
+    
+    @Test
     void assertEscapeLiteralEscapesSingleQuote() {
         String actualValue = WorkflowSQLUtils.escapeLiteral("O'Brien");
         assertThat(actualValue, is("O''Brien"));

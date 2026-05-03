@@ -63,6 +63,17 @@ public final class WorkflowSQLUtils {
     }
     
     /**
+     * Format a DistSQL identifier.
+     *
+     * @param identifier identifier to format
+     * @return formatted DistSQL identifier
+     */
+    public static String formatDistSQLIdentifier(final String identifier) {
+        String actualIdentifier = trimToEmpty(identifier);
+        return actualIdentifier.isEmpty() || isSafeIdentifier(actualIdentifier) ? actualIdentifier : String.format("`%s`", actualIdentifier.replace("`", "``"));
+    }
+    
+    /**
      * Escape a SQL string literal value.
      *
      * @param value raw value

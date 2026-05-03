@@ -54,6 +54,24 @@ class EncryptRuleInspectionServiceTest {
     }
     
     @Test
+    void assertQueryEncryptRulesQuotesUnicodeNames() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("逻辑库", "", "SHOW ENCRYPT TABLE RULE `订单` FROM `逻辑库`"))
+                .thenReturn(List.of(Map.of("logic_column", "phone")));
+        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "逻辑库", "订单");
+        assertThat(actual.get(0).get("logic_column"), is("phone"));
+    }
+    
+    @Test
+    void assertQueryEncryptRulesEscapesQuoteDelimiter() {
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.query("逻`辑库", "", "SHOW ENCRYPT TABLE RULE `订``单` FROM `逻``辑库`"))
+                .thenReturn(List.of(Map.of("logic_column", "phone")));
+        List<Map<String, Object>> actual = service.queryEncryptRules(queryFacade, "逻`辑库", "订`单");
+        assertThat(actual.get(0).get("logic_column"), is("phone"));
+    }
+    
+    @Test
     void assertQueryEncryptAlgorithms() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES"), Map.of("type", "CUSTOM")));

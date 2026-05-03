@@ -41,9 +41,8 @@ public final class EncryptRuleInspectionService {
      * @return encrypt rules
      */
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        List<Map<String, Object>> rawRows = queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName));
         List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : rawRows) {
+        for (Map<String, Object> each : queryFacade.query(databaseName, "", buildShowEncryptRulesSQL(databaseName, tableName))) {
             Map<String, Object> actualRow = new LinkedHashMap<>(each);
             putAliasIfAbsent(actualRow, "assisted_query_column", "assisted_query");
             putAliasIfAbsent(actualRow, "like_query_column", "like_query");
@@ -53,9 +52,9 @@ public final class EncryptRuleInspectionService {
     }
     
     private String buildShowEncryptRulesSQL(final String databaseName, final String tableName) {
-        WorkflowSQLUtils.checkSafeIdentifier("database", databaseName);
-        WorkflowSQLUtils.checkSafeIdentifier("table", tableName);
-        return tableName.isEmpty() ? String.format("SHOW ENCRYPT RULES FROM %s", databaseName) : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", tableName, databaseName);
+        return tableName.isEmpty()
+                ? String.format("SHOW ENCRYPT RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName))
+                : String.format("SHOW ENCRYPT TABLE RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName));
     }
     
     private void putAliasIfAbsent(final Map<String, Object> row, final String targetKey, final String sourceKey) {
