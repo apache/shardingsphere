@@ -48,11 +48,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIf("isEnabled")
 class PackagedDistributionPluginDiscoveryE2ETest {
     
-    private static final List<String> CORE_TOOL_NAMES = List.of("search_metadata", "execute_query");
+    private static final List<String> CORE_TOOL_NAMES = List.of("search_metadata", "execute_query", "apply_workflow", "validate_workflow");
     
-    private static final List<String> REMOVED_OFFICIAL_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
+    private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
     
-    private static final List<String> REMOVED_OFFICIAL_RESOURCE_URIS = List.of("shardingsphere://features/encrypt/algorithms", "shardingsphere://features/mask/algorithms");
+    private static final List<String> REMOVED_FEATURE_RESOURCE_URIS = List.of("shardingsphere://features/encrypt/algorithms", "shardingsphere://features/mask/algorithms");
     
     private static final String FIXTURE_RESOURCE_URI = "shardingsphere://features/test-fixture/status";
     
@@ -83,8 +83,8 @@ class PackagedDistributionPluginDiscoveryE2ETest {
     
     private void assertDiscoveredTools(final List<Map<String, Object>> tools) {
         List<String> actualToolNames = tools.stream().map(each -> String.valueOf(each.get("name"))).toList();
-        assertThat(actualToolNames, hasItems("search_metadata", "execute_query", "fixture_ping"));
-        for (String each : REMOVED_OFFICIAL_TOOL_NAMES) {
+        assertThat(actualToolNames, hasItems("search_metadata", "execute_query", "apply_workflow", "validate_workflow", "fixture_ping"));
+        for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualToolNames.contains(each));
         }
     }
@@ -108,13 +108,13 @@ class PackagedDistributionPluginDiscoveryE2ETest {
     
     private void assertCapabilities(final Map<String, Object> payload) {
         List<String> actualSupportedTools = ((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList();
-        assertThat(actualSupportedTools, hasItems("search_metadata", "execute_query", "fixture_ping"));
-        for (String each : REMOVED_OFFICIAL_TOOL_NAMES) {
+        assertThat(actualSupportedTools, hasItems("search_metadata", "execute_query", "apply_workflow", "validate_workflow", "fixture_ping"));
+        for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualSupportedTools.contains(each));
         }
         List<String> actualSupportedResources = ((List<?>) payload.get("supportedResources")).stream().map(String::valueOf).toList();
         assertTrue(actualSupportedResources.contains(FIXTURE_RESOURCE_URI));
-        for (String each : REMOVED_OFFICIAL_RESOURCE_URIS) {
+        for (String each : REMOVED_FEATURE_RESOURCE_URIS) {
             assertFalse(actualSupportedResources.contains(each));
         }
     }
