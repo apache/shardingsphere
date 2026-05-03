@@ -18,72 +18,63 @@
 package org.apache.shardingsphere.mcp.feature.mask.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskRuleInspectionService;
-import org.junit.jupiter.api.Test;
+import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MaskResourceHandlerTest {
     
-    @Test
-    void assertGetMaskAlgorithmsUriPattern() {
-        assertThat(new MaskAlgorithmsHandler().getUriPattern(), is("shardingsphere://features/mask/algorithms"));
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertGetUriPatternArguments")
+    void assertGetUriPattern(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final String expectedUriPattern) {
+        assertThat(handler.getUriPattern(), is(expectedUriPattern));
     }
     
-    @Test
-    void assertHandleMaskAlgorithms() throws ReflectiveOperationException {
-        MaskAlgorithmsHandler handler = new MaskAlgorithmsHandler();
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("assertHandleArguments")
+    void assertHandle(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final Map<String, String> uriVariables,
+                      final String expectedDatabase, final String expectedTable, final List<Map<String, Object>> maskRules,
+                      final List<Map<String, Object>> maskAlgorithms) throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MD5")));
-        when(ruleInspectionService.enrichMaskAlgorithms(List.of(Map.of("type", "MD5")))).thenReturn(List.of(Map.of("type", "MD5", "source", "builtin")));
         setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), createUriVariables(Map.of()));
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(databaseContext.getQueryFacade()).thenReturn(queryFacade);
+        when(ruleInspectionService.queryMaskRules(queryFacade, expectedDatabase, expectedTable)).thenReturn(maskRules);
+        when(ruleInspectionService.enrichMaskAlgorithms(queryFacade)).thenReturn(maskAlgorithms);
+        MCPResponse actual = handler.handle(databaseContext, createUriVariables(uriVariables));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
     }
     
-    @Test
-    void assertGetMaskRulesUriPattern() {
-        assertThat(new MaskRulesHandler().getUriPattern(), is("shardingsphere://features/mask/databases/{database}/rules"));
+    private static Stream<Arguments> assertGetUriPatternArguments() {
+        return Stream.of(
+                Arguments.of("mask algorithms URI", new MaskAlgorithmsHandler(), "shardingsphere://features/mask/algorithms"),
+                Arguments.of("mask rules URI", new MaskRulesHandler(), "shardingsphere://features/mask/databases/{database}/rules"),
+                Arguments.of("mask table rule URI", new MaskRuleHandler(), "shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
     }
     
-    @Test
-    void assertHandleMaskRules() throws ReflectiveOperationException {
-        MaskRulesHandler handler = new MaskRulesHandler();
-        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
-        setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), createUriVariables(Map.of("database", "logic_db")));
-        verify(ruleInspectionService).queryMaskRules(any(), eq("logic_db"), eq(""));
-        assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
-    }
-    
-    @Test
-    void assertGetMaskRuleUriPattern() {
-        assertThat(new MaskRuleHandler().getUriPattern(), is("shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
-    }
-    
-    @Test
-    void assertHandleMaskRule() throws ReflectiveOperationException {
-        MaskRuleHandler handler = new MaskRuleHandler();
-        MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
-        when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
-        setField(handler, "ruleInspectionService", ruleInspectionService);
-        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), createUriVariables(Map.of("database", "logic_db", "table", "orders")));
-        verify(ruleInspectionService).queryMaskRules(any(), eq("logic_db"), eq("orders"));
-        assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
+    private static Stream<Arguments> assertHandleArguments() {
+        return Stream.of(
+                Arguments.of("mask algorithms", new MaskAlgorithmsHandler(), Map.of(), "", "", List.of(), List.of(Map.of("type", "MD5", "source", "builtin"))),
+                Arguments.of("mask rules", new MaskRulesHandler(), Map.of("database", "logic_db"), "logic_db", "", List.of(Map.of("column", "phone")), List.of()),
+                Arguments.of("mask table rule", new MaskRuleHandler(), Map.of("database", "logic_db", "table", "orders"), "logic_db", "orders",
+                        List.of(Map.of("column", "phone")), List.of()));
     }
     
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {

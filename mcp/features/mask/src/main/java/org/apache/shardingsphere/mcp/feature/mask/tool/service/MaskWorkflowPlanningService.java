@@ -122,9 +122,8 @@ public final class MaskWorkflowPlanningService {
         return true;
     }
     
-    private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
-                                final WorkflowContextSnapshot snapshot) {
-        List<Map<String, Object>> maskAlgorithms = ruleInspectionService.enrichMaskAlgorithms(ruleInspectionService.queryMaskAlgorithms(queryFacade));
+    private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
+        List<Map<String, Object>> maskAlgorithms = ruleInspectionService.enrichMaskAlgorithms(queryFacade);
         List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendMaskAlgorithms(clarifiedIntent, request, maskAlgorithms, snapshot.getIssues());
         snapshot.getAlgorithmCandidates().addAll(algorithmCandidates);
         if (!algorithmCandidates.isEmpty()) {

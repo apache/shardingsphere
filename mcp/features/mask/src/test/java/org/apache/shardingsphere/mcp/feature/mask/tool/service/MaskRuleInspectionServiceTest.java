@@ -26,7 +26,6 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MaskRuleInspectionServiceTest {
@@ -54,17 +53,10 @@ class MaskRuleInspectionServiceTest {
     }
     
     @Test
-    void assertQueryMaskAlgorithms() {
-        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MD5")));
-        List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
-        assertThat(actual.size(), is(1));
-        verify(queryFacade).queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
-    }
-    
-    @Test
     void assertEnrichMaskAlgorithms() {
-        List<Map<String, Object>> actual = service.enrichMaskAlgorithms(List.of(Map.of("type", "MD5"), Map.of("type", "CUSTOM")));
+        MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
+        when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MD5"), Map.of("type", "CUSTOM")));
+        List<Map<String, Object>> actual = service.enrichMaskAlgorithms(queryFacade);
         assertThat(actual.get(0).get("source"), is("builtin"));
         assertThat(actual.get(1).get("source"), is("custom-spi"));
     }

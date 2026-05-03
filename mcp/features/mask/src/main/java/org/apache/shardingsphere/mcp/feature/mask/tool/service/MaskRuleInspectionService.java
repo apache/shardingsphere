@@ -44,24 +44,14 @@ public final class MaskRuleInspectionService {
     }
     
     /**
-     * Query mask algorithms.
-     *
-     * @param queryFacade query facade
-     * @return mask algorithm plugins
-     */
-    public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        return queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
-    }
-    
-    /**
      * Enrich mask algorithm plugins with MCP-specific metadata.
      *
-     * @param rawRows raw plugin rows
+     * @param queryFacade query facade
      * @return enriched plugin rows
      */
-    public List<Map<String, Object>> enrichMaskAlgorithms(final List<Map<String, Object>> rawRows) {
+    public List<Map<String, Object>> enrichMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
         List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : rawRows) {
+        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")) {
             String type = WorkflowSqlUtils.trimToEmpty(String.valueOf(each.get("type"))).toUpperCase(Locale.ENGLISH);
             Map<String, Object> row = new LinkedHashMap<>(each);
             row.put("source", MaskAlgorithmRecommendationService.isKnownMaskAlgorithm(type) ? "builtin" : "custom-spi");
@@ -75,9 +65,7 @@ public final class MaskRuleInspectionService {
         String actualTableName = WorkflowSqlUtils.trimToEmpty(tableName);
         WorkflowSqlUtils.checkSafeIdentifier("database", actualDatabaseName);
         WorkflowSqlUtils.checkSafeIdentifier("table", actualTableName);
-        return actualTableName.isEmpty()
-                ? String.format("SHOW MASK RULES FROM %s", actualDatabaseName)
-                : String.format("SHOW MASK RULE %s FROM %s", actualTableName, actualDatabaseName);
+        return actualTableName.isEmpty() ? String.format("SHOW MASK RULES FROM %s", actualDatabaseName) : String.format("SHOW MASK RULE %s FROM %s", actualTableName, actualDatabaseName);
     }
     
     private List<Map<String, Object>> normalizeMaskRuleRows(final List<Map<String, Object>> rawRows) {

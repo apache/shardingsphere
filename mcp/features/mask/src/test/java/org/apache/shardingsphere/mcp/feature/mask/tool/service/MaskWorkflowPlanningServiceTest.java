@@ -95,7 +95,6 @@ class MaskWorkflowPlanningServiceTest {
                                                 final String expectedStatus) throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("column", "phone")) : List.of());
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
         when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MaskWorkflowPlanningService service = createService(ruleInspectionService, new MaskAlgorithmRecommendationService(),
@@ -111,7 +110,6 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
         when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of());
         MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any())).thenAnswer(invocation -> {
@@ -131,7 +129,6 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
         when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of());
         MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any()))
@@ -151,7 +148,6 @@ class MaskWorkflowPlanningServiceTest {
     void assertPlanCreatesRuleArtifact() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
-        when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
         when(ruleInspectionService.enrichMaskAlgorithms(any())).thenReturn(List.of());
         MaskAlgorithmRecommendationService algorithmRecommendationService = mock(MaskAlgorithmRecommendationService.class);
         when(algorithmRecommendationService.recommendMaskAlgorithms(any(), any(), any(), any()))
