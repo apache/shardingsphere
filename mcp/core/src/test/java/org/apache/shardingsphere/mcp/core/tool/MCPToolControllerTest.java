@@ -56,8 +56,10 @@ class MCPToolControllerTest {
         try (MockedStatic<ToolHandlerRegistry> mocked = mockStatic(ToolHandlerRegistry.class)) {
             mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("unsupported_tool"), eq(Map.of()))).thenReturn(Optional.empty());
             Map<String, Object> actual = createController().handle("session-1", "unsupported_tool", Map.of()).toPayload();
+            Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
             assertThat(actual.get("error_code"), is("invalid_request"));
-            assertThat(actual.get("message"), is("Unsupported tool."));
+            assertThat(actual.get("message"), is("Unsupported tool `unsupported_tool`."));
+            assertThat(actualRecovery.get("category"), is("unsupported_tool"));
         }
     }
     

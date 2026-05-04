@@ -56,6 +56,7 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("delivery_mode", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getDeliveryMode());
         result.put("execution_mode", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getExecutionMode());
         result.put("intent_inference", createIntentInference(snapshot.getClarifiedIntent()));
+        WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
         return result;
     }
     

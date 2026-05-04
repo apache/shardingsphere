@@ -38,7 +38,7 @@ public final class MaskRuleInspectionService {
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
         return queryFacade.query(databaseName, "", String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
-
+    
     /**
      * Query mask rules.
      *

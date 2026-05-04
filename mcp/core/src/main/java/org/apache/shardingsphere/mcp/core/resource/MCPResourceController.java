@@ -41,7 +41,7 @@ public final class MCPResourceController {
      */
     public MCPResponse handle(final String resourceUri) {
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            return ResourceHandlerRegistry.dispatch(requestScope, resourceUri).orElseThrow(UnsupportedResourceUriException::new);
+            return ResourceHandlerRegistry.dispatch(requestScope, resourceUri).orElseThrow(() -> new UnsupportedResourceUriException(resourceUri));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

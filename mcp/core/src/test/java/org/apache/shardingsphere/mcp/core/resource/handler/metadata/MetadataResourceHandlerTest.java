@@ -33,9 +33,10 @@ import static org.mockito.Mockito.when;
 class MetadataResourceHandlerTest {
     
     @Test
-    void assertGetUriPattern() {
+    void assertGetResourceDescriptor() {
         MetadataResourceHandler actual = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        assertThat(actual.getUriPattern(), is("shardingsphere://databases"));
+        assertThat(actual.getResourceDescriptor().getUriPattern(), is("shardingsphere://databases"));
+        assertThat(actual.getResourceDescriptor().getTitle(), is("Logical Databases"));
     }
     
     @Test

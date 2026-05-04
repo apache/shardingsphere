@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.capability;
 
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
-import org.apache.shardingsphere.mcp.core.capability.MCPServiceCapability;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
-import org.apache.shardingsphere.mcp.core.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
 import java.util.Set;
 
@@ -34,22 +35,21 @@ import java.util.Set;
  */
 public final class ServerCapabilitiesHandler implements MCPResourceHandler<MCPServiceHandlerContext> {
     
+    private static final String URI_PATTERN = "shardingsphere://capabilities";
+    
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {
         return MCPServiceHandlerContext.class;
     }
     
     @Override
-    public String getUriPattern() {
-        return "shardingsphere://capabilities";
+    public MCPResourceDescriptor getResourceDescriptor() {
+        return MCPDescriptorRegistry.getRequiredResourceDescriptor(URI_PATTERN);
     }
     
     @Override
     public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPUriVariables uriVariables) {
-        return new MCPServiceCapabilityResponse(createServiceCapability());
-    }
-    
-    private MCPServiceCapability createServiceCapability() {
-        return new MCPServiceCapability(ResourceHandlerRegistry.getSupportedResources(), ToolHandlerRegistry.getSupportedTools(), Set.of(SupportedMCPStatement.values()));
+        return new MCPMapResponse(MCPDescriptorRegistry.createCapabilityPayload(
+                ResourceHandlerRegistry.getSupportedResources(), ToolHandlerRegistry.getSupportedTools(), Set.of(SupportedMCPStatement.values())));
     }
 }

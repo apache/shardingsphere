@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
+import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
@@ -26,9 +27,9 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
-import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -47,11 +48,11 @@ public final class WorkflowValidationSupport {
      */
     public Map<String, Object> checkValidatePreconditions(final String sessionId, final WorkflowContextSnapshot snapshot) {
         if (!WorkflowLifecycleUtils.isOwnedBySession(sessionId, snapshot)) {
-            return createRejectedResponse(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH, "The workflow plan belongs to another MCP session.",
+            return createRejectedResponse(snapshot, WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH, "The workflow plan belongs to another MCP session.",
                     "Continue the workflow from the same session that created the plan.");
         }
         if (!isValidatableStatus(snapshot)) {
-            return createRejectedResponse(WorkflowIssueCode.WORKFLOW_STATUS_INVALID,
+            return createRejectedResponse(snapshot, WorkflowIssueCode.WORKFLOW_STATUS_INVALID,
                     String.format("Workflow status `%s` cannot enter validate in the current lifecycle.", snapshot.getStatus()),
                     "Execute the workflow first or continue from a validatable status.");
         }
@@ -145,10 +146,13 @@ public final class WorkflowValidationSupport {
                                                   final ValidationReport validationReport) {
         String validationStatus = resolveValidationStatus(validationReport);
         workflowSessionContext.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        result.put("plan_id", snapshot.getPlanId());
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));
         result.putAll(validationReport.toMap());
+        result.put("sections", createValidationSections(validationReport));
+        WorkflowGuidancePayloadBuilder.appendValidationGuidance(result, snapshot, validationReport);
         return result;
     }
     
@@ -183,6 +187,25 @@ public final class WorkflowValidationSupport {
                 "Validation detected mismatches between the plan and the current state.", "Inspect mismatches and re-run the workflow after fixes.", true, Map.of()).toMap());
     }
     
+    private List<Map<String, Object>> createValidationSections(final ValidationReport validationReport) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        addValidationSection(result, "ddl", validationReport.getDdlValidation());
+        addValidationSection(result, "rule", validationReport.getRuleValidation());
+        addValidationSection(result, "logical_metadata", validationReport.getLogicalMetadataValidation());
+        addValidationSection(result, "sql_executability", validationReport.getSqlExecutabilityValidation());
+        return result;
+    }
+    
+    private void addValidationSection(final List<Map<String, Object>> result, final String layer, final ValidationSection section) {
+        if (null == section) {
+            return;
+        }
+        Map<String, Object> sectionPayload = new LinkedHashMap<>(4, 1F);
+        sectionPayload.put("layer", layer);
+        sectionPayload.putAll(section.toMap());
+        result.add(sectionPayload);
+    }
+    
     private String resolveValidationStatus(final ValidationReport validationReport) {
         return WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus()) ? WorkflowLifecycle.STATUS_FAILED : WorkflowLifecycle.STATUS_VALIDATED;
     }
@@ -203,12 +226,17 @@ public final class WorkflowValidationSupport {
                 || WorkflowLifecycle.STEP_EXECUTED.equalsIgnoreCase(currentStep);
     }
     
-    private Map<String, Object> createRejectedResponse(final String issueCode, final String message, final String userAction) {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+    private Map<String, Object> createRejectedResponse(final WorkflowContextSnapshot snapshot, final String issueCode, final String message, final String userAction) {
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("plan_id", snapshot.getPlanId());
         result.put("status", WorkflowLifecycle.STATUS_FAILED);
         result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));
         result.put("overall_status", WorkflowLifecycle.STATUS_FAILED);
         result.put("mismatches", List.of());
+        result.put("recommended_recovery", userAction);
+        result.put("next_actions", List.of());
+        result.put("recommended_next_tool", "");
+        result.put("requires_user_approval", false);
         return result;
     }
     

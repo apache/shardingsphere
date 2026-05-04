@@ -1,0 +1,298 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resources:
+  - uriPattern: shardingsphere://features/encrypt/algorithms
+    name: encrypt-algorithms
+    title: Encrypt Algorithms
+    description: "List encrypt algorithm plugins visible from the current ShardingSphere-Proxy runtime. Read this before planning encryption when the user asks for algorithm choice or query behavior."
+    mimeType: application/json
+    meta:
+      resourceKind: list
+      feature: encrypt
+      runtimeVisibility: ShardingSphere-Proxy
+      relatedTools:
+        - plan_encrypt_rule
+  - uriPattern: shardingsphere://features/encrypt/databases/{database}/rules
+    name: encrypt-rules
+    title: Encrypt Rules
+    description: "List encrypt table rules for one ShardingSphere logical database. Read this before altering or validating encrypt configuration."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database whose encrypt rules should be inspected."
+        required: true
+        scope: logical-database
+    meta:
+      resourceKind: list
+      feature: encrypt
+      relatedTools:
+        - plan_encrypt_rule
+        - validate_workflow
+  - uriPattern: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+    name: encrypt-table-rule
+    title: Encrypt Table Rule
+    description: "Read encrypt rules for one logical table. Use this before planning column-level encryption so the model can preserve existing cipher and assisted-query columns."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the encrypt rule."
+        required: true
+        scope: logical-database
+      - name: table
+        title: Logical Table
+        description: "ShardingSphere logical table name, not a physical table shard."
+        required: true
+        scope: logical-table
+    meta:
+      resourceKind: detail
+      feature: encrypt
+      relatedTools:
+        - plan_encrypt_rule
+        - validate_workflow
+tools:
+  - name: plan_encrypt_rule
+    title: Plan Encrypt Rule
+    description: "Plan a ShardingSphere encrypt rule workflow for a logical table column. This tool creates reviewable rule, DistSQL, and physical DDL artifacts but does not execute them; use apply_workflow only after user review."
+    fields:
+      - name: plan_id
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Optional existing workflow plan identifier used to continue or revise a previous encrypt plan."
+      - name: database
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "ShardingSphere logical database that owns the target table."
+      - name: schema
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Optional schema or namespace that owns the target logical table."
+      - name: table
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Target ShardingSphere logical table name."
+      - name: column
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Target logical column name to encrypt."
+      - name: operation_type
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Encrypt rule lifecycle operation requested by the user."
+          enumValues:
+            - create
+            - alter
+            - drop
+      - name: natural_language_intent
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "User request in natural language, used together with structured_intent_evidence to clarify encryption behavior."
+      - name: structured_intent_evidence
+        required: false
+        valueDefinition:
+          type: OBJECT
+          description: "Structured intent extracted from the user request. Use these fields when the user mentions decrypt, equality filtering, LIKE queries, or domain semantics."
+          additionalProperties: false
+          objectProperties:
+            - name: requires_decrypt
+              required: false
+              valueDefinition:
+                type: BOOLEAN
+                description: "Whether applications must read plaintext through ShardingSphere decryption."
+            - name: requires_equality_filter
+              required: false
+              valueDefinition:
+                type: BOOLEAN
+                description: "Whether equality predicates on this column must remain usable."
+            - name: requires_like_query
+              required: false
+              valueDefinition:
+                type: BOOLEAN
+                description: "Whether LIKE predicates on this column must remain usable."
+            - name: field_semantics
+              required: false
+              valueDefinition:
+                type: STRING
+                description: "Domain meaning such as phone number, email, ID card, or other sensitive field category."
+      - name: delivery_mode
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Whether the plan should return all artifacts at once or guide the user step by step."
+          enumValues:
+            - all-at-once
+            - step-by-step
+      - name: execution_mode
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Preferred execution mode for later apply_workflow; planning itself does not execute changes."
+          enumValues:
+            - auto-execute
+            - review-then-execute
+            - manual-only
+      - name: allow_index_ddl
+        required: false
+        valueDefinition:
+          type: BOOLEAN
+          description: "Whether the plan may generate index DDL for assisted-query columns."
+      - name: user_overrides
+        required: false
+        valueDefinition:
+          type: OBJECT
+          description: "Optional user-selected encrypt algorithm and generated column names."
+          additionalProperties: false
+          objectProperties:
+            - name: algorithm_type
+              required: false
+              valueDefinition:
+                type: STRING
+                description: "Primary encrypt algorithm type override."
+            - name: assisted_query_algorithm_type
+              required: false
+              valueDefinition:
+                type: STRING
+                description: "Assisted-query encrypt algorithm type override."
+            - name: like_query_algorithm_type
+              required: false
+              valueDefinition:
+                type: STRING
+                description: "LIKE-query encrypt algorithm type override."
+            - name: cipher_column_name
+              required: false
+              valueDefinition:
+                type: STRING
+                description: "Cipher column name override."
+            - name: assisted_query_column_name
+              required: false
+              valueDefinition:
+                type: STRING
+                description: "Assisted-query column name override."
+            - name: like_query_column_name
+              required: false
+              valueDefinition:
+                type: STRING
+                description: "LIKE-query column name override."
+      - name: algorithm_type
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Primary encrypt algorithm type override; equivalent to user_overrides.algorithm_type."
+      - name: assisted_query_algorithm_type
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Assisted-query algorithm type override used for equality filtering."
+      - name: like_query_algorithm_type
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "LIKE-query algorithm type override used when LIKE predicates must remain usable."
+      - name: cipher_column_name
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Cipher column name override."
+      - name: assisted_query_column_name
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Assisted-query column name override."
+      - name: like_query_column_name
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "LIKE-query column name override."
+      - name: primary_algorithm_properties
+        required: false
+        valueDefinition:
+          type: OBJECT
+          description: "Plugin-defined primary encrypt algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          additionalProperties: true
+      - name: assisted_query_algorithm_properties
+        required: false
+        valueDefinition:
+          type: OBJECT
+          description: "Plugin-defined assisted-query algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          additionalProperties: true
+      - name: like_query_algorithm_properties
+        required: false
+        valueDefinition:
+          type: OBJECT
+          description: "Plugin-defined LIKE-query algorithm properties. Accepted keys depend on the selected algorithm descriptor returned in planning output."
+          additionalProperties: true
+    outputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Workflow plan identifier for apply_workflow and validate_workflow."
+        status:
+          type: string
+          description: "Stable workflow status, such as clarifying, planned, or failed."
+        missing_required_inputs:
+          type: array
+          description: "Inputs still required before the plan can be completed."
+        issues:
+          type: array
+          description: "Warnings, conflicts, and validation issues found during planning."
+        artifacts:
+          type: object
+          description: "Generated rule, DistSQL, DDL, and manual review artifacts."
+        property_requirements:
+          type: array
+          description: "Required and optional algorithm properties for selected encrypt algorithms."
+        next_actions:
+          type: array
+          description: "Ordered model-facing recommendations for the next call or user question."
+        recommended_next_tool:
+          type: string
+          description: "Preferred follow-up tool when one is clear."
+        resources_to_read:
+          type: array
+          description: "Resource URIs the model should read when more metadata or algorithm context is useful."
+        requires_user_approval:
+          type: boolean
+          description: "Whether the preferred next action needs visible user approval before side effects."
+    annotations:
+      title: Plan Encrypt Rule
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+      returnDirect: false
+    meta:
+      workflowRole: plan
+      workflowKind: encrypt.rule
+      relatedResources:
+        - shardingsphere://features/encrypt/algorithms
+        - shardingsphere://features/encrypt/databases/{database}/rules
+        - shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+        - shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
+        - shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
+      followUpTools:
+        - apply_workflow
+        - validate_workflow

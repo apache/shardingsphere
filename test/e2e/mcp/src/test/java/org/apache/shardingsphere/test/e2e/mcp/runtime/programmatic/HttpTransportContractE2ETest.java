@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     
     private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
-            "search_metadata", "execute_query", "apply_workflow", "validate_workflow", "plan_encrypt_rule", "plan_mask_rule");
+            "search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "plan_encrypt_rule", "plan_mask_rule");
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();

@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.mcp.core.protocol.response;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Response for resource errors.
  */
-@RequiredArgsConstructor
 public final class MCPErrorResponse implements MCPResponse {
     
     @Getter
@@ -34,8 +33,26 @@ public final class MCPErrorResponse implements MCPResponse {
     
     private final String message;
     
+    private final Map<String, Object> recovery;
+    
+    public MCPErrorResponse(final String errorCode, final String message) {
+        this(errorCode, message, Map.of());
+    }
+    
+    public MCPErrorResponse(final String errorCode, final String message, final Map<String, Object> recovery) {
+        this.errorCode = errorCode;
+        this.message = message;
+        this.recovery = recovery;
+    }
+    
     @Override
     public Map<String, Object> toPayload() {
-        return Map.of("error_code", errorCode, "message", message);
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("error_code", errorCode);
+        result.put("message", message);
+        if (!recovery.isEmpty()) {
+            result.put("recovery", recovery);
+        }
+        return result;
     }
 }

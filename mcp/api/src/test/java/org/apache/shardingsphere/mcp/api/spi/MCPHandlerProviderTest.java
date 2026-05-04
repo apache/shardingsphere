@@ -23,6 +23,7 @@ import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -102,8 +103,8 @@ class MCPHandlerProviderTest {
         }
         
         @Override
-        public String getUriPattern() {
-            return "shardingsphere://foo";
+        public MCPResourceDescriptor getResourceDescriptor() {
+            return new MCPResourceDescriptor("shardingsphere://foo", "foo", "Foo", "Read the fixture foo resource.", "application/json");
         }
         
         @Override

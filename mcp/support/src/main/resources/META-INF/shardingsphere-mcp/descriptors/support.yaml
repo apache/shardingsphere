@@ -1,0 +1,134 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+tools:
+  - name: apply_workflow
+    title: Apply Workflow
+    description: "Apply a previously planned ShardingSphere MCP workflow. Use only after the user has reviewed the plan because this tool may execute DistSQL, DDL, or data movement steps."
+    fields:
+      - name: plan_id
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "Workflow plan identifier returned by a planning tool."
+      - name: execution_mode
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Optional execution mode override for this apply call."
+          enumValues:
+            - auto-execute
+            - review-then-execute
+            - manual-only
+      - name: approved_steps
+        required: false
+        valueDefinition:
+          type: ARRAY
+          description: "Optional approved step names when only part of the plan should be applied."
+          itemDefinition:
+            type: STRING
+            description: "Workflow step name from the plan response."
+    outputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Workflow plan identifier that was applied."
+        execution_mode:
+          type: string
+          description: "Execution mode used by the apply call."
+        applied_artifacts:
+          type: array
+          description: "Artifacts or steps executed by the server."
+        skipped_artifacts:
+          type: array
+          description: "Artifacts intentionally skipped by policy or approval."
+        manual_artifacts:
+          type: array
+          description: "Artifacts returned for manual execution."
+        recommended_next_tool:
+          type: string
+          description: "Usually validate_workflow after a successful apply."
+        next_actions:
+          type: array
+          description: "Ordered model-facing recommendations after applying or exporting workflow artifacts."
+        requires_user_approval:
+          type: boolean
+          description: "Whether the next manual or retry action requires user approval."
+    annotations:
+      title: Apply Workflow
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: false
+      openWorldHint: true
+      returnDirect: false
+    meta:
+      workflowRole: apply
+      sideEffectScope:
+        - rule-metadata
+        - physical-structure
+        - physical-data
+      requiresUserApproval: true
+      followUpTools:
+        - validate_workflow
+  - name: validate_workflow
+    title: Validate Workflow
+    description: "Validate a planned or applied workflow against visible metadata and generated artifacts. Use after planning for review, and after apply_workflow to confirm the runtime state."
+    fields:
+      - name: plan_id
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "Workflow plan identifier returned by a planning tool."
+    outputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Workflow plan identifier that was validated."
+        status:
+          type: string
+          description: "Validation status such as passed, warning, or failed."
+        sections:
+          type: array
+          description: "Validation sections with findings and evidence."
+        mismatches:
+          type: array
+          description: "Differences between planned artifacts and runtime metadata."
+        recommended_recovery:
+          type: string
+          description: "Suggested next action when validation fails."
+        next_actions:
+          type: array
+          description: "Ordered model-facing recommendations after validation."
+        recommended_next_tool:
+          type: string
+          description: "Preferred follow-up planning tool when validation fails."
+        requires_user_approval:
+          type: boolean
+          description: "Whether the next action requires user approval."
+    annotations:
+      title: Validate Workflow
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+      returnDirect: false
+    meta:
+      workflowRole: validate
+      relatedTools:
+        - apply_workflow

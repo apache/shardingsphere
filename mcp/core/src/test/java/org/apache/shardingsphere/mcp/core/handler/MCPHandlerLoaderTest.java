@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -57,7 +58,7 @@ class MCPHandlerLoaderTest {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             List<MCPResourceHandler<?>> actual = List.copyOf(MCPHandlerLoader.loadResourceHandlers());
-            assertThat(actual.stream().map(MCPResourceHandler::getUriPattern).toList(), is(List.of("shardingsphere://foo")));
+            assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriPattern()).toList(), is(List.of("shardingsphere://foo")));
             assertThrows(UnsupportedOperationException.class, () -> MCPHandlerLoader.loadResourceHandlers().clear());
         }
     }
@@ -115,7 +116,7 @@ class MCPHandlerLoaderTest {
     
     private static MCPResourceHandler<?> createResourceHandler(final String uriPattern) {
         MCPResourceHandler<?> result = mock(MCPResourceHandler.class);
-        when(result.getUriPattern()).thenReturn(uriPattern);
+        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriPattern, "foo", "Foo", "Read the fixture foo resource.", "application/json"));
         return result;
     }
 }

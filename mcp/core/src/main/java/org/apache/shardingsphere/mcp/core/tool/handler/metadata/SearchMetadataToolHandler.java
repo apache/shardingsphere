@@ -22,17 +22,13 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -44,20 +40,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
             SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
     
-    private static final List<String> SUPPORTED_OBJECT_TYPE_NAMES = List.of("DATABASE", "SCHEMA", "TABLE", "VIEW", "COLUMN", "INDEX", "SEQUENCE");
-    
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("search_metadata", "Search Metadata",
-            "Search logical database metadata by object type, name, or pagination arguments.",
-            Arrays.asList(
-                    new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Optional logical database name.", null), false),
-                    new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional schema name.", null), false),
-                    new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
-                    new MCPToolFieldDefinition("object_types",
-                            new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter. Allowed values: DATABASE, SCHEMA, TABLE, VIEW, COLUMN, INDEX, SEQUENCE.",
-                                    new MCPToolValueDefinition(Type.STRING, "Allowed values: DATABASE, SCHEMA, TABLE, VIEW, COLUMN, INDEX, SEQUENCE.", null, SUPPORTED_OBJECT_TYPE_NAMES)),
-                            false),
-                    new MCPToolFieldDefinition("page_size", new MCPToolValueDefinition(Type.INTEGER, "Requested page size.", null), false),
-                    new MCPToolFieldDefinition("page_token", new MCPToolValueDefinition(Type.STRING, "Opaque pagination token.", null), false)));
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("search_metadata");
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {

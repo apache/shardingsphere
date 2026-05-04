@@ -18,17 +18,17 @@
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * MCP tool value definition.
  */
-@RequiredArgsConstructor
 @Getter
 public final class MCPToolValueDefinition {
     
@@ -40,8 +40,26 @@ public final class MCPToolValueDefinition {
     
     private final Collection<String> enumValues;
     
+    private final Collection<MCPToolFieldDefinition> objectProperties;
+    
+    private final boolean additionalProperties;
+    
     public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition) {
-        this(type, description, itemDefinition, Collections.emptyList());
+        this(type, description, itemDefinition, Collections.emptyList(), Collections.emptyList(), true);
+    }
+    
+    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues) {
+        this(type, description, itemDefinition, enumValues, Collections.emptyList(), true);
+    }
+    
+    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues,
+                                  final Collection<MCPToolFieldDefinition> objectProperties, final boolean additionalProperties) {
+        this.type = type;
+        this.description = description;
+        this.itemDefinition = itemDefinition;
+        this.enumValues = null == enumValues ? Collections.emptyList() : List.copyOf(enumValues);
+        this.objectProperties = null == objectProperties ? Collections.emptyList() : List.copyOf(objectProperties);
+        this.additionalProperties = additionalProperties;
     }
     
     /**
@@ -74,7 +92,25 @@ public final class MCPToolValueDefinition {
     }
     
     private Map<String, Object> toObjectSchemaFragment() {
-        return Map.of("type", "object", "description", description, "additionalProperties", true);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("type", "object");
+        result.put("description", description);
+        if (objectProperties.isEmpty()) {
+            result.put("additionalProperties", additionalProperties);
+            return result;
+        }
+        Map<String, Object> properties = new LinkedHashMap<>(objectProperties.size(), 1F);
+        Collection<String> required = new ArrayList<>(objectProperties.size());
+        for (MCPToolFieldDefinition each : objectProperties) {
+            properties.put(each.getName(), each.getValueDefinition().toSchemaFragment());
+            if (each.isRequired()) {
+                required.add(each.getName());
+            }
+        }
+        result.put("properties", properties);
+        result.put("required", required);
+        result.put("additionalProperties", additionalProperties);
+        return result;
     }
     
     /**

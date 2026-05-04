@@ -55,15 +55,15 @@ class ToolHandlerRegistryTest {
     
     @Test
     void assertGetSupportedTools() {
-        assertThat(ToolHandlerRegistry.getSupportedTools(), is(List.of("search_metadata", "execute_query", "apply_workflow", "validate_workflow")));
+        assertThat(ToolHandlerRegistry.getSupportedTools(), is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
         assertThrows(UnsupportedOperationException.class, () -> ToolHandlerRegistry.getSupportedTools().add("new_tool"));
     }
     
     @Test
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
-        assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query", "apply_workflow", "validate_workflow")));
-        assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5, 3, 1)));
+        assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
+        assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5, 5, 3, 1)));
         assertThrows(UnsupportedOperationException.class, () -> ToolHandlerRegistry.getSupportedToolDescriptors().clear());
     }
     

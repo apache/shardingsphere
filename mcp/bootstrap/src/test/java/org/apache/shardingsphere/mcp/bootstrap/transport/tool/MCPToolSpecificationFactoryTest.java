@@ -23,6 +23,7 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
@@ -65,11 +66,15 @@ class MCPToolSpecificationFactoryTest {
             assertThat(actual.get(0).tool().description(), is("Search database metadata."));
             assertThat(actual.get(0).tool().inputSchema().type(), is("object"));
             assertThat(actual.get(0).tool().inputSchema().required(), is(List.of("query")));
+            assertFalse(actual.get(0).tool().inputSchema().additionalProperties());
             assertThat(actual.get(0).tool().inputSchema().properties().get("query"), is(Map.of("type", "string", "description", "Search query.")));
             assertThat(actual.get(0).tool().inputSchema().properties().get("object_types"), is(Map.of(
                     "type", "array",
                     "description", "Optional object-type filter.",
                     "items", Map.of("type", "string", "description", "Object type.", "enum", List.of("TABLE", "VIEW")))));
+            assertThat(actual.get(0).tool().outputSchema(), is(Map.of("type", "object")));
+            assertTrue(actual.get(0).tool().annotations().readOnlyHint());
+            assertThat(actual.get(0).tool().meta(), is(Map.of("relatedResources", List.of("shardingsphere://databases"))));
             assertNotNull(actual.get(0).callHandler());
         }
     }
@@ -115,6 +120,8 @@ class MCPToolSpecificationFactoryTest {
         return new MCPToolDescriptor("search_metadata", "Search Metadata", "Search database metadata.", List.of(
                 new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
                 new MCPToolFieldDefinition("object_types", new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter.",
-                        new MCPToolValueDefinition(Type.STRING, "Object type.", null, List.of("TABLE", "VIEW"))), false)));
+                        new MCPToolValueDefinition(Type.STRING, "Object type.", null, List.of("TABLE", "VIEW"))), false)),
+                Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true, false),
+                Map.of("relatedResources", List.of("shardingsphere://databases")));
     }
 }

@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationSection;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -51,20 +53,27 @@ class WorkflowValidationSupportTest {
     @Test
     void assertCheckValidatePreconditionsRejectsDifferentSession() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
         snapshot.setSessionId("session-1");
         snapshot.setStatus("executed");
         Map<String, Object> actualResult = validationSupport.checkValidatePreconditions("session-2", snapshot);
         assertThat(actualResult.get("status"), is("failed"));
+        assertThat(actualResult.get("plan_id"), is("plan-1"));
+        assertThat(actualResult.get("recommended_recovery"), is("Continue the workflow from the same session that created the plan."));
+        assertFalse((Boolean) actualResult.get("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
     
     @Test
     void assertCheckValidatePreconditionsRejectsInvalidLifecycleStatus() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
         snapshot.setSessionId("session-1");
         snapshot.setStatus("clarifying");
         Map<String, Object> actualResult = validationSupport.checkValidatePreconditions("session-1", snapshot);
         assertThat(actualResult.get("status"), is("failed"));
+        assertThat(actualResult.get("plan_id"), is("plan-1"));
+        assertThat(actualResult.get("recommended_recovery"), is("Execute the workflow first or continue from a validatable status."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
     }
     
@@ -153,6 +162,9 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         assertThat(actualResult.get("status"), is("validated"));
+        assertThat(actualResult.get("plan_id"), is("plan-1"));
+        assertThat(actualResult.get("recommended_recovery"), is(""));
+        assertThat(actualResult.get("recommended_next_tool"), is(""));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("validated"));
         assertThat(workflowSessionContext.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
     }
@@ -171,6 +183,23 @@ class WorkflowValidationSupportTest {
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
         assertThat(actualResult.get("status"), is("failed"));
+        assertThat(actualResult.get("recommended_recovery"), is("Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again."));
+        assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
+    }
+    
+    @Test
+    void assertFinalizeValidationRecommendsPlanningToolWhenWorkflowKindExists() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        ValidationReport validationReport = new ValidationReport();
+        validationReport.setOverallStatus("failed");
+        WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
+        List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
+        assertThat(actualResult.get("recommended_next_tool"), is("plan_encrypt_rule"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("target_tool"), is("plan_encrypt_rule"));
     }
     
     @Test

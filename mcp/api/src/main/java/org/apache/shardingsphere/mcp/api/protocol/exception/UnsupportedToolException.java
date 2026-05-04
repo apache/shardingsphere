@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
+import lombok.Getter;
+
 /**
  * Exception for unsupported MCP tools.
  */
@@ -24,7 +26,11 @@ public final class UnsupportedToolException extends MCPInvalidRequestException {
     
     private static final long serialVersionUID = 8570810523001728350L;
     
-    public UnsupportedToolException() {
-        super("Unsupported tool.");
+    @Getter
+    private final String toolName;
+    
+    public UnsupportedToolException(final String toolName) {
+        super(toolName.isEmpty() ? "Unsupported tool." : String.format("Unsupported tool `%s`.", toolName));
+        this.toolName = toolName;
     }
 }

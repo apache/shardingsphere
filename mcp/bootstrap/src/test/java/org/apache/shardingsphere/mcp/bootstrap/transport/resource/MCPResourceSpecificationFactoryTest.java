@@ -23,6 +23,8 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceRequest;
 import io.modelcontextprotocol.spec.McpSchema.ReadResourceResult;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceParameterDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
@@ -50,13 +52,14 @@ class MCPResourceSpecificationFactoryTest {
     @Test
     void assertCreateResourceSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
-            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResources).thenReturn(List.of("shardingsphere://capabilities", "shardingsphere://databases/{database}"));
+            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor(), createResourceTemplateDescriptor()));
             MCPResourceSpecificationFactory actualFactory = new MCPResourceSpecificationFactory(mock(MCPRuntimeContext.class));
             List<SyncResourceSpecification> actual = actualFactory.createResourceSpecifications();
             assertThat(actual.size(), is(1));
             assertThat(actual.get(0).resource().uri(), is("shardingsphere://capabilities"));
-            assertThat(actual.get(0).resource().name(), is("capabilities"));
-            assertThat(actual.get(0).resource().description(), is("ShardingSphere MCP resource: shardingsphere://capabilities"));
+            assertThat(actual.get(0).resource().name(), is("server-capability-catalog"));
+            assertThat(actual.get(0).resource().title(), is("Server Capability Catalog"));
+            assertThat(actual.get(0).resource().description(), is("Read the model-facing capability catalog."));
             assertThat(actual.get(0).resource().mimeType(), is("application/json"));
             assertNotNull(actual.get(0).readHandler());
         }
@@ -67,7 +70,7 @@ class MCPResourceSpecificationFactoryTest {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = Map.of("status", "ok");
             MCPResponse response = () -> expectedPayload;
-            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResources).thenReturn(List.of("shardingsphere://capabilities"));
+            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor()));
             mockedResourceHandlerRegistry.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities")))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
@@ -81,15 +84,29 @@ class MCPResourceSpecificationFactoryTest {
     @Test
     void assertCreateResourceTemplateSpecifications() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
-            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResources).thenReturn(List.of("shardingsphere://capabilities", "shardingsphere://databases/{database}"));
+            mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor(), createResourceTemplateDescriptor()));
             MCPResourceSpecificationFactory actualFactory = new MCPResourceSpecificationFactory(mock(MCPRuntimeContext.class));
             List<SyncResourceTemplateSpecification> actual = actualFactory.createResourceTemplateSpecifications();
             assertThat(actual.size(), is(1));
             assertThat(actual.get(0).resourceTemplate().uriTemplate(), is("shardingsphere://databases/{database}"));
-            assertThat(actual.get(0).resourceTemplate().name(), is("{database}"));
-            assertThat(actual.get(0).resourceTemplate().description(), is("ShardingSphere MCP resource template: shardingsphere://databases/{database}"));
+            assertThat(actual.get(0).resourceTemplate().name(), is("logical-database-detail"));
+            assertThat(actual.get(0).resourceTemplate().title(), is("Logical Database Detail"));
+            assertThat(actual.get(0).resourceTemplate().description(), is("Read one logical database detail."));
             assertThat(actual.get(0).resourceTemplate().mimeType(), is("application/json"));
+            assertThat(((List<?>) actual.get(0).resourceTemplate().meta().get("parameters")).size(), is(1));
             assertNotNull(actual.get(0).readHandler());
         }
+    }
+    
+    private MCPResourceDescriptor createResourceDescriptor() {
+        return new MCPResourceDescriptor("shardingsphere://capabilities", "server-capability-catalog", "Server Capability Catalog",
+                "Read the model-facing capability catalog.", "application/json");
+    }
+    
+    private MCPResourceDescriptor createResourceTemplateDescriptor() {
+        return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
+                "Read one logical database detail.", "application/json",
+                List.of(new MCPResourceParameterDescriptor("database", "Logical Database", "ShardingSphere logical database name.", true, "logical-database")),
+                null, Map.of("resourceKind", "detail"));
     }
 }

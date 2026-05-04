@@ -23,12 +23,17 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowPlanPayloadBuilderTest {
@@ -37,8 +42,13 @@ class WorkflowPlanPayloadBuilderTest {
     void assertBuildIncludesIntentInference() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
-        snapshot.setWorkflowKind(org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind.valueOf("encrypt.rule"));
-        snapshot.setStatus("clarifying");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setSchema("public");
+        request.setTable("orders");
+        snapshot.setRequest(request);
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
         clarifiedIntent.setOperationType("create");
         clarifiedIntent.setFieldSemantics("phone");
@@ -65,5 +75,53 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("field_semantics"), is("phone"));
         assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actual.get("intent_inference")).get("inferred_values")).get("requires_decrypt"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("unresolved_fields"), is(clarifiedIntent.getUnresolvedFields()));
+        assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query")));
+        assertThat(actual.get("recommended_next_tool"), is("plan_encrypt_rule"));
+        assertFalse((Boolean) actual.get("requires_user_approval"));
+        assertTrue(((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
+    }
+    
+    @Test
+    void assertBuildIncludesMaskResources() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
+        WorkflowRequest request = new WorkflowRequest();
+        request.setDatabase("logic_db");
+        request.setSchema("public");
+        request.setTable("orders");
+        snapshot.setRequest(request);
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        List<?> actualResourcesToRead = (List<?>) actual.get("resources_to_read");
+        assertTrue(actualResourcesToRead.contains("shardingsphere://features/mask/algorithms"));
+        assertTrue(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        assertFalse(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
+        assertThat(actual.get("recommended_next_tool"), is("apply_workflow"));
+    }
+    
+    @Test
+    void assertBuildRecommendsPlanningToolAfterFailure() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
+        assertThat(actual.get("recommended_next_tool"), is("plan_encrypt_rule"));
+        assertThat(actualNextAction.get("action_kind"), is("call_tool"));
+        assertThat(actualNextAction.get("target_tool"), is("plan_encrypt_rule"));
+    }
+    
+    @Test
+    void assertBuildAsksUserAfterFailureWithUnknownWorkflowKind() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
+        assertThat(actual.get("recommended_next_tool"), is(""));
+        assertThat(actualNextAction.get("action_kind"), is("ask_user"));
     }
 }

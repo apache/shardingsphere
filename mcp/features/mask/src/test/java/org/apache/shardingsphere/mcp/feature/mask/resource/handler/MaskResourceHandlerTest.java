@@ -42,7 +42,7 @@ class MaskResourceHandlerTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertGetUriPatternArguments")
     void assertGetUriPattern(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final String expectedUriPattern) {
-        assertThat(handler.getUriPattern(), is(expectedUriPattern));
+        assertThat(handler.getResourceDescriptor().getUriPattern(), is(expectedUriPattern));
     }
     
     @ParameterizedTest(name = "{0}")

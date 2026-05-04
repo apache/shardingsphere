@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.junit.jupiter.api.Test;
@@ -128,14 +129,15 @@ class ResourceHandlerRegistryTest {
     private static MCPResourceHandler<?> createResourceHandler(final String uriPattern) {
         MCPResourceHandler<MCPServiceHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPServiceHandlerContext.class);
-        when(result.getUriPattern()).thenReturn(uriPattern);
+        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriPattern, "foo", "Foo", "Read the fixture foo resource.", "application/json"));
         return result;
     }
     
     private static MCPResourceHandler<?> createUnsupportedResourceHandler() {
         MCPResourceHandler<MCPHandlerContext> result = mock(MCPResourceHandler.class);
         when(result.getContextType()).thenReturn(MCPHandlerContext.class);
-        when(result.getUriPattern()).thenReturn("shardingsphere://unsupported");
+        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(
+                "shardingsphere://unsupported", "unsupported", "Unsupported", "Read the unsupported fixture resource.", "application/json"));
         return result;
     }
     

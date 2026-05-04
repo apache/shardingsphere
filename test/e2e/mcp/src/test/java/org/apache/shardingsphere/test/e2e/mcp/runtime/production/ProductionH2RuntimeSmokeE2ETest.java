@@ -100,7 +100,8 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             List<Map<String, Object>> actual = interactionClient.listTools();
             assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
             assertToolDefinition(actual, "search_metadata", "Search Metadata", "query", "object_types", "array");
-            assertToolDefinition(actual, "execute_query", "Execute Query", "sql", "timeout_ms", "integer");
+            assertToolDefinition(actual, "execute_query", "Execute Read-Only SQL", "sql", "timeout_ms", "integer");
+            assertToolDefinition(actual, "execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
         }
     }
     
@@ -225,7 +226,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     void assertExecuteUpdate(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> payload = interactionClient.call("execute_query",
+            Map<String, Object> payload = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
             assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
             assertThat(String.valueOf(payload.get("affected_rows")), is("1"));
@@ -322,7 +323,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     void assertRejectBlankSavepointName(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_query",
+            Map<String, Object> actual = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "SAVEPOINT"));
             assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
             assertThat(String.valueOf(actual.get("message")), is("Savepoint name is required."));
@@ -334,16 +335,16 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     void assertExecuteSavepointFlow(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-            interactionClient.call("execute_query",
+            interactionClient.call("execute_update", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+            interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-            Map<String, Object> savepointResponse = interactionClient.call("execute_query",
+            Map<String, Object> savepointResponse = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "SAVEPOINT sp_1"));
-            interactionClient.call("execute_query",
+            interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
-            Map<String, Object> rollbackResponse = interactionClient.call("execute_query",
+            Map<String, Object> rollbackResponse = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "ROLLBACK TO SAVEPOINT sp_1"));
-            Map<String, Object> commitResponse = interactionClient.call("execute_query",
+            Map<String, Object> commitResponse = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
             assertThat(String.valueOf(savepointResponse.get("message")), is("Savepoint created."));
             assertThat(String.valueOf(rollbackResponse.get("message")), is("Savepoint rolled back."));
@@ -357,12 +358,12 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     void assertExecuteReleaseSavepoint(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-            Map<String, Object> savepointResponse = interactionClient.call("execute_query",
+            interactionClient.call("execute_update", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+            Map<String, Object> savepointResponse = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "SAVEPOINT sp_release"));
-            Map<String, Object> releaseResponse = interactionClient.call("execute_query",
+            Map<String, Object> releaseResponse = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "RELEASE SAVEPOINT sp_release"));
-            Map<String, Object> commitResponse = interactionClient.call("execute_query",
+            Map<String, Object> commitResponse = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
             assertThat(String.valueOf(savepointResponse.get("message")), is("Savepoint created."));
             assertThat(String.valueOf(releaseResponse.get("message")), is("Savepoint released."));
@@ -375,10 +376,10 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     void assertExecuteTransactionalDdlRefreshesMetadataOnCommit(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-            interactionClient.call("execute_query",
+            interactionClient.call("execute_update", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+            interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
-            Map<String, Object> commitResponse = interactionClient.call("execute_query",
+            Map<String, Object> commitResponse = interactionClient.call("execute_update",
                     Map.of("database", "logic_db", "schema", "public", "sql", "COMMIT"));
             List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
                     "shardingsphere://databases/logic_db/schemas/public/tables/orders_archive"));
@@ -393,8 +394,8 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     void assertCloseRollsBackPendingTransaction(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
-            interactionClient.call("execute_query", Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
+            interactionClient.call("execute_update", Map.of("database", "logic_db", "schema", "public", "sql", "BEGIN"));
+            interactionClient.call("execute_update", Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
             interactionClient.close();
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
         }

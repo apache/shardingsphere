@@ -54,9 +54,9 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
-        sendToolCallRequest(httpClient, sessionId, "execute_query", createExecuteQueryArguments("logic_db", "public", "BEGIN"));
-        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
-                createExecuteQueryArguments("analytics_db", "public", "BEGIN"));
+        sendToolCallRequest(httpClient, sessionId, "execute_update", createExecuteSQLArguments("logic_db", "public", "BEGIN"));
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+                createExecuteSQLArguments("analytics_db", "public", "BEGIN"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
@@ -96,6 +96,10 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
         assertFalse(String.valueOf(payload.get("message")).isEmpty());
+    }
+    
+    private Map<String, Object> createExecuteSQLArguments(final String databaseName, final String schemaName, final String sql) {
+        return createExecuteQueryArguments(databaseName, schemaName, sql, -1);
     }
     
     private Map<String, Object> createExecuteQueryArguments(final String databaseName, final String schemaName, final String sql) {

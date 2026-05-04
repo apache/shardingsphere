@@ -18,12 +18,7 @@
 package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
-
-import java.util.LinkedList;
-import java.util.List;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
 /**
  * Shared workflow tool descriptors.
@@ -34,33 +29,6 @@ public final class WorkflowToolDescriptors {
     
     public static final String VALIDATE_TOOL_NAME = "validate_workflow";
     
-    private static final List<String> OPERATION_TYPES = List.of("create", "alter", "drop");
-    
-    private static final List<String> DELIVERY_MODES = List.of("all-at-once", "step-by-step");
-    
-    private static final List<String> EXECUTION_MODES = List.of("auto-execute", "review-then-execute", "manual-only");
-    
-    private static final List<MCPToolFieldDefinition> COMMON_PLANNING_FIELDS = List.of(
-            new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Optional existing workflow plan identifier.", null), false),
-            new MCPToolFieldDefinition("database", new MCPToolValueDefinition(Type.STRING, "Logical database name.", null), false),
-            new MCPToolFieldDefinition("schema", new MCPToolValueDefinition(Type.STRING, "Optional logical schema name.", null), false),
-            new MCPToolFieldDefinition("table", new MCPToolValueDefinition(Type.STRING, "Target logical table name.", null), false),
-            new MCPToolFieldDefinition("column", new MCPToolValueDefinition(Type.STRING, "Target logical column name.", null), false),
-            new MCPToolFieldDefinition("operation_type", new MCPToolValueDefinition(Type.STRING, "Lifecycle operation: create, alter or drop.", null, OPERATION_TYPES), false),
-            new MCPToolFieldDefinition("natural_language_intent", new MCPToolValueDefinition(Type.STRING, "Natural-language request used for intent clarification.", null), false),
-            new MCPToolFieldDefinition("structured_intent_evidence", new MCPToolValueDefinition(Type.OBJECT, "Structured intent evidence extracted by the caller.", null), false),
-            new MCPToolFieldDefinition("delivery_mode", new MCPToolValueDefinition(Type.STRING, "Delivery mode: all-at-once or step-by-step.", null, DELIVERY_MODES), false),
-            new MCPToolFieldDefinition("execution_mode", new MCPToolValueDefinition(Type.STRING, "Execution mode: auto-execute, review-then-execute or manual-only.", null, EXECUTION_MODES), false));
-    
-    private static final List<MCPToolFieldDefinition> EXECUTION_FIELDS = List.of(
-            new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Workflow plan identifier.", null), true),
-            new MCPToolFieldDefinition("execution_mode", new MCPToolValueDefinition(Type.STRING, "Optional execution mode override.", null, EXECUTION_MODES), false),
-            new MCPToolFieldDefinition("approved_steps",
-                    new MCPToolValueDefinition(Type.ARRAY, "Approved execution steps.", new MCPToolValueDefinition(Type.STRING, "Step name.", null)), false));
-    
-    private static final List<MCPToolFieldDefinition> VALIDATION_FIELDS =
-            List.of(new MCPToolFieldDefinition("plan_id", new MCPToolValueDefinition(Type.STRING, "Workflow plan identifier.", null), true));
-    
     private WorkflowToolDescriptors() {
     }
     
@@ -68,15 +36,10 @@ public final class WorkflowToolDescriptors {
      * Create workflow planning descriptor.
      *
      * @param toolName tool name
-     * @param title tool title
-     * @param description tool description
-     * @param featureFields feature-specific fields
      * @return MCP tool descriptor
      */
-    public static MCPToolDescriptor createPlanning(final String toolName, final String title, final String description, final List<MCPToolFieldDefinition> featureFields) {
-        List<MCPToolFieldDefinition> result = new LinkedList<>(COMMON_PLANNING_FIELDS);
-        result.addAll(featureFields);
-        return new MCPToolDescriptor(toolName, title, description, List.copyOf(result));
+    public static MCPToolDescriptor createPlanning(final String toolName) {
+        return MCPDescriptorRegistry.getRequiredToolDescriptor(toolName);
     }
     
     /**
@@ -85,7 +48,7 @@ public final class WorkflowToolDescriptors {
      * @return MCP tool descriptor
      */
     public static MCPToolDescriptor createExecution() {
-        return new MCPToolDescriptor(APPLY_TOOL_NAME, "Apply Workflow", "Apply an approved workflow plan.", EXECUTION_FIELDS);
+        return MCPDescriptorRegistry.getRequiredToolDescriptor(APPLY_TOOL_NAME);
     }
     
     /**
@@ -94,6 +57,6 @@ public final class WorkflowToolDescriptors {
      * @return MCP tool descriptor
      */
     public static MCPToolDescriptor createValidation() {
-        return new MCPToolDescriptor(VALIDATE_TOOL_NAME, "Validate Workflow", "Validate a workflow plan without applying changes.", VALIDATION_FIELDS);
+        return MCPDescriptorRegistry.getRequiredToolDescriptor(VALIDATE_TOOL_NAME);
     }
 }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.descriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -32,23 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class WorkflowToolDescriptorsTest {
     
     @Test
-    void assertCreatePlanningPrependsCommonFieldsAndKeepsFeatureFields() {
-        List<MCPToolFieldDefinition> featureFields = List.of(
-                new MCPToolFieldDefinition("algorithm_type", new MCPToolValueDefinition(Type.STRING, "Algorithm type.", null), false),
-                new MCPToolFieldDefinition("user_overrides", new MCPToolValueDefinition(Type.OBJECT, "User overrides.", null), false));
-        MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("plan_encrypt_rule", "Plan Encrypt Rule", "Plan an encrypt rule workflow.", featureFields);
+    void assertCreatePlanningLoadsDescriptor() {
+        MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("plan_encrypt_rule");
         assertThat(actual.getName(), is("plan_encrypt_rule"));
         assertThat(actual.getTitle(), is("Plan Encrypt Rule"));
-        assertThat(actual.getDescription(), is("Plan an encrypt rule workflow."));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of(
                 "plan_id", "database", "schema", "table", "column", "operation_type",
                 "natural_language_intent", "structured_intent_evidence", "delivery_mode",
                 "execution_mode", "algorithm_type", "user_overrides")));
         assertThat(actual.getFields().get(5).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("create", "alter", "drop")));
-        assertThat(actual.getFields().get(7).getValueDefinition().toSchemaFragment(),
-                is(new MCPToolValueDefinition(Type.OBJECT, "Structured intent evidence extracted by the caller.", null).toSchemaFragment()));
         assertThat(actual.getFields().get(8).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("all-at-once", "step-by-step")));
         assertThat(actual.getFields().get(9).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("auto-execute", "review-then-execute", "manual-only")));
+        assertTrue(actual.getFields().get(7).getValueDefinition().toSchemaFragment().containsKey("properties"));
     }
     
     @Test
@@ -56,11 +50,12 @@ class WorkflowToolDescriptorsTest {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
         assertThat(actual.getName(), is("apply_workflow"));
         assertThat(actual.getTitle(), is("Apply Workflow"));
-        assertThat(actual.getDescription(), is("Apply an approved workflow plan."));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id", "execution_mode", "approved_steps")));
         assertThat(actual.getFields().get(1).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("auto-execute", "review-then-execute", "manual-only")));
         assertThat(actual.getFields().get(2).getValueDefinition().toSchemaFragment(), is(new MCPToolValueDefinition(
-                MCPToolValueDefinition.Type.ARRAY, "Approved execution steps.", new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "Step name.", null)).toSchemaFragment()));
+                MCPToolValueDefinition.Type.ARRAY, "Optional approved step names when only part of the plan should be applied.",
+                new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "Workflow step name from the plan response.", null)).toSchemaFragment()));
+        assertTrue(actual.getAnnotations().getDestructiveHint());
     }
     
     @Test
@@ -68,8 +63,8 @@ class WorkflowToolDescriptorsTest {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation();
         assertThat(actual.getName(), is("validate_workflow"));
         assertThat(actual.getTitle(), is("Validate Workflow"));
-        assertThat(actual.getDescription(), is("Validate a workflow plan without applying changes."));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id")));
         assertTrue(actual.getFields().get(0).isRequired());
+        assertTrue(actual.getAnnotations().getReadOnlyHint());
     }
 }

@@ -21,12 +21,18 @@ import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceSpecificatio
 import io.modelcontextprotocol.server.McpServerFeatures.SyncResourceTemplateSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceParameterDescriptor;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.resource.MCPResourceController;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -34,12 +40,12 @@ import java.util.stream.Collectors;
  */
 public final class MCPResourceSpecificationFactory {
     
-    private final List<String> supportedResources;
+    private final List<MCPResourceDescriptor> resourceDescriptors;
     
     private final MCPResourceController controller;
     
     public MCPResourceSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        supportedResources = ResourceHandlerRegistry.getSupportedResources();
+        resourceDescriptors = ResourceHandlerRegistry.getSupportedResourceDescriptors();
         controller = new MCPResourceController(runtimeContext);
     }
     
@@ -49,8 +55,8 @@ public final class MCPResourceSpecificationFactory {
      * @return resource specifications
      */
     public List<SyncResourceSpecification> createResourceSpecifications() {
-        return supportedResources.stream()
-                .filter(each -> !isTemplatedResource(each)).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
+        return resourceDescriptors.stream()
+                .filter(each -> !each.isTemplated()).map(each -> new SyncResourceSpecification(createResource(each), this::handleReadResource)).collect(Collectors.toList());
     }
     
     /**
@@ -59,32 +65,83 @@ public final class MCPResourceSpecificationFactory {
      * @return resource template specifications
      */
     public List<SyncResourceTemplateSpecification> createResourceTemplateSpecifications() {
-        return supportedResources.stream()
-                .filter(this::isTemplatedResource)
+        return resourceDescriptors.stream()
+                .filter(MCPResourceDescriptor::isTemplated)
                 .map(each -> new SyncResourceTemplateSpecification(createResourceTemplate(each), this::handleReadResource))
                 .collect(Collectors.toList());
     }
     
-    private boolean isTemplatedResource(final String resourceUri) {
-        return resourceUri.contains("{");
+    private McpSchema.Resource createResource(final MCPResourceDescriptor descriptor) {
+        McpSchema.Resource.Builder result = McpSchema.Resource.builder()
+                .uri(descriptor.getUriPattern())
+                .name(descriptor.getName())
+                .title(descriptor.getTitle())
+                .description(descriptor.getDescription())
+                .mimeType(descriptor.getMimeType());
+        appendResourceAnnotations(result, descriptor.getAnnotations());
+        appendResourceMeta(result, descriptor);
+        return result.build();
     }
     
-    private McpSchema.Resource createResource(final String uri) {
-        return McpSchema.Resource.builder()
-                .uri(uri)
-                .name(uri.substring(uri.lastIndexOf('/') + 1))
-                .description("ShardingSphere MCP resource: " + uri)
-                .mimeType(MCPTransportPayloadUtils.JSON_CONTENT_TYPE)
-                .build();
+    private McpSchema.ResourceTemplate createResourceTemplate(final MCPResourceDescriptor descriptor) {
+        McpSchema.ResourceTemplate.Builder result = McpSchema.ResourceTemplate.builder()
+                .uriTemplate(descriptor.getUriPattern())
+                .name(descriptor.getName())
+                .title(descriptor.getTitle())
+                .description(descriptor.getDescription())
+                .mimeType(descriptor.getMimeType());
+        appendResourceTemplateAnnotations(result, descriptor.getAnnotations());
+        appendResourceTemplateMeta(result, descriptor);
+        return result.build();
     }
     
-    private McpSchema.ResourceTemplate createResourceTemplate(final String uriTemplate) {
-        return McpSchema.ResourceTemplate.builder()
-                .uriTemplate(uriTemplate)
-                .name(uriTemplate.substring(uriTemplate.lastIndexOf('/') + 1))
-                .description("ShardingSphere MCP resource template: " + uriTemplate)
-                .mimeType(MCPTransportPayloadUtils.JSON_CONTENT_TYPE)
-                .build();
+    private void appendResourceAnnotations(final McpSchema.Resource.Builder builder, final MCPResourceAnnotations annotations) {
+        if (!annotations.isEmpty()) {
+            builder.annotations(createAnnotations(annotations));
+        }
+    }
+    
+    private void appendResourceTemplateAnnotations(final McpSchema.ResourceTemplate.Builder builder, final MCPResourceAnnotations annotations) {
+        if (!annotations.isEmpty()) {
+            builder.annotations(createAnnotations(annotations));
+        }
+    }
+    
+    private McpSchema.Annotations createAnnotations(final MCPResourceAnnotations annotations) {
+        List<McpSchema.Role> audience = annotations.getAudience().stream().map(each -> McpSchema.Role.valueOf(each.toUpperCase(Locale.ENGLISH))).toList();
+        return new McpSchema.Annotations(audience, annotations.getPriority(), annotations.getLastModified());
+    }
+    
+    private void appendResourceMeta(final McpSchema.Resource.Builder builder, final MCPResourceDescriptor descriptor) {
+        Map<String, Object> meta = createMeta(descriptor);
+        if (!meta.isEmpty()) {
+            builder.meta(meta);
+        }
+    }
+    
+    private void appendResourceTemplateMeta(final McpSchema.ResourceTemplate.Builder builder, final MCPResourceDescriptor descriptor) {
+        Map<String, Object> meta = createMeta(descriptor);
+        if (!meta.isEmpty()) {
+            builder.meta(meta);
+        }
+    }
+    
+    private Map<String, Object> createMeta(final MCPResourceDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(descriptor.getMeta());
+        if (!descriptor.getParameters().isEmpty()) {
+            result.put("parameters", descriptor.getParameters().stream().map(this::createParameterMeta).toList());
+        }
+        return result;
+    }
+    
+    private Map<String, Object> createParameterMeta(final MCPResourceParameterDescriptor parameter) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("name", parameter.getName());
+        result.put("title", parameter.getTitle());
+        result.put("description", parameter.getDescription());
+        result.put("required", parameter.isRequired());
+        result.put("scope", parameter.getScope());
+        return result;
     }
     
     private McpSchema.ReadResourceResult handleReadResource(final McpSyncServerExchange exchange, final McpSchema.ReadResourceRequest request) {

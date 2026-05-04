@@ -1,0 +1,600 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resources:
+  - uriPattern: shardingsphere://capabilities
+    name: server-capability-catalog
+    title: ShardingSphere MCP Capability Catalog
+    description: "Generated model-facing catalog for ShardingSphere MCP resources, resource templates, tools, workflow relationships, side-effect notes, and deferred prompt or completion requirements."
+    mimeType: application/json
+    annotations:
+      audience:
+        - assistant
+      priority: 1.0
+    meta:
+      kind: capability-catalog
+      useBefore:
+        - choosing tools
+        - planning multi-step workflows
+  - uriPattern: shardingsphere://databases
+    name: logical-databases
+    title: Logical Databases
+    description: "List ShardingSphere logical databases visible to the current MCP runtime. Read this before choosing a database argument for metadata, SQL, or workflow tools."
+    mimeType: application/json
+    meta:
+      resourceKind: list
+      objectScope: logical-database
+      relatedTools:
+        - search_metadata
+        - execute_query
+  - uriPattern: shardingsphere://databases/{database}
+    name: logical-database-detail
+    title: Logical Database Detail
+    description: "Read one ShardingSphere logical database entry and its visible metadata summary. Use this when a user names a database and the model needs to confirm it exists."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database name, not a physical storage unit name."
+        required: true
+        scope: logical-database
+    meta:
+      resourceKind: detail
+      objectScope: logical-database
+  - uriPattern: shardingsphere://databases/{database}/capabilities
+    name: database-capabilities
+    title: Database Capabilities
+    description: "Read statement, transaction, schema, and metadata-object capabilities for one logical database. Use before executing SQL or deciding whether EXPLAIN ANALYZE is available."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database whose SQL and metadata capabilities should be inspected."
+        required: true
+        scope: logical-database
+    meta:
+      resourceKind: detail
+      relatedTools:
+        - execute_query
+        - execute_update
+  - uriPattern: shardingsphere://databases/{database}/schemas
+    name: schemas
+    title: Schemas
+    description: "List schemas or namespaces visible inside one ShardingSphere logical database. Use this to fill schema arguments for metadata and SQL context."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema namespace."
+        required: true
+        scope: logical-database
+    meta:
+      resourceKind: list
+      objectScope: schema
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}
+    name: schema-detail
+    title: Schema Detail
+    description: "Read one schema or namespace inside a logical database. Use this before listing tables, views, sequences, or indexes under that schema."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Database-native schema or namespace visible through ShardingSphere."
+        required: true
+        scope: schema
+    meta:
+      resourceKind: detail
+      objectScope: schema
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/sequences
+    name: sequences
+    title: Sequences
+    description: "List sequences in a schema. Use this when SQL or workflow planning needs sequence object names visible through ShardingSphere."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Database-native schema or namespace that contains sequences."
+        required: true
+        scope: schema
+    meta:
+      resourceKind: list
+      objectScope: sequence
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
+    name: sequence-detail
+    title: Sequence Detail
+    description: "Read one sequence definition visible through ShardingSphere. Use this when SQL generation or review needs a concrete sequence object."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Database-native schema or namespace that contains the sequence."
+        required: true
+        scope: schema
+      - name: sequence
+        title: Sequence
+        description: "Database-native sequence object name."
+        required: true
+        scope: sequence
+    meta:
+      resourceKind: detail
+      objectScope: sequence
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables
+    name: tables
+    title: Tables
+    description: "List logical tables in a schema. Read this before planning encrypt or mask rules when the table name is uncertain."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains logical tables."
+        required: true
+        scope: schema
+    meta:
+      resourceKind: list
+      objectScope: logical-table
+      relatedTools:
+        - plan_encrypt_rule
+        - plan_mask_rule
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
+    name: table-detail
+    title: Table Detail
+    description: "Read one logical table definition, including table-level metadata visible through ShardingSphere. Use this before column-level planning."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the table."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the logical table."
+        required: true
+        scope: schema
+      - name: table
+        title: Logical Table
+        description: "ShardingSphere logical table name, not a physical table shard."
+        required: true
+        scope: logical-table
+    meta:
+      resourceKind: detail
+      objectScope: logical-table
+      relatedTools:
+        - plan_encrypt_rule
+        - plan_mask_rule
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
+    name: table-columns
+    title: Table Columns
+    description: "List columns for one logical table. Read this before planning encrypt or mask rules for a column, or before writing SQL that references columns."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the table."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the logical table."
+        required: true
+        scope: schema
+      - name: table
+        title: Logical Table
+        description: "ShardingSphere logical table name whose columns should be listed."
+        required: true
+        scope: logical-table
+    meta:
+      resourceKind: list
+      objectScope: column
+      relatedTools:
+        - plan_encrypt_rule
+        - plan_mask_rule
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
+    name: table-column-detail
+    title: Table Column Detail
+    description: "Read one logical table column, including type and nullability metadata visible through ShardingSphere. Use this before column-level rule planning."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the table."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the logical table."
+        required: true
+        scope: schema
+      - name: table
+        title: Logical Table
+        description: "ShardingSphere logical table name that owns the column."
+        required: true
+        scope: logical-table
+      - name: column
+        title: Column
+        description: "Logical column name visible through ShardingSphere."
+        required: true
+        scope: column
+    meta:
+      resourceKind: detail
+      objectScope: column
+      relatedTools:
+        - plan_encrypt_rule
+        - plan_mask_rule
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
+    name: table-indexes
+    title: Table Indexes
+    description: "List indexes for one logical table. Use this before planning assisted-query encryption or reviewing DDL that may create or reuse indexes."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the table."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the logical table."
+        required: true
+        scope: schema
+      - name: table
+        title: Logical Table
+        description: "ShardingSphere logical table name whose indexes should be listed."
+        required: true
+        scope: logical-table
+    meta:
+      resourceKind: list
+      objectScope: index
+      relatedTools:
+        - plan_encrypt_rule
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
+    name: table-index-detail
+    title: Table Index Detail
+    description: "Read one index definition for a logical table. Use this when a plan must preserve or create a specific index."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the table."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the logical table."
+        required: true
+        scope: schema
+      - name: table
+        title: Logical Table
+        description: "ShardingSphere logical table name that owns the index."
+        required: true
+        scope: logical-table
+      - name: index
+        title: Index
+        description: "Database-native index name visible for the logical table."
+        required: true
+        scope: index
+    meta:
+      resourceKind: detail
+      objectScope: index
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views
+    name: views
+    title: Views
+    description: "List views in a schema. Use this when SQL generation or metadata search must distinguish views from logical tables."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains views."
+        required: true
+        scope: schema
+    meta:
+      resourceKind: list
+      objectScope: view
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
+    name: view-detail
+    title: View Detail
+    description: "Read one view definition visible through ShardingSphere. Use this before writing SQL that references a view."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the view."
+        required: true
+        scope: schema
+      - name: view
+        title: View
+        description: "Database view name visible through ShardingSphere."
+        required: true
+        scope: view
+    meta:
+      resourceKind: detail
+      objectScope: view
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
+    name: view-columns
+    title: View Columns
+    description: "List columns exposed by one view. Use this before writing SQL that projects or filters view columns."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the view."
+        required: true
+        scope: schema
+      - name: view
+        title: View
+        description: "Database view name whose columns should be listed."
+        required: true
+        scope: view
+    meta:
+      resourceKind: list
+      objectScope: column
+  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}
+    name: view-column-detail
+    title: View Column Detail
+    description: "Read one view column definition visible through ShardingSphere. Use this when SQL should reference a specific view column."
+    mimeType: application/json
+    parameters:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the schema."
+        required: true
+        scope: logical-database
+      - name: schema
+        title: Schema
+        description: "Schema or namespace that contains the view."
+        required: true
+        scope: schema
+      - name: view
+        title: View
+        description: "Database view name that owns the column."
+        required: true
+        scope: view
+      - name: column
+        title: Column
+        description: "View column name visible through ShardingSphere."
+        required: true
+        scope: column
+    meta:
+      resourceKind: detail
+      objectScope: column
+tools:
+  - name: search_metadata
+    title: Search Metadata
+    description: "Search ShardingSphere logical metadata by name and object type. Use this to find databases, schemas, tables, columns, indexes, views, or sequences before calling detail resources or planning tools."
+    fields:
+      - name: database
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Optional ShardingSphere logical database name used to narrow the search."
+      - name: schema
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Optional schema or namespace used to narrow table, view, column, index, and sequence search."
+      - name: query
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "Name fragment or exact object name to search for."
+      - name: object_types
+        required: false
+        valueDefinition:
+          type: ARRAY
+          description: "Optional object-type filter. Omit it when the user intent does not identify a specific metadata object kind."
+          itemDefinition:
+            type: STRING
+            description: "Allowed metadata object type."
+            enumValues:
+              - DATABASE
+              - SCHEMA
+              - TABLE
+              - VIEW
+              - COLUMN
+              - INDEX
+              - SEQUENCE
+      - name: page_size
+        required: false
+        valueDefinition:
+          type: INTEGER
+          description: "Requested page size for search results. Omit to use the server default."
+      - name: page_token
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Opaque pagination token returned by a previous search_metadata call."
+    outputSchema:
+      type: object
+      properties:
+        items:
+          type: array
+          description: "Matched metadata objects with logical path fields and object type."
+        nextPageToken:
+          type: string
+          description: "Opaque token for the next result page when more items exist."
+    annotations:
+      title: Search Metadata
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+      returnDirect: false
+    meta:
+      relatedResources:
+        - shardingsphere://databases
+        - shardingsphere://databases/{database}/schemas
+  - name: execute_query
+    title: Execute Read-Only SQL
+    description: "Execute exactly one read-only SELECT or EXPLAIN ANALYZE statement against a ShardingSphere logical database. Use for inspection only; DML, DDL, DCL, transaction control, and savepoints are rejected."
+    fields:
+      - name: database
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "ShardingSphere logical database name that provides the execution boundary."
+      - name: schema
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Optional schema or namespace hint for unqualified object names."
+      - name: sql
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "One SELECT or EXPLAIN ANALYZE statement. Do not include multiple statements or mutating SQL."
+      - name: max_rows
+        required: false
+        valueDefinition:
+          type: INTEGER
+          description: "Optional maximum number of rows to return. Omit or use zero for the server default."
+      - name: timeout_ms
+        required: false
+        valueDefinition:
+          type: INTEGER
+          description: "Optional execution timeout in milliseconds. Omit or use zero for the server default."
+    outputSchema:
+      type: object
+      properties:
+        result_kind:
+          type: string
+          description: "QUERY_RESULT for row results."
+        statement_class:
+          type: string
+          description: "Statement class, QUERY or EXPLAIN_ANALYZE."
+        columns:
+          type: array
+          description: "Returned column definitions."
+        rows:
+          type: array
+          description: "Returned result rows."
+        truncated:
+          type: boolean
+          description: "Whether rows were truncated by max_rows or server limits."
+    annotations:
+      title: Execute Read-Only SQL
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: true
+      openWorldHint: true
+      returnDirect: false
+    meta:
+      relatedResources:
+        - shardingsphere://databases/{database}/capabilities
+        - shardingsphere://databases/{database}/schemas
+      rejectedStatementClasses:
+        - DML
+        - DDL
+        - DCL
+        - TRANSACTION_CONTROL
+        - SAVEPOINT
+  - name: execute_update
+    title: Execute Update SQL
+    description: "Execute exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state. Use only when the user intends side effects and has reviewed the SQL."
+    fields:
+      - name: database
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "ShardingSphere logical database name that provides the execution boundary."
+      - name: schema
+        required: false
+        valueDefinition:
+          type: STRING
+          description: "Optional schema or namespace hint for unqualified object names."
+      - name: sql
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "One SQL statement. The server contract rejects banned commands and multiple statements."
+      - name: max_rows
+        required: false
+        valueDefinition:
+          type: INTEGER
+          description: "Optional maximum row count when the statement returns rows, for example dialect-specific RETURNING."
+      - name: timeout_ms
+        required: false
+        valueDefinition:
+          type: INTEGER
+          description: "Optional execution timeout in milliseconds. Omit or use zero for the server default."
+    outputSchema:
+      type: object
+      properties:
+        result_kind:
+          type: string
+          description: "Result kind such as UPDATE_COUNT, QUERY_RESULT, or MESSAGE."
+        statement_class:
+          type: string
+          description: "Statement class such as DML, DDL, DCL, TRANSACTION_CONTROL, or SAVEPOINT."
+        affected_rows:
+          type: integer
+          description: "Affected row count when the database reports one."
+        message:
+          type: string
+          description: "Execution message for statements without row results."
+        truncated:
+          type: boolean
+          description: "Whether returned rows were truncated."
+    annotations:
+      title: Execute Update SQL
+      readOnlyHint: false
+      destructiveHint: true
+      idempotentHint: false
+      openWorldHint: true
+      returnDirect: false
+    meta:
+      relatedResources:
+        - shardingsphere://databases/{database}/capabilities
+      sideEffectScope:
+        - physical-data
+        - physical-structure
+        - privilege-metadata
+        - transaction-state

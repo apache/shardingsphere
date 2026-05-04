@@ -26,12 +26,22 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedResourceUriException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -61,6 +71,12 @@ public final class MCPErrorConverter {
      * @return MCP error
      */
     public static MCPErrorResponse convert(final Throwable cause) {
+        if (cause instanceof UnsupportedToolException) {
+            return createError(INVALID_REQUEST, cause, "Unsupported tool.");
+        }
+        if (cause instanceof UnsupportedResourceUriException) {
+            return createError(INVALID_REQUEST, cause, "Unsupported resource URI.");
+        }
         if (cause instanceof MCPInvalidRequestException) {
             return createError(INVALID_REQUEST, cause, "Invalid request.");
         }
@@ -107,6 +123,89 @@ public final class MCPErrorConverter {
     }
     
     private static MCPErrorResponse createError(final String errorCode, final Throwable cause, final String defaultMessage) {
-        return new MCPErrorResponse(errorCode, Objects.toString(cause.getMessage(), defaultMessage).trim());
+        String message = Objects.toString(cause.getMessage(), defaultMessage).trim();
+        return new MCPErrorResponse(errorCode, message, createRecovery(errorCode, cause, message));
+    }
+    
+    private static Map<String, Object> createRecovery(final String errorCode, final Throwable cause, final String message) {
+        if (cause instanceof UnsupportedToolException) {
+            return createUnsupportedToolRecovery(((UnsupportedToolException) cause).getToolName());
+        }
+        if (cause instanceof UnsupportedResourceUriException) {
+            return createUnsupportedResourceRecovery(((UnsupportedResourceUriException) cause).getResourceUri());
+        }
+        if (UNSUPPORTED.equals(errorCode) && message.startsWith("execute_query only supports read-only")) {
+            return createUnsafeQueryRecovery();
+        }
+        if (UNSUPPORTED.equals(errorCode) && message.startsWith("execute_update does not accept read-only SQL")) {
+            return createReadOnlyUpdateRecovery();
+        }
+        if (INVALID_REQUEST.equals(errorCode) && message.endsWith(" is required.")) {
+            return createMissingArgumentRecovery(message.substring(0, message.length() - " is required.".length()));
+        }
+        if (INVALID_REQUEST.equals(errorCode) && message.startsWith("Unsupported object_types value")) {
+            return createInvalidObjectTypesRecovery();
+        }
+        if (INVALID_REQUEST.equals(errorCode) && (message.startsWith("Unknown plan_id") || message.startsWith("Workflow kind is required"))) {
+            return createWorkflowStateRecovery();
+        }
+        return Map.of();
+    }
+    
+    private static Map<String, Object> createUnsupportedToolRecovery(final String toolName) {
+        Map<String, Object> result = createBaseRecovery("unsupported_tool", "Call one of the supported tools returned by tools/list.");
+        result.put("tool_name", toolName);
+        result.put("supported_tools", ToolHandlerRegistry.getSupportedTools());
+        return result;
+    }
+    
+    private static Map<String, Object> createUnsupportedResourceRecovery(final String resourceUri) {
+        Map<String, Object> result = createBaseRecovery("unsupported_resource_uri", "Read one of the supported resources or templates returned by resources/list and resources/templates/list.");
+        result.put("resource_uri", resourceUri);
+        result.put("matching_resource_templates", ResourceHandlerRegistry.getSupportedResources());
+        return result;
+    }
+    
+    private static Map<String, Object> createUnsafeQueryRecovery() {
+        Map<String, Object> result = createBaseRecovery("unsafe_sql_attempted", "Use execute_update only after user approval for side-effecting SQL.");
+        result.put("recommended_tool", "execute_update");
+        result.put("requires_user_approval", true);
+        return result;
+    }
+    
+    private static Map<String, Object> createReadOnlyUpdateRecovery() {
+        Map<String, Object> result = createBaseRecovery("read_only_sql_sent_to_update_tool", "Use execute_query for read-only SELECT or EXPLAIN ANALYZE statements.");
+        result.put("recommended_tool", "execute_query");
+        result.put("requires_user_approval", false);
+        return result;
+    }
+    
+    private static Map<String, Object> createMissingArgumentRecovery(final String argumentName) {
+        Map<String, Object> result = createBaseRecovery("missing_argument", "Provide the missing argument, infer it from resources when safe, or ask the user.");
+        result.put("missing_fields", List.of(argumentName));
+        result.put("ask_user_when_uncertain", true);
+        return result;
+    }
+    
+    private static Map<String, Object> createInvalidObjectTypesRecovery() {
+        Map<String, Object> result = createBaseRecovery("invalid_enum_value", "Retry with one or more allowed object_types values.");
+        result.put("field", "object_types");
+        result.put("allowed_values", Arrays.stream(SupportedMCPMetadataObjectType.values()).map(each -> each.name().toLowerCase(Locale.ENGLISH)).toList());
+        return result;
+    }
+    
+    private static Map<String, Object> createWorkflowStateRecovery() {
+        Map<String, Object> result = createBaseRecovery("workflow_state_error", "Use the latest plan_id from a planning response, or re-run the planning tool.");
+        result.put("recommended_tools", List.of("plan_encrypt_rule", "plan_mask_rule"));
+        result.put("ask_user_when_uncertain", false);
+        return result;
+    }
+    
+    private static Map<String, Object> createBaseRecovery(final String category, final String modelAction) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("recoverable", true);
+        result.put("category", category);
+        result.put("model_action", modelAction);
+        return result;
     }
 }

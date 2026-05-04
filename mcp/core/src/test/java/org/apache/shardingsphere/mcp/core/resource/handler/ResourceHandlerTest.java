@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -37,7 +38,6 @@ import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
-import org.apache.shardingsphere.mcp.core.resource.response.MCPServiceCapabilityResponse;
 import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,6 +52,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -61,8 +62,9 @@ class ResourceHandlerTest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
-    void assertGetUriPattern(final HandlerCase handlerCase) {
-        assertThat(handlerCase.getHandler().getUriPattern(), is(handlerCase.getExpectedUriPattern()));
+    void assertGetResourceDescriptor(final HandlerCase handlerCase) {
+        assertThat(handlerCase.getHandler().getResourceDescriptor().getUriPattern(), is(handlerCase.getExpectedUriPattern()));
+        assertFalse(handlerCase.getHandler().getResourceDescriptor().getDescription().isBlank());
     }
     
     @ParameterizedTest(name = "{0}")
@@ -77,7 +79,7 @@ class ResourceHandlerTest {
                 return;
             }
             if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
-                assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPServiceCapabilityResponse.class));
+                assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMapResponse.class));
                 assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
                 return;
             }

@@ -85,7 +85,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
     void assertRefreshMetadataVisibleForSubsequentClientSessionsInTargetDatabaseOnly(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient firstInteractionClient = createOpenedInteractionClient()) {
-            firstInteractionClient.call("execute_query",
+            firstInteractionClient.call("execute_update",
                     Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
             List<String> firstSessionTableNames = readTableNames(firstInteractionClient, LOGIC_DATABASE_NAME);
             try (MCPInteractionClient secondInteractionClient = createOpenedInteractionClient()) {
@@ -104,7 +104,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
     void assertRejectCrossDatabaseTransactionSwitch(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_query",
+            interactionClient.call("execute_update",
                     Map.of("database", LOGIC_DATABASE_NAME, "schema", "public", "sql", "BEGIN"));
             Map<String, Object> actual = interactionClient.call("execute_query",
                     Map.of("database", ANALYTICS_DATABASE_NAME, "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id"));

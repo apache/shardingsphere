@@ -22,7 +22,9 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
 import java.util.List;
 import java.util.function.BiFunction;
@@ -43,8 +45,8 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     @Override
-    public String getUriPattern() {
-        return uriPattern;
+    public MCPResourceDescriptor getResourceDescriptor() {
+        return MCPDescriptorRegistry.getRequiredResourceDescriptor(uriPattern);
     }
     
     @Override

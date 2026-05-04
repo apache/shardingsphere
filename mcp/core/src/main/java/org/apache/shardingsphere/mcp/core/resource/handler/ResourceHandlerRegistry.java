@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerLoader;
@@ -49,10 +50,13 @@ public final class ResourceHandlerRegistry {
     
     private static final List<String> SUPPORTED_RESOURCES;
     
+    private static final List<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
+    
     static {
         REGISTERED_RESOURCES = createRegisteredResources();
         validateRegisteredResources();
         SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).toList();
+        SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).toList();
     }
     
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources() {
@@ -63,7 +67,10 @@ public final class ResourceHandlerRegistry {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
-            String uriPattern = each.getUriPattern();
+            MCPResourceDescriptor descriptor = each.getResourceDescriptor();
+            ShardingSpherePreconditions.checkState(null != descriptor,
+                    () -> new IllegalArgumentException(String.format("Resource descriptor is required for `%s`.", each.getClass().getName())));
+            String uriPattern = descriptor.getUriPattern();
             ShardingSpherePreconditions.checkState(null != uriPattern && !uriPattern.isBlank(),
                     () -> new IllegalArgumentException(String.format("Resource URI pattern is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
@@ -130,5 +137,14 @@ public final class ResourceHandlerRegistry {
      */
     public static List<String> getSupportedResources() {
         return SUPPORTED_RESOURCES;
+    }
+    
+    /**
+     * Get supported resource descriptors.
+     *
+     * @return supported resource descriptors
+     */
+    public static List<MCPResourceDescriptor> getSupportedResourceDescriptors() {
+        return SUPPORTED_RESOURCE_DESCRIPTORS;
     }
 }

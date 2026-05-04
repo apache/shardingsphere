@@ -48,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @EnabledIf("isEnabled")
 class PackagedDistributionPluginDiscoveryE2ETest {
     
-    private static final List<String> CORE_TOOL_NAMES = List.of("search_metadata", "execute_query", "apply_workflow", "validate_workflow");
+    private static final List<String> CORE_TOOL_NAMES = List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow");
     
     private static final List<String> REMOVED_FEATURE_TOOL_NAMES = OfficialMCPToolNames.getAll().stream().filter(each -> !CORE_TOOL_NAMES.contains(each)).toList();
     
@@ -83,7 +83,7 @@ class PackagedDistributionPluginDiscoveryE2ETest {
     
     private void assertDiscoveredTools(final List<Map<String, Object>> tools) {
         List<String> actualToolNames = tools.stream().map(each -> String.valueOf(each.get("name"))).toList();
-        assertThat(actualToolNames, hasItems("search_metadata", "execute_query", "apply_workflow", "validate_workflow", "fixture_ping"));
+        assertThat(actualToolNames, hasItems("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualToolNames.contains(each));
         }
@@ -108,7 +108,7 @@ class PackagedDistributionPluginDiscoveryE2ETest {
     
     private void assertCapabilities(final Map<String, Object> payload) {
         List<String> actualSupportedTools = ((List<?>) payload.get("supportedTools")).stream().map(String::valueOf).toList();
-        assertThat(actualSupportedTools, hasItems("search_metadata", "execute_query", "apply_workflow", "validate_workflow", "fixture_ping"));
+        assertThat(actualSupportedTools, hasItems("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "fixture_ping"));
         for (String each : REMOVED_FEATURE_TOOL_NAMES) {
             assertFalse(actualSupportedTools.contains(each));
         }

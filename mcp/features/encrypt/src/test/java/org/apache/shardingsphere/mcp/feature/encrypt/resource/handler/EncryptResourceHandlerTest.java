@@ -40,7 +40,7 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptAlgorithmsUriPattern() {
-        assertThat(new EncryptAlgorithmsHandler().getUriPattern(), is("shardingsphere://features/encrypt/algorithms"));
+        assertThat(new EncryptAlgorithmsHandler().getResourceDescriptor().getUriPattern(), is("shardingsphere://features/encrypt/algorithms"));
     }
     
     @Test
@@ -58,7 +58,7 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptRulesUriPattern() {
-        assertThat(new EncryptRulesHandler().getUriPattern(), is("shardingsphere://features/encrypt/databases/{database}/rules"));
+        assertThat(new EncryptRulesHandler().getResourceDescriptor().getUriPattern(), is("shardingsphere://features/encrypt/databases/{database}/rules"));
     }
     
     @Test
@@ -74,7 +74,7 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptRuleUriPattern() {
-        assertThat(new EncryptRuleHandler().getUriPattern(), is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
+        assertThat(new EncryptRuleHandler().getResourceDescriptor().getUriPattern(), is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
     }
     
     @Test

@@ -25,7 +25,7 @@ import java.util.List;
 public final class OfficialMCPToolNames {
     
     private static final List<String> ALL = List.of(
-            "search_metadata", "execute_query", "apply_workflow", "validate_workflow", "plan_encrypt_rule", "plan_mask_rule");
+            "search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "plan_encrypt_rule", "plan_mask_rule");
     
     private OfficialMCPToolNames() {
     }

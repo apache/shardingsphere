@@ -24,8 +24,11 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedResourceUriException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -34,11 +37,13 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPErrorConverterTest {
     
@@ -47,6 +52,44 @@ class MCPErrorConverterTest {
     void assertConvert(final String name, final Throwable cause, final String expectedErrorCode, final String expectedMessage) {
         MCPErrorResponse actual = MCPErrorConverter.convert(cause);
         assertThat(actual.toPayload(), is(Map.of("error_code", expectedErrorCode, "message", expectedMessage)));
+    }
+    
+    @Test
+    void assertConvertUnsupportedToolWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedToolException("missing_tool")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actualRecovery.get("category"), is("unsupported_tool"));
+        assertThat(actualRecovery.get("tool_name"), is("missing_tool"));
+        assertTrue(((List<?>) actualRecovery.get("supported_tools")).contains("execute_query"));
+    }
+    
+    @Test
+    void assertConvertUnsupportedResourceWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedResourceUriException("shardingsphere://unknown")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actual.get("error_code"), is("invalid_request"));
+        assertThat(actualRecovery.get("category"), is("unsupported_resource_uri"));
+        assertThat(actualRecovery.get("resource_uri"), is("shardingsphere://unknown"));
+        assertTrue(((List<?>) actualRecovery.get("matching_resource_templates")).contains("shardingsphere://capabilities"));
+    }
+    
+    @Test
+    void assertConvertMissingArgumentWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("database is required.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("missing_argument"));
+        assertThat(actualRecovery.get("missing_fields"), is(List.of("database")));
+    }
+    
+    @Test
+    void assertConvertUnsafeQueryWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(
+                "execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("unsafe_sql_attempted"));
+        assertThat(actualRecovery.get("recommended_tool"), is("execute_update"));
+        assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
     static Stream<Arguments> assertConvertCases() {

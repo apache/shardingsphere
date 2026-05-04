@@ -21,9 +21,11 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptRuleInspectionService;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
 /**
  * Encrypt rule handler.
@@ -38,8 +40,8 @@ public final class EncryptRuleHandler implements MCPResourceHandler<MCPDatabaseH
     }
     
     @Override
-    public String getUriPattern() {
-        return EncryptFeatureDefinition.RULE_RESOURCE_URI;
+    public MCPResourceDescriptor getResourceDescriptor() {
+        return MCPDescriptorRegistry.getRequiredResourceDescriptor(EncryptFeatureDefinition.RULE_RESOURCE_URI);
     }
     
     @Override

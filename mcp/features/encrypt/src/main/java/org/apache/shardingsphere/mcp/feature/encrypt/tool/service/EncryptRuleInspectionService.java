@@ -42,7 +42,7 @@ public final class EncryptRuleInspectionService {
     public List<Map<String, Object>> queryEncryptRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
         return queryFacade.query(databaseName, "", String.format("SHOW ENCRYPT RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
     }
-
+    
     /**
      * Query encrypt rules.
      *

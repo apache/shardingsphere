@@ -162,7 +162,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
     @Test
     void assertPlanAutoRenamesDerivedColumnWhenCipherColumnConflictsThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_query",
+            interactionClient.call("execute_update",
                     Map.of("database", getLogicalDatabaseName(), "schema", "public",
                             "sql", "ALTER TABLE orders ADD COLUMN status_cipher VARCHAR(32), ADD COLUMN status_cipher_1 VARCHAR(32)"));
             assertThat(countPhysicalColumn("status_cipher"), is(1));

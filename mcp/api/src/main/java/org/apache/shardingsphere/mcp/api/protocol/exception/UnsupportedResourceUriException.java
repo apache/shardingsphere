@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.exception;
 
+import lombok.Getter;
+
 /**
  * Exception for unsupported MCP resource URIs.
  */
@@ -24,7 +26,11 @@ public final class UnsupportedResourceUriException extends MCPInvalidRequestExce
     
     private static final long serialVersionUID = -5677772971573969755L;
     
-    public UnsupportedResourceUriException() {
-        super("Unsupported resource URI.");
+    @Getter
+    private final String resourceUri;
+    
+    public UnsupportedResourceUriException(final String resourceUri) {
+        super(resourceUri.isEmpty() ? "Unsupported resource URI." : String.format("Unsupported resource URI `%s`.", resourceUri));
+        this.resourceUri = resourceUri;
     }
 }

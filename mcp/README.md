@@ -122,7 +122,8 @@ Expected result:
 Notes:
 
 - Metadata list/detail/capability discovery is unified through `resources/read`.
-- The current public tools are `search_metadata`, `execute_query`, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, and `validate_workflow`.
+- The current public tools are `search_metadata`, `execute_query`, `execute_update`, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, and `validate_workflow`.
+- `execute_query` accepts read-only `SELECT` and `EXPLAIN ANALYZE` statements only. Use `execute_update` for DML, DDL, DCL, transaction control, savepoints, and other supported side-effecting SQL.
 - The encrypt and mask workflow targets logical databases exposed by ShardingSphere-Proxy; the dedicated usage notes appear below.
 - `search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence` only.
 
@@ -174,6 +175,20 @@ Expected result:
 
 - The response content type is `text/event-stream`.
 - The `data:` line contains one resource payload for `shardingsphere://capabilities`.
+- The payload is generated from the descriptor catalog and includes `resources`, `resourceTemplates`, `tools`, `protocolAvailability`, and deferred prompt or completion requirements.
+
+### Descriptor-Driven Discovery
+
+MCP tools and resources publish model-facing metadata from YAML descriptors under `META-INF/shardingsphere-mcp/descriptors`.
+The same descriptor source is used by `resources/list`, `resources/templates/list`, `tools/list`, and the aggregate `shardingsphere://capabilities` resource.
+
+Descriptors must describe what the model should use the surface for, not just repeat the URI or tool name:
+
+- Resource descriptors include URI template parameter meaning, logical versus physical object scope, MIME type, title, description, annotations, and relationship metadata.
+- Tool descriptors include input field descriptions, structured object properties where keys are known, output schema, MCP annotations, related resources, follow-up tools, and side-effect notes.
+- Workflow tool responses include `missing_required_inputs`, `resources_to_read`, `next_actions`, `recommended_next_tool`, and `requires_user_approval` so a model can continue the workflow without guessing.
+- Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments, unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
+- Prompt and completion support is recorded in the capability catalog as a deferred requirement and is not implemented in this phase.
 
 ### Read `shardingsphere://databases/orders/schemas/public/sequences`
 
@@ -295,15 +310,15 @@ If you want to add another feature beyond encrypt and mask, keep the implementat
 
 - Create `mcp/features/<feature>` and depend on `mcp/api`, `mcp/support` for database metadata, execution, or workflow handlers, `mcp/core` only when service-level handler context is needed, plus the required domain modules only; do not depend on `mcp/bootstrap`
 - If this is a new feature module, wire it into both the build and the runtime classpath: add it under `mcp/features/pom.xml`, then either add it to `distribution/mcp/pom.xml` when it should ship in the official packaged runtime or place the built jar under `plugins/` before startup when it should stay optional
-- For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type; always provide a unique `MCPToolDescriptor`
-- For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type; always provide a unique URI pattern
+- For each public tool, implement `MCPToolHandler<T extends MCPHandlerContext>` with the required context type and add its canonical descriptor under `META-INF/shardingsphere-mcp/descriptors`
+- For each public resource, implement `MCPResourceHandler<T extends MCPHandlerContext>` with the required context type and return a descriptor that resolves to the same canonical YAML metadata
 - Use `MCPServiceHandlerContext` for service-level handlers, `MCPDatabaseHandlerContext` for database metadata or execution handlers, and `MCPWorkflowHandlerContext` for workflow handlers
 - Implement one `MCPHandlerProvider` that returns the feature-owned handlers through `getToolHandlers()` and `getResourceHandlers()`
 - If the feature owns workflow definitions, implement `MCPWorkflowDefinitionProvider` on the same provider
 - Register `org.apache.shardingsphere.mcp.api.MCPHandlerProvider` under `src/main/resources/META-INF/services/`
 - Keep feature URIs under `shardingsphere://features/<feature>/...` so they do not leak into shared metadata paths
 - `mcp/core` discovers handler providers through `ShardingSphereServiceLoader`, flattens their handlers, and validates global uniqueness; `mcp/bootstrap` only publishes the final protocol surface
-- Tool names and resource URI patterns must stay globally unique; duplicate handlers are rejected during startup validation
+- Tool names and resource URI patterns must stay globally unique; duplicate handlers and duplicate descriptors are rejected during startup validation
 
 The encrypt and mask modules are the recommended reference implementations.
 

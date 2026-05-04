@@ -33,6 +33,12 @@ class MCPErrorResponseTest {
     }
     
     @Test
+    void assertToPayloadWithRecovery() {
+        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message", Map.of("recoverable", true)).toPayload();
+        assertThat(actual, is(Map.of("error_code", "invalid_request", "message", "foo_message", "recovery", Map.of("recoverable", true))));
+    }
+    
+    @Test
     void assertGetErrorCode() {
         assertThat(new MCPErrorResponse("invalid_request", "foo_message").getErrorCode(), is("invalid_request"));
     }

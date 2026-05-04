@@ -54,8 +54,10 @@ class MCPResourceControllerTest {
         try (MockedStatic<ResourceHandlerRegistry> mocked = mockStatic(ResourceHandlerRegistry.class)) {
             mocked.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("unsupported://resource"))).thenReturn(Optional.empty());
             Map<String, Object> actual = createController().handle("unsupported://resource").toPayload();
+            Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
             assertThat(actual.get("error_code"), is("invalid_request"));
-            assertThat(actual.get("message"), is("Unsupported resource URI."));
+            assertThat(actual.get("message"), is("Unsupported resource URI `unsupported://resource`."));
+            assertThat(actualRecovery.get("category"), is("unsupported_resource_uri"));
         }
     }
     

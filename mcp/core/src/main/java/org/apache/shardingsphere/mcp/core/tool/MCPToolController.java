@@ -45,7 +45,7 @@ public final class MCPToolController {
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
         try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            return ToolHandlerRegistry.dispatch(requestScope, sessionId, toolName, arguments).orElseThrow(UnsupportedToolException::new);
+            return ToolHandlerRegistry.dispatch(requestScope, sessionId, toolName, arguments).orElseThrow(() -> new UnsupportedToolException(toolName));
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
