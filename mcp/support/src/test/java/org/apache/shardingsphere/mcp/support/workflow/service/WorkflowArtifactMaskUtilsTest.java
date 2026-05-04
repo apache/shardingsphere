@@ -43,12 +43,6 @@ class WorkflowArtifactMaskUtilsTest {
         assertThat(actualRuleArtifact.get("sql"), is("SQL ****** '******' ******"));
     }
     
-    @Test
-    void assertMaskSensitiveSqlKeepsSqlWhenRequestIsNull() {
-        String actualSql = WorkflowArtifactMaskUtils.maskSensitiveSql("SELECT plain_text", null, List.of());
-        assertThat(actualSql, is("SELECT plain_text"));
-    }
-    
     private WorkflowPropertySource createPropertySource() {
         Map<String, Map<String, String>> properties = Map.of(
                 "primary", Map.of("aes-key-value", "primary-secret"),

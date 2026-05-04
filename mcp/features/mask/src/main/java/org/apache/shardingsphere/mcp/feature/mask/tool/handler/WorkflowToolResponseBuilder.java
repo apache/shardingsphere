@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.handler;
 
 import org.apache.shardingsphere.mcp.feature.mask.tool.service.MaskAlgorithmPropertyTemplateService;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 
 import java.util.List;
 import java.util.Map;
@@ -45,9 +45,6 @@ final class WorkflowToolResponseBuilder {
     }
     
     private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        if (null == snapshot.getRequest()) {
-            return Map.of();
-        }
         return Map.of("primary", propertyTemplateService.maskProperties(filterRequirements(snapshot), propertySource.getAlgorithmProperties("primary")));
     }
     
@@ -56,6 +53,6 @@ final class WorkflowToolResponseBuilder {
     }
     
     private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getRequest() ? algorithmRole -> Map.of() : snapshot.getRequest();
+        return snapshot.getRequest();
     }
 }

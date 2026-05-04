@@ -17,6 +17,10 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.feature.encrypt.EncryptFeatureDefinition;
 import org.apache.shardingsphere.mcp.feature.encrypt.TestWorkflowSessionContext;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowRequest;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
@@ -26,11 +30,10 @@ import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
+import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.DDLArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.DerivedColumnPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.IndexPlan;
@@ -38,7 +41,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.InteractionPlan;
 import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.internal.configuration.plugins.Plugins;
@@ -113,7 +115,12 @@ class EncryptToolHandlerTest {
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
+        result.setWorkflowKind(EncryptFeatureDefinition.WORKFLOW_KIND);
         result.setStatus(status);
+        result.setRequest(new EncryptWorkflowRequest());
+        result.setClarifiedIntent(new ClarifiedIntent());
+        result.setFeatureData(new EncryptWorkflowState());
+        result.setInteractionPlan(createInteractionPlan());
         return result;
     }
     

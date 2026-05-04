@@ -67,6 +67,6 @@ public final class MCPResourceDescriptor {
      * @return true if the resource is a URI template
      */
     public boolean isTemplated() {
-        return null != uriPattern && uriPattern.contains("{");
+        return uriPattern.contains("{");
     }
 }

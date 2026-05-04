@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,26 +43,23 @@ public final class WorkflowPlanPayloadBuilder {
     public static Map<String, Object> build(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         result.put("plan_id", snapshot.getPlanId());
-        result.put("workflow_kind", null == snapshot.getWorkflowKind() ? "" : snapshot.getWorkflowKind().getValue());
+        result.put("workflow_kind", snapshot.getWorkflowKind().getValue());
         result.put("status", snapshot.getStatus());
-        result.put("pending_questions", null == snapshot.getClarifiedIntent() ? List.of() : snapshot.getClarifiedIntent().getPendingQuestions());
+        result.put("pending_questions", snapshot.getClarifiedIntent().getPendingQuestions());
         result.put("issues", snapshot.getIssues().stream().map(WorkflowIssue::toMap).toList());
-        result.put("global_steps", null == snapshot.getInteractionPlan() ? List.of() : snapshot.getInteractionPlan().getSteps());
-        result.put("current_step", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getCurrentStep());
+        result.put("global_steps", snapshot.getInteractionPlan().getSteps());
+        result.put("current_step", snapshot.getInteractionPlan().getCurrentStep());
         result.put("algorithm_recommendations", snapshot.getAlgorithmCandidates().stream().map(AlgorithmCandidate::toMap).toList());
         result.put("property_requirements", snapshot.getPropertyRequirements().stream().map(AlgorithmPropertyRequirement::toMap).toList());
-        result.put("validation_strategy", null == snapshot.getInteractionPlan() ? Map.of() : snapshot.getInteractionPlan().getValidationStrategy());
-        result.put("delivery_mode", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getDeliveryMode());
-        result.put("execution_mode", null == snapshot.getInteractionPlan() ? "" : snapshot.getInteractionPlan().getExecutionMode());
+        result.put("validation_strategy", snapshot.getInteractionPlan().getValidationStrategy());
+        result.put("delivery_mode", snapshot.getInteractionPlan().getDeliveryMode());
+        result.put("execution_mode", snapshot.getInteractionPlan().getExecutionMode());
         result.put("intent_inference", createIntentInference(snapshot.getClarifiedIntent()));
         WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
         return result;
     }
     
     private static Map<String, Object> createIntentInference(final ClarifiedIntent clarifiedIntent) {
-        if (null == clarifiedIntent) {
-            return Map.of();
-        }
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("operation_type", clarifiedIntent.getOperationType());
         result.put("field_semantics", clarifiedIntent.getFieldSemantics());

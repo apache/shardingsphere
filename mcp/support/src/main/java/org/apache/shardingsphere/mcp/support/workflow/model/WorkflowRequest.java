@@ -119,12 +119,10 @@ public class WorkflowRequest implements WorkflowPropertySource {
      */
     public static WorkflowRequest merge(final WorkflowRequest previous, final WorkflowRequest current) {
         if (null == previous) {
-            return null == current ? null : current.copy();
+            return current.copy();
         }
         WorkflowRequest result = previous.copy();
-        if (null != current) {
-            current.overlayTo(result);
-        }
+        current.overlayTo(result);
         return result;
     }
     

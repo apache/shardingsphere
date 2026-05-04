@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -48,11 +47,6 @@ public final class WorkflowRequestBinder {
                                                                     final BiConsumer<T, WorkflowPlanningArguments> featureArgumentBinder,
                                                                     final BiConsumer<T, Map<String, Object>> structuredIntentBinder,
                                                                     final BiConsumer<T, Map<String, Object>> userOverrideBinder) {
-        Objects.requireNonNull(requestSupplier);
-        Objects.requireNonNull(arguments);
-        Objects.requireNonNull(featureArgumentBinder);
-        Objects.requireNonNull(structuredIntentBinder);
-        Objects.requireNonNull(userOverrideBinder);
         WorkflowPlanningArguments workflowPlanningArguments = new WorkflowPlanningArguments(arguments);
         T result = requestSupplier.get();
         bindCommonPlanningFields(result, workflowPlanningArguments);

@@ -22,15 +22,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPE2ETestConfigurationTest {
-    
-    @Test
-    void assertGetInstance() {
-        assertNotNull(MCPE2ETestConfiguration.getInstance());
-    }
     
     @Test
     void assertDefaultLaneValues() {

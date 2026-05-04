@@ -88,11 +88,13 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setPlanId("plan-1");
         snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
         snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
         WorkflowRequest request = new WorkflowRequest();
         request.setDatabase("logic_db");
         request.setSchema("public");
         request.setTable("orders");
         snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         List<?> actualResourcesToRead = (List<?>) actual.get("resources_to_read");
         assertTrue(actualResourcesToRead.contains("shardingsphere://features/mask/algorithms"));
@@ -107,21 +109,14 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setPlanId("plan-1");
         snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
         snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
         assertThat(actual.get("recommended_next_tool"), is("plan_encrypt_rule"));
         assertThat(actualNextAction.get("action_kind"), is("call_tool"));
         assertThat(actualNextAction.get("target_tool"), is("plan_encrypt_rule"));
-    }
-    
-    @Test
-    void assertBuildAsksUserAfterFailureWithUnknownWorkflowKind() {
-        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
-        snapshot.setPlanId("plan-1");
-        snapshot.setStatus(WorkflowLifecycle.STATUS_FAILED);
-        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
-        assertThat(actual.get("recommended_next_tool"), is(""));
-        assertThat(actualNextAction.get("action_kind"), is("ask_user"));
     }
 }

@@ -72,9 +72,6 @@ public final class WorkflowArtifactMaskUtils {
     }
     
     private static Set<String> collectSecretValues(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
-        if (null == propertySource) {
-            return Set.of();
-        }
         Set<String> result = new LinkedHashSet<>();
         for (AlgorithmPropertyRequirement each : propertyRequirements) {
             if (!each.isSecret()) {

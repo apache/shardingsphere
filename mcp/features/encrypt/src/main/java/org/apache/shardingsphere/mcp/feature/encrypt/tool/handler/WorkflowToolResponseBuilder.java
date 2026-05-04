@@ -19,11 +19,11 @@ package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.model.EncryptWorkflowState;
 import org.apache.shardingsphere.mcp.feature.encrypt.tool.service.EncryptAlgorithmPropertyTemplateService;
+import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloadBuilder;
-import org.apache.shardingsphere.mcp.support.workflow.WorkflowPropertySource;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,7 +38,7 @@ final class WorkflowToolResponseBuilder {
     }
     
     Map<String, Object> buildPlanResponse(final WorkflowContextSnapshot snapshot) {
-        EncryptWorkflowState workflowState = getEncryptWorkflowState(snapshot);
+        EncryptWorkflowState workflowState = (EncryptWorkflowState) snapshot.getFeatureData();
         WorkflowPropertySource propertySource = getPropertySource(snapshot);
         Map<String, Object> result = WorkflowPlanPayloadBuilder.build(snapshot);
         result.put("masked_property_preview", createMaskedPropertyPreview(snapshot, propertySource));
@@ -47,14 +47,7 @@ final class WorkflowToolResponseBuilder {
         return result;
     }
     
-    private EncryptWorkflowState getEncryptWorkflowState(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getFeatureData() instanceof EncryptWorkflowState ? (EncryptWorkflowState) snapshot.getFeatureData() : new EncryptWorkflowState();
-    }
-    
     private Map<String, Object> createMaskedPropertyPreview(final WorkflowContextSnapshot snapshot, final WorkflowPropertySource propertySource) {
-        if (null == snapshot.getRequest() && null == snapshot.getFeatureData()) {
-            return Map.of();
-        }
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("primary", propertyTemplateService.maskProperties(filterRequirements(snapshot, "primary"), propertySource.getAlgorithmProperties("primary")));
         result.put("assisted_query", propertyTemplateService.maskProperties(filterRequirements(snapshot, "assisted_query"), propertySource.getAlgorithmProperties("assisted_query")));
@@ -67,6 +60,6 @@ final class WorkflowToolResponseBuilder {
     }
     
     private WorkflowPropertySource getPropertySource(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getRequest() ? algorithmRole -> Map.of() : snapshot.getRequest();
+        return snapshot.getRequest();
     }
 }

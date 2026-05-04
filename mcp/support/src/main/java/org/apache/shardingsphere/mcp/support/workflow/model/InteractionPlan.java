@@ -70,6 +70,6 @@ public final class InteractionPlan {
     }
     
     private static String resolveMode(final String requestedMode, final String defaultMode) {
-        return null == requestedMode || requestedMode.isBlank() ? defaultMode : requestedMode;
+        return requestedMode.isBlank() ? defaultMode : requestedMode;
     }
 }

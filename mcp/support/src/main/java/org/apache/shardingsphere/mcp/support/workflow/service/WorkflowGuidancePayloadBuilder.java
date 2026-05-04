@@ -107,17 +107,15 @@ public final class WorkflowGuidancePayloadBuilder {
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
-        if (null != clarifiedIntent) {
-            for (String each : clarifiedIntent.getUnresolvedFields()) {
-                if (!result.contains(each)) {
-                    result.add(each);
-                }
+        for (String each : clarifiedIntent.getUnresolvedFields()) {
+            if (!result.contains(each)) {
+                result.add(each);
             }
         }
         for (WorkflowIssue each : snapshot.getIssues()) {
             addMissingInputsFromIssue(result, each);
         }
-        if (result.isEmpty() && null != clarifiedIntent && !clarifiedIntent.getPendingQuestions().isEmpty()) {
+        if (result.isEmpty() && !clarifiedIntent.getPendingQuestions().isEmpty()) {
             result.add("user_clarification");
         }
         return result;
@@ -142,10 +140,6 @@ public final class WorkflowGuidancePayloadBuilder {
         List<String> result = new LinkedList<>();
         addFeatureResources(result, snapshot);
         WorkflowRequest request = snapshot.getRequest();
-        if (null == request) {
-            result.add("shardingsphere://databases");
-            return result;
-        }
         if (!request.getDatabase().isEmpty()) {
             addRuleResources(result, snapshot, request);
             if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
@@ -236,11 +230,11 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getWorkflowKind() ? "" : snapshot.getWorkflowKind().getValue();
+        return snapshot.getWorkflowKind().getValue();
     }
     
     private static String resolveExecutionMode(final WorkflowContextSnapshot snapshot) {
-        return null == snapshot.getRequest() ? "review-then-execute" : snapshot.getRequest().getExecutionMode();
+        return snapshot.getRequest().getExecutionMode();
     }
     
     private static String resolveTargetTool(final Map<String, Object> action) {
