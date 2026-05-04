@@ -37,7 +37,7 @@ class MCPToolArgumentsTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("getObjectTypesCases")
     void assertGetObjectTypes(final String name, final Map<String, Object> rawArguments, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes,
-                              final List<SupportedMCPMetadataObjectType> expectedObjectTypes) {
+                              final Set<SupportedMCPMetadataObjectType> expectedObjectTypes) {
         assertThat(new MCPToolArguments(rawArguments).getObjectTypes(supportedObjectTypes), is(expectedObjectTypes));
     }
     
@@ -80,11 +80,11 @@ class MCPToolArgumentsTest {
     
     private static Stream<Arguments> getObjectTypesCases() {
         return Stream.of(
-                Arguments.of("missing object types", Map.of(), Set.of(SupportedMCPMetadataObjectType.TABLE), List.of()),
-                Arguments.of("empty object types", Map.of("object_types", List.of()), Set.of(SupportedMCPMetadataObjectType.TABLE), List.of()),
+                Arguments.of("missing object types", Map.of(), Set.of(SupportedMCPMetadataObjectType.TABLE), Set.of()),
+                Arguments.of("empty object types", Map.of("object_types", List.of()), Set.of(SupportedMCPMetadataObjectType.TABLE), Set.of()),
                 Arguments.of("normalized object types", Map.of("object_types", List.of("table", " VIEW ", "table")),
                         Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW),
-                        List.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW)));
+                        Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW)));
     }
     
     private static Stream<Arguments> invalidObjectTypesCases() {

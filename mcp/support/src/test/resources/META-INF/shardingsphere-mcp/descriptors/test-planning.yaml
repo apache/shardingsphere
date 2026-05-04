@@ -104,3 +104,15 @@ tools:
               valueDefinition:
                 type: STRING
                 description: "Algorithm type override."
+    outputSchema:
+      type: object
+      properties:
+        plan_id:
+          type: string
+          description: "Workflow plan identifier for apply_workflow and validate_workflow."
+        status:
+          type: string
+          description: "Stable workflow status, such as clarifying, planned, or failed."
+        next_actions:
+          type: array
+          description: "Ordered structured model-facing recommendations for the next call or user question."

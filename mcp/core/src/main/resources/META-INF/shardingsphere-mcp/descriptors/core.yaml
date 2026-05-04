@@ -524,7 +524,9 @@ resourceNavigation:
 tools:
   - name: search_metadata
     title: Search Metadata
-    description: "Search ShardingSphere logical metadata by name and object type. Use this to find databases, schemas, tables, columns, indexes, views, or sequences before calling detail resources or planning tools."
+    description: >-
+      Search ShardingSphere logical metadata by name and object type. Use this to find databases, schemas, tables, columns, indexes, views,
+      or sequences before calling detail resources or planning tools.
     fields:
       - name: database
         required: false
@@ -592,7 +594,9 @@ tools:
         - shardingsphere://databases/{database}/schemas
   - name: execute_query
     title: Execute Read-Only SQL
-    description: "Execute exactly one read-only SELECT or EXPLAIN ANALYZE statement against a ShardingSphere logical database. Use for inspection only; DML, DDL, DCL, transaction control, and savepoints are rejected."
+    description: >-
+      Execute exactly one read-only SELECT or EXPLAIN ANALYZE statement against a ShardingSphere logical database. Use for inspection only;
+      DML, DDL, DCL, transaction control, and savepoints are rejected.
     fields:
       - name: database
         required: true
@@ -656,7 +660,9 @@ tools:
         - SAVEPOINT
   - name: execute_update
     title: Execute Update SQL
-    description: "Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state. Use execution_mode=preview first when the user has not explicitly approved side effects."
+    description: >-
+      Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state.
+      Use execution_mode=preview first when the user has not explicitly approved side effects.
     fields:
       - name: database
         required: true
@@ -726,7 +732,7 @@ tools:
           description: "Whether the model should ask the user before continuing."
         next_actions:
           type: array
-          description: "Ordered model-facing recommendations after preview or execution."
+          description: "Ordered structured model-facing recommendations after preview or execution."
         truncated:
           type: boolean
           description: "Whether returned rows were truncated."

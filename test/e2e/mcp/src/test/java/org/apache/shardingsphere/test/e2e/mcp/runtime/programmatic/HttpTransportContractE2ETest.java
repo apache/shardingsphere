@@ -152,6 +152,21 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
 
     @Test
+    void assertExposeExecuteUpdateOutputSchema() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId),
+                MCPHttpTransportTestSupport.createJsonRpcRequestBody("tools-list-1", "tools/list", Map.of()));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> actualResult = castToMap(parseJsonBody(actual.body()).get("result"));
+        Map<String, Object> actualTool = castToMapList(actualResult.get("tools")).stream()
+                .filter(each -> "execute_update".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
+        Map<String, Object> actualOutputProperties = castToMap(castToMap(actualTool.get("outputSchema")).get("properties"));
+        assertThat(String.valueOf(castToMap(actualOutputProperties.get("next_actions")).get("type")), is("array"));
+    }
+
+    @Test
     void assertRejectExecuteUpdateWithoutExecutionMode() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -164,6 +179,29 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> recovery = castToMap(structuredContent.get("recovery"));
         assertThat(recovery.get("category"), is("missing_execution_mode"));
         assertThat(recovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
+        Map<String, Object> retryAction = castToMapList(recovery.get("next_actions")).iterator().next();
+        assertThat(String.valueOf(retryAction.get("action_kind")), is("retry_tool"));
+        assertThat(castToMap(retryAction.get("required_arguments")), is(Map.of("execution_mode", "preview")));
+        assertTrue((Boolean) retryAction.get("requires_user_approval"));
+    }
+
+    @Test
+    void assertPreviewExecuteUpdateNextActions() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> structuredContent = getStructuredContent(actual.body());
+        assertThat(String.valueOf(structuredContent.get("result_kind")), is("PREVIEW"));
+        assertFalse((Boolean) structuredContent.get("would_execute"));
+        List<Map<String, Object>> nextActions = castToMapList(structuredContent.get("next_actions"));
+        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("action_kind"))).toList(), is(List.of("ask_user", "call_tool")));
+        Map<String, Object> callToolAction = nextActions.get(1);
+        assertThat(String.valueOf(callToolAction.get("target_tool")), is("execute_update"));
+        assertThat(String.valueOf(castToMap(callToolAction.get("required_arguments")).get("execution_mode")), is("execute"));
+        assertTrue((Boolean) callToolAction.get("requires_user_approval"));
     }
 
     @Test
@@ -195,6 +233,10 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         }
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
                 "completion-1", "completion/complete", params));
+    }
+
+    private List<Map<String, Object>> castToMapList(final Object value) {
+        return ((List<?>) value).stream().map(this::castToMap).toList();
     }
 
     @Test

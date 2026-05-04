@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
@@ -230,7 +231,8 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getWorkflowKind().getValue();
+        WorkflowKind workflowKind = snapshot.getWorkflowKind();
+        return null == workflowKind ? "" : workflowKind.getValue();
     }
     
     private static String resolveExecutionMode(final WorkflowContextSnapshot snapshot) {

@@ -8,7 +8,8 @@
 - 适用范围：ShardingSphere MCP V1
 
 ## 2. 文档目标
-- 本文档用于将前面的 PRD 和技术设计方案落到实现级别，目标是让 MCP 子系统能够直接进入开发，而不会在实现过程中因为模块结构、协议契约、测试落位或构建链不明确而返工。
+- 本文档用于将前面的 PRD 和技术设计方案落到实现级别。
+  目标是让 MCP 子系统能够直接进入开发，避免在实现过程中因为模块结构、协议契约、测试落位或构建链不明确而返工。
 - 本文档重点回答：
   - 代码模块如何组织
   - Maven / 模块 / JDK 21 子链路如何落地
@@ -654,6 +655,30 @@ apache-shardingsphere-mcp-<version>/
   - SDK provider 与 ShardingSphere glue 的职责边界已定
   - transaction matrix 存储方式已定
   - capability / `execute_query` 输入输出边界已定
+
+### 16.1 AI-Friendly 增量开工前重新取证
+
+AI-Friendly 轻量体验增量进入实现前，应先从当前代码重新确认以下事实。
+这些是实现取证点，不是需要反复向需求方澄清的问题。
+
+- 当前 MCP public surface：以 descriptor、capabilities 和 README 为准核对 tool、resource、prompt、completion 与 navigation。
+- `execute_update` preview 返回结构：先检查现有 handler 和测试，再决定补充字段或统一命名。
+- workflow preview guidance：确认 `apply_workflow` 是否能与 SQL preview 复用同一套轻量 `next_actions` 词汇。
+- 错误恢复现状：检查 missing database、missing execution mode、wrong SQL tool、unknown tool/resource 和旧 `plan_id`。
+- descriptor lint 落点：优先复用 descriptor loader 或 support 层测试，不新增复杂 lint 框架。
+- capabilities contract test：只验证 section 和 shape，不锁定大段运行时 snapshot。
+- 历史文档状态：只标注会误导当前实现契约的旧设计说明，不批量重写历史文档。
+
+### 16.2 AI-Friendly 增量不重新打开的决策
+
+除非需求方明确改变范围，以下决策不重新打开。
+
+- 不切换或创建 git 分支。
+- 不引入 heavy planner、vector memory、跨会话长期记忆或完整 auth platform。
+- 保持 resource-first 作为当前 MCP surface 的主要发现路径。
+- 先完成 P0/P1 的模型困惑和操作风险收敛，再处理 P2 便利性增强。
+- `mcp/README.md` 与 `mcp/README_ZH.md` 的当前 public surface 说明同步。
+- 真实 LLM E2E 保持 opt-in，不进入默认 CI 门禁。
 
 ## 17. 最终结论
 - 这份详细设计说明书的作用，是把前面的 PRD 与技术方案真正推进到“可以开工写代码”的状态。

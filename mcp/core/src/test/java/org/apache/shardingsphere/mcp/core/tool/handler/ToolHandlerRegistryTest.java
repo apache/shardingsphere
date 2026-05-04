@@ -63,7 +63,7 @@ class ToolHandlerRegistryTest {
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
-        assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5, 5, 3, 1)));
+        assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5, 6, 3, 1)));
     }
     
     @Test
