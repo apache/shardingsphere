@@ -22,10 +22,8 @@ import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -80,15 +78,17 @@ public final class MCPUriPattern {
     }
     
     private List<String> extractVariableNames(final String pattern, final List<String> pathSegments) {
-        Set<String> result = new LinkedHashSet<>(pathSegments.size(), 1F);
+        List<String> result = new ArrayList<>(pathSegments.size());
         for (String each : pathSegments) {
             if (!isVariableSegment(each)) {
                 continue;
             }
             String variableName = extractVariableName(pattern, each);
-            ShardingSpherePreconditions.checkState(result.add(variableName), () -> new IllegalArgumentException(String.format("Duplicate URI pattern variable `%s` in `%s`.", variableName, pattern)));
+            ShardingSpherePreconditions.checkState(!result.contains(variableName),
+                    () -> new IllegalArgumentException(String.format("Duplicate URI pattern variable `%s` in `%s`.", variableName, pattern)));
+            result.add(variableName);
         }
-        return List.copyOf(result);
+        return result;
     }
     
     private String extractVariableName(final String pattern, final String pathSegment) {

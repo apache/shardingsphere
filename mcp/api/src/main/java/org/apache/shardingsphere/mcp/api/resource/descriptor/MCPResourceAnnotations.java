@@ -37,7 +37,7 @@ public final class MCPResourceAnnotations {
     private final String lastModified;
     
     public MCPResourceAnnotations(final List<String> audience, final Double priority, final String lastModified) {
-        this.audience = null == audience ? Collections.emptyList() : List.copyOf(audience);
+        this.audience = null == audience ? Collections.emptyList() : audience;
         this.priority = priority;
         this.lastModified = lastModified;
     }

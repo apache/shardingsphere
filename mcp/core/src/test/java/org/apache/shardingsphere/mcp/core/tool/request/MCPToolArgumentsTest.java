@@ -38,7 +38,7 @@ class MCPToolArgumentsTest {
     @MethodSource("getObjectTypesCases")
     void assertGetObjectTypes(final String name, final Map<String, Object> rawArguments, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes,
                               final List<SupportedMCPMetadataObjectType> expectedObjectTypes) {
-        assertThat(List.copyOf(new MCPToolArguments(rawArguments).getObjectTypes(supportedObjectTypes)), is(expectedObjectTypes));
+        assertThat(new MCPToolArguments(rawArguments).getObjectTypes(supportedObjectTypes), is(expectedObjectTypes));
     }
     
     @ParameterizedTest(name = "{0}")

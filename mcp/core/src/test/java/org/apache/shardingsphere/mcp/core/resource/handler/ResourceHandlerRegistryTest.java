@@ -55,7 +55,6 @@ class ResourceHandlerRegistryTest {
     @Test
     void assertGetRegisteredResources() {
         assertThat(ResourceHandlerRegistry.getRegisteredResources().size(), is(18));
-        assertThrows(UnsupportedOperationException.class, () -> ResourceHandlerRegistry.getRegisteredResources().clear());
     }
     
     @Test
@@ -97,7 +96,6 @@ class ResourceHandlerRegistryTest {
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}"));
-        assertThrows(UnsupportedOperationException.class, () -> ResourceHandlerRegistry.getSupportedResources().clear());
     }
     
     private static Stream<Arguments> getRegisteredResourcesFailureCases() {

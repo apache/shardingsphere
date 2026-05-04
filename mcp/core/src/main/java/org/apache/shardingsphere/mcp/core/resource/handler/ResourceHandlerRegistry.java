@@ -32,13 +32,13 @@ import org.apache.shardingsphere.mcp.core.resource.uri.MCPUriPattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Resource handler registry.
@@ -55,8 +55,8 @@ public final class ResourceHandlerRegistry {
     static {
         REGISTERED_RESOURCES = createRegisteredResources();
         validateRegisteredResources();
-        SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).toList();
-        SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).toList();
+        SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).collect(Collectors.toList());
+        SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).collect(Collectors.toList());
     }
     
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources() {
@@ -76,7 +76,7 @@ public final class ResourceHandlerRegistry {
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
             result.put(new MCPUriPattern(uriPattern), each);
         }
-        return Collections.unmodifiableMap(result);
+        return result;
     }
     
     private static void validateRegisteredResources() {

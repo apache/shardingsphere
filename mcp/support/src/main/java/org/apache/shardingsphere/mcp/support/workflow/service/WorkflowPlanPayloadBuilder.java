@@ -67,8 +67,8 @@ public final class WorkflowPlanPayloadBuilder {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("operation_type", clarifiedIntent.getOperationType());
         result.put("field_semantics", clarifiedIntent.getFieldSemantics());
-        result.put("inferred_values", Map.copyOf(clarifiedIntent.getInferredValues()));
-        result.put("unresolved_fields", List.copyOf(clarifiedIntent.getUnresolvedFields()));
+        result.put("inferred_values", clarifiedIntent.getInferredValues());
+        result.put("unresolved_fields", clarifiedIntent.getUnresolvedFields());
         result.put("reasoning_notes", clarifiedIntent.getReasoningNotes());
         return result;
     }

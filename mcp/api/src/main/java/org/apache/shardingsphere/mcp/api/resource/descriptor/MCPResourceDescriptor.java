@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.api.resource.descriptor;
 import lombok.Getter;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,9 +56,9 @@ public final class MCPResourceDescriptor {
         this.title = title;
         this.description = description;
         this.mimeType = mimeType;
-        this.parameters = null == parameters ? Collections.emptyList() : List.copyOf(parameters);
+        this.parameters = null == parameters ? Collections.emptyList() : parameters;
         this.annotations = null == annotations ? MCPResourceAnnotations.EMPTY : annotations;
-        this.meta = null == meta ? Collections.emptyMap() : Collections.unmodifiableMap(new LinkedHashMap<>(meta));
+        this.meta = null == meta ? Collections.emptyMap() : meta;
     }
     
     /**

@@ -33,12 +33,12 @@ import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerLoader;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Tool handler registry.
@@ -48,14 +48,14 @@ public final class ToolHandlerRegistry {
     
     private static final Map<String, MCPToolHandler<?>> REGISTERED_TOOL_HANDLERS;
     
-    private static final List<String> SUPPORTED_TOOLS;
+    private static final Collection<String> SUPPORTED_TOOLS;
     
     private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS;
     
     static {
         REGISTERED_TOOL_HANDLERS = createRegisteredTools();
-        SUPPORTED_TOOLS = List.copyOf(REGISTERED_TOOL_HANDLERS.keySet());
-        SUPPORTED_TOOL_DESCRIPTORS = REGISTERED_TOOL_HANDLERS.values().stream().map(MCPToolHandler::getToolDescriptor).toList();
+        SUPPORTED_TOOLS = REGISTERED_TOOL_HANDLERS.keySet();
+        SUPPORTED_TOOL_DESCRIPTORS = REGISTERED_TOOL_HANDLERS.values().stream().map(MCPToolHandler::getToolDescriptor).collect(Collectors.toList());
     }
     
     private static Map<String, MCPToolHandler<?>> createRegisteredTools() {
@@ -77,7 +77,7 @@ public final class ToolHandlerRegistry {
             ShardingSpherePreconditions.checkState(null == previousHandler, () -> new IllegalArgumentException(
                     String.format("Duplicate tool name `%s` with `%s` and `%s`.", toolName, previousHandler.getClass().getName(), each.getClass().getName())));
         }
-        return Collections.unmodifiableMap(result);
+        return result;
     }
     
     /**
@@ -85,7 +85,7 @@ public final class ToolHandlerRegistry {
      *
      * @return supported tools
      */
-    public static List<String> getSupportedTools() {
+    public static Collection<String> getSupportedTools() {
         return SUPPORTED_TOOLS;
     }
     

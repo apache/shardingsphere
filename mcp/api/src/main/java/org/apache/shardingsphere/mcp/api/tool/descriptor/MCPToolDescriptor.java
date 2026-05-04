@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.api.tool.descriptor;
 import lombok.Getter;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,9 +52,9 @@ public final class MCPToolDescriptor {
         this.name = name;
         this.title = title;
         this.description = description;
-        this.fields = null == fields ? Collections.emptyList() : List.copyOf(fields);
-        this.outputSchema = null == outputSchema ? Collections.emptyMap() : Collections.unmodifiableMap(new LinkedHashMap<>(outputSchema));
+        this.fields = null == fields ? Collections.emptyList() : fields;
+        this.outputSchema = null == outputSchema ? Collections.emptyMap() : outputSchema;
         this.annotations = null == annotations ? MCPToolAnnotations.EMPTY : annotations;
-        this.meta = null == meta ? Collections.emptyMap() : Collections.unmodifiableMap(new LinkedHashMap<>(meta));
+        this.meta = null == meta ? Collections.emptyMap() : meta;
     }
 }

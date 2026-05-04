@@ -104,11 +104,11 @@ public final class MCPDescriptorCatalogLoader {
     }
     
     private static List<MCPResourceParameterDescriptor> swapResourceParameters(final Collection<YamlMCPResourceParameterDescriptor> yamlParameters) {
-        Collection<MCPResourceParameterDescriptor> result = new LinkedList<>();
+        List<MCPResourceParameterDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceParameterDescriptor each : emptyIfNull(yamlParameters)) {
             result.add(new MCPResourceParameterDescriptor(each.getName(), each.getTitle(), each.getDescription(), each.isRequired(), each.getScope()));
         }
-        return List.copyOf(result);
+        return result;
     }
     
     private static MCPResourceAnnotations swapResourceAnnotations(final YamlMCPResourceAnnotations yamlAnnotations) {
@@ -126,11 +126,11 @@ public final class MCPDescriptorCatalogLoader {
     }
     
     private static List<MCPToolFieldDefinition> swapToolFields(final Collection<YamlMCPToolFieldDefinition> yamlFields) {
-        Collection<MCPToolFieldDefinition> result = new LinkedList<>();
+        List<MCPToolFieldDefinition> result = new LinkedList<>();
         for (YamlMCPToolFieldDefinition each : emptyIfNull(yamlFields)) {
             result.add(new MCPToolFieldDefinition(each.getName(), swapValueDefinition(each.getValueDefinition()), each.isRequired()));
         }
-        return List.copyOf(result);
+        return result;
     }
     
     private static MCPToolValueDefinition swapValueDefinition(final YamlMCPToolValueDefinition yamlValueDefinition) {

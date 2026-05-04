@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,13 +36,13 @@ import java.util.Map;
 @Getter
 public final class MCPDescriptorCatalog {
     
-    private final List<MCPResourceDescriptor> resourceDescriptors;
+    private final Collection<MCPResourceDescriptor> resourceDescriptors;
     
-    private final List<MCPToolDescriptor> toolDescriptors;
+    private final Collection<MCPToolDescriptor> toolDescriptors;
     
     public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors) {
-        this.resourceDescriptors = null == resourceDescriptors ? Collections.emptyList() : List.copyOf(resourceDescriptors);
-        this.toolDescriptors = null == toolDescriptors ? Collections.emptyList() : List.copyOf(toolDescriptors);
+        this.resourceDescriptors = null == resourceDescriptors ? Collections.emptyList() : resourceDescriptors;
+        this.toolDescriptors = null == toolDescriptors ? Collections.emptyList() : toolDescriptors;
     }
     
     /**
@@ -56,9 +55,9 @@ public final class MCPDescriptorCatalog {
      */
     public Map<String, Object> toPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         Map<String, Object> result = new LinkedHashMap<>(12, 1F);
-        result.put("supportedResources", List.copyOf(supportedResources));
-        result.put("supportedTools", List.copyOf(supportedTools));
-        result.put("supportedStatementClasses", List.copyOf(supportedStatements));
+        result.put("supportedResources", supportedResources);
+        result.put("supportedTools", supportedTools);
+        result.put("supportedStatementClasses", supportedStatements);
         result.put("resources", resourceDescriptors.stream().filter(each -> !each.isTemplated()).map(this::toResourcePayload).toList());
         result.put("resourceTemplates", resourceDescriptors.stream().filter(MCPResourceDescriptor::isTemplated).map(this::toResourcePayload).toList());
         result.put("tools", toolDescriptors.stream().map(this::toToolPayload).toList());

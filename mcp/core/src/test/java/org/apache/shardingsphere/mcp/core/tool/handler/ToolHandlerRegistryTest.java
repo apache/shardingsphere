@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -55,8 +56,7 @@ class ToolHandlerRegistryTest {
     
     @Test
     void assertGetSupportedTools() {
-        assertThat(ToolHandlerRegistry.getSupportedTools(), is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
-        assertThrows(UnsupportedOperationException.class, () -> ToolHandlerRegistry.getSupportedTools().add("new_tool"));
+        assertThat(ToolHandlerRegistry.getSupportedTools(), contains("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow"));
     }
     
     @Test
@@ -64,7 +64,6 @@ class ToolHandlerRegistryTest {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
         assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5, 5, 3, 1)));
-        assertThrows(UnsupportedOperationException.class, () -> ToolHandlerRegistry.getSupportedToolDescriptors().clear());
     }
     
     @Test

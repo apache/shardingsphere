@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.support.distribution;
 
+import lombok.Getter;
 import org.apache.shardingsphere.test.e2e.mcp.support.distribution.PackagedDistributionTestSupport.PreparedPackagedDistribution;
 
 import java.io.BufferedReader;
@@ -57,6 +58,7 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
     
     private final String outputCollectorThreadName;
     
+    @Getter
     private final List<String> outputMessages = new CopyOnWriteArrayList<>();
     
     private Process process;
@@ -129,10 +131,6 @@ public final class PackagedDistributionProcessSupport implements AutoCloseable {
     
     public boolean isAlive() {
         return null != process && process.isAlive();
-    }
-    
-    public List<String> getOutputMessages() {
-        return List.copyOf(outputMessages);
     }
     
     @Override

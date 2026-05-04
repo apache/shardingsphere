@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,9 +58,8 @@ class MCPHandlerLoaderTest {
         when(provider.getResourceHandlers()).thenReturn(resourceHandlers);
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
-            List<MCPResourceHandler<?>> actual = List.copyOf(MCPHandlerLoader.loadResourceHandlers());
+            Collection<MCPResourceHandler<?>> actual = MCPHandlerLoader.loadResourceHandlers();
             assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriPattern()).toList(), is(List.of("shardingsphere://foo")));
-            assertThrows(UnsupportedOperationException.class, () -> MCPHandlerLoader.loadResourceHandlers().clear());
         }
     }
     

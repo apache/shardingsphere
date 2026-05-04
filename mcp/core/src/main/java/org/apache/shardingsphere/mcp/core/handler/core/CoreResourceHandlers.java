@@ -102,7 +102,7 @@ final class CoreResourceHandlers {
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryIndex(
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("index")))));
-        return List.copyOf(result);
+        return result;
     }
     
     private static List<?> singletonOrEmpty(final Optional<?> metadata) {

@@ -26,10 +26,8 @@ import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowDefinitionP
 import org.apache.shardingsphere.mcp.support.workflow.spi.WorkflowRuntimeDefinition;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -60,7 +58,7 @@ public final class WorkflowRuntimeDefinitionRegistry {
                     () -> new IllegalArgumentException(String.format("Duplicate workflow kind `%s` with `%s` and `%s`.",
                             workflowKind.getValue(), previousDefinition.getClass().getName(), each.getClass().getName())));
         }
-        return Collections.unmodifiableMap(result);
+        return result;
     }
     
     /**
@@ -79,14 +77,14 @@ public final class WorkflowRuntimeDefinitionRegistry {
                 result.addAll(createDefinitions((MCPWorkflowDefinitionProvider) each));
             }
         }
-        return List.copyOf(result);
+        return result;
     }
     
     private static Collection<WorkflowRuntimeDefinition> createDefinitions(final MCPWorkflowDefinitionProvider workflowDefinitionProvider) {
         final Collection<WorkflowRuntimeDefinition> result = Objects.requireNonNull(workflowDefinitionProvider.getWorkflowDefinitions(),
                 () -> String.format("Workflow definitions are required for `%s`.", workflowDefinitionProvider.getClass().getName()));
         result.forEach(each -> Objects.requireNonNull(each, () -> String.format("Workflow definition is required for `%s`.", workflowDefinitionProvider.getClass().getName())));
-        return List.copyOf(result);
+        return result;
     }
     
     /**

@@ -29,12 +29,10 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Workflow guidance payload builder.
@@ -107,10 +105,14 @@ public final class WorkflowGuidancePayloadBuilder {
     }
     
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
-        Set<String> result = new LinkedHashSet<>();
+        List<String> result = new LinkedList<>();
         ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
         if (null != clarifiedIntent) {
-            result.addAll(clarifiedIntent.getUnresolvedFields());
+            for (String each : clarifiedIntent.getUnresolvedFields()) {
+                if (!result.contains(each)) {
+                    result.add(each);
+                }
+            }
         }
         for (WorkflowIssue each : snapshot.getIssues()) {
             addMissingInputsFromIssue(result, each);
@@ -118,17 +120,20 @@ public final class WorkflowGuidancePayloadBuilder {
         if (result.isEmpty() && null != clarifiedIntent && !clarifiedIntent.getPendingQuestions().isEmpty()) {
             result.add("user_clarification");
         }
-        return List.copyOf(result);
+        return result;
     }
     
     private static void addMissingInputsFromIssue(final Collection<String> result, final WorkflowIssue issue) {
-        if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode())) {
+        if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !result.contains("database")) {
             result.add("database");
         }
         Object missingProperties = issue.getDetails().get("missing_properties");
         if (missingProperties instanceof Collection) {
             for (Object each : (Collection<?>) missingProperties) {
-                result.add(String.format("algorithm_properties.%s", each));
+                String missingInput = String.format("algorithm_properties.%s", each);
+                if (!result.contains(missingInput)) {
+                    result.add(missingInput);
+                }
             }
         }
     }

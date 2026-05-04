@@ -26,7 +26,6 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -45,7 +44,7 @@ public final class MCPHandlerLoader {
         for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
             result.addAll(createToolHandlers(each));
         }
-        return List.copyOf(result);
+        return result;
     }
     
     /**
@@ -58,7 +57,7 @@ public final class MCPHandlerLoader {
         for (MCPHandlerProvider each : ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)) {
             result.addAll(createResourceHandlers(each));
         }
-        return List.copyOf(result);
+        return result;
     }
     
     static Collection<MCPToolHandler<?>> createToolHandlers(final MCPHandlerProvider provider) {
@@ -66,7 +65,7 @@ public final class MCPHandlerLoader {
                 () -> String.format("Tool handlers are required for `%s`.", provider.getClass().getName()));
         handlers.forEach(each -> Objects.requireNonNull(each,
                 () -> String.format("Tool handler is required for `%s`.", provider.getClass().getName())));
-        return List.copyOf(handlers);
+        return handlers;
     }
     
     static Collection<MCPResourceHandler<?>> createResourceHandlers(final MCPHandlerProvider provider) {
@@ -74,6 +73,6 @@ public final class MCPHandlerLoader {
                 () -> String.format("Resource handlers are required for `%s`.", provider.getClass().getName()));
         handlers.forEach(each -> Objects.requireNonNull(each,
                 () -> String.format("Resource handler is required for `%s`.", provider.getClass().getName())));
-        return List.copyOf(handlers);
+        return handlers;
     }
 }

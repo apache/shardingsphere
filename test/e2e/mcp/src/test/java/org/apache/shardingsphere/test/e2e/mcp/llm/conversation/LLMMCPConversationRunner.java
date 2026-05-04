@@ -501,7 +501,7 @@ public final class LLMMCPConversationRunner {
         
         private LLME2EArtifactBundle createArtifactBundle(final LLME2EScenario scenario, final LLME2EAssertionReport assertionReport) {
             return new LLME2EArtifactBundle(scenario.getScenarioId(), scenario.getSystemPrompt(), scenario.getUserPrompt(), finalAnswerJson,
-                    List.copyOf(rawModelOutputs), List.copyOf(interactionTrace), List.copyOf(mcpRuntimeLogLines), assertionReport);
+                    rawModelOutputs, interactionTrace, mcpRuntimeLogLines, assertionReport);
         }
     }
 }

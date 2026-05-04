@@ -52,7 +52,7 @@ public final class MCPToolSpecificationFactory {
      * @param runtimeContext runtime context
      */
     public MCPToolSpecificationFactory(final MCPRuntimeContext runtimeContext) {
-        toolDescriptors = List.copyOf(ToolHandlerRegistry.getSupportedToolDescriptors());
+        toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
         toolController = new MCPToolController(runtimeContext);
     }
     

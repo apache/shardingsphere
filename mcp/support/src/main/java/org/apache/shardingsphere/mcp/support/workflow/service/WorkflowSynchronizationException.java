@@ -35,6 +35,6 @@ public final class WorkflowSynchronizationException extends RuntimeException {
     public WorkflowSynchronizationException(final String issueCode, final String message, final List<Map<String, Object>> mismatches) {
         super(message);
         this.issueCode = issueCode;
-        this.mismatches = List.copyOf(mismatches);
+        this.mismatches = mismatches;
     }
 }

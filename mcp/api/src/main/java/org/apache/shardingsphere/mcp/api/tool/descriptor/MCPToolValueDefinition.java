@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,8 +56,8 @@ public final class MCPToolValueDefinition {
         this.type = type;
         this.description = description;
         this.itemDefinition = itemDefinition;
-        this.enumValues = null == enumValues ? Collections.emptyList() : List.copyOf(enumValues);
-        this.objectProperties = null == objectProperties ? Collections.emptyList() : List.copyOf(objectProperties);
+        this.enumValues = null == enumValues ? Collections.emptyList() : enumValues;
+        this.objectProperties = null == objectProperties ? Collections.emptyList() : objectProperties;
         this.additionalProperties = additionalProperties;
     }
     
