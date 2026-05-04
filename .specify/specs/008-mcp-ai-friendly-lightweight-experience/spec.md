@@ -20,12 +20,17 @@
 The following items are not open product questions. They are evidence-gathering gates that implementation work must answer from current code:
 
 - Current MCP public surface from descriptors, capabilities, and README, so docs do not name absent tools or resources.
-- Current `execute_update` preview response shape in handler and tests before adding or renaming guidance fields.
-- Current workflow preview guidance shape before sharing next-action vocabulary with SQL preview.
+- Current `next_actions`, recommended-tool, user-approval, SQL preview, and workflow preview response shapes before adding or renaming guidance fields.
+- Current `search_metadata` result builder, supported hit types, descriptor-backed URI patterns, and non-derivable cases before adding direct URI hints.
+- Current real payloads, status values, enum casing, required fields, and descriptor schemas for the seven core tools before schema alignment.
 - Current recovery behavior for missing database, missing execution mode, wrong SQL tool, unknown tool/resource, and unavailable `plan_id`.
 - Minimal descriptor lint placement in existing descriptor loader or support-layer tests.
 - Capabilities contract boundary that verifies section and shape without large snapshots.
+- P1/P2 feasibility from existing workflow session context, metadata resources, completion handlers, algorithm descriptors, startup logging, and config binding.
 - Historical document status risk, limited to documents that could mislead readers about the current contract.
+
+Each re-analysis result MUST record current behavior evidence, minimal affected paths, planned verification, explicit non-goals,
+and rollback boundary before implementation starts.
 
 ### Does not need user clarification
 
@@ -40,7 +45,7 @@ These decisions remain fixed unless the user explicitly changes scope:
 
 ## User Scenarios & Testing *(mandatory)*
 
-### User Story 1 - Model sees the current MCP surface consistently (Priority: P1)
+### User Story 1 - Model sees the current MCP surface consistently (Priority: P0)
 
 As an MCP model-facing client or documentation reader, I want README, descriptors, and capabilities to describe the same public MCP surface
 so that the model does not choose tools that are only present in old design documents.
@@ -59,7 +64,7 @@ The current implementation is resource-first, so the public contract must consis
 
 ---
 
-### User Story 2 - Model safely handles side-effecting actions (Priority: P1)
+### User Story 2 - Model safely handles side-effecting actions (Priority: P0)
 
 As an operator using an LLM with ShardingSphere MCP, I want side-effecting SQL and workflow apply actions to be previewed before execution
 so that the model cannot silently mutate data, rules, or physical structure.
@@ -79,7 +84,7 @@ approval guidance, side-effect scope, and a structured next action. Verify workf
 
 ---
 
-### User Story 3 - Model repairs common mistakes from structured recovery (Priority: P1)
+### User Story 3 - Model repairs common mistakes from structured recovery (Priority: P0)
 
 As a model using MCP tools, I want common call-shape mistakes to return structured recovery fields so that I can safely retry without guessing hidden values.
 
@@ -97,7 +102,7 @@ As a model using MCP tools, I want common call-shape mistakes to return structur
 
 ---
 
-### User Story 4 - Model follows short task paths and examples (Priority: P2)
+### User Story 4 - Model follows short task paths and examples (Priority: P1)
 
 As a model or model integrator, I want compact examples and short first-use paths so that I can use metadata inspection, safe SQL, and encrypt or mask workflow without reading long design documents.
 
@@ -114,7 +119,7 @@ As a model or model integrator, I want compact examples and short first-use path
 
 ---
 
-### User Story 5 - Maintainers catch model-surface regressions early (Priority: P2)
+### User Story 5 - Maintainers catch model-surface regressions early (Priority: P0)
 
 As a maintainer, I want lightweight descriptor lint and a capabilities contract test so that model-facing metadata does not silently regress.
 
@@ -138,50 +143,75 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - A workflow plan exists in another MCP session.
 - A result list is large enough that pagination hints matter.
 - Prompt text and descriptor text drift over time.
+- A metadata search hit cannot safely derive a detail resource URI.
+- A descriptor schema remains syntactically valid but no longer matches the real payload.
+- HTTP mode starts with a bearer token, but the client omits it.
+- STDIO mode emits logs to stdout and pollutes the MCP protocol stream.
 - A future public config or file resource would require roots or permission-boundary metadata.
 
 ## Requirements *(mandatory)*
 
 ### Functional Requirements
 
-- **FR-001**: README, descriptor, and capabilities documentation MUST describe the same current public MCP tools and resource-first metadata path.
-- **FR-002**: Historical PRD, technical design, or previous spec documents that retain obsolete tool lists SHOULD be marked as historical design, current contract, or future planning.
-- **FR-003**: Model-facing guidance SHOULD describe three short first-use paths: metadata inspection, safe SQL execution, and encrypt or mask workflow.
-- **FR-004**: `next_actions` SHOULD be the primary structured field for follow-up guidance.
-- **FR-005**: Each structured next action SHOULD include `action_kind`, `reason`, and `requires_user_approval`.
-- **FR-006**: Tool-call next actions SHOULD include `target_tool` and `required_arguments`.
-- **FR-007**: Ask-user next actions SHOULD include `required_inputs`.
-- **FR-008**: The project SHOULD converge on one preferred field name for the single recommended next tool and avoid adding more equivalent names.
-- **FR-009**: `execute_update` preview MUST return reusable `suggested_arguments` that include normalized SQL and the execution mode needed for an approved follow-up.
-- **FR-010**: `execute_update` preview MUST state that user approval is required before execution.
-- **FR-011**: `apply_workflow` preview SHOULD use the same next-action vocabulary as SQL preview where practical.
-- **FR-012**: Missing `database` recovery MUST include missing field metadata and a safe resource to read first.
-- **FR-013**: Missing `execution_mode` recovery MUST recommend `execution_mode=preview`.
-- **FR-014**: Wrong SQL tool recovery MUST preserve preview and user approval semantics.
-- **FR-015**: Unsupported tool and unsupported resource recovery SHOULD recommend `shardingsphere://capabilities`.
-- **FR-016**: Unavailable workflow plan recovery SHOULD recommend replanning in the current MCP session.
-- **FR-017**: Complex tool descriptors or documentation SHOULD include compact output examples for `execute_update` preview,
-  `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow` preview, and `validate_workflow`.
-- **FR-018**: Examples MUST be static, small, secret-free, and free of production database names or environment-specific paths.
-- **FR-019**: Descriptor lint SHOULD reject empty descriptions, placeholder descriptions, missing side-effect metadata for side-effecting tools,
-  missing enum value sets, missing core output schema fields, and broken navigation references.
-- **FR-020**: A lightweight capabilities contract test SHOULD assert the presence of resources, resource templates, tools, prompts,
-  completion targets, navigation, protocol availability, and fingerprints.
-- **FR-021**: Capabilities contract tests MUST avoid locking large runtime data or requiring real model services.
-- **FR-022**: The LLM usability suite SHOULD add minimal scenarios for side-effect SQL preview and plan-to-apply-preview-to-validate workflow order while remaining opt-in.
-- **FR-023**: Completion ranking MAY prefer candidates with stronger supplied context, such as database/schema for tables and database/schema/table for columns.
-- **FR-024**: Completion ranking MUST NOT use vector search, model calls, cross-session memory, or user behavior learning in this increment.
-- **FR-025**: Metadata responses MAY expose a lightweight freshness hint such as `metadata_fingerprint` or `loaded_at`.
-- **FR-026**: Documentation SHOULD cover common first-run failures: Java version, missing JDBC driver, HTTP token, STDIO stdout logging, and empty tool or resource discovery.
-- **FR-027**: Encrypt and mask workflow documentation MUST state that workflow tools do not migrate existing data, backfill data, or approve production changes for the user.
-- **FR-028**: Requirement analysis and resulting specification updates MUST be completed without branch creation or branch switching.
+#### P0 - must finish first
+
+- **FR-001**: README, descriptor, capabilities, and easily discovered design documents MUST distinguish current implementation contract from historical design.
+- **FR-002**: `shardingsphere://capabilities` MUST remain the single best current public surface entry point for resources, templates, tools, prompts, completions, navigation, and fingerprints.
+- **FR-003**: `mcp/README.md` and `mcp/README_ZH.md` MUST list only descriptor-backed public tools and MUST NOT present a full `list_*` or `describe_*` matrix as implemented.
+- **FR-004**: Historical PRD, technical design, or previous spec documents that retain obsolete tool lists SHOULD be marked as historical design, current contract, or future planning.
+- **FR-005**: `next_actions` SHOULD be the primary structured field for follow-up guidance.
+- **FR-006**: Each next action SHOULD include `action_kind`, `reason`, and `requires_user_approval`.
+- **FR-007**: Tool-call next actions SHOULD include `target_tool` and `required_arguments`; resource-read next actions SHOULD include `target_resource`.
+- **FR-008**: Ask-user next actions SHOULD include `required_inputs`.
+- **FR-009**: The single recommended-next-tool field SHOULD converge to one preferred name instead of growing more equivalent aliases.
+- **FR-010**: Preview responses MUST return reusable follow-up arguments when the server can safely provide them.
+- **FR-011**: `execute_update` preview MUST state user approval is required before execution.
+- **FR-012**: `search_metadata` hits SHOULD include direct `resource_uri` values when they can be safely derived from descriptor-backed resource patterns.
+- **FR-013**: `search_metadata` hits SHOULD include parent or next-hop resource URIs when they can be safely derived, and MUST avoid guessed URIs.
+- **FR-014**: Output schemas MUST match real payloads for `search_metadata`, `execute_query`, `execute_update`, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, and `validate_workflow`.
+- **FR-015**: Output schemas SHOULD explain common states such as `preview`, `error`, `clarifying`, `planned`, `completed`, and `failed` through fields or compact examples.
+- **FR-016**: Missing `database` recovery MUST include missing field metadata and recommend reading `shardingsphere://databases`.
+- **FR-017**: Missing `execution_mode` recovery MUST recommend `execution_mode=preview`.
+- **FR-018**: Wrong SQL tool recovery MUST recommend `execute_update` preview and preserve user approval semantics.
+- **FR-019**: Unsupported tool or resource recovery SHOULD recommend reading `shardingsphere://capabilities`.
+- **FR-020**: Unavailable workflow plan recovery SHOULD recommend current-session plan lookup or replanning.
+- **FR-021**: Recovery next steps SHOULD reuse the next-action shape from FR-005 through FR-008.
+- **FR-022**: Descriptor lint SHOULD reject empty descriptions, placeholder descriptions, missing side-effect or approval metadata,
+  missing enum values, missing core output fields, and broken navigation references.
+- **FR-023**: A lightweight capabilities contract test SHOULD assert core section presence and shape without large snapshots or real-model services.
+- **FR-024**: Requirement analysis and resulting specification updates MUST be completed without branch creation or branch switching.
+- **FR-025**: P0 implementation MUST NOT start until code re-analysis records current behavior evidence, affected paths, verification mapping, non-goals, and rollback boundary.
+
+#### P1 - high-value lightweight improvements
+
+- **FR-101**: Current-session workflow recovery MAY expose a lightweight plan lookup with `plan_id`, `workflow_kind`, `status`, `current_step`, `updated_at`, artifacts summary, and next actions.
+- **FR-102**: Metadata resources SHOULD return lightweight navigation fields such as `self_uri`, `parent_uri`, `count`, and safe `next_resources` where practical.
+- **FR-103**: Complex tools SHOULD provide compact examples for `execute_update` preview, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow` preview, and `validate_workflow`.
+- **FR-104**: Examples MUST be static, small, secret-free, and free of production database names or environment-specific paths.
+- **FR-105**: Completion ranking MAY prefer stronger supplied context, such as database/schema for tables and database/schema/table for columns.
+- **FR-106**: Completion ranking MUST NOT use vector search, model calls, cross-session memory, or user behavior learning in this increment.
+- **FR-107**: Encrypt and mask algorithm resources SHOULD expose required properties, optional properties, defaults, secret flags, and capability hints where available.
+- **FR-108**: Metadata responses MAY expose `metadata_fingerprint` or `loaded_at` so a model can compare whether responses came from the same loaded context.
+
+#### P2 - later comfort improvements
+
+- **FR-201**: Startup output SHOULD make HTTP endpoint, config path, log path, runtime database count, STDIO logging rules, and access token expectations clear.
+- **FR-202**: Sensitive configuration SHOULD support environment variable references for HTTP access token and runtime database password without introducing a full secret manager.
+- **FR-203**: Documentation SHOULD cover Java version, missing JDBC driver, HTTP token, STDIO stdout logging, empty discovery results, and workflow topology mistakes.
+- **FR-204**: The opt-in LLM usability suite SHOULD add minimal scenarios for SQL preview, metadata search to detail URI, and plan-to-apply-preview-to-validate order.
+- **FR-205**: Real-model LLM usability tests MUST remain opt-in and outside default CI.
 
 ### Key Entities
 
 - **Current MCP Surface**: The protocol-visible set of public resources, resource templates, tools, prompts, completions, navigation entries, annotations, and schemas.
+- **Implementation Analysis Note**: A short pre-implementation evidence record with current behavior, inspected paths, affected paths,
+  verification mapping, non-goals, and rollback boundary.
 - **Next Action**: A structured model-facing recommendation that tells the model whether to call a tool, read a resource, ask the user, or stop.
+- **Resource URI Hint**: A descriptor-backed URI returned by metadata search or metadata resources so the model can read the next resource without manual URI construction.
+- **Output Schema Contract**: A compact contract that aligns model-visible schema fields, enum values, required fields, and common states with real tool responses.
 - **Recovery Envelope**: Structured metadata attached to recoverable errors that tells a model how to retry safely.
 - **Capabilities Core Contract**: A small deterministic assertion set for `shardingsphere://capabilities`, focused on section presence and shape rather than large payload snapshots.
+- **Descriptor Lint Rule**: A deterministic check that protects model-facing descriptor quality without using real model calls or natural-language scoring.
 - **Compact Example**: A small static JSON shape used to teach complex tool output without leaking secrets or environment details.
 - **Workflow Plan Summary**: A current-session summary of workflow plan identity, kind, status, update time, artifact summary, and next action if a lightweight workflow query resource is implemented.
 
@@ -190,13 +220,16 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 ### Measurable Outcomes
 
 - **SC-001**: A reviewer can compare README public tool lists with descriptor-backed capabilities and find no current-surface mismatch.
-- **SC-002**: Common mistake tests prove structured recovery for missing database, missing execution mode, wrong SQL tool, unknown resource or tool, and unavailable plan id.
-- **SC-003**: SQL preview responses include reusable suggested arguments and explicit user-approval guidance.
-- **SC-004**: Descriptor lint catches at least empty descriptions, placeholder descriptions, side-effect metadata omissions, missing enum values,
+- **SC-002**: `search_metadata` results expose direct resource URIs for safely derivable metadata hits.
+- **SC-003**: Output schemas for the seven core tools match real payload fields, states, and enum values.
+- **SC-004**: Common mistake tests prove structured recovery for missing database, missing execution mode, wrong SQL tool, unknown resource or tool, and unavailable plan id.
+- **SC-005**: SQL preview responses include reusable suggested arguments and explicit user-approval guidance.
+- **SC-006**: Descriptor lint catches at least empty descriptions, placeholder descriptions, side-effect metadata omissions, missing enum values,
   missing core output fields, and broken navigation references.
-- **SC-005**: A capabilities contract test runs without real-model credentials and verifies the core model-facing sections.
-- **SC-006**: README or prompt guidance contains short paths for metadata inspection, safe SQL execution, and encrypt or mask workflow.
-- **SC-007**: This Spec Kit package is created on the existing branch with no branch creation or branch switching.
+- **SC-007**: A capabilities contract test runs without real-model credentials and verifies the core model-facing sections.
+- **SC-008**: README or prompt guidance contains short paths for metadata inspection, safe SQL execution, and encrypt or mask workflow.
+- **SC-009**: Implementation planning contains traceable code evidence, affected paths, verification mapping, non-goals, and rollback boundary for each P0 item.
+- **SC-010**: This Spec Kit package is updated on the existing branch with no branch creation or branch switching.
 
 ## Assumptions
 

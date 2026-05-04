@@ -11,10 +11,37 @@ git status --short
 
 Expected result:
 
-- Branch remains `001-shardingsphere-mcp`.
+- Branch remains the current working branch.
 - No branch switch or branch creation is required.
 
-## 2. Check current public surface
+For documentation-only requirement updates, also run:
+
+```bash
+git diff --check -- .specify/specs/008-mcp-ai-friendly-lightweight-experience docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md
+```
+
+Expected result:
+
+- No whitespace errors.
+- Only the intended Spec Kit and MCP requirement documents are changed.
+
+## 2. Confirm Phase 0 analysis notes
+
+Before implementation starts for a P0 slice, confirm the analysis note records:
+
+- Current behavior evidence.
+- Inspected descriptor, handler, resource, workflow, completion, test, or README paths.
+- Minimal affected paths.
+- Verification map.
+- Explicit non-goals.
+- Rollback boundary.
+
+Expected result:
+
+- The implementation slice does not start from requirement text alone.
+- Code facts that conflict with the requirement are resolved in docs or design before coding.
+
+## 3. Check current public surface
 
 Build or run an MCP test fixture, then read capabilities:
 
@@ -33,7 +60,7 @@ Expected model-facing sections in `shardingsphere://capabilities`:
 - `protocolAvailability`
 - `fingerprints`
 
-## 3. Validate documentation consistency
+## 4. Validate documentation consistency
 
 Compare the public tool list in:
 
@@ -49,7 +76,7 @@ Expected result:
 - README lists only tools exposed by descriptors and capabilities.
 - Old PRD-only tool names are not presented as the current implementation contract.
 
-## 4. Validate side-effect SQL guidance
+## 5. Validate side-effect SQL guidance
 
 Call `execute_update` with `execution_mode=preview` for one supported side-effecting statement.
 
@@ -61,7 +88,34 @@ Expected result:
 - Response contains reusable `suggested_arguments`.
 - Response tells the model to ask the user before executing.
 
-## 5. Validate common recovery paths
+## 6. Validate metadata URI hints
+
+Call `search_metadata` for a known logical table, column, index, view, or sequence.
+
+Expected result:
+
+- Each safely derivable hit includes `resource_uri`.
+- Parent or next-hop URIs are included only when they can be derived from descriptor-backed patterns.
+- The response does not invent physical object names, secrets, or guessed paths.
+
+## 7. Validate output schema alignment
+
+Compare descriptor-visible schemas with real responses for:
+
+- `search_metadata`
+- `execute_query`
+- `execute_update`
+- `plan_encrypt_rule`
+- `plan_mask_rule`
+- `apply_workflow`
+- `validate_workflow`
+
+Expected result:
+
+- Field names, enum casing, required fields, nested objects, and common states match the real payloads.
+- Complex states are explained by schema fields or compact examples.
+
+## 8. Validate common recovery paths
 
 Trigger the following errors:
 
@@ -77,7 +131,7 @@ Expected result:
 - Recovery never invents hidden values or secrets.
 - Side-effect recovery recommends preview and preserves approval semantics.
 
-## 6. Validate descriptor quality
+## 9. Validate descriptor quality
 
 Run the descriptor lint tests after implementation.
 
@@ -90,7 +144,7 @@ Expected checks:
 - Core output schemas keep key fields.
 - Navigation entries resolve to public identifiers.
 
-## 7. Validate lightweight contract and optional LLM scenarios
+## 10. Validate lightweight contract and optional LLM scenarios
 
 Run deterministic contract tests first:
 
@@ -108,3 +162,21 @@ Expected result:
 
 - Deterministic tests do not require model credentials.
 - Real-model tests remain opt-in.
+
+## 11. Validate P1/P2 only after P0
+
+P1 validation should be added only when each P1 item is implemented:
+
+- Current-session workflow plan lookup returns only current-session plans.
+- Metadata resources expose lightweight navigation without a graph engine.
+- Complex tool examples are static and secret-free.
+- Completion ordering improves with supplied context without model calls or vector search.
+- Algorithm resources expose property templates without requiring a workflow plan first.
+- Metadata freshness hints are present without adding active refresh.
+
+P2 validation should be added only when each P2 item is implemented:
+
+- Startup output clarifies HTTP, STDIO, token, config, log, and database-count expectations.
+- Environment variable references resolve or fail with clear messages.
+- Troubleshooting docs cover first-run failures.
+- LLM usability scenarios remain opt-in.

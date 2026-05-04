@@ -574,7 +574,46 @@ tools:
       properties:
         items:
           type: array
-          description: "Matched metadata objects with logical path fields and object type."
+          description: "Matched metadata objects with logical path fields, object type, and direct resource navigation hints when derivable."
+          items:
+            type: object
+            description: "One metadata search hit."
+            properties:
+              database:
+                type: string
+                description: "ShardingSphere logical database that owns the metadata object."
+              schema:
+                type: string
+                description: "Schema or namespace for schema-scoped metadata objects."
+              objectType:
+                type: string
+                description: "Matched metadata object type: database, schema, table, view, column, index, or sequence."
+              table:
+                type: string
+                description: "Parent logical table for table, table column, and index hits."
+              view:
+                type: string
+                description: "Parent logical view for view and view column hits."
+              name:
+                type: string
+                description: "Matched metadata object name."
+              resource_uri:
+                type: string
+                description: "Direct resources/read URI for this hit when the metadata names map safely to a descriptor resource pattern."
+              parent_resource_uri:
+                type: string
+                description: "Nearest list resource URI that contains this hit when derivable."
+              next_resource_uris:
+                type: array
+                description: "Likely child or detail resource URIs to read next from this hit."
+                items:
+                  type: string
+              derivation_status:
+                type: string
+                description: "URI derivation status, either derived or not_safe_to_derive."
+              derivation_reason:
+                type: string
+                description: "Reason resource_uri could not be safely derived."
         next_page_token:
           type: string
           description: "Opaque token for the next result page when more items exist."

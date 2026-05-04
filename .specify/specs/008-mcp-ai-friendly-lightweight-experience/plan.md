@@ -7,12 +7,13 @@
 ## Summary
 
 Improve ShardingSphere MCP model usability with small, concrete changes:
-align current-surface documentation, standardize next-action guidance, harden common recovery metadata, add compact examples,
-introduce minimal descriptor lint, protect capabilities with a lightweight contract test,
-and extend opt-in usability coverage only where it directly reduces model confusion.
+align current-surface documentation, standardize next-action guidance, return direct metadata resource URIs, align output schemas,
+harden common recovery metadata, introduce minimal descriptor lint, protect capabilities with a lightweight contract test,
+and add examples or opt-in usability coverage only where they directly reduce model confusion.
 
 This plan intentionally avoids heavy redesign. It preserves the existing resource-first surface, descriptor catalog, prompts, completions,
 workflow tools, HTTP/STDIO transports, and session-scoped workflow behavior.
+P0 is the implementation gate; P1 and P2 are explicitly non-blocking comfort improvements.
 
 ## Technical Context
 
@@ -30,6 +31,7 @@ workflow tools, HTTP/STDIO transports, and session-scoped workflow behavior.
 - Preserve preview-before-execute semantics for side-effecting actions.
 - Keep real-model E2E opt-in.
 - Avoid broad compatibility layers for historical `list_*` tool names in this increment.
+- Record code evidence, affected paths, verification mapping, explicit non-goals, and rollback boundary before implementing each P0 item.
 
 **Scale/Scope**:
 
@@ -85,18 +87,32 @@ Documentation alignment belongs in `mcp/README.md`, `mcp/README_ZH.md`, and exis
 ## Phase 0: Research
 
 - Confirm the current MCP public surface from descriptor YAML, `shardingsphere://capabilities`, and README.
+- Confirm whether historical docs under `docs/mcp` could be mistaken for current public contract.
 - Inspect `execute_update` preview handler and tests before changing guidance fields or adding `suggested_arguments`.
+- Inspect `search_metadata` result construction and descriptor-backed resource URI patterns before adding direct URI hints.
+- Inspect real output payloads and descriptors for the seven core tools before changing output schemas.
 - Inspect workflow preview guidance before deciding whether SQL preview and `apply_workflow` can share one lightweight vocabulary.
 - Inspect recovery behavior for missing database, missing execution mode, wrong SQL tool, unknown tool/resource, and unavailable `plan_id`.
 - Decide descriptor lint placement by reusing descriptor loader or support-layer tests where possible.
 - Decide the `shardingsphere://capabilities` contract boundary by asserting section and shape without large snapshots.
-- Identify only the historical docs that could mislead readers about the current public contract.
+- For P1 only, inspect whether workflow session context, metadata resources, completion handlers, and algorithm resources can expose the requested hints without new storage.
+- For P2 only, inspect startup logging and config binding before documenting runtime hints or environment variable references.
+
+### Phase 0 Deliverables
+
+Each P0 item must leave a short implementation note before coding:
+
+- `current_behavior`: descriptor, handler, resource, workflow, completion, test, or README evidence.
+- `affected_paths`: minimal production, test, descriptor, and document paths expected to change.
+- `verification_map`: deterministic tests or manual document checks mapped to acceptance criteria.
+- `non_goals`: related capabilities intentionally excluded from the slice.
+- `rollback_boundary`: behavior restored by reverting the slice.
 
 ### Fixed Decisions Not Reopened
 
 - Do not switch or create git branches.
 - Preserve resource-first discovery as the current MCP surface.
-- Implement the P0/P1 risk-reduction path before optional P2 conveniences.
+- Implement P0 before optional P1 and P2 conveniences.
 - Keep README English and Chinese current-surface descriptions aligned.
 - Keep real-model LLM E2E opt-in instead of default CI gating.
 - Do not add heavy planner, vector search, cross-session memory, or a full authorization platform.
@@ -104,18 +120,31 @@ Documentation alignment belongs in `mcp/README.md`, `mcp/README_ZH.md`, and exis
 ## Phase 1: Design
 
 - Define the shared next-action shape.
+- Define safe URI hint rules for `search_metadata` and metadata resource navigation.
+- Define the output-schema alignment checklist for the seven core tools.
 - Define the recovery envelope fields for the five common model errors.
-- Define compact example placement and shape.
 - Define the capabilities contract assertions.
+- Define the descriptor lint rule set and failure messages.
+- Define compact example placement and shape for P1 only.
 - Define optional workflow plan summary shape if lightweight workflow query is accepted for P1.
+- Define startup and environment-variable documentation boundaries for P2 only.
+
+### Phase 1 Design Rules
+
+- Prefer small response-builder or descriptor changes over new framework layers.
+- Prefer descriptor/catalog tests over broad runtime snapshots.
+- Prefer current-session state over new persistence.
+- Prefer explicit `not_safe_to_derive` or ask-user guidance over guessed metadata URIs.
+- Defer any design that needs planner state, vector ranking, cross-session memory, or a complete authorization model.
 
 ## Phase 2: Implementation Strategy
 
 1. Align current documentation and descriptor wording first, because it is low risk and clarifies the target contract.
-2. Standardize `next_actions` and common recovery fields in existing response builders.
-3. Add compact examples and descriptor lint.
-4. Add the capabilities contract test.
-5. Extend LLM usability scenarios only after deterministic tests protect the basic surface.
+2. Standardize `next_actions`, reusable preview arguments, and common recovery fields in existing response builders.
+3. Add direct `search_metadata` resource URI hints and align core output schemas.
+4. Add descriptor lint and the capabilities contract test.
+5. Add P1 examples, workflow lookup, navigation hints, completion tuning, algorithm property templates, or freshness hints only after P0 is stable.
+6. Extend P2 startup, environment-variable, troubleshooting, and opt-in LLM usability coverage only after deterministic tests protect the basic surface.
 
 ## Complexity Tracking
 

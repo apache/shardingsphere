@@ -53,7 +53,16 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "search_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE", "VIEW")));
         assertThat(actual.statusCode(), is(200));
-        assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("order_items", "orders", "active_orders")));
+        Map<String, Object> actualPayload = getStructuredContent(actual.body());
+        List<Map<String, Object>> actualItems = getItems(actualPayload);
+        assertThat(getItemNames(actualPayload), is(List.of("order_items", "orders", "active_orders")));
+        assertThat(String.valueOf(actualItems.get(1).get("resource_uri")), is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
+        assertThat(((List<?>) actualItems.get(1).get("next_resource_uris")).stream().map(String::valueOf).toList(),
+                is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns",
+                        "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes")));
+        HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId, String.valueOf(actualItems.get(1).get("resource_uri")));
+        assertThat(tableResource.statusCode(), is(200));
+        assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).get(0).get("table")), is("orders"));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -176,7 +185,11 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
     }
 
     private List<String> getItemNames(final Map<String, Object> payload) {
-        return MCPInteractionPayloads.castToList(payload.get("items")).stream().map(each -> String.valueOf(each.get("name"))).toList();
+        return getItems(payload).stream().map(each -> String.valueOf(each.get("name"))).toList();
+    }
+
+    private List<Map<String, Object>> getItems(final Map<String, Object> payload) {
+        return MCPInteractionPayloads.castToList(payload.get("items"));
     }
 
     private static Map<String, Object> createSearchArguments(final String databaseName, final String schemaName, final String query, final List<String> objectTypes) {

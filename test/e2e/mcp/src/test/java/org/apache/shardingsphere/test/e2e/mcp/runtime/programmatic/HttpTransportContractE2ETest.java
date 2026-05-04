@@ -152,7 +152,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
 
     @Test
-    void assertExposeExecuteUpdateOutputSchema() throws IOException, InterruptedException {
+    void assertExposeModelFacingOutputSchemas() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
         String sessionId = initializeSession(httpClient);
@@ -160,6 +160,12 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 MCPHttpTransportTestSupport.createJsonRpcRequestBody("tools-list-1", "tools/list", Map.of()));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> actualResult = castToMap(parseJsonBody(actual.body()).get("result"));
+        Map<String, Object> actualSearchMetadataTool = castToMapList(actualResult.get("tools")).stream()
+                .filter(each -> "search_metadata".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
+        Map<String, Object> actualSearchMetadataOutputProperties = castToMap(castToMap(actualSearchMetadataTool.get("outputSchema")).get("properties"));
+        Map<String, Object> actualSearchMetadataItemProperties = castToMap(castToMap(castToMap(actualSearchMetadataOutputProperties.get("items")).get("items")).get("properties"));
+        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("resource_uri")).get("type")), is("string"));
+        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("next_resource_uris")).get("type")), is("array"));
         Map<String, Object> actualTool = castToMapList(actualResult.get("tools")).stream()
                 .filter(each -> "execute_update".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
         Map<String, Object> actualOutputProperties = castToMap(castToMap(actualTool.get("outputSchema")).get("properties"));

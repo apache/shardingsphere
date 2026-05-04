@@ -46,7 +46,30 @@ The user explicitly asked to avoid over-design. The current gap can be reduced b
 - Build a complete protocol error ontology. Rejected as larger than needed.
 - Do nothing because some recovery fields already exist. Rejected because the fields are not yet fully consistent across common mistakes.
 
-## Decision 5: Use minimal descriptor lint
+## Decision 5: Return direct resource URIs from metadata search where safe
+
+**Decision**: Add direct `resource_uri` hints to `search_metadata` hits only when the URI can be derived from descriptor-backed resource patterns and known logical metadata.
+
+**Rationale**: Search is a model's fastest path from vague user intent to a precise metadata object.
+Without a URI, the model must manually reconstruct a resource path and can easily guess wrong.
+
+**Alternatives considered**:
+
+- Add a complete `list_*` and `describe_*` tool matrix. Rejected because it duplicates the resource-first contract.
+- Return guessed best-effort URIs. Rejected because wrong URIs are worse than asking the model to read capabilities or parent resources.
+
+## Decision 6: Treat output schema drift as a P0 usability defect
+
+**Decision**: Align descriptor-visible output schemas with real payloads for the seven core tools before adding broad new behavior.
+
+**Rationale**: Models rely on schemas to choose fields and retry calls. A schema that is protocol-valid but behaviorally stale still causes model confusion.
+
+**Alternatives considered**:
+
+- Document mismatches only in README. Rejected because descriptors are the protocol-visible contract.
+- Add broad golden snapshots. Deferred because small schema-contract checks are enough for this increment.
+
+## Decision 7: Use minimal descriptor lint
 
 **Decision**: Add deterministic descriptor checks for only the most visible model-facing regressions:
 empty descriptions, placeholders, missing side-effect hints, missing enum values, missing core output fields, and broken navigation references.
@@ -58,7 +81,7 @@ empty descriptions, placeholders, missing side-effect hints, missing enum values
 - Build a natural-language quality scorer. Rejected because it would be nondeterministic and excessive.
 - Use only review discipline. Rejected because descriptor regressions are easy to miss in code review.
 
-## Decision 6: Protect capabilities with a shape contract, not a large golden snapshot
+## Decision 8: Protect capabilities with a shape contract, not a large golden snapshot
 
 **Decision**: Add a lightweight contract test that asserts core sections exist and remain shaped for model discovery.
 
@@ -69,7 +92,7 @@ empty descriptions, placeholders, missing side-effect hints, missing enum values
 - Full protocol transcript golden suite. Deferred until the lightweight contract proves stable.
 - No contract test. Rejected because capabilities is the model's best single discovery entry point.
 
-## Decision 7: Keep real-model E2E opt-in
+## Decision 9: Keep real-model E2E opt-in
 
 **Decision**: Add only a few high-value scenarios and keep them outside default CI.
 
@@ -79,3 +102,29 @@ empty descriptions, placeholders, missing side-effect hints, missing enum values
 
 - Run real-model tests by default. Rejected because default CI must stay deterministic and credential-free.
 - Remove real-model tests. Rejected because they provide direct evidence that the surface is usable by an actual model.
+
+## Decision 10: Keep P1 and P2 as comfort layers, not blockers
+
+**Decision**: Workflow plan lookup, metadata navigation hints, compact examples, completion tuning, algorithm property templates, freshness hints,
+startup diagnostics, environment-variable references, troubleshooting docs, and LLM usability scenarios stay behind P0.
+
+**Rationale**: These are useful, but the first-order model failures are surface mismatch, unclear next action, missing URI hints, schema drift, unsafe preview follow-up, and weak recovery.
+
+**Alternatives considered**:
+
+- Build all improvements in one large pass. Rejected because it increases review risk and hides the minimum useful change.
+- Drop P1/P2 completely. Rejected because they are cheap, concrete follow-ups once P0 is protected by tests.
+
+## Decision 11: Make code re-analysis a gate, not a scope expansion loop
+
+**Decision**: Before implementing each P0 item, record current behavior evidence, affected paths, verification mapping, explicit non-goals,
+and rollback boundary. This re-analysis is a gate to prevent guessing, not a new request to expand requirements.
+
+**Rationale**: The MCP surface already has descriptors, resources, tools, prompts, completions, workflow state, and recovery behavior.
+Implementation should adapt to those facts instead of re-opening product scope or asking the user to re-confirm decisions that are already fixed.
+
+**Alternatives considered**:
+
+- Ask the user again whenever a code detail is unclear. Rejected because the code can answer implementation facts better than the user.
+- Skip re-analysis and implement from the requirement text only. Rejected because schema, recovery, and descriptor behavior can drift from docs.
+- Produce a large architecture document before coding. Rejected because the user asked to avoid over-design.
