@@ -61,7 +61,7 @@ resources:
         required: true
         scope: logical-table
     meta:
-      resourceKind: detail
+      resourceKind: list
       feature: encrypt
       relatedTools:
         - plan_encrypt_rule

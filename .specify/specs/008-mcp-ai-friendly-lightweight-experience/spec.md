@@ -43,6 +43,17 @@ These decisions remain fixed unless the user explicitly changes scope:
 - Keep `mcp/README.md` and `mcp/README_ZH.md` aligned for current public surface descriptions.
 - Keep real-model LLM E2E opt-in instead of default CI gating.
 
+### Requirement Ordering
+
+Use this order when turning requirements into implementation slices:
+
+- **P0**: Make the model's first hop, resource/tool schemas, detail/list semantics, next action shape, preview reuse,
+  common recovery, and descriptor/capabilities guards explicit.
+- **P1**: Add lightweight runtime status, feature readiness, schema resolution, search-result ranking explanations,
+  view completion, algorithm property hints, field-to-planner navigation, URI encoding rules, and read-only query follow-up hints.
+- **P2**: Improve packaging hints, startup diagnostics, security guidance, optional preview correlation, opt-in real-model usability checks,
+  and configuration convenience only after P0/P1 evidence shows the need.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Model sees the current MCP surface consistently (Priority: P0)
@@ -148,6 +159,13 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - HTTP mode starts with a bearer token, but the client omits it.
 - STDIO mode emits logs to stdout and pollutes the MCP protocol stream.
 - A future public config or file resource would require roots or permission-boundary metadata.
+- A model reads capabilities first but still cannot tell the safe first hop for metadata, SQL, or workflow.
+- A model reads a detail resource and cannot distinguish "not found" from "empty list".
+- A logical database contains multiple schemas and the model cannot infer a single schema safely.
+- A metadata object name contains characters that require URI encoding.
+- A model needs a view name completion, but only table-oriented completion is available.
+- An algorithm is visible, but required properties are not visible until the planner returns `clarifying`.
+- A manual workflow export returns `manual_artifact_package`, but the descriptor schema does not document it.
 
 ## Requirements *(mandatory)*
 
@@ -181,6 +199,14 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **FR-023**: A lightweight capabilities contract test SHOULD assert core section presence and shape without large snapshots or real-model services.
 - **FR-024**: Requirement analysis and resulting specification updates MUST be completed without branch creation or branch switching.
 - **FR-025**: P0 implementation MUST NOT start until code re-analysis records current behavior evidence, affected paths, verification mapping, non-goals, and rollback boundary.
+- **FR-026**: `shardingsphere://capabilities` SHOULD expose a compact `model_contract` that states the safest first resource,
+  SQL tool selection rule, workflow session rule, and preview-before-side-effect rule.
+- **FR-027**: High-use resources SHOULD expose model-facing payload contracts or output schemas for capabilities, databases,
+  schemas, tables, columns, indexes, views, feature rules, and feature algorithms.
+- **FR-028**: Detail resources SHOULD distinguish not-found, empty-list, and single-item states through stable fields such as `found`, `item`, `items`, or `resource_kind`.
+- **FR-029**: Wrong SQL tool recovery SHOULD preserve safely known context, including normalized SQL and safe suggested arguments, so the model does not rebuild the call from prose.
+- **FR-030**: `apply_workflow` output schema MUST document `manual_artifact_package` or any equivalent manual export field that appears in real payloads.
+- **FR-031**: Security-sensitive capability metadata SHOULD summarize HTTP token expectations, remote access intent, and STDIO stdout cleanliness without exposing secrets.
 
 #### P1 - high-value lightweight improvements
 
@@ -192,6 +218,16 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **FR-106**: Completion ranking MUST NOT use vector search, model calls, cross-session memory, or user behavior learning in this increment.
 - **FR-107**: Encrypt and mask algorithm resources SHOULD expose required properties, optional properties, defaults, secret flags, and capability hints where available.
 - **FR-108**: Metadata responses MAY expose `metadata_fingerprint` or `loaded_at` so a model can compare whether responses came from the same loaded context.
+- **FR-109**: A lightweight runtime status resource MAY expose transport mode, loaded feature names, descriptor fingerprint,
+  runtime database count, driver-load status, and non-sensitive configuration summary.
+- **FR-110**: Database capabilities SHOULD expose feature readiness hints for encrypt and mask workflows,
+  including whether the database appears Proxy-backed or demo/direct JDBC when such evidence is safely known.
+- **FR-111**: Schema discovery SHOULD expose default-schema or ambiguity metadata so a model can infer a single safe schema or ask the user when multiple schemas are visible.
+- **FR-112**: `search_metadata` SHOULD expose deterministic `score`, `match_reason`, or `ambiguity` metadata when it helps a model choose among multiple hits.
+- **FR-113**: Completion SHOULD include view names where resource descriptors and metadata query facades already support views.
+- **FR-114**: Resource navigation SHOULD include table-column detail to `plan_encrypt_rule` and `plan_mask_rule`, carrying database, schema, table, and column.
+- **FR-115**: Resource URI hints SHOULD define percent-encoding or explicit non-derivable behavior for path segments with special characters.
+- **FR-116**: `execute_query` responses SHOULD provide next actions for truncated results, empty results, or retryable query-shaping situations when safe.
 
 #### P2 - later comfort improvements
 
@@ -200,10 +236,14 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **FR-203**: Documentation SHOULD cover Java version, missing JDBC driver, HTTP token, STDIO stdout logging, empty discovery results, and workflow topology mistakes.
 - **FR-204**: The opt-in LLM usability suite SHOULD add minimal scenarios for SQL preview, metadata search to detail URI, and plan-to-apply-preview-to-validate order.
 - **FR-205**: Real-model LLM usability tests MUST remain opt-in and outside default CI.
+- **FR-206**: `server.json` or adjacent packaging metadata SHOULD provide minimal local HTTP and STDIO client configuration hints when doing so does not create branch-specific release commitments.
+- **FR-207**: Preview correlation, such as a preview revision or token, MAY be evaluated after reusable preview arguments and approval guidance are stable.
+- **FR-208**: Sampling, progress, logging, roots, or permission-boundary metadata MAY be added only when the SDK exposes stable APIs and a concrete model-use path proves the need.
 
 ### Key Entities
 
 - **Current MCP Surface**: The protocol-visible set of public resources, resource templates, tools, prompts, completions, navigation entries, annotations, and schemas.
+- **Model Contract**: A compact capabilities section that tells a model the safest first hop and the non-negotiable rules for SQL execution, workflow continuation, and side-effect preview.
 - **Implementation Analysis Note**: A short pre-implementation evidence record with current behavior, inspected paths, affected paths,
   verification mapping, non-goals, and rollback boundary.
 - **Next Action**: A structured model-facing recommendation that tells the model whether to call a tool, read a resource, ask the user, or stop.
@@ -211,6 +251,7 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **Output Schema Contract**: A compact contract that aligns model-visible schema fields, enum values, required fields, and common states with real tool responses.
 - **Recovery Envelope**: Structured metadata attached to recoverable errors that tells a model how to retry safely.
 - **Capabilities Core Contract**: A small deterministic assertion set for `shardingsphere://capabilities`, focused on section presence and shape rather than large payload snapshots.
+- **Resource Payload Contract**: A model-facing description of a resource response shape, including list/detail state, item fields, pagination fields, and navigation hints where available.
 - **Descriptor Lint Rule**: A deterministic check that protects model-facing descriptor quality without using real model calls or natural-language scoring.
 - **Compact Example**: A small static JSON shape used to teach complex tool output without leaking secrets or environment details.
 - **Workflow Plan Summary**: A current-session summary of workflow plan identity, kind, status, update time, artifact summary, and next action if a lightweight workflow query resource is implemented.
@@ -230,6 +271,10 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **SC-008**: README or prompt guidance contains short paths for metadata inspection, safe SQL execution, and encrypt or mask workflow.
 - **SC-009**: Implementation planning contains traceable code evidence, affected paths, verification mapping, non-goals, and rollback boundary for each P0 item.
 - **SC-010**: This Spec Kit package is updated on the existing branch with no branch creation or branch switching.
+- **SC-011**: Capabilities expose enough compact guidance for a model to choose metadata, SQL, and workflow first hops without reading README.
+- **SC-012**: Detail resources and high-use resource schemas let a model distinguish not found, empty list, and single-item payloads.
+- **SC-013**: Manual workflow export fields that appear in real payloads are documented in descriptor output schemas.
+- **SC-014**: P1/P2 candidates remain clearly non-blocking and do not introduce planner, vector ranking, cross-session memory, or full authorization scope.
 
 ## Assumptions
 

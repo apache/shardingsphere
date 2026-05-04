@@ -40,6 +40,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * MCP descriptor catalog.
@@ -85,7 +86,7 @@ public final class MCPDescriptorCatalog {
      * @return capability payload
      */
     public Map<String, Object> toPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(13, 1F);
         List<Map<String, Object>> resources = resourceDescriptors.stream().filter(each -> !each.isTemplated()).map(this::toResourcePayload).toList();
         List<Map<String, Object>> resourceTemplates = resourceDescriptors.stream().filter(MCPResourceDescriptor::isTemplated).map(this::toResourcePayload).toList();
         List<Map<String, Object>> tools = toolDescriptors.stream().map(this::toToolPayload).toList();
@@ -95,6 +96,8 @@ public final class MCPDescriptorCatalog {
         result.put("supportedResources", supportedResources);
         result.put("supportedTools", supportedTools);
         result.put("supportedStatementClasses", supportedStatements);
+        result.put("model_contract", createModelContract());
+        result.put("security_hints", createSecurityHints());
         result.put("resources", resources);
         result.put("resourceTemplates", resourceTemplates);
         result.put("tools", tools);
@@ -107,7 +110,7 @@ public final class MCPDescriptorCatalog {
     }
 
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         result.put("uriPattern", descriptor.getUriPattern());
         result.put("name", descriptor.getName());
         result.put("title", descriptor.getTitle());
@@ -120,7 +123,103 @@ public final class MCPDescriptorCatalog {
         if (!descriptor.getMeta().isEmpty()) {
             result.put("meta", descriptor.getMeta());
         }
+        Map<String, Object> payloadContract = createResourcePayloadContract(descriptor);
+        if (!payloadContract.isEmpty()) {
+            result.put("payload_contract", payloadContract);
+        }
         return result;
+    }
+
+    private Map<String, Object> createModelContract() {
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        result.put("safe_first_resource", "shardingsphere://capabilities");
+        result.put("metadata_first_resource", "shardingsphere://databases");
+        result.put("sql_tool_selection", Map.of(
+                "read_only", "Use execute_query for one SELECT or EXPLAIN ANALYZE statement.",
+                "side_effecting", "Use execute_update with execution_mode=preview before asking for user approval."));
+        result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
+        result.put("side_effect_rule", "Preview before side effects and continue only after explicit user approval.");
+        result.put("detail_resource_rule", "Read each resource payload_contract before assuming detail fields.");
+        result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
+        return result;
+    }
+
+    private Map<String, Object> createSecurityHints() {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("http_access_token", "HTTP transport may require an Authorization bearer token; capabilities never exposes secrets.");
+        result.put("remote_access", "Prefer loopback access unless the operator explicitly configures remote exposure.");
+        result.put("stdio_stdout", "STDIO transport must keep MCP protocol frames on stdout and send logs to stderr or files.");
+        return result;
+    }
+
+    private Map<String, Object> createResourcePayloadContract(final MCPResourceDescriptor descriptor) {
+        Object resourceKind = descriptor.getMeta().get("resourceKind");
+        if ("list".equals(resourceKind)) {
+            return createListResourcePayloadContract(descriptor);
+        }
+        if ("detail".equals(resourceKind)) {
+            return createDetailResourcePayloadContract(descriptor);
+        }
+        if ("capability-catalog".equals(descriptor.getMeta().get("kind"))) {
+            return createCapabilityResourcePayloadContract();
+        }
+        return Map.of();
+    }
+
+    private Map<String, Object> createListResourcePayloadContract(final MCPResourceDescriptor descriptor) {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        result.put("response_kind", "list");
+        result.put("item_scope", createObjectScope(descriptor));
+        result.put("stable_fields", List.of("items", "has_more"));
+        result.put("optional_fields", List.of("next_page_token"));
+        result.put("empty_state", Map.of("items", List.of(), "has_more", false));
+        result.put("pagination", "next_page_token is present only when has_more is true.");
+        return result;
+    }
+
+    private Map<String, Object> createDetailResourcePayloadContract(final MCPResourceDescriptor descriptor) {
+        if ("database-capabilities".equals(descriptor.getName())) {
+            return createDatabaseCapabilityResourcePayloadContract();
+        }
+        if (!descriptor.getMeta().containsKey("objectScope")) {
+            return Map.of();
+        }
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        result.put("response_kind", "detail");
+        result.put("item_scope", createObjectScope(descriptor));
+        result.put("stable_fields", List.of("resource_kind", "found", "items", "count", "item"));
+        result.put("found_state", Map.of("found", true, "count", 1, "item", "single object payload"));
+        result.put("not_found_state", Map.of("found", false, "count", 0, "items", List.of()));
+        result.put("pagination", "Detail resources are not paginated.");
+        return result;
+    }
+
+    private Map<String, Object> createCapabilityResourcePayloadContract() {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("response_kind", "capability-catalog");
+        result.put("stable_fields", List.of("model_contract", "security_hints", "resources", "resourceTemplates", "tools", "prompts", "completionTargets",
+                "resourceNavigation", "protocolAvailability"));
+        result.put("model_first_hop", "Read model_contract before choosing metadata, SQL, or workflow calls.");
+        result.put("fingerprints", "Use fingerprints to compare descriptor payload shape across calls.");
+        return result;
+    }
+
+    private Map<String, Object> createDatabaseCapabilityResourcePayloadContract() {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("response_kind", "detail-object");
+        result.put("item_scope", "database-capability");
+        result.put("stable_fields", List.of("database", "databaseType", "supportedObjectTypes", "supportedStatementClasses", "supportsTransactionControl", "supportsSavepoint",
+                "defaultSchemaSemantics", "schemaExecutionSemantics", "supportsCrossSchemaSql", "supportsExplainAnalyze"));
+        result.put("not_found_behavior", "The resource returns a not_found error when the logical database capability is unavailable.");
+        return result;
+    }
+
+    private String createObjectScope(final MCPResourceDescriptor descriptor) {
+        Object objectScope = descriptor.getMeta().get("objectScope");
+        if (null != objectScope) {
+            return objectScope.toString();
+        }
+        return Objects.toString(descriptor.getMeta().get("feature"), "resource");
     }
 
     private Map<String, Object> toParameterPayload(final MCPResourceParameterDescriptor parameter) {

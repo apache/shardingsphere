@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -26,7 +27,9 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescript
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
@@ -34,23 +37,44 @@ import java.util.function.BiFunction;
  */
 @RequiredArgsConstructor
 public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
-    
+
     private final String uriPattern;
-    
+
     private final BiFunction<MCPDatabaseHandlerContext, MCPUriVariables, List<?>> metadataLoader;
-    
+
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-    
+
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
         return MCPDescriptorRegistry.getRequiredResourceDescriptor(uriPattern);
     }
-    
+
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
-        return new MCPItemsResponse(metadataLoader.apply(databaseContext, uriVariables));
+        List<?> items = metadataLoader.apply(databaseContext, uriVariables);
+        MCPResourceDescriptor descriptor = getResourceDescriptor();
+        return isDetailResource(descriptor) ? new MCPMapResponse(createDetailPayload(descriptor, items)) : new MCPItemsResponse(items);
+    }
+
+    private boolean isDetailResource(final MCPResourceDescriptor descriptor) {
+        return "detail".equals(descriptor.getMeta().get("resourceKind"));
+    }
+
+    private Map<String, Object> createDetailPayload(final MCPResourceDescriptor descriptor, final List<?> items) {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        result.put("resource_kind", "detail");
+        if (descriptor.getMeta().containsKey("objectScope")) {
+            result.put("object_scope", descriptor.getMeta().get("objectScope"));
+        }
+        result.put("found", !items.isEmpty());
+        result.put("items", items);
+        result.put("count", items.size());
+        if (!items.isEmpty()) {
+            result.put("item", items.get(0));
+        }
+        return result;
     }
 }

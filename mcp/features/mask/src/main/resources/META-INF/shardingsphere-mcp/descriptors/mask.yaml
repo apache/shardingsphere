@@ -61,7 +61,7 @@ resources:
         required: true
         scope: logical-table
     meta:
-      resourceKind: detail
+      resourceKind: list
       feature: mask
       relatedTools:
         - plan_mask_rule

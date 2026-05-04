@@ -30,6 +30,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedResourceU
 import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 
@@ -134,6 +135,9 @@ public final class MCPErrorConverter {
         if (cause instanceof UnsupportedResourceUriException) {
             return createUnsupportedResourceRecovery(((UnsupportedResourceUriException) cause).getResourceUri());
         }
+        if (cause instanceof SQLToolMismatchException) {
+            return createSQLToolMismatchRecovery((SQLToolMismatchException) cause);
+        }
         if (UNSUPPORTED.equals(errorCode) && message.startsWith("execute_query only supports read-only")) {
             return createUnsafeQueryRecovery();
         }
@@ -189,6 +193,34 @@ public final class MCPErrorConverter {
         result.put("next_actions", List.of(createReadResourceAction("shardingsphere://capabilities", "Read current MCP capabilities before choosing another resource.")));
         result.put("ask_user_when_uncertain", false);
         return result;
+    }
+
+    private static Map<String, Object> createSQLToolMismatchRecovery(final SQLToolMismatchException cause) {
+        boolean requiresUserApproval = "execute_update".equals(cause.getTargetTool());
+        Map<String, Object> result = createBaseRecovery(createSQLToolMismatchCategory(cause),
+                requiresUserApproval ? "Use execute_update in preview mode, then ask for approval before execution." : "Use execute_query for this read-only SQL.");
+        result.put("source_tool", cause.getSourceTool());
+        result.put("suggested_next_tool", cause.getTargetTool());
+        result.put("statement_class", cause.getClassificationResult().getStatementClass().name().toLowerCase(Locale.ENGLISH));
+        result.put("statement_type", cause.getClassificationResult().getStatementType());
+        result.put("normalized_sql", cause.getClassificationResult().getNormalizedSql());
+        cause.getClassificationResult().getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
+        cause.getClassificationResult().getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
+        result.put("suggested_arguments", cause.getSuggestedArguments());
+        result.put("next_actions", List.of(createToolAction(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments(), requiresUserApproval)));
+        result.put("requires_user_approval", requiresUserApproval);
+        result.put("ask_user_when_uncertain", requiresUserApproval);
+        return result;
+    }
+
+    private static String createSQLToolMismatchCategory(final SQLToolMismatchException cause) {
+        return "execute_update".equals(cause.getTargetTool()) ? "unsafe_sql_attempted" : "read_only_sql_sent_to_update_tool";
+    }
+
+    private static String createSQLToolMismatchActionReason(final SQLToolMismatchException cause) {
+        return "execute_update".equals(cause.getTargetTool())
+                ? "Retry side-effecting SQL in preview mode with the normalized SQL and preserved context."
+                : "Retry the read-only SQL with execute_query using the normalized SQL and preserved context.";
     }
 
     private static Map<String, Object> createUnsafeQueryRecovery() {

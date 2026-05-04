@@ -40,12 +40,28 @@ class MetadataResourceHandlerTest {
     }
 
     @Test
-    void assertHandle() {
+    void assertHandleListResource() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
+                (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
+        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "has_more", false)));
+    }
+
+    @Test
+    void assertHandleDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getVariable("database"))));
         MCPUriVariables uriVariables = mock(MCPUriVariables.class);
         when(uriVariables.getVariable("database")).thenReturn("logic_db");
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), uriVariables);
-        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "has_more", false)));
+        assertThat(actual.toPayload(), is(Map.of("resource_kind", "detail", "object_scope", "logical-database", "found", true,
+                "items", List.of(Map.of("database", "logic_db")), "count", 1, "item", Map.of("database", "logic_db"))));
+    }
+
+    @Test
+    void assertHandleMissingDetailResource() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}", (requestContext, uriVariables) -> List.of());
+        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), mock(MCPUriVariables.class));
+        assertThat(actual.toPayload(), is(Map.of("resource_kind", "detail", "object_scope", "logical-database", "found", false, "items", List.of(), "count", 0)));
     }
 }

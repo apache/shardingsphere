@@ -191,6 +191,9 @@ tools:
         manual_artifacts:
           type: array
           description: "Artifacts returned for manual execution."
+        manual_artifact_package:
+          type: object
+          description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
         recommended_next_tool:
           type: string
           description: "Usually validate_workflow after a successful apply."

@@ -74,7 +74,9 @@ class EncryptResourceHandlerTest {
     
     @Test
     void assertGetEncryptRuleUriPattern() {
-        assertThat(new EncryptRuleHandler().getResourceDescriptor().getUriPattern(), is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
+        EncryptRuleHandler actual = new EncryptRuleHandler();
+        assertThat(actual.getResourceDescriptor().getUriPattern(), is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
+        assertThat(actual.getResourceDescriptor().getMeta().get("resourceKind"), is("list"));
     }
     
     @Test

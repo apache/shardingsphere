@@ -28,6 +28,9 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedResourceU
 import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -44,6 +47,7 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPErrorConverterTest {
@@ -132,6 +136,38 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("execute_update"));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
+    }
+
+    @Test
+    void assertConvertSQLToolMismatchWithRecovery() {
+        ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'PAID'", "orders", "");
+        Map<String, Object> suggestedArguments = Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID'", "execution_mode", "preview");
+        Map<String, Object> actual = MCPErrorConverter.convert(new SQLToolMismatchException(
+                "execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL.",
+                "execute_query", "execute_update", classificationResult, suggestedArguments)).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("unsafe_sql_attempted"));
+        assertThat(actualRecovery.get("source_tool"), is("execute_query"));
+        assertThat(actualRecovery.get("suggested_next_tool"), is("execute_update"));
+        assertThat(actualRecovery.get("normalized_sql"), is("UPDATE orders SET status = 'PAID'"));
+        assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("required_arguments"), is(suggestedArguments));
+        assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
+    }
+
+    @Test
+    void assertConvertReadOnlySQLToolMismatchWithRecovery() {
+        ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM orders", "orders", "");
+        Map<String, Object> suggestedArguments = Map.of("database", "logic_db", "sql", "SELECT * FROM orders");
+        Map<String, Object> actual = MCPErrorConverter.convert(new SQLToolMismatchException(
+                "execute_update does not accept read-only SQL. Use execute_query for read-only SQL.",
+                "execute_update", "execute_query", classificationResult, suggestedArguments)).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("read_only_sql_sent_to_update_tool"));
+        assertThat(actualRecovery.get("suggested_next_tool"), is("execute_query"));
+        assertThat(actualRecovery.get("normalized_sql"), is("SELECT * FROM orders"));
+        assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
+        assertFalse((Boolean) ((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("requires_user_approval"));
     }
 
     @Test
