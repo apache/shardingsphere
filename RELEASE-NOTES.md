@@ -29,6 +29,7 @@
 1. SQL Parser: Support additional MySQL SELECT index hint and MATCH ... AGAINST WITH ROLLUP syntax - [#38233](https://github.com/apache/shardingsphere/pull/38233)
 1. SQL Parser: Support MySQL CREATE EVENT and additional CREATE FUNCTION RETURN syntax - [#38237](https://github.com/apache/shardingsphere/pull/38237)
 1. SQL Parser: Support MySQL subquery table projection alias visit to SQL statement - [#38320](https://github.com/apache/shardingsphere/pull/38320)
+1. SQL Parser: Support Oracle Create TABLE sql statement parse - [#38667](https://github.com/apache/shardingsphere/pull/38667)
 1. SQL Parser: Enhance select window partition by order by, lead placeholder parse - [#38392](https://github.com/apache/shardingsphere/pull/38392)
 1. SQL Parser: Support MariaDB cycleClause, groupConcatLimitClause, MEDIAN window function parse - [#38579](https://github.com/apache/shardingsphere/pull/38579)
 1. SQL Parser: Support mysql, doris insert & replace rows statement parse - [#38585](https://github.com/apache/shardingsphere/pull/38585)
