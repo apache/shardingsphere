@@ -66,6 +66,101 @@ resources:
       relatedTools:
         - plan_encrypt_rule
         - validate_workflow
+prompts:
+  - name: plan_encrypt_rule
+    title: Plan Encrypt Rule
+    description: "Guide the model to plan a ShardingSphere encrypt rule by reading logical metadata, encrypt algorithms, and existing encrypt rules before calling plan_encrypt_rule."
+    templateResource: META-INF/shardingsphere-mcp/prompts/plan-encrypt-rule.md
+    arguments:
+      - name: database
+        title: Logical Database
+        description: "ShardingSphere logical database that owns the table."
+        required: false
+      - name: schema
+        title: Schema
+        description: "Optional schema or namespace that contains the table."
+        required: false
+      - name: table
+        title: Logical Table
+        description: "Logical table whose column should be encrypted."
+        required: false
+      - name: column
+        title: Column
+        description: "Logical column that should receive encrypt rule planning."
+        required: false
+      - name: algorithm_type
+        title: Encrypt Algorithm
+        description: "Optional primary encrypt algorithm type visible from ShardingSphere-Proxy."
+        required: false
+      - name: plan_id
+        title: Workflow Plan ID
+        description: "Optional current-session workflow plan identifier used to continue an encrypt plan."
+        required: false
+    meta:
+      relatedTools:
+        - plan_encrypt_rule
+        - apply_workflow
+        - validate_workflow
+      relatedResources:
+        - shardingsphere://features/encrypt/algorithms
+        - shardingsphere://features/encrypt/databases/{database}/rules
+      stopConditions:
+        - "Stop after plan_encrypt_rule returns a planned workflow with plan_id and reviewable artifacts."
+        - "Stop after a clarifying response lists missing inputs instead of guessing algorithm or column choices."
+      askUserConditions:
+        - "Ask when decrypt, equality, LIKE, or sensitive-field semantics are unclear."
+        - "Ask before applying generated DDL or DistSQL that changes runtime state."
+
+completionTargets:
+  - referenceType: prompt
+    reference: plan_encrypt_rule
+    arguments:
+      - database
+      - schema
+      - table
+      - column
+      - algorithm_type
+      - assisted_query_algorithm_type
+      - like_query_algorithm_type
+      - plan_id
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://features/encrypt/algorithms
+    arguments:
+      - algorithm_type
+      - assisted_query_algorithm_type
+      - like_query_algorithm_type
+    maxValues: 50
+resourceNavigation:
+  - from: shardingsphere://features/encrypt/algorithms
+    to: plan_encrypt_rule
+    requiredArguments: []
+    carriedArguments:
+      - algorithm_type
+    description: "Use visible encrypt algorithms when planning an encrypt rule."
+  - from: shardingsphere://features/encrypt/databases/{database}/rules
+    to: plan_encrypt_rule
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "Preserve existing database-level encrypt rules when planning changes."
+  - from: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+    to: plan_encrypt_rule
+    requiredArguments:
+      - database
+      - table
+    carriedArguments:
+      - database
+      - table
+    description: "Preserve existing table-level encrypt rule columns and algorithms."
+  - from: plan_encrypt_rule
+    to: apply_workflow
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Preview or apply generated encrypt workflow artifacts after reviewing the plan."
 tools:
   - name: plan_encrypt_rule
     title: Plan Encrypt Rule
@@ -149,9 +244,8 @@ tools:
         required: false
         valueDefinition:
           type: STRING
-          description: "Preferred execution mode for later apply_workflow; planning itself does not execute changes."
+          description: "Preferred final mode for later apply_workflow after preview and user approval."
           enumValues:
-            - auto-execute
             - review-then-execute
             - manual-only
       - name: allow_index_ddl

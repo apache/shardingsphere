@@ -30,8 +30,14 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class YamlMCPDescriptorCatalog implements YamlConfiguration {
-    
+
     private Collection<YamlMCPResourceDescriptor> resources = new LinkedList<>();
-    
+
     private Collection<YamlMCPToolDescriptor> tools = new LinkedList<>();
+
+    private Collection<YamlMCPPromptDescriptor> prompts = new LinkedList<>();
+
+    private Collection<YamlMCPCompletionTargetDescriptor> completionTargets = new LinkedList<>();
+
+    private Collection<YamlMCPResourceNavigationDescriptor> resourceNavigation = new LinkedList<>();
 }

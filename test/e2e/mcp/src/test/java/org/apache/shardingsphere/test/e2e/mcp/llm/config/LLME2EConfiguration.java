@@ -35,25 +35,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Getter
 public final class LLME2EConfiguration {
-    
+
     private static final DateTimeFormatter RUN_ID_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss", Locale.ENGLISH);
-    
+
     private final String baseUrl;
-    
+
+    private final String modelProvider;
+
     private final String modelName;
-    
+
     private final String apiKey;
-    
+
     private final int readyTimeoutSeconds;
-    
+
     private final int requestTimeoutSeconds;
-    
+
     private final int maxTurns;
-    
+
     private final Path artifactRoot;
-    
+
     private final String runId;
-    
+
     /**
      * Load LLM E2E configuration.
      *
@@ -62,6 +64,7 @@ public final class LLME2EConfiguration {
     public static LLME2EConfiguration load() {
         return new LLME2EConfiguration(
                 normalizeBaseUrl(readString("mcp.llm.base-url", "MCP_LLM_BASE_URL", "http://127.0.0.1:11434/v1")),
+                readString("mcp.llm.provider", "MCP_LLM_PROVIDER", "openai-compatible"),
                 readString("mcp.llm.model", "MCP_LLM_MODEL", "qwen3:1.7b"),
                 readString("mcp.llm.api-key", "MCP_LLM_API_KEY", "ollama"),
                 readInteger("mcp.llm.ready-timeout-seconds", "MCP_LLM_READY_TIMEOUT_SECONDS", 600),
@@ -70,7 +73,7 @@ public final class LLME2EConfiguration {
                 Paths.get(readString("mcp.llm.artifact-root", "MCP_LLM_ARTIFACT_ROOT", "target/llm-e2e")),
                 readString("mcp.llm.run-id", "MCP_LLM_RUN_ID", createDefaultRunId()));
     }
-    
+
     /**
      * Create artifact directory.
      *
@@ -83,7 +86,7 @@ public final class LLME2EConfiguration {
         Files.createDirectories(result);
         return result;
     }
-    
+
     /**
      * Get chat completions URL.
      *
@@ -92,7 +95,7 @@ public final class LLME2EConfiguration {
     public String getChatCompletionsUrl() {
         return baseUrl + "/chat/completions";
     }
-    
+
     /**
      * Get models URL.
      *
@@ -101,7 +104,7 @@ public final class LLME2EConfiguration {
     public String getModelsUrl() {
         return baseUrl + "/models";
     }
-    
+
     private static String readString(final String propertyName, final String environmentName, final String defaultValue) {
         String result = System.getProperty(propertyName);
         if (null != result && !result.trim().isEmpty()) {
@@ -110,7 +113,7 @@ public final class LLME2EConfiguration {
         result = System.getenv(environmentName);
         return null == result || result.trim().isEmpty() ? defaultValue : result.trim();
     }
-    
+
     private static int readInteger(final String propertyName, final String environmentName, final int defaultValue) {
         final String result = readString(propertyName, environmentName, String.valueOf(defaultValue));
         try {
@@ -119,11 +122,11 @@ public final class LLME2EConfiguration {
             return defaultValue;
         }
     }
-    
+
     private static String normalizeBaseUrl(final String baseUrl) {
         return baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
     }
-    
+
     private static String createDefaultRunId() {
         return RUN_ID_FORMATTER.format(LocalDateTime.now()) + "-" + UUID.randomUUID().toString().substring(0, 8);
     }

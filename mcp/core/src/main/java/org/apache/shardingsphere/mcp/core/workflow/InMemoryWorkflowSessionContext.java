@@ -23,12 +23,11 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
 import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -36,40 +35,24 @@ import java.util.concurrent.ConcurrentHashMap;
  * Session-local in-memory workflow session context.
  */
 public final class InMemoryWorkflowSessionContext implements WorkflowSessionContext {
-    
-    private static final Duration DEFAULT_CONTEXT_TTL = Duration.ofHours(24);
-    
-    private static final int DEFAULT_MAX_ENTRIES = Integer.MAX_VALUE;
-    
+
     private final Clock clock;
-    
-    private final Duration contextTtl;
-    
-    private final int maxEntries;
-    
+
     private final Map<String, WorkflowContextSnapshot> contexts = new ConcurrentHashMap<>();
-    
+
     public InMemoryWorkflowSessionContext() {
-        this(Clock.systemUTC(), DEFAULT_CONTEXT_TTL, DEFAULT_MAX_ENTRIES);
+        this(Clock.systemUTC());
     }
-    
-    public InMemoryWorkflowSessionContext(final Clock clock, final Duration contextTtl, final int maxEntries) {
-        if (contextTtl.isZero() || contextTtl.isNegative()) {
-            throw new IllegalArgumentException("Context TTL must be positive.");
-        }
-        if (0 >= maxEntries) {
-            throw new IllegalArgumentException("Max entries must be positive.");
-        }
+
+    public InMemoryWorkflowSessionContext(final Clock clock) {
         this.clock = clock;
-        this.contextTtl = contextTtl;
-        this.maxEntries = maxEntries;
     }
-    
+
     @Override
     public String createPlanId() {
         return "plan-" + UUID.randomUUID();
     }
-    
+
     @Override
     public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
         String actualPlanId = null == planId ? "" : planId.trim();
@@ -82,21 +65,26 @@ public final class InMemoryWorkflowSessionContext implements WorkflowSessionCont
         result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
         return result;
     }
-    
+
     @Override
     public void save(final WorkflowContextSnapshot snapshot) {
-        purgeExpiredContexts();
         snapshot.setUpdateTime(clock.instant());
         contexts.put(snapshot.getPlanId(), snapshot.copy());
-        purgeOverflowContexts();
     }
-    
+
     @Override
     public Optional<WorkflowContextSnapshot> find(final String planId) {
-        purgeExpiredContexts();
         return Optional.ofNullable(contexts.get(planId)).map(WorkflowContextSnapshot::copy);
     }
-    
+
+    @Override
+    public List<WorkflowContextSnapshot> list(final String sessionId) {
+        return contexts.values().stream().filter(each -> Objects.equals(sessionId, each.getSessionId()))
+                .map(WorkflowContextSnapshot::copy).sorted(Comparator.comparing(WorkflowContextSnapshot::getUpdateTime, Comparator.nullsLast(Comparator.naturalOrder()))
+                        .thenComparing(WorkflowContextSnapshot::getPlanId))
+                .toList();
+    }
+
     @Override
     public WorkflowContextSnapshot persist(final WorkflowContextSnapshot snapshot, final String currentStep, final String status) {
         if (null != snapshot.getInteractionPlan()) {
@@ -106,32 +94,20 @@ public final class InMemoryWorkflowSessionContext implements WorkflowSessionCont
         save(snapshot);
         return snapshot;
     }
-    
+
     @Override
     public WorkflowContextSnapshot getRequired(final String planId) {
-        return find(planId).orElseThrow(() -> new MCPInvalidRequestException(String.format("Unknown plan_id `%s`.", planId)));
+        return find(planId).orElseThrow(() -> new MCPInvalidRequestException(
+                String.format("Unknown or unavailable plan_id `%s`. Call the planning tool again in the current MCP session.", planId)));
     }
-    
+
     @Override
     public void remove(final String planId) {
         contexts.remove(planId);
     }
-    
-    private void purgeExpiredContexts() {
-        Instant expirationTime = clock.instant().minus(contextTtl);
-        contexts.entrySet().removeIf(each -> null == each.getValue().getUpdateTime() || each.getValue().getUpdateTime().isBefore(expirationTime));
-    }
-    
-    private void purgeOverflowContexts() {
-        while (contexts.size() > maxEntries) {
-            String planIdToEvict = contexts.entrySet().stream()
-                    .min(Comparator.comparing((Entry<String, WorkflowContextSnapshot> each) -> null == each.getValue().getUpdateTime() ? Instant.EPOCH : each.getValue().getUpdateTime())
-                            .thenComparing(Entry::getKey))
-                    .map(Entry::getKey).orElse(null);
-            if (null == planIdToEvict) {
-                return;
-            }
-            contexts.remove(planIdToEvict);
-        }
+
+    @Override
+    public void removeBySessionId(final String sessionId) {
+        contexts.entrySet().removeIf(each -> Objects.equals(sessionId, each.getValue().getSessionId()));
     }
 }

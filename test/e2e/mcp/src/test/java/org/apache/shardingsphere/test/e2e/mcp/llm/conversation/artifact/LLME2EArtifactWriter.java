@@ -22,12 +22,19 @@ import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * LLM E2E artifact writer.
  */
 public final class LLME2EArtifactWriter {
-    
+
+    private static final Pattern JSON_SECRET_FIELD_PATTERN = Pattern.compile(
+            "(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")([^\"]+)(\")");
+
+    private static final Pattern BEARER_TOKEN_PATTERN = Pattern.compile("(?i)(Bearer\\s+)[A-Za-z0-9._~+/=-]+");
+
     /**
      * Write.
      *
@@ -37,14 +44,29 @@ public final class LLME2EArtifactWriter {
      */
     public void write(final Path artifactDirectory, final LLME2EArtifactBundle artifactBundle) throws IOException {
         Files.createDirectories(artifactDirectory);
-        Files.writeString(artifactDirectory.resolve("system-prompt.md"), artifactBundle.getSystemPrompt());
-        Files.writeString(artifactDirectory.resolve("user-prompt.md"), artifactBundle.getUserPrompt());
-        Files.writeString(artifactDirectory.resolve("raw-model-output.txt"), String.join(System.lineSeparator() + System.lineSeparator(), artifactBundle.getRawModelOutputs()));
-        Files.writeString(artifactDirectory.resolve("interaction-trace.json"), JsonUtils.toJsonString(artifactBundle.getInteractionTrace()));
-        Files.writeString(artifactDirectory.resolve("assertion-report.json"), JsonUtils.toJsonString(artifactBundle.getAssertionReport()));
-        Files.writeString(artifactDirectory.resolve("mcp-runtime.log"), String.join(System.lineSeparator(), artifactBundle.getMcpRuntimeLogLines()));
+        Files.writeString(artifactDirectory.resolve("run-context.json"), redact(JsonUtils.toJsonString(createRunContext(artifactBundle))));
+        Files.writeString(artifactDirectory.resolve("system-prompt.md"), redact(artifactBundle.getSystemPrompt()));
+        Files.writeString(artifactDirectory.resolve("user-prompt.md"), redact(artifactBundle.getUserPrompt()));
+        Files.writeString(artifactDirectory.resolve("raw-model-output.txt"), redact(String.join(System.lineSeparator() + System.lineSeparator(), artifactBundle.getRawModelOutputs())));
+        Files.writeString(artifactDirectory.resolve("interaction-trace.json"), redact(JsonUtils.toJsonString(artifactBundle.getInteractionTrace())));
+        Files.writeString(artifactDirectory.resolve("assertion-report.json"), redact(JsonUtils.toJsonString(artifactBundle.getAssertionReport())));
+        Files.writeString(artifactDirectory.resolve("mcp-runtime.log"), redact(String.join(System.lineSeparator(), artifactBundle.getMcpRuntimeLogLines())));
         if (null != artifactBundle.getFinalAnswerJson() && !artifactBundle.getFinalAnswerJson().isEmpty()) {
-            Files.writeString(artifactDirectory.resolve("final-answer.json"), artifactBundle.getFinalAnswerJson());
+            Files.writeString(artifactDirectory.resolve("final-answer.json"), redact(artifactBundle.getFinalAnswerJson()));
         }
+    }
+
+    private Map<String, Object> createRunContext(final LLME2EArtifactBundle artifactBundle) {
+        return Map.of(
+                "scenarioId", artifactBundle.getScenarioId(),
+                "modelProvider", artifactBundle.getModelProvider(),
+                "modelName", artifactBundle.getModelName(),
+                "capabilityFingerprints", artifactBundle.getCapabilityFingerprints(),
+                "failureType", artifactBundle.getAssertionReport().getFailureType());
+    }
+
+    private String redact(final String value) {
+        String result = JSON_SECRET_FIELD_PATTERN.matcher(value).replaceAll("$1<redacted>$3");
+        return BEARER_TOKEN_PATTERN.matcher(result).replaceAll("$1<redacted>");
     }
 }

@@ -19,7 +19,7 @@ resources:
   - uriPattern: shardingsphere://capabilities
     name: server-capability-catalog
     title: ShardingSphere MCP Capability Catalog
-    description: "Generated model-facing catalog for ShardingSphere MCP resources, resource templates, tools, workflow relationships, side-effect notes, and deferred prompt or completion requirements."
+    description: "Generated model-facing catalog for ShardingSphere MCP resources, resource templates, tools, prompts, completions, workflow relationships, side-effect notes, and navigation hints."
     mimeType: application/json
     annotations:
       audience:
@@ -406,6 +406,121 @@ resources:
     meta:
       resourceKind: detail
       objectScope: column
+completionTargets:
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas
+    arguments:
+      - database
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/tables
+    arguments:
+      - database
+      - schema
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
+    arguments:
+      - database
+      - schema
+      - table
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
+    arguments:
+      - database
+      - schema
+      - table
+    maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://databases/{database}/schemas/{schema}/sequences
+    arguments:
+      - database
+      - schema
+    maxValues: 50
+resourceNavigation:
+  - from: shardingsphere://capabilities
+    to: shardingsphere://databases
+    requiredArguments: []
+    carriedArguments: []
+    description: "Read logical databases before choosing a database argument."
+  - from: shardingsphere://capabilities
+    to: search_metadata
+    requiredArguments: []
+    carriedArguments: []
+    description: "Use metadata search when the target object name or object type is uncertain."
+  - from: shardingsphere://databases/{database}
+    to: shardingsphere://databases/{database}/schemas
+    requiredArguments:
+      - database
+    carriedArguments:
+      - database
+    description: "List schemas after choosing a logical database."
+  - from: shardingsphere://databases/{database}/schemas/{schema}
+    to: shardingsphere://databases/{database}/schemas/{schema}/tables
+    requiredArguments:
+      - database
+      - schema
+    carriedArguments:
+      - database
+      - schema
+    description: "List logical tables after choosing a schema."
+  - from: shardingsphere://databases/{database}/schemas/{schema}
+    to: shardingsphere://databases/{database}/schemas/{schema}/views
+    requiredArguments:
+      - database
+      - schema
+    carriedArguments:
+      - database
+      - schema
+    description: "List logical views after choosing a schema."
+  - from: shardingsphere://databases/{database}/schemas/{schema}
+    to: shardingsphere://databases/{database}/schemas/{schema}/sequences
+    requiredArguments:
+      - database
+      - schema
+    carriedArguments:
+      - database
+      - schema
+    description: "Read sequences when sequence metadata is supported."
+  - from: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
+    to: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
+    requiredArguments:
+      - database
+      - schema
+      - table
+    carriedArguments:
+      - database
+      - schema
+      - table
+    description: "Read columns after choosing a logical table."
+  - from: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
+    to: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
+    requiredArguments:
+      - database
+      - schema
+      - table
+    carriedArguments:
+      - database
+      - schema
+      - table
+    description: "Read indexes when index metadata is supported."
+  - from: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
+    to: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
+    requiredArguments:
+      - database
+      - schema
+      - view
+    carriedArguments:
+      - database
+      - schema
+      - view
+    description: "Read view columns after choosing a logical view."
 tools:
   - name: search_metadata
     title: Search Metadata
@@ -458,9 +573,12 @@ tools:
         items:
           type: array
           description: "Matched metadata objects with logical path fields and object type."
-        nextPageToken:
+        next_page_token:
           type: string
           description: "Opaque token for the next result page when more items exist."
+        has_more:
+          type: boolean
+          description: "Whether another page is available and next_page_token should be used."
     annotations:
       title: Search Metadata
       readOnlyHint: true
@@ -538,7 +656,7 @@ tools:
         - SAVEPOINT
   - name: execute_update
     title: Execute Update SQL
-    description: "Execute exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state. Use only when the user intends side effects and has reviewed the SQL."
+    description: "Execute or preview exactly one supported SQL statement that may mutate data, metadata, rules, or transaction state. Use execution_mode=preview first when the user has not explicitly approved side effects."
     fields:
       - name: database
         required: true
@@ -555,6 +673,14 @@ tools:
         valueDefinition:
           type: STRING
           description: "One SQL statement. The server contract rejects banned commands and multiple statements."
+      - name: execution_mode
+        required: true
+        valueDefinition:
+          type: STRING
+          description: "Required safety gate. Use preview to classify side effects without execution, or execute only after explicit user approval of the preview."
+          enumValues:
+            - execute
+            - preview
       - name: max_rows
         required: false
         valueDefinition:
@@ -580,6 +706,27 @@ tools:
         message:
           type: string
           description: "Execution message for statements without row results."
+        would_execute:
+          type: boolean
+          description: "False when execution_mode=preview, proving the SQL was classified but not executed."
+        side_effect_scope:
+          type: array
+          description: "Preview-only side-effect categories such as physical-data, physical-structure, privilege-metadata, or transaction-state."
+        suggested_next_tool:
+          type: string
+          description: "Preview-only preferred follow-up tool, normally execute_update after user approval."
+        suggested_arguments:
+          type: object
+          description: "Preview-only arguments to reuse when the user approves execution."
+        read_resources_first:
+          type: array
+          description: "Resource URIs to read before retrying when metadata context is missing."
+        ask_user_when_uncertain:
+          type: boolean
+          description: "Whether the model should ask the user before continuing."
+        next_actions:
+          type: array
+          description: "Ordered model-facing recommendations after preview or execution."
         truncated:
           type: boolean
           description: "Whether returned rows were truncated."
@@ -598,3 +745,4 @@ tools:
         - physical-structure
         - privilege-metadata
         - transaction-state
+      requiresUserApproval: true

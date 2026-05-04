@@ -17,9 +17,9 @@
 
 # Feature Specification: AI-Friendly MCP Tool and Resource Surface
 
-**Feature Branch**: `001-shardingsphere-mcp`  
-**Created**: 2026-05-03  
-**Status**: Draft  
+**Feature Branch**: `001-shardingsphere-mcp`
+**Created**: 2026-05-03
+**Status**: Draft
 **Input**: User request to use Spec Kit style requirements and catalog the gaps that prevent MCP tools and resources from being natural for large language models, without switching branches.
 
 ## Process Constraints
@@ -154,7 +154,7 @@ Given a user or model is about to call a tool that may execute SQL, DDL, or Dist
 Acceptance checks:
 
 - Side-effecting tools declare whether they may mutate data, metadata, rules, or physical structures.
-- `apply_workflow` explains the difference between `auto-execute`, `review-then-execute`, and `manual-only`.
+- `apply_workflow` explains the difference between `preview`, `review-then-execute`, and `manual-only`.
 - `execute_query` is either constrained to read-only behavior or its name, description, annotations, and validation explain the actual supported statement classes.
 - Responses from side-effecting tools include execution mode, executed artifacts, skipped artifacts, and validation recommendations.
 

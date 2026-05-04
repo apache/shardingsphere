@@ -28,19 +28,20 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class MCPItemsResponse implements MCPResponse {
-    
+
     private final List<?> items;
-    
+
     private final String nextPageToken;
-    
+
     public MCPItemsResponse(final List<?> items) {
         this(items, "");
     }
-    
+
     @Override
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(items.size() + 1, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(items.size() + 2, 1F);
         result.put("items", items);
+        result.put("has_more", null != nextPageToken && !nextPageToken.isEmpty());
         if (null != nextPageToken && !nextPageToken.isEmpty()) {
             result.put("next_page_token", nextPageToken);
         }

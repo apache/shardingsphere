@@ -175,20 +175,29 @@ Expected result:
 
 - The response content type is `text/event-stream`.
 - The `data:` line contains one resource payload for `shardingsphere://capabilities`.
-- The payload is generated from the descriptor catalog and includes `resources`, `resourceTemplates`, `tools`, `protocolAvailability`, and deferred prompt or completion requirements.
+- The payload is generated from the descriptor catalog and includes `resources`, `resourceTemplates`, `tools`, `prompts`, `completionTargets`, `resourceNavigation`,
+  `protocolAvailability`, and deterministic `fingerprints`.
 
 ### Descriptor-Driven Discovery
 
-MCP tools and resources publish model-facing metadata from YAML descriptors under `META-INF/shardingsphere-mcp/descriptors`.
-The same descriptor source is used by `resources/list`, `resources/templates/list`, `tools/list`, and the aggregate `shardingsphere://capabilities` resource.
+MCP tools, resources, prompts, and completions publish model-facing metadata from YAML descriptors under `META-INF/shardingsphere-mcp/descriptors`.
+The same descriptor source is used by `resources/list`, `resources/templates/list`, `tools/list`, `prompts/list`, `completion/complete`, and the aggregate `shardingsphere://capabilities` resource.
 
 Descriptors must describe what the model should use the surface for, not just repeat the URI or tool name:
 
 - Resource descriptors include URI template parameter meaning, logical versus physical object scope, MIME type, title, description, annotations, and relationship metadata.
 - Tool descriptors include input field descriptions, structured object properties where keys are known, output schema, MCP annotations, related resources, follow-up tools, and side-effect notes.
-- Workflow tool responses include `missing_required_inputs`, `resources_to_read`, `next_actions`, `recommended_next_tool`, and `requires_user_approval` so a model can continue the workflow without guessing.
-- Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments, unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
-- Prompt and completion support is recorded in the capability catalog as a deferred requirement and is not implemented in this phase.
+- Prompt descriptors expose task guides such as metadata inspection, safe SQL execution, encrypt planning, mask planning, and workflow recovery.
+- Completion targets provide descriptor-backed suggestions for runtime names, algorithms, and current-session workflow plan IDs.
+- Completion responses include diagnostics such as missing context, candidate counts, and deterministic ranking reasons.
+- `resourceNavigation` explains lightweight public next hops such as databases to schemas, tables to columns, algorithms to planning tools,
+  and workflow plans to apply or validation tools.
+- `fingerprints` records deterministic hashes for descriptor, prompt, navigation, and model-facing schema surfaces so test artifacts can prove which MCP surface a model used.
+- Paginated item responses always include `has_more`, and include `next_page_token` only when another page is available.
+- Workflow tool responses include `missing_required_inputs`, `resources_to_read`, `next_actions`, `recommended_next_tool`, and `requires_user_approval`
+  so a model can continue the workflow without guessing.
+- Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,
+  unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.
 
 ### Read `shardingsphere://databases/orders/schemas/public/sequences`
 
@@ -384,10 +393,11 @@ If you want one encrypt or mask workflow to run end to end without ambiguity, us
 1. Start with the feature-specific planner: `plan_encrypt_rule` for encrypt or `plan_mask_rule` for mask. Do not start from `apply`.
 2. If the response is `status = clarifying`, read `pending_questions` and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
 3. If the response is `status = planned`, review `derived_column_plan`, `ddl_artifacts`, `distsql_artifacts`, and `index_plan`.
-4. Call `apply_workflow`. If you want manual execution, set `execution_mode` to `manual-only`.
-5. If apply returns `awaiting-manual-execution`, execute the returned `manual_artifact_package` against ShardingSphere-Proxy first, then continue.
-6. Call `validate_workflow` and make sure the returned validation layers pass.
-7. If validation fails, inspect `issues` and `mismatches`, then either finish the remaining apply steps or re-plan after fixing the environment.
+4. Call `apply_workflow` with `execution_mode=preview` so MCP shows the artifacts and side-effect scope without changing runtime state.
+5. After user approval, call `apply_workflow` with `execution_mode=review-then-execute`, or use `manual-only` when the artifacts should be exported.
+6. If apply returns `awaiting-manual-execution`, execute the returned `manual_artifact_package` against ShardingSphere-Proxy first, then continue.
+7. Call `validate_workflow` and make sure the returned validation layers pass.
+8. If validation fails, inspect `issues` and `mismatches`, then either finish the remaining apply steps or re-plan after fixing the environment.
 
 ### Interaction model
 
@@ -419,8 +429,9 @@ In addition:
 
 - `delivery_mode` supports `all-at-once` and `step-by-step`
   - MCP echoes the selected mode in the plan response so the client can decide whether to present the whole plan at once or drive the conversation step by step
-- `execution_mode` supports `review-then-execute` and `manual-only`
-  - the former executes generated artifacts automatically, while the latter exports a manual artifact package only
+- Planning `execution_mode` supports `review-then-execute` and `manual-only` as the preferred final apply mode.
+- `apply_workflow` requires explicit `execution_mode`
+  - use `preview` first, then `review-then-execute` after approval, or `manual-only` to export a manual artifact package only
 
 ### What to do next for each status
 
@@ -640,7 +651,7 @@ At this point the workflow is ready to execute. Review:
 - whether assisted-query derived columns and indexes are expected
 - whether the DistSQL mapping matches the intended logical column and algorithm types
 
-Step 3: apply the plan
+Step 3: apply the approved plan
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -648,7 +659,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 Typical response snippet:
@@ -712,7 +723,8 @@ Continue with the same `plan_id` and send the missing fields back to `plan_encry
 
 #### Apply and validate
 
-The default execution mode is `review-then-execute`:
+The planned default final mode is `review-then-execute`, but `apply_workflow` requires an explicit safety mode.
+Preview first:
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -720,7 +732,18 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"preview\"}}}"
+```
+
+After reviewing the preview with the user, execute approved artifacts:
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 If you want MCP to export the artifacts without executing them, switch to `manual-only`:
@@ -731,7 +754,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-3\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
 ```
 
 `manual-only` returns `manual_artifact_package` with:
@@ -943,7 +966,7 @@ Two important things to verify here:
 - mask should not generate physical derived columns, so `ddl_artifacts` should normally stay empty
 - the main review target is `distsql_artifacts`
 
-Step 3: apply the mask rule
+Step 3: apply the approved mask rule
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -951,7 +974,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 Step 4: validate the final rule state

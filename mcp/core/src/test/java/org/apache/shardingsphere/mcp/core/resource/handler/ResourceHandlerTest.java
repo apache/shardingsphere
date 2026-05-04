@@ -57,16 +57,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
-    
+
     private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetResourceDescriptor(final HandlerCase handlerCase) {
         assertThat(handlerCase.getHandler().getResourceDescriptor().getUriPattern(), is(handlerCase.getExpectedUriPattern()));
         assertFalse(handlerCase.getHandler().getResourceDescriptor().getDescription().isBlank());
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
@@ -81,13 +81,18 @@ class ResourceHandlerTest {
             if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
                 assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMapResponse.class));
                 assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
+                assertTrue(((List<?>) actualPayload.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
+                assertTrue(((List<?>) actualPayload.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
+                assertTrue(((List<?>) actualPayload.get("resourceNavigation")).stream().map(String::valueOf).anyMatch(each -> each.contains("apply_workflow")));
+                assertTrue(((Map<?, ?>) actualPayload.get("fingerprints")).containsKey("descriptorCatalog"));
+                assertTrue((Boolean) ((Map<?, ?>) actualPayload.get("protocolAvailability")).get("resourceNavigation"));
                 return;
             }
             assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPItemsResponse.class));
             assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));
         }
     }
-    
+
     @Test
     void assertHandleWithUnsupportedIndexResource() {
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
@@ -101,7 +106,7 @@ class ResourceHandlerTest {
             assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
         }
     }
-    
+
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
@@ -115,15 +120,15 @@ class ResourceHandlerTest {
             assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
         }
     }
-    
+
     private MCPUriVariables parseUriVariables(final String uriPattern, final String resourceUri) {
         return new MCPUriPattern(uriPattern).parse(resourceUri).orElseThrow();
     }
-    
+
     private <T extends MCPHandlerContext> MCPResponse handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
         return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
-    
+
     private List<String> extractMetadataNames(final Map<String, Object> payload) {
         List<String> result = new LinkedList<>();
         for (Object each : getMetadataItems(payload)) {
@@ -157,12 +162,12 @@ class ResourceHandlerTest {
         }
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<Object> getMetadataItems(final Map<String, Object> payload) {
         return (List<Object>) payload.get("items");
     }
-    
+
     private static Stream<HandlerCase> handlerCases() {
         return Stream.of(
                 new HandlerCase("server capabilities", new ServerCapabilitiesHandler(), "shardingsphere://capabilities",
@@ -252,27 +257,27 @@ class ResourceHandlerTest {
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")));
     }
-    
+
     private static List<?> singletonOrEmpty(final Optional<?> metadata) {
         return metadata.map(Collections::singletonList).orElse(Collections.emptyList());
     }
-    
+
     private static final class HandlerCase {
-        
+
         private final String description;
-        
+
         private final MCPResourceHandler<?> handler;
-        
+
         private final String expectedUriPattern;
-        
+
         private final String resourceUri;
-        
+
         private final HandlerResultType expectedType;
-        
+
         private final String expectedDatabase;
-        
+
         private final List<String> expectedObjectNames;
-        
+
         private HandlerCase(final String description, final MCPResourceHandler<?> handler, final String expectedUriPattern, final String resourceUri,
                             final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
             this.description = description;
@@ -283,43 +288,43 @@ class ResourceHandlerTest {
             this.expectedDatabase = expectedDatabase;
             this.expectedObjectNames = expectedObjectNames;
         }
-        
+
         private MCPResourceHandler<?> getHandler() {
             return handler;
         }
-        
+
         private String getExpectedUriPattern() {
             return expectedUriPattern;
         }
-        
+
         private String getResourceUri() {
             return resourceUri;
         }
-        
+
         private HandlerResultType getExpectedType() {
             return expectedType;
         }
-        
+
         private String getExpectedDatabase() {
             return expectedDatabase;
         }
-        
+
         private List<String> getExpectedObjectNames() {
             return expectedObjectNames;
         }
-        
+
         @Override
         public String toString() {
             return description;
         }
     }
-    
+
     private enum HandlerResultType {
-        
+
         SERVICE_CAPABILITY,
-        
+
         DATABASE_CAPABILITY,
-        
+
         METADATA
     }
 }

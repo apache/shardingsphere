@@ -32,19 +32,19 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 
 class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWorkflowE2ETest {
-    
+
     private static final String PLAN_TOOL_NAME = "plan_mask_rule";
-    
+
     private static final String APPLY_TOOL_NAME = WorkflowToolDescriptors.APPLY_TOOL_NAME;
-    
+
     private static final String VALIDATE_TOOL_NAME = WorkflowToolDescriptors.VALIDATE_TOOL_NAME;
-    
+
     private static final String ALGORITHMS_RESOURCE_URI = "shardingsphere://features/mask/algorithms";
-    
+
     private static final String RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/rules";
-    
+
     private static final String TABLE_RULES_RESOURCE_URI = "shardingsphere://features/mask/databases/%s/tables/%s/rules";
-    
+
     @Test
     void assertPlanApplyAndValidateMaskCreateAlterWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -55,7 +55,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualCreatePlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("CREATE MASK RULE orders"));
             String createPlanId = String.valueOf(actualCreatePlanResponse.get("plan_id"));
-            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", createPlanId)).get("status")), is("completed"));
+            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(createPlanId)).get("status")), is("completed"));
             Map<String, Object> actualCreateValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", createPlanId));
             assertValidationPassed(actualCreateValidationResponse);
             assertThat(String.valueOf(getMap(getMap(actualCreateValidationResponse.get("rule_validation")).get("evidence")).get("algorithm_type")).toUpperCase(Locale.ENGLISH),
@@ -67,14 +67,14 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualAlterPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualAlterPlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER MASK RULE orders"));
             String alterPlanId = String.valueOf(actualAlterPlanResponse.get("plan_id"));
-            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", alterPlanId)).get("status")), is("completed"));
+            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(alterPlanId)).get("status")), is("completed"));
             Map<String, Object> actualAlterValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", alterPlanId));
             assertValidationPassed(actualAlterValidationResponse);
             assertThat(String.valueOf(getMap(getMap(actualAlterValidationResponse.get("rule_validation")).get("evidence")).get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("KEEP_FIRST_N_LAST_M"));
         }
     }
-    
+
     @Test
     void assertPlanApplyAndValidateMaskDropWorkflowThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -84,13 +84,13 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), is("DROP MASK RULE orders"));
             String planId = String.valueOf(actualDropPlanResponse.get("plan_id"));
-            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId)).get("status")), is("completed"));
+            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)).get("status")), is("completed"));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
             assertThat(String.valueOf(getMap(actualValidationResponse.get("rule_validation")).get("details")), is("Mask rule has been removed."));
         }
     }
-    
+
     @Test
     void assertPlanKeepsSiblingMaskRulesWhenDroppingOneColumnThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -102,7 +102,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualSecondCreatePlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualSecondCreatePlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER MASK RULE orders"));
             String secondCreatePlanId = String.valueOf(actualSecondCreatePlanResponse.get("plan_id"));
-            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", secondCreatePlanId)).get("status")), is("completed"));
+            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(secondCreatePlanId)).get("status")), is("completed"));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", secondCreatePlanId)));
             List<Map<String, Object>> actualMaskRules = getPayloadItems(
                     interactionClient.readResource(String.format(TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName(), "orders")));
@@ -112,7 +112,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
             assertThat(String.valueOf(getMapList(actualDropPlanResponse.get("distsql_artifacts")).get(0).get("sql")), containsString("ALTER MASK RULE orders"));
             String dropPlanId = String.valueOf(actualDropPlanResponse.get("plan_id"));
-            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", dropPlanId)).get("status")), is("completed"));
+            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(dropPlanId)).get("status")), is("completed"));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", dropPlanId)));
             List<Map<String, Object>> actualRemainingMaskRules = getPayloadItems(
                     interactionClient.readResource(String.format(TABLE_RULES_RESOURCE_URI, getLogicalDatabaseName(), "orders")));
@@ -120,7 +120,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualRemainingMaskRules.get(0).get("column")), is("status"));
         }
     }
-    
+
     @Test
     void assertPlanRecommendApplyAndValidateMaskWorkflowFromNaturalLanguageThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -137,14 +137,14 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             Map<String, Object> actualPlannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("plan_id", planId, "primary_algorithm_properties", Map.of("from-x", "4", "to-y", "7")));
             assertThat(String.valueOf(actualPlannedResponse.get("status")), is("planned"));
-            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId)).get("status")), is("completed"));
+            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)).get("status")), is("completed"));
             Map<String, Object> actualValidationResponse = interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
             assertValidationPassed(actualValidationResponse);
             assertThat(String.valueOf(getMap(getMap(actualValidationResponse.get("rule_validation")).get("evidence")).get("algorithm_type")).toUpperCase(Locale.ENGLISH),
                     is("MASK_FROM_X_TO_Y"));
         }
     }
-    
+
     @Test
     void assertPlanApplyValidateAndReadMaskResourcesWithCustomAlgorithmThroughProxy() throws Exception {
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -153,7 +153,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                             "operation_type", "create", "algorithm_type", "MCP_MASK_CUSTOM"));
             assertThat(String.valueOf(actualPlanResponse.get("status")), is("planned"));
             String planId = String.valueOf(actualPlanResponse.get("plan_id"));
-            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId)).get("status")), is("completed"));
+            assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)).get("status")), is("completed"));
             assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
             List<Map<String, Object>> actualMaskPluginItems = getPayloadItems(interactionClient.readResource(ALGORITHMS_RESOURCE_URI));
             assertThat(String.valueOf(findItemByField(actualMaskPluginItems, "type", "MCP_MASK_CUSTOM").get("type")), is("MCP_MASK_CUSTOM"));
@@ -167,7 +167,7 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
             assertThat(String.valueOf(actualSingleRuleItems.get(0).get("column")), is("status"));
         }
     }
-    
+
     private void createMaskRule(final MCPInteractionClient interactionClient) throws Exception {
         Map<String, Object> actualCreatePlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                 Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status",
@@ -175,10 +175,14 @@ class HttpProductionProxyMaskWorkflowE2ETest extends AbstractProductionProxyWork
                         "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*")));
         assertThat(String.valueOf(actualCreatePlanResponse.get("status")), is("planned"));
         String planId = String.valueOf(actualCreatePlanResponse.get("plan_id"));
-        assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, Map.of("plan_id", planId)).get("status")), is("completed"));
+        assertThat(String.valueOf(interactionClient.call(APPLY_TOOL_NAME, createApplyArguments(planId)).get("status")), is("completed"));
         assertValidationPassed(interactionClient.call(VALIDATE_TOOL_NAME, Map.of("plan_id", planId)));
     }
-    
+
+    private Map<String, Object> createApplyArguments(final String planId) {
+        return Map.of("plan_id", planId, "execution_mode", "review-then-execute");
+    }
+
     private Map<String, Object> findItemByField(final List<Map<String, Object>> items, final String fieldName, final String expectedValue) {
         return items.stream().filter(each -> expectedValue.equalsIgnoreCase(String.valueOf(each.get(fieldName)))).findFirst()
                 .orElseThrow(() -> new AssertionError(String.format("Failed to find item by %s=%s in %s", fieldName, expectedValue, items)));

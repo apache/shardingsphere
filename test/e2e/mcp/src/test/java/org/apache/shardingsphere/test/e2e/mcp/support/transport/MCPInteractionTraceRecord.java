@@ -28,21 +28,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class MCPInteractionTraceRecord {
-    
+
     private final int sequence;
-    
+
     private final String actionKind;
-    
+
     private final String targetName;
-    
+
     private final Map<String, Object> arguments;
-    
+
     private final Map<String, Object> structuredContent;
-    
+
     private final boolean valid;
-    
+
     private final long latencyMillis;
-    
+
     /**
      * Create resource list.
      *
@@ -55,7 +55,7 @@ public final class MCPInteractionTraceRecord {
         return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_LIST_KIND, MCPInteractionActionNames.LIST_RESOURCES,
                 Map.of(), structuredContent, true, latencyMillis);
     }
-    
+
     /**
      * Create resource read.
      *
@@ -69,7 +69,51 @@ public final class MCPInteractionTraceRecord {
         return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, MCPInteractionActionNames.READ_RESOURCE,
                 Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
     }
-    
+
+    /**
+     * Create prompt list.
+     *
+     * @param sequence sequence
+     * @param structuredContent structured content
+     * @param latencyMillis latency millis
+     * @return interaction trace record
+     */
+    public static MCPInteractionTraceRecord createPromptList(final int sequence, final Map<String, Object> structuredContent, final long latencyMillis) {
+        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_LIST_KIND, MCPInteractionActionNames.LIST_PROMPTS,
+                Map.of(), structuredContent, true, latencyMillis);
+    }
+
+    /**
+     * Create prompt get.
+     *
+     * @param sequence sequence
+     * @param promptName prompt name
+     * @param promptArguments prompt arguments
+     * @param structuredContent structured content
+     * @param latencyMillis latency millis
+     * @return interaction trace record
+     */
+    public static MCPInteractionTraceRecord createPromptGet(final int sequence, final String promptName, final Map<String, Object> promptArguments,
+                                                            final Map<String, Object> structuredContent, final long latencyMillis) {
+        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_GET_KIND, MCPInteractionActionNames.GET_PROMPT,
+                Map.of("name", promptName, "arguments", promptArguments), structuredContent, true, latencyMillis);
+    }
+
+    /**
+     * Create completion.
+     *
+     * @param sequence sequence
+     * @param arguments completion arguments
+     * @param structuredContent structured content
+     * @param latencyMillis latency millis
+     * @return interaction trace record
+     */
+    public static MCPInteractionTraceRecord createCompletion(final int sequence, final Map<String, Object> arguments,
+                                                             final Map<String, Object> structuredContent, final long latencyMillis) {
+        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.COMPLETION_KIND, MCPInteractionActionNames.COMPLETE,
+                arguments, structuredContent, true, latencyMillis);
+    }
+
     /**
      * Create invalid action.
      *

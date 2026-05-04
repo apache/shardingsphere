@@ -29,18 +29,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class MCPItemsResponseTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertToPayloadCases")
     void assertToPayload(final String name, final MCPItemsResponse response, final Map<String, Object> expectedPayload) {
         Map<String, Object> actual = response.toPayload();
         assertThat(actual, is(expectedPayload));
     }
-    
+
     private static Stream<Arguments> assertToPayloadCases() {
         return Stream.of(
-                Arguments.of("without page token", new MCPItemsResponse(List.of("foo_item")), Map.of("items", List.of("foo_item"))),
-                Arguments.of("with null page token", new MCPItemsResponse(List.of("foo_item"), null), Map.of("items", List.of("foo_item"))),
-                Arguments.of("with page token", new MCPItemsResponse(List.of("foo_item"), "foo_token"), Map.of("items", List.of("foo_item"), "next_page_token", "foo_token")));
+                Arguments.of("without page token", new MCPItemsResponse(List.of("foo_item")), Map.of("items", List.of("foo_item"), "has_more", false)),
+                Arguments.of("with null page token", new MCPItemsResponse(List.of("foo_item"), null), Map.of("items", List.of("foo_item"), "has_more", false)),
+                Arguments.of("with page token", new MCPItemsResponse(List.of("foo_item"), "foo_token"),
+                        Map.of("items", List.of("foo_item"), "has_more", true, "next_page_token", "foo_token")));
     }
 }

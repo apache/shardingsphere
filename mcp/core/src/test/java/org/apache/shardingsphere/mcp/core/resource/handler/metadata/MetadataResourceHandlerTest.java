@@ -31,14 +31,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MetadataResourceHandlerTest {
-    
+
     @Test
     void assertGetResourceDescriptor() {
         MetadataResourceHandler actual = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
         assertThat(actual.getResourceDescriptor().getUriPattern(), is("shardingsphere://databases"));
         assertThat(actual.getResourceDescriptor().getTitle(), is("Logical Databases"));
     }
-    
+
     @Test
     void assertHandle() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
@@ -46,6 +46,6 @@ class MetadataResourceHandlerTest {
         MCPUriVariables uriVariables = mock(MCPUriVariables.class);
         when(uriVariables.getVariable("database")).thenReturn("logic_db");
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), uriVariables);
-        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")))));
+        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "has_more", false)));
     }
 }

@@ -24,6 +24,8 @@ import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
 import io.modelcontextprotocol.spec.McpServerTransportProvider;
 import io.modelcontextprotocol.spec.McpStreamableServerTransportProvider;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportConstants;
+import org.apache.shardingsphere.mcp.bootstrap.transport.completion.MCPCompletionSpecificationFactory;
+import org.apache.shardingsphere.mcp.bootstrap.transport.prompt.MCPPromptSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.resource.MCPResourceSpecificationFactory;
 import org.apache.shardingsphere.mcp.bootstrap.transport.tool.MCPToolSpecificationFactory;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
@@ -34,19 +36,25 @@ import java.util.Optional;
  * MCP sync server factory.
  */
 public final class MCPSyncServerFactory {
-    
+
     private final McpJsonMapper jsonMapper;
-    
+
     private final MCPToolSpecificationFactory toolSpecificationFactory;
-    
+
     private final MCPResourceSpecificationFactory resourceSpecificationFactory;
-    
+
+    private final MCPPromptSpecificationFactory promptSpecificationFactory;
+
+    private final MCPCompletionSpecificationFactory completionSpecificationFactory;
+
     public MCPSyncServerFactory(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
         toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext);
         resourceSpecificationFactory = new MCPResourceSpecificationFactory(runtimeContext);
+        promptSpecificationFactory = new MCPPromptSpecificationFactory();
+        completionSpecificationFactory = new MCPCompletionSpecificationFactory(runtimeContext);
     }
-    
+
     /**
      * Create one sync server for single-session transports.
      *
@@ -56,7 +64,7 @@ public final class MCPSyncServerFactory {
     public McpSyncServer create(final McpServerTransportProvider transportProvider) {
         return create(McpServer.sync(transportProvider));
     }
-    
+
     /**
      * Create one sync server for streamable transports.
      *
@@ -66,15 +74,17 @@ public final class MCPSyncServerFactory {
     public McpSyncServer create(final McpStreamableServerTransportProvider transportProvider) {
         return create(McpServer.sync(transportProvider));
     }
-    
+
     private McpSyncServer create(final McpServer.SyncSpecification<?> specification) {
         return specification.jsonMapper(jsonMapper)
                 .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development"))
                 .instructions(MCPTransportConstants.SERVER_INSTRUCTIONS)
-                .capabilities(ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).build())
+                .capabilities(ServerCapabilities.builder().resources(Boolean.FALSE, Boolean.FALSE).tools(Boolean.FALSE).prompts(Boolean.FALSE).completions().build())
                 .tools(toolSpecificationFactory.createToolSpecifications())
                 .resources(resourceSpecificationFactory.createResourceSpecifications())
                 .resourceTemplates(resourceSpecificationFactory.createResourceTemplateSpecifications())
+                .prompts(promptSpecificationFactory.createPromptSpecifications())
+                .completions(completionSpecificationFactory.createCompletionSpecifications())
                 .build();
     }
 }

@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowToolDescriptorsTest {
-    
+
     @Test
     void assertCreatePlanningLoadsDescriptor() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("plan_encrypt_rule");
@@ -41,23 +41,24 @@ class WorkflowToolDescriptorsTest {
                 "execution_mode", "algorithm_type", "user_overrides")));
         assertThat(actual.getFields().get(5).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("create", "alter", "drop")));
         assertThat(actual.getFields().get(8).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("all-at-once", "step-by-step")));
-        assertThat(actual.getFields().get(9).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("auto-execute", "review-then-execute", "manual-only")));
+        assertThat(actual.getFields().get(9).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("review-then-execute", "manual-only")));
         assertTrue(actual.getFields().get(7).getValueDefinition().toSchemaFragment().containsKey("properties"));
     }
-    
+
     @Test
     void assertCreateExecutionBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
         assertThat(actual.getName(), is("apply_workflow"));
         assertThat(actual.getTitle(), is("Apply Workflow"));
         assertThat(actual.getFields().stream().map(MCPToolFieldDefinition::getName).toList(), is(List.of("plan_id", "execution_mode", "approved_steps")));
-        assertThat(actual.getFields().get(1).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("auto-execute", "review-then-execute", "manual-only")));
+        assertTrue(actual.getFields().get(1).isRequired());
+        assertThat(actual.getFields().get(1).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("preview", "review-then-execute", "manual-only")));
         assertThat(actual.getFields().get(2).getValueDefinition().toSchemaFragment(), is(new MCPToolValueDefinition(
                 MCPToolValueDefinition.Type.ARRAY, "Optional approved step names when only part of the plan should be applied.",
                 new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "Workflow step name from the plan response.", null)).toSchemaFragment()));
         assertTrue(actual.getAnnotations().getDestructiveHint());
     }
-    
+
     @Test
     void assertCreateValidationBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation();

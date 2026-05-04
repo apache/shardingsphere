@@ -85,7 +85,6 @@ tools:
           type: STRING
           description: "Execution mode."
           enumValues:
-            - auto-execute
             - review-then-execute
             - manual-only
       - name: algorithm_type

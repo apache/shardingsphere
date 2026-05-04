@@ -37,6 +37,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.SQLSyntaxErrorException;
 import java.sql.SQLTimeoutException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -46,14 +47,14 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPErrorConverterTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertConvertCases")
     void assertConvert(final String name, final Throwable cause, final String expectedErrorCode, final String expectedMessage) {
         MCPErrorResponse actual = MCPErrorConverter.convert(cause);
         assertThat(actual.toPayload(), is(Map.of("error_code", expectedErrorCode, "message", expectedMessage)));
     }
-    
+
     @Test
     void assertConvertUnsupportedToolWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedToolException("missing_tool")).toPayload();
@@ -61,9 +62,10 @@ class MCPErrorConverterTest {
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actualRecovery.get("category"), is("unsupported_tool"));
         assertThat(actualRecovery.get("tool_name"), is("missing_tool"));
-        assertTrue(((List<?>) actualRecovery.get("supported_tools")).contains("execute_query"));
+        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
+        assertTrue(((Collection<?>) actualRecovery.get("supported_tools")).contains("execute_query"));
     }
-    
+
     @Test
     void assertConvertUnsupportedResourceWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedResourceUriException("shardingsphere://unknown")).toPayload();
@@ -71,27 +73,71 @@ class MCPErrorConverterTest {
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actualRecovery.get("category"), is("unsupported_resource_uri"));
         assertThat(actualRecovery.get("resource_uri"), is("shardingsphere://unknown"));
-        assertTrue(((List<?>) actualRecovery.get("matching_resource_templates")).contains("shardingsphere://capabilities"));
+        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
+        assertTrue(((Collection<?>) actualRecovery.get("matching_resource_templates")).contains("shardingsphere://capabilities"));
     }
-    
+
     @Test
     void assertConvertMissingArgumentWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("database is required.")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("missing_argument"));
         assertThat(actualRecovery.get("missing_fields"), is(List.of("database")));
+        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://databases")));
+        assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
-    
+
+    @Test
+    void assertConvertMissingExecutionModeWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("execution_mode is required.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("missing_execution_mode"));
+        assertThat(actualRecovery.get("missing_fields"), is(List.of("execution_mode")));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
+        assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
+    }
+
+    @Test
+    void assertConvertInvalidWorkflowExecutionModeWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(
+                new MCPInvalidRequestException("execution_mode must be one of `preview`, `review-then-execute`, or `manual-only`.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
+        assertThat(actualRecovery.get("allowed_values"), is(List.of("preview", "review-then-execute", "manual-only")));
+        assertThat(actualRecovery.get("suggested_next_tool"), is("apply_workflow"));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
+    }
+
+    @Test
+    void assertConvertMultipleStatementsWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("Only one SQL statement is allowed.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("multiple_sql_statements"));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
+        assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
+    }
+
     @Test
     void assertConvertUnsafeQueryWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(
                 "execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL.")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("unsafe_sql_attempted"));
-        assertThat(actualRecovery.get("recommended_tool"), is("execute_update"));
+        assertThat(actualRecovery.get("suggested_next_tool"), is("execute_update"));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
-    
+
+    @Test
+    void assertConvertWorkflowStateWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException(
+                "Unknown or unavailable plan_id `plan-missing`. Call the planning tool again in the current MCP session.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("workflow_state_error"));
+        assertThat(actualRecovery.get("suggested_next_tools"), is(List.of("plan_encrypt_rule", "plan_mask_rule")));
+        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
+    }
+
     static Stream<Arguments> assertConvertCases() {
         return Stream.of(
                 Arguments.of("invalid request exception", new MCPInvalidRequestException("Invalid request."), "invalid_request", "Invalid request."),

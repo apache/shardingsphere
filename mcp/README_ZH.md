@@ -175,20 +175,29 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 - 响应类型是 `text/event-stream`。
 - `data:` 行中会包含 `shardingsphere://capabilities` 对应的 resource 内容。
-- 该 payload 由 descriptor catalog 生成，会包含 `resources`、`resourceTemplates`、`tools`、`protocolAvailability`，以及暂缓实现的 prompt / completion 需求。
+- 该 payload 由 descriptor catalog 生成，会包含 `resources`、`resourceTemplates`、`tools`、`prompts`、`completionTargets`、`resourceNavigation`、
+  `protocolAvailability` 和确定性的 `fingerprints`。
 
 ### 基于 Descriptor 的 Discovery
 
-MCP tools 与 resources 的模型可见元数据来自 `META-INF/shardingsphere-mcp/descriptors` 下的 YAML descriptors。
-`resources/list`、`resources/templates/list`、`tools/list` 和聚合资源 `shardingsphere://capabilities` 都使用同一份 descriptor 来源。
+MCP tools、resources、prompts 与 completions 的模型可见元数据来自 `META-INF/shardingsphere-mcp/descriptors` 下的 YAML descriptors。
+`resources/list`、`resources/templates/list`、`tools/list`、`prompts/list`、`completion/complete` 和聚合资源 `shardingsphere://capabilities` 都使用同一份 descriptor 来源。
 
 Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 URI 或 tool 名：
 
 - Resource descriptor 包含 URI template 参数含义、逻辑对象与物理对象范围、MIME type、title、description、annotations 和关系元数据。
 - Tool descriptor 包含 input field 描述、已知 object key 的结构化 schema、output schema、MCP annotations、相关 resources、后续 tools 和副作用说明。
-- Workflow tool 响应包含 `missing_required_inputs`、`resources_to_read`、`next_actions`、`recommended_next_tool` 和 `requires_user_approval`，让模型可以不用猜测地继续下一步。
-- 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、workflow 状态错误以及 SQL tool 选错场景增加 `recovery` 提示。
-- Prompt 与 completion 支持目前只作为暂缓需求记录在 capability catalog 中，本阶段不实现。
+- Prompt descriptor 暴露元数据检查、安全 SQL 执行、加密规划、脱敏规划和 workflow 恢复等任务指南。
+- Completion target 为运行时名称、算法和当前 session 内 workflow plan_id 提供 descriptor 驱动的补全建议。
+- Completion 响应会返回缺失上下文、候选数量和确定性排序原因等诊断信息。
+- `resourceNavigation` 说明轻量级的公开下一跳，例如 database 到 schema、table 到 column、algorithm 到规划工具，
+  以及 workflow plan 到 apply 或 validation 工具。
+- `fingerprints` 记录 descriptor、prompt、navigation 和模型可见 schema 的确定性哈希，让测试产物能证明模型使用的是哪一版 MCP surface。
+- 分页 item 响应总会包含 `has_more`，只有存在下一页时才包含 `next_page_token`。
+- Workflow tool 响应包含 `missing_required_inputs`、`resources_to_read`、`next_actions`、`recommended_next_tool`
+  和 `requires_user_approval`，让模型可以不用猜测地继续下一步。
+- 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、
+  workflow 状态错误以及 SQL tool 选错场景增加 `recovery` 提示。
 
 ### 读取 `shardingsphere://databases/orders/schemas/public/sequences`
 
@@ -386,10 +395,11 @@ Workflow 同时补充了以下 feature resources：
 1. 先调用对应 feature 的 planner：加密用 `plan_encrypt_rule`，脱敏用 `plan_mask_rule`，不要直接从 `apply` 开始。
 2. 如果返回 `status = clarifying`，读取 `pending_questions`，带上同一个 `plan_id` 再次调用同一个 `plan_*_rule` 补齐缺失信息。
 3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
-4. 调用 `apply_workflow` 执行 artifacts；如果要人工执行，就把 `execution_mode` 设为 `manual-only`。
-5. 如果 `apply` 返回 `awaiting-manual-execution`，先把 `manual_artifact_package` 里的 SQL / DistSQL 在 Proxy 上手工执行完，再进入下一步。
-6. 调用 `validate_workflow`，确认返回中的校验层级都通过。
-7. 如果 `validate` 失败，优先看 `issues` 和 `mismatches`，修复后再继续补执行或重新规划。
+4. 调用 `apply_workflow` 并显式设置 `execution_mode=preview`，先查看 artifacts 和副作用范围，不改变运行时状态。
+5. 用户确认后，再用 `execution_mode=review-then-execute` 调用 `apply_workflow`，或者用 `manual-only` 导出人工执行包。
+6. 如果 `apply` 返回 `awaiting-manual-execution`，先把 `manual_artifact_package` 里的 SQL / DistSQL 在 Proxy 上手工执行完，再进入下一步。
+7. 调用 `validate_workflow`，确认返回中的校验层级都通过。
+8. 如果 `validate` 失败，优先看 `issues` 和 `mismatches`，修复后再继续补执行或重新规划。
 
 ### 整体交互方式
 
@@ -421,8 +431,9 @@ Workflow 同时补充了以下 feature resources：
 
 - `delivery_mode` 支持 `all-at-once` 和 `step-by-step`
   - MCP 会把选定模式写回 plan 响应，便于 client 决定一次展示完整计划还是按步骤组织对话。
-- `execution_mode` 支持 `review-then-execute` 和 `manual-only`
-  - 前者自动执行已生成的 artifacts，后者只导出人工执行包。
+- 规划阶段的 `execution_mode` 支持 `review-then-execute` 和 `manual-only`，表示最终 apply 的偏好。
+- `apply_workflow` 必须显式传入 `execution_mode`
+  - 先用 `preview` 预览，再在用户确认后使用 `review-then-execute`，或者用 `manual-only` 只导出人工执行包。
 
 ### 看到不同状态时，下一步该做什么
 
@@ -642,7 +653,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - 是否需要辅助查询列和索引
 - DistSQL 中的算法类型和逻辑列映射是否正确
 
-第 3 步：执行 plan
+第 3 步：执行已确认的 plan
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -650,7 +661,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 典型响应片段如下：
@@ -714,7 +725,8 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 #### 执行与校验
 
-默认执行模式是 `review-then-execute`：
+规划阶段默认的最终模式是 `review-then-execute`，但 `apply_workflow` 仍必须显式传入安全模式。
+先预览：
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -722,7 +734,18 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"preview\"}}}"
+```
+
+用户确认预览结果后，执行已确认的 artifacts：
+
+```bash
+curl -sS http://127.0.0.1:18088/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -H "MCP-Session-Id: ${SESSION_ID}" \
+  -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 如果只想让 MCP 生成 SQL 和 DistSQL，不自动执行，可以改为：
@@ -733,7 +756,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-3\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"manual-only\"}}}"
 ```
 
 `manual-only` 会返回 `manual_artifact_package`，里面包含：
@@ -945,7 +968,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - 脱敏不会生成物理派生列，所以 `ddl_artifacts` 正常情况下应该为空
 - 你真正需要 review 的核心是 `distsql_artifacts`
 
-第 3 步：执行脱敏规则
+第 3 步：执行已确认的脱敏规则
 
 ```bash
 curl -sS http://127.0.0.1:18088/mcp \
@@ -953,7 +976,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
 ```
 
 第 4 步：校验脱敏规则

@@ -24,9 +24,9 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryWorkflowSessionContextTest {
-    
+
     @Test
     void assertGetOrCreateCreatesNewSnapshot() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -45,7 +45,7 @@ class InMemoryWorkflowSessionContextTest {
         assertThat(actualSnapshot.getStatus(), is("clarifying"));
         assertTrue(actualSnapshot.getPlanId().startsWith("plan-"));
     }
-    
+
     @Test
     void assertGetOrCreateReturnsStoredSnapshot() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -57,19 +57,18 @@ class InMemoryWorkflowSessionContextTest {
         assertThat(actualSnapshot.getPlanId(), is("plan-1"));
         assertThat(actualSnapshot.getStatus(), is("planned"));
     }
-    
+
     @Test
-    void assertFindPurgesExpiredSnapshot() {
+    void assertFindKeepsSnapshotForActiveSessionLifetime() {
         MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext(clock, Duration.ofHours(24), 10);
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext(clock);
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
         snapshot.setPlanId("plan-1");
         workflowSessionContext.save(snapshot);
-        clock.setInstant(clock.instant().plus(Duration.ofDays(2)));
         Optional<WorkflowContextSnapshot> actualSnapshot = workflowSessionContext.find("plan-1");
-        assertFalse(actualSnapshot.isPresent());
+        assertTrue(actualSnapshot.isPresent());
     }
-    
+
     @Test
     void assertGetRequiredReturnsSavedSnapshot() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -81,14 +80,14 @@ class InMemoryWorkflowSessionContextTest {
         assertThat(actualSnapshot.getPlanId(), is("plan-1"));
         assertThat(actualSnapshot.getStatus(), is("planned"));
     }
-    
+
     @Test
     void assertGetRequiredThrowsForUnknownPlanId() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
         Exception actualException = assertThrows(MCPInvalidRequestException.class, () -> workflowSessionContext.getRequired("missing"));
-        assertThat(actualException.getMessage(), is("Unknown plan_id `missing`."));
+        assertThat(actualException.getMessage(), is("Unknown or unavailable plan_id `missing`. Call the planning tool again in the current MCP session."));
     }
-    
+
     @Test
     void assertRemoveDeletesSnapshot() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -98,7 +97,7 @@ class InMemoryWorkflowSessionContextTest {
         workflowSessionContext.remove("plan-1");
         assertFalse(workflowSessionContext.find("plan-1").isPresent());
     }
-    
+
     @Test
     void assertSaveStoresDetachedSnapshotCopy() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -109,7 +108,7 @@ class InMemoryWorkflowSessionContextTest {
         snapshot.setStatus("failed");
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("planned"));
     }
-    
+
     @Test
     void assertGetRequiredReturnsDetachedSnapshotCopy() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -121,7 +120,7 @@ class InMemoryWorkflowSessionContextTest {
         actualSnapshot.setStatus("failed");
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("planned"));
     }
-    
+
     @Test
     void assertPersistUpdatesCurrentStepAndStatus() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -135,65 +134,69 @@ class InMemoryWorkflowSessionContextTest {
         assertThat(actualSnapshot.getStatus(), is("planned"));
         assertThat(actualSnapshot.getInteractionPlan().getCurrentStep(), is("review"));
     }
-    
+
     @Test
-    void assertSaveEvictsOldestSnapshotWhenCapacityExceeded() {
+    void assertListReturnsOnlyCurrentSessionSnapshots() {
         MutableClock clock = new MutableClock(Instant.parse("2026-04-25T00:00:00Z"));
-        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext(clock, Duration.ofHours(24), 2);
-        WorkflowContextSnapshot firstSnapshot = createSnapshot("plan-1");
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext(clock);
+        WorkflowContextSnapshot firstSnapshot = createSnapshot("plan-1", "session-1");
         workflowSessionContext.save(firstSnapshot);
-        clock.setInstant(clock.instant().plusSeconds(1L));
-        WorkflowContextSnapshot secondSnapshot = createSnapshot("plan-2");
+        WorkflowContextSnapshot secondSnapshot = createSnapshot("plan-2", "session-2");
         workflowSessionContext.save(secondSnapshot);
         clock.setInstant(clock.instant().plusSeconds(1L));
-        WorkflowContextSnapshot thirdSnapshot = createSnapshot("plan-3");
+        WorkflowContextSnapshot thirdSnapshot = createSnapshot("plan-3", "session-1");
         workflowSessionContext.save(thirdSnapshot);
+        List<WorkflowContextSnapshot> actual = workflowSessionContext.list("session-1");
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0).getPlanId(), is("plan-1"));
+        assertThat(actual.get(1).getPlanId(), is("plan-3"));
+    }
+
+    @Test
+    void assertRemoveBySessionIdRemovesOnlySessionSnapshots() {
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(createSnapshot("plan-1", "session-1"));
+        workflowSessionContext.save(createSnapshot("plan-2", "session-2"));
+        workflowSessionContext.removeBySessionId("session-1");
         assertFalse(workflowSessionContext.find("plan-1").isPresent());
         assertTrue(workflowSessionContext.find("plan-2").isPresent());
-        assertTrue(workflowSessionContext.find("plan-3").isPresent());
     }
-    
-    @Test
-    void assertConstructWithNonPositiveTtlThrowsException() {
-        Exception actual = assertThrows(IllegalArgumentException.class, () -> new InMemoryWorkflowSessionContext(Clock.systemUTC(), Duration.ZERO, 1));
-        assertThat(actual.getMessage(), is("Context TTL must be positive."));
-    }
-    
-    @Test
-    void assertConstructWithNonPositiveCapacityThrowsException() {
-        Exception actual = assertThrows(IllegalArgumentException.class, () -> new InMemoryWorkflowSessionContext(Clock.systemUTC(), Duration.ofHours(1L), 0));
-        assertThat(actual.getMessage(), is("Max entries must be positive."));
-    }
-    
+
     private WorkflowContextSnapshot createSnapshot(final String planId) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
         return result;
     }
-    
+
+    private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId) {
+        WorkflowContextSnapshot result = createSnapshot(planId);
+        result.setSessionId(sessionId);
+        return result;
+    }
+
     private static final class MutableClock extends Clock {
-        
+
         private Instant currentInstant;
-        
+
         private MutableClock(final Instant currentInstant) {
             this.currentInstant = currentInstant;
         }
-        
+
         @Override
         public ZoneId getZone() {
             return ZoneId.of("UTC");
         }
-        
+
         @Override
         public Clock withZone(final ZoneId zone) {
             return this;
         }
-        
+
         @Override
         public Instant instant() {
             return currentInstant;
         }
-        
+
         private void setInstant(final Instant currentInstant) {
             this.currentInstant = currentInstant;
         }

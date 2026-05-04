@@ -27,14 +27,14 @@ import java.util.List;
 import java.util.Locale;
 
 public final class LLMUsabilityScenarioCatalog {
-    
+
     private static final String SYSTEM_PROMPT = """
             You are evaluating an MCP server.
             Use the provided MCP actions exactly as needed.
             Do not guess database structure or query results.
             Return JSON only when asked for the final answer.
             """.trim();
-    
+
     /**
      * Create the minimal usability baseline scenarios for one runtime kind.
      *
@@ -74,6 +74,14 @@ public final class LLMUsabilityScenarioCatalog {
                         List.of("search_metadata", "execute_query"),
                         List.of("search_metadata", "execute_query")),
                 List.of("search_metadata"), List.of(), false, false));
+        List<String> promptCompletionActions = List.of(
+                MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "execute_query");
+        result.add(createScenario("prompt-completion-inspect-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
+                new LLME2EScenario("prompt-completion-inspect-" + runtimeKind, SYSTEM_PROMPT,
+                        "First call " + MCPInteractionActionNames.LIST_PROMPTS + ", then get the `inspect_metadata` prompt for database `" + databaseName + "` and query `"
+                                + tableName + "`. Use " + MCPInteractionActionNames.COMPLETE + " for table prefix `ord`, then verify `" + query + "`.",
+                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), promptCompletionActions, promptCompletionActions),
+                List.of(MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE), List.of(), false, false));
         result.add(createScenario("resource-list-discovery-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 new LLME2EScenario("resource-list-discovery-" + runtimeKind, SYSTEM_PROMPT,
                         "First call " + MCPInteractionActionNames.LIST_RESOURCES + " to discover the available metadata resources. "
@@ -122,7 +130,7 @@ public final class LLMUsabilityScenarioCatalog {
         }
         return result;
     }
-    
+
     private LLMUsabilityScenario createScenario(final String scenarioId, final LLMUsabilityDimension dimension, final String runtimeKind,
                                                 final LLME2EScenario llmScenario, final List<String> expectedFirstActionNames,
                                                 final List<String> expectedResourceUris, final boolean resourceHitRequired,
