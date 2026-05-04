@@ -23,10 +23,10 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescript
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * MCP descriptor registry.
@@ -41,37 +41,13 @@ public final class MCPDescriptorRegistry {
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
     
     private static Map<String, MCPResourceDescriptor> createResourceDescriptors() {
-        Map<String, MCPResourceDescriptor> result = new LinkedHashMap<>(CATALOG.getResourceDescriptors().size(), 1F);
-        for (MCPResourceDescriptor each : CATALOG.getResourceDescriptors()) {
-            result.put(each.getUriPattern(), each);
-        }
-        return Collections.unmodifiableMap(result);
+        return CATALOG.getResourceDescriptors().stream()
+                .collect(Collectors.toMap(MCPResourceDescriptor::getUriPattern, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getResourceDescriptors().size(), 1F)));
     }
     
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
-        Map<String, MCPToolDescriptor> result = new LinkedHashMap<>(CATALOG.getToolDescriptors().size(), 1F);
-        for (MCPToolDescriptor each : CATALOG.getToolDescriptors()) {
-            result.put(each.getName(), each);
-        }
-        return Collections.unmodifiableMap(result);
-    }
-    
-    /**
-     * Get resource descriptors.
-     *
-     * @return resource descriptors
-     */
-    public static Collection<MCPResourceDescriptor> getResourceDescriptors() {
-        return RESOURCE_DESCRIPTORS.values();
-    }
-    
-    /**
-     * Get tool descriptors.
-     *
-     * @return tool descriptors
-     */
-    public static Collection<MCPToolDescriptor> getToolDescriptors() {
-        return TOOL_DESCRIPTORS.values();
+        return CATALOG.getToolDescriptors().stream()
+                .collect(Collectors.toMap(MCPToolDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getToolDescriptors().size(), 1F)));
     }
     
     /**
@@ -81,8 +57,7 @@ public final class MCPDescriptorRegistry {
      * @return resource descriptor
      */
     public static MCPResourceDescriptor getRequiredResourceDescriptor(final String uriPattern) {
-        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriPattern))
-                .orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriPattern)));
+        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriPattern)).orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriPattern)));
     }
     
     /**
@@ -92,8 +67,7 @@ public final class MCPDescriptorRegistry {
      * @return tool descriptor
      */
     public static MCPToolDescriptor getRequiredToolDescriptor(final String toolName) {
-        return Optional.ofNullable(TOOL_DESCRIPTORS.get(toolName))
-                .orElseThrow(() -> new IllegalStateException(String.format("MCP tool descriptor is required for `%s`.", toolName)));
+        return Optional.ofNullable(TOOL_DESCRIPTORS.get(toolName)).orElseThrow(() -> new IllegalStateException(String.format("MCP tool descriptor is required for `%s`.", toolName)));
     }
     
     /**
@@ -104,8 +78,7 @@ public final class MCPDescriptorRegistry {
      * @param supportedStatements supported statement classes
      * @return capability payload
      */
-    public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools,
-                                                              final Collection<?> supportedStatements) {
+    public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         return CATALOG.toPayload(supportedResources, supportedTools, supportedStatements);
     }
 }
