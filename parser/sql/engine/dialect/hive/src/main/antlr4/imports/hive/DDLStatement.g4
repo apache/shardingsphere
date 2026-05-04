@@ -81,6 +81,7 @@ alterTable
     | alterTableCommonClause createTag
     | alterTableCommonClause dropBranch
     | alterTableCommonClause dropTag
+    | alterTableCommonClause deleteOrphanFile
     ;
 
 createView
@@ -533,4 +534,10 @@ dropBranch
 
 dropTag
     : DROP TAG ifExists? identifier
+    ;
+
+
+deleteOrphanFile
+    : EXECUTE DELETE ORPHAN_FILES
+    | EXECUTE DELETE ORPHAN_FILES OLDER THAN LP_ string_ RP_
     ;

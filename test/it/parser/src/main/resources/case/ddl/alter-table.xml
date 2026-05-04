@@ -2520,7 +2520,15 @@
     <alter-table sql-case-id="alter_create_branch_tag">
         <table name="test" start-index="12" stop-index="15" />
     </alter-table>
-    
+
+    <alter-table sql-case-id="alter_delete_orphan_files">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+
+    <alter-table sql-case-id="alter_delete_orphan_files_with_date">
+        <table name="test" start-index="12" stop-index="15" />
+    </alter-table>
+
     <alter-table sql-case-id="alter_create_tag_default">
         <table name="test" start-index="12" stop-index="15" />
     </alter-table>

@@ -374,6 +374,8 @@
     <sql-case id="alter_drop_branch_if_exists" value="ALTER TABLE test DROP BRANCH IF EXISTS branch1;" db-types="Hive" />
     <sql-case id="alter_drop_tag_basic" value="ALTER TABLE test DROP TAG tag1;" db-types="Hive" />
     <sql-case id="alter_drop_tag_if_exists" value="ALTER TABLE test DROP TAG IF EXISTS tag1;" db-types="Hive" />
+    <sql-case id="alter_delete_orphan_files" value="ALTER TABLE test EXECUTE DELETE ORPHAN-FILES;" db-types="Hive" />
+    <sql-case id="alter_delete_orphan_files_with_date" value="ALTER TABLE test EXECUTE DELETE ORPHAN-FILES OLDER THAN ('2021-12-09 05:39:18.689000000');" db-types="Hive" />
     <sql-case id="alter_table_rename_table_doris" value="ALTER TABLE table1 RENAME table2" db-types="Doris" />
     <sql-case id="alter_table_without_actions_doris" value="ALTER TABLE t_order" db-types="Doris" />
     <sql-case id="alter_table_rename_column_doris" value="ALTER TABLE example_table RENAME COLUMN c1 c2" db-types="Doris" />
