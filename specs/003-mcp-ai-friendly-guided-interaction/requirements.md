@@ -15,433 +15,363 @@
   limitations under the License.
 -->
 
-# Requirements: AI-Friendly MCP Experience Hardening
+# ShardingSphere MCP AI-Friendly Lightweight Requirements
 
-> Status after over-design cleanup: This requirements draft is kept for traceability only and is not the active implementation baseline. Use `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md` for the current lightweight scope. Normalized golden transcript suites, broad real-model E2E expansion, model-confusion matrices, sampling/progress/logging/roots work, metadata freshness, env-var config interpolation, and current-session workflow listing resources are deferred until separately justified.
+## 1. 文档目的
 
-**Feature Branch**: `001-shardingsphere-mcp`
-**Created**: 2026-05-04
-**Status**: Draft
-**Input**: Convert the complete P0, P1, and P2 model-comfort improvement list into a Spec Kit requirements baseline after SDK-native prompts,
-completions, workflow session lifecycle, and preview support were implemented.
+本文档定义 ShardingSphere MCP 面向大模型原生、便捷、舒服、清晰使用的轻量改进需求。
 
-## Process Constraints
+核心目标不是增加一套新的智能系统，而是把模型在使用 MCP 时需要猜的地方降到最低：
 
-- Stay on the current branch. Do not run branch-changing Spec Kit commands, `git switch`, or `git checkout`.
-- Treat this file as the current requirements baseline for the next increment.
-- Keep the existing `spec.md`, `plan.md`, `tasks.md`, `research.md`, `data-model.md`, and `quickstart.md` for traceability until they are regenerated from this baseline.
-- Do not edit generated paths such as `target/`.
-- Require explicit model-visible approval semantics for side-effecting tools.
-- Do not introduce broad planner, memory, ranking, graph, or benchmark abstractions before a smaller requirement proves the need.
+- 少猜当前有哪些工具和资源。
+- 少猜下一步应该读资源、调用工具、问用户还是停止。
+- 少猜工具返回值和 output schema 的对应关系。
+- 少猜错误后该如何安全恢复。
+- 少猜有副作用操作何时可以执行。
 
-## Current Baseline
+本文档只描述需求和验收标准，不绑定具体实现方案。
 
-The completed baseline already includes:
+## 2. 当前基线
 
-- descriptor-backed MCP tools, resources, prompts, and completions;
-- SDK-native prompt and completion registration;
-- session-scoped workflow `plan_id` lifecycle;
-- `execute_update` and `apply_workflow` preview modes;
-- deterministic tests for prompt/completion bridge support;
-- descriptor validation for prompt templates and completion references.
+当前 ShardingSphere MCP 已具备以下基础能力：
 
-The next requirements therefore focus on hardening and measuring model comfort, not rebuilding the base MCP surface.
+- 通过 `resources/list`、`resources/templates/list`、`tools/list` 暴露模型可见能力。
+- 通过 `shardingsphere://capabilities` 聚合 resources、tools、prompts、completion targets、resource navigation 和 fingerprints。
+- 以 resource-first 方式暴露 database、schema、table、column、index、view、sequence 等逻辑元数据。
+- 通过 `search_metadata` 支持元数据搜索。
+- 通过 `execute_query` 与 `execute_update` 区分只读 SQL 与有副作用 SQL。
+- 通过 `plan_encrypt_rule`、`plan_mask_rule`、`apply_workflow`、`validate_workflow` 支持加密和脱敏 workflow。
+- 通过 `next_actions`、推荐工具字段和用户确认字段引导模型继续下一步。
+- 通过 descriptor、prompt、completion 和 opt-in LLM usability 测试保护部分模型可见契约。
 
-## Scope Decision
+后续需求应在这些能力上补齐体验缺口，不推倒重建。
 
-### Must Do
+## 3. 设计原则
 
-- Correct stale README statements that still describe prompt and completion support as deferred.
-- Add normalized MCP transcript golden tests for the protocol-visible model surface.
-- Add opt-in real-model E2E scenarios with strong trace assertions and no default CI dependency.
-- Make side-effecting update execution require an explicit model-supplied execution mode.
-- Add model-native or structured clarification semantics for missing user input.
-- Add completion diagnostic metadata that explains ranking sources and empty completion results.
-- Add descriptor lint and version fingerprints for model-facing capabilities.
-- Add a unified next-action contract across tool outputs, resource outputs, prompts, and recoverable errors.
-- Add a unified structured recovery envelope that helps models repair failed calls.
-- Improve completion ordering with deterministic, context-aware ranking only.
-- Move lightweight resource navigation ownership into descriptors while avoiding a runtime graph engine.
-- Add prompt stop conditions and explicit ask-user conditions.
-- Add protocol transport contract tests for prompt retrieval, completion, and capability navigation.
-- Add model ergonomics requirements for naming, pagination, sampling, progress, logging, roots or permission boundaries, prompt argument coverage,
-  output examples, and model-confusion tests.
+新增或调整需求必须满足以下原则：
 
-### Conditional Native Protocol Use
+- 能明显降低模型误用、绕路、重组参数或错误恢复成本。
+- 优先复用现有 descriptor、resource、tool、prompt、completion、workflow 和 recovery 机制。
+- 保持 resource-first 发现路径，不复制一整套 `list_*` 或 `describe_*` 工具矩阵。
+- 有副作用操作必须先 preview，并要求用户确认后才能 execute。
+- 每个需求都应能通过轻量测试、descriptor lint、contract test 或文档核对验证。
+- 不引入重型 planner、跨会话长期记忆、向量搜索、模型调用排序或完整权限平台。
 
-- Use MCP-native elicitation, sampling, progress, logging, roots, or related capabilities when the current SDK exposes them with stable APIs.
-- When a native MCP capability is not available, expose the same model-facing semantics through structured fields and keep the fallback discoverable in descriptors.
+## 4. 非目标
 
-## Priority Coverage Map
+本阶段明确不做以下事项：
 
-- **P0**: Golden transcript contract, real-model E2E report, explicit `execute_update` mode, structured clarification, and completion diagnostics.
-- **P1**: Descriptor lint, capability fingerprints, unified next-action contract, descriptor-owned navigation, prompt stop conditions, and transport contract tests.
-- **P2**: Naming clarity, recovery taxonomy, pagination, sampling, progress, logging, roots or permission boundaries, prompt argument coverage,
-  compact examples, and model-confusion tests.
+- 不新增自动 planner、图遍历引擎或跨会话长期记忆。
+- 不新增完整 RBAC、租户系统、生产审批系统或外部工单集成。
+- 不把 `execute_update`、`apply_workflow` 变成自动越过用户确认的执行工具。
+- 不把所有 resource 复制成完整工具矩阵。
+- 不在 MCP 内解决存量数据迁移、回填或生产变更审批。
+- 不为了兼容旧 PRD 中的早期工具名而增加兼容层。
+- 不把 opt-in LLM E2E 变成默认 CI 必跑门禁。
 
-### Do Not Do In This Increment
+### 4.1 过渡与过度设计清理结论
 
-- Do not add live model calls to default CI.
-- Do not build a model benchmark suite or multi-model leaderboard.
-- Do not add semantic vector ranking, cross-session memory, or user behavior learning for completions.
-- Do not add a central AI planner or mega tool that hides MCP primitives.
-- Do not build a runtime graph engine or automatic resource traversal service.
-- Do not add broad benchmark leaderboards, adaptive cross-session memory, or hidden execution shortcuts.
+以下内容保留为过渡说明，但不得作为当前实现契约：
 
-## User Scenarios and Testing
+- 旧 PRD、技术设计和详细设计中的早期工具矩阵。
+- README 中关于发布、registry、opt-in LLM smoke 的运行说明。
+- `specs/003-mcp-ai-friendly-guided-interaction/` 中为溯源保留的 Spec Kit 草稿。
 
-### User Story 1: Protocol Surface Cannot Regress (Priority: P0)
+以下内容本轮先从活跃需求中清理掉：
 
-Model-facing descriptions, schemas, prompts, completions, resource templates, preview enums, and safety annotations must remain stable enough for models to rely on.
+- 当前 session workflow 列表或详情 resource。现有 `plan_id` 返回、当前 session completion 和 recovery 已覆盖主要恢复路径。
+- metadata freshness 字段。它会引入元数据批次一致性语义，当前没有证据证明是模型使用 MCP 的主要阻塞。
+- 配置环境变量引用。它更像运维安全能力，不是模型原生使用 MCP 的核心路径。
+- normalized golden transcript 大套件、real-model E2E 扩展、model-confusion 测试矩阵、
+  sampling/progress/logging/roots 边界测试。它们可以作为未来质量工程候选，但不进入当前轻量改进范围。
 
-**Why this priority**: Without a contract guard, later descriptor or YAML changes can silently make the model surface less natural even while handlers still compile.
+## 5. 使用场景
 
-**Independent Test**: Run normalized transcript golden tests that compare stable protocol payloads after removing dynamic fields and sorting unordered collections.
+### 5.1 元数据检查
 
-**Acceptance Scenarios**:
+用户希望查看逻辑库、表、列、索引、视图或 sequence。
 
-1. **Given** the MCP runtime starts with the default descriptor catalog, **When** normalized `initialize`, `tools/list`, `resources/list`,
-   `resources/templates/list`, `prompts/list`, `completion/complete`, and `shardingsphere://capabilities` payloads are captured,
-   **Then** they match the approved golden contract.
-2. **Given** a descriptor removes a prompt, completion target, field description, preview enum, or safety annotation, **When** golden tests run,
-   **Then** the tests fail with the missing model-facing contract field.
-3. **Given** runtime-specific fields such as timestamps, session identifiers, database versions, or result ordering can vary,
-   **When** golden payloads are compared, **Then** those dynamic fields are normalized before comparison.
+模型应能：
 
-### User Story 2: Real Models Prove the Surface Is Comfortable (Priority: P0)
+1. 读取 `shardingsphere://capabilities` 或 `shardingsphere://databases` 了解当前 surface。
+2. 使用 `search_metadata` 定位对象，或直接读取 detail resource。
+3. 从搜索结果中拿到可直接读取的 resource URI。
+4. 在只需元数据时停止，不主动执行 SQL。
 
-A real model should naturally use prompts, completions, previews, resources, and tools in the expected order without relying on README-only knowledge.
+### 5.2 安全 SQL 执行
 
-**Why this priority**: Deterministic tests prove protocol availability, but only real-model E2E can show whether an actual model chooses the intended MCP path.
+用户希望执行 SQL 或确认 SQL 影响范围。
 
-**Independent Test**: Run opt-in real-model E2E outside default CI with non-production credentials and trace-based assertions.
+模型应能：
 
-**Acceptance Scenarios**:
+1. 使用 `execute_query` 执行单条只读 `SELECT` 或 `EXPLAIN ANALYZE`。
+2. 对 DML、DDL、DCL、事务控制和 savepoint 使用 `execute_update`。
+3. 对有副作用 SQL 先调用 `execute_update` 的 `execution_mode=preview`。
+4. 从 preview 返回中复用服务器提供的执行参数。
+5. 只有用户明确确认后，才使用 `execution_mode=execute`。
 
-1. **Given** a real model is asked to inspect metadata, **When** the MCP actions are available, **Then** the trace includes prompt discovery or prompt retrieval,
-   resource reads or completions, and a schema-valid `execute_query`.
-2. **Given** a real model is asked to execute side-effecting SQL safely, **When** it reaches an update-capable statement, **Then** the trace includes
-   `execute_update` with `execution_mode=preview` before any execute mode.
-3. **Given** a real model is asked to complete an encrypt or mask workflow, **When** it plans, previews, applies, and validates, **Then** the trace proves
-   prompt use, completion use, preview before side effects, approval boundary preservation, and final validation.
-4. **Given** the model service is unavailable, **When** real-model E2E runs, **Then** the test reports an explicit skipped or unavailable state rather than failing default CI.
+### 5.3 加密和脱敏 workflow
 
-### User Story 3: Completion Results Prefer the Most Useful Candidate (Priority: P2)
+用户希望为逻辑表列规划、预览、执行并验证加密或脱敏规则。
 
-Completion should remain simple and deterministic while ranking values in a way that reduces model hesitation and wrong argument selection.
+模型应能：
 
-**Why this priority**: Current prefix filtering and lexicographic ordering are usable.
-Context-aware deterministic ordering can make the model choose faster without adding speculative intelligence.
+1. 读取逻辑 metadata 和 feature algorithm 资源。
+2. 调用 `plan_encrypt_rule` 或 `plan_mask_rule`。
+3. 如果返回 `clarifying`，按结构化缺失字段继续同一个 `plan_id`。
+4. 如果返回 `planned`，先调用 `apply_workflow` 的 `execution_mode=preview`。
+5. 用户确认后执行或导出 manual artifacts。
+6. 最后调用 `validate_workflow` 验证结果。
 
-**Independent Test**: Use completion unit tests and transport tests that assert sorted values for exact match, prefix match, metadata context, plan lifecycle,
-and feature-specific algorithms.
+### 5.4 错误恢复
 
-**Acceptance Scenarios**:
+模型常见错误应可通过结构化字段恢复。
 
-1. **Given** a completion prefix exactly matches a candidate, **When** completion returns values, **Then** the exact match appears before broader prefix matches.
-2. **Given** database and schema context are supplied, **When** table or column completion runs, **Then** candidates from that context appear and unrelated values are omitted.
-3. **Given** multiple current-session workflow plans are completion-eligible, **When** `plan_id` completion runs, **Then** the most recently updated eligible plan appears first.
-4. **Given** encrypt and mask algorithm names overlap, **When** algorithm completion is requested from an encrypt or mask reference,
-   **Then** candidates are ranked for that feature context without cross-feature confusion.
+典型错误包括：
 
-### User Story 4: Models Can Repair Errors From Structured Recovery (Priority: P2)
+- 缺少 `database`。
+- 缺少 `execution_mode`。
+- 将有副作用 SQL 发给 `execute_query`。
+- 调用未知 tool 或 resource。
+- 使用过期、未知或跨 session 的 `plan_id`。
 
-Recoverable errors should provide enough structured fields for a model to retry safely without reconstructing the entire call from prose.
+## 6. 实现前分析与设计闸门
 
-**Why this priority**: Models often fail in small ways. A consistent recovery envelope converts these failures into safe, local repairs.
+以下内容不是新的产品范围，也不是需要反复向用户确认的问题。
+它们是进入实现前必须从当前代码中复核的事实。
 
-**Independent Test**: Error converter tests and model-like E2E tests assert recovery shape for missing fields, invalid enums, unsupported resources,
-wrong SQL tool choice, and unavailable workflow plans.
+如果代码事实与本文档需求不一致，应先更新需求或设计记录，再进入实现。
 
-**Acceptance Scenarios**:
+### 6.1 必须复核的代码事实
 
-1. **Given** a required argument is missing, **When** the server returns an error, **Then** `recovery` includes `recoverable`, `category`,
-   `model_action`, `suggested_next_tool` when known, `suggested_arguments` when safe, and `ask_user_when_uncertain`.
-2. **Given** a model calls `execute_query` with side-effecting SQL, **When** the server rejects it, **Then** recovery recommends the update-capable path
-   with `execution_mode=preview` and preserves user approval requirements.
-3. **Given** a `plan_id` is unavailable, **When** apply or validation fails, **Then** recovery tells the model to call the matching planning tool again instead of retrying stale state.
-4. **Given** the server cannot know a missing value safely, **When** recovery is generated, **Then** `suggested_arguments` omits guessed values and `ask_user_when_uncertain` is true.
+- 当前 public surface：descriptor、`shardingsphere://capabilities`、`mcp/README.md` 和 `mcp/README_ZH.md` 是否一致。
+- 当前 `next_actions`：现有字段、推荐工具字段、用户确认字段和 workflow guidance 是否已经有可复用结构。
+- 当前 `search_metadata`：结果构造位置、支持的对象类型、可安全推导的 resource URI pattern，以及不能推导时的返回方式。
+- 当前 output schema：七个核心工具的 descriptor schema 与真实 payload、状态值、enum 大小写和嵌套字段是否一致。
+- 当前 recovery：缺 `database`、缺 `execution_mode`、SQL 工具用错、未知 tool/resource、旧 `plan_id` 的实际错误形态。
+- descriptor lint 落点：优先复用现有 descriptor loader、catalog 或 support 层测试，不新增独立 lint 框架。
+- capabilities contract 边界：只验证 section 和 shape，不做大快照，不依赖真实模型。
+- P1/P2 可行性：只有现有上下文能轻量支持时才继续分析，不为了 P1/P2 引入新存储、planner 或复杂索引。
 
-### User Story 5: Resource Navigation Shows the Next MCP Hop (Priority: P1)
+### 6.2 分析产物要求
 
-The capability payload should expose descriptor-owned navigation metadata so models can understand resource, prompt, and tool relationships without a graph engine.
+每个进入实现的需求至少应形成以下分析产物：
 
-**Why this priority**: Navigation helps models choose the next resource or tool. Descriptor ownership keeps the relationship close to the public identifier and avoids Java hardcoding drift.
+- 当前行为证据：相关 descriptor、handler、resource、workflow、completion、test 或 README 路径。
+- 最小变更映射：需要改的生产代码、测试和文档路径。
+- 验收测试映射：每个行为分支对应一个明确测试或文档核对项。
+- 不做项说明：明确哪些看似相关的能力本次不做，以及原因。
+- 回滚边界：说明回滚后恢复到哪个现有行为，不影响 HTTP/STDIO 基础暴露。
 
-**Independent Test**: Descriptor catalog tests verify navigation entries reference existing resources, prompts, and tools and are loaded from descriptor metadata.
+### 6.3 设计约束
 
-**Acceptance Scenarios**:
+- 设计必须优先复用现有 MCP descriptor、resource、tool、prompt、completion、workflow 和 error conversion 机制。
+- 设计不得新增完整 `list_*` 工具矩阵、通用图遍历、自动 planner、向量检索、跨会话记忆或完整权限平台。
+- P0 设计必须能通过确定性单测、descriptor lint、capabilities contract test 或文档一致性检查验证。
+- P1/P2 设计必须在 P0 稳定后单独评估，不得阻塞 P0。
 
-1. **Given** a model reads capabilities, **When** it sees metadata resources, **Then** it can infer `databases -> schemas -> tables -> columns/indexes/sequences`.
-2. **Given** a model reads feature algorithm resources, **When** it sees workflow relationships, **Then** it can infer algorithms feed `plan_encrypt_rule` or `plan_mask_rule`.
-3. **Given** a workflow response exposes a plan, **When** the model reads navigation metadata, **Then** it can infer `plan -> apply_workflow preview -> apply_workflow execute -> validate_workflow`.
-4. **Given** navigation references drift from descriptors, **When** descriptor tests run, **Then** the tests fail.
+## 7. P0 需求
 
-### User Story 6: Side-Effecting Tools Require Explicit Execution Mode (Priority: P0)
+P0 是最小必做集合，目标是立即降低模型猜测成本和操作风险。
 
-Models should never trigger update-capable behavior by omitting a field that defaults to execution.
+### FR-001 当前 public surface 唯一可信
 
-**Why this priority**: Model comfort includes safety. A clear preview-first path is easier for models and operators than hidden backward-compatible defaults.
+README、descriptor、capabilities 和容易被模型读取的设计文档必须明确区分当前实现契约与历史设计。
 
-**Independent Test**: Tool handler and transport tests reject missing execution mode for update-capable calls and return structured recovery that recommends preview.
+验收标准：
 
-**Acceptance Scenarios**:
+- `shardingsphere://capabilities` 可作为当前 MCP public surface 的事实源。
+- `mcp/README.md` 与 `mcp/README_ZH.md` 中的 public tools 列表与 descriptor/capabilities 一致。
+- 文档不得暗示当前已存在完整 `list_databases`、`list_schemas`、`describe_table` 等工具矩阵。
+- 保留旧工具清单的 PRD 或设计文档必须标注其为历史设计、未来规划或非当前契约。
 
-1. **Given** a model calls `execute_update` without `execution_mode`, **When** validation runs, **Then** the call is rejected as recoverable and recommends `execution_mode=preview`.
-2. **Given** a model calls `execute_update` with `execution_mode=preview`, **When** SQL is valid, **Then** the server returns a preview without side effects.
-3. **Given** a model calls `execute_update` with `execution_mode=execute`, **When** approval requirements are satisfied, **Then** the server executes using the existing update path.
-4. **Given** a descriptor describes `execute_update`, **When** a model reads it, **Then** the description and schema make the explicit mode requirement unambiguous.
+### FR-002 统一 next action 与可复用参数
 
-### User Story 7: Clarification and Completion Explain Missing Context (Priority: P0)
+模型引导字段必须收敛到一套稳定词汇，并尽量返回下一步可直接复用的参数。
 
-Models should know whether to ask the user, read a resource, or retry with a different argument when completion or validation lacks enough context.
+验收标准：
 
-**Why this priority**: Empty completions and missing arguments are common. Structured clarification prevents models from guessing.
+- 以 `next_actions` 作为主引导字段。
+- 每个 action 至少包含 `action_kind`、`reason` 和 `requires_user_approval`。
+- 调工具 action 包含 `target_tool` 和 `required_arguments`。
+- 读资源 action 包含 `target_resource` 或等价字段。
+- 问用户 action 包含 `required_inputs`。
+- 以 `next_actions` 为主；已有 `recommended_next_tool`、`suggested_next_tool` 仅作为兼容字段保留，避免继续新增同义字段。
+- preview 类响应必须给出可复用的下一步参数，避免模型重新拼 SQL、`plan_id` 或 execution mode。
 
-**Independent Test**: Completion, recovery, and prompt tests verify missing context metadata, ask-user flags, and native-MCP fallback behavior.
+### FR-003 `search_metadata` 返回可直接读取的 URI
 
-**Acceptance Scenarios**:
+`search_metadata` 命中对象后，应直接告诉模型可以读取哪个 detail resource。
 
-1. **Given** completion cannot return values because a required context argument is missing, **When** completion runs,
-   **Then** metadata identifies the missing context and the resource or prompt that can provide it.
-2. **Given** completion returns ranked values, **When** metadata is included, **Then** it explains the ranking source without changing the reusable string values.
-3. **Given** a tool requires user-only input, **When** the server cannot compute it, **Then** clarification metadata tells the model to ask the user instead of inventing a value.
-4. **Given** the MCP SDK supports native elicitation, **When** missing user input is detected, **Then** native elicitation is preferred; otherwise the structured fallback is exposed.
+验收标准：
 
-### User Story 8: Descriptors Are Linted and Versioned (Priority: P1)
+- 能安全推导 detail resource 时，搜索命中包含 `resource_uri`。
+- 能安全推导父级资源时，返回 `parent_resource_uri`。
+- 能安全推导下一跳时，返回 `next_resource_uris` 或等价结构。
+- URI 必须使用当前 descriptor 已暴露的 resource pattern。
+- 不能安全推导 URI 时，不返回猜测值，并通过 `derivation_status` 与 `derivation_reason` 说明原因。
 
-Every model-facing descriptor should meet a minimum clarity contract and publish a stable fingerprint for regression reports.
+### FR-004 output schema 与真实返回对齐
 
-**Why this priority**: Description quality is now part of the product surface. A linter catches unclear or incomplete descriptors before models feel the regression.
+模型可见 output schema 必须能准确描述实际返回形态。
 
-**Independent Test**: Descriptor lint tests fail for missing titles, weak descriptions, undocumented enum values, missing output schemas, missing annotations, and unversioned capability payloads.
+验收标准：
 
-**Acceptance Scenarios**:
+- 核对并修正 `search_metadata`、`execute_query`、`execute_update`、`plan_encrypt_rule`、`plan_mask_rule`、`apply_workflow`、`validate_workflow`。
+- enum 值大小写、字段名、必填字段和嵌套对象结构必须与真实返回一致。
+- preview、error、clarifying、planned、completed、failed 等常见状态必须在 schema 或示例中可理解。
+- schema 不应只写 `array` 或 `object` 而缺少关键字段说明。
 
-1. **Given** a tool descriptor lacks a useful description, **When** descriptor lint runs, **Then** it fails with the descriptor identifier and missing field.
-2. **Given** an enum argument is exposed, **When** descriptor lint runs, **Then** every enum value has model-facing meaning.
-3. **Given** capabilities are read, **When** the payload is generated, **Then** descriptor catalog, prompt set, navigation, and schema fingerprints are present.
-4. **Given** a real-model E2E report is generated, **When** it records context, **Then** the descriptor and prompt fingerprints are included.
+### FR-005 常见错误结构化 recovery
 
-### User Story 9: Outputs and Prompts Share a Next-Action Contract (Priority: P1)
+最常见的模型错误必须返回可恢复信息，而不是只返回自由文本。
 
-Models should receive the same next-step vocabulary from successful tool outputs, resource outputs, prompt instructions, and recovery envelopes.
+验收标准：
 
-**Why this priority**: Different field names for the same concept increase model hesitation and wrong retries.
+- 缺少 `database` 时，返回 `missing_fields`，并建议读取 `shardingsphere://databases`。
+- 缺少 `execution_mode` 时，返回 `missing_fields`，并建议先使用 `execution_mode=preview`。
+- 有副作用 SQL 发给 `execute_query` 时，建议改用 `execute_update` preview，并保留用户确认要求。
+- 未知 tool 或 resource 时，建议读取 `shardingsphere://capabilities`。
+- `plan_id` 不存在、过期或跨 session 时，建议使用当前 session 的 `plan_id` completion，或重新调用对应 planning tool。
+- recovery 中的下一步建议应使用 FR-002 的 next action 结构。
 
-**Independent Test**: Schema and model-like tests assert a shared next-action shape across representative tools, resources, prompts, and errors.
+### FR-006 最小回归保护
 
-**Acceptance Scenarios**:
+模型可见 surface 必须有轻量自动保护，防止 descriptor 或 capabilities 悄悄退化。
 
-1. **Given** a model reads a successful workflow plan output, **When** next actions are available,
-   **Then** it includes standard fields for next tool, arguments, resources to read, and approval requirements.
-2. **Given** a model reads a resource output with follow-up resources, **When** navigation is available, **Then** it uses the same next-action vocabulary as tool outputs.
-3. **Given** a prompt is retrieved, **When** it describes a workflow, **Then** it includes stop conditions and ask-user conditions.
-4. **Given** a field cannot be safely suggested, **When** next-action metadata is generated, **Then** the field is omitted and `ask_user_when_uncertain` is set.
+验收标准：
 
-### User Story 10: Prompt, Completion, and Capability Transport Is Contract-Tested (Priority: P1)
+- 增加 descriptor lint，至少覆盖空 description、占位 description、缺少 side-effect/approval 语义、enum 缺少可选值、核心 output schema 缺少关键字段。
+- descriptor lint 必须覆盖 navigation 引用不存在的情况。
+- 增加 `shardingsphere://capabilities` contract test，覆盖 resources、resourceTemplates、tools、prompts、completionTargets、resourceNavigation、protocolAvailability、fingerprints。
+- contract test 不锁定大段快照，不依赖真实模型服务。
+- lint 和 contract test 应保持确定性和快速执行。
 
-The protocol transport layer should prove that prompt retrieval, completion, capability fingerprints, and descriptor-owned navigation are visible exactly where models consume them.
+## 8. P1 需求
 
-**Why this priority**: Factory-level tests are not enough when the model only sees transport payloads.
+P1 是高价值轻量增强，可以在 P0 稳定后按收益排序实现。已清理掉会新增状态查询面或一致性语义的候选项。
 
-**Independent Test**: HTTP and STDIO contract tests call public MCP methods and assert the model-facing fields.
+### FR-101 资源响应补轻量导航信息
 
-**Acceptance Scenarios**:
+资源读取结果应尽量告诉模型当前所在位置和可走的下一跳。
 
-1. **Given** a prompt exists in descriptors, **When** `prompts/get` is called through transport, **Then** the returned messages include expected stop and ask-user conditions.
-2. **Given** a completion target exists, **When** `completion/complete` is called through transport, **Then** values and diagnostic metadata are returned.
-3. **Given** capabilities are read through a resource call, **When** navigation is included, **Then** every navigation endpoint resolves to a public identifier.
-4. **Given** a descriptor fingerprint changes, **When** transport golden tests run, **Then** the change is visible in the normalized contract.
+验收标准：
 
-### User Story 11: Naming, Pagination, Native Signals, and Roots Feel Native (Priority: P2)
+- list/detail resource 可返回 `self_uri`。
+- 能安全推导父级时，返回 `parent_uri`。
+- list 结果返回 `count` 或等价数量信息。
+- 能安全推导下一跳时，返回 `next_resources`。
+- 不要求实现通用图遍历引擎。
 
-Tool names, resource pagination, native sampling, progress, logging, and permission boundaries should be clear enough that a model does not need hidden project knowledge.
+### FR-102 复杂工具提供短输出示例
 
-**Why this priority**: These are second-order comfort issues. They do not block correctness, but they reduce token waste and wrong calls.
+复杂工具应提供小而静态的示例，让模型快速理解返回形态。
 
-**Independent Test**: Descriptor lint, protocol tests, and model-confusion tests cover ambiguous names, large lists, long-running workflows, and boundary hints.
+验收标准：
 
-**Acceptance Scenarios**:
+- `execute_update` preview 有最小 JSON 示例。
+- `plan_encrypt_rule` 有 `clarifying` 或 `planned` 示例。
+- `plan_mask_rule` 有 `clarifying` 或 `planned` 示例。
+- `apply_workflow` preview 有最小 JSON 示例。
+- `validate_workflow` 有 passed 或 failed 示例。
+- 示例不得包含真实密钥、生产库名或环境特定路径。
 
-1. **Given** two tools can look similar, **When** descriptor lint runs, **Then** names and descriptions must distinguish action intent and side-effect level.
-2. **Given** a resource or tool can return a large list, **When** it is called, **Then** pagination fields consistently show whether more data exists and how to continue.
-3. **Given** a workflow can take noticeable time, **When** progress reporting is available, **Then** native progress or structured progress fields are exposed.
-4. **Given** sampling or logging is available, **When** a workflow does not need it, **Then** it is not used as hidden planning, execution, or ranking.
-5. **Given** file or config roots become part of MCP resources, **When** descriptors are exposed, **Then** roots or permission boundaries are explicit before access.
+### FR-103 completion 轻量优化
 
-### User Story 12: Complex Outputs Include Examples and Confusion Tests (Priority: P2)
+completion 应更贴近模型输入习惯，但不引入重型能力。
 
-Complex workflow, preview, metadata, and recovery outputs should include compact examples and tests for model mistakes.
+验收标准：
 
-**Why this priority**: Examples and negative-path tests make the protocol easier for models to learn and harder to misuse.
+- 有 database/schema 上下文时，table completion 优先返回该上下文内候选。
+- 有 database/schema/table 上下文时，column completion 优先返回该表下候选。
+- 支持 prefix 优先和 contains fallback。
+- `plan_id` completion 继续优先当前 session 最近更新且可继续的 plan。
+- 不使用向量检索、模型调用、跨会话学习或用户行为学习。
 
-**Independent Test**: Descriptor lint verifies concise examples for complex outputs, and model-confusion tests simulate common wrong orders and stale state.
+### FR-104 algorithm resource 暴露属性模板
 
-**Acceptance Scenarios**:
+encrypt 和 mask algorithm resource 应尽量告诉模型算法需要哪些属性。
 
-1. **Given** a workflow plan output is described, **When** a model reads the descriptor, **Then** it can see a compact shape example without runtime secrets.
-2. **Given** a model attempts apply before plan, **When** the call fails, **Then** recovery points to planning in the current session.
-3. **Given** a model attempts execute without preview or approval, **When** validation runs, **Then** recovery preserves the approval boundary.
-4. **Given** a model uses stale or ambiguous metadata, **When** the call fails, **Then** recovery recommends a resource read or user clarification instead of guessing.
+验收标准：
 
-## Functional Requirements
+- 返回 required properties。
+- 返回 optional properties。
+- 返回 default value。
+- 返回 secret flag。
+- 返回能力提示，例如是否支持 decrypt、equality filter、like query。
+- 不要求先调用 planner 才能知道基础属性缺口。
 
-### Documentation Correction
+## 9. P2 需求
 
-- **FR-001**: README documentation MUST no longer describe prompts or completions as deferred when protocol-visible support exists.
-- **FR-002**: README documentation MUST describe prompt discovery, prompt retrieval, completion usage, preview usage, and opt-in real-model E2E at a model-facing level.
-- **FR-003**: Documentation MUST preserve explicit approval guidance for `execute_update`, `apply_workflow`, and any future side-effecting tool.
+P2 是可后置的体验补强，不阻塞核心模型使用链路。
 
-### Transcript Golden Contract
+### FR-201 启动成功提示更清晰
 
-- **FR-010**: The project MUST include normalized golden tests for `initialize`, `tools/list`, `resources/list`, `resources/templates/list`,
-  `prompts/list`, representative `completion/complete`, and `shardingsphere://capabilities`.
-- **FR-011**: Golden normalization MUST remove or replace dynamic values such as session IDs, timestamps, runtime database versions, and nondeterministic ordering.
-- **FR-012**: Golden tests MUST fail when model-facing descriptions, input schemas, prompt descriptors, completion targets, preview enum values,
-  tool annotations, or safety metadata disappear.
-- **FR-013**: Golden fixtures MUST be small enough for maintainers to review and MUST avoid locking large runtime data payloads.
-- **FR-014**: Golden tests MUST use public MCP protocol surfaces rather than private Java implementation details.
+MCP runtime 启动成功后应清楚展示连接和排障入口。
 
-### Real-Model E2E
+验收标准：
 
-- **FR-020**: Real-model E2E MUST be opt-in and excluded from default CI.
-- **FR-021**: Real-model E2E MUST use non-production model credentials and deterministic ShardingSphere fixtures.
-- **FR-022**: Real-model E2E MUST redact API keys, tokens, and credentials from logs and artifacts.
-- **FR-023**: Real-model E2E MUST assert observable traces, including prompt calls, completion calls, resource reads, tool order,
-  argument schema validity, preview-before-execution, approval boundaries, recovery path, and final validation.
-- **FR-024**: Real-model E2E MUST NOT assert exact natural-language wording except for stable protocol fields.
-- **FR-025**: Real-model E2E SHOULD cover metadata inspection, safe SQL execution, encrypt workflow, mask workflow, and at least one recovery scenario.
-- **FR-026**: Real-model E2E reports MUST record provider, model identifier, prompt set version, descriptor catalog version, scenario ID,
-  skipped assertions, and failure classification.
+- HTTP 模式展示 endpoint、config path、log path、runtime database 数量。
+- STDIO 模式说明 stdout 用于 MCP 协议、日志应走 stderr 或文件。
+- 如果启用 access token，提示 HTTP 请求需要 bearer token。
+- 不在 stdout 输出会污染 STDIO 协议的日志内容。
 
-### Completion Ranking
+### FR-202 首次接入排障文档
 
-- **FR-030**: Completion handlers MUST keep returned `values` directly reusable as argument strings.
-- **FR-031**: Completion handlers MUST keep deterministic ordering for the same runtime state and request.
-- **FR-032**: Completion handlers SHOULD rank exact prefix matches before broader prefix matches.
-- **FR-033**: Completion handlers SHOULD rank candidates that match supplied context arguments before candidates with weaker context.
-- **FR-034**: `plan_id` completions SHOULD rank current-session eligible plans by most recent update before older plans.
-- **FR-035**: Algorithm completions SHOULD prefer candidates matching the prompt or resource feature context.
-- **FR-036**: Completion ranking MUST NOT use cross-session history, vector search, model calls, or user behavior learning in this increment.
+补充最常见失败路径，帮助模型和用户快速定位问题。
 
-### Structured Recovery
+验收标准：
 
-- **FR-040**: Recoverable error payloads MUST use a consistent `recovery` envelope.
-- **FR-041**: The `recovery` envelope MUST include `recoverable`, `category`, and `model_action` when recovery is possible.
-- **FR-042**: The `recovery` envelope SHOULD include `suggested_next_tool`, `suggested_arguments`, `read_resources_first`, and `ask_user_when_uncertain` when those fields can be computed safely.
-- **FR-043**: `suggested_arguments` MUST contain only server-known values or values already supplied by the user.
-- **FR-044**: `suggested_arguments` MUST NOT contain secrets, guessed runtime values, placeholder values, or hidden physical objects.
-- **FR-045**: Wrong-tool SQL recovery MUST preserve preview and user approval semantics.
-- **FR-046**: Unavailable workflow plan recovery MUST recommend replanning in the current MCP session instead of retrying stale `plan_id` values.
-- **FR-047**: Structured recovery tests MUST cover missing arguments, invalid enum values, unsupported tool, unsupported resource, wrong SQL tool choice,
-  unsupported metadata object, and unavailable workflow plan.
-- **FR-048**: Recovery categories MUST distinguish SQL parse error, unsupported statement, multiple statements, missing database, unsafe SQL,
-  unsupported dialect, unsupported metadata object, invalid enum, wrong tool, missing execution mode, and stale workflow plan.
+- 覆盖 Java 版本不满足。
+- 覆盖 JDBC driver 缺失。
+- 覆盖 HTTP token 缺失或错误。
+- 覆盖 STDIO stdout 被日志污染。
+- 覆盖 tools/list、resources/list 或 capabilities 为空。
+- 覆盖 workflow 连接到物理库而不是 ShardingSphere-Proxy 逻辑库的误用。
 
-### Resource Navigation
+### FR-203 opt-in LLM usability 场景补充
 
-- **FR-050**: The capability payload MUST expose lightweight `resourceNavigation` metadata loaded from descriptor-owned metadata.
-- **FR-051**: Each navigation entry SHOULD include `from`, `to`, `requiredArguments`, `carriedArguments`, and `description`.
-- **FR-052**: Navigation MUST cover metadata hierarchy, feature algorithm to planning relationships, and workflow plan to apply and validate relationships.
-- **FR-053**: Navigation MUST reference only public resources, prompts, and tools.
-- **FR-054**: Navigation MUST NOT introduce a runtime graph engine, automatic traversal tool, or hidden planning service in this increment.
-- **FR-055**: Navigation ownership SHOULD live in descriptor YAML or equivalent descriptor input so new features can add relationships without Java catalog hardcoding.
+LLM usability 测试可增加少量高价值场景，但仍保持 opt-in。
 
-### Explicit Side-Effect Execution
+验收标准：
 
-- **FR-060**: `execute_update` MUST require an explicit `execution_mode` value for every call.
-- **FR-061**: Missing `execution_mode` for `execute_update` MUST be rejected as recoverable and MUST recommend `execution_mode=preview`.
-- **FR-062**: `execute_update` descriptors MUST state that preview is the safe first step and that execute is side-effecting.
-- **FR-063**: Direct execution compatibility defaults MUST NOT be preserved for model-facing update calls in this increment.
-- **FR-064**: `apply_workflow` and future side-effecting tools MUST keep explicit preview or approval-bound execution semantics.
+- 增加有副作用 SQL 必须先 preview 的场景。
+- 增加 metadata search 到 detail resource URI 的场景。
+- 增加 plan -> apply preview -> validate 的 workflow 顺序场景。
+- 不要求真实模型测试进入默认 CI。
 
-### Clarification and Completion Diagnostics
+## 10. 实施顺序建议
 
-- **FR-070**: Missing user-only input MUST be represented through MCP-native elicitation when the SDK supports it.
-- **FR-071**: When native elicitation is unavailable, missing user-only input MUST use structured fallback fields with `pending_questions`, `missing_arguments`, and `ask_user_when_uncertain`.
-- **FR-072**: Completion responses SHOULD include diagnostic metadata that explains the source of ranked values and missing context when values are empty or partial.
-- **FR-073**: Completion diagnostic metadata MUST NOT change the `values` contract; returned values remain directly reusable argument strings.
-- **FR-074**: Completion diagnostics MUST NOT reveal hidden physical metadata, secrets, or guessed runtime values.
+建议按以下顺序实施：
 
-### Descriptor Lint and Version Fingerprints
+1. 完成 P0：public surface、next action、search metadata URI、output schema、recovery、回归保护。
+2. 再做 P1：资源导航、短示例、completion、algorithm 属性模板。
+3. 最后做 P2：启动提示、排障文档、opt-in LLM usability 扩展。
 
-- **FR-080**: Descriptor lint MUST validate useful title, description, input schema descriptions, enum descriptions, output schema descriptions,
-  annotations, prompt links, completion targets, navigation links, and safety hints.
-- **FR-081**: Descriptor lint MUST reject vague descriptions that do not identify the model action, required context, or side-effect level.
-- **FR-082**: Capability payloads MUST include stable fingerprints for descriptor catalog, prompt set, navigation metadata, and model-facing schema set.
-- **FR-083**: Real-model E2E reports and golden transcripts MUST record the relevant fingerprints.
-- **FR-084**: Fingerprints MUST be deterministic for the same descriptor inputs and MUST ignore runtime session values.
+每个需求应尽量独立提交和验证，避免一次性大改 MCP runtime。
 
-### Unified Next-Action Contract
+## 11. 验证要求
 
-- **FR-090**: Tool outputs, resource outputs, prompt instructions, and recoverable errors SHOULD use the same next-action vocabulary when they guide the model.
-- **FR-091**: The shared vocabulary SHOULD include `suggested_next_tool`, `suggested_arguments`, `read_resources_first`, `requires_user_approval`, and `ask_user_when_uncertain`.
-- **FR-092**: Suggested arguments MUST follow the same safety rules as recovery suggested arguments.
-- **FR-093**: Prompt templates MUST include stop conditions for workflows where the model should stop reading or calling tools.
-- **FR-094**: Prompt templates MUST include ask-user conditions when the server cannot infer required user intent.
+只修改文档时，至少执行：
 
-### Protocol Transport Contracts
+```bash
+git diff --check
+```
 
-- **FR-100**: Transport-level tests MUST cover `prompts/get` for at least support, encrypt, and mask prompt templates.
-- **FR-101**: Transport-level tests MUST cover `completion/complete` values and diagnostic metadata for representative prompt and resource references.
-- **FR-102**: Transport-level tests MUST cover capability fingerprints and descriptor-owned `resourceNavigation`.
-- **FR-103**: Transport-level tests MUST verify side-effecting tools expose explicit mode requirements and safety annotations.
+实现 P0/P1 代码后，优先执行受影响模块的 scoped test，例如：
 
-### Naming, Pagination, Native Signals, and Roots
+```bash
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
+```
 
-- **FR-110**: Tool names and descriptions MUST distinguish read-only, preview, and side-effecting actions without relying on README context.
-- **FR-111**: Resource and tool outputs that can exceed a bounded result size MUST expose consistent pagination fields,
-  including whether more data exists and the token or arguments needed to continue.
-- **FR-112**: Long-running workflow actions SHOULD expose MCP-native progress or structured progress fields when the current SDK supports them.
-- **FR-113**: If future resources access files or configuration roots, descriptors MUST expose MCP-native roots or equivalent permission-boundary metadata before access.
-- **FR-114**: Prompt argument coverage MUST be explicit: every prompt argument is either backed by completion, backed by a resource, or documented as user-provided only.
-- **FR-115**: MCP-native sampling and logging SHOULD be used only when stable SDK support exists and a concrete workflow requires it;
-  they MUST NOT become hidden planning, hidden execution, or completion ranking dependencies.
+若新增 descriptor lint、capabilities contract test 或 LLM usability 场景，应补充对应模块的单测或 E2E 验证命令。
 
-### Output Examples and Model-Confusion Tests
+## 12. 成功标准
 
-- **FR-120**: Complex output descriptors SHOULD include compact example shapes for workflow plans, SQL previews, metadata search results, completion diagnostics, and recovery envelopes.
-- **FR-121**: Examples MUST be static, small, secret-free, and free of environment-specific values.
-- **FR-122**: Model-confusion tests MUST cover apply-before-plan, execute-before-preview, missing execution mode, stale `plan_id`,
-  unknown database, ambiguous metadata, invalid enum, and wrong SQL tool.
-- **FR-123**: Confusion tests MUST assert structured recovery or next-action metadata rather than exact prose.
-
-## Key Entities
-
-- **Normalized Transcript Fixture**: Stable, reviewable JSON payload derived from public MCP protocol calls after dynamic fields are normalized.
-- **Real-Model Scenario**: Opt-in E2E case with public prompts, completions, resources, and tools plus trace-based assertions.
-- **Completion Ranking Rule**: Deterministic ordering rule that uses prefix, context, lifecycle, and feature reference without external model inference.
-- **Recovery Envelope**: Structured error metadata that describes whether and how a model can safely repair a failed MCP call.
-- **Resource Navigation Entry**: Descriptor-owned relationship from one public MCP resource, prompt, or tool to another.
-- **Capability Fingerprint Set**: Stable hashes for descriptor, prompt, navigation, and schema inputs that identify the model-facing contract version.
-- **Descriptor Lint Finding**: Reviewable validation result that identifies a descriptor clarity, schema, annotation, safety, completion, prompt, or navigation defect.
-- **Next-Action Metadata**: Shared guidance fields used by outputs, prompts, and recovery to tell the model what to read, call, ask, or stop doing next.
-- **Completion Diagnostic Metadata**: Optional metadata that explains candidate source, ranking reason, and missing context without changing completion values.
-- **Model-Confusion Scenario**: Deterministic negative-path test that simulates a common model misuse and verifies safe recovery.
-
-## Success Criteria
-
-- **SC-001**: Golden tests fail when prompt, completion, preview, description, schema, or safety metadata is accidentally removed.
-- **SC-002**: At least one opt-in real-model metadata scenario proves prompt/completion/resource/tool trace coverage without README-only hints.
-- **SC-003**: At least one opt-in real-model side-effect scenario proves preview-before-execution and approval-boundary preservation.
-- **SC-004**: Completion tests prove deterministic ordering for exact match, prefix match, contextual metadata, plan recency, and feature-specific algorithms.
-- **SC-005**: Recovery tests prove a model-like caller can repair common failures from structured fields without guessing hidden values.
-- **SC-006**: Side-effecting update tests prove missing execution mode is rejected and preview is the recommended repair.
-- **SC-007**: Descriptor lint fails on missing descriptions, enum explanations, output schemas, safety annotations, completion targets, and navigation links.
-- **SC-008**: Capability payloads, golden transcripts, and real-model E2E reports contain deterministic fingerprints for model-facing contracts.
-- **SC-009**: Navigation tests prove every descriptor-owned navigation entry resolves to existing public MCP identifiers.
-- **SC-010**: Prompt, completion, and capability transport tests prove model-facing fields are visible through public protocol calls.
-- **SC-011**: Model-confusion tests prove unsafe or ambiguous call orders recover through structured next-action metadata.
-- **SC-012**: Default CI remains deterministic and does not require real model credentials.
-
-## Assumptions
-
-- MCP Java SDK prompt and completion support remains available in the current dependency set.
-- The existing descriptor catalog remains the source of truth for public model-facing identifiers.
-- Existing MCP interaction trace infrastructure can be extended instead of replaced.
-- Real-model E2E runs against non-production fixtures and credentials only.
-- Session-scoped workflow plan lifecycle remains the accepted design; no durable plan storage is required for this increment.
-- Native MCP elicitation, sampling, progress, logging, and roots are used only when the current SDK exposes stable server APIs;
-  otherwise structured fallback fields are acceptable.
-- Descriptor-owned navigation can be represented in YAML or an equivalent descriptor input without adding a graph service.
+- 模型能从 README、descriptor 和 capabilities 获得一致的当前 MCP surface。
+- 模型搜索到 metadata 后能直接读取对应 resource，而不是手工拼 URI。
+- 模型面对 preview、workflow、error 时能复用结构化 next action 和参数。
+- 模型面对常见缺参、错工具、旧 plan 等问题时能通过 recovery 安全修正。
+- 模型面对有副作用 SQL 或 workflow apply 时始终先 preview，再等待用户确认。
+- 维护者能通过最小 lint 和 capabilities contract test 捕获模型可见 surface 的明显回归。
+- 改进保持轻量，不引入重型 planner、跨会话记忆、向量检索或复杂权限平台。

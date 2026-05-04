@@ -36,5 +36,7 @@ public final class MCPTransportConstants {
     
     public static final String SERVER_NAME = "Apache ShardingSphere MCP";
     
-    public static final String SERVER_INSTRUCTIONS = "Apache ShardingSphere MCP bootstrap runtime";
+    public static final String SERVER_INSTRUCTIONS = "Apache ShardingSphere MCP. Read `shardingsphere://capabilities` first, then use resource-first metadata discovery. "
+            + "Use `execute_query` only for read-only SELECT or EXPLAIN ANALYZE. Use `execute_update` with `execution_mode=preview` before side effects, "
+            + "and continue from `next_actions` or `recovery.next_actions` instead of guessing hidden tools or arguments.";
 }

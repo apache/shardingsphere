@@ -29,14 +29,14 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class YamlMCPResourceNavigationDescriptor {
-
+    
     private String from;
-
+    
     private String to;
-
+    
     private Collection<String> requiredArguments = new LinkedList<>();
-
+    
     private Collection<String> carriedArguments = new LinkedList<>();
-
+    
     private String description;
 }

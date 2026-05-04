@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPPromptTemplateLoader {
-
+    
     private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{\\s*([a-zA-Z0-9_.-]+)\\s*}}");
-
+    
     /**
      * Load template from classpath.
      *
@@ -56,7 +56,7 @@ public final class MCPPromptTemplateLoader {
             throw new IllegalStateException(String.format("Failed to load MCP prompt template resource `%s`.", templateResource), ex);
         }
     }
-
+    
     /**
      * Extract placeholders from template.
      *
@@ -71,7 +71,7 @@ public final class MCPPromptTemplateLoader {
         }
         return result;
     }
-
+    
     /**
      * Render template with arguments.
      *

@@ -37,12 +37,13 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPCompletionSpecificationFactoryTest {
-
+    
     @Test
     void assertCompleteDatabaseValues() {
         SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
@@ -52,10 +53,22 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.completion().values(), is(List.of("logic_db")));
         assertFalse(actual.completion().hasMore());
         assertThat(actual.meta().get("diagnostic"), is("ok"));
+        assertThat(actual.meta().get("matchStrategy"), is("prefix"));
         assertThat(actual.meta().get("matchedCandidateCount"), is(1));
         assertThat(((List<?>) actual.meta().get("valueDetails")).size(), is(1));
     }
-
+    
+    @Test
+    void assertCompleteDatabaseValuesWithContainsFallback() {
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+                new McpSchema.PromptReference("inspect_metadata"));
+        McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
+                new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "house")));
+        assertThat(actual.completion().values(), is(List.of("warehouse")));
+        assertThat(actual.meta().get("matchStrategy"), is("contains_fallback"));
+        assertTrue(((List<?>) actual.meta().get("rankingPolicy")).contains("contains-fallback-when-prefix-has-no-match"));
+    }
+    
     @Test
     void assertCompleteTableValuesWithMissingContextDiagnostic() {
         SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
@@ -66,7 +79,7 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.meta().get("diagnostic"), is("missing_context"));
         assertThat(actual.meta().get("missingContextArguments"), is(List.of("database", "schema")));
     }
-
+    
     @Test
     void assertCompleteCurrentSessionPlanIds() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -81,7 +94,7 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.completion().total(), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actual.meta().get("valueDetails")).get(0)).get("rankingReason"), is("recent-plan-first-for-plan_id"));
     }
-
+    
     @Test
     void assertCompletePlanIdsWithExactMatchFirst() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
@@ -94,7 +107,7 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "plan-a")));
         assertThat(actual.completion().values(), is(List.of("plan-a", "plan-a1")));
     }
-
+    
     @Test
     void assertCompletePlanIdsWithRecentPlanFirst() {
         WorkflowSessionContext workflowSessionContext = mock(WorkflowSessionContext.class);
@@ -107,11 +120,11 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "plan-")));
         assertThat(actual.completion().values(), is(List.of("plan-new", "plan-old")));
     }
-
+    
     private MCPCompletionSpecificationFactory createFactory(final MCPRuntimeContext runtimeContext) {
         return new MCPCompletionSpecificationFactory(runtimeContext);
     }
-
+    
     private MCPRuntimeContext createRuntimeContext(final WorkflowSessionContext workflowSessionContext) {
         MCPDatabaseCapabilityProvider databaseCapabilityProvider = mock(MCPDatabaseCapabilityProvider.class);
         when(databaseCapabilityProvider.getDatabaseProfiles()).thenReturn(List.of(
@@ -123,17 +136,17 @@ class MCPCompletionSpecificationFactoryTest {
         when(result.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
         return result;
     }
-
+    
     private McpSyncServerExchange createExchange(final String sessionId) {
         McpSyncServerExchange result = mock(McpSyncServerExchange.class);
         when(result.sessionId()).thenReturn(sessionId);
         return result;
     }
-
+    
     private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String status) {
         return createSnapshot(planId, sessionId, status, null);
     }
-
+    
     private WorkflowContextSnapshot createSnapshot(final String planId, final String sessionId, final String status, final Instant updateTime) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
@@ -142,7 +155,7 @@ class MCPCompletionSpecificationFactoryTest {
         result.setUpdateTime(updateTime);
         return result;
     }
-
+    
     private SyncCompletionSpecification findCompletion(final List<SyncCompletionSpecification> specifications, final McpSchema.CompleteReference reference) {
         return specifications.stream().filter(each -> reference.equals(each.referenceKey())).findFirst().orElseThrow();
     }

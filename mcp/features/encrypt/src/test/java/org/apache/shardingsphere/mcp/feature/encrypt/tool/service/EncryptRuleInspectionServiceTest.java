@@ -77,7 +77,13 @@ class EncryptRuleInspectionServiceTest {
         when(queryFacade.queryWithAnyDatabase("SHOW ENCRYPT ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "AES"), Map.of("type", "CUSTOM")));
         List<Map<String, Object>> actual = service.queryEncryptAlgorithms(queryFacade);
         assertTrue((Boolean) actual.get(0).get("supports_decrypt"));
+        assertThat(actual.get(0).get("required_properties"), is(List.of("aes-key-value")));
+        assertThat(actual.get(0).get("optional_properties"), is(List.of("digest-algorithm-name")));
+        assertThat(actual.get(0).get("secret_properties"), is(List.of("aes-key-value")));
+        List<?> propertyTemplates = (List<?>) actual.get(0).get("property_templates");
+        assertThat(((Map<?, ?>) propertyTemplates.get(0)).get("property_key"), is("aes-key-value"));
         assertThat(actual.get(1).get("type"), is("CUSTOM"));
         assertNull(actual.get(1).get("supports_like"));
+        assertThat(actual.get(1).get("property_templates"), is(List.of()));
     }
 }

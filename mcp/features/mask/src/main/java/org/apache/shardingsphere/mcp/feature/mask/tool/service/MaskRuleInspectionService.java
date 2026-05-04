@@ -18,15 +18,22 @@
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Mask rule inspection service.
  */
 public final class MaskRuleInspectionService {
+    
+    private final MaskAlgorithmPropertyTemplateService propertyTemplateService = new MaskAlgorithmPropertyTemplateService();
     
     /**
      * Query mask rules.
@@ -59,6 +66,17 @@ public final class MaskRuleInspectionService {
      * @return mask algorithms
      */
     public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
-        return queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS");
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")) {
+            String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
+            List<AlgorithmPropertyRequirement> propertyTemplates = propertyTemplateService.findRequirements(type);
+            Map<String, Object> row = new LinkedHashMap<>(each);
+            row.put("property_templates", propertyTemplates.stream().map(AlgorithmPropertyRequirement::toMap).toList());
+            row.put("required_properties", propertyTemplates.stream().filter(AlgorithmPropertyRequirement::isRequired).map(AlgorithmPropertyRequirement::getPropertyKey).toList());
+            row.put("optional_properties", propertyTemplates.stream().filter(eachRequirement -> !eachRequirement.isRequired()).map(AlgorithmPropertyRequirement::getPropertyKey).toList());
+            row.put("secret_properties", propertyTemplates.stream().filter(AlgorithmPropertyRequirement::isSecret).map(AlgorithmPropertyRequirement::getPropertyKey).toList());
+            result.add(row);
+        }
+        return result;
     }
 }

@@ -74,9 +74,14 @@ class MaskRuleInspectionServiceTest {
     @Test
     void assertQueryMaskAlgorithms() {
         MCPFeatureQueryFacade queryFacade = mock(MCPFeatureQueryFacade.class);
-        when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MD5"), Map.of("type", "CUSTOM")));
+        when(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y"), Map.of("type", "CUSTOM")));
         List<Map<String, Object>> actual = service.queryMaskAlgorithms(queryFacade);
-        assertThat(actual.get(0).get("type"), is("MD5"));
+        assertThat(actual.get(0).get("type"), is("MASK_FROM_X_TO_Y"));
+        assertThat(actual.get(0).get("required_properties"), is(List.of("from-x", "to-y", "replace-char")));
+        assertThat(actual.get(0).get("optional_properties"), is(List.of()));
+        List<?> propertyTemplates = (List<?>) actual.get(0).get("property_templates");
+        assertThat(((Map<?, ?>) propertyTemplates.get(0)).get("property_key"), is("from-x"));
         assertThat(actual.get(1).get("type"), is("CUSTOM"));
+        assertThat(actual.get(1).get("property_templates"), is(List.of()));
     }
 }

@@ -107,17 +107,25 @@ class SQLExecutionResponseTest {
         ExecuteQueryColumnDefinition orderIdColumn = new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false);
         List<ExecuteQueryColumnDefinition> columns = List.of(orderIdColumn);
         List<List<Object>> rows = List.of(List.of(1));
+        List<Map<String, Object>> resultSetNextActions = createNextActions("Return the result rows to the user or ask a follow-up question if the user requested more analysis.");
+        List<Map<String, Object>> executionNextActions = createNextActions("Report the execution status to the user and stop unless the user asks for another operation.");
         return Stream.of(
                 Arguments.of("result set with rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(columns, rows, true),
-                        Map.of("result_kind", "result_set", "statement_class", "query", "statement_type", "SELECT", "status", "OK", "columns", columns, "rows", rows, "truncated", true)),
+                        Map.of("result_kind", "result_set", "statement_class", "query", "statement_type", "SELECT", "status", "OK", "columns", columns, "rows", rows,
+                                "truncated", true, "next_actions", resultSetNextActions)),
                 Arguments.of("result set with null rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(List.of(), null, false),
                         Map.of("result_kind", "result_set", "statement_class", "query", "statement_type", "SELECT", "status", "OK",
-                                "columns", List.of(), "rows", List.of(), "truncated", false)),
+                                "columns", List.of(), "rows", List.of(), "truncated", false, "next_actions", resultSetNextActions)),
                 Arguments.of("update count", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.updateCount("UPDATE", 2),
-                        Map.of("result_kind", "update_count", "statement_class", "dml", "statement_type", "UPDATE", "status", "OK", "affected_rows", 2, "truncated", false)),
+                        Map.of("result_kind", "update_count", "statement_class", "dml", "statement_type", "UPDATE", "status", "OK", "affected_rows", 2, "truncated", false,
+                                "next_actions", executionNextActions)),
                 Arguments.of("statement acknowledgement",
                         (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction committed."),
                         Map.of("result_kind", "statement_ack", "statement_class", "transaction_control", "statement_type", "COMMIT",
-                                "status", "OK", "message", "Transaction committed.", "truncated", false)));
+                                "status", "OK", "message", "Transaction committed.", "truncated", false, "next_actions", executionNextActions)));
+    }
+    
+    private static List<Map<String, Object>> createNextActions(final String reason) {
+        return List.of(Map.of("action_kind", "stop", "reason", reason, "requires_user_approval", false));
     }
 }

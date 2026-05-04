@@ -193,7 +193,8 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
 - `resourceNavigation` 说明轻量级的公开下一跳，例如 database 到 schema、table 到 column、algorithm 到规划工具，
   以及 workflow plan 到 apply 或 validation 工具。
 - `fingerprints` 记录 descriptor、prompt、navigation 和模型可见 schema 的确定性哈希，让测试产物能证明模型使用的是哪一版 MCP surface。
-- 分页 item 响应总会包含 `has_more`，只有存在下一页时才包含 `next_page_token`。
+- item-list 响应总会包含 `items`、`count` 和 `has_more`。resource read 还会包含 `self_uri`，
+  并在适用时包含 `parent_uri`、`next_resources` 或 `next_page_token`。
 - Workflow tool 响应包含 `missing_required_inputs`、`resources_to_read`、`next_actions`、`recommended_next_tool`
   和 `requires_user_approval`，让模型可以不用猜测地继续下一步。
 - 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、
@@ -273,6 +274,19 @@ bin\start.bat conf\mcp-stdio.yaml
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioMCPServer.java`
 - `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioTransportIntegrationTest.java`
+
+## Client 配置与排障
+
+- 启动时会向 stderr 输出简短提示：配置文件路径、日志路径、runtime database 数量、当前 transport、token 状态，
+  以及第一个应该读取的 resource。
+- Client 应先读取 `shardingsphere://capabilities`，再跟随 `resourceNavigation`、`next_resources` 和 `next_actions`，
+  不要猜测隐藏 tool 或参数。
+- 如果 HTTP 返回 `401`，检查 `transport.http.accessToken`，并发送 `Authorization: Bearer <token>`。
+- 如果启动提示 runtime database 缺失或数量为 0，修正 `runtimeDatabases`；MCP resources 暴露的是 ShardingSphere 逻辑库，
+  不是物理存储单元。
+- 如果 JDBC metadata 或 SQL 执行因为驱动失败，请把目标 JDBC driver jar 放入 `plugins/`，或加入嵌入式运行时 classpath。
+- STDIO 模式下 stdout 只用于 MCP 协议帧，诊断信息应写到 stderr 或 `logs/mcp.log`。
+- Workflow tools 规划的是 ShardingSphere 逻辑规则变更；apply 前先 preview，并确认用户已批准副作用。
 
 ## Runtime 说明
 

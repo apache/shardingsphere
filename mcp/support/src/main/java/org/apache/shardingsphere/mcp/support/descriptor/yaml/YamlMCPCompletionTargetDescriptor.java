@@ -31,14 +31,14 @@ import java.util.Map;
 @Getter
 @Setter
 public final class YamlMCPCompletionTargetDescriptor {
-
+    
     private String referenceType;
-
+    
     private String reference;
-
+    
     private Collection<String> arguments = new LinkedList<>();
-
+    
     private int maxValues;
-
+    
     private Map<String, Object> meta = new LinkedHashMap<>();
 }

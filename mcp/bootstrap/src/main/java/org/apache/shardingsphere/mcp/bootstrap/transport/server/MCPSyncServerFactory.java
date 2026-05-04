@@ -36,17 +36,17 @@ import java.util.Optional;
  * MCP sync server factory.
  */
 public final class MCPSyncServerFactory {
-
+    
     private final McpJsonMapper jsonMapper;
-
+    
     private final MCPToolSpecificationFactory toolSpecificationFactory;
-
+    
     private final MCPResourceSpecificationFactory resourceSpecificationFactory;
-
+    
     private final MCPPromptSpecificationFactory promptSpecificationFactory;
-
+    
     private final MCPCompletionSpecificationFactory completionSpecificationFactory;
-
+    
     public MCPSyncServerFactory(final MCPRuntimeContext runtimeContext, final McpJsonMapper jsonMapper) {
         this.jsonMapper = jsonMapper;
         toolSpecificationFactory = new MCPToolSpecificationFactory(runtimeContext);
@@ -54,7 +54,7 @@ public final class MCPSyncServerFactory {
         promptSpecificationFactory = new MCPPromptSpecificationFactory();
         completionSpecificationFactory = new MCPCompletionSpecificationFactory(runtimeContext);
     }
-
+    
     /**
      * Create one sync server for single-session transports.
      *
@@ -64,7 +64,7 @@ public final class MCPSyncServerFactory {
     public McpSyncServer create(final McpServerTransportProvider transportProvider) {
         return create(McpServer.sync(transportProvider));
     }
-
+    
     /**
      * Create one sync server for streamable transports.
      *
@@ -74,7 +74,7 @@ public final class MCPSyncServerFactory {
     public McpSyncServer create(final McpStreamableServerTransportProvider transportProvider) {
         return create(McpServer.sync(transportProvider));
     }
-
+    
     private McpSyncServer create(final McpServer.SyncSpecification<?> specification) {
         return specification.jsonMapper(jsonMapper)
                 .serverInfo(MCPTransportConstants.SERVER_NAME, Optional.ofNullable(MCPSyncServerFactory.class.getPackage().getImplementationVersion()).orElse("development"))

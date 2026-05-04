@@ -28,17 +28,17 @@ import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
  */
 @Getter
 public final class MCPRuntimeContext {
-
+    
     private final MCPSessionManager sessionManager;
-
+    
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
-
+    
     private final WorkflowSessionContext workflowSessionContext;
-
+    
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
         this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext());
     }
-
+    
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowSessionContext workflowSessionContext) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;

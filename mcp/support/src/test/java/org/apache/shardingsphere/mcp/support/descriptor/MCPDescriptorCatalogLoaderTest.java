@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDescriptorCatalogLoaderTest {
-
+    
     @Test
     void assertLoadValidatesDescriptorQuality() {
         MCPDescriptorCatalog actual = MCPDescriptorCatalogLoader.load();
@@ -41,7 +41,7 @@ class MCPDescriptorCatalogLoaderTest {
         assertOutputProperties(actual, "apply_workflow", Set.of("plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package"));
         assertOutputProperties(actual, "validate_workflow", Set.of("plan_id", "status", "next_actions"));
     }
-
+    
     @Test
     void assertLoadValidatesEnumFields() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
@@ -49,18 +49,18 @@ class MCPDescriptorCatalogLoaderTest {
         MCPToolFieldDefinition actualExecutionMode = findField(actual, "execution_mode");
         assertThat(actualExecutionMode.getValueDefinition().getEnumValues(), is(List.of("preview", "review-then-execute", "manual-only")));
     }
-
+    
     private void assertOutputProperties(final MCPDescriptorCatalog catalog, final String toolName, final Set<String> expectedProperties) {
         Map<?, ?> actualProperties = (Map<?, ?>) findTool(catalog, toolName).getOutputSchema().get("properties");
         for (String each : expectedProperties) {
             assertTrue(actualProperties.containsKey(each));
         }
     }
-
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
     }
-
+    
     private MCPToolFieldDefinition findField(final MCPToolDescriptor toolDescriptor, final String fieldName) {
         return toolDescriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst().orElseThrow();
     }

@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.mcp.api.protocol.response;
 
-import lombok.RequiredArgsConstructor;
-
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,25 +25,42 @@ import java.util.Map;
 /**
  * MCP items response.
  */
-@RequiredArgsConstructor
 public final class MCPItemsResponse implements MCPResponse {
-
+    
     private final List<?> items;
-
+    
     private final String nextPageToken;
-
+    
+    private final Map<String, Object> navigation;
+    
     public MCPItemsResponse(final List<?> items) {
         this(items, "");
     }
-
+    
+    public MCPItemsResponse(final List<?> items, final String nextPageToken) {
+        this(items, nextPageToken, Collections.emptyMap());
+    }
+    
+    public MCPItemsResponse(final List<?> items, final Map<String, Object> navigation) {
+        this(items, "", navigation);
+    }
+    
+    public MCPItemsResponse(final List<?> items, final String nextPageToken, final Map<String, Object> navigation) {
+        this.items = null == items ? Collections.emptyList() : items;
+        this.nextPageToken = nextPageToken;
+        this.navigation = null == navigation ? Collections.emptyMap() : navigation;
+    }
+    
     @Override
     public Map<String, Object> toPayload() {
-        Map<String, Object> result = new LinkedHashMap<>(items.size() + 2, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(items.size() + navigation.size() + 3, 1F);
         result.put("items", items);
+        result.put("count", items.size());
         result.put("has_more", null != nextPageToken && !nextPageToken.isEmpty());
         if (null != nextPageToken && !nextPageToken.isEmpty()) {
             result.put("next_page_token", nextPageToken);
         }
+        result.putAll(navigation);
         return result;
     }
 }

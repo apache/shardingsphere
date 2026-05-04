@@ -26,12 +26,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public final class YamlMCPPromptArgumentDescriptor {
-
+    
     private String name;
-
+    
     private String title;
-
+    
     private String description;
-
+    
     private boolean required;
 }

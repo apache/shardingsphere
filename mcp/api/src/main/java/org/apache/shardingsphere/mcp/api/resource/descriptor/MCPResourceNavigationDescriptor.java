@@ -27,17 +27,17 @@ import java.util.List;
  */
 @Getter
 public final class MCPResourceNavigationDescriptor {
-
+    
     private final String from;
-
+    
     private final String to;
-
+    
     private final List<String> requiredArguments;
-
+    
     private final List<String> carriedArguments;
-
+    
     private final String description;
-
+    
     public MCPResourceNavigationDescriptor(final String from, final String to, final List<String> requiredArguments,
                                            final List<String> carriedArguments, final String description) {
         this.from = from;

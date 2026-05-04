@@ -39,7 +39,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ToolHandlerTest {
-
+    
     @Test
     void assertGetSearchMetadataToolDescriptor() {
         MCPToolDescriptor actual = new SearchMetadataToolHandler().getToolDescriptor();
@@ -53,7 +53,7 @@ class ToolHandlerTest {
         assertTrue(actualItemProperties.containsKey("next_resource_uris"));
         assertTrue(actualItemProperties.containsKey("derivation_status"));
     }
-
+    
     @Test
     void assertHandleSearchMetadata() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -66,7 +66,7 @@ class ToolHandlerTest {
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_idx"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithSequence() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -78,7 +78,7 @@ class ToolHandlerTest {
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_seq"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithEmptyQuery() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -94,7 +94,7 @@ class ToolHandlerTest {
             assertTrue(actualNames.contains("order_idx"));
         }
     }
-
+    
     private MCPRuntimeContext createSearchRuntimeContext() {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext();
         result.getSessionManager().createSession("session-1");

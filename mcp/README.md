@@ -193,7 +193,8 @@ Descriptors must describe what the model should use the surface for, not just re
 - `resourceNavigation` explains lightweight public next hops such as databases to schemas, tables to columns, algorithms to planning tools,
   and workflow plans to apply or validation tools.
 - `fingerprints` records deterministic hashes for descriptor, prompt, navigation, and model-facing schema surfaces so test artifacts can prove which MCP surface a model used.
-- Paginated item responses always include `has_more`, and include `next_page_token` only when another page is available.
+- Item-list responses always include `items`, `count`, and `has_more`. Resource reads also include `self_uri`,
+  and include `parent_uri`, `next_resources`, or `next_page_token` when applicable.
 - Workflow tool responses include `missing_required_inputs`, `resources_to_read`, `next_actions`, `recommended_next_tool`, and `requires_user_approval`
   so a model can continue the workflow without guessing.
 - Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,
@@ -273,6 +274,19 @@ Reference:
 
 - `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioMCPServer.java`
 - `mcp/bootstrap/src/test/java/org/apache/shardingsphere/mcp/bootstrap/transport/server/stdio/StdioTransportIntegrationTest.java`
+
+## Client Configuration and Troubleshooting
+
+- Startup prints concise hints to stderr: configuration path, log path, runtime database count, active transport, token state,
+  and the first resource to read.
+- Configure clients to read `shardingsphere://capabilities` first, then follow `resourceNavigation`, `next_resources`,
+  and `next_actions` instead of guessing hidden tools or arguments.
+- For HTTP `401`, check `transport.http.accessToken` and send `Authorization: Bearer <token>`.
+- If startup reports zero or missing runtime databases, fix `runtimeDatabases`; MCP resources expose ShardingSphere logical databases,
+  not physical storage units.
+- If JDBC metadata or SQL execution fails with a driver error, add the target JDBC driver jar under `plugins/` or the embedding classpath.
+- In STDIO mode, keep stdout reserved for MCP protocol frames. Send diagnostics to stderr or `logs/mcp.log`.
+- Workflow tools plan ShardingSphere logical rule changes; preview before apply and confirm the user approved side effects.
 
 ## Runtime Notes
 

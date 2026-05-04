@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ServerCapabilitiesHandlerTest {
-
+    
     @Test
     void assertHandleReturnsCoreModelSurfaceContract() {
         try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext())) {
@@ -56,7 +56,7 @@ class ServerCapabilitiesHandlerTest {
             assertCoreToolSchemas(actual);
         }
     }
-
+    
     private void assertModelContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_contract");
         assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
@@ -65,29 +65,30 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(actual.containsKey("workflow_session_rule"));
         assertTrue(actual.containsKey("recovery_rule"));
     }
-
+    
     private void assertSecurityHints(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("security_hints");
         assertTrue(actual.containsKey("http_access_token"));
         assertTrue(actual.containsKey("remote_access"));
         assertTrue(actual.containsKey("stdio_stdout"));
     }
-
+    
     private void assertResourcePayloadContracts(final Map<String, Object> capabilities) {
         Map<?, ?> capabilityCatalog = findResource(capabilities, "shardingsphere://capabilities");
         assertThat(((Map<?, ?>) capabilityCatalog.get("payload_contract")).get("response_kind"), is("capability-catalog"));
         Map<?, ?> databaseDetail = findResource(capabilities, "shardingsphere://databases/{database}");
         Map<?, ?> payloadContract = (Map<?, ?>) databaseDetail.get("payload_contract");
         assertThat(payloadContract.get("response_kind"), is("detail"));
-        assertTrue(((List<?>) payloadContract.get("stable_fields")).containsAll(List.of("found", "items", "count", "item")));
+        assertTrue(((List<?>) payloadContract.get("stable_fields")).containsAll(List.of("found", "items", "count")));
+        assertTrue(((List<?>) payloadContract.get("optional_fields")).containsAll(List.of("item", "self_uri", "parent_uri", "next_resources")));
         Map<?, ?> databaseCapabilities = findResource(capabilities, "shardingsphere://databases/{database}/capabilities");
         assertThat(((Map<?, ?>) databaseCapabilities.get("payload_contract")).get("response_kind"), is("detail-object"));
         Map<?, ?> databases = findResource(capabilities, "shardingsphere://databases");
         Map<?, ?> databaseListPayloadContract = (Map<?, ?>) databases.get("payload_contract");
-        assertThat(databaseListPayloadContract.get("stable_fields"), is(List.of("items", "has_more")));
-        assertThat(databaseListPayloadContract.get("optional_fields"), is(List.of("next_page_token")));
+        assertThat(databaseListPayloadContract.get("stable_fields"), is(List.of("items", "count", "has_more")));
+        assertThat(databaseListPayloadContract.get("optional_fields"), is(List.of("next_page_token", "self_uri", "parent_uri", "next_resources")));
     }
-
+    
     private void assertCoreToolSchemas(final Map<String, Object> capabilities) {
         Map<?, ?> searchMetadataTool = findTool(capabilities, "search_metadata");
         Map<?, ?> objectTypesSchema = findInputSchema(searchMetadataTool, "object_types");
@@ -96,16 +97,16 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> executeUpdateOutputProperties = (Map<?, ?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("properties");
         assertTrue(((List<?>) ((Map<?, ?>) executeUpdateOutputProperties.get("result_kind")).get("enum")).containsAll(List.of("preview", "result_set", "update_count", "statement_ack")));
     }
-
+    
     private Map<?, ?> findResource(final Map<String, Object> capabilities, final String uriPattern) {
         List<?> resources = (List<?>) capabilities.get(uriPattern.contains("{") ? "resourceTemplates" : "resources");
         return resources.stream().map(each -> (Map<?, ?>) each).filter(each -> uriPattern.equals(each.get("uriPattern"))).findFirst().orElseThrow();
     }
-
+    
     private Map<?, ?> findTool(final Map<String, Object> capabilities, final String toolName) {
         return ((List<?>) capabilities.get("tools")).stream().map(each -> (Map<?, ?>) each).filter(each -> toolName.equals(each.get("name"))).findFirst().orElseThrow();
     }
-
+    
     private Map<?, ?> findInputSchema(final Map<?, ?> tool, final String fieldName) {
         Map<?, ?> field = ((List<?>) tool.get("inputFields")).stream().map(each -> (Map<?, ?>) each).filter(each -> fieldName.equals(each.get("name"))).findFirst().orElseThrow();
         return (Map<?, ?>) field.get("schema");

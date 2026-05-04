@@ -20,10 +20,10 @@ package org.apache.shardingsphere.mcp.support.database.tool.response;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryResultKind;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -136,6 +136,21 @@ public final class SQLExecutionResponse implements MCPResponse {
             result.put("message", message);
         }
         result.put("truncated", truncated);
+        result.put("next_actions", createNextActions());
+        return result;
+    }
+    
+    private List<Map<String, Object>> createNextActions() {
+        return List.of(createStopAction(ExecuteQueryResultKind.RESULT_SET == resultKind
+                ? "Return the result rows to the user or ask a follow-up question if the user requested more analysis."
+                : "Report the execution status to the user and stop unless the user asks for another operation."));
+    }
+    
+    private Map<String, Object> createStopAction(final String reason) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("action_kind", "stop");
+        result.put("reason", reason);
+        result.put("requires_user_approval", false);
         return result;
     }
     

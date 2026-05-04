@@ -31,16 +31,16 @@ import java.util.Map;
 @Getter
 @Setter
 public final class YamlMCPPromptDescriptor {
-
+    
     private String name;
-
+    
     private String title;
-
+    
     private String description;
-
+    
     private Collection<YamlMCPPromptArgumentDescriptor> arguments = new LinkedList<>();
-
+    
     private String templateResource;
-
+    
     private Map<String, Object> meta = new LinkedHashMap<>();
 }

@@ -70,7 +70,7 @@ class MCPBootstrapTest {
                 MockedStatic<MCPConfigurationLoader> mockedConfigurationLoader = mockStatic(MCPConfigurationLoader.class);
                 MockedStatic<Runtime> mockedRuntime = mockStatic(Runtime.class);
                 MockedConstruction<MCPRuntimeLauncher> mockedConstruction = mockConstruction(MCPRuntimeLauncher.class,
-                        (mock, context) -> when(mock.launch(launchConfig)).thenReturn(runtimeServer))) {
+                        (mock, context) -> when(mock.launch(launchConfig, expectedConfigPath)).thenReturn(runtimeServer))) {
             mockedRuntime.when(Runtime::getRuntime).thenReturn(runtime);
             mockedConfigurationLoader.when(() -> MCPConfigurationLoader.load(expectedConfigPath)).thenReturn(launchConfig);
             doAnswer(invocation -> {
@@ -79,7 +79,7 @@ class MCPBootstrapTest {
             }).when(runtime).addShutdownHook(any(Thread.class));
             MCPBootstrap.main(args);
             MCPRuntimeLauncher actualLauncher = mockedConstruction.constructed().get(0);
-            verify(actualLauncher).launch(launchConfig);
+            verify(actualLauncher).launch(launchConfig, expectedConfigPath);
             Thread actualShutdownHook = shutdownHook.get();
             actualShutdownHook.run();
             if (runShutdownHookTwice) {

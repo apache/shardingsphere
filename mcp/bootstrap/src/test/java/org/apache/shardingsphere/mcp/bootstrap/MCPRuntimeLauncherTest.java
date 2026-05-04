@@ -23,13 +23,14 @@ import org.apache.shardingsphere.mcp.bootstrap.config.StdioTransportConfiguratio
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
-import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class MCPRuntimeLauncherTest {
     
@@ -108,6 +110,35 @@ class MCPRuntimeLauncherTest {
             assertThat(actual.getCause(), is(startFailure));
             verify(mockedStdioServer.constructed().get(0)).stop();
         }
+    }
+    
+    @Test
+    void assertCreateHttpStartupHints() {
+        StreamableHttpMCPServer server = mock(StreamableHttpMCPServer.class);
+        when(server.getLocalPort()).thenReturn(19090);
+        List<String> actual = new MCPRuntimeLauncher().createStartupHints(createLaunchConfiguration(true), server, "custom.yaml");
+        assertThat(actual, is(List.of(
+                "ShardingSphere MCP runtime started.",
+                "Configuration: custom.yaml",
+                "Logs: logs/mcp.log",
+                "Runtime databases: 1",
+                "HTTP endpoint: http://127.0.0.1:19090/mcp",
+                "HTTP bearer token: not configured",
+                "First resource to read: shardingsphere://capabilities")));
+    }
+    
+    @Test
+    void assertCreateStdioStartupHints() {
+        MCPRuntimeServer server = mock(MCPRuntimeServer.class);
+        List<String> actual = new MCPRuntimeLauncher().createStartupHints(createLaunchConfiguration(false), server, "");
+        assertThat(actual, is(List.of(
+                "ShardingSphere MCP runtime started.",
+                "Configuration: conf/mcp.yaml",
+                "Logs: logs/mcp.log",
+                "Runtime databases: 1",
+                "STDIO transport: enabled",
+                "STDIO stdout: reserved for MCP protocol frames; send diagnostics to stderr or logs.",
+                "First resource to read: shardingsphere://capabilities")));
     }
     
     private MCPLaunchConfiguration createLaunchConfiguration(final boolean httpEnabled) {

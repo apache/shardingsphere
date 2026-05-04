@@ -15,42 +15,48 @@
   limitations under the License.
 -->
 
-# Implementation Plan: AI-Friendly MCP Experience Hardening
+# Implementation Plan: AI-Friendly MCP Lightweight Requirements
 
-> Status after over-design cleanup: This implementation plan is retained for traceability only. It must not be executed as the current task queue. The active scope is the lightweight requirements document under `docs/mcp/`, with over-designed quality-engineering suites and future native MCP signal work deferred.
-
-**Branch**: `001-shardingsphere-mcp` | **Date**: 2026-05-04 | **Spec**: `specs/003-mcp-ai-friendly-guided-interaction/spec.md`
-**Input**: Feature specification from `specs/003-mcp-ai-friendly-guided-interaction/spec.md`
-**Note**: Spec Kit structure is maintained manually because branch-changing Spec Kit scripts are forbidden for this request.
+**Branch**: `001-shardingsphere-mcp` (current branch, not changed)
+**Date**: 2026-05-04
+**Spec**: `specs/003-mcp-ai-friendly-guided-interaction/spec.md`
+**Input**: Lightweight requirements from `requirements.md`
+**Note**: This plan is maintained manually because branch-changing Spec Kit commands are forbidden for this request.
 
 ## Summary
 
-Harden the already implemented MCP prompt, completion, resource, tool, workflow, and preview surface for large-model use.
-The plan now includes the full P0, P1, and P2 model-comfort scope: protocol regression guards, real-model proof, explicit side-effect modes,
-clarification, completion diagnostics, descriptor lint, fingerprints, unified next-action metadata, descriptor-owned navigation, prompt stop conditions,
-transport contracts, naming, pagination, sampling, progress, logging, roots, examples, and model-confusion tests.
+Organize the next MCP usability increment around small model-facing improvements.
+The work should make the current MCP surface easier for large models to discover, call, continue, and recover from without introducing
+a planner, broad tool matrix, graph engine, vector search, cross-session memory, or default-CI real-model benchmark.
+
+The active requirement source is:
+
+- `specs/003-mcp-ai-friendly-guided-interaction/spec.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/requirements.md`
+- `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md`
 
 ## Technical Context
 
 **Language/Version**: Java 21 MCP subchain.
-**Primary Dependencies**: MCP Java SDK, ShardingSphere MCP descriptor catalog, MCP bootstrap transport, workflow session context, E2E MCP interaction framework.
-**Storage**: Existing session-scoped workflow state only; no new durable plan storage.
-**Testing**: JUnit 5, Mockito, module-scoped Maven tests, deterministic transcript golden tests, descriptor lint tests, transport contract tests,
-model-confusion tests, opt-in real-model E2E.
-**Target Platform**: ShardingSphere-Proxy MCP runtime.
+**Primary Dependencies**: Existing MCP Java SDK integration, descriptor catalog, MCP bootstrap transport, workflow session context, and ShardingSphere MCP resources/tools.
+**Storage**: Existing session-scoped workflow state only; no new durable memory.
+**Testing**: Documentation-only changes use `git diff --check`.
+Later code changes should use module-scoped JUnit 5/Mockito tests, descriptor lint, focused capabilities contract checks,
+and opt-in LLM usability tests only when explicitly enabled.
+**Target Platform**: ShardingSphere-Proxy MCP runtime over HTTP and STDIO.
 **Project Type**: Java backend protocol surface and model-facing metadata.
-**Performance Goals**: Completion ranking remains in-memory, deterministic, and bounded by existing max result limits.
-**Constraints**: No branch switching, no generated-path edits, no default-CI real-model calls, no weakened approval path, no hidden execution defaults.
-**Scale/Scope**: MCP API/support/core/bootstrap, encrypt/mask descriptors, README, and `test/e2e/mcp`.
+**Performance Goals**: Completion and navigation changes remain deterministic, in-memory, and bounded by existing pagination or max-result limits.
+**Constraints**: No branch switching, no generated-path edits, no hidden execution defaults, no broad planner or benchmark system, and no default-CI dependency on live model services.
+**Scale/Scope**: `mcp/api`, `mcp/support`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, `mcp/features/mask`,
+`mcp/README.md`, `mcp/README_ZH.md`, `docs/mcp`, and focused MCP tests when implementation starts.
 
 ## Constitution Check
 
-- **Proxy-first logical abstraction**: Pass. Transcript, completion, recovery, and navigation operate on logical MCP resources and Proxy-visible metadata.
-- **Explicit operator control**: Pass. Real-model E2E, recovery, and `execute_update` validation must preserve preview and approval boundaries for side effects.
-- **Minimal safe automation**: Pass. No central planner, graph engine, rollback dry-run, migration, or hidden execution is introduced.
-- **Deterministic naming and transparent changes**: Pass. Golden tests and completion ranking are deterministic.
-- **Complete verification before completion**: Pass. Requirements include deterministic tests, opt-in real-model E2E, descriptor lint, transport contracts, and navigation validation.
-- **Repository rules**: Pass. Implementation must follow `AGENTS.md`, `CODE_OF_CONDUCT.md`, scoped Maven checks, and ASF headers.
+- **Readability and cleanliness**: Pass. Requirements are grouped by P0/P1/P2 and remove stale broad scope.
+- **Simplicity**: Pass. The plan explicitly excludes planner, graph, memory, vector, benchmark, and RBAC systems.
+- **Explicit operator control**: Pass. Preview-first and user approval boundaries remain mandatory for side effects.
+- **Deterministic verification**: Pass. Default verification uses lightweight deterministic checks; real-model usage remains opt-in.
+- **Repository rules**: Pass. This task does not switch branches or edit generated files, and implementation tasks must keep scoped Maven/checkstyle verification.
 
 ## Project Structure
 
@@ -65,9 +71,12 @@ specs/003-mcp-ai-friendly-guided-interaction/
 |-- data-model.md
 |-- quickstart.md
 `-- tasks.md
+
+docs/mcp/
+`-- ShardingSphere-MCP-AI-Friendly-Requirements.md
 ```
 
-### Source Code
+### Source Code For Later Implementation
 
 ```text
 mcp/api/
@@ -76,83 +85,81 @@ mcp/core/
 mcp/bootstrap/
 mcp/features/encrypt/
 mcp/features/mask/
-test/e2e/mcp/
 mcp/README.md
 mcp/README_ZH.md
+test/e2e/mcp/
 ```
 
-**Structure Decision**: Extend existing MCP modules and E2E framework. Do not introduce a new module for this increment.
+**Structure Decision**: Reuse existing MCP modules. Do not introduce a new module for this increment.
 
-## Phase Plan
+## Requirement Slices
 
-### Phase 0: Documentation and Baseline Correction
+### Slice 0: Requirements Alignment
 
-- Update README statements that still describe prompt and completion support as deferred.
-- Document current prompt, completion, preview, explicit update execution mode, structured clarification, and opt-in real-model E2E behavior.
+- Keep Spec Kit `spec.md` aligned with the lightweight active requirements.
+- Keep Spec Kit `requirements.md` synchronized with the current `docs/mcp` requirement baseline.
+- Mark over-designed historical material as trace-only when it remains in the repository.
+- Verify documentation diffs with `git diff --check`.
 
-### Phase 1: P0 Protocol Golden Guard
+### Slice 1: P0 Public Surface Clarity
 
-- Add normalized capture helpers for public MCP protocol payloads.
-- Add small golden fixtures for model-facing protocol surfaces.
-- Add tests that fail on missing descriptions, schemas, prompts, completions, preview enums, annotations, safety metadata, fingerprints, and explicit side-effect requirements.
+- Make server instructions point models to `shardingsphere://capabilities` and resource-first discovery.
+- Check README, descriptor identifiers, and capabilities for current public surface consistency.
+- Label obsolete tool-matrix material as non-current.
+- Add a lightweight capabilities shape check rather than a broad golden transcript suite.
 
-### Phase 2: P0 Opt-In Real-Model E2E
+### Slice 2: P0 Next Actions and Safe Continuation
 
-- Extend or reuse MCP conversation scenarios for real-model runs.
-- Assert trace shape instead of exact prose.
-- Redact credentials and record provider, model, descriptor fingerprint, prompt fingerprint, navigation fingerprint, scenario ID, and failure classification.
-- Keep real-model execution outside default CI.
+- Standardize `next_actions` as the primary guidance field.
+- Keep existing compatibility fields only where already present.
+- Ensure preview outputs return reusable arguments for execute/apply steps when safe.
+- Preserve user approval requirements for all side-effecting continuation paths.
 
-### Phase 3: P0 Explicit Side-Effect and Clarification
+### Slice 3: P0 Metadata URI Navigation
 
-- Require explicit `execution_mode` for `execute_update` and recover missing mode to preview.
-- Prefer native MCP elicitation for user-only missing input when SDK support exists.
-- Add structured fallback fields for pending questions, missing arguments, and ask-user status.
-- Add completion diagnostic metadata for ranking source and missing context.
+- Ensure `search_metadata` returns descriptor-backed detail resource URIs when safe.
+- Include parent and next-resource hints when derivable.
+- Return derivation status and reason instead of guessed URIs when the mapping is uncertain.
 
-### Phase 4: P1 Descriptor Quality and Capability Fingerprints
+### Slice 4: P0 Schema and Recovery Accuracy
 
-- Add descriptor lint for descriptions, schemas, enum values, annotations, safety hints, prompt references, completion targets, navigation, and examples.
-- Add deterministic fingerprints for descriptor catalog, prompt set, navigation metadata, and model-facing schema set.
-- Record fingerprints in golden transcripts and real-model E2E reports.
+- Reconcile core output schemas with actual payloads for search, SQL, workflow planning, apply, and validation.
+- Extend structured recovery for missing `database`, missing `execution_mode`, wrong SQL tool, unknown public identifier, and stale workflow `plan_id`.
+- Add descriptor lint for obvious model-facing regressions.
 
-### Phase 5: P1 Unified Next Actions and Prompt Stop Conditions
+### Slice 5: P1 Lightweight Comfort Enhancements
 
-- Standardize next-action fields across tool outputs, resource outputs, prompts, and recovery.
-- Add prompt stop conditions and ask-user conditions.
-- Validate that suggested arguments contain only known or user-supplied values.
+- Add safe `self_uri`, `parent_uri`, `count`, and `next_resources` to resource responses where useful.
+- Add compact static examples for complex tool outputs.
+- Add deterministic prefix-first plus contains fallback completion behavior.
+- Expose encrypt and mask algorithm property templates through algorithm resources.
+- Clarify approval arguments such as `approved_steps`.
 
-### Phase 6: P1 Descriptor-Owned Navigation and Transport Contracts
+### Slice 6: P2 First-Use and Opt-In Usability
 
-- Move navigation ownership into descriptor YAML or equivalent descriptor input.
-- Add prompt retrieval, completion, capabilities, navigation, and explicit side-effect mode transport contract tests.
-- Validate all navigation endpoints resolve to public resources, prompts, or tools.
-
-### Phase 7: P2 Deterministic Completion Ranking
-
-- Implement exact-prefix, context, plan-recency, and feature-reference ranking.
-- Keep returned values directly reusable.
-- Avoid cross-session history, embeddings, model calls, and user behavior learning.
-
-### Phase 8: P2 Structured Recovery and Error Taxonomy
-
-- Standardize recovery fields for common recoverable failures.
-- Preserve preview and approval for wrong-tool SQL recovery.
-- Recommend replanning for unavailable workflow plans.
-- Expand categories for parse errors, unsupported statements, multiple statements, missing database, unsafe SQL, invalid enum, unsupported resource, and stale plan.
-
-### Phase 9: P2 Ergonomics, Examples, and Confusion Tests
-
-- Audit tool and resource naming for read-only, preview, and side-effect distinction.
-- Normalize pagination fields for large result surfaces.
-- Add native or structured progress metadata for long-running workflows when supported.
-- Add sampling and logging only where stable SDK support and concrete workflow need exist.
-- Add roots or permission-boundary metadata for future file or config resources.
-- Require prompt argument coverage by completion, resource, or user-provided-only documentation.
-- Add compact output examples and model-confusion tests.
+- Improve HTTP and STDIO startup hints.
+- Add first-use client configuration and troubleshooting docs.
+- Add a few opt-in LLM usability scenarios for preview-first SQL, metadata search to detail resource, and workflow order.
+- Normalize count and pagination wording on large list responses.
 
 ## Complexity Tracking
 
-No constitution violation is currently justified.
-Any later proposal for a graph engine, central planner, real-model default CI, cross-session completion memory, semantic ranking, or hidden execution shortcut
-must reopen this section with explicit rationale.
+No complexity exception is justified.
+Any later proposal for a new planner, graph engine, vector retrieval, cross-session memory, default-CI real-model suite,
+benchmark leaderboard, RBAC platform, or hidden execution shortcut must reopen this section with a concrete benefit and scoped alternative analysis.
+
+## Verification Plan
+
+For this requirements-only pass:
+
+```bash
+git diff --check
+```
+
+For later implementation, prefer narrow module checks, for example:
+
+```bash
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+If descriptor lint, capabilities contract checks, or opt-in LLM usability tests are added, record the exact scoped command and keep live model services out of default CI.

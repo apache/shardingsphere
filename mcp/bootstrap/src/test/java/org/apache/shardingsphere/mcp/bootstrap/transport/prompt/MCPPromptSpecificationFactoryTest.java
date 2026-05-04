@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 
 class MCPPromptSpecificationFactoryTest {
-
+    
     @Test
     void assertCreatePromptSpecifications() {
         List<SyncPromptSpecification> actual = new MCPPromptSpecificationFactory().createPromptSpecifications();
@@ -40,7 +40,7 @@ class MCPPromptSpecificationFactoryTest {
         assertThat(actualPromptSpecification.prompt().arguments().size(), is(3));
         assertThat(actualPromptSpecification.prompt().meta().get("relatedTools"), is(List.of("execute_query", "execute_update")));
     }
-
+    
     @Test
     void assertRenderPromptTemplate() {
         SyncPromptSpecification promptSpecification = findPrompt(new MCPPromptSpecificationFactory().createPromptSpecifications(), "inspect_metadata");
@@ -56,7 +56,7 @@ class MCPPromptSpecificationFactoryTest {
                 "Stop without SQL execution when the user only asked to inspect metadata.")));
         assertThat(actual.meta().get("templateResource"), is("META-INF/shardingsphere-mcp/prompts/inspect-metadata.md"));
     }
-
+    
     private SyncPromptSpecification findPrompt(final List<SyncPromptSpecification> specifications, final String name) {
         return specifications.stream().filter(each -> name.equals(each.prompt().name())).findFirst().orElseThrow();
     }

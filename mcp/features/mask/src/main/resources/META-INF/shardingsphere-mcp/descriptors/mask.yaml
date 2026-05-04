@@ -19,7 +19,9 @@ resources:
   - uriPattern: shardingsphere://features/mask/algorithms
     name: mask-algorithms
     title: Mask Algorithms
-    description: "List mask algorithm plugins visible from the current ShardingSphere-Proxy runtime. Read this before planning masking when the user asks for masking strategy or algorithm choice."
+    description: >-
+      List mask algorithm plugins visible from the current ShardingSphere-Proxy runtime, including property templates and secret-property hints.
+      Read this before planning masking when the user asks for masking strategy or algorithm choice.
     mimeType: application/json
     meta:
       resourceKind: list
@@ -160,7 +162,9 @@ resourceNavigation:
 tools:
   - name: plan_mask_rule
     title: Plan Mask Rule
-    description: "Plan a ShardingSphere mask rule workflow for a logical table column. This tool creates reviewable rule and DistSQL artifacts but does not execute them; use apply_workflow only after user review."
+    description: >-
+      Plan a ShardingSphere mask rule workflow for a logical table column. This tool creates reviewable rule and DistSQL artifacts
+      but does not execute them; use apply_workflow only after user review.
     fields:
       - name: plan_id
         required: false
@@ -300,6 +304,26 @@ tools:
         requires_user_approval:
           type: boolean
           description: "Whether the preferred next action needs visible user approval before side effects."
+      examples:
+        - plan_id: mask-rule-20260505-001
+          status: planned
+          missing_required_inputs: []
+          issues: []
+          artifacts: {}
+          property_requirements:
+            - role: primary
+              property_key: from-x
+              required: true
+              secret: false
+          resources_to_read:
+            - shardingsphere://features/mask/algorithms
+          next_actions:
+            - action_kind: call_tool
+              tool: apply_workflow
+              reason: Preview generated workflow artifacts.
+              requires_user_approval: false
+          recommended_next_tool: apply_workflow
+          requires_user_approval: false
     annotations:
       title: Plan Mask Rule
       readOnlyHint: true

@@ -28,16 +28,16 @@ import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
-
+    
     static boolean isReadOnlyStatement(final SupportedMCPStatement statementClass) {
         return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN_ANALYZE == statementClass;
     }
-
+    
     static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql) {
         return new SQLExecutionRequest(toolCall.getSessionId(), toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), sql,
                 toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0));
     }
-
+    
     static void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
         if (!value.isEmpty()) {
             target.put(key, value);

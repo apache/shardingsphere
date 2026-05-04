@@ -22,11 +22,14 @@ import org.apache.shardingsphere.mcp.bootstrap.config.MCPLaunchConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.MCPRuntimeServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.http.StreamableHttpMCPServer;
 import org.apache.shardingsphere.mcp.bootstrap.transport.server.stdio.StdioMCPServer;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * MCP runtime launcher.
@@ -41,16 +44,52 @@ public final class MCPRuntimeLauncher {
      * @throws IOException when the active server startup fails
      */
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config) throws IOException {
+        return launch(config, "");
+    }
+    
+    /**
+     * Launch.
+     *
+     * @param config launch configuration
+     * @param configPath configuration path
+     * @return MCP runtime server
+     * @throws IOException when the active server startup fails
+     */
+    public MCPRuntimeServer launch(final MCPLaunchConfiguration config, final String configPath) throws IOException {
         ShardingSpherePreconditions.checkNotEmpty(config.getDatabases(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
         config.validate();
         MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(config.getDatabases()), new MCPDatabaseCapabilityProvider(config.getDatabases()));
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();
+            printStartupHints(createStartupHints(config, result, configPath));
         } catch (final IOException ex) {
             result.stop();
             throw new IOException(String.format("Failed to start %s server.", config.getHttpTransport().isEnabled() ? "HTTP" : "STDIO"), ex);
         }
         return result;
+    }
+    
+    List<String> createStartupHints(final MCPLaunchConfiguration config, final MCPRuntimeServer server, final String configPath) {
+        List<String> result = new LinkedList<>();
+        result.add("ShardingSphere MCP runtime started.");
+        result.add("Configuration: " + (Objects.toString(configPath, "").isBlank() ? "conf/mcp.yaml" : configPath));
+        result.add("Logs: logs/mcp.log");
+        result.add("Runtime databases: " + config.getDatabases().size());
+        if (config.getHttpTransport().isEnabled()) {
+            int port = server instanceof StreamableHttpMCPServer ? ((StreamableHttpMCPServer) server).getLocalPort() : config.getHttpTransport().getPort();
+            result.add("HTTP endpoint: http://" + config.getHttpTransport().getBindHost() + ":" + port + config.getHttpTransport().getEndpointPath());
+            result.add("HTTP bearer token: " + (Objects.toString(config.getHttpTransport().getAccessToken(), "").isBlank() ? "not configured" : "required"));
+            result.add("First resource to read: shardingsphere://capabilities");
+            return result;
+        }
+        result.add("STDIO transport: enabled");
+        result.add("STDIO stdout: reserved for MCP protocol frames; send diagnostics to stderr or logs.");
+        result.add("First resource to read: shardingsphere://capabilities");
+        return result;
+    }
+    
+    private void printStartupHints(final List<String> startupHints) {
+        startupHints.forEach(System.err::println);
     }
 }

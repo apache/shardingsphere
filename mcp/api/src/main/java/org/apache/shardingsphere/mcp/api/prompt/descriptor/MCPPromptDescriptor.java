@@ -28,19 +28,19 @@ import java.util.Map;
  */
 @Getter
 public final class MCPPromptDescriptor {
-
+    
     private final String name;
-
+    
     private final String title;
-
+    
     private final String description;
-
+    
     private final List<MCPPromptArgumentDescriptor> arguments;
-
+    
     private final String templateResource;
-
+    
     private final Map<String, Object> meta;
-
+    
     public MCPPromptDescriptor(final String name, final String title, final String description, final List<MCPPromptArgumentDescriptor> arguments,
                                final String templateResource, final Map<String, Object> meta) {
         this.name = name;

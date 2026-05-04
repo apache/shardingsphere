@@ -28,36 +28,36 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class MetadataResourceHandlerTest {
-
+    
     @Test
     void assertGetResourceDescriptor() {
         MetadataResourceHandler actual = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
         assertThat(actual.getResourceDescriptor().getUriPattern(), is("shardingsphere://databases"));
         assertThat(actual.getResourceDescriptor().getTitle(), is("Logical Databases"));
     }
-
+    
     @Test
     void assertHandleListResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
                 (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
-        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "has_more", false)));
+        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "count", 1, "has_more", false, "self_uri", "shardingsphere://databases")));
     }
-
+    
     @Test
     void assertHandleDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getVariable("database"))));
-        MCPUriVariables uriVariables = mock(MCPUriVariables.class);
-        when(uriVariables.getVariable("database")).thenReturn("logic_db");
+        MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "logic_db"));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), uriVariables);
         assertThat(actual.toPayload(), is(Map.of("resource_kind", "detail", "object_scope", "logical-database", "found", true,
-                "items", List.of(Map.of("database", "logic_db")), "count", 1, "item", Map.of("database", "logic_db"))));
+                "items", List.of(Map.of("database", "logic_db")), "count", 1, "item", Map.of("database", "logic_db"),
+                "self_uri", "shardingsphere://databases/logic_db", "parent_uri", "shardingsphere://databases",
+                "next_resources", List.of("shardingsphere://databases/logic_db/schemas"))));
     }
-
+    
     @Test
     void assertHandleMissingDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}", (requestContext, uriVariables) -> List.of());

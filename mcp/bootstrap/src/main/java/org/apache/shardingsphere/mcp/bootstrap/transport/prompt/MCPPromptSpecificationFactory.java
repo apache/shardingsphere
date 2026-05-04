@@ -33,13 +33,13 @@ import java.util.Optional;
  * MCP prompt specification factory.
  */
 public final class MCPPromptSpecificationFactory {
-
+    
     private final List<MCPPromptDescriptor> promptDescriptors;
-
+    
     public MCPPromptSpecificationFactory() {
         promptDescriptors = List.copyOf(MCPDescriptorRegistry.getPromptDescriptors());
     }
-
+    
     /**
      * Create MCP prompt specifications.
      *
@@ -48,23 +48,23 @@ public final class MCPPromptSpecificationFactory {
     public List<SyncPromptSpecification> createPromptSpecifications() {
         return promptDescriptors.stream().map(each -> new SyncPromptSpecification(createPrompt(each), (exchange, request) -> handle(request, each))).toList();
     }
-
+    
     private McpSchema.Prompt createPrompt(final MCPPromptDescriptor descriptor) {
         return new McpSchema.Prompt(descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(),
                 descriptor.getArguments().stream().map(this::createPromptArgument).toList(), descriptor.getMeta());
     }
-
+    
     private McpSchema.PromptArgument createPromptArgument(final MCPPromptArgumentDescriptor descriptor) {
         return new McpSchema.PromptArgument(descriptor.getName(), descriptor.getTitle(), descriptor.getDescription(), descriptor.isRequired());
     }
-
+    
     private McpSchema.GetPromptResult handle(final McpSchema.GetPromptRequest request, final MCPPromptDescriptor descriptor) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
         String text = MCPPromptTemplateLoader.render(MCPPromptTemplateLoader.load(descriptor.getTemplateResource()), arguments);
         return new McpSchema.GetPromptResult(descriptor.getDescription(), List.of(new McpSchema.PromptMessage(McpSchema.Role.USER, new McpSchema.TextContent(text))),
                 createPromptMeta(descriptor));
     }
-
+    
     private Map<String, Object> createPromptMeta(final MCPPromptDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(descriptor.getMeta());
         result.put("templateResource", descriptor.getTemplateResource());

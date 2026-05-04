@@ -47,26 +47,26 @@ import java.util.Objects;
  */
 @Getter
 public final class MCPDescriptorCatalog {
-
+    
     private final Collection<MCPResourceDescriptor> resourceDescriptors;
-
+    
     private final Collection<MCPToolDescriptor> toolDescriptors;
-
+    
     private final Collection<MCPPromptDescriptor> promptDescriptors;
-
+    
     private final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors;
-
+    
     private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
-
+    
     public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors) {
         this(resourceDescriptors, toolDescriptors, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
     }
-
+    
     public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
                                 final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors) {
         this(resourceDescriptors, toolDescriptors, promptDescriptors, completionTargetDescriptors, Collections.emptyList());
     }
-
+    
     public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
                                 final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors,
                                 final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors) {
@@ -76,7 +76,7 @@ public final class MCPDescriptorCatalog {
         this.completionTargetDescriptors = null == completionTargetDescriptors ? Collections.emptyList() : completionTargetDescriptors;
         this.resourceNavigationDescriptors = null == resourceNavigationDescriptors ? Collections.emptyList() : resourceNavigationDescriptors;
     }
-
+    
     /**
      * Convert descriptors to model-facing capability payload.
      *
@@ -108,7 +108,7 @@ public final class MCPDescriptorCatalog {
         result.put("fingerprints", createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation));
         return result;
     }
-
+    
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         result.put("uriPattern", descriptor.getUriPattern());
@@ -129,7 +129,7 @@ public final class MCPDescriptorCatalog {
         }
         return result;
     }
-
+    
     private Map<String, Object> createModelContract() {
         Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("safe_first_resource", "shardingsphere://capabilities");
@@ -143,7 +143,7 @@ public final class MCPDescriptorCatalog {
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
         return result;
     }
-
+    
     private Map<String, Object> createSecurityHints() {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("http_access_token", "HTTP transport may require an Authorization bearer token; capabilities never exposes secrets.");
@@ -151,7 +151,7 @@ public final class MCPDescriptorCatalog {
         result.put("stdio_stdout", "STDIO transport must keep MCP protocol frames on stdout and send logs to stderr or files.");
         return result;
     }
-
+    
     private Map<String, Object> createResourcePayloadContract(final MCPResourceDescriptor descriptor) {
         Object resourceKind = descriptor.getMeta().get("resourceKind");
         if ("list".equals(resourceKind)) {
@@ -165,18 +165,18 @@ public final class MCPDescriptorCatalog {
         }
         return Map.of();
     }
-
+    
     private Map<String, Object> createListResourcePayloadContract(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("response_kind", "list");
         result.put("item_scope", createObjectScope(descriptor));
-        result.put("stable_fields", List.of("items", "has_more"));
-        result.put("optional_fields", List.of("next_page_token"));
-        result.put("empty_state", Map.of("items", List.of(), "has_more", false));
+        result.put("stable_fields", List.of("items", "count", "has_more"));
+        result.put("optional_fields", List.of("next_page_token", "self_uri", "parent_uri", "next_resources"));
+        result.put("empty_state", Map.of("items", List.of(), "count", 0, "has_more", false));
         result.put("pagination", "next_page_token is present only when has_more is true.");
         return result;
     }
-
+    
     private Map<String, Object> createDetailResourcePayloadContract(final MCPResourceDescriptor descriptor) {
         if ("database-capabilities".equals(descriptor.getName())) {
             return createDatabaseCapabilityResourcePayloadContract();
@@ -184,16 +184,17 @@ public final class MCPDescriptorCatalog {
         if (!descriptor.getMeta().containsKey("objectScope")) {
             return Map.of();
         }
-        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("response_kind", "detail");
         result.put("item_scope", createObjectScope(descriptor));
-        result.put("stable_fields", List.of("resource_kind", "found", "items", "count", "item"));
+        result.put("stable_fields", List.of("resource_kind", "found", "items", "count"));
+        result.put("optional_fields", List.of("item", "self_uri", "parent_uri", "next_resources"));
         result.put("found_state", Map.of("found", true, "count", 1, "item", "single object payload"));
         result.put("not_found_state", Map.of("found", false, "count", 0, "items", List.of()));
         result.put("pagination", "Detail resources are not paginated.");
         return result;
     }
-
+    
     private Map<String, Object> createCapabilityResourcePayloadContract() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("response_kind", "capability-catalog");
@@ -203,7 +204,7 @@ public final class MCPDescriptorCatalog {
         result.put("fingerprints", "Use fingerprints to compare descriptor payload shape across calls.");
         return result;
     }
-
+    
     private Map<String, Object> createDatabaseCapabilityResourcePayloadContract() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("response_kind", "detail-object");
@@ -213,7 +214,7 @@ public final class MCPDescriptorCatalog {
         result.put("not_found_behavior", "The resource returns a not_found error when the logical database capability is unavailable.");
         return result;
     }
-
+    
     private String createObjectScope(final MCPResourceDescriptor descriptor) {
         Object objectScope = descriptor.getMeta().get("objectScope");
         if (null != objectScope) {
@@ -221,7 +222,7 @@ public final class MCPDescriptorCatalog {
         }
         return Objects.toString(descriptor.getMeta().get("feature"), "resource");
     }
-
+    
     private Map<String, Object> toParameterPayload(final MCPResourceParameterDescriptor parameter) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("name", parameter.getName());
@@ -231,7 +232,7 @@ public final class MCPDescriptorCatalog {
         result.put("scope", parameter.getScope());
         return result;
     }
-
+    
     private Map<String, Object> toToolPayload(final MCPToolDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("name", descriptor.getName());
@@ -247,7 +248,7 @@ public final class MCPDescriptorCatalog {
         }
         return result;
     }
-
+    
     private Map<String, Object> toPromptPayload(final MCPPromptDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("name", descriptor.getName());
@@ -260,7 +261,7 @@ public final class MCPDescriptorCatalog {
         }
         return result;
     }
-
+    
     private Map<String, Object> toPromptArgumentPayload(final MCPPromptArgumentDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("name", descriptor.getName());
@@ -269,7 +270,7 @@ public final class MCPDescriptorCatalog {
         result.put("required", descriptor.isRequired());
         return result;
     }
-
+    
     private Map<String, Object> toCompletionTargetPayload(final MCPCompletionTargetDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("referenceType", descriptor.getReferenceType());
@@ -281,7 +282,7 @@ public final class MCPDescriptorCatalog {
         }
         return result;
     }
-
+    
     private Map<String, Object> toResourceNavigationPayload(final MCPResourceNavigationDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("from", descriptor.getFrom());
@@ -291,7 +292,7 @@ public final class MCPDescriptorCatalog {
         result.put("description", descriptor.getDescription());
         return result;
     }
-
+    
     private Map<String, Object> toFieldPayload(final MCPToolFieldDefinition field) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("name", field.getName());
@@ -299,7 +300,7 @@ public final class MCPDescriptorCatalog {
         result.put("schema", field.getValueDefinition().toSchemaFragment());
         return result;
     }
-
+    
     private Map<String, Object> toResourceAnnotationsPayload(final MCPResourceAnnotations annotations) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         if (!annotations.getAudience().isEmpty()) {
@@ -313,7 +314,7 @@ public final class MCPDescriptorCatalog {
         }
         return result;
     }
-
+    
     private Map<String, Object> toToolAnnotationsPayload(final MCPToolAnnotations annotations) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         putIfPresent(result, "title", annotations.getTitle());
@@ -324,13 +325,13 @@ public final class MCPDescriptorCatalog {
         putIfPresent(result, "returnDirect", annotations.getReturnDirect());
         return result;
     }
-
+    
     private void putIfPresent(final Map<String, Object> target, final String key, final Object value) {
         if (null != value) {
             target.put(key, value);
         }
     }
-
+    
     private Map<String, Object> createProtocolAvailability(final boolean hasResourceNavigation) {
         Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("resources", true);
@@ -344,7 +345,7 @@ public final class MCPDescriptorCatalog {
         result.put("elicitation", Map.of("native", false, "fallback", "Use ask_user_when_uncertain, pending_questions, and next_actions fields."));
         return result;
     }
-
+    
     private Map<String, Object> createFingerprints(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
                                                    final List<Map<String, Object>> tools, final List<Map<String, Object>> prompts,
                                                    final List<Map<String, Object>> completionTargets, final List<Map<String, Object>> resourceNavigation) {
@@ -362,7 +363,7 @@ public final class MCPDescriptorCatalog {
         result.put("modelFacingSchemas", createFingerprint(createModelFacingSchemas(resources, resourceTemplates, tools)));
         return result;
     }
-
+    
     private List<Map<String, Object>> createModelFacingSchemas(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
                                                                final List<Map<String, Object>> tools) {
         List<Map<String, Object>> result = new LinkedList<>();
@@ -371,15 +372,15 @@ public final class MCPDescriptorCatalog {
         tools.stream().map(this::createToolSchema).forEach(result::add);
         return result;
     }
-
+    
     private Map<String, Object> createResourceSchema(final Map<String, Object> resource) {
         return Map.of("uriPattern", resource.get("uriPattern"), "parameters", resource.get("parameters"));
     }
-
+    
     private Map<String, Object> createToolSchema(final Map<String, Object> tool) {
         return Map.of("name", tool.get("name"), "inputFields", tool.get("inputFields"), "outputSchema", tool.get("outputSchema"));
     }
-
+    
     private String createFingerprint(final Object value) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -389,7 +390,7 @@ public final class MCPDescriptorCatalog {
             throw new IllegalStateException("SHA-256 is not available.", ex);
         }
     }
-
+    
     private String toHex(final byte[] bytes) {
         StringBuilder result = new StringBuilder(bytes.length * 2);
         for (byte each : bytes) {
@@ -401,7 +402,7 @@ public final class MCPDescriptorCatalog {
         }
         return result.toString();
     }
-
+    
     private String canonicalize(final Object value) {
         if (null == value) {
             return "null";
@@ -417,7 +418,7 @@ public final class MCPDescriptorCatalog {
         }
         return "\"" + escape(String.valueOf(value)) + "\"";
     }
-
+    
     private String canonicalizeMap(final Map<?, ?> value) {
         StringBuilder result = new StringBuilder("{");
         List<? extends Entry<?, ?>> entries = value.entrySet().stream()
@@ -431,7 +432,7 @@ public final class MCPDescriptorCatalog {
         }
         return result.append('}').toString();
     }
-
+    
     private String canonicalizeCollection(final Collection<?> value) {
         StringBuilder result = new StringBuilder("[");
         int index = 0;
@@ -443,7 +444,7 @@ public final class MCPDescriptorCatalog {
         }
         return result.append(']').toString();
     }
-
+    
     private String escape(final String value) {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }

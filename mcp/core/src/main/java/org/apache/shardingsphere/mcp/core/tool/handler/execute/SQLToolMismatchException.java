@@ -29,17 +29,17 @@ import java.util.Map;
  */
 @Getter
 public final class SQLToolMismatchException extends MCPUnsupportedException {
-
+    
     private static final long serialVersionUID = 4446140739545147946L;
-
+    
     private final String sourceTool;
-
+    
     private final String targetTool;
-
+    
     private final ClassificationResult classificationResult;
-
+    
     private final Map<String, Object> suggestedArguments;
-
+    
     /**
      * Create SQL tool mismatch exception.
      *

@@ -31,34 +31,34 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class MetadataSearchHit {
-
+    
     private final String database;
-
+    
     private final String schema;
-
+    
     private final String objectType;
-
+    
     private final String table;
-
+    
     private final String view;
-
+    
     private final String name;
-
+    
     @JsonProperty("resource_uri")
     @JsonInclude(Include.NON_EMPTY)
     private final String resourceUri;
-
+    
     @JsonProperty("parent_resource_uri")
     @JsonInclude(Include.NON_EMPTY)
     private final String parentResourceUri;
-
+    
     @JsonProperty("next_resource_uris")
     @JsonInclude(Include.NON_EMPTY)
     private final List<String> nextResourceUris;
-
+    
     @JsonProperty("derivation_status")
     private final String derivationStatus;
-
+    
     @JsonProperty("derivation_reason")
     @JsonInclude(Include.NON_EMPTY)
     private final String derivationReason;

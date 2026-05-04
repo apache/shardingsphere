@@ -163,10 +163,10 @@ tools:
         required: false
         valueDefinition:
           type: ARRAY
-          description: "Optional approved step names when only part of the plan should be applied."
+          description: "Optional exact step names copied from the plan response when only part of the workflow should be applied."
           itemDefinition:
             type: STRING
-            description: "Workflow step name from the plan response."
+            description: "Workflow step name or artifact step from the plan response."
     outputSchema:
       type: object
       properties:
@@ -203,6 +203,20 @@ tools:
         requires_user_approval:
           type: boolean
           description: "Whether the next manual or retry action requires user approval."
+      examples:
+        - plan_id: encrypt-rule-20260505-001
+          execution_mode: preview
+          applied_artifacts: []
+          preview_artifacts: []
+          would_apply: false
+          skipped_artifacts: []
+          manual_artifacts: []
+          recommended_next_tool: validate_workflow
+          next_actions:
+            - action_kind: ask_user
+              reason: Ask the user to approve the previewed artifacts before execution.
+              requires_user_approval: true
+          requires_user_approval: true
     annotations:
       title: Apply Workflow
       readOnlyHint: false
@@ -255,6 +269,17 @@ tools:
         requires_user_approval:
           type: boolean
           description: "Whether the next action requires user approval."
+      examples:
+        - plan_id: encrypt-rule-20260505-001
+          status: passed
+          sections: []
+          mismatches: []
+          recommended_recovery: ""
+          next_actions:
+            - action_kind: stop
+              reason: Validation passed.
+              requires_user_approval: false
+          requires_user_approval: false
     annotations:
       title: Validate Workflow
       readOnlyHint: true

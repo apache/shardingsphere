@@ -614,12 +614,29 @@ tools:
               derivation_reason:
                 type: string
                 description: "Reason resource_uri could not be safely derived."
+        count:
+          type: integer
+          description: "Number of items returned in this page."
         next_page_token:
           type: string
           description: "Opaque token for the next result page when more items exist."
         has_more:
           type: boolean
           description: "Whether another page is available and next_page_token should be used."
+      examples:
+        - items:
+            - database: logic_db
+              schema: public
+              objectType: table
+              table: orders
+              name: orders
+              resource_uri: shardingsphere://databases/logic_db/schemas/public/tables/orders
+              parent_resource_uri: shardingsphere://databases/logic_db/schemas/public/tables
+              next_resource_uris:
+                - shardingsphere://databases/logic_db/schemas/public/tables/orders/columns
+              derivation_status: derived
+          count: 1
+          has_more: false
     annotations:
       title: Search Metadata
       readOnlyHint: true
@@ -676,6 +693,12 @@ tools:
           enum:
             - query
             - explain_analyze
+        statement_type:
+          type: string
+          description: "Database statement type reported by the execution classifier."
+        status:
+          type: string
+          description: "Execution status returned by the server."
         columns:
           type: array
           description: "Returned column definitions."
@@ -685,6 +708,21 @@ tools:
         truncated:
           type: boolean
           description: "Whether rows were truncated by max_rows or server limits."
+        next_actions:
+          type: array
+          description: "Ordered structured model-facing recommendations after SQL execution."
+      examples:
+        - result_kind: result_set
+          statement_class: query
+          statement_type: SELECT
+          status: OK
+          columns: []
+          rows: []
+          truncated: false
+          next_actions:
+            - action_kind: stop
+              reason: Return the result rows to the user.
+              requires_user_approval: false
     annotations:
       title: Execute Read-Only SQL
       readOnlyHint: true
@@ -761,6 +799,12 @@ tools:
             - dcl
             - transaction_control
             - savepoint
+        statement_type:
+          type: string
+          description: "Database statement type reported by the execution classifier or preview."
+        status:
+          type: string
+          description: "Execution or preview status returned by the server."
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
@@ -791,6 +835,19 @@ tools:
         truncated:
           type: boolean
           description: "Whether returned rows were truncated."
+      examples:
+        - result_kind: preview
+          statement_class: dml
+          statement_type: UPDATE
+          status: AWAITING_APPROVAL
+          would_execute: false
+          suggested_next_tool: execute_update
+          suggested_arguments:
+            execution_mode: execute
+          next_actions:
+            - action_kind: ask_user
+              reason: Ask the user to approve the previewed side effects before execution.
+              requires_user_approval: true
     annotations:
       title: Execute Update SQL
       readOnlyHint: false

@@ -30,14 +30,14 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class TestWorkflowSessionContext implements WorkflowSessionContext {
-
+    
     private final Map<String, WorkflowContextSnapshot> contexts = new ConcurrentHashMap<>();
-
+    
     @Override
     public String createPlanId() {
         return "plan-" + UUID.randomUUID();
     }
-
+    
     @Override
     public WorkflowContextSnapshot getOrCreate(final String sessionId, final String planId) {
         if (null != planId && !planId.isBlank()) {
@@ -49,22 +49,22 @@ public final class TestWorkflowSessionContext implements WorkflowSessionContext 
         result.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
         return result;
     }
-
+    
     @Override
     public void save(final WorkflowContextSnapshot snapshot) {
         contexts.put(snapshot.getPlanId(), snapshot.copy());
     }
-
+    
     @Override
     public Optional<WorkflowContextSnapshot> find(final String planId) {
         return Optional.ofNullable(contexts.get(planId)).map(WorkflowContextSnapshot::copy);
     }
-
+    
     @Override
     public List<WorkflowContextSnapshot> list(final String sessionId) {
         return contexts.values().stream().filter(each -> Objects.equals(sessionId, each.getSessionId())).map(WorkflowContextSnapshot::copy).toList();
     }
-
+    
     @Override
     public WorkflowContextSnapshot persist(final WorkflowContextSnapshot snapshot, final String currentStep, final String status) {
         if (null != snapshot.getInteractionPlan()) {
@@ -74,17 +74,17 @@ public final class TestWorkflowSessionContext implements WorkflowSessionContext 
         save(snapshot);
         return snapshot;
     }
-
+    
     @Override
     public WorkflowContextSnapshot getRequired(final String planId) {
         return find(planId).orElseThrow(() -> new MCPInvalidRequestException(String.format("Unknown plan_id `%s`.", planId)));
     }
-
+    
     @Override
     public void remove(final String planId) {
         contexts.remove(planId);
     }
-
+    
     @Override
     public void removeBySessionId(final String sessionId) {
         contexts.entrySet().removeIf(each -> Objects.equals(sessionId, each.getValue().getSessionId()));

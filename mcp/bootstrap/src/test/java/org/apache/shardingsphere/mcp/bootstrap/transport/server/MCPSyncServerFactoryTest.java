@@ -53,7 +53,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MCPSyncServerFactoryTest {
-
+    
     @Test
     void assertCreateWithTransportProvider() throws ReflectiveOperationException {
         TestServerTransportProvider transportProvider = new TestServerTransportProvider();
@@ -73,7 +73,7 @@ class MCPSyncServerFactoryTest {
         assertThat(actual.listPrompts().stream().map(McpSchema.Prompt::name).toList(), is(List.of("inspect_metadata")));
         actual.closeGracefully();
     }
-
+    
     @Test
     void assertCreateWithStreamableTransportProvider() throws ReflectiveOperationException {
         TestStreamableTransportProvider transportProvider = new TestStreamableTransportProvider();
@@ -84,7 +84,7 @@ class MCPSyncServerFactoryTest {
         assertThat(actual.listResourceTemplates().size(), is(1));
         actual.closeGracefully();
     }
-
+    
     private MCPSyncServerFactory createFactory() throws ReflectiveOperationException {
         MCPToolSpecificationFactory toolSpecificationFactory = mock(MCPToolSpecificationFactory.class);
         MCPResourceSpecificationFactory resourceSpecificationFactory = mock(MCPResourceSpecificationFactory.class);
@@ -114,46 +114,46 @@ class MCPSyncServerFactoryTest {
         setField(result, "completionSpecificationFactory", completionSpecificationFactory);
         return result;
     }
-
+    
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
     }
-
+    
     private static final class TestServerTransportProvider implements McpServerTransportProvider {
-
+        
         private McpServerSession.Factory sessionFactory;
-
+        
         @Override
         public void setSessionFactory(final McpServerSession.Factory sessionFactory) {
             this.sessionFactory = sessionFactory;
         }
-
+        
         @Override
         public Mono<Void> notifyClients(final String method, final Object params) {
             return Mono.empty();
         }
-
+        
         @Override
         public Mono<Void> closeGracefully() {
             return Mono.empty();
         }
     }
-
+    
     private static final class TestStreamableTransportProvider implements McpStreamableServerTransportProvider {
-
+        
         private McpStreamableServerSession.Factory sessionFactory;
-
+        
         @Override
         public void setSessionFactory(final McpStreamableServerSession.Factory sessionFactory) {
             this.sessionFactory = sessionFactory;
         }
-
+        
         @Override
         public Mono<Void> notifyClients(final String method, final Object params) {
             return Mono.empty();
         }
-
+        
         @Override
         public Mono<Void> closeGracefully() {
             return Mono.empty();
