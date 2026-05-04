@@ -17,6 +17,8 @@
 
 # Implementation Plan: AI-Friendly MCP Experience Hardening
 
+> Status after over-design cleanup: This implementation plan is retained for traceability only. It must not be executed as the current task queue. The active scope is the lightweight requirements document under `docs/mcp/`, with over-designed quality-engineering suites and future native MCP signal work deferred.
+
 **Branch**: `001-shardingsphere-mcp` | **Date**: 2026-05-04 | **Spec**: `specs/003-mcp-ai-friendly-guided-interaction/spec.md`
 **Input**: Feature specification from `specs/003-mcp-ai-friendly-guided-interaction/spec.md`
 **Note**: Spec Kit structure is maintained manually because branch-changing Spec Kit scripts are forbidden for this request.

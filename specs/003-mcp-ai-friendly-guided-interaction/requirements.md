@@ -17,6 +17,8 @@
 
 # Requirements: AI-Friendly MCP Experience Hardening
 
+> Status after over-design cleanup: This requirements draft is kept for traceability only and is not the active implementation baseline. Use `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md` for the current lightweight scope. Normalized golden transcript suites, broad real-model E2E expansion, model-confusion matrices, sampling/progress/logging/roots work, metadata freshness, env-var config interpolation, and current-session workflow listing resources are deferred until separately justified.
+
 **Feature Branch**: `001-shardingsphere-mcp`
 **Created**: 2026-05-04
 **Status**: Draft

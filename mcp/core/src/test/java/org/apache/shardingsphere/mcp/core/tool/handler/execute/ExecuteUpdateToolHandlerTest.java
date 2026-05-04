@@ -89,7 +89,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview")));
-        assertThat(actual.toPayload().get("result_kind"), is("PREVIEW"));
+        assertThat(actual.toPayload().get("result_kind"), is("preview"));
         assertFalse((boolean) actual.toPayload().get("would_execute"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));

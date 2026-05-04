@@ -85,7 +85,7 @@ public final class MCPDescriptorCatalog {
      * @return capability payload
      */
     public Map<String, Object> toPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
-        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
         List<Map<String, Object>> resources = resourceDescriptors.stream().filter(each -> !each.isTemplated()).map(this::toResourcePayload).toList();
         List<Map<String, Object>> resourceTemplates = resourceDescriptors.stream().filter(MCPResourceDescriptor::isTemplated).map(this::toResourcePayload).toList();
         List<Map<String, Object>> tools = toolDescriptors.stream().map(this::toToolPayload).toList();
@@ -243,8 +243,6 @@ public final class MCPDescriptorCatalog {
         result.put("completions", !completionTargetDescriptors.isEmpty());
         result.put("resourceNavigation", hasResourceNavigation);
         result.put("elicitation", Map.of("native", false, "fallback", "Use ask_user_when_uncertain, pending_questions, and next_actions fields."));
-        result.put("sampling", Map.of("native", false, "fallback", "Use prompt templates and structured workflow outputs."));
-        result.put("roots", Map.of("native", false, "fallback", "Use descriptor resources and resource templates."));
         return result;
     }
 

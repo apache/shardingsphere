@@ -1,5 +1,7 @@
 # ShardingSphere MCP PRD
 
+> 状态说明：本文档保留早期 PRD 背景，不是当前 MCP public surface 契约。当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准；不要从本文档推导 `list_*`、`describe_*` 等早期工具矩阵。
+
 ## 文档信息
 - 产品名称：ShardingSphere MCP
 - 文档版本：定稿候选版

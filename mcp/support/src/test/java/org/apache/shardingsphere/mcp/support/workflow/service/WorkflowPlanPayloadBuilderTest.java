@@ -101,6 +101,11 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         assertFalse(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
         assertThat(actual.get("recommended_next_tool"), is("apply_workflow"));
+        assertFalse((Boolean) actual.get("requires_user_approval"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
+        assertThat(actualNextAction.get("target_tool"), is("apply_workflow"));
+        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("preview"));
+        assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
     
     @Test

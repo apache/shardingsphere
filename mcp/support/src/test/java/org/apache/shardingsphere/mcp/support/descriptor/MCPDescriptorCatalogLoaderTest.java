@@ -44,8 +44,9 @@ class MCPDescriptorCatalogLoaderTest {
     
     @Test
     void assertLoadValidatesEnumFields() {
-        MCPToolDescriptor actual = findTool(MCPDescriptorCatalogLoader.load(), "apply_workflow");
-        MCPToolFieldDefinition actualExecutionMode = actual.getFields().stream().filter(each -> "execution_mode".equals(each.getName())).findFirst().orElseThrow();
+        MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
+        MCPToolDescriptor actual = findTool(catalog, "apply_workflow");
+        MCPToolFieldDefinition actualExecutionMode = findField(actual, "execution_mode");
         assertThat(actualExecutionMode.getValueDefinition().getEnumValues(), is(List.of("preview", "review-then-execute", "manual-only")));
     }
     
@@ -58,5 +59,9 @@ class MCPDescriptorCatalogLoaderTest {
     
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
+    }
+
+    private MCPToolFieldDefinition findField(final MCPToolDescriptor toolDescriptor, final String fieldName) {
+        return toolDescriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst().orElseThrow();
     }
 }

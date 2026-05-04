@@ -17,6 +17,8 @@
 
 # Feature Specification: AI-Friendly MCP Experience Hardening
 
+> Status after over-design cleanup: This Spec Kit draft is kept for traceability only and is not the active implementation scope. Use `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md` as the current lightweight scope. Normalized golden transcript suites, broad real-model E2E expansion, model-confusion matrices, and MCP-native sampling/progress/logging/roots work are deferred until separately justified.
+
 **Feature Branch**: `001-shardingsphere-mcp`
 **Created**: 2026-05-04
 **Status**: Draft

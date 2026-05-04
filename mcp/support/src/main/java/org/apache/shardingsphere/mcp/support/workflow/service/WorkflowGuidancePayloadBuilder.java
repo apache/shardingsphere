@@ -44,6 +44,8 @@ public final class WorkflowGuidancePayloadBuilder {
     private static final String APPLY_WORKFLOW = "apply_workflow";
     
     private static final String VALIDATE_WORKFLOW = "validate_workflow";
+
+    private static final String EXECUTION_MODE_PREVIEW = "preview";
     
     /**
      * Append model-facing next action guidance to a planning response.
@@ -57,7 +59,7 @@ public final class WorkflowGuidancePayloadBuilder {
         payload.put("resources_to_read", createResourcesToRead(snapshot));
         payload.put("next_actions", createPlanningNextActions(snapshot, missingRequiredInputs));
         payload.put("recommended_next_tool", createPlanningRecommendedNextTool(snapshot));
-        payload.put("requires_user_approval", WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus()));
+        payload.put("requires_user_approval", false);
     }
     
     /**
@@ -180,8 +182,8 @@ public final class WorkflowGuidancePayloadBuilder {
             return List.of(createUserAction("Ask for the missing inputs, then call the same planning tool with the existing plan_id.", false, missingRequiredInputs));
         }
         if (WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus())) {
-            return List.of(createToolAction(APPLY_WORKFLOW, "Apply or export the reviewed workflow artifacts after user approval.",
-                    Map.of("plan_id", snapshot.getPlanId(), "execution_mode", resolveExecutionMode(snapshot)), true));
+            return List.of(createToolAction(APPLY_WORKFLOW, "Preview workflow artifacts before asking the user to approve execution.",
+                    Map.of("plan_id", snapshot.getPlanId(), "execution_mode", EXECUTION_MODE_PREVIEW), false));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
             return createRecoveryPlanningActions(snapshot);
@@ -233,10 +235,6 @@ public final class WorkflowGuidancePayloadBuilder {
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {
         WorkflowKind workflowKind = snapshot.getWorkflowKind();
         return null == workflowKind ? "" : workflowKind.getValue();
-    }
-    
-    private static String resolveExecutionMode(final WorkflowContextSnapshot snapshot) {
-        return snapshot.getRequest().getExecutionMode();
     }
     
     private static String resolveTargetTool(final Map<String, Object> action) {

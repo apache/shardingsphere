@@ -1,5 +1,7 @@
 # ShardingSphere MCP 详细设计说明书
 
+> 状态说明：本文档保留早期详细设计背景，不是当前 MCP public surface 契约。当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准；不要从本文档推导 `list_databases`、`describe_table` 等早期工具矩阵。
+
 ## 1. 文档信息
 - 文档名称：ShardingSphere MCP 详细设计说明书
 - 文档版本：最终版

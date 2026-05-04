@@ -1,5 +1,7 @@
 # ShardingSphere MCP 技术设计方案
 
+> 状态说明：本文档保留早期技术设计背景，不是当前 MCP public surface 契约。当前契约以 `shardingsphere://capabilities`、descriptor、`mcp/README.md` 和 `mcp/README_ZH.md` 为准；不要从本文档推导早期工具矩阵或额外兼容层。
+
 ## 1. 文档信息
 - 文档名称：ShardingSphere MCP 技术设计方案
 - 文档版本：最终版

@@ -17,6 +17,8 @@
 
 # Tasks: AI-Friendly MCP Experience Hardening
 
+> Status after over-design cleanup: This task list is retained for traceability only. Do not execute it as-is. The active scope is `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md`; normalized golden transcript suites, broad real-model E2E expansion, model-confusion matrices, sampling/progress/logging/roots work, metadata freshness, env-var config interpolation, and current-session workflow listing resources are deferred until separately justified.
+
 **Input**: Design documents from `specs/003-mcp-ai-friendly-guided-interaction/`
 **Prerequisites**: `spec.md`, `requirements.md`, `plan.md`, `research.md`, `data-model.md`, `quickstart.md`
 **Tests**: Required. This increment exists to harden model-facing contracts and model-experience validation.

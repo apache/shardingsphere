@@ -200,7 +200,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview"));
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
-        assertThat(String.valueOf(structuredContent.get("result_kind")), is("PREVIEW"));
+        assertThat(String.valueOf(structuredContent.get("result_kind")), is("preview"));
         assertFalse((Boolean) structuredContent.get("would_execute"));
         List<Map<String, Object>> nextActions = castToMapList(structuredContent.get("next_actions"));
         assertThat(nextActions.stream().map(each -> String.valueOf(each.get("action_kind"))).toList(), is(List.of("ask_user", "call_tool")));

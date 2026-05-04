@@ -44,6 +44,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     private static final String EXECUTION_MODE_EXECUTE = "execute";
     
     private static final String EXECUTION_MODE_PREVIEW = "preview";
+
+    private static final String RESULT_KIND_PREVIEW = "preview";
     
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
@@ -88,7 +90,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     
     private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(11, 1F);
-        result.put("result_kind", "PREVIEW");
+        result.put("result_kind", RESULT_KIND_PREVIEW);
         result.put("execution_mode", EXECUTION_MODE_PREVIEW);
         result.put("would_execute", false);
         result.put("statement_class", classificationResult.getStatementClass().name().toLowerCase(Locale.ENGLISH));

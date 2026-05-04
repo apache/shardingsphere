@@ -43,8 +43,30 @@ class ServerCapabilitiesHandlerTest {
             assertFalse(((List<?>) actual.get("prompts")).isEmpty());
             assertFalse(((List<?>) actual.get("completionTargets")).isEmpty());
             assertFalse(((List<?>) actual.get("resourceNavigation")).isEmpty());
-            assertTrue((Boolean) ((Map<?, ?>) actual.get("protocolAvailability")).get("resourceNavigation"));
+            Map<?, ?> protocolAvailability = (Map<?, ?>) actual.get("protocolAvailability");
+            assertTrue((Boolean) protocolAvailability.get("resourceNavigation"));
+            assertFalse(protocolAvailability.containsKey("sampling"));
+            assertFalse(protocolAvailability.containsKey("roots"));
             assertTrue(((Map<?, ?>) actual.get("fingerprints")).containsKey("descriptorCatalog"));
+            assertCoreToolSchemas(actual);
         }
+    }
+
+    private void assertCoreToolSchemas(final Map<String, Object> capabilities) {
+        Map<?, ?> searchMetadataTool = findTool(capabilities, "search_metadata");
+        Map<?, ?> objectTypesSchema = findInputSchema(searchMetadataTool, "object_types");
+        assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
+        Map<?, ?> executeUpdateTool = findTool(capabilities, "execute_update");
+        Map<?, ?> executeUpdateOutputProperties = (Map<?, ?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("properties");
+        assertTrue(((List<?>) ((Map<?, ?>) executeUpdateOutputProperties.get("result_kind")).get("enum")).containsAll(List.of("preview", "result_set", "update_count", "statement_ack")));
+    }
+
+    private Map<?, ?> findTool(final Map<String, Object> capabilities, final String toolName) {
+        return ((List<?>) capabilities.get("tools")).stream().map(each -> (Map<?, ?>) each).filter(each -> toolName.equals(each.get("name"))).findFirst().orElseThrow();
+    }
+
+    private Map<?, ?> findInputSchema(final Map<?, ?> tool, final String fieldName) {
+        Map<?, ?> field = ((List<?>) tool.get("inputFields")).stream().map(each -> (Map<?, ?>) each).filter(each -> fieldName.equals(each.get("name"))).findFirst().orElseThrow();
+        return (Map<?, ?>) field.get("schema");
     }
 }

@@ -552,13 +552,13 @@ tools:
             type: STRING
             description: "Allowed metadata object type."
             enumValues:
-              - DATABASE
-              - SCHEMA
-              - TABLE
-              - VIEW
-              - COLUMN
-              - INDEX
-              - SEQUENCE
+              - database
+              - schema
+              - table
+              - view
+              - column
+              - index
+              - sequence
       - name: page_size
         required: false
         valueDefinition:
@@ -667,10 +667,15 @@ tools:
       properties:
         result_kind:
           type: string
-          description: "QUERY_RESULT for row results."
+          description: "Result kind. execute_query returns result_set for row results."
+          enum:
+            - result_set
         statement_class:
           type: string
-          description: "Statement class, QUERY or EXPLAIN_ANALYZE."
+          description: "Statement class: query or explain_analyze."
+          enum:
+            - query
+            - explain_analyze
         columns:
           type: array
           description: "Returned column definitions."
@@ -741,10 +746,21 @@ tools:
       properties:
         result_kind:
           type: string
-          description: "Result kind such as UPDATE_COUNT, QUERY_RESULT, or MESSAGE."
+          description: "Result kind: preview, result_set, update_count, or statement_ack."
+          enum:
+            - preview
+            - result_set
+            - update_count
+            - statement_ack
         statement_class:
           type: string
-          description: "Statement class such as DML, DDL, DCL, TRANSACTION_CONTROL, or SAVEPOINT."
+          description: "Statement class such as dml, ddl, dcl, transaction_control, or savepoint."
+          enum:
+            - dml
+            - ddl
+            - dcl
+            - transaction_control
+            - savepoint
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
