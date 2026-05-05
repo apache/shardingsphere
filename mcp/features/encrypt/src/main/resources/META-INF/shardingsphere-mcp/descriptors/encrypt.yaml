@@ -157,6 +157,13 @@ resourceNavigation:
       - table
     description: "Preserve existing table-level encrypt rule columns and algorithms."
   - from: plan_encrypt_rule
+    to: shardingsphere://workflows/{plan_id}
+    requiredArguments:
+      - plan_id
+    carriedArguments:
+      - plan_id
+    description: "Read the persisted workflow plan after planning encryption rule changes."
+  - from: plan_encrypt_rule
     to: apply_workflow
     requiredArguments:
       - plan_id
@@ -360,6 +367,12 @@ tools:
         missing_required_inputs:
           type: array
           description: "Inputs still required before the plan can be completed."
+        clarification_questions:
+          type: array
+          description: "Structured questions for the model to ask the user, including field, input_type, secret flag, and message."
+        elicitation:
+          type: object
+          description: "Native elicitation availability and fallback payload fields."
         issues:
           type: array
           description: "Warnings, conflicts, and validation issues found during planning."
@@ -402,6 +415,9 @@ tools:
           workflow_kind: encrypt.rule
           pending_questions: []
           missing_required_inputs: []
+          clarification_questions: []
+          elicitation:
+            native_supported: false
           issues: []
           global_steps: []
           current_step: review

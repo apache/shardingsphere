@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwappe
 import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -43,10 +44,14 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
     
     @Override
     public HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig) {
+        return swapToObject(yamlConfig, System.getenv());
+    }
+    
+    HttpTransportConfiguration swapToObject(final YamlHttpTransportConfiguration yamlConfig, final Map<String, String> environment) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Property `transport.http` is required."));
         String bindHost = resolveBindHost(yamlConfig.getBindHost());
         boolean allowRemoteAccess = yamlConfig.isAllowRemoteAccess();
-        String accessToken = resolveAccessToken(yamlConfig.getAccessToken());
+        String accessToken = resolveAccessToken(yamlConfig.getAccessToken(), environment);
         return new HttpTransportConfiguration(yamlConfig.isEnabled(), bindHost, allowRemoteAccess, accessToken, resolvePort(yamlConfig.getPort()), resolveEndpointPath(yamlConfig.getEndpointPath()));
     }
     
@@ -60,8 +65,8 @@ public final class YamlHttpTransportConfigurationSwapper implements YamlConfigur
         return value;
     }
     
-    private String resolveAccessToken(final String accessToken) {
-        return Objects.toString(accessToken, "").trim();
+    private String resolveAccessToken(final String accessToken, final Map<String, String> environment) {
+        return Objects.toString(YamlEnvironmentPlaceholderUtils.resolve(accessToken, "transport.http.accessToken", environment), "").trim();
     }
     
     private int resolvePort(final Integer port) {

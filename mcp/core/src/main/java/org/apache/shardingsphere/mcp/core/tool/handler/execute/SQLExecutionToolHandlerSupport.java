@@ -29,13 +29,26 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class SQLExecutionToolHandlerSupport {
     
+    private static final int DEFAULT_MAX_ROWS = 100;
+    
+    private static final int MAX_ROWS_LIMIT = 5000;
+    
+    private static final int DEFAULT_TIMEOUT_MILLISECONDS = 0;
+    
+    private static final int MAX_TIMEOUT_MILLISECONDS = 300000;
+    
     static boolean isReadOnlyStatement(final SupportedMCPStatement statementClass) {
         return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN_ANALYZE == statementClass;
     }
     
     static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql) {
         return new SQLExecutionRequest(toolCall.getSessionId(), toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), sql,
-                toolArguments.getIntegerArgument("max_rows", 0), toolArguments.getIntegerArgument("timeout_ms", 0));
+                resolveMaxRows(toolArguments), toolArguments.getIntegerArgument("timeout_ms", DEFAULT_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS, MAX_TIMEOUT_MILLISECONDS));
+    }
+    
+    private static int resolveMaxRows(final MCPToolArguments toolArguments) {
+        int result = toolArguments.getIntegerArgument("max_rows", DEFAULT_MAX_ROWS, 0, MAX_ROWS_LIMIT);
+        return 0 == result ? DEFAULT_MAX_ROWS : result;
     }
     
     static void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {

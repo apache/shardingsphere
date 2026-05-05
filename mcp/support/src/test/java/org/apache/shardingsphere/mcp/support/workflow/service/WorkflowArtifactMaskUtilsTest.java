@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowArtifactMaskUtilsTest {
     
@@ -41,6 +42,9 @@ class WorkflowArtifactMaskUtilsTest {
                 new AlgorithmPropertyRequirement("like_query", "token", true, true, "like", "")));
         assertThat(actualRuleArtifact.get("operation_type"), is("create"));
         assertThat(actualRuleArtifact.get("sql"), is("SQL ****** '******' ******"));
+        Map<?, ?> actualRedaction = (Map<?, ?>) actualRuleArtifact.get("redaction");
+        assertTrue((Boolean) actualRedaction.get("applied"));
+        assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value", "assisted_query.salt", "like_query.token")));
     }
     
     private WorkflowPropertySource createPropertySource() {

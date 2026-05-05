@@ -34,7 +34,7 @@ public final class MCPTransportConstants {
     
     public static final List<String> SUPPORTED_PROTOCOL_VERSIONS = Collections.singletonList(PROTOCOL_VERSION);
     
-    public static final String SERVER_NAME = "Apache ShardingSphere MCP";
+    public static final String SERVER_NAME = "apache-shardingsphere-mcp";
     
     public static final String SERVER_INSTRUCTIONS = "Apache ShardingSphere MCP. Read `shardingsphere://capabilities` first as the current public-surface source of truth, "
             + "then use resource-first metadata discovery. "

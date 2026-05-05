@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
@@ -56,6 +57,8 @@ class ExecuteQueryToolHandlerTest {
         assertThat(requestCaptor.getValue().getDatabase(), is("logic_db"));
         assertThat(requestCaptor.getValue().getSchema(), is("public"));
         assertThat(requestCaptor.getValue().getSql(), is("select * from orders"));
+        assertThat(requestCaptor.getValue().getMaxRows(), is(100));
+        assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
     
     @Test
@@ -78,6 +81,17 @@ class ExecuteQueryToolHandlerTest {
         MCPUnsupportedException actual = assertThrows(MCPUnsupportedException.class, () -> new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'"))));
         assertThat(actual.getMessage(), is("execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL."));
+        verifyNoInteractions(executionFacade);
+    }
+    
+    @Test
+    void assertRejectOutOfRangeMaxRows() {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "sql", "select * from orders", "max_rows", 5001))));
+        assertThat(actual.getMessage(), is("max_rows must be an integer between 0 and 5000."));
         verifyNoInteractions(executionFacade);
     }
 }

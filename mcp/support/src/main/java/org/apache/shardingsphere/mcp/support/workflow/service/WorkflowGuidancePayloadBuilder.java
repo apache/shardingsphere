@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -40,13 +42,13 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowGuidancePayloadBuilder {
-
+    
     private static final String APPLY_WORKFLOW = "apply_workflow";
-
+    
     private static final String VALIDATE_WORKFLOW = "validate_workflow";
-
+    
     private static final String EXECUTION_MODE_PREVIEW = "preview";
-
+    
     /**
      * Append model-facing next action guidance to a planning response.
      *
@@ -55,12 +57,15 @@ public final class WorkflowGuidancePayloadBuilder {
      */
     public static void appendPlanningGuidance(final Map<String, Object> payload, final WorkflowContextSnapshot snapshot) {
         List<String> missingRequiredInputs = createMissingRequiredInputs(snapshot);
+        List<Map<String, Object>> clarificationQuestions = createClarificationQuestions(snapshot, missingRequiredInputs);
         payload.put("missing_required_inputs", missingRequiredInputs);
+        payload.put("clarification_questions", clarificationQuestions);
+        payload.put("elicitation", createElicitationFallback(clarificationQuestions));
         payload.put("resources_to_read", createResourcesToRead(snapshot));
         payload.put("next_actions", createPlanningNextActions(snapshot, missingRequiredInputs));
         payload.put("requires_user_approval", false);
     }
-
+    
     /**
      * Append model-facing next action guidance to an apply response.
      *
@@ -74,15 +79,15 @@ public final class WorkflowGuidancePayloadBuilder {
                     Map.of("plan_id", Objects.toString(payload.get("plan_id"), "")), false));
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
-            nextActions.add(0, createUserAction("Execute the manual artifacts outside MCP, then call validate_workflow with the same plan_id.", true, List.of("manual_artifacts")));
+            nextActions.add(0, createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", true, List.of("manual_artifacts_executed")));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry apply_workflow only after the failed artifact is corrected.", true, List.of("issues")));
         }
-        payload.put("next_actions", nextActions);
+        payload.put("next_actions", addSequencing(nextActions));
         payload.put("requires_user_approval", WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status) || WorkflowLifecycle.STATUS_FAILED.equals(status));
     }
-
+    
     /**
      * Append model-facing next action guidance to a validation response.
      *
@@ -96,14 +101,14 @@ public final class WorkflowGuidancePayloadBuilder {
         payload.put("next_actions", failed ? createValidationFailureActions(snapshot) : List.of(createStopAction()));
         payload.put("requires_user_approval", false);
     }
-
+    
     private static List<Map<String, Object>> createValidationFailureActions(final WorkflowContextSnapshot snapshot) {
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind before re-planning with the existing plan_id.", false, List.of("workflow_kind", "mismatches")))
                 : List.of(createToolAction(planningTool, "Re-plan with corrected metadata or algorithm choices.", Map.of("plan_id", snapshot.getPlanId()), false));
     }
-
+    
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
@@ -120,7 +125,59 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return result;
     }
-
+    
+    private static List<Map<String, Object>> createClarificationQuestions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        List<String> pendingQuestions = snapshot.getClarifiedIntent().getPendingQuestions();
+        for (int i = 0; i < missingRequiredInputs.size(); i++) {
+            String fieldName = missingRequiredInputs.get(i);
+            result.add(createClarificationQuestion(snapshot, fieldName, i < pendingQuestions.size() ? pendingQuestions.get(i) : ""));
+        }
+        return result;
+    }
+    
+    private static Map<String, Object> createClarificationQuestion(final WorkflowContextSnapshot snapshot, final String fieldName, final String pendingQuestion) {
+        Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        String inputType = resolveClarificationInputType(snapshot, fieldName);
+        result.put("field", fieldName);
+        result.put("question_key", fieldName.replace('.', '_'));
+        result.put("input_type", inputType);
+        if ("boolean".equals(inputType)) {
+            result.put("allowed_values", List.of(true, false));
+        }
+        result.put("secret", isSecretClarificationField(snapshot, fieldName));
+        result.put("message", pendingQuestion.isBlank() ? String.format("Please provide `%s`.", fieldName) : pendingQuestion);
+        return result;
+    }
+    
+    private static String resolveClarificationInputType(final WorkflowContextSnapshot snapshot, final String fieldName) {
+        if (isSecretClarificationField(snapshot, fieldName)) {
+            return "secret";
+        }
+        return fieldName.startsWith("requires_") ? "boolean" : "string";
+    }
+    
+    private static boolean isSecretClarificationField(final WorkflowContextSnapshot snapshot, final String fieldName) {
+        if (!fieldName.startsWith("algorithm_properties.")) {
+            return false;
+        }
+        String propertyKey = fieldName.substring("algorithm_properties.".length());
+        for (AlgorithmPropertyRequirement each : snapshot.getPropertyRequirements()) {
+            if (propertyKey.equals(each.getPropertyKey())) {
+                return each.isSecret();
+            }
+        }
+        return false;
+    }
+    
+    private static Map<String, Object> createElicitationFallback(final List<Map<String, Object>> clarificationQuestions) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("native_supported", false);
+        result.put("fallback_fields", List.of("clarification_questions", "pending_questions", "next_actions"));
+        result.put("requires_user_response", !clarificationQuestions.isEmpty());
+        return result;
+    }
+    
     private static void addMissingInputsFromIssue(final Collection<String> result, final WorkflowIssue issue) {
         if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !result.contains("database")) {
             result.add("database");
@@ -135,7 +192,7 @@ public final class WorkflowGuidancePayloadBuilder {
             }
         }
     }
-
+    
     private static List<String> createResourcesToRead(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         addFeatureResources(result, snapshot);
@@ -148,7 +205,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return result;
     }
-
+    
     private static void addFeatureResources(final Collection<String> result, final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
@@ -157,7 +214,7 @@ public final class WorkflowGuidancePayloadBuilder {
             result.add("shardingsphere://features/mask/algorithms");
         }
     }
-
+    
     private static void addRuleResources(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
@@ -166,14 +223,14 @@ public final class WorkflowGuidancePayloadBuilder {
             result.add(String.format("shardingsphere://features/mask/databases/%s/rules", request.getDatabase()));
         }
     }
-
+    
     private static void addTableResources(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         result.add(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", request.getDatabase(), request.getSchema(), request.getTable()));
         if ("encrypt.rule".equals(resolveWorkflowKind(snapshot))) {
             result.add(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", request.getDatabase(), request.getSchema(), request.getTable()));
         }
     }
-
+    
     private static List<Map<String, Object>> createPlanningNextActions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
         if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
             return List.of(createUserAction("Ask for the missing inputs, then call the same planning tool with the existing plan_id.", false, missingRequiredInputs));
@@ -187,41 +244,37 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return List.of();
     }
-
+    
     private static List<Map<String, Object>> createRecoveryPlanningActions(final WorkflowContextSnapshot snapshot) {
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind, then call the matching planning tool with the existing plan_id.", false, List.of("workflow_kind", "issues")))
                 : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of("plan_id", snapshot.getPlanId()), false));
     }
-
+    
     private static Map<String, Object> createToolAction(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("action_kind", "call_tool");
-        result.put("target_tool", targetTool);
-        result.put("reason", reason);
-        result.put("required_arguments", requiredArguments);
-        result.put("requires_user_approval", requiresUserApproval);
-        return result;
+        return MCPNextActionUtils.callTool(targetTool, reason, requiredArguments, requiresUserApproval);
     }
-
+    
     private static Map<String, Object> createUserAction(final String reason, final boolean requiresUserApproval, final List<String> requiredInputs) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("action_kind", "ask_user");
-        result.put("reason", reason);
-        result.put("required_inputs", requiredInputs);
-        result.put("requires_user_approval", requiresUserApproval);
-        return result;
+        return MCPNextActionUtils.askUser(reason, requiredInputs, requiresUserApproval);
     }
-
+    
     private static Map<String, Object> createStopAction() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("action_kind", "stop");
-        result.put("reason", "Validation passed. Report the confirmed workflow result to the user.");
-        result.put("requires_user_approval", false);
+        return MCPNextActionUtils.stop("Validation passed. Report the confirmed workflow result to the user.");
+    }
+    
+    private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
+        List<Map<String, Object>> result = new LinkedList<>(nextActions);
+        for (int index = 0; index < result.size(); index++) {
+            result.get(index).put("order", index + 1);
+            if (0 < index && "ask_user".equals(result.get(index - 1).get("action_kind"))) {
+                result.get(index).put("depends_on", List.of(index));
+            }
+        }
         return result;
     }
-
+    
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
@@ -229,10 +282,10 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return "mask.rule".equals(workflowKind) ? "plan_mask_rule" : "";
     }
-
+    
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {
         WorkflowKind workflowKind = snapshot.getWorkflowKind();
         return null == workflowKind ? "" : workflowKind.getValue();
     }
-
+    
 }

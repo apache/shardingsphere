@@ -56,23 +56,23 @@ public final class MCPJdbcTransactionStatementExecutor {
         try {
             ShardingSpherePreconditions.checkState(sessionManager.hasSession(sessionId), MCPSessionNotExistedException::new);
             if ("BEGIN".equals(statementType) || "START TRANSACTION".equals(statementType)) {
-                return executeBeginTransaction(sessionId, databaseName, databaseCapability, statementType);
+                return executeBeginTransaction(sessionId, databaseName, databaseCapability, statementType).withNormalizedSql(classificationResult.getNormalizedSql());
             }
             if ("COMMIT".equals(statementType)) {
-                return executeCommit(sessionId, databaseCapability);
+                return executeCommit(sessionId, databaseCapability).withNormalizedSql(classificationResult.getNormalizedSql());
             }
             if ("ROLLBACK".equals(statementType)) {
-                return executeRollback(sessionId, databaseCapability);
+                return executeRollback(sessionId, databaseCapability).withNormalizedSql(classificationResult.getNormalizedSql());
             }
             String savepointName = classificationResult.getSavepointName().orElse("");
             if ("SAVEPOINT".equals(statementType)) {
-                return executeSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+                return executeSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName)).withNormalizedSql(classificationResult.getNormalizedSql());
             }
             if ("ROLLBACK TO SAVEPOINT".equals(statementType)) {
-                return executeRollbackSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+                return executeRollbackSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName)).withNormalizedSql(classificationResult.getNormalizedSql());
             }
             if ("RELEASE SAVEPOINT".equals(statementType)) {
-                return executeReleaseSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName));
+                return executeReleaseSavepoint(sessionId, databaseCapability, getRequiredSavepointName(savepointName)).withNormalizedSql(classificationResult.getNormalizedSql());
             }
             throw new MCPInvalidRequestException("Statement is not a transaction command.");
         } catch (final IllegalArgumentException ex) {

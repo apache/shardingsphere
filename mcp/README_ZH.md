@@ -49,6 +49,7 @@ bin\start.bat
 - 启用 HTTP 时，默认端点是 `http://127.0.0.1:18088/mcp`。
 - 日志会写到 `logs/` 目录。
 - `conf/mcp.yaml` 现在对支持字段名采用严格 schema：`transport.http.enabled`、`transport.http.bindHost`、`transport.http.allowRemoteAccess`、`transport.http.accessToken`、`transport.http.port`、`transport.http.endpointPath`、`transport.stdio.enabled`，以及每个 runtime database 的全部字段都只能使用受支持字段名。
+- `transport.http.accessToken` 和 runtime database 字段支持简单的 `${ENV_NAME}` 占位，便于部署时注入 JDBC 凭证等敏感配置。
 - 每个进程必须且只能启用一种 transport。发行包内置示例配置默认只启用 HTTP。
 - `bin/start.sh` 和 `bin\start.bat` 启动前都会校验配置文件、运行时依赖和 Java 环境，并自动创建 `data/`、`logs/`、`plugins/` 目录，然后切到发行包根目录启动，确保相对路径可用。
 - 如果启动成功，进程会保持前台运行；如果立刻退出，优先查看终端报错和 `logs/mcp.log`。
@@ -192,10 +193,11 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
 - Completion 响应会返回缺失上下文、候选数量和确定性排序原因等诊断信息。
 - `resourceNavigation` 说明轻量级的公开下一跳，例如 database 到 schema、table 到 column、algorithm 到规划工具，
   以及 workflow plan 到 apply 或 validation 工具。
+- `shardingsphere://runtime` 暴露轻量运行时状态，`shardingsphere://workflows/{plan_id}` 支持按 plan_id 回读 workflow plan。
 - `fingerprints` 记录 descriptor、prompt、navigation 和模型可见 schema 的确定性哈希，让测试产物能证明模型使用的是哪一版 MCP surface。
 - item-list 响应总会包含 `items`、`count` 和 `has_more`。resource read 还会包含 `self_uri`，
   并在适用时包含 `parent_uri`、`next_resources` 或 `next_page_token`。
-- Workflow tool 响应包含 `missing_required_inputs`、`resources_to_read`、`next_actions`
+- Workflow tool 响应包含 `missing_required_inputs`、`clarification_questions`、`resources_to_read`、`next_actions`
   和 `requires_user_approval`，让模型不用依赖旧推荐字段也可以继续下一步。
 - 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、
   workflow 状态错误以及 SQL tool 选错场景增加 `recovery` 提示。

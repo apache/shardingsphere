@@ -1,0 +1,166 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.support.protocol;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Utilities for model-facing MCP next action payloads.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class MCPNextActionUtils {
+    
+    /**
+     * Create a read-resource action.
+     *
+     * @param targetResource target resource URI
+     * @param reason action reason
+     * @return action payload
+     */
+    public static Map<String, Object> readResource(final String targetResource, final String reason) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("action_kind", "read_resource");
+        result.put("target_resource", targetResource);
+        result.put("reason", reason);
+        result.put("requires_user_approval", false);
+        return result;
+    }
+    
+    /**
+     * Create a tool-call action.
+     *
+     * @param targetTool target tool
+     * @param reason action reason
+     * @param requiredArguments required arguments
+     * @param requiresUserApproval requires user approval
+     * @return action payload
+     */
+    public static Map<String, Object> callTool(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("action_kind", "call_tool");
+        result.put("target_tool", targetTool);
+        result.put("reason", reason);
+        result.put("required_arguments", requiredArguments);
+        result.put("requires_user_approval", requiresUserApproval);
+        return result;
+    }
+    
+    /**
+     * Create a retry-tool action.
+     *
+     * @param targetTool optional target tool
+     * @param reason action reason
+     * @param requiredArguments required arguments
+     * @param requiresUserApproval requires user approval
+     * @return action payload
+     */
+    public static Map<String, Object> retryTool(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("action_kind", "retry_tool");
+        if (null != targetTool && !targetTool.isBlank()) {
+            result.put("target_tool", targetTool);
+        }
+        result.put("reason", reason);
+        result.put("required_arguments", requiredArguments);
+        result.put("requires_user_approval", requiresUserApproval);
+        return result;
+    }
+    
+    /**
+     * Create a completion action.
+     *
+     * @param argumentName argument name
+     * @param reason action reason
+     * @return action payload
+     */
+    public static Map<String, Object> completeArgument(final String argumentName, final String reason) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("action_kind", "complete_argument");
+        result.put("argument_name", argumentName);
+        result.put("reason", reason);
+        result.put("requires_user_approval", false);
+        return result;
+    }
+    
+    /**
+     * Create an ask-user action.
+     *
+     * @param reason action reason
+     * @param requiredInputs required user inputs
+     * @param requiresUserApproval requires user approval
+     * @return action payload
+     */
+    public static Map<String, Object> askUser(final String reason, final List<String> requiredInputs, final boolean requiresUserApproval) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("action_kind", "ask_user");
+        result.put("reason", reason);
+        result.put("required_inputs", requiredInputs);
+        result.put("requires_user_approval", requiresUserApproval);
+        return result;
+    }
+    
+    /**
+     * Create a stop action.
+     *
+     * @param reason action reason
+     * @return action payload
+     */
+    public static Map<String, Object> stop(final String reason) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("action_kind", "stop");
+        result.put("reason", reason);
+        result.put("requires_user_approval", false);
+        return result;
+    }
+    
+    /**
+     * Add 1-based order values to actions.
+     *
+     * @param actions actions
+     * @return ordered actions
+     */
+    @SafeVarargs
+    public static List<Map<String, Object>> ordered(final Map<String, Object>... actions) {
+        List<Map<String, Object>> result = new ArrayList<>(actions.length);
+        for (int index = 0; index < actions.length; index++) {
+            Map<String, Object> action = new LinkedHashMap<>(actions[index]);
+            action.put("order", index + 1);
+            result.add(action);
+        }
+        return result;
+    }
+    
+    /**
+     * Add action dependencies by 1-based order.
+     *
+     * @param action action
+     * @param dependsOn action orders that must complete first
+     * @return action payload
+     */
+    public static Map<String, Object> dependsOn(final Map<String, Object> action, final Integer... dependsOn) {
+        Map<String, Object> result = new LinkedHashMap<>(action);
+        result.put("depends_on", List.of(dependsOn));
+        return result;
+    }
+}

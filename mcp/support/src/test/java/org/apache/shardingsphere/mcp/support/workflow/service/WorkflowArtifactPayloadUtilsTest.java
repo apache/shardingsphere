@@ -49,5 +49,8 @@ class WorkflowArtifactPayloadUtilsTest {
         assertThat(((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).size(), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).get(0)).get("sql"),
                 is("CREATE ENCRYPT RULE t (PROPERTIES('aes-key-value'='******'))"));
+        Map<?, ?> actualRedaction = (Map<?, ?>) ((Map<?, ?>) ((List<?>) actual.get(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS)).get(0)).get("redaction");
+        assertThat(actualRedaction.get("marker"), is("******"));
+        assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value")));
     }
 }

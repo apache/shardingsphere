@@ -21,13 +21,15 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * MCP URI pattern.
@@ -124,9 +126,18 @@ public final class MCPUriPattern {
      */
     public Optional<MCPUriVariables> parse(final String uri) {
         Matcher matcher = compiledRegex.matcher(uri);
-        return matcher.matches()
-                ? Optional.of(new MCPUriVariables(IntStream.range(0, variableNames.size()).boxed().collect(Collectors.toMap(variableNames::get, i -> matcher.group(i + 1)))))
-                : Optional.empty();
+        if (!matcher.matches()) {
+            return Optional.empty();
+        }
+        Map<String, String> variables = new LinkedHashMap<>(variableNames.size(), 1F);
+        try {
+            for (int i = 0; i < variableNames.size(); i++) {
+                variables.put(variableNames.get(i), URLDecoder.decode(matcher.group(i + 1), StandardCharsets.UTF_8));
+            }
+        } catch (final IllegalArgumentException ignored) {
+            return Optional.empty();
+        }
+        return Optional.of(new MCPUriVariables(variables));
     }
     
     /**

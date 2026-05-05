@@ -49,6 +49,7 @@ Notes:
 - When HTTP is enabled, the default endpoint is `http://127.0.0.1:18088/mcp`.
 - Logs are written under `logs/`.
 - `conf/mcp.yaml` is now strict about supported field names: `transport.http.enabled`, `transport.http.bindHost`, `transport.http.allowRemoteAccess`, `transport.http.accessToken`, `transport.http.port`, `transport.http.endpointPath`, `transport.stdio.enabled`, and all runtime database fields must be declared with supported keys only.
+- `transport.http.accessToken` and runtime database fields support simple `${ENV_NAME}` placeholders for deployment secrets such as JDBC credentials.
 - Exactly one transport must be enabled per process. The packaged sample configuration enables HTTP only.
 - `bin/start.sh` and `bin\start.bat` validate the config file, runtime libraries, and Java availability before startup, create `data/`, `logs/`, and `plugins/`, then start from the package root so relative runtime paths resolve consistently.
 - If startup succeeds, the process stays running in the foreground. If it exits immediately, inspect the terminal error and `logs/mcp.log` first.
@@ -192,10 +193,11 @@ Descriptors must describe what the model should use the surface for, not just re
 - Completion responses include diagnostics such as missing context, candidate counts, and deterministic ranking reasons.
 - `resourceNavigation` explains lightweight public next hops such as databases to schemas, tables to columns, algorithms to planning tools,
   and workflow plans to apply or validation tools.
+- `shardingsphere://runtime` exposes a small runtime status readout, and `shardingsphere://workflows/{plan_id}` lets clients read back a workflow plan by ID.
 - `fingerprints` records deterministic hashes for descriptor, prompt, navigation, and model-facing schema surfaces so test artifacts can prove which MCP surface a model used.
 - Item-list responses always include `items`, `count`, and `has_more`. Resource reads also include `self_uri`,
   and include `parent_uri`, `next_resources`, or `next_page_token` when applicable.
-- Workflow tool responses include `missing_required_inputs`, `resources_to_read`, `next_actions`, and `requires_user_approval`
+- Workflow tool responses include `missing_required_inputs`, `clarification_questions`, `resources_to_read`, `next_actions`, and `requires_user_approval`
   so a model can continue the workflow without guessing or relying on legacy recommendation fields.
 - Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,
   unsupported tools or resources, invalid enum values, workflow state errors, and unsafe SQL tool selection.

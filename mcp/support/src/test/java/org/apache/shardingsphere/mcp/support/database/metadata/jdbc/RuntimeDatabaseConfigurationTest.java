@@ -70,9 +70,10 @@ class RuntimeDatabaseConfigurationTest {
     @SuppressWarnings("resource")
     @Test
     void assertOpenConnectionWithUnavailableDriverClassName() {
-        IllegalStateException actual = assertThrows(IllegalStateException.class,
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class,
                 () -> new RuntimeDatabaseConfiguration("H2", "jdbc:test:missing-driver", "", "", "org.example.MissingDriver").openConnection("logic_db"));
-        assertThat(actual.getMessage(), is("JDBC driver `org.example.MissingDriver` is not available for database `logic_db`."));
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: missing_jdbc_driver."));
+        assertThat(actual.getCategory(), is("missing_jdbc_driver"));
     }
     
     private static Stream<Arguments> invalidDatabaseTypeArguments() {

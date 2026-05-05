@@ -66,7 +66,7 @@ public final class MaskAlgorithmRecommendationService {
     private String resolveRecommendedAlgorithm(final ClarifiedIntent intent, final WorkflowRequest request, final List<Map<String, Object>> maskAlgorithms) {
         String fieldSemantics = intent.getFieldSemantics().toLowerCase(Locale.ENGLISH);
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if ((fieldSemantics.contains("phone") || naturalLanguageIntent.contains("first") || naturalLanguageIntent.contains("last"))
+        if ((fieldSemantics.contains("phone") || containsAny(naturalLanguageIntent, "first", "last", "前", "后", "保留"))
                 && containsAlgorithm(maskAlgorithms, "MASK_FROM_X_TO_Y")) {
             return "MASK_FROM_X_TO_Y";
         }
@@ -78,6 +78,15 @@ public final class MaskAlgorithmRecommendationService {
     
     private boolean containsAlgorithm(final List<Map<String, Object>> algorithmRows, final String algorithmType) {
         return algorithmRows.stream().map(this::getAlgorithmType).anyMatch(algorithmType::equals);
+    }
+    
+    private boolean containsAny(final String value, final String... candidates) {
+        for (String each : candidates) {
+            if (value.contains(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private String getAlgorithmType(final Map<String, Object> algorithmRow) {

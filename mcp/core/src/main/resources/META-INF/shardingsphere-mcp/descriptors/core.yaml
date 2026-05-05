@@ -30,6 +30,38 @@ resources:
       useBefore:
         - choosing tools
         - planning multi-step workflows
+  - uriPattern: shardingsphere://runtime
+    name: runtime-status
+    title: Runtime Status
+    description: "Read the current MCP runtime status, configured logical database count, and first resources to inspect before choosing tools."
+    mimeType: application/json
+    annotations:
+      audience:
+        - assistant
+      priority: 0.9
+    meta:
+      resourceKind: detail
+      objectScope: runtime
+      relatedResources:
+        - shardingsphere://capabilities
+        - shardingsphere://databases
+  - uriPattern: shardingsphere://workflows/{plan_id}
+    name: workflow-plan
+    title: Workflow Plan
+    description: "Read one current in-memory workflow plan by plan_id. Use after planning tools to review status, clarification questions, artifacts, and next actions."
+    mimeType: application/json
+    parameters:
+      - name: plan_id
+        title: Plan ID
+        description: "Workflow plan_id returned by a planning tool in the current MCP runtime."
+        required: true
+        scope: workflow-plan
+    meta:
+      resourceKind: detail
+      objectScope: workflow-plan
+      relatedTools:
+        - validate_workflow
+        - apply_workflow
   - uriPattern: shardingsphere://databases
     name: logical-databases
     title: Logical Databases
@@ -445,6 +477,11 @@ completionTargets:
     maxValues: 50
 resourceNavigation:
   - from: shardingsphere://capabilities
+    to: shardingsphere://runtime
+    requiredArguments: []
+    carriedArguments: []
+    description: "Read current runtime status when availability or configured database scope is unclear."
+  - from: shardingsphere://capabilities
     to: shardingsphere://databases
     requiredArguments: []
     carriedArguments: []
@@ -539,10 +576,10 @@ tools:
           type: STRING
           description: "Optional schema or namespace used to narrow table, view, column, index, and sequence search."
       - name: query
-        required: true
+        required: false
         valueDefinition:
           type: STRING
-          description: "Name fragment or exact object name to search for."
+          description: "Optional name fragment or exact object name. Blank query lists metadata inside the narrowed database/schema/object_types scope."
       - name: object_types
         required: false
         valueDefinition:
@@ -563,12 +600,12 @@ tools:
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Requested page size for search results. Omit to use the server default."
+          description: "Requested page size for search results. Omit for default 100. Accepted range is 1 to 500."
       - name: page_token
         required: false
         valueDefinition:
           type: STRING
-          description: "Opaque pagination token returned by a previous search_metadata call."
+          description: "Non-negative pagination offset token returned by a previous search_metadata call."
     outputSchema:
       type: object
       properties:
@@ -637,6 +674,12 @@ tools:
         search_context:
           type: object
           description: "Applied search scope, query, object types, page size, and page offset used for this page."
+        empty_reason:
+          type: string
+          description: "Reason no metadata hits were returned, such as no_matches_for_query or no_metadata_in_scope."
+        next_actions:
+          type: array
+          description: "Structured follow-up actions for an empty search result."
       examples:
         - items:
             - database: logic_db
@@ -700,12 +743,12 @@ tools:
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional maximum number of rows to return. Omit or use zero for the server default."
+          description: "Optional maximum number of rows to return. Omit or use zero for default 100. Accepted range is 0 to 5000."
       - name: timeout_ms
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional execution timeout in milliseconds. Omit or use zero for the server default."
+          description: "Optional execution timeout in milliseconds. Omit or use zero for no explicit timeout. Accepted range is 0 to 300000."
     outputSchema:
       type: object
       properties:
@@ -726,6 +769,9 @@ tools:
         status:
           type: string
           description: "Execution status returned by the server."
+        normalized_sql:
+          type: string
+          description: "Classifier-normalized SQL executed by the server."
         columns:
           type: array
           description: "Returned column definitions."
@@ -737,7 +783,7 @@ tools:
           description: "Number of result rows returned in this payload."
         applied_max_rows:
           type: integer
-          description: "Applied max_rows argument; zero means the request used the server default or unbounded behavior."
+          description: "Applied max_rows argument after defaulting and bounds enforcement."
         applied_timeout_ms:
           type: integer
           description: "Applied timeout_ms argument; zero means the request used the server default."
@@ -812,12 +858,12 @@ tools:
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional maximum row count when the statement returns rows, for example dialect-specific RETURNING."
+          description: "Optional maximum row count when the statement returns rows, for example dialect-specific RETURNING. Omit or use zero for default 100. Accepted range is 0 to 5000."
       - name: timeout_ms
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional execution timeout in milliseconds. Omit or use zero for the server default."
+          description: "Optional execution timeout in milliseconds. Omit or use zero for no explicit timeout. Accepted range is 0 to 300000."
     outputSchema:
       type: object
       properties:
@@ -861,7 +907,7 @@ tools:
           description: "Number of rows returned when result_kind is result_set."
         applied_max_rows:
           type: integer
-          description: "Applied max_rows argument for executed SQL; zero means the request used the server default or unbounded behavior."
+          description: "Applied max_rows argument for executed SQL after defaulting and bounds enforcement."
         applied_timeout_ms:
           type: integer
           description: "Applied timeout_ms argument for executed SQL; zero means the request used the server default."
@@ -892,6 +938,9 @@ tools:
         suggested_arguments:
           type: object
           description: "Preview-only arguments to reuse when the user approves execution."
+        argument_provenance:
+          type: object
+          description: "Source of suggested argument values, such as user_provided, server_normalized, or server_suggested."
         read_resources_first:
           type: array
           description: "Resource URIs to read before retrying when metadata context is missing."

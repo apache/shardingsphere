@@ -40,7 +40,7 @@ class MCPDescriptorCatalogLoaderTest {
         assertTrue(actualToolNames.contains("apply_workflow"));
         assertTrue(actualToolNames.contains("validate_workflow"));
         assertOutputProperties(actual, "apply_workflow", Set.of(
-                "plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package", "approval_summary", "approval_question"));
+                "plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package", "manual_follow_up", "argument_provenance", "approval_summary", "approval_question"));
         assertOutputProperties(actual, "validate_workflow", Set.of("plan_id", "status", "next_actions", "sections", "mismatches"));
         assertNoLegacyRecommendationFields(actual);
     }

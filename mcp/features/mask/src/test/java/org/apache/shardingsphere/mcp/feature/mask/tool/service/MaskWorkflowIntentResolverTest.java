@@ -38,4 +38,13 @@ class MaskWorkflowIntentResolverTest {
         assertThat(actual.getInferredValues().get("field_semantics"), is("phone"));
         assertThat(actual.getReasoningNotes(), is("Resolved from explicit arguments, heuristic inference for operation_type, field_semantics."));
     }
+    
+    @Test
+    void assertResolveRecordsChineseSharedInference() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setNaturalLanguageIntent("删除手机号脱敏规则");
+        ClarifiedIntent actual = new MaskWorkflowIntentResolver().resolve(request);
+        assertThat(actual.getOperationType(), is("drop"));
+        assertThat(actual.getFieldSemantics(), is("phone"));
+    }
 }

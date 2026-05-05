@@ -61,6 +61,19 @@ class MCPToolArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getBoundedIntegerArgumentCases")
+    void assertGetBoundedIntegerArgument(final String name, final Map<String, Object> rawArguments, final int expectedValue) {
+        assertThat(new MCPToolArguments(rawArguments).getIntegerArgument("limit", 10, 0, 100), is(expectedValue));
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("invalidBoundedIntegerArgumentCases")
+    void assertGetBoundedIntegerArgumentWithInvalidArgument(final String name, final Map<String, Object> rawArguments, final String expectedMessage) {
+        assertThat(assertThrows(MCPInvalidRequestException.class, () -> new MCPToolArguments(rawArguments).getIntegerArgument("limit", 10, 0, 100)).getMessage(),
+                is(expectedMessage));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("getBooleanArgumentCases")
     void assertGetBooleanArgument(final String name, final Map<String, Object> rawArguments, final boolean defaultValue, final boolean expectedValue) {
         assertThat(new MCPToolArguments(rawArguments).getBooleanArgument("enabled", defaultValue), is(expectedValue));
@@ -110,6 +123,20 @@ class MCPToolArgumentsTest {
                 Arguments.of("parsed integer", Map.of("limit", " 20 "), 10, 20),
                 Arguments.of("blank integer", Map.of("limit", "   "), 10, 10),
                 Arguments.of("invalid integer", Map.of("limit", "foo"), 10, 10));
+    }
+    
+    private static Stream<Arguments> getBoundedIntegerArgumentCases() {
+        return Stream.of(
+                Arguments.of("missing bounded integer", Map.of(), 10),
+                Arguments.of("parsed bounded integer", Map.of("limit", "20"), 20),
+                Arguments.of("number bounded integer", Map.of("limit", 5), 5));
+    }
+    
+    private static Stream<Arguments> invalidBoundedIntegerArgumentCases() {
+        return Stream.of(
+                Arguments.of("malformed bounded integer", Map.of("limit", "foo"), "limit must be an integer."),
+                Arguments.of("too small bounded integer", Map.of("limit", -1), "limit must be an integer between 0 and 100."),
+                Arguments.of("too large bounded integer", Map.of("limit", 101), "limit must be an integer between 0 and 100."));
     }
     
     private static Stream<Arguments> getBooleanArgumentCases() {

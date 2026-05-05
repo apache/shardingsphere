@@ -54,6 +54,8 @@ public final class LLMUsabilityReportWriter {
         result.append("- boundaryConfusionRate: ").append(scorecard.getBoundaryConfusionRate()).append(System.lineSeparator());
         result.append("- resourceHitRate: ").append(scorecard.getResourceHitRate()).append(System.lineSeparator());
         result.append("- recoveryRate: ").append(scorecard.getRecoveryRate()).append(System.lineSeparator());
+        result.append("- nextActionFollowRate: ").append(scorecard.getNextActionFollowRate()).append(System.lineSeparator());
+        result.append("- approvalViolationRate: ").append(scorecard.getApprovalViolationRate()).append(System.lineSeparator());
         result.append(System.lineSeparator()).append("## Scenario Results").append(System.lineSeparator());
         for (LLMUsabilityScenarioResult each : scorecard.getScenarioResults()) {
             result.append("- ").append(each.getScenarioId()).append(": ")

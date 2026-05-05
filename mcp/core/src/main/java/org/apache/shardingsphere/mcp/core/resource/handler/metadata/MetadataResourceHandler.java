@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -58,6 +59,9 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
         MCPResourceDescriptor descriptor = getResourceDescriptor();
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
+        if (items.isEmpty()) {
+            appendEmptyStateGuidance(navigationPayload, descriptor);
+        }
         return isDetailResource(descriptor) ? new MCPMapResponse(createDetailPayload(descriptor, items, navigationPayload)) : new MCPItemsResponse(items, navigationPayload);
     }
     
@@ -79,6 +83,18 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         }
         result.putAll(navigationPayload);
         return result;
+    }
+    
+    private void appendEmptyStateGuidance(final Map<String, Object> payload, final MCPResourceDescriptor descriptor) {
+        if (isDetailResource(descriptor)) {
+            payload.put("not_found_reason", String.format("%s detail resource was not found for this URI.", descriptor.getMeta().getOrDefault("objectScope", "metadata")));
+        } else {
+            payload.put("empty_reason", "no_metadata_items_in_scope");
+        }
+        String parentUri = String.valueOf(payload.getOrDefault("parent_uri", ""));
+        payload.put("next_actions", parentUri.isEmpty()
+                ? List.of(MCPNextActionUtils.stop("No metadata items are available in this scope."))
+                : List.of(MCPNextActionUtils.readResource(parentUri, "Read the parent metadata resource before broadening or correcting the request.")));
     }
     
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {

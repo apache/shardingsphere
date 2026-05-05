@@ -57,7 +57,7 @@ class WorkflowPlanPayloadBuilderTest {
         clarifiedIntent.getUnresolvedFields().add("requires_like_query");
         clarifiedIntent.getPendingQuestions().add("Do you need LIKE query?");
         snapshot.setClarifiedIntent(clarifiedIntent);
-        snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true, Map.of()));
+        snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true, Map.of("missing_properties", List.of("aes-key-value"))));
         snapshot.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", true, true, false, 95, "reason", ""));
         snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "desc", ""));
         InteractionPlan interactionPlan = new InteractionPlan();
@@ -75,7 +75,14 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("field_semantics"), is("phone"));
         assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actual.get("intent_inference")).get("inferred_values")).get("requires_decrypt"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("unresolved_fields"), is(clarifiedIntent.getUnresolvedFields()));
-        assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query")));
+        assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query", "algorithm_properties.aes-key-value")));
+        List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("input_type"), is("boolean"));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("allowed_values"), is(List.of(true, false)));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("message"), is("Do you need LIKE query?"));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("input_type"), is("secret"));
+        assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(1)).get("secret"));
+        assertTrue((Boolean) ((Map<?, ?>) actual.get("elicitation")).get("requires_user_response"));
         assertFalse(actual.containsKey("recommended_next_tool"));
         assertFalse((Boolean) actual.get("requires_user_approval"));
         assertTrue(((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));

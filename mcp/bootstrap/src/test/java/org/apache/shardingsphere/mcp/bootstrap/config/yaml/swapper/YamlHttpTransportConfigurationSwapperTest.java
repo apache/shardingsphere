@@ -21,6 +21,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.HttpTransportConfiguration
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlHttpTransportConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -78,6 +80,20 @@ class YamlHttpTransportConfigurationSwapperTest {
         assertThat(actual.getBindHost(), is("0.0.0.0"));
         assertTrue(actual.isAllowRemoteAccess());
         assertThat(actual.getAccessToken(), is("foo_token"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithAccessTokenEnvironmentPlaceholder() {
+        HttpTransportConfiguration actual = swapper.swapToObject(createYamlConfig("0.0.0.0", true, "${MCP_ACCESS_TOKEN}", 18088, "/mcp"),
+                Map.of("MCP_ACCESS_TOKEN", "foo_token"));
+        assertThat(actual.getAccessToken(), is("foo_token"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithMissingAccessTokenEnvironmentPlaceholder() {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class,
+                () -> swapper.swapToObject(createYamlConfig("0.0.0.0", true, "${MCP_ACCESS_TOKEN}", 18088, "/mcp"), Map.of()));
+        assertThat(actual.getMessage(), is("Environment variable `MCP_ACCESS_TOKEN` referenced by property `transport.http.accessToken` is not set."));
     }
     
     @Test

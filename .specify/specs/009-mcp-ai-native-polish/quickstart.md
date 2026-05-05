@@ -27,19 +27,27 @@ Review:
 
 Expected:
 
-- 008 remains the completed baseline.
+- 008/003 remain the completed baseline.
 - 009 only adds the next small polish backlog.
+- Existing code already includes capability contracts, common flows, search match explanations, output parse hints, approval summaries, completion diagnostics, and structured recovery.
 
 ## 3. Validate Requirement Scope
 
 Check that 009 asks only for:
 
-- Capability-level next-action contract.
-- Static common flows.
-- Search context and match explanations.
-- Output parse hints for SQL and workflow payloads.
-- Server-owned approval summaries.
-- Focused deterministic guards.
+- Ordered/dependency-aware next actions.
+- Compact capabilities `surface_summary`.
+- Resource navigation and completion locality hints.
+- Empty-state and not-found diagnostics.
+- Argument provenance, redaction markers, and manual-only follow-up clarity.
+- Safe runtime recovery diagnostics and optional bounded request IDs.
+- Explicit SQL row, timeout, metadata pagination, and blank-query bounds.
+- Structured clarification questions plus MCP-native elicitation fallback.
+- Common Chinese encrypt/mask intent hints and structured non-English evidence.
+- Current-session workflow plan read-back by `plan_id`.
+- Percent-encoded resource identifiers for non-ASCII or reserved object names.
+- Secret-safe runtime status, env placeholders, HTTP auth hints, and minimal client configs.
+- Opt-in next-action-follow and approval-violation usability metrics.
 
 Reject any implementation proposal that adds:
 
@@ -49,15 +57,22 @@ Reject any implementation proposal that adds:
 - Approval tokens or durable approval records.
 - Full RBAC or tenant platform.
 - Default-CI real-model E2E.
+- Full natural-language parser inside MCP.
+- Cross-session workflow memory or audit persistence.
+- Semantic metadata search engine.
 
 ## 4. Suggested Implementation Order
 
-1. Add or update tests for capabilities shape.
-2. Add `next_action_contract` and `common_flows`.
-3. Add `search_metadata` search context and match explanations.
-4. Add SQL and workflow output parse hints and schema updates.
-5. Add approval summaries to preview responses.
-6. Add optional parity checks and opt-in LLM usability scenarios.
+1. Add deterministic tests for action ordering and `surface_summary`.
+2. Add action dependency metadata and retry target/source hints.
+3. Add capability summary plus navigation/completion locality hints.
+4. Add empty-state and not-found diagnostics.
+5. Add argument provenance, redaction markers, normalized SQL success hints, and manual-only follow-up guidance.
+6. Add safe runtime recovery diagnostics.
+7. Add SQL/search bounds, strict argument recovery, and URI encoding.
+8. Add structured clarification, Chinese synonym hints, and workflow read-back.
+9. Add secret-safe runtime status, env-placeholder support, and client/auth documentation.
+10. Add opt-in usability metrics.
 
 ## 5. Suggested Verification Commands
 
@@ -90,6 +105,9 @@ For Checkstyle after Java changes:
 - The branch was not switched.
 - New model-facing fields are descriptor-backed or response-backed.
 - Side effects still require preview and user approval.
+- Broad SQL/search calls have documented defaults, caps, and structured recovery.
+- Workflow plans can be recovered only within current session scope.
+- Non-English user intent is represented as structured evidence or covered by deterministic common synonyms.
 - No secrets, tokens, passwords, or production identifiers appear in examples.
 - Deterministic tests cover new shape contracts.
 - Live-model checks remain opt-in.

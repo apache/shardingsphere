@@ -105,6 +105,13 @@ class SQLExecutionResponseTest {
         assertThat(actual.toPayload().get("affected_rows"), is(0));
     }
     
+    @Test
+    void assertWithNormalizedSql() {
+        SQLExecutionResponse actual = SQLExecutionResponse.updateCount("UPDATE", 1).withNormalizedSql("UPDATE orders SET status = 'DONE'");
+        assertThat(actual.getNormalizedSql(), is("UPDATE orders SET status = 'DONE'"));
+        assertThat(actual.toPayload().get("normalized_sql"), is("UPDATE orders SET status = 'DONE'"));
+    }
+    
     private static Stream<Arguments> assertToPayloadCases() {
         ExecuteQueryColumnDefinition orderIdColumn = new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false);
         List<ExecuteQueryColumnDefinition> columns = List.of(orderIdColumn);

@@ -23,8 +23,10 @@ import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.DatabaseCapabilitiesHandler;
+import org.apache.shardingsphere.mcp.core.resource.handler.capability.RuntimeStatusHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.capability.ServerCapabilitiesHandler;
 import org.apache.shardingsphere.mcp.core.resource.handler.metadata.MetadataResourceHandler;
+import org.apache.shardingsphere.mcp.core.resource.handler.workflow.WorkflowPlanHandler;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,6 +44,8 @@ final class CoreResourceHandlers {
     static Collection<MCPResourceHandler<?>> createHandlers() {
         Collection<MCPResourceHandler<?>> result = new LinkedList<>();
         result.add(new ServerCapabilitiesHandler());
+        result.add(new RuntimeStatusHandler());
+        result.add(new WorkflowPlanHandler());
         result.add(new DatabaseCapabilitiesHandler());
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases",

@@ -120,6 +120,40 @@ public final class MCPToolArguments {
     }
     
     /**
+     * Get bounded integer argument.
+     *
+     * @param name argument name
+     * @param defaultValue default value
+     * @param minValue minimum accepted value
+     * @param maxValue maximum accepted value
+     * @return argument value
+     * @throws MCPInvalidRequestException when value is not an integer or is outside the accepted range
+     */
+    public int getIntegerArgument(final String name, final int defaultValue, final int minValue, final int maxValue) {
+        Object value = arguments.get(name);
+        int result = parseIntegerArgument(name, value, defaultValue);
+        if (result < minValue || result > maxValue) {
+            throw new MCPInvalidRequestException(String.format("%s must be an integer between %d and %d.", name, minValue, maxValue));
+        }
+        return result;
+    }
+    
+    private int parseIntegerArgument(final String name, final Object value, final int defaultValue) {
+        if (null == value) {
+            return defaultValue;
+        }
+        String actualValue = Objects.toString(value, "").trim();
+        if (actualValue.isEmpty()) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(actualValue);
+        } catch (final NumberFormatException ex) {
+            throw new MCPInvalidRequestException(String.format("%s must be an integer.", name), ex);
+        }
+    }
+    
+    /**
      * Get boolean argument.
      *
      * @param name argument name

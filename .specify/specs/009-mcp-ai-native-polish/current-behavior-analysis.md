@@ -10,289 +10,328 @@
 
 ## Summary
 
-The current MCP surface already has strong foundations: descriptor-backed tools, a capabilities resource, structured `next_actions`,
-workflow preview gates, recovery payloads, and opt-in LLM usability tests.
-The remaining improvements are small clarity gaps.
-A model can usually finish the task today, but it must infer too much from prose or missing fields in these areas:
+The current MCP surface already has strong foundations and has advanced beyond the older 009 draft:
 
-- Capabilities do not yet document the `next_actions` vocabulary or compact common flows.
-- Search results do not explain match quality, matched fields, applied scope, or unsafe URI derivation details.
-- Numeric arguments silently fall back to defaults on malformed input.
-- SQL result payloads lack applied limit and row-count hints.
-- Preview payloads expose safety facts but do not provide a server-owned approval question.
-- Workflow validation success returns no explicit stop action, while failure does.
-- Some recovery payloads are structured, but invalid `object_types` and page tokens are less actionable.
-- Deterministic tests exist, and opt-in LLM tests exist, but intent-style model tests can be more natural.
+- Capabilities already expose `model_contract`, `next_action_contract`, `common_flows`, `security_hints`, payload contracts, protocol availability, and fingerprints.
+- Search already exposes `searchContext`, `match_kind`, `matched_fields`, `matched_value`, and descriptor-backed resource URI hints.
+- SQL outputs already expose `returned_row_count`, `applied_max_rows`, `applied_timeout_ms`, `truncated`, and `next_actions`.
+- Side-effect previews already expose `approval_summary`, `approval_question`, side-effect scope, reusable arguments, and approval requirements.
+- Recovery already covers invalid `object_types`, invalid page token, stale plan IDs, wrong SQL tool, unsupported tool/resource, and missing execution mode.
+- Completion already exposes diagnostics, missing context, ranking policy, candidate counts, prefix-first matching, contains fallback, and value details.
+- Resource responses already expose `self_uri`, `parent_uri`, `next_resources`, counts, and payload contracts.
+- Opt-in LLM usability already covers capability discovery, search-to-detail URI, preview SQL, workflow preview/manual/validate, prompt completion, and recovery paths.
 
-## Finding 1: Capabilities Contract
+The remaining improvements are narrower:
+
+- Multi-action `next_actions` still rely on list order and prose for dependencies.
+- `retry_tool` can be clearer when context is compacted.
+- Capabilities are rich; a tiny `surface_summary` would make first-hop use more comfortable.
+- Resource navigation lacks source/target type hints.
+- Tool fields do not locally say whether completion is available.
+- Empty, zero-hit, and not-found states can explain what happened more directly.
+- Reusable arguments do not consistently expose provenance.
+- Redacted workflow values can use a more uniform marker.
+- EXPLAIN ANALYZE risk semantics can be clearer by database capability.
+- Runtime failures can distinguish missing driver, authentication, timeout, and database-unavailable cases more safely.
+- Opt-in usability reports can measure next-action following and approval violations directly.
+- SQL and metadata calls need explicit defaults, caps, and invalid-argument recovery to avoid accidental unbounded work.
+- Blank metadata search, broad all-database search, and percent-encoded identifiers need clearer contracts.
+- Missing-input prompts need field-level structure and an MCP-native elicitation path when supported.
+- Common Chinese encrypt/mask intents need deterministic synonym coverage or structured intent evidence.
+- Workflow plans need a current-session read-back surface so models can resume after context compaction.
+- Runtime setup needs secret-safe status, environment placeholders, clearer bearer-token hints, and minimal client examples.
+
+## Finding 1: Capability Surface
 
 Current behavior:
 
-- `MCPDescriptorCatalog.toPayload()` exposes supported resources, tools, statement classes, `model_contract`, `security_hints`,
-  resources, templates, tools, prompts, completion targets, resource navigation, protocol availability, and fingerprints.
-  Evidence: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalog.java:88`.
-- `model_contract` already tells models to start from capabilities, use databases for metadata, choose SQL tools by side effect,
-  use workflow sessions, avoid legacy recommendation fields, follow detail resources, and respect recovery actions.
-  Evidence: `MCPDescriptorCatalog.java:124`.
-- There is no explicit `next_action_contract` or `common_flows` section yet.
-- `ServerCapabilitiesHandlerTest` protects the current capability surface and legacy-field removal.
-  Evidence: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/handler/capability/ServerCapabilitiesHandlerTest.java:36`.
+- `MCPDescriptorCatalog.toPayload()` includes `model_contract`, `next_action_contract`, `common_flows`, `security_hints`, resources, templates, tools, prompts,
+  completion targets, resource navigation, protocol availability, and fingerprints.
+- `ServerCapabilitiesHandlerTest` asserts `next_action_contract`, `common_flows`, payload contracts, security hints, core schemas, and legacy-field removal.
 
 Opportunity:
 
-- Add a static `next_action_contract` section that defines `action_kind` values and required fields for `read_resource`, `call_tool`,
-  `retry_tool`, `complete_argument`, `ask_user`, and `stop`.
-- Add compact `common_flows` for metadata inspection, read-only query, side-effecting SQL preview, workflow planning, workflow validation, and recovery.
-- Keep this in capabilities rather than adding a new planning tool.
+- Add `surface_summary` above the rich catalog.
+- Keep the summary static and short.
+- Do not create a second discovery resource.
 
 Suggested affected paths:
 
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalog.java`
 - `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/handler/capability/ServerCapabilitiesHandlerTest.java`
-- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogLoader.java` if flow references should be linted.
 
-## Finding 2: Next Actions Vocabulary
-
-Current behavior:
-
-- SQL execution success uses `stop` in `SQLExecutionResponse`.
-  Evidence: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponse.java:139`.
-- `execute_update` preview uses `ask_user` and `call_tool` with `requires_user_approval=true`.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/ExecuteUpdateToolHandler.java:109`.
-- Error recovery creates `read_resource`, `complete_argument`, `retry_tool`, `call_tool`, and `ask_user` actions.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/error/MCPErrorConverter.java:378`.
-- Workflow planning and apply responses add `ask_user` and `call_tool` actions.
-  Evidence: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow/service/WorkflowGuidancePayloadBuilder.java:56` and `:70`.
-- Workflow apply preview builds a `call_tool` action requiring user approval.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow/WorkflowExecutionService.java:178`.
-
-Opportunity:
-
-- Document the existing vocabulary rather than refactoring the producers first.
-- Require each action kind to expose a minimal stable shape so models can parse it without guessing.
-- Preserve existing producer-specific fields such as `required_arguments`, `target_resource`, `target_tool`, `argument_name`, and `required_inputs`.
-
-Suggested affected paths:
-
-- Capabilities contract tests first.
-- Optional descriptor/catalog lint after the contract exists.
-
-## Finding 3: `search_metadata` Context and Match Explanation
+## Finding 2: Next Action Dependencies
 
 Current behavior:
 
-- `SearchMetadataToolService.execute()` rejects a schema without database, otherwise uses either the specified database or all query databases.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/metadata/SearchMetadataToolService.java:64`.
-- Missing `object_types` defaults to database, schema, table, view, column, index, and sequence (`SearchMetadataToolService.java:373`).
-- `matchesQuery()` only checks case-insensitive containment against `name`, `table`, and `view` (`SearchMetadataToolService.java:302`).
-- `MetadataSearchHit` returns object identity and URI derivation fields only. It does not return `match_kind`, `matched_fields`,
-  or applied search context.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/response/MetadataSearchHit.java:32`.
-- `MetadataSearchResult` contains only `items` and `nextPageToken` (`mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/response/MetadataSearchResult.java:27`).
-- Pagination uses integer offsets; invalid tokens throw `InvalidPageTokenException`.
-  Evidence: `SearchMetadataToolService.java:322` and
-  `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/exception/InvalidPageTokenException.java:29`.
-- URI derivation only rejects blank names or names containing `/`; names containing spaces, `?`, or `#` are still URI-usable.
-  Evidence: `SearchMetadataToolService.java:391`.
+- `execute_update` preview returns `ask_user` and `call_tool` actions.
+- Workflow apply preview returns approval-gated follow-up actions.
+- Recovery can return `retry_tool`, `call_tool`, `read_resource`, `complete_argument`, `ask_user`, and `stop`.
+- Existing actions expose required arguments and approval flags, but not explicit order/dependency metadata.
 
 Opportunity:
 
-- Add low-cost fields: `search_context`, `match_kind`, `matched_fields`, and possibly `matched_value`.
-- Tighten URI derivation conservatively and return `derivation_status=not_safe` with a clear `derivation_reason` for unsafe names.
-- Add page metadata such as applied `page_size` and result count only if it stays lightweight.
-- Add recovery for invalid page token if it becomes a common model failure.
-
-Suggested affected paths:
-
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/metadata/SearchMetadataToolService.java`
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/response/MetadataSearchHit.java`
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/response/MetadataSearchResult.java`
-- `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/metadata/SearchMetadataToolServiceTest.java`
-
-## Finding 4: Numeric Argument Defaults
-
-Current behavior:
-
-- `MCPToolArguments.getIntegerArgument()` returns the default for missing, blank, and invalid numeric strings.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/request/MCPToolArguments.java:105`.
-- Tests codify the silent default behavior for invalid integers (`mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/request/MCPToolArgumentsTest.java:106`).
-- SQL handlers use `max_rows` default `0` and `timeout_ms` default `0`.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/SQLExecutionToolHandlerSupport.java:38`.
-- JDBC query timeout is applied only when `timeout_ms > 0`, converted upward to seconds.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/MCPJdbcStatementExecutor.java:179`.
-
-Opportunity:
-
-- Do not reject omitted numeric arguments.
-- Either reject malformed provided numeric values with structured recovery, or keep defaulting but expose `applied_max_rows` and `applied_timeout_ms` in responses.
-- Prefer explicit applied hints first because it is less disruptive.
-
-Suggested affected paths:
-
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/request/MCPToolArguments.java`
-- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponse.java`
-- `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponseTest.java`
-
-## Finding 5: SQL Output Parse Hints
-
-Current behavior:
-
-- `SQLExecutionResponse.toPayload()` returns `result_kind`, `statement_class`, `statement_type`, `status`, result-specific fields,
-  `truncated`, and `next_actions`.
-  Evidence: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponse.java:121`.
-- Result-set truncation is computed with effective max rows. The payload only exposes `truncated`, not the limit or returned count.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/MCPJdbcStatementExecutor.java:135`.
-- Existing tests assert exact payload shapes without row-count or applied-default hints.
-  Evidence: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponseTest.java:94`.
-
-Opportunity:
-
-- Add `returned_row_count`, `applied_max_rows`, and `applied_timeout_ms` where values are already known.
-- Keep this as parse hints, not a new SQL introspection tool.
-- Update descriptor output schemas alongside payload tests.
-
-Suggested affected paths:
-
-- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponse.java`
-- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/MCPJdbcStatementExecutor.java`
-- `mcp/core/src/main/resources/META-INF/shardingsphere-mcp/descriptors/core.yaml`
-
-## Finding 6: Approval Summary and Workflow Payloads
-
-Current behavior:
-
-- `execute_update` preview returns `execution_mode=preview`, `status=AWAITING_APPROVAL`, `would_execute=false`, normalized SQL,
-  statement class/type, side-effect scope, target object, approval guidance, suggested arguments, read resources, and next actions.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/ExecuteUpdateToolHandler.java:90`.
-- It does not expose a server-owned `approval_summary` or `approval_question`.
-- `apply_workflow` preview returns `would_apply=false`, `preview_artifacts`, `requires_user_approval=true`, and a `call_tool` next action.
-  Evidence: `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow/WorkflowExecutionService.java:155`.
-- Workflow apply common responses include `issues`, `step_results`, executed/skipped/manual artifacts, and guidance (`WorkflowExecutionService.java:285`).
-- Workflow validation failure includes `recommended_recovery` and `next_actions`; validation success leaves `next_actions` empty.
-  Evidence: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow/service/WorkflowGuidancePayloadBuilder.java:93`.
-- Descriptor schemas expose top-level workflow fields, but nested item shapes and status enums are relatively loose.
-  Evidence: `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml:174` and `:260`.
-
-Opportunity:
-
-- Add concise `approval_summary` or `approval_question` to SQL and workflow preview responses.
-  This lets models avoid paraphrasing risk wording from scattered fields.
-- Add status vocabulary and nested item schemas for `preview_artifacts`, `step_results`, `issues`, and `mismatches`.
-- Consider explicit validation success `stop` action for consistency with SQL execution success.
+- Add optional `order`, `depends_on`, or `approval_dependency` fields for multi-action responses.
+- Add `target_tool` or `source_tool` to `retry_tool` when known.
+- Keep the action contract descriptive; no planner and no hidden execution.
 
 Suggested affected paths:
 
 - `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/ExecuteUpdateToolHandler.java`
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/error/MCPErrorConverter.java`
 - `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow/WorkflowExecutionService.java`
 - `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow/service/WorkflowGuidancePayloadBuilder.java`
-- `mcp/support/src/main/resources/META-INF/shardingsphere-mcp/descriptors/support.yaml`
-- `mcp/features/encrypt/src/main/resources/META-INF/shardingsphere-mcp/descriptors/encrypt.yaml`
-- `mcp/features/mask/src/main/resources/META-INF/shardingsphere-mcp/descriptors/mask.yaml`
 
-## Finding 7: Recovery Paths
+## Finding 3: Navigation and Completion Locality
 
 Current behavior:
 
-- Unsupported tools/resources direct the model to read capabilities (`MCPErrorConverter.java:182` and `:192`).
-- SQL tool mismatch returns normalized SQL, suggested arguments, and a target tool action (`MCPErrorConverter.java:202`).
-- Missing database recovery directs the model to `shardingsphere://databases`; generic missing arguments use `ask_user` (`MCPErrorConverter.java:293`).
-- Workflow state recovery suggests plan-id completion and capabilities (`MCPErrorConverter.java:351`).
-- Invalid `object_types` returns allowed values and `ask_user_when_uncertain=false`, but no `next_actions` or `suggested_arguments`.
-  Evidence: `MCPErrorConverter.java:317`.
-- Invalid page token currently produces the generic invalid request path unless callers add special handling (`InvalidPageTokenException.java:29`).
+- `resourceNavigation` exposes `from`, `to`, required arguments, carried arguments, and description.
+- `completionTargets` exposes reference type, reference, argument names, max values, and metadata.
+- Completion responses include missing context diagnostics and ranking policy.
 
 Opportunity:
 
-- Add `next_actions` to invalid `object_types` recovery, likely a `retry_tool` with allowed values or a `read_resource` capabilities action.
-- Add invalid page token recovery that tells the model to retry without `page_token` or use the previous `next_page_token`.
-- Keep generic missing argument recovery as-is unless model tests show confusion.
+- Add `from_type` and `to_type` to navigation payloads where the catalog can infer tool/resource/prompt kinds.
+- Add local completion availability hints to tool fields, prompt arguments, or resource parameters where current completion targets already support them.
+- Add next actions to completion diagnostics for missing context, such as reading databases before schema/table completion.
+
+Suggested affected paths:
+
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalog.java`
+- `mcp/bootstrap/src/main/java/org/apache/shardingsphere/mcp/bootstrap/transport/completion/MCPCompletionSpecificationFactory.java`
+- Descriptor catalog tests in `mcp/support` and completion tests in `mcp/bootstrap`
+
+## Finding 4: Empty and Not-Found States
+
+Current behavior:
+
+- List resources expose `items`, `count`, `has_more`, optional pagination, and navigation.
+- Detail resources expose `found`, `items`, `count`, optional `item`, and navigation.
+- Search exposes context and match details, but a zero-hit result can still feel underspecified.
+
+Opportunity:
+
+- Add compact empty-state categories where safe.
+- Include parent/list/search follow-up hints for not-found details.
+- Keep zero SQL rows as a valid SQL result, not an error.
+
+Suggested affected paths:
+
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/resource/handler/metadata/MetadataResourceHandler.java`
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/metadata/SearchMetadataToolService.java`
+- `mcp/api/src/main/java/org/apache/shardingsphere/mcp/api/protocol/response/MCPItemsResponse.java`
+
+## Finding 5: Argument Provenance and Redaction
+
+Current behavior:
+
+- `execute_update` preview exposes normalized SQL and `suggested_arguments`.
+- Workflow planning/apply returns `plan_id`, artifacts, redacted sensitive properties, and reusable apply/validation guidance.
+- Redaction is present, but provenance is not consistently explicit.
+
+Opportunity:
+
+- Add provenance for reusable arguments: user-provided, server-normalized, server-generated, server-defaulted, or redacted.
+- Add standardized redaction markers for algorithm/workflow properties.
+- Add manual-only follow-up guidance that asks the user to confirm external execution before validation.
+- Add normalized SQL to success payloads when already classified and safe.
+
+Suggested affected paths:
+
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/ExecuteUpdateToolHandler.java`
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponse.java`
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/workflow/service/WorkflowArtifactMaskUtils.java`
+- `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/workflow/WorkflowExecutionService.java`
+- Encrypt and mask workflow services/descriptors
+
+## Finding 6: Runtime Diagnostics
+
+Current behavior:
+
+- Error conversion returns structured recovery for many model mistakes.
+- Startup hints and README cover Java version, token, driver path, STDIO stdout, empty surface, and workflow topology.
+- JDBC/config exceptions can still collapse into broader unavailable/query-failed categories.
+
+Opportunity:
+
+- Add safe categories for missing JDBC driver, authentication failure, connection timeout, and database unavailable where exception type/message supports it.
+- Optionally add bounded request/trace IDs if they do not require persistence or expose secrets.
+- Add a short health-check shape to docs if needed.
 
 Suggested affected paths:
 
 - `mcp/core/src/main/java/org/apache/shardingsphere/mcp/core/protocol/error/MCPErrorConverter.java`
-- `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/protocol/MCPErrorConverterTest.java`
+- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/database/metadata/jdbc/RuntimeDatabaseConfiguration.java`
+- `mcp/README.md`
+- `mcp/README_ZH.md`
 
-## Finding 8: Descriptor Lint and Deterministic Tests
-
-Current behavior:
-
-- `MCPDescriptorCatalogLoader` validates known enum fields, output schemas, legacy recommendation fields, required core output fields,
-  `search_metadata` item fields, prompt guidance, completion references, resource navigation, and destructive tool metadata.
-  Evidence: `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogLoader.java:263`.
-- `MCPDescriptorCatalogLoaderTest` asserts workflow tools and no legacy recommendation fields.
-  Evidence: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogLoaderTest.java:36`.
-- `ServerCapabilitiesHandlerTest` asserts capabilities shape, core tools, payload contracts, security hints, and no legacy recommendation fields.
-  Evidence: `ServerCapabilitiesHandlerTest.java:36`.
-
-Opportunity:
-
-- Extend deterministic contract tests for `next_action_contract`, `common_flows`, search match fields, SQL parse hints, and approval summaries.
-- Add lint for common-flow references only if the new flows are descriptor-backed enough to validate cheaply.
-- Avoid broad golden transcripts for this increment.
-
-Suggested affected paths:
-
-- `mcp/support/src/main/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogLoader.java`
-- `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogLoaderTest.java`
-- `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/handler/capability/ServerCapabilitiesHandlerTest.java`
-
-## Finding 9: Opt-In LLM E2E
+## Finding 7: Opt-In Usability Metrics
 
 Current behavior:
 
-- LLM E2E is opt-in via `mcp.e2e.llm.enabled=false` by default (`test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/env/MCPE2ETestConfiguration.java:58`).
-- LLM configuration defaults to an OpenAI-compatible local endpoint and model (`test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/config/LLME2EConfiguration.java:64`).
-- The smoke prompt forces an exact sequence: `search_metadata`, `mcp_read_resource`, and `execute_query` (`test/e2e/mcp/src/test/resources/llm/suite/smoke/minimal-smoke-user-prompt.md:3`).
-- The usability suite already includes capabilities, table resources, search detail URI, preview update, workflow preview/manual/validate,
-  prompt completion, resource discovery, database disambiguation, and recovery scenarios.
-  Evidence: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/scenario/LLMUsabilityScenarioCatalog.java:49`.
-- The runner requires tool coverage, blocks unsafe SQL/update/workflow execution, records capability fingerprints, and validates final JSON.
-  Evidence: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/conversation/LLMMCPConversationRunner.java:153` and `:216`.
+- LLM usability tests are opt-in and outside default CI.
+- Existing metrics cover task success, first correct action, invalid calls, round trips, resource hits, recovery, and query answer fidelity.
 
 Opportunity:
 
-- Keep live-model tests opt-in.
-- Add one or two intent-style scenarios after the deterministic contract work, where the prompt gives the goal but does not prescribe exact next actions.
-- Use those scenarios as usability signal, not default CI blockers.
+- Add next-action-follow rate.
+- Add approval-violation rate.
+- Keep both metrics in the existing opt-in lane.
 
 Suggested affected paths:
 
-- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/scenario/LLMUsabilityScenarioCatalog.java`
-- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/scenario/LLMUsabilityScenarioCatalogTest.java`
+- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/assessment/LLMUsabilityMetricCalculator.java`
+- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/assessment/LLMUsabilityScorecard.java`
+- `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/assessment/LLMUsabilityScenarioResult.java`
 
-## Proposed Implementation Order
+## Recommended Sequence
 
-1. Add capabilities `next_action_contract` and compact `common_flows`.
-2. Add deterministic tests for the new capabilities fields and reference integrity.
-3. Add search context and match explanation fields with unsafe URI derivation behavior.
-4. Add SQL parse hints where values are already known.
-5. Add approval summaries to SQL preview and workflow preview.
-6. Tighten workflow descriptor schemas and add validation success stop action only if it keeps payload semantics simple.
-7. Add small recovery improvements for invalid `object_types` and page tokens.
-8. Add opt-in intent-style LLM scenarios after deterministic tests are stable.
+1. Add P0 action ordering and compact surface summary.
+2. Add navigation/completion locality hints.
+3. Add SQL/search input bounds, strict recovery, and URI encoding.
+4. Add empty-state and not-found diagnostics.
+5. Add provenance/redaction/manual-only follow-up refinements.
+6. Add structured clarification, Chinese intent hints, and workflow read-back.
+7. Add safe runtime and configuration diagnostics.
+8. Add opt-in usability metrics.
 
-## Non-Goals Reconfirmed
+## Implementation Readiness Recheck (2026-05-05)
 
-- No planner or model-orchestration tool.
-- No semantic/vector search.
-- No memory or conversation state beyond existing workflow sessions.
-- No approval token, approval ledger, RBAC, or policy engine.
-- No default CI dependency on live model providers.
-- No broad response golden snapshots unless focused shape tests become insufficient.
+This recheck narrows implementation to additive, model-facing fields. It avoids replacing existing response shapes because the current MCP surface is already richer than the
+original gap analysis assumed.
 
-## Verification Map
+### Next Actions
 
-- Capabilities: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/resource/handler/capability/ServerCapabilitiesHandlerTest.java`
-- Descriptor quality: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/descriptor/MCPDescriptorCatalogLoaderTest.java`
-- Search behavior: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/metadata/SearchMetadataToolServiceTest.java`
-- Error recovery: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/protocol/MCPErrorConverterTest.java`
-- SQL output: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/database/tool/response/SQLExecutionResponseTest.java`
-- SQL/update preview: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/tool/handler/execute/ExecuteUpdateToolHandlerTest.java`
-- Workflow apply: `mcp/core/src/test/java/org/apache/shardingsphere/mcp/core/workflow/WorkflowExecutionServiceTest.java`
-- Workflow validation: `mcp/support/src/test/java/org/apache/shardingsphere/mcp/support/workflow/service/WorkflowValidationSupportTest.java`
-- Opt-in LLM usability: `test/e2e/mcp/src/test/java/org/apache/shardingsphere/test/e2e/mcp/llm/suite/usability/LLMUsabilitySuiteE2ETest.java`
+Confirmed producers:
 
-## Rollback Boundary
+- `ExecuteUpdateToolHandler` emits two preview actions: `ask_user` and `call_tool`.
+- `MCPErrorConverter` emits `read_resource`, `complete_argument`, `retry_tool`, `call_tool`, and `ask_user` recovery actions.
+- `WorkflowExecutionService` emits preview apply actions.
+- `WorkflowGuidancePayloadBuilder` emits planning, apply, validation, and stop actions.
+- `SQLExecutionResponse` emits a terminal `stop` action.
 
-All proposed changes can be rolled back by removing the added model-facing fields and their tests.
-No persisted data format, public SQL behavior, transport protocol, branch topology, or workflow lifecycle state needs to change.
+Remaining gap:
+
+- Multi-action flows still rely on array order and prose for dependencies.
+- `retry_tool` recovery actions do not carry a `target_tool` or `source_tool`; this is acceptable for "same tool" semantics, but less clear for models after error recovery.
+- Add optional `order` and optional dependency fields such as `depends_on` or `approval_dependency` to multi-action producers only.
+- Update `next_action_contract` to document optional sequencing fields without making every action verbose.
+
+### Completion Locality
+
+Confirmed behavior:
+
+- `MCPCompletionSpecificationFactory.createMeta` already returns `missingContextArguments`, `diagnostic`, `rankingPolicy`, candidate counts, and `valueDetails`.
+- Completion candidates support prefix matching, contains fallback, and recent-plan-first ordering for `plan_id`.
+- `MCPDescriptorCatalog.toCompletionTargetPayload` exposes completion targets, but `toFieldPayload` only emits `name`, `required`, and `schema`.
+
+Remaining gap:
+
+- Completion results do not yet provide `next_actions` for `missing_context`, `no_candidates`, or `prefix_filtered_all_candidates`.
+- Tool fields, prompt arguments, and resource parameters do not locally tell the model whether a value is completable.
+- Add local hints derived from existing completion target descriptors instead of adding new descriptor files or a new completion registry.
+
+### Empty and Not-Found States
+
+Confirmed behavior:
+
+- `MetadataResourceHandler` already distinguishes list and detail resources.
+- Detail resources already return `found`, `items`, `count`, optional `item`, `self_uri`, `parent_uri`, and `next_resources`.
+- `MCPItemsResponse` already provides `items`, `count`, `has_more`, optional `next_page_token`, and navigation.
+- `SearchMetadataToolService` and `SearchMetadataToolHandler` already provide `search_context`, paging, match kind, matched fields, and derived resource URIs.
+
+Remaining gap:
+
+- A zero-hit search lacks a compact diagnostic such as `empty_reason`.
+- Detail not-found responses have `found=false`, but do not explain whether to read the parent/list resource, broaden search, or correct path arguments.
+- Prefer adding empty diagnostics in `MetadataResourceHandler` and search-specific diagnostics in `SearchMetadataToolService` or `MetadataSearchResult`.
+- Avoid widening `MCPItemsResponse` unless the hint is truly generic for every list response.
+
+### Provenance, Redaction, and Manual Follow-Up
+
+Confirmed behavior:
+
+- `execute_update` preview already exposes `normalized_sql`, `approval_summary`, `approval_question`, and `suggested_arguments`.
+- `SQLExecutionResponse` exposes execution status, row/update counts, applied limits, truncation, and terminal next actions.
+- `WorkflowArtifactMaskUtils` masks sensitive workflow property values inside rule DistSQL artifacts.
+- `WorkflowArtifactBundle` and `WorkflowArtifactPayloadUtils` are the central artifact payload construction points.
+
+Remaining gap:
+
+- `suggested_arguments` do not say which values came from the user, the server normalizer, server defaults, or generated workflow state.
+- `SQLExecutionResponse` cannot expose `normalized_sql` without carrying classification metadata into the response.
+- Masked workflow artifacts do not expose a compact redaction marker such as redacted property keys or redacted count.
+- Manual-only workflow guidance already asks for external execution before validation, but artifact payloads can make the manual confirmation contract more explicit.
+
+### Runtime Diagnostics
+
+Confirmed behavior:
+
+- `RuntimeDatabaseConfiguration.openConnection` loads the configured driver and opens via `DriverManager`.
+- Missing configured JDBC driver throws `IllegalStateException`.
+- `MCPJdbcStatementExecutor` catches `IllegalStateException` during transaction/open-connection setup and converts it to `MCPTransactionStateException`.
+- Metadata/profile loading wraps `SQLException` as `IllegalStateException`.
+- `MCPErrorConverter` maps generic `IllegalStateException` to `transaction_state_error`.
+
+Remaining gap:
+
+- Missing driver, authentication failure, connection timeout, and database unavailable can still be reported under broad or misleading categories.
+- Keep diagnostics safe: include database name, category, retry/read-resource action, and never expose JDBC URL credentials or password values.
+- The cleanest implementation point is a small runtime-connection diagnostic mapper used before generic exception wrapping, plus focused tests around driver missing, timeout,
+  authentication/database unavailable messages, and metadata/profile loading.
+
+## Final Requirement Sweep (2026-05-05)
+
+This sweep re-asks whether a large model can use the MCP natively, conveniently, comfortably, and clearly without over-design.
+
+### SQL and Metadata Bounds
+
+Remaining gap:
+
+- `execute_query` should have documented default and maximum row limits instead of leaving omitted limits effectively unbounded.
+- Timeout and row-limit arguments should be preserved when preview responses provide suggested follow-up arguments.
+- `search_metadata` should document whether blank query means "list within scope" and should require narrowing for expensive all-database scans.
+- `page_size` and `page_token` should expose schema-visible min/max/defaults and structured recovery for invalid values.
+
+Non-goals:
+
+- Do not add a semantic search engine or model-ranked metadata explorer.
+
+### URI and Identifier Handling
+
+Remaining gap:
+
+- Resource URI derivation and matching should support percent-encoded non-ASCII and reserved identifier characters.
+- When identifiers cannot be safely represented by descriptor-backed patterns, responses should keep the existing "not safe to derive" fallback.
+
+Non-goals:
+
+- Do not invent guessed URIs or duplicate parser logic.
+
+### Clarification, Localization, and Context Recovery
+
+Remaining gap:
+
+- Missing workflow inputs should be represented as structured questions, not only prose.
+- MCP-native elicitation should be used when supported, with current fallback fields retained.
+- Common Chinese terms for encryption, masking, reversibility, hashing, equality query, fuzzy query, phone, identity card, and email should be handled through deterministic synonyms or structured intent evidence.
+- A current-session workflow plan should be readable by `plan_id` so a model can recover after context compaction.
+
+Non-goals:
+
+- Do not add a full natural-language parser or cross-session memory.
+
+### Runtime and Packaging Comfort
+
+Remaining gap:
+
+- Runtime status should expose secret-free setup and health information such as configured logical databases, loaded features, transport, and safe first checks.
+- YAML configuration should support environment-variable placeholders for tokens and JDBC credentials.
+- HTTP auth errors should clearly point to bearer-token requirements without leaking the token.
+- Server identity should expose a machine-friendly name where protocol clients expect one.
+- README examples should include minimal STDIO and HTTP client configuration shapes.
+
+Non-goals:
+
+- Do not add OAuth, RBAC, tenant policy, or an observability platform in this increment.

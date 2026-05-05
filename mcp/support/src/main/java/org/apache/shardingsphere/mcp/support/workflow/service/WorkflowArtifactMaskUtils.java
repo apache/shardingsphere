@@ -48,6 +48,7 @@ public final class WorkflowArtifactMaskUtils {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("operation_type", ruleArtifact.getOperationType());
         result.put("sql", maskSensitiveSql(ruleArtifact.getSql(), propertySource, propertyRequirements));
+        result.put("redaction", createRedactionPayload(propertySource, propertyRequirements));
         return result;
     }
     
@@ -71,6 +72,15 @@ public final class WorkflowArtifactMaskUtils {
         return result;
     }
     
+    private static Map<String, Object> createRedactionPayload(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        List<String> redactedProperties = collectSecretPropertyNames(propertySource, propertyRequirements).stream().toList();
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("applied", !redactedProperties.isEmpty());
+        result.put("marker", "******");
+        result.put("redacted_properties", redactedProperties);
+        return result;
+    }
+    
     private static Set<String> collectSecretValues(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         Set<String> result = new LinkedHashSet<>();
         for (AlgorithmPropertyRequirement each : propertyRequirements) {
@@ -80,6 +90,20 @@ public final class WorkflowArtifactMaskUtils {
             String value = getPropertyValue(propertySource, each);
             if (null != value && !value.isBlank()) {
                 result.add(value.trim());
+            }
+        }
+        return result;
+    }
+    
+    private static Set<String> collectSecretPropertyNames(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
+        Set<String> result = new LinkedHashSet<>();
+        for (AlgorithmPropertyRequirement each : propertyRequirements) {
+            if (!each.isSecret()) {
+                continue;
+            }
+            String value = getPropertyValue(propertySource, each);
+            if (null != value && !value.isBlank()) {
+                result.add(each.getAlgorithmRole() + "." + each.getPropertyKey());
             }
         }
         return result;

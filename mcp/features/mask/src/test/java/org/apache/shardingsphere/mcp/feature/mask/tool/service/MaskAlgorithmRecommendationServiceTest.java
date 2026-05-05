@@ -71,6 +71,19 @@ class MaskAlgorithmRecommendationServiceTest {
     }
     
     @Test
+    void assertRecommendMaskAlgorithmsWithChineseKeepIntent() {
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        WorkflowRequest request = new WorkflowRequest();
+        request.setNaturalLanguageIntent("保留前3后4位");
+        List<WorkflowIssue> issues = new LinkedList<>();
+        List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(clarifiedIntent, request, List.of(
+                Map.of("type", "MASK_FROM_X_TO_Y"),
+                Map.of("type", "KEEP_FIRST_N_LAST_M")), issues);
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get(0).getAlgorithmType(), is("MASK_FROM_X_TO_Y"));
+    }
+    
+    @Test
     void assertRecommendMaskAlgorithmsWithoutAvailableAlgorithms() {
         List<WorkflowIssue> issues = new LinkedList<>();
         List<AlgorithmCandidate> actual = service.recommendMaskAlgorithms(new ClarifiedIntent(), new WorkflowRequest(), List.of(), issues);

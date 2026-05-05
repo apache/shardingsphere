@@ -52,7 +52,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class WorkflowExecutionServiceTest {
-
+    
     @Test
     void assertApplyMasksManualArtifactPackage() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -69,12 +69,14 @@ class WorkflowExecutionServiceTest {
         assertFalse(actualResponse.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
         assertTrue((Boolean) actualResponse.get("requires_user_approval"));
+        assertThat(((Map<?, ?>) actualResponse.get("manual_follow_up")).get("confirmation_field"), is("manual_artifacts_executed"));
         Map<?, ?> actualManualArtifactPackage = (Map<?, ?>) actualResponse.get("manual_artifact_package");
         Map<?, ?> actualArtifact = (Map<?, ?>) ((List<?>) actualManualArtifactPackage.get("distsql_artifacts")).get(0);
         assertThat(actualArtifact.get("sql"), is("CREATE ENCRYPT RULE orders (PROPERTIES('aes-key-value'='******'))"));
     }
-
+    
     @Test
     void assertApplyRejectsDifferentSession() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -88,7 +90,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("execution_mode"), is("review-then-execute"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
-
+    
     @Test
     void assertApplyRejectsInvalidLifecycleStatus() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -103,7 +105,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("execution_mode"), is("review-then-execute"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
     }
-
+    
     @Test
     void assertApplyRejectsMissingExecutionMode() {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
@@ -112,7 +114,7 @@ class WorkflowExecutionServiceTest {
                 "session-1", createSnapshot(), List.of(), ""));
         assertThat(actual.getMessage(), is("execution_mode is required."));
     }
-
+    
     @Test
     void assertApplyRejectsUnsupportedExecutionMode() {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
@@ -121,7 +123,7 @@ class WorkflowExecutionServiceTest {
                 "session-1", createSnapshot(), List.of(), "auto-execute"));
         assertThat(actual.getMessage(), is("execution_mode must be one of `preview`, `review-then-execute`, or `manual-only`."));
     }
-
+    
     @Test
     void assertApplyRejectsUnsupportedApprovedStep() {
         WorkflowExecutionService executionService = new WorkflowExecutionService();
@@ -130,7 +132,7 @@ class WorkflowExecutionServiceTest {
                 "session-1", createSnapshot(), List.of("review"), "review-then-execute"));
         assertThat(actual.getMessage(), is("approved_steps must contain only `ddl`, `index_ddl`, or `rule_distsql`."));
     }
-
+    
     @Test
     void assertApplyPreviewDoesNotExecuteOrChangeLifecycle() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -148,15 +150,19 @@ class WorkflowExecutionServiceTest {
         assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(2));
         assertThat(actualResponse.get("approval_summary"), is("Previewed 2 workflow artifacts with side-effect scope physical-structure, rule-metadata. Nothing has been applied."));
         assertThat(actualResponse.get("approval_question"), is("Do you approve applying the previewed workflow artifacts?"));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualResponse.get("next_actions")).get(0);
+        List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.get(1);
         assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("review-then-execute"));
+        assertThat(actualNextAction.get("depends_on"), is(List.of(1)));
         assertTrue((Boolean) actualNextAction.get("requires_user_approval"));
+        assertThat(((Map<?, ?>) actualResponse.get("argument_provenance")).get("plan_id"), is("server_generated_current_session"));
         assertTrue((Boolean) actualResponse.get("requires_user_approval"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("planned"));
         verify(executionFacade, never()).execute(any());
         verify(workflowApplySynchronizationHandler, never()).synchronize(any(), any(), any(), any(), any());
     }
-
+    
     @Test
     void assertApplyPreviewWithoutArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -168,7 +174,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("approval_summary"), is("Previewed 0 workflow artifacts. Nothing has been applied."));
         assertThat(actualResponse.get("approval_question"), is("No workflow artifacts are available to apply. Do you want to continue reviewing this workflow?"));
     }
-
+    
     @Test
     void assertApplyExecutesApprovedArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -190,7 +196,7 @@ class WorkflowExecutionServiceTest {
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("executed"));
         verify(executionFacade, times(3)).execute(any());
     }
-
+    
     @Test
     void assertApplySkipsUnapprovedArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -214,7 +220,7 @@ class WorkflowExecutionServiceTest {
         verify(executionFacade).execute(any());
         verify(workflowApplySynchronizationHandler, never()).synchronize(any(), any(), any(), any(), any());
     }
-
+    
     @Test
     void assertApplyFailsWhenSynchronizationDoesNotConverge() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -234,7 +240,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("failed"));
     }
-
+    
     @Test
     void assertApplyReturnsDdlExecutionFailureForDdlArtifact() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -252,7 +258,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
         assertThat(actualStep.get("artifact_type"), is("add-column"));
     }
-
+    
     @Test
     void assertApplyReturnsDdlExecutionFailureForIndexArtifact() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -270,7 +276,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.DDL_EXECUTION_FAILED));
         assertThat(actualStep.get("artifact_type"), is("create-index"));
     }
-
+    
     @Test
     void assertApplyReturnsRuleExecutionFailureForRuleArtifact() {
         WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
@@ -286,7 +292,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("status"), is("failed"));
         assertThat(actualIssue.get("code"), is(WorkflowIssueCode.RULE_EXECUTION_FAILED));
     }
-
+    
     private WorkflowContextSnapshot createSnapshot() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId("plan-1");

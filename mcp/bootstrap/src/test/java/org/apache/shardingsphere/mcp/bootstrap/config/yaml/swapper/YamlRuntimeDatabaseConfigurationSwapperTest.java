@@ -21,6 +21,8 @@ import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDat
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,6 +39,26 @@ class YamlRuntimeDatabaseConfigurationSwapperTest {
         assertThat(actual.getUsername(), is(" demo "));
         assertThat(actual.getPassword(), is(" secret "));
         assertThat(actual.getDriverClassName(), is(" org.h2.Driver "));
+    }
+    
+    @Test
+    void assertSwapToObjectWithEnvironmentPlaceholders() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setJdbcUrl("jdbc:h2:${MCP_DB_NAME}");
+        yamlConfig.setUsername("${MCP_DB_USER}");
+        yamlConfig.setPassword("${MCP_DB_PASSWORD}");
+        RuntimeDatabaseConfiguration actual = swapper.swapToObject(yamlConfig, Map.of("MCP_DB_NAME", "mem:logic", "MCP_DB_USER", "demo", "MCP_DB_PASSWORD", "secret"));
+        assertThat(actual.getJdbcUrl(), is("jdbc:h2:mem:logic"));
+        assertThat(actual.getUsername(), is("demo"));
+        assertThat(actual.getPassword(), is("secret"));
+    }
+    
+    @Test
+    void assertSwapToObjectWithMissingEnvironmentPlaceholder() {
+        YamlRuntimeDatabaseConfiguration yamlConfig = createYamlConfig();
+        yamlConfig.setPassword("${MCP_DB_PASSWORD}");
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> swapper.swapToObject(yamlConfig, Map.of()));
+        assertThat(actual.getMessage(), is("Environment variable `MCP_DB_PASSWORD` referenced by property `runtime.databases[].password` is not set."));
     }
     
     @Test

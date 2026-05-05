@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequence
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
 
@@ -268,10 +269,28 @@ public final class MCPCompletionSpecificationFactory {
         result.put("returnedCandidateCount", returnedCandidates.size());
         List<String> missingContextArguments = createMissingContextArguments(argumentName, contextArguments);
         result.put("missingContextArguments", missingContextArguments);
-        result.put("diagnostic", createDiagnostic(candidates, filteredCandidates, missingContextArguments));
+        String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
+        result.put("diagnostic", diagnostic);
+        List<Map<String, Object>> nextActions = createNextActions(argumentName, diagnostic, missingContextArguments);
+        if (!nextActions.isEmpty()) {
+            result.put("next_actions", nextActions);
+        }
         result.put("rankingPolicy", List.of("exact-prefix-match", "contains-fallback-when-prefix-has-no-match", "recent-plan-first-for-plan_id", "case-insensitive-lexical"));
         result.put("valueDetails", returnedCandidates.stream().map(this::createValueDetail).toList());
         return result;
+    }
+    
+    private List<Map<String, Object>> createNextActions(final String argumentName, final String diagnostic, final List<String> missingContextArguments) {
+        if ("missing_context".equals(diagnostic)) {
+            return List.of(MCPNextActionUtils.completeArgument(missingContextArguments.get(0), "Complete or provide the missing context argument before retrying this completion."));
+        }
+        if ("prefix_filtered_all_candidates".equals(diagnostic)) {
+            return List.of(MCPNextActionUtils.completeArgument(argumentName, "Retry completion with a shorter or empty prefix."));
+        }
+        if ("no_candidates".equals(diagnostic)) {
+            return List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP capabilities before choosing another argument source."));
+        }
+        return List.of();
     }
     
     private List<String> createMissingContextArguments(final String argumentName, final Map<String, String> contextArguments) {

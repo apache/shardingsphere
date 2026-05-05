@@ -71,7 +71,11 @@ public final class RuntimeDatabaseConfiguration {
         if (!password.isEmpty()) {
             props.setProperty("password", password);
         }
-        return props.isEmpty() ? DriverManager.getConnection(jdbcUrl) : DriverManager.getConnection(jdbcUrl, props);
+        try {
+            return props.isEmpty() ? DriverManager.getConnection(jdbcUrl) : DriverManager.getConnection(jdbcUrl, props);
+        } catch (final SQLException ex) {
+            throw RuntimeDatabaseConnectionException.connectionFailed(databaseName, ex);
+        }
     }
     
     private void loadDriver(final String databaseName) {
@@ -81,7 +85,7 @@ public final class RuntimeDatabaseConfiguration {
         try {
             Class.forName(driverClassName);
         } catch (final ClassNotFoundException ex) {
-            throw new IllegalStateException(String.format("JDBC driver `%s` is not available for database `%s`.", driverClassName, databaseName), ex);
+            throw RuntimeDatabaseConnectionException.missingJdbcDriver(databaseName, ex);
         }
     }
 }

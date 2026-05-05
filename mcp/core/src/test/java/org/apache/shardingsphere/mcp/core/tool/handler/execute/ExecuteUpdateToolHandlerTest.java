@@ -58,6 +58,8 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(requestCaptor.getValue().getDatabase(), is("logic_db"));
         assertThat(requestCaptor.getValue().getSchema(), is("public"));
         assertThat(requestCaptor.getValue().getSql(), is("update orders set status = 'PAID'"));
+        assertThat(requestCaptor.getValue().getMaxRows(), is(100));
+        assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
     
     @Test
@@ -98,9 +100,12 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("approval_question"), is("Do you approve executing this UPDATE statement with side-effect scope physical-data?"));
         assertFalse(actual.toPayload().containsKey("suggested_next_tool"));
         assertThat(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).get("execution_mode"), is("execute"));
+        assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("sql"), is("server_normalized"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("order"), is(1));
         assertThat(((Map<?, ?>) actualNextActions.get(1)).get("target_tool"), is("execute_update"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("required_arguments")).get("execution_mode"), is("execute"));
         assertTrue((Boolean) ((Map<?, ?>) actualNextActions.get(1)).get("requires_user_approval"));
         assertThat(actual.toPayload().get("read_resources_first"), is(List.of("shardingsphere://databases/logic_db/capabilities")));

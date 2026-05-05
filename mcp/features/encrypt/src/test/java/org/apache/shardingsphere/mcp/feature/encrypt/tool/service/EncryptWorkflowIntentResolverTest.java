@@ -64,6 +64,18 @@ class EncryptWorkflowIntentResolverTest {
     }
     
     @Test
+    void assertResolveRecordsChineseHeuristicInference() {
+        EncryptWorkflowRequest request = new EncryptWorkflowRequest();
+        request.setNaturalLanguageIntent("给手机号配置可逆加密，支持等值查询和模糊查询");
+        ClarifiedIntent actual = new EncryptWorkflowIntentResolver().resolve(request);
+        assertThat(actual.getFieldSemantics(), is("phone"));
+        assertTrue((Boolean) actual.getInferredValues().get("requires_decrypt"));
+        assertTrue((Boolean) actual.getInferredValues().get("requires_equality_filter"));
+        assertTrue((Boolean) actual.getInferredValues().get("requires_like_query"));
+        assertThat(actual.getUnresolvedFields(), is(List.of()));
+    }
+    
+    @Test
     void assertResolveAddsUnresolvedFieldsWhenRequirementsNeedClarification() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setColumn("customer_phone");

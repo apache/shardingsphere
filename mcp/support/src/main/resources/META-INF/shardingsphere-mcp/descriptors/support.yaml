@@ -270,6 +270,12 @@ tools:
         manual_artifact_package:
           type: object
           description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
+        manual_follow_up:
+          type: object
+          description: "Manual-only confirmation contract to satisfy before validate_workflow is called."
+        argument_provenance:
+          type: object
+          description: "Source of reusable apply arguments, such as server_generated_current_session or server_suggested."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations after applying or exporting workflow artifacts."
@@ -294,6 +300,12 @@ tools:
               requires_user_approval:
                 type: boolean
                 description: "Whether the next action requires user approval."
+              order:
+                type: integer
+                description: "1-based action order when multiple actions are returned."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
         requires_user_approval:
           type: boolean
           description: "Whether the next manual or retry action requires user approval."
@@ -443,6 +455,12 @@ tools:
               requires_user_approval:
                 type: boolean
                 description: "Whether the next action requires user approval."
+              order:
+                type: integer
+                description: "1-based action order when multiple actions are returned."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
         requires_user_approval:
           type: boolean
           description: "Whether the next action requires user approval."

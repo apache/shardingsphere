@@ -32,7 +32,7 @@ class AccessTokenHeaderConstraintTest {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate(""));
         assertThat(actual.getStatusCode(), is(401));
-        assertThat(actual.getMessage(), is("Unauthorized."));
+        assertThat(actual.getMessage(), is("Unauthorized. Send Authorization: Bearer <token>."));
     }
     
     @Test
@@ -40,7 +40,7 @@ class AccessTokenHeaderConstraintTest {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("Basic foo_token"));
         assertThat(actual.getStatusCode(), is(401));
-        assertThat(actual.getMessage(), is("Unauthorized."));
+        assertThat(actual.getMessage(), is("Unauthorized. Send Authorization: Bearer <token>."));
     }
     
     @Test
@@ -48,7 +48,7 @@ class AccessTokenHeaderConstraintTest {
         AccessTokenHeaderConstraint actualConstraint = new AccessTokenHeaderConstraint("foo_token");
         ServerTransportSecurityException actual = assertThrows(ServerTransportSecurityException.class, () -> actualConstraint.validate("Bearer bar_token"));
         assertThat(actual.getStatusCode(), is(401));
-        assertThat(actual.getMessage(), is("Unauthorized."));
+        assertThat(actual.getMessage(), is("Unauthorized. Send Authorization: Bearer <token>."));
     }
     
     @Test

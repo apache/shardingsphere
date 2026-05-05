@@ -40,9 +40,11 @@ class CoreHandlerProviderTest {
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
-        assertThat(actual.size(), is(18));
+        assertThat(actual.size(), is(20));
         List<String> actualUriPatterns = actual.stream().map(each -> each.getResourceDescriptor().getUriPattern()).toList();
         assertTrue(actualUriPatterns.contains("shardingsphere://capabilities"));
+        assertTrue(actualUriPatterns.contains("shardingsphere://runtime"));
+        assertTrue(actualUriPatterns.contains("shardingsphere://workflows/{plan_id}"));
         assertTrue(actualUriPatterns.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
     }
 }

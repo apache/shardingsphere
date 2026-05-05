@@ -6,26 +6,31 @@
 
 ## Summary
 
-Organize the next ShardingSphere MCP model-usability polish increment around compact capability contracts, short static common flows,
-clearer metadata search context, less inferential SQL/workflow outputs, and server-owned approval summaries.
-The work is deliberately small: reuse descriptors, capabilities, response builders, recovery conversion, existing tests, and opt-in LLM scenarios.
+Organize the next ShardingSphere MCP model-usability polish increment around the small gaps that remain after the completed AI-friendly baseline.
+The current surface already has capability contracts, common flows, search match explanations, output parse hints, approval summaries, structured recovery,
+completion diagnostics, and opt-in usability tests.
+This increment focuses on action ordering, compact surface summary, navigation/completion type hints, empty-state diagnostics, argument provenance,
+runtime recovery diagnostics, safe input bounds, structured clarification, current-session workflow read-back, URI encoding, configuration comfort,
+and opt-in usability metrics.
 
 ## Technical Context
 
 **Language/Version**: Java 21 for MCP modules
-**Primary Dependencies**: Existing ShardingSphere MCP API/support/core/bootstrap, descriptor YAML, MCP Java SDK integration, JUnit 5, Mockito
+**Primary Dependencies**: Existing ShardingSphere MCP API/support/core/bootstrap/features, descriptor YAML, MCP Java SDK integration, JUnit 5, Mockito
 **Storage**: No new durable storage; use existing runtime metadata and current-session workflow context only
-**Testing**: Module-scoped JUnit tests, descriptor/catalog tests, capabilities shape tests, opt-in LLM E2E only when explicitly enabled
+**Testing**: Module-scoped JUnit tests, descriptor/catalog tests, capabilities shape tests, recovery tests, opt-in LLM E2E only when explicitly enabled
 **Target Platform**: ShardingSphere MCP standalone runtime over HTTP and STDIO
 **Project Type**: Java backend protocol surface plus descriptor and documentation assets
 **Performance Goals**: No model calls, no vector indexes, no background graph traversal; added metadata should be built from already-available descriptors or response values
 **Constraints**:
 
-- Do not switch or create git branches.
+- Do not switch, create, or check out git branches.
 - Keep current resource-first discovery.
 - Keep side-effecting operations preview-first and user-approved.
 - Do not add a planner, graph engine, vector search, cross-session memory, approval-token platform, RBAC platform, or default-CI live-model suite.
 - Keep changes small enough for independent review slices.
+- Prefer additive payload fields and descriptor/schema clarification over protocol rewrites.
+- Preserve fallback fields when adopting MCP-native elicitation or other newer MCP capabilities.
 
 **Scale/Scope**:
 
@@ -35,7 +40,7 @@ The work is deliberately small: reuse descriptors, capabilities, response builde
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+*GATE: Must pass before implementation planning. Re-check after design.*
 
 - **Proxy-first logical abstraction**: Pass. Requirements continue to expose logical databases, tables, columns, resources, and workflow artifacts from the logical view.
 - **Explicit operator control**: Pass. Preview and user approval remain mandatory for side-effecting SQL and workflow apply.
@@ -54,12 +59,13 @@ The work is deliberately small: reuse descriptors, capabilities, response builde
 |-- research.md
 |-- data-model.md
 |-- quickstart.md
+|-- current-behavior-analysis.md
 |-- tasks.md
 `-- checklists/
     `-- requirements.md
 ```
 
-### Source Code (repository root)
+### Source Code (future implementation)
 
 ```text
 mcp/
@@ -77,36 +83,53 @@ docs/mcp/
 ```
 
 **Structure Decision**: Keep implementation in existing MCP modules. Capabilities and descriptor contracts belong in `mcp/support`.
-Tool response polish belongs in `mcp/core` and workflow support helpers. Transport-facing parity and completion behavior belong in `mcp/bootstrap` or `test/e2e/mcp`.
+Tool/resource response polish belongs in `mcp/core` and workflow support helpers. Transport-facing completion behavior belongs in `mcp/bootstrap`.
+Opt-in usability metrics belong in `test/e2e/mcp`.
 
-## Phase 0: Research
+## Phase 0: Current Evidence
 
-- Inspect current `shardingsphere://capabilities` payload construction before adding next-action contracts or common flows.
-- Inspect all current `next_actions` producers before documenting action kinds.
-- Inspect `search_metadata` matching and pagination code before adding search context or match explanation fields.
-- Inspect URI derivation rules before deciding whether to encode safe names or return `not_safe_to_derive`.
-- Inspect numeric argument parsing for `page_size`, `max_rows`, and `timeout_ms` before deciding recovery versus applied-default metadata.
-- Inspect `execute_query`, `execute_update`, workflow planning, workflow apply, and validation payloads before adding count, status, item-shape, or approval-summary fields.
-- Inspect descriptor lint and capabilities tests before adding new checks.
-- Inspect opt-in LLM E2E scenario support before adding intent-only discovery scenarios.
+- Confirm branch with `git branch --show-current`; do not run branch-changing commands.
+- Reconfirm 008/003 baseline and current code evidence before implementation.
+- Inspect `MCPDescriptorCatalog` for existing `model_contract`, `next_action_contract`, `common_flows`, payload contracts, security hints, and fingerprints.
+- Inspect all current `next_actions` producers for action ordering and retry target visibility.
+- Inspect completion metadata for missing-context diagnostics and candidate-ranking metadata.
+- Inspect resource navigation descriptors and capability payload for type-hint gaps.
+- Inspect resource, detail, and search responses for empty-state and not-found diagnostics.
+- Inspect SQL/workflow preview and success responses for reusable arguments, normalized SQL, redaction markers, and manual-only follow-up.
+- Inspect runtime error conversion for JDBC/config/connection-specific recovery categories.
+- Inspect opt-in LLM usability metrics before adding new metrics.
+- Inspect SQL row-limit handling, timeout handling, and broad-result truncation.
+- Inspect metadata search pagination, blank-query behavior, invalid argument recovery, and URI encoding/decoding.
+- Inspect workflow clarification outputs, non-English intent handling, and current-session `plan_id` recovery.
+- Inspect runtime configuration loading, server identity metadata, HTTP authentication errors, and first-use documentation.
 
 ## Phase 1: Design
 
-- Define the capability-level `next_action_contract` shape.
-- Define compact `common_flows` with short, descriptor-backed steps.
-- Define search response additions: applied context, per-hit match explanation, and unsafe URI behavior.
-- Define output parse hints for SQL and workflow payloads.
-- Define approval-summary wording rules that preserve user approval boundaries.
-- Define focused tests without broad snapshots.
+- Define ordered next-action metadata that is purely descriptive and does not execute anything.
+- Define compact `surface_summary` fields in capabilities.
+- Define navigation type hints and completion availability hints without duplicating the whole completion catalog.
+- Define empty-state and not-found response hints.
+- Define argument provenance values and redaction marker expectations.
+- Define conservative runtime recovery categories and optional request/trace identifier constraints.
+- Define opt-in next-action-follow and approval-violation metrics.
+- Define safe SQL and metadata input-bound contracts.
+- Define structured clarification questions and native-elicitation fallback rules.
+- Define current-session workflow status read-back.
+- Define percent-encoded resource identifier behavior.
+- Define secret-safe runtime status and env-placeholder configuration expectations.
 
 ## Phase 2: Implementation Strategy
 
-1. Add deterministic tests for the new capabilities sections before changing payload shape.
-2. Add `next_action_contract` and `common_flows` from descriptor-known tools/resources.
-3. Add `search_metadata` search context and match explanation while preserving current pagination behavior.
-4. Add output parse hints and schema updates for SQL/workflow payloads.
-5. Add approval summaries after preview payloads already contain all required facts.
-6. Add optional parity and opt-in LLM usability checks only after deterministic tests are stable.
+1. Add or update deterministic tests for each new model-facing field before changing payload shape.
+2. Add capability-level `surface_summary`, navigation type hints, and completion availability hints.
+3. Add ordered next-action/dependency metadata to preview, workflow, and recovery producers.
+4. Add empty-state and not-found diagnostics to resource/search payloads.
+5. Add argument provenance and redaction markers where values are already known.
+6. Improve safe runtime recovery categories and optional trace/request identifiers.
+7. Add row/search bounds, strict argument recovery, and URI encoding support.
+8. Add structured clarification, Chinese synonym guidance, and current-session workflow read-back.
+9. Add secret-safe runtime status, env-placeholder docs/config support, and clearer auth/server identity hints.
+10. Add opt-in usability metrics without changing default CI.
 
 ## Complexity Tracking
 

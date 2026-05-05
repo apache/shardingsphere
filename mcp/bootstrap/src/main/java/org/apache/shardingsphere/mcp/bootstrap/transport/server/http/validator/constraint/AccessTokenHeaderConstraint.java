@@ -41,6 +41,6 @@ public final class AccessTokenHeaderConstraint implements TransportHeaderConstra
         String[] authorizationSegments = value.isEmpty() ? new String[0] : value.split("\\s+", 2);
         ShardingSpherePreconditions.checkState(
                 2 == authorizationSegments.length && BEARER_AUTH_SCHEME.equalsIgnoreCase(authorizationSegments[0]) && accessToken.equals(authorizationSegments[1].trim()),
-                () -> new ServerTransportSecurityException(401, "Unauthorized."));
+                () -> new ServerTransportSecurityException(401, "Unauthorized. Send Authorization: Bearer <token>."));
     }
 }

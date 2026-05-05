@@ -47,10 +47,10 @@ final class EncryptWorkflowIntentResolver {
             return request.getOptions().getRequiresDecrypt();
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("irreversible") || naturalLanguageIntent.contains("not reversible")) {
+        if (containsAny(naturalLanguageIntent, "irreversible", "not reversible", "不可逆", "无法解密", "哈希", "散列")) {
             return inferOption(clarifiedIntent, "requires_decrypt", false);
         }
-        if (naturalLanguageIntent.contains("reversible") || naturalLanguageIntent.contains("decrypt")) {
+        if (containsAny(naturalLanguageIntent, "reversible", "decrypt", "可逆", "解密")) {
             return inferOption(clarifiedIntent, "requires_decrypt", true);
         }
         addPendingQuestion(clarifiedIntent, "requires_decrypt", "Do you need reversible decryption?");
@@ -65,10 +65,10 @@ final class EncryptWorkflowIntentResolver {
             return request.getOptions().getRequiresEqualityFilter();
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("no equality") || naturalLanguageIntent.contains("without equality")) {
+        if (containsAny(naturalLanguageIntent, "no equality", "without equality", "不需要等值", "不支持等值", "无等值")) {
             return inferOption(clarifiedIntent, "requires_equality_filter", false);
         }
-        if (naturalLanguageIntent.contains("equality") || naturalLanguageIntent.contains("exact")) {
+        if (containsAny(naturalLanguageIntent, "equality", "exact", "等值", "精确查询", "精确匹配")) {
             return inferOption(clarifiedIntent, "requires_equality_filter", true);
         }
         addPendingQuestion(clarifiedIntent, "requires_equality_filter", "Do you need equality query?");
@@ -83,11 +83,10 @@ final class EncryptWorkflowIntentResolver {
             return request.getOptions().getRequiresLikeQuery();
         }
         String naturalLanguageIntent = request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("no like") || naturalLanguageIntent.contains("without like")
-                || naturalLanguageIntent.contains("no fuzzy") || naturalLanguageIntent.contains("without fuzzy")) {
+        if (containsAny(naturalLanguageIntent, "no like", "without like", "no fuzzy", "without fuzzy", "不需要模糊", "不支持模糊", "无模糊", "不需要 like")) {
             return inferOption(clarifiedIntent, "requires_like_query", false);
         }
-        if (naturalLanguageIntent.contains("like") || naturalLanguageIntent.contains("fuzzy")) {
+        if (containsAny(naturalLanguageIntent, "like", "fuzzy", "模糊", "模糊查询")) {
             return inferOption(clarifiedIntent, "requires_like_query", true);
         }
         addPendingQuestion(clarifiedIntent, "requires_like_query", "Do you need LIKE query?");
@@ -101,6 +100,15 @@ final class EncryptWorkflowIntentResolver {
     private Boolean inferOption(final ClarifiedIntent clarifiedIntent, final String fieldName, final boolean value) {
         clarifiedIntent.getInferredValues().put(fieldName, value);
         return value;
+    }
+    
+    private boolean containsAny(final String value, final String... candidates) {
+        for (String each : candidates) {
+            if (value.contains(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void addPendingQuestion(final ClarifiedIntent clarifiedIntent, final String unresolvedField, final String question) {

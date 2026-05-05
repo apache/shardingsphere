@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 class MetadataResourceHandlerTest {
@@ -62,6 +63,8 @@ class MetadataResourceHandlerTest {
     void assertHandleMissingDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}", (requestContext, uriVariables) -> List.of());
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), mock(MCPUriVariables.class));
-        assertThat(actual.toPayload(), is(Map.of("resource_kind", "detail", "object_scope", "logical-database", "found", false, "items", List.of(), "count", 0)));
+        assertFalse((Boolean) actual.toPayload().get("found"));
+        assertThat(actual.toPayload().get("not_found_reason"), is("logical-database detail resource was not found for this URI."));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0)).get("action_kind"), is("stop"));
     }
 }

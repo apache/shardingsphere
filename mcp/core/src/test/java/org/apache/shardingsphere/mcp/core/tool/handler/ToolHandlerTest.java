@@ -56,6 +56,8 @@ class ToolHandlerTest {
         assertTrue(actualItemProperties.containsKey("matched_fields"));
         assertTrue(actualItemProperties.containsKey("matched_value"));
         assertTrue(actualProperties.containsKey("search_context"));
+        assertTrue(actualProperties.containsKey("empty_reason"));
+        assertTrue(actualProperties.containsKey("next_actions"));
     }
     
     @Test
@@ -97,6 +99,19 @@ class ToolHandlerTest {
             assertThat(actualNames.size(), is(9));
             assertTrue(actualNames.contains("logic_db"));
             assertTrue(actualNames.contains("order_idx"));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithEmptyResultGuidance() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "query", "missing")));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(actualPayload.get("empty_reason"), is("no_matches_for_query"));
+            Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
+            assertThat(actualNextAction.get("action_kind"), is("call_tool"));
+            assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
+            assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("database"), is("logic_db"));
         }
     }
     

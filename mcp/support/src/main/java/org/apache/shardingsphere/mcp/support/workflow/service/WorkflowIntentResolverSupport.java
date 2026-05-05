@@ -54,10 +54,10 @@ public final class WorkflowIntentResolverSupport {
             return actualOperationType;
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
-        if (naturalLanguageIntent.contains("drop") || naturalLanguageIntent.contains("delete") || naturalLanguageIntent.contains("remove")) {
+        if (containsAny(naturalLanguageIntent, "drop", "delete", "remove", "删除", "移除", "去掉")) {
             return recordInferredValue(clarifiedIntent, "operation_type", WorkflowLifecycle.OPERATION_DROP);
         }
-        if (naturalLanguageIntent.contains("alter") || naturalLanguageIntent.contains("modify") || naturalLanguageIntent.contains("update")) {
+        if (containsAny(naturalLanguageIntent, "alter", "modify", "update", "修改", "更新", "调整", "变更")) {
             return recordInferredValue(clarifiedIntent, "operation_type", "alter");
         }
         return recordInferredValue(clarifiedIntent, "operation_type", "create");
@@ -87,11 +87,15 @@ public final class WorkflowIntentResolverSupport {
         }
         String naturalLanguageIntent = getNaturalLanguageIntent(request);
         String columnName = request.getColumn().toLowerCase(Locale.ENGLISH);
-        if (naturalLanguageIntent.contains("phone number") || columnName.contains("phone") || columnName.contains("mobile") || columnName.contains("tel")) {
+        if (containsAny(naturalLanguageIntent, "phone number", "phone", "mobile", "tel", "手机号", "手机", "电话号码", "电话")
+                || containsAny(columnName, "phone", "mobile", "tel")) {
             return recordInferredValue(clarifiedIntent, "field_semantics", "phone");
         }
-        if (naturalLanguageIntent.contains("identity card") || naturalLanguageIntent.contains("id card") || columnName.contains("id_card")) {
+        if (containsAny(naturalLanguageIntent, "identity card", "id card", "身份证", "证件") || columnName.contains("id_card")) {
             return recordInferredValue(clarifiedIntent, "field_semantics", "id_card");
+        }
+        if (containsAny(naturalLanguageIntent, "email", "邮箱", "邮件") || columnName.contains("email")) {
+            return recordInferredValue(clarifiedIntent, "field_semantics", "email");
         }
         return recordInferredValue(clarifiedIntent, "field_semantics", columnName);
     }
@@ -119,6 +123,15 @@ public final class WorkflowIntentResolverSupport {
     
     private static String getNaturalLanguageIntent(final WorkflowRequest request) {
         return request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
+    }
+    
+    private static boolean containsAny(final String value, final String... candidates) {
+        for (String each : candidates) {
+            if (value.contains(each)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private static String recordInferredValue(final ClarifiedIntent clarifiedIntent, final String fieldName, final String value) {

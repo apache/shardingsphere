@@ -19,8 +19,10 @@ package org.apache.shardingsphere.mcp.bootstrap.config.yaml.swapper;
 
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.util.yaml.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.mcp.bootstrap.config.yaml.config.YamlRuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+
+import java.util.Map;
 
 /**
  * YAML runtime database configuration swapper.
@@ -40,21 +42,26 @@ public final class YamlRuntimeDatabaseConfigurationSwapper implements YamlConfig
     
     @Override
     public RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig) {
+        return swapToObject(yamlConfig, System.getenv());
+    }
+    
+    RuntimeDatabaseConfiguration swapToObject(final YamlRuntimeDatabaseConfiguration yamlConfig, final Map<String, String> environment) {
         ShardingSpherePreconditions.checkNotNull(yamlConfig, () -> new IllegalArgumentException("Runtime database configuration cannot be null."));
-        return new RuntimeDatabaseConfiguration(resolveRequiredText(yamlConfig.getDatabaseType(), "databaseType"), resolveRequiredText(yamlConfig.getJdbcUrl(), "jdbcUrl"),
-                resolveExplicitText(yamlConfig.getUsername(), "username"), resolveExplicitText(yamlConfig.getPassword(), "password"),
-                resolveExplicitText(yamlConfig.getDriverClassName(), "driverClassName"));
+        return new RuntimeDatabaseConfiguration(resolveRequiredText(yamlConfig.getDatabaseType(), "databaseType", environment), resolveRequiredText(yamlConfig.getJdbcUrl(), "jdbcUrl", environment),
+                resolveExplicitText(yamlConfig.getUsername(), "username", environment), resolveExplicitText(yamlConfig.getPassword(), "password", environment),
+                resolveExplicitText(yamlConfig.getDriverClassName(), "driverClassName", environment));
     }
     
-    private String resolveRequiredText(final String value, final String fieldName) {
+    private String resolveRequiredText(final String value, final String fieldName, final Map<String, String> environment) {
         ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
-        ShardingSpherePreconditions.checkState(!value.isBlank(), () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
-        return value;
+        String result = YamlEnvironmentPlaceholderUtils.resolve(value, String.format("runtime.databases[].%s", fieldName), environment);
+        ShardingSpherePreconditions.checkState(!result.isBlank(), () -> new IllegalArgumentException(formatRequiredMessage(fieldName)));
+        return result;
     }
     
-    private String resolveExplicitText(final String value, final String fieldName) {
+    private String resolveExplicitText(final String value, final String fieldName, final Map<String, String> environment) {
         ShardingSpherePreconditions.checkNotNull(value, () -> new IllegalArgumentException(formatExplicitMessage(fieldName)));
-        return value;
+        return YamlEnvironmentPlaceholderUtils.resolve(value, String.format("runtime.databases[].%s", fieldName), environment);
     }
     
     private String formatRequiredMessage(final String fieldName) {

@@ -46,5 +46,9 @@ public final class LLMUsabilityScorecard {
     
     private final double recoveryRate;
     
+    private final double nextActionFollowRate;
+    
+    private final double approvalViolationRate;
+    
     private final List<LLMUsabilityScenarioResult> scenarioResults;
 }

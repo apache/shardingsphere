@@ -75,7 +75,7 @@ class StreamableHttpMCPServletTest {
         when(session.getId()).thenReturn("session-id");
         McpStreamableServerSession.McpStreamableServerSessionInit expectedInit = new McpStreamableServerSession.McpStreamableServerSessionInit(session,
                 Mono.just(new InitializeResult(MCPTransportConstants.PROTOCOL_VERSION, McpSchema.ServerCapabilities.builder().tools(Boolean.FALSE).build(),
-                        new McpSchema.Implementation("Apache ShardingSphere MCP", "development"), "runtime")));
+                        new McpSchema.Implementation(MCPTransportConstants.SERVER_NAME, "development"), "runtime")));
         when(sessionFactory.startSession(any(McpSchema.InitializeRequest.class))).thenReturn(expectedInit);
         StreamableHttpMCPServlet actual = createServlet(delegate, sessionManager, mock(MCPSessionExecutionCoordinator.class));
         actual.setSessionFactory(sessionFactory);
@@ -98,7 +98,7 @@ class StreamableHttpMCPServletTest {
         when(session.getId()).thenReturn("session-id");
         McpStreamableServerSession.McpStreamableServerSessionInit expectedInit = new McpStreamableServerSession.McpStreamableServerSessionInit(session,
                 Mono.just(new InitializeResult(MCPTransportConstants.PROTOCOL_VERSION, McpSchema.ServerCapabilities.builder().tools(Boolean.FALSE).build(),
-                        new McpSchema.Implementation("Apache ShardingSphere MCP", "development"), "runtime")));
+                        new McpSchema.Implementation(MCPTransportConstants.SERVER_NAME, "development"), "runtime")));
         when(sessionFactory.startSession(any(McpSchema.InitializeRequest.class))).thenReturn(expectedInit);
         StreamableHttpMCPServlet actual = createServlet(delegate, sessionManager, mock(MCPSessionExecutionCoordinator.class));
         actual.setSessionFactory(sessionFactory);

@@ -28,7 +28,10 @@ import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,8 +61,38 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         MetadataSearchRequest request = new MetadataSearchRequest(
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
-                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));
+                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES),
+                toolArguments.getIntegerArgument("page_size", SearchMetadataToolService.DEFAULT_PAGE_SIZE, 1, SearchMetadataToolService.MAX_PAGE_SIZE),
+                toolArguments.getStringArgument("page_token"));
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
-        return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken(), Map.of("search_context", searchResult.getSearchContext()));
+        return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken(), createSearchPayloadMetadata(request, searchResult));
+    }
+    
+    private Map<String, Object> createSearchPayloadMetadata(final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("search_context", searchResult.getSearchContext());
+        if (searchResult.getItems().isEmpty()) {
+            result.put("empty_reason", request.getQuery().isEmpty() ? "no_metadata_in_scope" : "no_matches_for_query");
+            result.put("next_actions", List.of(createEmptySearchNextAction(request)));
+        }
+        return result;
+    }
+    
+    private Map<String, Object> createEmptySearchNextAction(final MetadataSearchRequest request) {
+        if (!request.getQuery().isEmpty() || !request.getSchema().isEmpty()) {
+            return MCPNextActionUtils.callTool("search_metadata", "Retry search_metadata with a broader scope.", createBroadenedSearchArguments(request), false);
+        }
+        return MCPNextActionUtils.readResource("shardingsphere://databases", "Read configured databases before choosing a narrower metadata search.");
+    }
+    
+    private Map<String, Object> createBroadenedSearchArguments(final MetadataSearchRequest request) {
+        Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        if (!request.getDatabase().isEmpty()) {
+            result.put("database", request.getDatabase());
+        }
+        if (!request.getQuery().isEmpty()) {
+            result.put("query", request.getQuery());
+        }
+        return result;
     }
 }

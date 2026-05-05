@@ -54,7 +54,7 @@ class ResourceHandlerRegistryTest {
     
     @Test
     void assertGetRegisteredResources() {
-        assertThat(ResourceHandlerRegistry.getRegisteredResources().size(), is(18));
+        assertThat(ResourceHandlerRegistry.getRegisteredResources().size(), is(20));
     }
     
     @Test
@@ -90,8 +90,10 @@ class ResourceHandlerRegistryTest {
     @Test
     void assertGetSupportedResources() {
         List<String> actual = ResourceHandlerRegistry.getSupportedResources();
-        assertThat(actual.size(), is(18));
+        assertThat(actual.size(), is(20));
         assertTrue(actual.contains("shardingsphere://capabilities"));
+        assertTrue(actual.contains("shardingsphere://runtime"));
+        assertTrue(actual.contains("shardingsphere://workflows/{plan_id}"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}"));
         assertTrue(actual.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns"));

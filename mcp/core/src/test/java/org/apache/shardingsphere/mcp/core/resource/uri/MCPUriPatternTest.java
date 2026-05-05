@@ -68,6 +68,14 @@ class MCPUriPatternTest {
     }
     
     @Test
+    void assertParseWithEncodedVariables() {
+        Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}")
+                .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders%3Farchive");
+        assertTrue(actual.isPresent());
+        assertThat(actual.orElseThrow().getVariable("table"), is("orders?archive"));
+    }
+    
+    @Test
     void assertParseWithInvalidUri() {
         Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("unsupported://capabilities");
         assertFalse(actual.isPresent());

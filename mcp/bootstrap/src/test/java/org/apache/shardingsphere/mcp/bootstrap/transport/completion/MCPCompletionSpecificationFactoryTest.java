@@ -78,6 +78,35 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.completion().values(), is(List.of()));
         assertThat(actual.meta().get("diagnostic"), is("missing_context"));
         assertThat(actual.meta().get("missingContextArguments"), is(List.of("database", "schema")));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
+        assertThat(actualNextAction.get("action_kind"), is("complete_argument"));
+        assertThat(actualNextAction.get("argument_name"), is("database"));
+    }
+    
+    @Test
+    void assertCompleteDatabaseValuesWithPrefixFilteredDiagnostic() {
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+                new McpSchema.PromptReference("inspect_metadata"));
+        McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
+                new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "zzz")));
+        assertThat(actual.completion().values(), is(List.of()));
+        assertThat(actual.meta().get("diagnostic"), is("prefix_filtered_all_candidates"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
+        assertThat(actualNextAction.get("action_kind"), is("complete_argument"));
+        assertThat(actualNextAction.get("argument_name"), is("database"));
+    }
+    
+    @Test
+    void assertCompletePlanIdsWithNoCandidatesDiagnostic() {
+        SyncCompletionSpecification completionSpecification = findCompletion(createFactory(createRuntimeContext(new InMemoryWorkflowSessionContext())).createCompletionSpecifications(),
+                new McpSchema.PromptReference("recover_workflow"));
+        McpSchema.CompleteResult actual = completionSpecification.completionHandler().apply(createExchange("session-1"),
+                new McpSchema.CompleteRequest(new McpSchema.PromptReference("recover_workflow"), new McpSchema.CompleteRequest.CompleteArgument("plan_id", "")));
+        assertThat(actual.completion().values(), is(List.of()));
+        assertThat(actual.meta().get("diagnostic"), is("no_candidates"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
+        assertThat(actualNextAction.get("action_kind"), is("read_resource"));
+        assertThat(actualNextAction.get("target_resource"), is("shardingsphere://capabilities"));
     }
     
     @Test
