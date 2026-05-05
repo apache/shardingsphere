@@ -315,13 +315,15 @@ public final class MCPDescriptorCatalogLoader {
     
     private static Collection<String> createRequiredOutputFields(final String toolName) {
         if ("search_metadata".equals(toolName)) {
-            return List.of("items", "count", "next_page_token", "has_more");
+            return List.of("items", "count", "next_page_token", "has_more", "search_context");
         }
         if ("execute_query".equals(toolName)) {
-            return List.of("result_kind", "statement_class", "statement_type", "status", "truncated", "next_actions");
+            return List.of("result_kind", "statement_class", "statement_type", "status", "returned_row_count",
+                    "applied_max_rows", "applied_timeout_ms", "truncated", "next_actions");
         }
         if ("execute_update".equals(toolName)) {
-            return List.of("result_kind", "statement_class", "statement_type", "status", "suggested_arguments", "next_actions");
+            return List.of("result_kind", "statement_class", "statement_type", "status", "returned_row_count",
+                    "applied_max_rows", "applied_timeout_ms", "suggested_arguments", "next_actions");
         }
         if ("apply_workflow".equals(toolName)) {
             return List.of("plan_id", "status", "execution_mode", "next_actions", "requires_user_approval");
@@ -349,7 +351,8 @@ public final class MCPDescriptorCatalogLoader {
     }
     
     private static void validateSearchMetadataItemFields(final Map<?, ?> properties) {
-        for (String each : List.of("database", "schema", "objectType", "table", "view", "name", "resource_uri", "parent_resource_uri", "next_resource_uris", "derivation_status")) {
+        for (String each : List.of("database", "schema", "objectType", "table", "view", "name", "resource_uri", "parent_resource_uri", "next_resource_uris", "derivation_status",
+                "match_kind", "matched_fields", "matched_value")) {
             checkState(properties.containsKey(each), String.format("Tool `search_metadata` outputSchema item must declare `%s`.", each));
             final Object property = properties.get(each);
             checkState(property instanceof Map, String.format("Tool `search_metadata` outputSchema item property `%s` must be an object.", each));

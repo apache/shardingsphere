@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,18 +48,18 @@ import java.util.stream.Collectors;
  * Search metadata tool service.
  */
 public final class SearchMetadataToolService {
-    
+
     private static final Map<String, Integer> OBJECT_TYPE_ORDERS = Map.of(
             "database", 0, "schema", 1, "table", 2, "view", 3, "column", 4, "index", 5, "sequence", 6);
-    
+
     private static final String DATABASES_RESOURCE_URI = "shardingsphere://databases";
-    
+
     private final MCPMetadataQueryFacade metadataQueryFacade;
-    
+
     public SearchMetadataToolService(final MCPMetadataQueryFacade metadataQueryFacade) {
         this.metadataQueryFacade = metadataQueryFacade;
     }
-    
+
     /**
      * Search metadata.
      *
@@ -67,15 +68,16 @@ public final class SearchMetadataToolService {
      */
     public MetadataSearchResult execute(final MetadataSearchRequest request) {
         ShardingSpherePreconditions.checkState(request.getSchema().isEmpty() || !request.getDatabase().isEmpty(), () -> new MCPInvalidRequestException("Schema cannot be provided without database."));
+        Set<SupportedMCPMetadataObjectType> searchObjectTypes = getSearchObjectTypes(request.getObjectTypes());
         List<MetadataSearchHit> metadataItems = request.getDatabase().isEmpty()
-                ? metadataQueryFacade.queryDatabases().stream().flatMap(each -> readSearchResults(each.getDatabase(), request).stream()).collect(Collectors.toList())
-                : readSearchResults(request.getDatabase(), request);
-        return paginate(metadataItems, request.getQuery(), request.getPageSize(), request.getPageToken());
+                ? metadataQueryFacade.queryDatabases().stream().flatMap(each -> readSearchResults(each.getDatabase(), request.getSchema(), searchObjectTypes).stream()).collect(Collectors.toList())
+                : readSearchResults(request.getDatabase(), request.getSchema(), searchObjectTypes);
+        return paginate(metadataItems, request, searchObjectTypes);
     }
-    
-    private List<MetadataSearchHit> readSearchResults(final String databaseName, final MetadataSearchRequest request) {
+
+    private List<MetadataSearchHit> readSearchResults(final String databaseName, final String schemaName, final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
         List<MetadataSearchHit> result = new LinkedList<>();
-        for (SupportedMCPMetadataObjectType each : getSearchObjectTypes(request.getObjectTypes())) {
+        for (SupportedMCPMetadataObjectType each : searchObjectTypes) {
             if (SupportedMCPMetadataObjectType.DATABASE == each) {
                 metadataQueryFacade.queryDatabase(databaseName).ifPresent(optional -> result.add(createSearchHit(optional)));
                 continue;
@@ -83,11 +85,11 @@ public final class SearchMetadataToolService {
             if (!metadataQueryFacade.isSupportedMetadataObjectType(databaseName, each)) {
                 continue;
             }
-            result.addAll(querySearchHits(databaseName, each, request.getSchema()));
+            result.addAll(querySearchHits(databaseName, each, schemaName));
         }
         return result;
     }
-    
+
     private List<MetadataSearchHit> querySearchHits(final String databaseName, final SupportedMCPMetadataObjectType objectType, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
         if (SupportedMCPMetadataObjectType.SCHEMA == objectType) {
@@ -123,14 +125,14 @@ public final class SearchMetadataToolService {
         result.addAll(querySequenceSearchHits(databaseName, schemaName));
         return result;
     }
-    
+
     private List<MCPTableMetadata> queryTables(final String databaseName, final String schemaName) {
         if (!schemaName.isEmpty()) {
             return metadataQueryFacade.queryTables(databaseName, schemaName);
         }
         return metadataQueryFacade.querySchemas(databaseName).stream().flatMap(each -> metadataQueryFacade.queryTables(databaseName, each.getSchema()).stream()).collect(Collectors.toList());
     }
-    
+
     private List<MCPViewMetadata> queryViews(final String databaseName, final String schemaName) {
         List<MCPViewMetadata> result = new LinkedList<>();
         if (!schemaName.isEmpty()) {
@@ -142,7 +144,7 @@ public final class SearchMetadataToolService {
         }
         return result;
     }
-    
+
     private List<MetadataSearchHit> queryColumnSearchHits(final String databaseName, final String schemaName) {
         List<MetadataSearchHit> result = new LinkedList<>();
         for (MCPTableMetadata each : queryTables(databaseName, schemaName)) {
@@ -157,12 +159,12 @@ public final class SearchMetadataToolService {
         }
         return result;
     }
-    
+
     private List<MetadataSearchHit> queryIndexSearchHits(final String databaseName, final String schemaName) {
         return queryTables(databaseName, schemaName).stream()
                 .flatMap(each -> metadataQueryFacade.queryIndexes(databaseName, each.getSchema(), each.getTable()).stream()).map(this::createSearchHit).collect(Collectors.toList());
     }
-    
+
     private List<MetadataSearchHit> querySequenceSearchHits(final String databaseName, final String schemaName) {
         if (!schemaName.isEmpty()) {
             return metadataQueryFacade.querySequences(databaseName, schemaName).stream().map(this::createSearchHit).collect(Collectors.toList());
@@ -170,7 +172,7 @@ public final class SearchMetadataToolService {
         return metadataQueryFacade.querySchemas(databaseName).stream()
                 .flatMap(each -> metadataQueryFacade.querySequences(databaseName, each.getSchema()).stream()).map(this::createSearchHit).collect(Collectors.toList());
     }
-    
+
     private Set<SupportedMCPMetadataObjectType> getSearchObjectTypes(final Set<SupportedMCPMetadataObjectType> objectTypes) {
         if (!objectTypes.isEmpty()) {
             return objectTypes;
@@ -185,41 +187,41 @@ public final class SearchMetadataToolService {
         result.add(SupportedMCPMetadataObjectType.SEQUENCE);
         return result;
     }
-    
+
     private MetadataSearchHit createSearchHit(final MCPDatabaseMetadata databaseMetadata) {
         return createSearchHit(databaseMetadata.getDatabase(), "", "database", "", "", databaseMetadata.getDatabase());
     }
-    
+
     private MetadataSearchHit createSearchHit(final MCPSchemaMetadata schemaMetadata) {
         return createSearchHit(schemaMetadata.getDatabase(), schemaMetadata.getSchema(), "schema", "", "", schemaMetadata.getSchema());
     }
-    
+
     private MetadataSearchHit createSearchHit(final MCPTableMetadata tableMetadata) {
         return createSearchHit(tableMetadata.getDatabase(), tableMetadata.getSchema(), "table", tableMetadata.getTable(), "", tableMetadata.getTable());
     }
-    
+
     private MetadataSearchHit createSearchHit(final MCPViewMetadata viewMetadata) {
         return createSearchHit(viewMetadata.getDatabase(), viewMetadata.getSchema(), "view", "", viewMetadata.getView(), viewMetadata.getView());
     }
-    
+
     private MetadataSearchHit createSearchHit(final MCPColumnMetadata columnMetadata) {
         return createSearchHit(columnMetadata.getDatabase(), columnMetadata.getSchema(), "column", columnMetadata.getTable(), columnMetadata.getView(), columnMetadata.getColumn());
     }
-    
+
     private MetadataSearchHit createSearchHit(final MCPIndexMetadata indexMetadata) {
         return createSearchHit(indexMetadata.getDatabase(), indexMetadata.getSchema(), "index", indexMetadata.getTable(), "", indexMetadata.getIndex());
     }
-    
+
     private MetadataSearchHit createSearchHit(final MCPSequenceMetadata sequenceMetadata) {
         return createSearchHit(sequenceMetadata.getDatabase(), sequenceMetadata.getSchema(), "sequence", "", "", sequenceMetadata.getSequence());
     }
-    
+
     private MetadataSearchHit createSearchHit(final String database, final String schema, final String objectType, final String table, final String view, final String name) {
         MetadataResourceUris resourceUris = createMetadataResourceUris(database, schema, objectType, table, view, name);
         return new MetadataSearchHit(database, schema, objectType, table, view, name, resourceUris.resourceUri(), resourceUris.parentResourceUri(), resourceUris.nextResourceUris(),
-                resourceUris.derivationStatus(), resourceUris.derivationReason());
+                resourceUris.derivationStatus(), resourceUris.derivationReason(), "", List.of(), "");
     }
-    
+
     private MetadataResourceUris createMetadataResourceUris(final String database, final String schema, final String objectType, final String table, final String view, final String name) {
         if ("database".equals(objectType)) {
             return createDatabaseResourceUris(database);
@@ -244,7 +246,7 @@ public final class SearchMetadataToolService {
         }
         return notSafe("Metadata hit object type is not backed by a descriptor resource pattern.");
     }
-    
+
     private MetadataResourceUris createDatabaseResourceUris(final String database) {
         if (!canUseInUri(database)) {
             return notSafe("Metadata hit does not include a database name safe for resource URI derivation.");
@@ -252,7 +254,7 @@ public final class SearchMetadataToolService {
         String databaseUri = createResourceUri(database);
         return derived(databaseUri, DATABASES_RESOURCE_URI, List.of(createResourceUri(database, "capabilities"), createResourceUri(database, "schemas")));
     }
-    
+
     private MetadataResourceUris createSchemaResourceUris(final String database, final String schema) {
         if (!canUseInUri(database, schema)) {
             return notSafe("Metadata hit does not include database and schema names safe for resource URI derivation.");
@@ -262,7 +264,7 @@ public final class SearchMetadataToolService {
                 List.of(createResourceUri(database, "schemas", schema, "tables"), createResourceUri(database, "schemas", schema, "views"),
                         createResourceUri(database, "schemas", schema, "sequences")));
     }
-    
+
     private MetadataResourceUris createTableResourceUris(final String database, final String schema, final String table) {
         if (!canUseInUri(database, schema, table)) {
             return notSafe("Metadata hit does not include database, schema, and table names safe for resource URI derivation.");
@@ -271,7 +273,7 @@ public final class SearchMetadataToolService {
         return derived(tableUri, createResourceUri(database, "schemas", schema, "tables"),
                 List.of(createResourceUri(database, "schemas", schema, "tables", table, "columns"), createResourceUri(database, "schemas", schema, "tables", table, "indexes")));
     }
-    
+
     private MetadataResourceUris createViewResourceUris(final String database, final String schema, final String view) {
         if (!canUseInUri(database, schema, view)) {
             return notSafe("Metadata hit does not include database, schema, and view names safe for resource URI derivation.");
@@ -279,7 +281,7 @@ public final class SearchMetadataToolService {
         String viewUri = createResourceUri(database, "schemas", schema, "views", view);
         return derived(viewUri, createResourceUri(database, "schemas", schema, "views"), List.of(createResourceUri(database, "schemas", schema, "views", view, "columns")));
     }
-    
+
     private MetadataResourceUris createColumnResourceUris(final String database, final String schema, final String table, final String view, final String column) {
         if (canUseInUri(database, schema, table, column)) {
             return derived(createResourceUri(database, "schemas", schema, "tables", table, "columns", column),
@@ -291,7 +293,7 @@ public final class SearchMetadataToolService {
         }
         return notSafe("Metadata hit does not include database, schema, parent table or view, and column names safe for resource URI derivation.");
     }
-    
+
     private MetadataResourceUris createIndexResourceUris(final String database, final String schema, final String table, final String index) {
         if (!canUseInUri(database, schema, table, index)) {
             return notSafe("Metadata hit does not include database, schema, table, and index names safe for resource URI derivation.");
@@ -299,48 +301,89 @@ public final class SearchMetadataToolService {
         return derived(createResourceUri(database, "schemas", schema, "tables", table, "indexes", index),
                 createResourceUri(database, "schemas", schema, "tables", table, "indexes"), List.of());
     }
-    
+
     private MetadataResourceUris createSequenceResourceUris(final String database, final String schema, final String sequence) {
         if (!canUseInUri(database, schema, sequence)) {
             return notSafe("Metadata hit does not include database, schema, and sequence names safe for resource URI derivation.");
         }
         return derived(createResourceUri(database, "schemas", schema, "sequences", sequence), createResourceUri(database, "schemas", schema, "sequences"), List.of());
     }
-    
+
     private MetadataResourceUris derived(final String resourceUri, final String parentResourceUri, final List<String> nextResourceUris) {
         return new MetadataResourceUris(resourceUri, parentResourceUri, nextResourceUris, "derived", "");
     }
-    
+
     private MetadataResourceUris notSafe(final String reason) {
         return new MetadataResourceUris("", "", List.of(), "not_safe_to_derive", reason);
     }
-    
+
     private boolean canUseInUri(final String... values) {
-        return Arrays.stream(values).allMatch(each -> null != each && !each.isBlank() && !each.contains("/"));
+        return Arrays.stream(values).allMatch(this::canUsePathSegmentInUri);
     }
-    
+
+    private boolean canUsePathSegmentInUri(final String value) {
+        if (null == value || value.isBlank()) {
+            return false;
+        }
+        return value.chars().allMatch(this::isSafeUriPathCharacter);
+    }
+
+    private boolean isSafeUriPathCharacter(final int value) {
+        return isAsciiLetter(value) || isAsciiDigit(value) || '_' == value || '-' == value || '.' == value || ':' == value;
+    }
+
+    private boolean isAsciiLetter(final int value) {
+        return 'a' <= value && value <= 'z' || 'A' <= value && value <= 'Z';
+    }
+
+    private boolean isAsciiDigit(final int value) {
+        return '0' <= value && value <= '9';
+    }
+
     private String createResourceUri(final String... pathSegments) {
         return DATABASES_RESOURCE_URI + "/" + String.join("/", pathSegments);
     }
-    
-    private MetadataSearchResult paginate(final List<MetadataSearchHit> metadataItems, final String query, final int pageSize, final String pageToken) {
+
+    private MetadataSearchResult paginate(final List<MetadataSearchHit> metadataItems, final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
         int actualOffset;
         try {
-            actualOffset = pageToken.isEmpty() ? 0 : Integer.parseInt(pageToken);
+            actualOffset = request.getPageToken().isEmpty() ? 0 : Integer.parseInt(request.getPageToken());
         } catch (final NumberFormatException ignored) {
             throw new InvalidPageTokenException();
         }
-        int actualPageSize = 0 < pageSize ? pageSize : 100;
-        List<MetadataSearchHit> filteredItems = filterByQuery(metadataItems, query);
+        int actualPageSize = 0 < request.getPageSize() ? request.getPageSize() : 100;
+        Map<String, Object> searchContext = createSearchContext(request, searchObjectTypes, actualPageSize, actualOffset);
+        List<MetadataSearchHit> filteredItems = filterByQuery(metadataItems, request.getQuery());
         filteredItems.sort(this::compareSearchHits);
         if (actualOffset > filteredItems.size()) {
-            return new MetadataSearchResult(Collections.emptyList(), "");
+            return new MetadataSearchResult(Collections.emptyList(), "", searchContext);
         }
         int actualEndIndex = Math.min(actualOffset + actualPageSize, filteredItems.size());
         String nextPageToken = actualEndIndex < filteredItems.size() ? String.valueOf(actualEndIndex) : "";
-        return new MetadataSearchResult(new LinkedList<>(filteredItems.subList(actualOffset, actualEndIndex)), nextPageToken);
+        return new MetadataSearchResult(new LinkedList<>(filteredItems.subList(actualOffset, actualEndIndex)), nextPageToken, searchContext);
     }
-    
+
+    private Map<String, Object> createSearchContext(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes,
+                                                    final int actualPageSize, final int actualOffset) {
+        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        result.put("query", request.getQuery());
+        result.put("database", request.getDatabase());
+        result.put("database_scope", request.getDatabase().isEmpty() ? "all_query_databases" : "single_database");
+        result.put("schema", request.getSchema());
+        result.put("object_types", createObjectTypeNames(searchObjectTypes));
+        result.put("page_size", actualPageSize);
+        result.put("page_offset", actualOffset);
+        return result;
+    }
+
+    private List<String> createObjectTypeNames(final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
+        return searchObjectTypes.stream().map(each -> each.name().toLowerCase(Locale.ENGLISH)).sorted(this::compareObjectTypeNames).collect(Collectors.toList());
+    }
+
+    private int compareObjectTypeNames(final String left, final String right) {
+        return Integer.compare(getObjectTypeOrder(left), getObjectTypeOrder(right));
+    }
+
     private int compareSearchHits(final MetadataSearchHit left, final MetadataSearchHit right) {
         int result = left.getDatabase().compareTo(right.getDatabase());
         if (0 != result) {
@@ -364,23 +407,81 @@ public final class SearchMetadataToolService {
         }
         return left.getName().compareTo(right.getName());
     }
-    
+
     private int getObjectTypeOrder(final String objectType) {
         return OBJECT_TYPE_ORDERS.getOrDefault(objectType, Integer.MAX_VALUE);
     }
-    
+
     private List<MetadataSearchHit> filterByQuery(final List<MetadataSearchHit> metadataItems, final String query) {
-        return metadataItems.stream().filter(each -> matchesQuery(each, query)).collect(Collectors.toList());
+        List<MetadataSearchHit> result = new LinkedList<>();
+        for (MetadataSearchHit each : metadataItems) {
+            SearchMatch searchMatch = createSearchMatch(each, query);
+            if (!"none".equals(searchMatch.matchKind())) {
+                result.add(each.withMatch(searchMatch.matchKind(), searchMatch.matchedFields(), searchMatch.matchedValue()));
+            }
+        }
+        return result;
     }
-    
-    private boolean matchesQuery(final MetadataSearchHit searchHit, final String query) {
-        return matchesValue(query.toLowerCase(Locale.ENGLISH), searchHit.getName(), searchHit.getTable(), searchHit.getView());
+
+    private SearchMatch createSearchMatch(final MetadataSearchHit searchHit, final String query) {
+        String normalizedQuery = query.trim().toLowerCase(Locale.ENGLISH);
+        if (normalizedQuery.isEmpty()) {
+            return createMatchCandidates(searchHit).stream().anyMatch(each -> !each.value().isEmpty())
+                    ? new SearchMatch("all", List.of(), "")
+                    : new SearchMatch("none", List.of(), "");
+        }
+        for (String each : List.of("exact", "prefix", "contains")) {
+            SearchMatch result = createSearchMatch(searchHit, normalizedQuery, each);
+            if (!"none".equals(result.matchKind())) {
+                return result;
+            }
+        }
+        return new SearchMatch("none", List.of(), "");
     }
-    
-    private boolean matchesValue(final String query, final String... values) {
-        return Arrays.stream(values).anyMatch(each -> null != each && !each.isEmpty() && each.toLowerCase(Locale.ENGLISH).contains(query));
+
+    private SearchMatch createSearchMatch(final MetadataSearchHit searchHit, final String normalizedQuery, final String matchKind) {
+        List<String> matchedFields = new LinkedList<>();
+        String matchedValue = "";
+        for (MatchCandidate each : createMatchCandidates(searchHit)) {
+            if (matchesValue(each.value(), normalizedQuery, matchKind)) {
+                matchedFields.add(each.field());
+                if (matchedValue.isEmpty()) {
+                    matchedValue = each.value();
+                }
+            }
+        }
+        return matchedFields.isEmpty() ? new SearchMatch("none", List.of(), "") : new SearchMatch(matchKind, matchedFields, matchedValue);
     }
-    
+
+    private List<MatchCandidate> createMatchCandidates(final MetadataSearchHit searchHit) {
+        List<MatchCandidate> result = new LinkedList<>();
+        result.add(new MatchCandidate("name", searchHit.getName()));
+        if (!searchHit.getTable().isEmpty()) {
+            result.add(new MatchCandidate("table", searchHit.getTable()));
+        }
+        if (!searchHit.getView().isEmpty()) {
+            result.add(new MatchCandidate("view", searchHit.getView()));
+        }
+        return result;
+    }
+
+    private boolean matchesValue(final String value, final String normalizedQuery, final String matchKind) {
+        if (null == value || value.isEmpty()) {
+            return false;
+        }
+        String normalizedValue = value.toLowerCase(Locale.ENGLISH);
+        if ("exact".equals(matchKind)) {
+            return normalizedValue.equals(normalizedQuery);
+        }
+        return "prefix".equals(matchKind) ? normalizedValue.startsWith(normalizedQuery) : normalizedValue.contains(normalizedQuery);
+    }
+
     private record MetadataResourceUris(String resourceUri, String parentResourceUri, List<String> nextResourceUris, String derivationStatus, String derivationReason) {
+    }
+
+    private record MatchCandidate(String field, String value) {
+    }
+
+    private record SearchMatch(String matchKind, List<String> matchedFields, String matchedValue) {
     }
 }

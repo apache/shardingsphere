@@ -39,8 +39,9 @@ class MCPDescriptorCatalogLoaderTest {
         Set<String> actualToolNames = actual.getToolDescriptors().stream().map(MCPToolDescriptor::getName).collect(Collectors.toSet());
         assertTrue(actualToolNames.contains("apply_workflow"));
         assertTrue(actualToolNames.contains("validate_workflow"));
-        assertOutputProperties(actual, "apply_workflow", Set.of("plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package"));
-        assertOutputProperties(actual, "validate_workflow", Set.of("plan_id", "status", "next_actions"));
+        assertOutputProperties(actual, "apply_workflow", Set.of(
+                "plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package", "approval_summary", "approval_question"));
+        assertOutputProperties(actual, "validate_workflow", Set.of("plan_id", "status", "next_actions", "sections", "mismatches"));
         assertNoLegacyRecommendationFields(actual);
     }
     

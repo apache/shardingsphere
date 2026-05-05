@@ -51,14 +51,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPErrorConverterTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertConvertCases")
     void assertConvert(final String name, final Throwable cause, final String expectedErrorCode, final String expectedMessage) {
         MCPErrorResponse actual = MCPErrorConverter.convert(cause);
         assertThat(actual.toPayload(), is(Map.of("error_code", expectedErrorCode, "message", expectedMessage)));
     }
-    
+
     @Test
     void assertConvertUnsupportedToolWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedToolException("missing_tool")).toPayload();
@@ -70,7 +70,7 @@ class MCPErrorConverterTest {
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_resource"), is("shardingsphere://capabilities"));
         assertTrue(((Collection<?>) actualRecovery.get("supported_tools")).contains("execute_query"));
     }
-    
+
     @Test
     void assertConvertUnsupportedResourceWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedResourceUriException("shardingsphere://unknown")).toPayload();
@@ -82,7 +82,7 @@ class MCPErrorConverterTest {
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("read_resource"));
         assertTrue(((Collection<?>) actualRecovery.get("matching_resource_templates")).contains("shardingsphere://capabilities"));
     }
-    
+
     @Test
     void assertConvertMissingArgumentWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("database is required.")).toPayload();
@@ -93,7 +93,7 @@ class MCPErrorConverterTest {
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_resource"), is("shardingsphere://databases"));
         assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
-    
+
     @Test
     void assertConvertMissingExecutionModeWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("execution_mode is required.")).toPayload();
@@ -104,7 +104,7 @@ class MCPErrorConverterTest {
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("retry_tool"));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
-    
+
     @Test
     void assertConvertInvalidWorkflowExecutionModeWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(
@@ -116,7 +116,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("apply_workflow"));
     }
-    
+
     @Test
     void assertConvertInvalidApprovedStepsWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(
@@ -127,7 +127,30 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("allowed_values"), is(List.of("ddl", "index_ddl", "rule_distsql")));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("apply_workflow"));
     }
-    
+
+    @Test
+    void assertConvertInvalidObjectTypesWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("Unsupported object_types value `unknown`.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
+        assertThat(actualRecovery.get("field"), is("object_types"));
+        assertTrue(((Collection<?>) actualRecovery.get("allowed_values")).contains("table"));
+        assertTrue(((Collection<?>) ((Map<?, ?>) actualRecovery.get("suggested_arguments")).get("object_types")).contains("table"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("retry_tool"));
+        assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
+    }
+
+    @Test
+    void assertConvertInvalidPageTokenWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("Invalid page token.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("invalid_page_token"));
+        assertThat(actualRecovery.get("field"), is("page_token"));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("page_token", "")));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("retry_tool"));
+        assertFalse((Boolean) actualRecovery.get("ask_user_when_uncertain"));
+    }
+
     @Test
     void assertConvertMultipleStatementsWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("Only one SQL statement is allowed.")).toPayload();
@@ -136,7 +159,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
-    
+
     @Test
     void assertConvertUnsafeQueryWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPUnsupportedException(
@@ -148,7 +171,7 @@ class MCPErrorConverterTest {
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("execute_update"));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
-    
+
     @Test
     void assertConvertSQLToolMismatchWithRecovery() {
         ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.DML, "UPDATE", "UPDATE orders SET status = 'PAID'", "orders", "");
@@ -165,7 +188,7 @@ class MCPErrorConverterTest {
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("required_arguments"), is(suggestedArguments));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
-    
+
     @Test
     void assertConvertReadOnlySQLToolMismatchWithRecovery() {
         ClassificationResult classificationResult = new ClassificationResult(SupportedMCPStatement.QUERY, "SELECT", "SELECT * FROM orders", "orders", "");
@@ -180,7 +203,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
         assertFalse((Boolean) ((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("requires_user_approval"));
     }
-    
+
     @Test
     void assertConvertWorkflowStateWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException(
@@ -193,7 +216,7 @@ class MCPErrorConverterTest {
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("complete_argument"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("action_kind"), is("read_resource"));
     }
-    
+
     static Stream<Arguments> assertConvertCases() {
         return Stream.of(
                 Arguments.of("invalid request exception", new MCPInvalidRequestException("Invalid request."), "invalid_request", "Invalid request."),

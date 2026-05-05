@@ -52,11 +52,11 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 public final class MCPJdbcStatementExecutor {
-    
+
     private final Map<String, RuntimeDatabaseConfiguration> runtimeDatabases;
-    
+
     private final MCPJdbcTransactionResourceManager transactionResourceManager;
-    
+
     /**
      * Execute one classified request.
      *
@@ -104,7 +104,7 @@ public final class MCPJdbcStatementExecutor {
             }
         }
     }
-    
+
     private SQLExecutionResponse executeWithConnection(final Connection connection, final SQLExecutionRequest executionRequest,
                                                        final ClassificationResult classificationResult, final MCPDatabaseCapability databaseCapability) throws SQLException {
         applySchema(connection, executionRequest.getSchema(), databaseCapability.getSchemaExecutionSemantics());
@@ -113,7 +113,7 @@ public final class MCPJdbcStatementExecutor {
             return executeStatement(statement, executionRequest, classificationResult);
         }
     }
-    
+
     private void configureStatement(final Statement statement, final SQLExecutionRequest executionRequest) throws SQLException {
         if (0 < executionRequest.getMaxRows()) {
             statement.setMaxRows(resolveStatementMaxRows(executionRequest.getMaxRows()));
@@ -122,7 +122,7 @@ public final class MCPJdbcStatementExecutor {
             statement.setQueryTimeout((executionRequest.getTimeoutMs() + 999) / 1000);
         }
     }
-    
+
     private SQLExecutionResponse executeStatement(final Statement statement, final SQLExecutionRequest executionRequest,
                                                   final ClassificationResult classificationResult) throws SQLException {
         boolean hasResultSet = statement.execute(classificationResult.getNormalizedSql());
@@ -132,19 +132,25 @@ public final class MCPJdbcStatementExecutor {
                 if (!hasResultSet) {
                     throw new QueryDidNotReturnResultSetException();
                 }
-                return createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult);
+                return withExecutionHints(createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult), executionRequest);
             case DML:
                 return hasResultSet
-                        ? createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult)
-                        : SQLExecutionResponse.updateCount(classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount());
+                        ? withExecutionHints(createResultSetResponse(statement.getResultSet(), executionRequest.getMaxRows(), classificationResult), executionRequest)
+                        : withExecutionHints(SQLExecutionResponse.updateCount(
+                                classificationResult.getStatementClass(), classificationResult.getStatementType(), statement.getUpdateCount()), executionRequest);
             case DDL:
             case DCL:
-                return SQLExecutionResponse.statementAck(classificationResult.getStatementClass(), classificationResult.getStatementType(), "Statement executed.");
+                return withExecutionHints(SQLExecutionResponse.statementAck(
+                        classificationResult.getStatementClass(), classificationResult.getStatementType(), "Statement executed."), executionRequest);
             default:
                 throw new StatementClassNotSupportedException();
         }
     }
-    
+
+    private SQLExecutionResponse withExecutionHints(final SQLExecutionResponse response, final SQLExecutionRequest executionRequest) {
+        return response.withExecutionHints(executionRequest.getMaxRows(), executionRequest.getTimeoutMs());
+    }
+
     private SQLExecutionResponse createResultSetResponse(final ResultSet resultSet, final int maxRows, final ClassificationResult classificationResult) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         LinkedList<ExecuteQueryColumnDefinition> columns = new LinkedList<>();
@@ -168,17 +174,17 @@ public final class MCPJdbcStatementExecutor {
         }
         return SQLExecutionResponse.resultSet(classificationResult.getStatementClass(), classificationResult.getStatementType(), columns, rows, truncated);
     }
-    
+
     private int resolveStatementMaxRows(final int maxRows) {
         return Integer.MAX_VALUE == maxRows ? Integer.MAX_VALUE : maxRows + 1;
     }
-    
+
     private Connection openConnection(final String databaseName) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfig = Optional.ofNullable(runtimeDatabases.get(databaseName))
                 .orElseThrow(() -> new MCPUnavailableException(String.format("Database `%s` is not configured.", databaseName)));
         return runtimeDatabaseConfig.openConnection(databaseName);
     }
-    
+
     private void applySchema(final Connection connection, final String schemaName, final SchemaExecutionSemantics schemaExecutionSemantics) throws SQLException {
         String actualSchema = Objects.toString(schemaName, "").trim();
         if (actualSchema.isEmpty() || SchemaExecutionSemantics.FIXED_TO_DATABASE == schemaExecutionSemantics) {

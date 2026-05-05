@@ -614,6 +614,17 @@ tools:
               derivation_reason:
                 type: string
                 description: "Reason resource_uri could not be safely derived."
+              match_kind:
+                type: string
+                description: "Best query match kind for this hit: all, exact, prefix, or contains."
+              matched_fields:
+                type: array
+                description: "Metadata fields that matched the query using match_kind."
+                items:
+                  type: string
+              matched_value:
+                type: string
+                description: "First metadata value that matched the query."
         count:
           type: integer
           description: "Number of items returned in this page."
@@ -623,6 +634,9 @@ tools:
         has_more:
           type: boolean
           description: "Whether another page is available and next_page_token should be used."
+        search_context:
+          type: object
+          description: "Applied search scope, query, object types, page size, and page offset used for this page."
       examples:
         - items:
             - database: logic_db
@@ -635,8 +649,21 @@ tools:
               next_resource_uris:
                 - shardingsphere://databases/logic_db/schemas/public/tables/orders/columns
               derivation_status: derived
+              match_kind: exact
+              matched_fields:
+                - name
+              matched_value: orders
           count: 1
           has_more: false
+          search_context:
+            query: orders
+            database: logic_db
+            database_scope: single_database
+            schema: public
+            object_types:
+              - table
+            page_size: 100
+            page_offset: 0
     annotations:
       title: Search Metadata
       readOnlyHint: true
@@ -705,6 +732,15 @@ tools:
         rows:
           type: array
           description: "Returned result rows."
+        returned_row_count:
+          type: integer
+          description: "Number of result rows returned in this payload."
+        applied_max_rows:
+          type: integer
+          description: "Applied max_rows argument; zero means the request used the server default or unbounded behavior."
+        applied_timeout_ms:
+          type: integer
+          description: "Applied timeout_ms argument; zero means the request used the server default."
         truncated:
           type: boolean
           description: "Whether rows were truncated by max_rows or server limits."
@@ -718,6 +754,9 @@ tools:
           status: OK
           columns: []
           rows: []
+          returned_row_count: 0
+          applied_max_rows: 10
+          applied_timeout_ms: 0
           truncated: false
           next_actions:
             - action_kind: stop
@@ -817,6 +856,15 @@ tools:
         message:
           type: string
           description: "Execution message for statements without row results."
+        returned_row_count:
+          type: integer
+          description: "Number of rows returned when result_kind is result_set."
+        applied_max_rows:
+          type: integer
+          description: "Applied max_rows argument for executed SQL; zero means the request used the server default or unbounded behavior."
+        applied_timeout_ms:
+          type: integer
+          description: "Applied timeout_ms argument for executed SQL; zero means the request used the server default."
         would_execute:
           type: boolean
           description: "False when execution_mode=preview, proving the SQL was classified but not executed."
@@ -835,6 +883,12 @@ tools:
         approval_guidance:
           type: string
           description: "Preview-only user approval guidance before execution."
+        approval_summary:
+          type: string
+          description: "Preview-only natural-language summary that confirms the statement was not executed."
+        approval_question:
+          type: string
+          description: "Preview-only approval question the model can ask before execution."
         suggested_arguments:
           type: object
           description: "Preview-only arguments to reuse when the user approves execution."
@@ -857,6 +911,8 @@ tools:
           statement_type: UPDATE
           status: AWAITING_APPROVAL
           would_execute: false
+          approval_summary: Previewed UPDATE statement with side-effect scope physical-data. It has not been executed.
+          approval_question: Do you approve executing this UPDATE statement with side-effect scope physical-data?
           suggested_arguments:
             execution_mode: execute
           next_actions:

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.core.tool.request.MetadataSearchRequest;
 import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchResult;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -59,6 +60,6 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
                 toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
                 toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES), toolArguments.getIntegerArgument("page_size", 100), toolArguments.getStringArgument("page_token"));
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
-        return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken());
+        return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken(), Map.of("search_context", searchResult.getSearchContext()));
     }
 }

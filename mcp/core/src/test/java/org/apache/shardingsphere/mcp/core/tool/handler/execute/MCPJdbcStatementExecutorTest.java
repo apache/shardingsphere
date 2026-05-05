@@ -87,6 +87,8 @@ class MCPJdbcStatementExecutorTest {
         assertThat(actual.getAffectedRows(), is(expectedAffectedRows));
         assertThat(actual.getMessage(), is(expectedMessage));
         assertThat(actual.isTruncated(), is(expectedTruncated));
+        assertThat(actual.getAppliedMaxRows(), is(executionRequest.getMaxRows()));
+        assertThat(actual.getAppliedTimeoutMs(), is(executionRequest.getTimeoutMs()));
         verify(runtimeDatabaseConfig).openConnection("logic_db");
     }
     

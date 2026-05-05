@@ -52,6 +52,10 @@ class ToolHandlerTest {
         assertTrue(actualItemProperties.containsKey("parent_resource_uri"));
         assertTrue(actualItemProperties.containsKey("next_resource_uris"));
         assertTrue(actualItemProperties.containsKey("derivation_status"));
+        assertTrue(actualItemProperties.containsKey("match_kind"));
+        assertTrue(actualItemProperties.containsKey("matched_fields"));
+        assertTrue(actualItemProperties.containsKey("matched_value"));
+        assertTrue(actualProperties.containsKey("search_context"));
     }
     
     @Test
@@ -64,6 +68,7 @@ class ToolHandlerTest {
             assertThat(actual, isA(MCPItemsResponse.class));
             assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_idx"));
+            assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
         }
     }
     

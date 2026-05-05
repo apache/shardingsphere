@@ -94,6 +94,8 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.toPayload().get("status"), is("AWAITING_APPROVAL"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));
+        assertThat(actual.toPayload().get("approval_summary"), is("Previewed UPDATE statement with side-effect scope physical-data. It has not been executed."));
+        assertThat(actual.toPayload().get("approval_question"), is("Do you approve executing this UPDATE statement with side-effect scope physical-data?"));
         assertFalse(actual.toPayload().containsKey("suggested_next_tool"));
         assertThat(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).get("execution_mode"), is("execute"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");

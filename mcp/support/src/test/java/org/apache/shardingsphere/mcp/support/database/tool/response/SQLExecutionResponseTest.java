@@ -49,6 +49,8 @@ class SQLExecutionResponseTest {
         assertThat(actual.getStatus(), is("OK"));
         assertThat(actual.getMessage(), is(""));
         assertTrue(actual.isTruncated());
+        assertThat(actual.getAppliedMaxRows(), is(0));
+        assertThat(actual.getAppliedTimeoutMs(), is(0));
     }
     
     @Test
@@ -110,19 +112,23 @@ class SQLExecutionResponseTest {
         List<Map<String, Object>> resultSetNextActions = createNextActions("Return the result rows to the user or ask a follow-up question if the user requested more analysis.");
         List<Map<String, Object>> executionNextActions = createNextActions("Report the execution status to the user and stop unless the user asks for another operation.");
         return Stream.of(
-                Arguments.of("result set with rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(columns, rows, true),
-                        Map.of("result_kind", "result_set", "statement_class", "query", "statement_type", "SELECT", "status", "OK", "columns", columns, "rows", rows,
-                                "truncated", true, "next_actions", resultSetNextActions)),
+                Arguments.of("result set with rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(columns, rows, true).withExecutionHints(10, 5000),
+                        Map.ofEntries(
+                                Map.entry("result_kind", "result_set"), Map.entry("statement_class", "query"), Map.entry("statement_type", "SELECT"), Map.entry("status", "OK"),
+                                Map.entry("columns", columns), Map.entry("rows", rows), Map.entry("returned_row_count", 1), Map.entry("applied_max_rows", 10),
+                                Map.entry("applied_timeout_ms", 5000), Map.entry("truncated", true), Map.entry("next_actions", resultSetNextActions))),
                 Arguments.of("result set with null rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(List.of(), null, false),
-                        Map.of("result_kind", "result_set", "statement_class", "query", "statement_type", "SELECT", "status", "OK",
-                                "columns", List.of(), "rows", List.of(), "truncated", false, "next_actions", resultSetNextActions)),
+                        Map.ofEntries(
+                                Map.entry("result_kind", "result_set"), Map.entry("statement_class", "query"), Map.entry("statement_type", "SELECT"), Map.entry("status", "OK"),
+                                Map.entry("columns", List.of()), Map.entry("rows", List.of()), Map.entry("returned_row_count", 0), Map.entry("applied_max_rows", 0),
+                                Map.entry("applied_timeout_ms", 0), Map.entry("truncated", false), Map.entry("next_actions", resultSetNextActions))),
                 Arguments.of("update count", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.updateCount("UPDATE", 2),
                         Map.of("result_kind", "update_count", "statement_class", "dml", "statement_type", "UPDATE", "status", "OK", "affected_rows", 2, "truncated", false,
-                                "next_actions", executionNextActions)),
+                                "applied_max_rows", 0, "applied_timeout_ms", 0, "next_actions", executionNextActions)),
                 Arguments.of("statement acknowledgement",
                         (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.statementAck(SupportedMCPStatement.TRANSACTION_CONTROL, "COMMIT", "Transaction committed."),
                         Map.of("result_kind", "statement_ack", "statement_class", "transaction_control", "statement_type", "COMMIT",
-                                "status", "OK", "message", "Transaction committed.", "truncated", false, "next_actions", executionNextActions)));
+                                "status", "OK", "message", "Transaction committed.", "truncated", false, "applied_max_rows", 0, "applied_timeout_ms", 0, "next_actions", executionNextActions)));
     }
     
     private static List<Map<String, Object>> createNextActions(final String reason) {

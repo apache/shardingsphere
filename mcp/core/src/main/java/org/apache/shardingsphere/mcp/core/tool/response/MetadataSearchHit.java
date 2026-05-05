@@ -31,35 +31,59 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class MetadataSearchHit {
-    
+
     private final String database;
-    
+
     private final String schema;
-    
+
     private final String objectType;
-    
+
     private final String table;
-    
+
     private final String view;
-    
+
     private final String name;
-    
+
     @JsonProperty("resource_uri")
     @JsonInclude(Include.NON_EMPTY)
     private final String resourceUri;
-    
+
     @JsonProperty("parent_resource_uri")
     @JsonInclude(Include.NON_EMPTY)
     private final String parentResourceUri;
-    
+
     @JsonProperty("next_resource_uris")
     @JsonInclude(Include.NON_EMPTY)
     private final List<String> nextResourceUris;
-    
+
     @JsonProperty("derivation_status")
     private final String derivationStatus;
-    
+
     @JsonProperty("derivation_reason")
     @JsonInclude(Include.NON_EMPTY)
     private final String derivationReason;
+
+    @JsonProperty("match_kind")
+    private final String matchKind;
+
+    @JsonProperty("matched_fields")
+    @JsonInclude(Include.NON_EMPTY)
+    private final List<String> matchedFields;
+
+    @JsonProperty("matched_value")
+    @JsonInclude(Include.NON_EMPTY)
+    private final String matchedValue;
+
+    /**
+     * Create search hit with match explanation.
+     *
+     * @param matchKind match kind
+     * @param matchedFields matched fields
+     * @param matchedValue first matched value
+     * @return search hit with match explanation
+     */
+    public MetadataSearchHit withMatch(final String matchKind, final List<String> matchedFields, final String matchedValue) {
+        return new MetadataSearchHit(database, schema, objectType, table, view, name, resourceUri, parentResourceUri, nextResourceUris, derivationStatus, derivationReason,
+                matchKind, matchedFields, matchedValue);
+    }
 }
