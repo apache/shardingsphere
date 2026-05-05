@@ -200,7 +200,6 @@ public final class MCPErrorConverter {
         Map<String, Object> result = createBaseRecovery(createSQLToolMismatchCategory(cause),
                 requiresUserApproval ? "Use execute_update in preview mode, then ask for approval before execution." : "Use execute_query for this read-only SQL.");
         result.put("source_tool", cause.getSourceTool());
-        result.put("suggested_next_tool", cause.getTargetTool());
         result.put("statement_class", cause.getClassificationResult().getStatementClass().name().toLowerCase(Locale.ENGLISH));
         result.put("statement_type", cause.getClassificationResult().getStatementType());
         result.put("normalized_sql", cause.getClassificationResult().getNormalizedSql());
@@ -225,7 +224,6 @@ public final class MCPErrorConverter {
     
     private static Map<String, Object> createUnsafeQueryRecovery() {
         Map<String, Object> result = createBaseRecovery("unsafe_sql_attempted", "Use execute_update only after user approval for side-effecting SQL.");
-        result.put("suggested_next_tool", "execute_update");
         result.put("suggested_arguments", Map.of("execution_mode", "preview"));
         result.put("next_actions", List.of(createToolAction("execute_update", "Retry side-effecting SQL in preview mode before asking for approval.", Map.of("execution_mode", "preview"), true)));
         result.put("requires_user_approval", true);
@@ -235,7 +233,6 @@ public final class MCPErrorConverter {
     
     private static Map<String, Object> createReadOnlyUpdateRecovery() {
         Map<String, Object> result = createBaseRecovery("read_only_sql_sent_to_update_tool", "Use execute_query for read-only SELECT or EXPLAIN ANALYZE statements.");
-        result.put("suggested_next_tool", "execute_query");
         result.put("next_actions", List.of(createToolAction("execute_query", "Retry the read-only SQL with execute_query.", Map.of(), false)));
         result.put("requires_user_approval", false);
         result.put("ask_user_when_uncertain", false);
@@ -257,7 +254,6 @@ public final class MCPErrorConverter {
         Map<String, Object> result = createBaseRecovery("invalid_enum_value", "Retry with execution_mode=preview or execution_mode=execute.");
         result.put("field", "execution_mode");
         result.put("allowed_values", List.of("preview", "execute"));
-        result.put("suggested_next_tool", "execute_update");
         result.put("suggested_arguments", Map.of("execution_mode", "preview"));
         result.put("next_actions", List.of(createToolAction("execute_update", "Retry execute_update with execution_mode=preview first.", Map.of("execution_mode", "preview"), true)));
         result.put("requires_user_approval", true);
@@ -270,7 +266,6 @@ public final class MCPErrorConverter {
                 "Retry apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.");
         result.put("field", "execution_mode");
         result.put("allowed_values", List.of("preview", "review-then-execute", "manual-only"));
-        result.put("suggested_next_tool", "apply_workflow");
         result.put("suggested_arguments", Map.of("execution_mode", "preview"));
         result.put("next_actions", List.of(createToolAction("apply_workflow", "Retry apply_workflow with execution_mode=preview first.", Map.of("execution_mode", "preview"), true)));
         result.put("requires_user_approval", true);
@@ -338,7 +333,6 @@ public final class MCPErrorConverter {
     
     private static Map<String, Object> createWorkflowStateRecovery() {
         Map<String, Object> result = createBaseRecovery("workflow_state_error", "Use the latest plan_id from a planning response, or re-run the planning tool.");
-        result.put("suggested_next_tools", List.of("plan_encrypt_rule", "plan_mask_rule"));
         result.put("read_resources_first", List.of("shardingsphere://capabilities"));
         result.put("next_actions", List.of(createReadResourceAction("shardingsphere://capabilities", "Read current workflow tools, then re-run the matching planning tool in this session.")));
         result.put("ask_user_when_uncertain", false);

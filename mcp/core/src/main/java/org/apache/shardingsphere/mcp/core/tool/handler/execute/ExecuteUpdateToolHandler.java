@@ -92,6 +92,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         Map<String, Object> result = new LinkedHashMap<>(11, 1F);
         result.put("result_kind", RESULT_KIND_PREVIEW);
         result.put("execution_mode", EXECUTION_MODE_PREVIEW);
+        result.put("status", "AWAITING_APPROVAL");
         result.put("would_execute", false);
         result.put("statement_class", classificationResult.getStatementClass().name().toLowerCase(Locale.ENGLISH));
         result.put("statement_type", classificationResult.getStatementType());
@@ -103,7 +104,6 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("ask_user_when_uncertain", true);
         result.put("approval_guidance", "Review normalized_sql and side_effect_scope before calling execute_update with execution_mode=execute.");
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
-        result.put("suggested_next_tool", "execute_update");
         result.put("suggested_arguments", suggestedArguments);
         result.put("read_resources_first", createReadResourcesFirst(toolArguments));
         result.put("next_actions", List.of(

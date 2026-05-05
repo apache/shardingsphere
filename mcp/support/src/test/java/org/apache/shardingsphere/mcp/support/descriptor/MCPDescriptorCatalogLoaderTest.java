@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDescriptorCatalogLoaderTest {
@@ -40,6 +41,7 @@ class MCPDescriptorCatalogLoaderTest {
         assertTrue(actualToolNames.contains("validate_workflow"));
         assertOutputProperties(actual, "apply_workflow", Set.of("plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package"));
         assertOutputProperties(actual, "validate_workflow", Set.of("plan_id", "status", "next_actions"));
+        assertNoLegacyRecommendationFields(actual);
     }
     
     @Test
@@ -63,5 +65,37 @@ class MCPDescriptorCatalogLoaderTest {
     
     private MCPToolFieldDefinition findField(final MCPToolDescriptor toolDescriptor, final String fieldName) {
         return toolDescriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst().orElseThrow();
+    }
+    
+    private void assertNoLegacyRecommendationFields(final MCPDescriptorCatalog catalog) {
+        for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
+            assertFalse(containsLegacyRecommendationField(each.getOutputSchema()));
+        }
+    }
+    
+    private boolean containsLegacyRecommendationField(final Object value) {
+        if (value instanceof Map) {
+            return containsLegacyRecommendationFieldMap((Map<?, ?>) value);
+        }
+        if (value instanceof Iterable) {
+            for (Object each : (Iterable<?>) value) {
+                if (containsLegacyRecommendationField(each)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private boolean containsLegacyRecommendationFieldMap(final Map<?, ?> value) {
+        if (value.containsKey("recommended_next_tool") || value.containsKey("suggested_next_tool") || value.containsKey("suggested_next_tools")) {
+            return true;
+        }
+        for (Object each : value.values()) {
+            if (containsLegacyRecommendationField(each)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

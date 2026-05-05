@@ -54,6 +54,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -70,6 +71,8 @@ public final class MCPDescriptorCatalogLoader {
     private static final String DESCRIPTOR_DIRECTORY = "META-INF/shardingsphere-mcp/descriptors";
     
     private static final Pattern URI_VARIABLE_PATTERN = Pattern.compile("\\{([^}]+)}");
+    
+    private static final Collection<String> LEGACY_RECOMMENDATION_FIELDS = List.of("recommended_next_tool", "suggested_next_tool", "suggested_next_tools");
     
     /**
      * Load MCP descriptor catalog from classpath.
@@ -277,8 +280,27 @@ public final class MCPDescriptorCatalogLoader {
         checkState("object".equals(outputSchema.get("type")), String.format("Tool `%s` outputSchema must be an object.", descriptor.getName()));
         Object properties = outputSchema.get("properties");
         checkState(properties instanceof Map && !((Map<?, ?>) properties).isEmpty(), String.format("Tool `%s` outputSchema must declare properties.", descriptor.getName()));
+        validateNoLegacyRecommendationFields(descriptor, outputSchema);
         validateRequiredOutputFields(descriptor, (Map<?, ?>) properties);
         validateSearchMetadataOutputItems(descriptor, (Map<?, ?>) properties);
+    }
+    
+    private static void validateNoLegacyRecommendationFields(final MCPToolDescriptor descriptor, final Object value) {
+        if (value instanceof Map) {
+            validateNoLegacyRecommendationFieldMap(descriptor, (Map<?, ?>) value);
+        } else if (value instanceof Collection) {
+            for (Object each : (Collection<?>) value) {
+                validateNoLegacyRecommendationFields(descriptor, each);
+            }
+        }
+    }
+    
+    private static void validateNoLegacyRecommendationFieldMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
+        for (Entry<?, ?> entry : value.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            checkState(!LEGACY_RECOMMENDATION_FIELDS.contains(key), String.format("Tool `%s` outputSchema must use next_actions instead of legacy `%s`.", descriptor.getName(), key));
+            validateNoLegacyRecommendationFields(descriptor, entry.getValue());
+        }
     }
     
     private static void validateRequiredOutputFields(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
@@ -302,13 +324,13 @@ public final class MCPDescriptorCatalogLoader {
             return List.of("result_kind", "statement_class", "statement_type", "status", "suggested_arguments", "next_actions");
         }
         if ("apply_workflow".equals(toolName)) {
-            return List.of("plan_id", "execution_mode", "next_actions", "requires_user_approval");
+            return List.of("plan_id", "status", "execution_mode", "next_actions", "requires_user_approval");
         }
         if ("validate_workflow".equals(toolName)) {
-            return List.of("plan_id", "status", "next_actions");
+            return List.of("plan_id", "status", "overall_status", "issues", "next_actions");
         }
         if ("plan_encrypt_rule".equals(toolName) || "plan_mask_rule".equals(toolName)) {
-            return List.of("plan_id", "status", "next_actions");
+            return List.of("plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions");
         }
         return List.of();
     }

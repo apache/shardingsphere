@@ -91,14 +91,16 @@ class ExecuteUpdateToolHandlerTest {
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview")));
         assertThat(actual.toPayload().get("result_kind"), is("preview"));
         assertFalse((boolean) actual.toPayload().get("would_execute"));
+        assertThat(actual.toPayload().get("status"), is("AWAITING_APPROVAL"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         assertThat(actual.toPayload().get("side_effect_scope"), is(List.of("physical-data")));
-        assertThat(actual.toPayload().get("suggested_next_tool"), is("execute_update"));
+        assertFalse(actual.toPayload().containsKey("suggested_next_tool"));
         assertThat(((Map<?, ?>) actual.toPayload().get("suggested_arguments")).get("execution_mode"), is("execute"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
         assertThat(((Map<?, ?>) actualNextActions.get(1)).get("target_tool"), is("execute_update"));
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("required_arguments")).get("execution_mode"), is("execute"));
+        assertTrue((Boolean) ((Map<?, ?>) actualNextActions.get(1)).get("requires_user_approval"));
         assertThat(actual.toPayload().get("read_resources_first"), is(List.of("shardingsphere://databases/logic_db/capabilities")));
         assertTrue((boolean) actual.toPayload().get("ask_user_when_uncertain"));
         assertFalse(actual.toPayload().containsKey("recommended_next_call"));

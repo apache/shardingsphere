@@ -58,7 +58,6 @@ public final class WorkflowGuidancePayloadBuilder {
         payload.put("missing_required_inputs", missingRequiredInputs);
         payload.put("resources_to_read", createResourcesToRead(snapshot));
         payload.put("next_actions", createPlanningNextActions(snapshot, missingRequiredInputs));
-        payload.put("recommended_next_tool", createPlanningRecommendedNextTool(snapshot));
         payload.put("requires_user_approval", false);
     }
     
@@ -81,7 +80,6 @@ public final class WorkflowGuidancePayloadBuilder {
             nextActions.add(createUserAction("Inspect issues and retry apply_workflow only after the failed artifact is corrected.", true, List.of("issues")));
         }
         payload.put("next_actions", nextActions);
-        payload.put("recommended_next_tool", nextActions.isEmpty() ? "" : resolveTargetTool(nextActions.get(nextActions.size() - 1)));
         payload.put("requires_user_approval", WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status) || WorkflowLifecycle.STATUS_FAILED.equals(status));
     }
     
@@ -96,7 +94,6 @@ public final class WorkflowGuidancePayloadBuilder {
         boolean failed = WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus());
         payload.put("recommended_recovery", failed ? "Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again." : "");
         payload.put("next_actions", failed ? createValidationFailureActions(snapshot) : List.of());
-        payload.put("recommended_next_tool", failed ? resolvePlanningTool(snapshot) : "");
         payload.put("requires_user_approval", false);
     }
     
@@ -198,13 +195,6 @@ public final class WorkflowGuidancePayloadBuilder {
                 : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of("plan_id", snapshot.getPlanId()), false));
     }
     
-    private static String createPlanningRecommendedNextTool(final WorkflowContextSnapshot snapshot) {
-        if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus()) || WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus())) {
-            return resolvePlanningTool(snapshot);
-        }
-        return WorkflowLifecycle.STATUS_PLANNED.equals(snapshot.getStatus()) ? APPLY_WORKFLOW : "";
-    }
-    
     private static Map<String, Object> createToolAction(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("action_kind", "call_tool");
@@ -237,7 +227,4 @@ public final class WorkflowGuidancePayloadBuilder {
         return null == workflowKind ? "" : workflowKind.getValue();
     }
     
-    private static String resolveTargetTool(final Map<String, Object> action) {
-        return Objects.toString(action.get("target_tool"), "");
-    }
 }

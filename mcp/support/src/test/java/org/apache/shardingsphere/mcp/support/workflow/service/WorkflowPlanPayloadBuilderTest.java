@@ -76,7 +76,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actual.get("intent_inference")).get("inferred_values")).get("requires_decrypt"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("unresolved_fields"), is(clarifiedIntent.getUnresolvedFields()));
         assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query")));
-        assertThat(actual.get("recommended_next_tool"), is("plan_encrypt_rule"));
+        assertFalse(actual.containsKey("recommended_next_tool"));
         assertFalse((Boolean) actual.get("requires_user_approval"));
         assertTrue(((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
@@ -100,7 +100,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue(actualResourcesToRead.contains("shardingsphere://features/mask/algorithms"));
         assertTrue(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
         assertFalse(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
-        assertThat(actual.get("recommended_next_tool"), is("apply_workflow"));
+        assertFalse(actual.containsKey("recommended_next_tool"));
         assertFalse((Boolean) actual.get("requires_user_approval"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
         assertThat(actualNextAction.get("target_tool"), is("apply_workflow"));
@@ -120,7 +120,7 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
-        assertThat(actual.get("recommended_next_tool"), is("plan_encrypt_rule"));
+        assertFalse(actual.containsKey("recommended_next_tool"));
         assertThat(actualNextAction.get("action_kind"), is("call_tool"));
         assertThat(actualNextAction.get("target_tool"), is("plan_encrypt_rule"));
     }

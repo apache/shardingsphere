@@ -18,7 +18,7 @@
 # Tasks: AI-Friendly MCP Lightweight Requirements
 
 **Input**: `spec.md`, `requirements.md`, and `plan.md`
-**Tests**: Required only when implementation changes begin. This pass organizes requirements and does not implement runtime behavior.
+**Tests**: Implementation changes are included. Use scoped MCP module tests plus Checkstyle and Spotless gates.
 **Constraint**: Do not switch branches. Do not execute branch-changing Spec Kit commands, `git switch`, or `git checkout`.
 
 ## Format: `[ID] [P?] [Priority] Description`
@@ -26,6 +26,9 @@
 - **[P]**: Can be done in parallel after prerequisites are complete.
 - **[Priority]**: P0, P1, or P2 from `spec.md`.
 - These tasks are a lightweight backlog, not a mandate to build everything in one change.
+- P0 is locked to the six categories in `requirements.md`; do not pull P1/P2 work into the first implementation slice.
+- `shardingsphere://capabilities` is the sole current public-surface fact source.
+- Do not preserve legacy compatibility shims, old tool names, old recommendation fields, or implicit execution defaults.
 
 ## Phase 1: Requirements Alignment
 
@@ -36,38 +39,42 @@
   model-confusion matrices, sampling/progress/logging/roots work, graph/planner/memory/vector systems, and broad tool matrices.
 - [x] T005 Keep `requirements.md` synchronized with the active lightweight `docs/mcp` requirement baseline.
 - [x] T006 Update `spec.md`, `plan.md`, and `tasks.md` so the Spec Kit directory points to the same lightweight scope.
+- [x] T006A Record confirmed decisions: locked P0, capabilities as fact source, no compatibility shims, missing `execution_mode` rejection,
+  and lightweight deterministic verification.
 
 ## Phase 2: P0 Public Surface Clarity
 
-- [ ] T007 [P0] Inspect `mcp/README.md`, `mcp/README_ZH.md`, descriptor YAML, and `shardingsphere://capabilities` for public surface drift.
-- [ ] T008 [P0] Update server instructions so models start from `shardingsphere://capabilities` and resource-first discovery.
-- [ ] T009 [P0] Mark historical PRD/design content as non-current where it still presents early tool matrices as if active.
-- [ ] T010 [P0] Add a focused capabilities shape check for resources, resource templates, tools, prompts, completion targets, navigation, protocol availability, and fingerprints.
-- [ ] T011 [P0] Add descriptor lint for empty or placeholder descriptions, missing side-effect/approval wording, missing enum values, and missing key output schema fields.
+- [x] T007 [P0] Inspect `mcp/README.md`, `mcp/README_ZH.md`, descriptor YAML, and `shardingsphere://capabilities` for public surface drift.
+- [x] T008 [P0] Update server instructions so models start from `shardingsphere://capabilities` as the sole current fact source.
+- [x] T009 [P0] Mark historical PRD/design content as non-current where it still presents early tool matrices as if active.
+- [x] T009A [P0] Remove any old tool-name compatibility entry points instead of preserving forward compatibility.
+- [x] T010 [P0] Add a focused capabilities shape check for resources, resource templates, tools, prompts, completion targets, navigation, protocol availability, and fingerprints.
+- [x] T011 [P0] Add descriptor lint for empty or placeholder descriptions, missing side-effect/approval wording, missing enum values, and missing key output schema fields.
 
 ## Phase 3: P0 Next Actions and Safe Continuation
 
-- [ ] T012 [P0] Inventory existing `next_actions`, `recommended_next_tool`, `suggested_next_tool`, approval, and workflow guidance fields.
-- [ ] T013 [P0] Standardize new guidance on `next_actions` while preserving existing compatibility fields where already exposed.
-- [ ] T014 [P0] Ensure `execute_update` preview responses include reusable execute arguments only behind explicit user approval.
-- [ ] T015 [P0] Ensure `apply_workflow` preview responses include reusable apply arguments and approval requirements.
-- [ ] T016 [P0] Add tests that assert no next action suggests guessed secrets, hidden physical objects, or side-effect execution without approval.
+- [x] T012 [P0] Inventory existing `next_actions`, `recommended_next_tool`, `suggested_next_tool`, approval, and workflow guidance fields.
+- [x] T013 [P0] Standardize guidance on `next_actions` and remove `recommended_next_tool` / `suggested_next_tool` from the active contract.
+- [x] T014 [P0] Ensure `execute_update` preview responses include reusable execute arguments only behind explicit user approval.
+- [x] T015 [P0] Ensure `apply_workflow` preview responses include reusable apply arguments and approval requirements.
+- [x] T016 [P0] Add tests that assert no next action suggests guessed secrets, hidden physical objects, or side-effect execution without approval.
 
 ## Phase 4: P0 Metadata Search to Resource URI
 
-- [ ] T017 [P0] Verify `search_metadata` URI derivation for database, schema, table, column, index, view, and sequence objects.
-- [ ] T018 [P0] Add or adjust `resource_uri`, `parent_resource_uri`, and `next_resource_uris` fields only where descriptor-backed derivation is safe.
-- [ ] T019 [P0] Return derivation status and reason when URI derivation is unsafe or unsupported.
-- [ ] T020 [P0] Add focused tests for successful derivation and non-guessing failure paths.
+- [x] T017 [P0] Verify `search_metadata` URI derivation for database, schema, table, column, index, view, and sequence objects.
+- [x] T018 [P0] Add or adjust `resource_uri`, `parent_resource_uri`, and `next_resource_uris` fields only where descriptor-backed derivation is safe.
+- [x] T019 [P0] Return derivation status and reason when URI derivation is unsafe or unsupported.
+- [x] T020 [P0] Add focused tests for successful derivation and non-guessing failure paths.
 
 ## Phase 5: P0 Output Schema and Recovery Accuracy
 
-- [ ] T021 [P0] Compare descriptor output schemas with actual payloads for `search_metadata`, `execute_query`, `execute_update`,
+- [x] T021 [P0] Compare descriptor output schemas with actual payloads for `search_metadata`, `execute_query`, `execute_update`,
   `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, and `validate_workflow`.
-- [ ] T022 [P0] Correct schema fields, enum values, required fields, and nested object shapes where they drift.
-- [ ] T023 [P0] Expand recovery for missing `database`, missing `execution_mode`, wrong SQL tool, unknown tool/resource, and stale workflow `plan_id`.
-- [ ] T024 [P0] Keep wrong-tool SQL recovery on preview-first `execute_update` and preserve user approval.
-- [ ] T025 [P0] Add focused unit tests for each recovery branch.
+- [x] T022 [P0] Correct schema fields, enum values, required fields, and nested object shapes where they drift.
+- [x] T023 [P0] Reject missing `execution_mode` and recover to `execution_mode=preview` without implicit preview or execute defaults.
+- [x] T023A [P0] Expand recovery for missing `database`, missing `execution_mode`, wrong SQL tool, unknown tool/resource, and stale workflow `plan_id`.
+- [x] T024 [P0] Keep wrong-tool SQL recovery on preview-first `execute_update` and preserve user approval.
+- [x] T025 [P0] Add focused unit tests for each recovery branch.
 
 ## Phase 6: P1 Resource Navigation and Examples
 
@@ -108,16 +115,13 @@
 - [ ] D003 Do not add model-confusion matrices before focused recovery tests prove the gap.
 - [ ] D004 Do not add MCP-native sampling, progress, logging, or roots work without a separate SDK-supported requirement.
 - [ ] D005 Do not add metadata freshness semantics, config environment variable interpolation, current-session workflow list resources,
-  broad tool matrices, planner, graph engine, vector search, cross-session memory, RBAC platform, or hidden execution shortcuts.
+  broad tool matrices, compatibility shims, planner, graph engine, vector search, cross-session memory, RBAC platform, or hidden execution shortcuts.
 
 ## Verification
 
-For this requirements-only pass:
+For the completed P0 implementation pass:
 
-- [x] V001 Run `git diff --check`.
-
-For later implementation:
-
-- [ ] V002 Run scoped module tests for touched MCP modules.
-- [ ] V003 Run scoped Checkstyle/Spotless gates when Java or descriptor code changes.
-- [ ] V004 Record exact commands, exit codes, skipped checks, and remaining risks in the handoff.
+- [x] V001 Run formatting checks through the repository Spotless gate.
+- [x] V002 Run scoped module tests for touched MCP modules.
+- [x] V003 Run scoped Checkstyle/Spotless gates when Java or descriptor code changes.
+- [x] V004 Record exact commands, exit codes, skipped checks, and remaining risks in the handoff.

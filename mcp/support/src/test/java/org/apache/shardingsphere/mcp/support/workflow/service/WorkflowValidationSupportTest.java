@@ -164,7 +164,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("status"), is("validated"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recommended_recovery"), is(""));
-        assertThat(actualResult.get("recommended_next_tool"), is(""));
+        assertFalse(actualResult.containsKey("recommended_next_tool"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("validated"));
         assertThat(workflowSessionContext.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
     }
@@ -198,7 +198,7 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
-        assertThat(actualResult.get("recommended_next_tool"), is("plan_encrypt_rule"));
+        assertFalse(actualResult.containsKey("recommended_next_tool"));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("target_tool"), is("plan_encrypt_rule"));
     }
     

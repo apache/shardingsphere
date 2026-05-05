@@ -59,10 +59,12 @@ class ServerCapabilitiesHandlerTest {
     
     private void assertModelContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_contract");
+        assertThat(actual.get("public_surface_source"), is("shardingsphere://capabilities"));
         assertThat(actual.get("safe_first_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(((Map<?, ?>) actual.get("sql_tool_selection")).containsKey("side_effecting"));
         assertTrue(actual.containsKey("workflow_session_rule"));
+        assertTrue(actual.containsKey("legacy_compatibility_rule"));
         assertTrue(actual.containsKey("recovery_rule"));
     }
     
@@ -96,6 +98,26 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> executeUpdateTool = findTool(capabilities, "execute_update");
         Map<?, ?> executeUpdateOutputProperties = (Map<?, ?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("properties");
         assertTrue(((List<?>) ((Map<?, ?>) executeUpdateOutputProperties.get("result_kind")).get("enum")).containsAll(List.of("preview", "result_set", "update_count", "statement_ack")));
+        assertNoLegacyRecommendationFields(capabilities);
+    }
+    
+    private void assertNoLegacyRecommendationFields(final Object value) {
+        if (value instanceof Map) {
+            assertNoLegacyRecommendationFieldMap((Map<?, ?>) value);
+        } else if (value instanceof Collection) {
+            for (Object each : (Collection<?>) value) {
+                assertNoLegacyRecommendationFields(each);
+            }
+        }
+    }
+    
+    private void assertNoLegacyRecommendationFieldMap(final Map<?, ?> value) {
+        assertFalse(value.containsKey("recommended_next_tool"));
+        assertFalse(value.containsKey("suggested_next_tool"));
+        assertFalse(value.containsKey("suggested_next_tools"));
+        for (Object each : value.values()) {
+            assertNoLegacyRecommendationFields(each);
+        }
     }
     
     private Map<?, ?> findResource(final Map<String, Object> capabilities, final String uriPattern) {

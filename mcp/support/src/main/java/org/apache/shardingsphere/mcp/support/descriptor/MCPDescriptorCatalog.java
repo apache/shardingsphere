@@ -131,7 +131,8 @@ public final class MCPDescriptorCatalog {
     }
     
     private Map<String, Object> createModelContract() {
-        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("public_surface_source", "shardingsphere://capabilities");
         result.put("safe_first_resource", "shardingsphere://capabilities");
         result.put("metadata_first_resource", "shardingsphere://databases");
         result.put("sql_tool_selection", Map.of(
@@ -139,6 +140,7 @@ public final class MCPDescriptorCatalog {
                 "side_effecting", "Use execute_update with execution_mode=preview before asking for user approval."));
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
         result.put("side_effect_rule", "Preview before side effects and continue only after explicit user approval.");
+        result.put("legacy_compatibility_rule", "Do not rely on legacy tool names or legacy recommendation fields; follow next_actions instead.");
         result.put("detail_resource_rule", "Read each resource payload_contract before assuming detail fields.");
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
         return result;

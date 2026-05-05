@@ -15,235 +15,217 @@
   limitations under the License.
 -->
 
-# Data Model: AI-Friendly MCP Experience Hardening
+# Data Model: AI-Friendly MCP Lightweight Requirements
 
-## Normalized Transcript Fixture
+This document defines the lightweight requirement objects used by the active Spec Kit package.
+It is not an implementation class model and does not require new persistence, a planner, a graph service, or a benchmark framework.
 
-Represents a reviewable golden payload generated from public MCP protocol calls.
+## Public Surface Contract
 
-Fields:
-
-- `name`: Stable fixture name such as `tools-list` or `capabilities-resource`.
-- `method`: Protocol method or resource URI.
-- `payload`: Normalized JSON payload.
-- `normalizers`: Dynamic fields and ordering rules applied before comparison.
-- `assertion_scope`: The model-facing contract fields protected by the fixture.
-- `fingerprints`: Descriptor, prompt, navigation, and schema fingerprints captured with the payload.
-
-Validation rules:
-
-- Dynamic values must be masked or removed.
-- Collections whose order is not meaningful must be sorted by stable identifiers.
-- Fixtures must focus on model-facing metadata, not large runtime data.
-- Fingerprints must be deterministic for the same descriptor inputs.
-
-## Real-Model Scenario
-
-Represents an opt-in E2E scenario executed against an actual model.
+Represents the current model-visible MCP surface.
 
 Fields:
 
-- `scenario_id`: Stable scenario identifier.
-- `runtime_kind`: Fixture runtime such as H2 or MySQL.
-- `model_provider`: Model provider name.
-- `model_identifier`: Model identifier.
-- `allowed_actions`: MCP bridge actions and tools available to the model.
-- `descriptor_fingerprint`: Descriptor catalog fingerprint used by the scenario.
-- `prompt_fingerprint`: Prompt set fingerprint used by the scenario.
-- `navigation_fingerprint`: Resource navigation fingerprint used by the scenario.
-- `required_trace`: Required ordered or partially ordered MCP interactions.
-- `approval_boundary`: Expected preview and approval behavior before side effects.
-- `final_assertions`: Final validation result and result-shape checks.
-- `redaction_policy`: Credential fields that must be removed from artifacts.
-- `failure_classification`: Stable category for unavailable model, assertion failure, invalid call order, unsafe execution attempt, or infrastructure failure.
+- `tools`: Public tool identifiers and descriptions exposed by descriptors.
+- `resources`: Public resource identifiers exposed by descriptors and `resources/list`.
+- `resource_templates`: Public resource template identifiers and URI patterns.
+- `prompts`: Public prompt identifiers.
+- `completion_targets`: Arguments that support MCP completion.
+- `capabilities_uri`: The canonical `shardingsphere://capabilities` resource and sole current fact source.
+- `source_paths`: README, descriptor, or documentation paths used to verify the contract.
 
 Validation rules:
 
-- Default CI must not require real-model credentials.
-- Assertions must target protocol-visible interactions, not exact model prose.
-- Credentials, API keys, and tokens must not appear in artifacts.
-- Reports must include model and capability fingerprints so regressions are traceable.
+- README, descriptors, and capabilities must not describe conflicting public tools.
+- Historical tool matrices must be labeled as non-current.
+- Legacy tool names and compatibility shims must not remain in the active contract.
+- The contract must not imply hidden physical resources or undocumented tools.
 
-## Completion Ranking Rule
+## Next Action
 
-Represents deterministic ordering applied to completion candidates.
+Represents a safe next step that a model can follow after a tool, resource, workflow, or recoverable error.
+
+Fields:
+
+- `action_kind`: Read resource, call tool, ask user, retry, stop, or equivalent stable kind.
+- `reason`: Short explanation of why the action is suggested.
+- `requires_user_approval`: Whether the next step can change state or depends on operator confirmation.
+- `target_tool`: Optional public tool identifier.
+- `target_resource`: Optional public resource URI.
+- `required_arguments`: Optional schema-valid arguments known by the server or already supplied by the user.
+- `required_inputs`: Optional user inputs that the server cannot infer safely.
+
+Validation rules:
+
+- Side-effecting next actions must preserve preview and user approval.
+- Required arguments must not include guessed secrets, hidden physical objects, or placeholders.
+- Compatibility fields such as `recommended_next_tool` and `suggested_next_tool` must be removed from the active contract.
+
+## Resource URI Hint
+
+Represents safe navigation returned by metadata search or resource responses.
+
+Fields:
+
+- `resource_uri`: Detail resource URI when safely derivable.
+- `parent_resource_uri`: Parent resource URI when safely derivable.
+- `next_resource_uris`: Next-hop resource URIs when safely derivable.
+- `derivation_status`: Derived, unsupported, ambiguous, or not safe to derive.
+- `derivation_reason`: Explanation when a URI is omitted.
+
+Validation rules:
+
+- URI hints must match public resource templates.
+- Unsafe or ambiguous derivation must omit guessed URIs.
+- Hints must not require a runtime graph traversal engine.
+
+## Output Schema Contract
+
+Represents the descriptor-declared response shape for a core MCP tool.
+
+Fields:
+
+- `tool_name`: One of `search_metadata`, `execute_query`, `execute_update`, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, or `validate_workflow`.
+- `status_values`: Status or state enum values returned by the tool.
+- `required_fields`: Fields that are always present for the relevant response branch.
+- `branch_shapes`: Preview, planned, clarifying, completed, failed, or error branch shapes.
+- `examples`: Optional compact static examples.
+
+Validation rules:
+
+- Enum casing, field names, nested objects, and required fields must match actual payloads.
+- Examples must be secret-free and environment-independent.
+- Broad untyped `object` or `array` shapes are not enough for core fields.
+
+## Recovery Envelope
+
+Represents structured repair metadata for common model mistakes.
+
+Fields:
+
+- `recoverable`: Whether the caller can safely retry.
+- `category`: Stable local error category.
+- `missing_fields`: Arguments that block safe execution.
+- `read_resources_first`: Public resources to read before retrying.
+- `next_actions`: Structured next actions for repair.
+- `ask_user_when_uncertain`: Whether the model must ask the user before continuing.
+
+Validation rules:
+
+- Missing `database` should point to `shardingsphere://databases`.
+- Missing `execution_mode` should be rejected and then recover to preview.
+- Wrong SQL tool recovery should point from `execute_query` to `execute_update` preview.
+- Stale or unknown `plan_id` should recommend current-session completion or replanning.
+
+## Descriptor Lint Rule
+
+Represents a deterministic quality rule for model-visible descriptors.
+
+Fields:
+
+- `rule_id`: Stable lint rule identifier.
+- `target_kind`: Tool, resource, prompt, completion target, navigation, or schema.
+- `finding_category`: Missing description, placeholder description, missing enum value, missing approval wording, missing output schema, or invalid navigation reference.
+- `severity`: Failure or warning.
+- `message`: Maintainer-facing explanation.
+
+Validation rules:
+
+- P0 failures should fail a focused deterministic test.
+- Rules must be small enough to review without a separate lint framework.
+- Messages should identify the descriptor or schema that needs correction.
+
+## Capabilities Shape Check
+
+Represents a focused contract assertion for `shardingsphere://capabilities`.
+
+Fields:
+
+- `resources_section`: Presence and basic shape of public resources.
+- `resource_templates_section`: Presence and basic shape of resource templates.
+- `tools_section`: Presence and basic shape of public tools.
+- `prompts_section`: Presence and basic shape of prompts.
+- `completion_targets_section`: Presence and basic shape of completion targets.
+- `resource_navigation_section`: Presence and basic shape of navigation metadata when exposed.
+- `protocol_availability_section`: Transport/protocol availability metadata.
+- `fingerprints_section`: Deterministic fingerprints if already exposed.
+
+Validation rules:
+
+- Checks should assert sections and shape, not large snapshots.
+- Checks must not require a live model service.
+- Dynamic runtime values must not make the check flaky.
+
+## Completion Candidate
+
+Represents a deterministic completion value.
 
 Fields:
 
 - `argument`: Completed argument name.
-- `reference_type`: Prompt or resource reference type.
-- `reference`: Prompt name or resource URI.
-- `prefix_score`: Exact and prefix matching score.
-- `context_score`: Match strength for supplied context arguments.
-- `lifecycle_score`: Workflow plan eligibility and update recency score.
-- `feature_score`: Encrypt or mask feature match score for algorithms.
-- `fallback_order`: Stable lexical order used after stronger scores tie.
+- `value`: Plain reusable argument string.
+- `context`: Supplied database, schema, table, feature, or workflow context.
+- `rank_reason`: Prefix match, contains fallback, context match, plan recency, or stable fallback order.
 
 Validation rules:
 
-- Returned values must remain exact argument strings.
+- Values remain plain strings.
 - Ranking must be deterministic for the same request and runtime state.
-- Ranking must not use external models, vector search, cross-session history, or user behavior learning.
+- Completion must not use vector search, model calls, cross-session history, or user behavior learning.
 
-## Completion Diagnostic Metadata
+## Algorithm Property Template
 
-Represents optional metadata returned with completion values.
-
-Fields:
-
-- `value_sources`: Stable source labels for completion candidates.
-- `ranking_reasons`: Static reasons such as exact prefix, context match, plan recency, or feature match.
-- `missing_context`: Context arguments required before stronger candidates can be returned.
-- `read_resources_first`: Public resources that can provide missing context.
-- `ask_user_when_uncertain`: Whether missing context must come from the user.
-
-Validation rules:
-
-- Completion `values` remain plain strings.
-- Diagnostics must not include secrets, hidden physical objects, guessed values, or environment-specific values.
-- Empty completions must distinguish no candidates from missing prerequisite context.
-
-## Recovery Envelope
-
-Represents structured metadata returned with recoverable errors.
+Represents model-visible requirements for encrypt and mask algorithms.
 
 Fields:
 
-- `recoverable`: Whether a model can safely attempt recovery.
-- `category`: Stable recovery category.
-- `model_action`: Natural-language action summary for the model.
-- `suggested_next_tool`: Optional public tool name to call next.
-- `suggested_arguments`: Optional schema-valid arguments known by the server or already supplied by the user.
-- `read_resources_first`: Optional resource URIs to inspect before retrying.
-- `ask_user_when_uncertain`: Whether the model must ask the user for missing values.
-- `pending_questions`: Optional concise user-facing questions when native elicitation is unavailable.
-- `missing_arguments`: Optional argument names that block safe retry.
+- `algorithm_type`: Encrypt or mask algorithm identifier.
+- `required_properties`: Required property names.
+- `optional_properties`: Optional property names.
+- `defaults`: Default values when known.
+- `secret_flags`: Properties that must be treated as secret.
+- `capability_hints`: Known capability hints such as decrypt support, equality filter support, or like query support.
 
 Validation rules:
 
-- Suggested arguments must not include secrets, guessed values, placeholders, or hidden physical objects.
-- Wrong-tool SQL recovery must preserve `execution_mode=preview` and approval guidance.
-- Unavailable workflow plan recovery must recommend replanning in the current MCP session.
-- Recovery categories must be stable enough for model-confusion tests.
+- Secret values must not be emitted.
+- Unknown properties should be omitted rather than guessed.
+- The template should be available from existing algorithm resources.
 
-## Resource Navigation Entry
+## Startup Troubleshooting Hint
 
-Represents a lightweight descriptor-owned relationship between public MCP resources, prompts, or tools.
+Represents first-use connection guidance.
 
 Fields:
 
-- `from`: Source public identifier.
-- `to`: Target public identifier.
-- `required_arguments`: Arguments required to follow the relationship.
-- `carried_arguments`: Arguments that can be reused from the source context.
-- `description`: Model-facing explanation of when to follow the relationship.
-- `source_descriptor`: Descriptor file or logical descriptor owner that declared the relationship.
+- `transport`: HTTP or STDIO.
+- `endpoint`: HTTP endpoint when applicable.
+- `config_path`: Runtime configuration path when known.
+- `log_path`: Diagnostic log path when known.
+- `token_required`: Whether bearer token is required.
+- `database_count`: Runtime logical database count when safely available.
+- `common_failures`: Java version, missing JDBC driver, token error, STDIO log pollution, empty public surface, or workflow topology mistake.
 
 Validation rules:
 
-- Both endpoints must resolve to public MCP resources, prompts, or tools.
-- Navigation must be loaded from descriptors or descriptor-owned metadata.
-- Navigation must not expose hidden physical metadata or create an automatic traversal service.
+- STDIO mode must keep stdout reserved for MCP protocol.
+- Hints must avoid secrets and environment-specific credentials.
+- Troubleshooting should remain concise and documentation-oriented.
 
-## Descriptor Lint Finding
+## Opt-In Usability Scenario
 
-Represents a descriptor quality defect that would make the MCP surface less natural for models.
+Represents a small live-model or model-like scenario outside default CI.
 
 Fields:
 
-- `descriptor_id`: Tool, resource, prompt, completion target, or navigation identifier.
-- `finding_category`: Missing description, weak description, missing enum meaning, missing output schema, missing safety annotation, missing completion target, missing navigation, or invalid example.
-- `message`: Maintainer-facing explanation of the failed clarity rule.
-- `severity`: Failure or warning level.
+- `scenario_id`: Stable scenario name.
+- `purpose`: Preview-first SQL, search-to-resource, or workflow order.
+- `required_trace`: Minimal ordered MCP interactions.
+- `approval_boundary`: Expected user approval requirement.
+- `enabled_by_default`: Always false for live-model execution.
 
 Validation rules:
 
-- Findings for required P0/P1/P2 rules fail deterministic tests.
-- Messages must point to the descriptor identifier and the missing model-facing contract.
-
-## Capability Fingerprint Set
-
-Represents deterministic identifiers for model-facing contract versions.
-
-Fields:
-
-- `descriptor_catalog`: Fingerprint for tool, resource, schema, and annotation descriptors.
-- `prompt_set`: Fingerprint for prompt descriptors and prompt template content.
-- `resource_navigation`: Fingerprint for descriptor-owned navigation metadata.
-- `model_schema_set`: Fingerprint for output schemas and reusable model-facing schema fragments.
-
-Validation rules:
-
-- Fingerprints must ignore session IDs, timestamps, runtime database versions, and result data.
-- Golden transcripts and real-model E2E reports must record the fingerprints they used.
-
-## Next-Action Metadata
-
-Represents shared guidance returned from successful outputs, resource outputs, prompt instructions, or errors.
-
-Fields:
-
-- `suggested_next_tool`: Optional public tool to call next.
-- `suggested_arguments`: Optional safe arguments for the next call.
-- `read_resources_first`: Optional public resources to inspect before retrying.
-- `requires_user_approval`: Whether the next step can change state and needs approval.
-- `ask_user_when_uncertain`: Whether missing intent must be clarified with the user.
-- `stop_condition`: Optional condition telling the model no more MCP calls are needed for the current workflow.
-
-Validation rules:
-
-- Suggested arguments must use server-known or user-supplied values only.
-- Side-effecting next actions must preserve preview and approval boundaries.
-
-## Prompt Argument Coverage
-
-Represents how each prompt argument can be filled.
-
-Fields:
-
-- `prompt_name`: Prompt descriptor name.
-- `argument_name`: Prompt argument.
-- `coverage_kind`: Completion-backed, resource-backed, user-provided-only, or optional.
-- `reference`: Completion target, resource URI, or explanation for user-provided-only arguments.
-
-Validation rules:
-
-- Every prompt argument must have exactly one coverage kind.
-- User-provided-only arguments must include ask-user guidance.
-
-## Model Ergonomics Surface
-
-Represents second-order fields that make model calls clear and bounded.
-
-Fields:
-
-- `name_intent`: Read-only, preview, side-effecting, planning, validation, or lookup.
-- `pagination`: `has_more`, `next_page_token`, and continuation arguments when applicable.
-- `progress`: Native progress handle or structured progress fields when supported.
-- `sampling`: Native sampling metadata only when a concrete workflow needs model-side generation.
-- `logging`: Native logging or structured diagnostic fields for long-running workflows.
-- `roots`: Native roots or permission-boundary metadata for future file or configuration resources.
-- `example_shape`: Compact static example for complex outputs.
-
-Validation rules:
-
-- Large result surfaces must expose continuation metadata.
-- Sampling and logging must not become hidden planning, hidden execution, or completion ranking dependencies.
-- Examples must be secret-free and environment-independent.
-- File or configuration resource boundaries must be explicit before access.
-
-## Model-Confusion Scenario
-
-Represents a deterministic negative-path test for common model mistakes.
-
-Fields:
-
-- `scenario_id`: Stable scenario identifier.
-- `initial_call`: The intentionally wrong or ambiguous MCP call.
-- `expected_recovery`: Required recovery or next-action metadata.
-- `forbidden_behavior`: Behavior that must not happen, such as execution without preview.
-
-Validation rules:
-
-- Scenarios must cover wrong call order, missing execution mode, stale `plan_id`, unknown database, ambiguous metadata, invalid enum, and wrong SQL tool.
-- Assertions target structured fields rather than exact prose.
+- Default CI must not require live model credentials.
+- Assertions should target MCP calls and structured fields, not exact model prose.
+- The scenario set must stay small and focused.

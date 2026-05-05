@@ -28,6 +28,7 @@
 Organize the next MCP usability increment around small model-facing improvements.
 The work should make the current MCP surface easier for large models to discover, call, continue, and recover from without introducing
 a planner, broad tool matrix, graph engine, vector search, cross-session memory, or default-CI real-model benchmark.
+The first implementation slice is locked to P0, uses `shardingsphere://capabilities` as the sole current fact source, and removes legacy compatibility behavior instead of preserving it.
 
 The active requirement source is:
 
@@ -46,14 +47,15 @@ and opt-in LLM usability tests only when explicitly enabled.
 **Target Platform**: ShardingSphere-Proxy MCP runtime over HTTP and STDIO.
 **Project Type**: Java backend protocol surface and model-facing metadata.
 **Performance Goals**: Completion and navigation changes remain deterministic, in-memory, and bounded by existing pagination or max-result limits.
-**Constraints**: No branch switching, no generated-path edits, no hidden execution defaults, no broad planner or benchmark system, and no default-CI dependency on live model services.
+**Constraints**: No branch switching, no generated-path edits, no hidden execution defaults, no legacy compatibility shims,
+no broad planner or benchmark system, and no default-CI dependency on live model services.
 **Scale/Scope**: `mcp/api`, `mcp/support`, `mcp/core`, `mcp/bootstrap`, `mcp/features/encrypt`, `mcp/features/mask`,
 `mcp/README.md`, `mcp/README_ZH.md`, `docs/mcp`, and focused MCP tests when implementation starts.
 
 ## Constitution Check
 
 - **Readability and cleanliness**: Pass. Requirements are grouped by P0/P1/P2 and remove stale broad scope.
-- **Simplicity**: Pass. The plan explicitly excludes planner, graph, memory, vector, benchmark, and RBAC systems.
+- **Simplicity**: Pass. The plan explicitly excludes planner, graph, memory, vector, benchmark, RBAC systems, and legacy compatibility shims.
 - **Explicit operator control**: Pass. Preview-first and user approval boundaries remain mandatory for side effects.
 - **Deterministic verification**: Pass. Default verification uses lightweight deterministic checks; real-model usage remains opt-in.
 - **Repository rules**: Pass. This task does not switch branches or edit generated files, and implementation tasks must keep scoped Maven/checkstyle verification.
@@ -103,7 +105,7 @@ test/e2e/mcp/
 
 ### Slice 1: P0 Public Surface Clarity
 
-- Make server instructions point models to `shardingsphere://capabilities` and resource-first discovery.
+- Make server instructions point models to `shardingsphere://capabilities` as the sole current public-surface fact source.
 - Check README, descriptor identifiers, and capabilities for current public surface consistency.
 - Label obsolete tool-matrix material as non-current.
 - Add a lightweight capabilities shape check rather than a broad golden transcript suite.
@@ -111,7 +113,7 @@ test/e2e/mcp/
 ### Slice 2: P0 Next Actions and Safe Continuation
 
 - Standardize `next_actions` as the primary guidance field.
-- Keep existing compatibility fields only where already present.
+- Remove legacy recommendation compatibility fields such as `recommended_next_tool` and `suggested_next_tool`.
 - Ensure preview outputs return reusable arguments for execute/apply steps when safe.
 - Preserve user approval requirements for all side-effecting continuation paths.
 
@@ -124,6 +126,7 @@ test/e2e/mcp/
 ### Slice 4: P0 Schema and Recovery Accuracy
 
 - Reconcile core output schemas with actual payloads for search, SQL, workflow planning, apply, and validation.
+- Reject missing `execution_mode` and recover to `execution_mode=preview` without any implicit default.
 - Extend structured recovery for missing `database`, missing `execution_mode`, wrong SQL tool, unknown public identifier, and stale workflow `plan_id`.
 - Add descriptor lint for obvious model-facing regressions.
 
@@ -146,7 +149,7 @@ test/e2e/mcp/
 
 No complexity exception is justified.
 Any later proposal for a new planner, graph engine, vector retrieval, cross-session memory, default-CI real-model suite,
-benchmark leaderboard, RBAC platform, or hidden execution shortcut must reopen this section with a concrete benefit and scoped alternative analysis.
+benchmark leaderboard, RBAC platform, hidden execution shortcut, or legacy compatibility shim must reopen this section with a concrete benefit and scoped alternative analysis.
 
 ## Verification Plan
 

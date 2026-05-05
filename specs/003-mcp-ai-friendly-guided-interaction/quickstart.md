@@ -15,159 +15,123 @@
   limitations under the License.
 -->
 
-# Quickstart: AI-Friendly MCP Experience Hardening
+# Quickstart: AI-Friendly MCP Lightweight Requirements
 
-This quickstart defines the validation path for the next increment. It is not an implementation script.
+This quickstart explains how to read and validate the active requirements package.
+It is not an implementation script and must not switch branches.
 
 ## Prerequisites
 
-- `git branch --show-current` reports `001-shardingsphere-mcp`.
-- MCP prompt, completion, resource, tool, workflow, and preview baseline is available.
-- Real-model E2E is disabled by default and enabled only by an explicit profile or environment switch.
-- Side-effecting tools require explicit preview, execute, or approval-bound execution mode before state changes.
-- Descriptor lint, golden transcripts, transport contracts, and model-confusion tests are deterministic and run without real-model credentials.
+- `git branch --show-current` reports the existing branch, `001-shardingsphere-mcp`.
+- No `git switch`, `git checkout`, or branch-changing Spec Kit script is run.
+- Requirements stay scoped to model-facing clarity, safe continuation, and lightweight regression protection.
+- `shardingsphere://capabilities` is treated as the sole current public-surface fact source.
+- Legacy compatibility shims, old tool names, old recommendation fields, and implicit execution defaults are not preserved.
+- Side-effecting SQL and workflow apply paths remain preview-first and user-approved.
+- Live-model usability scenarios remain opt-in and outside default CI.
 
-## Scenario 1: Documentation Correction
+## Requirement Documents
 
-1. Read `mcp/README.md` and `mcp/README_ZH.md`.
-2. Verify prompt and completion support is documented as implemented, not deferred.
-3. Verify preview and approval guidance remains explicit.
-4. Verify `execute_update` no longer describes omitted `execution_mode` as a direct execution path.
+Use these files as the active requirement set:
 
-Expected result:
+- `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/spec.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/requirements.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/plan.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/research.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/data-model.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/tasks.md`
+- `specs/003-mcp-ai-friendly-guided-interaction/quickstart.md`
 
-- Documentation matches the current protocol-visible MCP surface.
+## Scenario 1: Confirm Active Scope
 
-## Scenario 2: Transcript Golden Guard
-
-1. Start the MCP runtime through an existing deterministic test harness.
-2. Capture `initialize`, `tools/list`, `resources/list`, `resources/templates/list`, `prompts/list`, representative `completion/complete`, and `shardingsphere://capabilities`.
-3. Capture descriptor, prompt, navigation, and schema fingerprints.
-4. Normalize dynamic fields and unordered collections.
-5. Compare the payloads with approved golden fixtures.
-
-Expected result:
-
-- Tests fail if model-facing contract metadata regresses.
-
-## Scenario 3: Opt-In Real-Model E2E
-
-1. Enable the real-model E2E profile outside default CI.
-2. Provide non-production model credentials and deterministic ShardingSphere fixtures.
-3. Run metadata, safe SQL, workflow, and recovery scenarios.
-4. Assert prompt calls, completion calls, resource reads, tool order, schema-valid arguments, preview-before-execution, approval boundary, recovery path, and final validation.
-5. Verify reports include provider, model identifier, scenario ID, failure classification, and model-facing fingerprints.
-6. Verify logs and artifacts redact credentials.
+1. Read `spec.md`.
+2. Confirm P0 focuses on public surface clarity, `next_actions`, search URI hints, output schema accuracy, recovery, and lightweight guards.
+3. Confirm P0 remains locked to those six categories.
+4. Confirm P1 and P2 are sequenced after P0.
+5. Confirm out-of-scope items exclude broad tool matrices, compatibility shims, planner, graph engine, vector search, cross-session memory, RBAC, benchmark systems, and hidden execution shortcuts.
 
 Expected result:
 
-- A real model can use the MCP surface naturally, and the assertion result is based on observable MCP traces.
+- The requirement set has one clear lightweight scope.
 
-## Scenario 4: Completion Ranking
+## Scenario 2: Public Surface Clarity
 
-1. Request completions with exact prefixes, partial prefixes, and missing context.
-2. Request table and column completions with database/schema/table context.
-3. Request `plan_id` completion with multiple current-session plans.
-4. Request algorithm completion from encrypt and mask references.
-5. Trigger missing-context completion.
-
-Expected result:
-
-- Returned values are deterministic, directly reusable, and ordered by exact match, context strength, plan recency, or feature context.
-- Diagnostic metadata explains ranking source or missing context without changing returned values.
-
-## Scenario 5: Structured Recovery
-
-1. Trigger missing argument, invalid enum, unsupported resource, wrong SQL tool, unsupported metadata object, and unavailable plan errors.
-2. Verify each recoverable error includes a consistent recovery envelope.
-3. Verify safe suggested arguments are present only when the server knows them.
-4. Verify side-effecting recovery keeps preview and approval requirements.
-5. Verify native elicitation or structured fallback fields identify pending user questions when the server cannot infer intent.
+1. Compare README public lists, descriptor identifiers, and `shardingsphere://capabilities`.
+2. Check that current resources, tools, prompts, and completion targets are not contradicted by active docs.
+3. Check that historical PRD or design docs are labeled when they mention non-current tool matrices.
+4. Check that no old tool-name compatibility entry point remains in the active contract.
 
 Expected result:
 
-- A model-like caller can repair common failures without guessing hidden values.
+- A model can discover the current MCP surface without chasing historical tool names.
 
-## Scenario 6: Resource Navigation
+## Scenario 3: Safe Continuation
 
-1. Read the capability payload.
-2. Inspect `resourceNavigation`.
-3. Verify relationships are loaded from descriptor-owned metadata.
-4. Verify metadata hierarchy, algorithm-to-planning, and workflow next-hop relationships.
-5. Verify every navigation endpoint resolves to a public resource, prompt, or tool.
-
-Expected result:
-
-- A model can identify the next public MCP hop without a runtime graph engine.
-
-## Scenario 7: Explicit Side-Effect Mode
-
-1. Call `execute_update` without `execution_mode`.
-2. Verify the call is rejected before execution.
-3. Verify recovery recommends `execution_mode=preview`.
-4. Call `execute_update` with `execution_mode=preview`.
-5. Verify only preview output is returned.
+1. Inspect representative successful outputs, preview outputs, workflow outputs, and recoverable errors.
+2. Confirm `next_actions` is the primary guidance shape.
+3. Confirm side-effecting next steps require preview and explicit user approval.
+4. Confirm reusable arguments are present only when the server can know them safely.
+5. Confirm `recommended_next_tool` and `suggested_next_tool` are removed from the active contract.
 
 Expected result:
 
-- Omitted mode never executes a side-effecting statement.
+- A model can continue without reconstructing SQL, `plan_id`, execution mode, or approval state from prose.
 
-## Scenario 8: Descriptor Lint and Fingerprints
+## Scenario 4: Metadata Search Navigation
 
-1. Run descriptor lint tests.
-2. Verify title, description, field description, enum description, output schema, annotation, safety hint, completion target, prompt link, navigation, and example rules.
-3. Read capabilities and verify descriptor, prompt, navigation, and schema fingerprints.
-
-Expected result:
-
-- Model-facing descriptor quality is enforced and capability versions are traceable.
-
-## Scenario 9: Next-Action and Prompt Stop Conditions
-
-1. Read representative tool outputs, resource outputs, prompt outputs, and recovery envelopes.
-2. Verify shared fields such as `suggested_next_tool`, `suggested_arguments`, `read_resources_first`, `requires_user_approval`, and `ask_user_when_uncertain`.
-3. Retrieve workflow prompts and verify stop conditions and ask-user conditions.
+1. Search for database, schema, table, column, index, view, and sequence metadata.
+2. Confirm results include `resource_uri`, `parent_resource_uri`, and `next_resource_uris` only when descriptor-backed derivation is safe.
+3. Confirm unsafe derivation returns status and reason instead of guessed URIs.
 
 Expected result:
 
-- Models see the same next-step vocabulary across the MCP surface.
+- A model can move from search results to readable resources without manual URI construction.
 
-## Scenario 10: Transport Contracts
+## Scenario 5: Schema and Recovery Accuracy
 
-1. Call `prompts/get` through HTTP and STDIO transport where available.
-2. Call `completion/complete` through transport.
-3. Read capabilities through transport.
-4. Verify prompt stop conditions, completion diagnostics, fingerprints, navigation, and explicit side-effect mode requirements are visible.
-
-Expected result:
-
-- Model-facing fields are proven at the protocol layer, not only by factory tests.
-
-## Scenario 11: Ergonomics and Model-Confusion Tests
-
-1. Run naming clarity checks for read-only, preview, side-effecting, planning, validation, and lookup actions.
-2. Verify pagination fields for large result surfaces.
-3. Verify progress or structured progress metadata for long-running workflows when supported.
-4. Verify sampling and logging are used only when stable SDK support and concrete workflow need exist.
-5. Verify future file or configuration resources expose roots or permission boundaries before access.
-6. Run model-confusion tests for apply-before-plan, execute-before-preview, missing execution mode, stale `plan_id`, unknown database, ambiguous metadata, invalid enum, and wrong SQL tool.
+1. Compare output schemas with actual payloads for the seven core tools in `requirements.md`.
+2. Check enum casing, required fields, branch shapes, and nested object names.
+3. Trigger or review recovery for missing `database`, missing `execution_mode`, wrong SQL tool, unknown public identifier, and stale workflow `plan_id`.
+4. Confirm missing `execution_mode` is rejected before recovery recommends `execution_mode=preview`.
 
 Expected result:
 
-- Common model mistakes recover through structured fields and no unsafe side effect occurs.
+- Models can parse outputs and repair common mistakes through structured fields.
+
+## Scenario 6: Lightweight Regression Guards
+
+1. Add descriptor lint only for obvious model-facing drift.
+2. Add capabilities shape checks for public sections without locking large snapshots.
+3. Add focused unit or contract assertions for touched behavior.
+
+Expected result:
+
+- The public MCP contract is protected without a large golden transcript suite or default live-model dependency.
+
+## Scenario 7: P1 and P2 Triage
+
+1. Take P1 only after P0 is stable.
+2. Prefer resource navigation fields, compact examples, deterministic completion, algorithm property templates, and `approved_steps` clarity.
+3. Take P2 for startup hints, troubleshooting, pagination wording, and a small opt-in usability set.
+4. Re-check that no P1/P2 item introduces a new compatibility shim, planner, graph engine, vector search, memory, RBAC platform, or default-CI live-model suite.
+
+Expected result:
+
+- Later improvements stay useful, small, and independently deliverable.
 
 ## Verification Commands
 
-Use scoped commands after implementation:
-
-```bash
-./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
-./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -am -Pcheck -DskipTests checkstyle:check
-./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask,test/e2e/mcp -am -Pcheck -DskipTests spotless:check
-```
-
-Also verify no branch switch occurred:
+For requirements-only changes:
 
 ```bash
 git branch --show-current
+git diff --check
+```
+
+For later implementation, use scoped module checks rather than the full reactor by default:
+
+```bash
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -am -DskipITs -Dspotless.skip=true -Dsurefire.failIfNoSpecifiedTests=false test
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/bootstrap,mcp/features/encrypt,mcp/features/mask -am -Pcheck -DskipTests checkstyle:check
 ```

@@ -110,9 +110,18 @@ tools:
         plan_id:
           type: string
           description: "Workflow plan identifier for apply_workflow and validate_workflow."
+        workflow_kind:
+          type: string
+          description: "Workflow kind resolved by the planner."
         status:
           type: string
           description: "Stable workflow status, such as clarifying, planned, or failed."
+        missing_required_inputs:
+          type: array
+          description: "Inputs still required before the plan can be completed."
+        resources_to_read:
+          type: array
+          description: "Resource URIs the model should read before retrying."
         next_actions:
           type: array
           description: "Ordered structured model-facing recommendations for the next call or user question."

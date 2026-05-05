@@ -15,162 +15,125 @@
   limitations under the License.
 -->
 
-# Research: AI-Friendly MCP Experience Hardening
+# Research: AI-Friendly MCP Lightweight Requirements
 
-## Decision 1: Make Transcript Golden Tests the First Guard
+This research note records the active decisions behind `spec.md` and `requirements.md`.
+It intentionally removes earlier over-built ideas from the active increment.
 
-**Decision**: Add normalized transcript golden tests before further model-comfort enhancement.
+## Decision 1: Treat Capabilities as the Current Public Surface
 
-**Rationale**: Prompt, completion, resource, and tool descriptors are now protocol-visible.
-A small descriptor edit can silently remove model-facing context without breaking handler tests.
-Golden tests provide a stable regression guard for the public MCP surface.
+**Decision**: Use `shardingsphere://capabilities` as the sole current model-facing contract.
+Descriptors and README public lists must align to it.
+Historical PRD and design documents may remain for traceability, but they must be labeled as non-current when they mention older tool matrices.
 
-**Alternatives considered**:
-
-- Rely on descriptor unit tests only. Rejected because unit tests rarely capture the full protocol payload a client sees.
-- Snapshot every runtime resource. Rejected because large dynamic payloads would be brittle and hard to review.
-
-## Decision 2: Keep Real-Model E2E Opt-In
-
-**Decision**: Add real-model E2E with strong trace assertions, but keep it outside default CI.
-
-**Rationale**: Actual model behavior is the final usability signal.
-However, model calls are credential-dependent, network-dependent, costly, and nondeterministic enough that default CI must remain local and deterministic.
+**Rationale**: Models should not need to reconcile multiple competing surfaces before making the first MCP call.
 
 **Alternatives considered**:
 
-- Put real-model calls in PR CI. Rejected due to nondeterminism, external credentials, and cost.
-- Omit real-model tests entirely. Rejected because deterministic tests cannot prove that real models naturally choose the intended MCP path.
+- Reintroduce `list_*` and `describe_*` tools for every resource. Rejected because the current resource-first surface already exposes metadata without a broad tool matrix.
+- Keep historical design text unmarked. Rejected because models may treat old tool names as active tools.
+- Keep legacy compatibility shims. Rejected because the confirmed direction is to fix compatibility drift by removing obsolete contracts.
 
-## Decision 3: Improve Completion Ranking Without Intelligence Layers
+## Decision 2: Standardize `next_actions` Without a Planner
 
-**Decision**: Add deterministic ranking rules only: exact prefix first, stronger context first, current-session plan recency first, and feature-specific algorithms first.
+**Decision**: Use `next_actions` as the primary continuation shape for successful outputs, previews, workflow states, and recoverable errors.
+Each action should say what kind of next step is safe, why it is needed, whether user approval is required, and which tool/resource/inputs are known.
+Legacy recommendation fields such as `recommended_next_tool` and `suggested_next_tool` must be migrated out of the active contract.
 
-**Rationale**: The current completion implementation already returns valid values.
-The next improvement should reduce ambiguity without introducing cross-session memory, embeddings, model calls, or behavior learning.
-
-**Alternatives considered**:
-
-- Add semantic vector ranking. Rejected as overbuilt for bounded metadata values.
-- Track user behavior across sessions. Rejected because completions should remain session-safe and deterministic.
-- Let the model rank values itself. Rejected because the server can cheaply provide stable context-aware ordering.
-
-## Decision 4: Standardize Recovery Instead of Creating an Error DSL
-
-**Decision**: Extend the existing `recovery` map into a consistent envelope instead of adding a new error language or planner.
-
-**Rationale**: Models need a small stable set of fields to retry safely. A full recovery DSL would add abstraction cost before the need is proven.
+**Rationale**: A stable local shape reduces model guessing while avoiding a new orchestration layer.
 
 **Alternatives considered**:
 
-- Keep recovery as prose. Rejected because models may miss or misapply repair instructions.
-- Add a central recovery planner. Rejected because existing errors can be improved locally with simpler structured fields.
+- Add a central planner. Rejected because the current gaps are local output-shape gaps.
+- Keep separate field names for each tool. Rejected because duplicate semantics increase model confusion.
 
-## Decision 5: Add Descriptor-Owned Navigation, Not a Graph Engine
+## Decision 3: Return Descriptor-Backed Resource URIs From Search
 
-**Decision**: Add descriptor-owned `resourceNavigation` metadata to capability payloads after higher-priority guards and recovery are in place.
+**Decision**: `search_metadata` should return readable resource URIs only when they can be safely derived from public resource templates.
+When derivation is unsafe, the response should explain that status instead of guessing.
 
-**Rationale**: Models benefit from knowing how resources and tools relate, but a runtime graph traversal service would duplicate model reasoning and introduce a new abstraction layer.
-
-**Alternatives considered**:
-
-- Build a graph service with automatic traversal. Rejected as overdesigned for the current need.
-- Do nothing. Rejected because resource hierarchy and workflow next hops are stable enough to expose cheaply.
-
-## Decision 6: Correct Documentation Drift Early
-
-**Decision**: Update README content that still describes prompts and completions as deferred.
-
-**Rationale**: Documentation feeds users, reviewers, and model context. Stale documentation undermines the newly implemented protocol surface and makes future E2E prompts less reliable.
+**Rationale**: URI construction is repetitive and easy for models to get slightly wrong.
 
 **Alternatives considered**:
 
-- Wait until all hardening work is done. Rejected because the current README is already incorrect for the baseline.
+- Add a runtime graph traversal service. Rejected as unnecessary for known metadata hierarchy.
+- Let models construct all URIs manually. Rejected because the server already knows many safe links.
 
-## Decision 7: Preserve Explicit Operator Control
+## Decision 4: Align Output Schemas With Real Payloads
 
-**Decision**: Every real-model scenario, recovery suggestion, and navigation path involving side effects must preserve preview and approval boundaries.
+**Decision**: The core tools need descriptor output schemas that match actual payloads for search, SQL, planning, apply, and validation paths.
 
-**Rationale**: The MCP constitution requires reviewable schema/rule changes. Model comfort must come from clarity and safety, not silent execution.
-
-**Alternatives considered**:
-
-- Auto-execute safe-looking calls. Rejected because the server cannot infer operator approval from model confidence.
-
-## Decision 8: Require Explicit Update Execution Mode
-
-**Decision**: `execute_update` must reject missing `execution_mode` and recover to `preview`.
-
-**Rationale**: Hidden compatibility defaults make a model-facing tool harder to reason about. Explicit mode selection is safer and clearer for both models and operators.
+**Rationale**: Schema drift teaches models the wrong contract even when handlers still work.
 
 **Alternatives considered**:
 
-- Preserve omitted-mode execution for compatibility. Rejected because this increment explicitly does not require backward compatibility and model safety is higher priority.
-- Split `execute_update` into two tools now. Deferred because the explicit enum mode already exists and can satisfy the requirement with less churn.
+- Use broad `object` or `array` schemas. Rejected because they do not help models parse or continue safely.
+- Add large golden transcript suites now. Rejected because focused schema and capabilities checks provide enough protection for this increment.
 
-## Decision 9: Prefer Native Clarification but Keep Structured Fallbacks
+## Decision 5: Keep Recovery Structured and Local
 
-**Decision**: Use MCP-native elicitation, sampling, progress, roots, or logging when stable SDK APIs exist; otherwise expose the same model-facing semantics through structured fields.
+**Decision**: Recoverable errors should expose missing fields, safe retry hints, resources to read first, approval requirements, and current-session workflow recovery where applicable.
 
-**Rationale**: Native protocol features are best for model clients, but the implementation should not block on SDK gaps or invent unstable dependencies.
-
-**Alternatives considered**:
-
-- Wait for every native capability before improving the surface. Rejected because structured fallback metadata still improves model behavior.
-- Implement a custom conversation planner. Rejected because it hides MCP primitives and exceeds the current scope.
-
-## Decision 10: Add Completion Diagnostics Without Changing Values
-
-**Decision**: Completion may include metadata describing source, ranking reason, and missing context, while `values` remain plain reusable argument strings.
-
-**Rationale**: Models need to know why a list is empty or ranked, but clients expect completion values to be directly reusable.
+**Rationale**: Missing `database`, missing `execution_mode`, wrong SQL tool, unknown public identifier, and stale `plan_id` are high-frequency local mistakes.
 
 **Alternatives considered**:
 
-- Return rich objects as completion values. Rejected because it would make values less directly usable.
-- Keep empty results silent. Rejected because models then guess missing context.
+- Keep recovery as prose only. Rejected because models can miss important constraints.
+- Add model-confusion matrices first. Rejected because focused branch tests are simpler and more actionable.
 
-## Decision 11: Enforce Descriptor Quality With Lint and Fingerprints
+## Decision 6: Preserve Preview and User Approval Boundaries
 
-**Decision**: Add descriptor lint and deterministic capability fingerprints for descriptor catalog, prompt set, navigation metadata, and model-facing schemas.
+**Decision**: Side-effecting SQL and workflow apply paths must continue through preview first and must not execute without explicit user approval.
+Missing `execution_mode` must be rejected, then recovered to `execution_mode=preview`; it must not silently default.
 
-**Rationale**: Description quality is now part of the public protocol. Lint catches local quality regressions, and fingerprints make test and model reports traceable.
-
-**Alternatives considered**:
-
-- Rely on code review. Rejected because descriptor regressions are easy to miss.
-- Use runtime timestamps as versions. Rejected because fingerprints must be deterministic and reviewable.
-
-## Decision 12: Standardize Next-Action Metadata
-
-**Decision**: Use one next-action vocabulary across tool outputs, resource outputs, prompt instructions, and recovery.
-
-**Rationale**: Models handle repeated field shapes well. A single vocabulary reduces hesitation and avoids different outputs teaching different retry patterns.
+**Rationale**: Model comfort should come from safe continuation, not hidden execution.
 
 **Alternatives considered**:
 
-- Keep source-specific field names. Rejected because semantic duplicates make model traces noisier.
-- Add a central next-action planner. Rejected because local structured metadata is enough.
+- Auto-execute safe-looking changes. Rejected because model confidence is not operator approval.
+- Split every side-effect path into extra tools now. Deferred because explicit rejected-or-preview `execution_mode` already gives a smaller contract.
 
-## Decision 13: Move Navigation Ownership Into Descriptors
+## Decision 7: Improve Completion Deterministically
 
-**Decision**: Store navigation relationships in descriptor YAML or equivalent descriptor inputs instead of Java catalog hardcoding.
+**Decision**: Completion improvements should stay deterministic: prefix first, contains fallback, supplied-context ordering, and current-session `plan_id` ordering.
 
-**Rationale**: Navigation belongs beside public identifiers. Descriptor ownership lets new features add relationships without modifying catalog logic.
-
-**Alternatives considered**:
-
-- Keep Java hardcoding. Rejected because it will drift as descriptors grow.
-- Add a graph engine. Rejected because models can traverse lightweight relationships themselves.
-
-## Decision 14: Add Ergonomics Guards Instead of Broad Benchmarks
-
-**Decision**: Cover naming clarity, pagination, sampling, progress, logging, roots or permission boundaries, prompt argument coverage, examples,
-and model-confusion tests with deterministic checks.
-
-**Rationale**: These checks directly target model comfort without the cost and nondeterminism of benchmark leaderboards.
+**Rationale**: The server can reduce ambiguity without embeddings, model calls, cross-session memory, or user behavior learning.
 
 **Alternatives considered**:
 
-- Create a multi-model benchmark suite. Rejected for this increment because it is expensive, nondeterministic, and less actionable than targeted contract tests.
-- Leave ergonomics to documentation. Rejected because models consume protocol payloads first.
+- Add vector search or semantic ranking. Rejected as over-built for bounded metadata and algorithm identifiers.
+- Learn from user behavior across sessions. Rejected because completions should remain session-safe and predictable.
+
+## Decision 8: Expose Algorithm Properties Through Existing Resources
+
+**Decision**: Encrypt and mask algorithm resources should expose required properties, optional properties, defaults, secret flags, and capability hints where known.
+
+**Rationale**: Models should be able to plan with fewer clarifying turns without inventing algorithm properties.
+
+**Alternatives considered**:
+
+- Hide property requirements until planner validation. Rejected because it forces avoidable trial and error.
+- Add a separate algorithm-planning service. Rejected because the existing resource surface is enough.
+
+## Decision 9: Keep Regression Guards Lightweight
+
+**Decision**: Use descriptor lint, capabilities shape checks, focused contract assertions, and scoped unit tests.
+Real-model scenarios remain opt-in and limited to a few high-value paths.
+
+**Rationale**: The current goal is to protect the model-visible contract without adding a brittle benchmark system.
+
+**Alternatives considered**:
+
+- Add normalized transcript mega suites. Rejected for this increment because they are broad and review-heavy.
+- Put live model tests in default CI. Rejected because they require credentials, network access, and nondeterministic external services.
+
+## Decision 10: Keep P1 and P2 Behind P0
+
+**Decision**: Resource navigation fields, compact examples, completion refinements, startup hints, troubleshooting docs, and opt-in usability scenarios should follow P0.
+
+**Rationale**: P0 fixes correctness and safety. P1/P2 are comfort improvements and should not block or expand the core surface.
+
+**Alternatives considered**:
+
+- Build all comfort features in one pass. Rejected because it would blur the smallest safe implementation boundary.
+- Drop P1/P2 entirely. Rejected because they are useful once P0 is stable and can be delivered independently.

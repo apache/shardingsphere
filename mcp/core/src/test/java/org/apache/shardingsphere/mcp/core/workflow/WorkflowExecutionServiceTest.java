@@ -66,7 +66,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("status"), is("awaiting-manual-execution"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
         assertThat(actualResponse.get("execution_mode"), is("manual-only"));
-        assertThat(actualResponse.get("recommended_next_tool"), is("validate_workflow"));
+        assertFalse(actualResponse.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
         assertTrue((Boolean) actualResponse.get("requires_user_approval"));
@@ -139,6 +139,8 @@ class WorkflowExecutionServiceTest {
         assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(2));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualResponse.get("next_actions")).get(0);
         assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("review-then-execute"));
+        assertTrue((Boolean) actualNextAction.get("requires_user_approval"));
+        assertTrue((Boolean) actualResponse.get("requires_user_approval"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("planned"));
         verify(executionFacade, never()).execute(any());
         verify(workflowApplySynchronizationHandler, never()).synchronize(any(), any(), any(), any(), any());
@@ -158,7 +160,7 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl", "index_ddl", "rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
-        assertThat(actualResponse.get("recommended_next_tool"), is("validate_workflow"));
+        assertFalse(actualResponse.containsKey("recommended_next_tool"));
         assertThat(((List<?>) actualResponse.get("applied_artifacts")).size(), is(3));
         assertThat(((List<?>) actualResponse.get("executed_ddl")).size(), is(2));
         assertThat(((List<?>) actualResponse.get("executed_distsql")).size(), is(1));

@@ -143,7 +143,6 @@ public final class WorkflowExecutionService {
         result.put("would_apply", false);
         result.put("preview_artifacts", createPreviewArtifacts(snapshot));
         result.put("requires_user_approval", true);
-        result.put("recommended_next_tool", "apply_workflow");
         result.put("next_actions", List.of(createPreviewNextAction(snapshot)));
         return result;
     }

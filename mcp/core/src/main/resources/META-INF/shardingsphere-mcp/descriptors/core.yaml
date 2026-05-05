@@ -802,9 +802,15 @@ tools:
         statement_type:
           type: string
           description: "Database statement type reported by the execution classifier or preview."
+        execution_mode:
+          type: string
+          description: "Execution mode used by the call; preview means the statement was not executed."
         status:
           type: string
           description: "Execution or preview status returned by the server."
+        normalized_sql:
+          type: string
+          description: "Classifier-normalized SQL returned by preview or recovery paths."
         affected_rows:
           type: integer
           description: "Affected row count when the database reports one."
@@ -817,9 +823,18 @@ tools:
         side_effect_scope:
           type: array
           description: "Preview-only side-effect categories such as physical-data, physical-structure, privilege-metadata, or transaction-state."
-        suggested_next_tool:
+        target_object:
           type: string
-          description: "Preview-only preferred follow-up tool, normally execute_update after user approval."
+          description: "Preview-only target object name when the classifier can identify one."
+        savepoint:
+          type: string
+          description: "Preview-only savepoint name when the classifier can identify one."
+        requires_user_approval:
+          type: boolean
+          description: "Whether continuing from this response requires explicit user approval."
+        approval_guidance:
+          type: string
+          description: "Preview-only user approval guidance before execution."
         suggested_arguments:
           type: object
           description: "Preview-only arguments to reuse when the user approves execution."
@@ -837,11 +852,11 @@ tools:
           description: "Whether returned rows were truncated."
       examples:
         - result_kind: preview
+          execution_mode: preview
           statement_class: dml
           statement_type: UPDATE
           status: AWAITING_APPROVAL
           would_execute: false
-          suggested_next_tool: execute_update
           suggested_arguments:
             execution_mode: execute
           next_actions:

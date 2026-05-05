@@ -235,7 +235,6 @@ public final class WorkflowValidationSupport {
         result.put("mismatches", List.of());
         result.put("recommended_recovery", userAction);
         result.put("next_actions", List.of());
-        result.put("recommended_next_tool", "");
         result.put("requires_user_approval", false);
         return result;
     }

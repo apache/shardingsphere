@@ -29,6 +29,8 @@ comfortable, and clear for large models, without over-design and without switchi
 - Treat `requirements.md` in this directory and `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md` as the lightweight active requirements baseline.
 - Preserve side-effect safety: update-capable tools and workflow apply paths must support preview first and keep explicit user approval before execution.
 - Prefer current descriptor, resource, tool, prompt, completion, workflow, and recovery mechanisms.
+- Treat `shardingsphere://capabilities` as the sole current source of truth for the public MCP surface.
+- Do not keep legacy compatibility shims, legacy recommendation fields, old tool names, or implicit default execution behavior.
 - Do not edit generated paths such as `target/`.
 - Do not introduce a broad tool matrix, planner, graph traversal engine, vector search, cross-session memory, model-call ranking, RBAC platform, benchmark leaderboard, or hidden execution shortcut.
 - Historical PRD/design/spec drafts may remain as trace material, but they must not override the lightweight active scope.
@@ -51,6 +53,7 @@ The next increment should reduce model guessing on top of this surface, not rebu
 
 ### P0: Must Do
 
+- Lock P0 to the six categories below; P1 and P2 must not be mixed into the first implementation slice.
 - Make the current public surface unambiguous across README, descriptors, capabilities, and active requirements.
 - Improve server instructions so the model starts from capabilities and the public resources/tools, not from historical design names.
 - Converge successful outputs, preview outputs, workflow outputs, and recoverable errors on a clear `next_actions` vocabulary.
@@ -86,7 +89,7 @@ A model can read server instructions or capabilities and understand the real cur
 
 **Acceptance Scenarios**:
 
-1. **Given** the model initializes the server, **When** it reads instructions, **Then** it is directed to `shardingsphere://capabilities` and the resource-first path.
+1. **Given** the model initializes the server, **When** it reads instructions, **Then** it is directed to `shardingsphere://capabilities` as the only current public-surface fact source.
 2. **Given** the model reads current docs, **When** it looks for public tools, **Then** it sees the existing small tool set rather than historical `list_*` or `describe_*` matrices.
 3. **Given** a historical PRD or design document is retained, **When** it mentions early tool names, **Then** it is clearly marked as non-current or historical.
 
@@ -168,7 +171,7 @@ A user or model setting up MCP can see the endpoint, client configuration shape,
 - Descriptor and README public lists drift; lightweight checks must catch the obvious mismatch.
 - Completion has no prefix match; contains fallback must remain deterministic and bounded.
 - A resource list is large; count and pagination fields must clearly say whether more data exists.
-- A side-effecting call omits `execution_mode`; it must recover to preview and not execute.
+- A side-effecting call omits `execution_mode`; it must be rejected, recover to preview, and not execute.
 - A workflow plan is session-scoped; stale or cross-session IDs must recover by completion or replanning.
 - STDIO mode must not write human logs to stdout.
 
@@ -176,28 +179,31 @@ A user or model setting up MCP can see the endpoint, client configuration shape,
 
 ### Functional Requirements
 
-- **FR-001**: The current public surface MUST be consistent across README, descriptors, and `shardingsphere://capabilities`.
+- **FR-001**: `shardingsphere://capabilities` MUST be the sole current source of truth for the public MCP surface.
 - **FR-002**: Server instructions MUST tell models to start from `shardingsphere://capabilities` and resource-first discovery.
 - **FR-003**: Historical PRD/design/spec material MUST be marked as non-current when it mentions obsolete tool matrices or deferred capabilities.
 - **FR-004**: `next_actions` MUST be the primary model-facing next-step field for successful outputs, previews, workflows, and recoverable errors.
 - **FR-005**: Next actions MUST include action kind, reason, approval requirement, and the target tool or resource when known.
-- **FR-006**: Preview outputs MUST include reusable execution or apply arguments when the server can know them safely.
-- **FR-007**: `search_metadata` MUST return `resource_uri`, `parent_resource_uri`, and `next_resource_uris` when they are safely derivable from public resource templates.
-- **FR-008**: URI derivation failures MUST expose derivation status and reason rather than guessed URIs.
-- **FR-009**: Core output schemas MUST match actual payloads for `search_metadata`, `execute_query`, `execute_update`, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, and `validate_workflow`.
-- **FR-010**: Recovery MUST cover missing `database`, missing `execution_mode`, wrong SQL tool choice, unknown tool/resource, and stale or unavailable workflow `plan_id`.
-- **FR-011**: Side-effecting recovery MUST preserve preview-first and user-approval requirements.
-- **FR-012**: Regression guards MUST stay lightweight: descriptor lint, capabilities shape checks, and focused contract assertions, not a large golden transcript suite.
-- **FR-013**: Resource responses SHOULD include `self_uri`, `parent_uri`, `count`, and `next_resources` where the values are safe and already public.
-- **FR-014**: Complex outputs SHOULD include compact static examples that do not contain secrets, production identifiers, or environment-specific paths.
-- **FR-015**: Completion SHOULD support deterministic prefix-first, contains fallback, context-scoped ordering, and current-session `plan_id` ordering.
-- **FR-016**: Completion MUST NOT use vector search, model calls, cross-session history, or user behavior learning in this increment.
-- **FR-017**: Encrypt and mask algorithm resources SHOULD expose required properties, optional properties, defaults, secret flags, and capability hints.
-- **FR-018**: Approval-related tool arguments, including `approved_steps`, SHOULD be documented with allowed values and preview-to-execute reuse guidance.
-- **FR-019**: Startup and client documentation SHOULD cover HTTP endpoint, STDIO behavior, token requirement, config paths,
+- **FR-006**: Legacy recommendation fields such as `recommended_next_tool` and `suggested_next_tool` MUST be removed from the active contract.
+- **FR-007**: Preview outputs MUST include reusable execution or apply arguments when the server can know them safely.
+- **FR-008**: `search_metadata` MUST return `resource_uri`, `parent_resource_uri`, and `next_resource_uris` when they are safely derivable from public resource templates.
+- **FR-009**: URI derivation failures MUST expose derivation status and reason rather than guessed URIs.
+- **FR-010**: Core output schemas MUST match actual payloads for `search_metadata`, `execute_query`, `execute_update`, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, and `validate_workflow`.
+- **FR-011**: Missing `execution_mode` MUST be rejected and recovered to `execution_mode=preview`, with no implicit preview or execute default.
+- **FR-012**: Recovery MUST cover missing `database`, missing `execution_mode`, wrong SQL tool choice, unknown tool/resource, and stale or unavailable workflow `plan_id`.
+- **FR-013**: Side-effecting recovery MUST preserve preview-first and user-approval requirements.
+- **FR-014**: Regression guards MUST stay lightweight: descriptor lint, capabilities shape checks, and focused contract assertions, not a large golden transcript suite.
+- **FR-015**: Resource responses SHOULD include `self_uri`, `parent_uri`, `count`, and `next_resources` where the values are safe and already public.
+- **FR-016**: Complex outputs SHOULD include compact static examples that do not contain secrets, production identifiers, or environment-specific paths.
+- **FR-017**: Completion SHOULD support deterministic prefix-first, contains fallback, context-scoped ordering, and current-session `plan_id` ordering.
+- **FR-018**: Completion MUST NOT use vector search, model calls, cross-session history, or user behavior learning in this increment.
+- **FR-019**: Encrypt and mask algorithm resources SHOULD expose required properties, optional properties, defaults, secret flags, and capability hints.
+- **FR-020**: Approval-related tool arguments, including `approved_steps`, SHOULD be documented with allowed values and preview-to-execute reuse guidance.
+- **FR-021**: Startup and client documentation SHOULD cover HTTP endpoint, STDIO behavior, token requirement, config paths,
   log paths, Java version, JDBC driver, and empty public surface troubleshooting.
-- **FR-020**: Opt-in LLM usability additions MAY cover only a few high-value scenarios and MUST remain outside default CI.
-- **FR-021**: The increment MUST NOT add a broad tool matrix, planner, graph engine, vector search, cross-session memory, RBAC platform, benchmark leaderboard, or hidden execution shortcut.
+- **FR-022**: Opt-in LLM usability additions MAY cover only a few high-value scenarios and MUST remain outside default CI.
+- **FR-023**: The increment MUST NOT add a broad tool matrix, planner, graph engine, vector search, cross-session memory, RBAC platform, benchmark leaderboard, or hidden execution shortcut.
+- **FR-024**: The increment MUST NOT preserve backward compatibility for obsolete public fields, historical tool names, or unsafe implicit defaults.
 
 ### Key Entities
 
@@ -220,7 +226,7 @@ A user or model setting up MCP can see the endpoint, client configuration shape,
 
 ## Assumptions
 
-- The existing descriptor catalog remains the source of truth for model-facing identifiers.
+- `shardingsphere://capabilities` is the current source of truth for model-facing identifiers; descriptors feed it but do not replace it for model discovery.
 - Workflow `plan_id` remains session-scoped and non-durable.
 - ShardingSphere-Proxy is the primary runtime topology for MCP workflows.
 - HTTP and STDIO transports remain supported.
@@ -229,7 +235,7 @@ A user or model setting up MCP can see the endpoint, client configuration shape,
 ## Out of Scope
 
 - New persistent approval system, RBAC, tenant model, or external ticket workflow.
-- New automatic planner, tool-matrix compatibility layer, graph traversal service, vector retrieval, or semantic ranking.
+- New automatic planner, tool-matrix compatibility layer, legacy compatibility shim, graph traversal service, vector retrieval, or semantic ranking.
 - Default-CI real-model E2E or broad model-confusion matrices.
 - MCP-native sampling, progress, logging, or roots work unless a future SDK-supported requirement justifies it separately.
 - Metadata freshness semantics, config environment variable interpolation, and current-session workflow listing resources.

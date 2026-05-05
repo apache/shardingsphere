@@ -112,7 +112,7 @@ class MCPErrorConverterTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
         assertThat(actualRecovery.get("allowed_values"), is(List.of("preview", "review-then-execute", "manual-only")));
-        assertThat(actualRecovery.get("suggested_next_tool"), is("apply_workflow"));
+        assertFalse(actualRecovery.containsKey("suggested_next_tool"));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("apply_workflow"));
     }
@@ -132,7 +132,7 @@ class MCPErrorConverterTest {
                 "execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL.")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("unsafe_sql_attempted"));
-        assertThat(actualRecovery.get("suggested_next_tool"), is("execute_update"));
+        assertFalse(actualRecovery.containsKey("suggested_next_tool"));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("execute_update"));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
@@ -148,7 +148,7 @@ class MCPErrorConverterTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("unsafe_sql_attempted"));
         assertThat(actualRecovery.get("source_tool"), is("execute_query"));
-        assertThat(actualRecovery.get("suggested_next_tool"), is("execute_update"));
+        assertFalse(actualRecovery.containsKey("suggested_next_tool"));
         assertThat(actualRecovery.get("normalized_sql"), is("UPDATE orders SET status = 'PAID'"));
         assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("required_arguments"), is(suggestedArguments));
@@ -164,7 +164,7 @@ class MCPErrorConverterTest {
                 "execute_update", "execute_query", classificationResult, suggestedArguments)).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("read_only_sql_sent_to_update_tool"));
-        assertThat(actualRecovery.get("suggested_next_tool"), is("execute_query"));
+        assertFalse(actualRecovery.containsKey("suggested_next_tool"));
         assertThat(actualRecovery.get("normalized_sql"), is("SELECT * FROM orders"));
         assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
         assertFalse((Boolean) ((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("requires_user_approval"));
@@ -176,7 +176,7 @@ class MCPErrorConverterTest {
                 "Unknown or unavailable plan_id `plan-missing`. Call the planning tool again in the current MCP session.")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("workflow_state_error"));
-        assertThat(actualRecovery.get("suggested_next_tools"), is(List.of("plan_encrypt_rule", "plan_mask_rule")));
+        assertFalse(actualRecovery.containsKey("suggested_next_tools"));
         assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("read_resource"));
     }

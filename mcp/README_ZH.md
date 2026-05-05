@@ -195,8 +195,8 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
 - `fingerprints` 记录 descriptor、prompt、navigation 和模型可见 schema 的确定性哈希，让测试产物能证明模型使用的是哪一版 MCP surface。
 - item-list 响应总会包含 `items`、`count` 和 `has_more`。resource read 还会包含 `self_uri`，
   并在适用时包含 `parent_uri`、`next_resources` 或 `next_page_token`。
-- Workflow tool 响应包含 `missing_required_inputs`、`resources_to_read`、`next_actions`、`recommended_next_tool`
-  和 `requires_user_approval`，让模型可以不用猜测地继续下一步。
+- Workflow tool 响应包含 `missing_required_inputs`、`resources_to_read`、`next_actions`
+  和 `requires_user_approval`，让模型不用依赖旧推荐字段也可以继续下一步。
 - 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、
   workflow 状态错误以及 SQL tool 选错场景增加 `recovery` 提示。
 

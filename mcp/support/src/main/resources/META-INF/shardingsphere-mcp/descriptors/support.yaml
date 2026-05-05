@@ -176,6 +176,21 @@ tools:
         execution_mode:
           type: string
           description: "Execution mode used by the apply call."
+        status:
+          type: string
+          description: "Apply status such as preview, completed, failed, or awaiting-manual-execution."
+        issues:
+          type: array
+          description: "Workflow issues reported while checking or applying artifacts."
+        step_results:
+          type: array
+          description: "Per-artifact execution, skipped, or failed results."
+        executed_ddl:
+          type: array
+          description: "DDL statements executed by the server."
+        executed_distsql:
+          type: array
+          description: "DistSQL statements executed by the server."
         applied_artifacts:
           type: array
           description: "Artifacts or steps executed by the server."
@@ -194,9 +209,6 @@ tools:
         manual_artifact_package:
           type: object
           description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
-        recommended_next_tool:
-          type: string
-          description: "Usually validate_workflow after a successful apply."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations after applying or exporting workflow artifacts."
@@ -211,7 +223,6 @@ tools:
           would_apply: false
           skipped_artifacts: []
           manual_artifacts: []
-          recommended_next_tool: validate_workflow
           next_actions:
             - action_kind: ask_user
               reason: Ask the user to approve the previewed artifacts before execution.
@@ -251,6 +262,12 @@ tools:
         status:
           type: string
           description: "Validation status such as passed, warning, or failed."
+        overall_status:
+          type: string
+          description: "Overall validation report status copied from the validation report."
+        issues:
+          type: array
+          description: "Validation issues raised from mismatches."
         sections:
           type: array
           description: "Validation sections with findings and evidence."
@@ -263,9 +280,6 @@ tools:
         next_actions:
           type: array
           description: "Ordered model-facing recommendations after validation."
-        recommended_next_tool:
-          type: string
-          description: "Preferred follow-up planning tool when validation fails."
         requires_user_approval:
           type: boolean
           description: "Whether the next action requires user approval."
