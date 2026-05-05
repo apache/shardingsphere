@@ -3,7 +3,7 @@
 **Feature Branch**: `[001-shardingsphere-mcp]`
 **Created**: 2026-05-04
 **Status**: Draft
-**Input**: User description: "Use Spec Kit to organize the ShardingSphere MCP AI-friendly requirements, avoid over-design, and do not switch git branches."
+**Input**: User description: "Use Spec Kit to organize the ShardingSphere MCP AI-friendly requirements after repeatedly asking what still makes model-native usage clearer, avoid over-design, and do not switch git branches."
 
 ## Process Constraints
 
@@ -49,10 +49,10 @@ Use this order when turning requirements into implementation slices:
 
 - **P0**: Make the model's first hop, resource/tool schemas, detail/list semantics, next action shape, preview reuse,
   common recovery, and descriptor/capabilities guards explicit.
-- **P1**: Add lightweight runtime status, feature readiness, schema resolution, search-result ranking explanations,
-  view completion, algorithm property hints, field-to-planner navigation, URI encoding rules, and read-only query follow-up hints.
-- **P2**: Improve packaging hints, startup diagnostics, security guidance, optional preview correlation, opt-in real-model usability checks,
-  and configuration convenience only after P0/P1 evidence shows the need.
+- **P1**: Tighten reusable next actions, resource navigation, compact examples, deterministic completion, algorithm property hints,
+  approval-step wording, workflow side-effect scope, stale-plan recovery, and pagination wording.
+- **P2**: Improve first-use client configuration, startup diagnostics, troubleshooting, registry/package hints, and a few opt-in
+  real-model usability checks only after P0/P1 evidence shows the need.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -158,14 +158,16 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - A descriptor schema remains syntactically valid but no longer matches the real payload.
 - HTTP mode starts with a bearer token, but the client omits it.
 - STDIO mode emits logs to stdout and pollutes the MCP protocol stream.
-- A future public config or file resource would require roots or permission-boundary metadata.
 - A model reads capabilities first but still cannot tell the safe first hop for metadata, SQL, or workflow.
 - A model reads a detail resource and cannot distinguish "not found" from "empty list".
 - A logical database contains multiple schemas and the model cannot infer a single schema safely.
 - A metadata object name contains characters that require URI encoding.
-- A model needs a view name completion, but only table-oriented completion is available.
 - An algorithm is visible, but required properties are not visible until the planner returns `clarifying`.
 - A manual workflow export returns `manual_artifact_package`, but the descriptor schema does not document it.
+- A preview response names `approved_steps`, but the model cannot tell which exact values can be sent back.
+- A workflow apply preview says it changes state, but the side-effect scope is too broad for the user to approve comfortably.
+- A stale `plan_id` recovery tells the model to recover, but not whether to use completion or replan.
+- A client can start the MCP process but does not know the expected local STDIO or HTTP configuration shape.
 
 ## Requirements *(mandatory)*
 
@@ -181,7 +183,7 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **FR-006**: Each next action SHOULD include `action_kind`, `reason`, and `requires_user_approval`.
 - **FR-007**: Tool-call next actions SHOULD include `target_tool` and `required_arguments`; resource-read next actions SHOULD include `target_resource`.
 - **FR-008**: Ask-user next actions SHOULD include `required_inputs`.
-- **FR-009**: The single recommended-next-tool field SHOULD converge to one preferred name instead of growing more equivalent aliases.
+- **FR-009**: Legacy recommendation fields such as `recommended_next_tool` and `suggested_next_tool` MUST be removed from the active contract in favor of `next_actions`.
 - **FR-010**: Preview responses MUST return reusable follow-up arguments when the server can safely provide them.
 - **FR-011**: `execute_update` preview MUST state user approval is required before execution.
 - **FR-012**: `search_metadata` hits SHOULD include direct `resource_uri` values when they can be safely derived from descriptor-backed resource patterns.
@@ -210,35 +212,27 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 
 #### P1 - high-value lightweight improvements
 
-- **FR-101**: Current-session workflow recovery MAY expose a lightweight plan lookup with `plan_id`, `workflow_kind`, `status`, `current_step`, `updated_at`, artifacts summary, and next actions.
-- **FR-102**: Metadata resources SHOULD return lightweight navigation fields such as `self_uri`, `parent_uri`, `count`, and safe `next_resources` where practical.
+- **FR-101**: Preview, planned, clarifying, completed, and recoverable-error responses SHOULD use one reusable `next_actions` shape with complete known arguments.
+- **FR-102**: Metadata and feature resources SHOULD return lightweight navigation fields such as `self_uri`, `parent_uri`, `count`, `has_more`, `next_page_token`, and safe `next_resources` where practical.
 - **FR-103**: Complex tools SHOULD provide compact examples for `execute_update` preview, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow` preview, and `validate_workflow`.
 - **FR-104**: Examples MUST be static, small, secret-free, and free of production database names or environment-specific paths.
-- **FR-105**: Completion ranking MAY prefer stronger supplied context, such as database/schema for tables and database/schema/table for columns.
-- **FR-106**: Completion ranking MUST NOT use vector search, model calls, cross-session memory, or user behavior learning in this increment.
+- **FR-105**: Completion SHOULD use deterministic prefix-first matching, contains fallback, supplied-context ordering, and current-session `plan_id` ordering.
+- **FR-106**: Completion MUST NOT use vector search, model calls, cross-session memory, or user behavior learning in this increment.
 - **FR-107**: Encrypt and mask algorithm resources SHOULD expose required properties, optional properties, defaults, secret flags, and capability hints where available.
-- **FR-108**: Metadata responses MAY expose `metadata_fingerprint` or `loaded_at` so a model can compare whether responses came from the same loaded context.
-- **FR-109**: A lightweight runtime status resource MAY expose transport mode, loaded feature names, descriptor fingerprint,
-  runtime database count, driver-load status, and non-sensitive configuration summary.
-- **FR-110**: Database capabilities SHOULD expose feature readiness hints for encrypt and mask workflows,
-  including whether the database appears Proxy-backed or demo/direct JDBC when such evidence is safely known.
-- **FR-111**: Schema discovery SHOULD expose default-schema or ambiguity metadata so a model can infer a single safe schema or ask the user when multiple schemas are visible.
-- **FR-112**: `search_metadata` SHOULD expose deterministic `score`, `match_reason`, or `ambiguity` metadata when it helps a model choose among multiple hits.
-- **FR-113**: Completion SHOULD include view names where resource descriptors and metadata query facades already support views.
-- **FR-114**: Resource navigation SHOULD include table-column detail to `plan_encrypt_rule` and `plan_mask_rule`, carrying database, schema, table, and column.
-- **FR-115**: Resource URI hints SHOULD define percent-encoding or explicit non-derivable behavior for path segments with special characters.
-- **FR-116**: `execute_query` responses SHOULD provide next actions for truncated results, empty results, or retryable query-shaping situations when safe.
+- **FR-108**: Approval-related arguments such as `approved_steps` SHOULD document accepted values and preview-to-execute reuse guidance.
+- **FR-109**: Workflow apply preview SHOULD distinguish side-effect scopes such as rule metadata, physical structure, and physical data when the server can know them safely.
+- **FR-110**: Stale or unavailable `plan_id` recovery SHOULD tell the model whether to use current-session completion or re-run the relevant planning tool.
 
 #### P2 - later comfort improvements
 
 - **FR-201**: Startup output SHOULD make HTTP endpoint, config path, log path, runtime database count, STDIO logging rules, and access token expectations clear.
-- **FR-202**: Sensitive configuration SHOULD support environment variable references for HTTP access token and runtime database password without introducing a full secret manager.
+- **FR-202**: Documentation SHOULD include minimal local STDIO and HTTP MCP client configuration examples, including OCI/server package and bearer-token shape where applicable.
 - **FR-203**: Documentation SHOULD cover Java version, missing JDBC driver, HTTP token, STDIO stdout logging, empty discovery results, and workflow topology mistakes.
 - **FR-204**: The opt-in LLM usability suite SHOULD add minimal scenarios for SQL preview, metadata search to detail URI, and plan-to-apply-preview-to-validate order.
 - **FR-205**: Real-model LLM usability tests MUST remain opt-in and outside default CI.
-- **FR-206**: `server.json` or adjacent packaging metadata SHOULD provide minimal local HTTP and STDIO client configuration hints when doing so does not create branch-specific release commitments.
-- **FR-207**: Preview correlation, such as a preview revision or token, MAY be evaluated after reusable preview arguments and approval guidance are stable.
-- **FR-208**: Sampling, progress, logging, roots, or permission-boundary metadata MAY be added only when the SDK exposes stable APIs and a concrete model-use path proves the need.
+- **FR-206**: `server.json` or adjacent packaging metadata SHOULD provide concise model-facing hints for metadata-first discovery, safe SQL, and encrypt/mask workflow when doing so does not create branch-specific release commitments.
+- **FR-207**: Initialize/server instructions SHOULD be checked so clients that surface instructions show `shardingsphere://capabilities` as the first safe resource.
+- **FR-208**: MCP-native elicitation, sampling, progress, logging, roots, or permission-boundary metadata MAY be added only when the SDK exposes stable APIs and a concrete model-use path proves the need.
 
 ### Key Entities
 
@@ -254,7 +248,8 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **Resource Payload Contract**: A model-facing description of a resource response shape, including list/detail state, item fields, pagination fields, and navigation hints where available.
 - **Descriptor Lint Rule**: A deterministic check that protects model-facing descriptor quality without using real model calls or natural-language scoring.
 - **Compact Example**: A small static JSON shape used to teach complex tool output without leaking secrets or environment details.
-- **Workflow Plan Summary**: A current-session summary of workflow plan identity, kind, status, update time, artifact summary, and next action if a lightweight workflow query resource is implemented.
+- **Approval Step Contract**: The accepted step identifiers, artifact identifiers, or all-step shortcuts that a model may pass from preview to execute.
+- **Startup and Client Hint**: The first-use connection, package, token, STDIO, and troubleshooting information needed to connect an MCP client without reading source code.
 
 ## Success Criteria *(mandatory)*
 
@@ -268,13 +263,13 @@ As a maintainer, I want lightweight descriptor lint and a capabilities contract 
 - **SC-006**: Descriptor lint catches at least empty descriptions, placeholder descriptions, side-effect metadata omissions, missing enum values,
   missing core output fields, and broken navigation references.
 - **SC-007**: A capabilities contract test runs without real-model credentials and verifies the core model-facing sections.
-- **SC-008**: README or prompt guidance contains short paths for metadata inspection, safe SQL execution, and encrypt or mask workflow.
+- **SC-008**: README, prompt guidance, or descriptor examples contain short paths for metadata inspection, safe SQL execution, and encrypt or mask workflow.
 - **SC-009**: Implementation planning contains traceable code evidence, affected paths, verification mapping, non-goals, and rollback boundary for each P0 item.
 - **SC-010**: This Spec Kit package is updated on the existing branch with no branch creation or branch switching.
 - **SC-011**: Capabilities expose enough compact guidance for a model to choose metadata, SQL, and workflow first hops without reading README.
-- **SC-012**: Detail resources and high-use resource schemas let a model distinguish not found, empty list, and single-item payloads.
-- **SC-013**: Manual workflow export fields that appear in real payloads are documented in descriptor output schemas.
-- **SC-014**: P1/P2 candidates remain clearly non-blocking and do not introduce planner, vector ranking, cross-session memory, or full authorization scope.
+- **SC-012**: High-use resource responses expose enough navigation and list-state fields for a model to continue without hand-built URIs.
+- **SC-013**: Approval-step and manual workflow export fields that appear in real payloads are documented in descriptor output schemas or compact examples.
+- **SC-014**: P1/P2 candidates remain clearly non-blocking and do not introduce planner, vector ranking, cross-session memory, full authorization scope, or hidden execution.
 
 ## Assumptions
 

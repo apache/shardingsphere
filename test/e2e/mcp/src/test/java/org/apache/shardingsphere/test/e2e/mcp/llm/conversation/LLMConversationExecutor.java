@@ -33,12 +33,12 @@ import java.nio.file.Path;
  * Execute one LLM conversation scenario and persist the generated artifacts.
  */
 public final class LLMConversationExecutor {
-
+    
     @Getter
     private final LLME2EConfiguration configuration = LLME2EConfiguration.load();
-
+    
     private final LLME2EArtifactWriter artifactWriter = new LLME2EArtifactWriter();
-
+    
     /**
      * Run one conversation scenario.
      *
@@ -57,7 +57,7 @@ public final class LLMConversationExecutor {
         artifactWriter.write(artifactDirectory, artifactBundle);
         return new ConversationResult(artifactBundle, artifactDirectory);
     }
-
+    
     /**
      * Conversation result.
      *

@@ -107,7 +107,7 @@ Fields:
 - `category`: Stable category, limited to common mistakes in this increment.
 - `model_action`: Human-readable safe next action.
 - `missing_fields`: Missing argument names when applicable.
-- `suggested_next_tool`: Optional compatibility hint for retry; `next_actions` remains the primary guidance surface.
+- `next_actions`: Structured retry guidance using the same shape as successful outputs and previews.
 - `suggested_arguments`: Optional safe arguments for retry.
 - `read_resources_first`: Optional resource URIs to inspect before retry.
 - `requires_user_approval`: Whether user approval is required before the recommended retry.
@@ -177,38 +177,36 @@ Initial rules:
 - Core output schemas include key fields.
 - Navigation references resolve to public identifiers.
 
-## Workflow Plan Summary
-
-Optional P1 model for current-session workflow recovery.
+## Approval Step Contract
 
 Fields:
 
-- `plan_id`: Current-session plan identifier.
-- `workflow_kind`: Workflow kind such as `encrypt.rule` or `mask.rule`.
-- `status`: Current lifecycle status.
-- `updated_at`: Last update time if available.
-- `artifact_summary`: Small summary of generated DDL, DistSQL, or manual artifacts.
-- `next_actions`: Structured next actions.
+- `argument_name`: Approval argument such as `approved_steps`.
+- `accepted_values`: Step identifiers, artifact identifiers, or an explicit all-step value when supported.
+- `preview_source`: The preview response field that the model should copy from.
+- `requires_user_approval`: Always true for side-effecting execute/apply paths.
 
 Validation rules:
 
-- Must be session-scoped.
-- Must not expose plans from other sessions.
-- Must not imply durability across server restarts.
+- Values must come from the preview payload or descriptor contract.
+- The contract must not allow hidden execution without visible user approval.
+- Unknown values should be rejected or recovered instead of guessed.
 
-## Metadata Freshness Hint
+## Workflow Side-Effect Scope
 
-Optional P1 field for metadata responses.
+Represents the side-effect category shown by workflow apply preview.
 
 Fields:
 
-- `metadata_fingerprint`: Deterministic identifier for the visible metadata snapshot, or
-- `loaded_at`: Load time for the metadata snapshot.
+- `scope`: Rule metadata, physical structure, physical data, or equivalent stable category.
+- `affected_objects`: Logical database, table, column, rule, or generated artifact identifiers when safely known.
+- `approval_message`: Short user-facing statement of what execution can change.
 
 Validation rules:
 
-- Should help compare whether multiple metadata responses came from the same snapshot.
-- Must not require a new active refresh mechanism in this increment.
+- Scope must be specific when the server can know it safely.
+- Scope must not understate possible physical or rule changes.
+- Physical data scope should appear only when data can actually be changed.
 
 ## Startup Runtime Hint
 
@@ -230,18 +228,36 @@ Validation rules:
 - STDIO mode must keep protocol stdout clean.
 - This is diagnostic guidance, not a new management API.
 
-## Environment Variable Reference
+## First-Use Client Configuration
 
-Optional P2 model for sensitive configuration values sourced from environment variables.
+Optional P2 model for client setup documentation.
 
 Fields:
 
-- `config_key`: Configuration key, such as `transport.http.accessToken` or runtime database password.
-- `env_name`: Environment variable name.
-- `required`: Whether startup should fail if the variable is missing.
-- `failure_message`: Clear validation message when the reference cannot be resolved.
+- `transport`: `stdio` or `http`.
+- `command_or_url`: Local command, OCI package command, or HTTP endpoint shape.
+- `headers`: Non-secret header names such as `Authorization` when token mode is enabled.
+- `first_resource`: Expected first resource, normally `shardingsphere://capabilities`.
+- `notes`: Short client-specific caveats when needed.
 
 Validation rules:
 
-- Do not introduce a full secret management system in this increment.
-- Documentation must explain missing-variable behavior.
+- Must not include secrets.
+- Must be small enough to copy into common MCP client configuration.
+- Must not create branch-specific release commitments beyond existing package metadata.
+
+## Troubleshooting Item
+
+Represents one first-use failure hint.
+
+Fields:
+
+- `symptom`: Short observable failure.
+- `likely_cause`: Java version, missing JDBC driver, HTTP token, STDIO stdout pollution, empty surface, or workflow topology mistake.
+- `check`: Minimal command, log path, or resource to inspect.
+- `fix`: Short corrective action.
+
+Validation rules:
+
+- Keep each item concise and documentation-oriented.
+- Do not require production credentials.

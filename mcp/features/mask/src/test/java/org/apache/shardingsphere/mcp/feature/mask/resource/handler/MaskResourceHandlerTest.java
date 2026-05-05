@@ -55,7 +55,7 @@ class MaskResourceHandlerTest {
     @MethodSource("assertHandleArguments")
     void assertHandle(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final Map<String, String> uriVariables,
                       final String expectedDatabase, final String expectedTable, final List<Map<String, Object>> maskRules,
-                      final List<Map<String, Object>> maskAlgorithms) throws ReflectiveOperationException {
+                      final List<Map<String, Object>> maskAlgorithms, final String expectedSelfUri, final String expectedParentUri) throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
@@ -66,6 +66,11 @@ class MaskResourceHandlerTest {
         when(ruleInspectionService.queryMaskAlgorithms(queryFacade)).thenReturn(maskAlgorithms);
         MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(uriVariables));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
+        assertThat(actual.toPayload().get("self_uri"), is(expectedSelfUri));
+        if (expectedParentUri.isEmpty()) {
+            return;
+        }
+        assertThat(actual.toPayload().get("parent_uri"), is(expectedParentUri));
     }
     
     private static Stream<Arguments> assertGetUriPatternArguments() {
@@ -77,8 +82,11 @@ class MaskResourceHandlerTest {
     
     private static Stream<Arguments> assertHandleArguments() {
         return Stream.of(
-                Arguments.of("mask algorithms", new MaskAlgorithmsHandler(), Map.of(), "", "", List.of(), List.of(Map.of("type", "MD5"))),
-                Arguments.of("mask rules", new MaskRulesHandler(), Map.of("database", "logic_db"), "logic_db", "", List.of(Map.of("column", "phone")), List.of()),
-                Arguments.of("mask table rule", new MaskRuleHandler(), Map.of("database", "logic_db", "table", "orders"), "logic_db", "orders", List.of(Map.of("column", "phone")), List.of()));
+                Arguments.of("mask algorithms", new MaskAlgorithmsHandler(), Map.of(), "", "", List.of(), List.of(Map.of("type", "MD5")),
+                        "shardingsphere://features/mask/algorithms", ""),
+                Arguments.of("mask rules", new MaskRulesHandler(), Map.of("database", "logic_db"), "logic_db", "", List.of(Map.of("column", "phone")), List.of(),
+                        "shardingsphere://features/mask/databases/logic_db/rules", ""),
+                Arguments.of("mask table rule", new MaskRuleHandler(), Map.of("database", "logic_db", "table", "orders"), "logic_db", "orders", List.of(Map.of("column", "phone")), List.of(),
+                        "shardingsphere://features/mask/databases/logic_db/tables/orders/rules", "shardingsphere://features/mask/databases/logic_db/rules"));
     }
 }

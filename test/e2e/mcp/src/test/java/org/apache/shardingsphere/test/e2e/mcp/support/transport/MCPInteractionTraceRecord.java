@@ -28,21 +28,21 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class MCPInteractionTraceRecord {
-
+    
     private final int sequence;
-
+    
     private final String actionKind;
-
+    
     private final String targetName;
-
+    
     private final Map<String, Object> arguments;
-
+    
     private final Map<String, Object> structuredContent;
-
+    
     private final boolean valid;
-
+    
     private final long latencyMillis;
-
+    
     /**
      * Create resource list.
      *
@@ -55,7 +55,7 @@ public final class MCPInteractionTraceRecord {
         return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_LIST_KIND, MCPInteractionActionNames.LIST_RESOURCES,
                 Map.of(), structuredContent, true, latencyMillis);
     }
-
+    
     /**
      * Create resource read.
      *
@@ -69,7 +69,7 @@ public final class MCPInteractionTraceRecord {
         return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, MCPInteractionActionNames.READ_RESOURCE,
                 Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
     }
-
+    
     /**
      * Create prompt list.
      *
@@ -82,7 +82,7 @@ public final class MCPInteractionTraceRecord {
         return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_LIST_KIND, MCPInteractionActionNames.LIST_PROMPTS,
                 Map.of(), structuredContent, true, latencyMillis);
     }
-
+    
     /**
      * Create prompt get.
      *
@@ -98,7 +98,7 @@ public final class MCPInteractionTraceRecord {
         return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_GET_KIND, MCPInteractionActionNames.GET_PROMPT,
                 Map.of("name", promptName, "arguments", promptArguments), structuredContent, true, latencyMillis);
     }
-
+    
     /**
      * Create completion.
      *
@@ -113,7 +113,7 @@ public final class MCPInteractionTraceRecord {
         return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.COMPLETION_KIND, MCPInteractionActionNames.COMPLETE,
                 arguments, structuredContent, true, latencyMillis);
     }
-
+    
     /**
      * Create invalid action.
      *

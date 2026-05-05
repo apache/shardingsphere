@@ -137,11 +137,12 @@ test/e2e/mcp/
 - Add deterministic prefix-first plus contains fallback completion behavior.
 - Expose encrypt and mask algorithm property templates through algorithm resources.
 - Clarify approval arguments such as `approved_steps`.
+- Clarify workflow apply preview side-effect scope and stale `plan_id` recovery guidance.
 
 ### Slice 6: P2 First-Use and Opt-In Usability
 
 - Improve HTTP and STDIO startup hints.
-- Add first-use client configuration and troubleshooting docs.
+- Add first-use client configuration, registry/package hints, and troubleshooting docs.
 - Add a few opt-in LLM usability scenarios for preview-first SQL, metadata search to detail resource, and workflow order.
 - Normalize count and pagination wording on large list responses.
 

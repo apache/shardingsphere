@@ -27,14 +27,14 @@ import java.util.List;
 import java.util.Locale;
 
 public final class LLMUsabilityScenarioCatalog {
-
+    
     private static final String SYSTEM_PROMPT = """
             You are evaluating an MCP server.
             Use the provided MCP actions exactly as needed.
             Do not guess database structure or query results.
             Return JSON only when asked for the final answer.
             """.trim();
-
+    
     /**
      * Create the minimal usability baseline scenarios for one runtime kind.
      *
@@ -74,6 +74,28 @@ public final class LLMUsabilityScenarioCatalog {
                         List.of("search_metadata", "execute_query"),
                         List.of("search_metadata", "execute_query")),
                 List.of("search_metadata"), List.of(), false, false));
+        String previewUpdateSql = "UPDATE orders SET status = status WHERE order_id = -1";
+        List<String> previewSqlActions = List.of("execute_update", "execute_query");
+        result.add(createScenario("tool-preview-update-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
+                new LLME2EScenario("tool-preview-update-" + runtimeKind, SYSTEM_PROMPT,
+                        "First preview the SQL `" + previewUpdateSql + "` with execute_update and execution_mode `preview`. "
+                                + "Do not execute the update. Then verify `" + query + "`.",
+                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), previewSqlActions, previewSqlActions),
+                List.of("execute_update"), List.of(), false, false));
+        List<String> searchDetailActions = List.of("search_metadata", MCPInteractionActionNames.READ_RESOURCE, "execute_query");
+        result.add(createScenario("tool-search-detail-uri-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
+                new LLME2EScenario("tool-search-detail-uri-" + runtimeKind, SYSTEM_PROMPT,
+                        "Use search_metadata for `" + tableName + "` in " + databaseName + "." + schemaName
+                                + ", read the returned table resource_uri, then verify `" + query + "`.",
+                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), searchDetailActions, searchDetailActions),
+                List.of("search_metadata"), List.of(tableResourceUri), true, false));
+        List<String> workflowActions = List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query");
+        result.add(createScenario("workflow-mask-preview-validate-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
+                new LLME2EScenario("workflow-mask-preview-validate-" + runtimeKind, SYSTEM_PROMPT,
+                        "Read `shardingsphere://features/mask/algorithms`, plan a mask rule for " + databaseName + "." + schemaName + "." + tableName
+                                + ".status, preview apply_workflow, export it with execution_mode `manual-only`, validate the workflow, then verify `" + query + "`.",
+                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), workflowActions, workflowActions),
+                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://features/mask/algorithms"), true, false));
         List<String> promptCompletionActions = List.of(
                 MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "execute_query");
         result.add(createScenario("prompt-completion-inspect-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
@@ -130,7 +152,7 @@ public final class LLMUsabilityScenarioCatalog {
         }
         return result;
     }
-
+    
     private LLMUsabilityScenario createScenario(final String scenarioId, final LLMUsabilityDimension dimension, final String runtimeKind,
                                                 final LLME2EScenario llmScenario, final List<String> expectedFirstActionNames,
                                                 final List<String> expectedResourceUris, final boolean resourceHitRequired,

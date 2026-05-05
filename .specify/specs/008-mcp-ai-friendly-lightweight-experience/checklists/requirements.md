@@ -25,7 +25,8 @@
 
 - [x] Heavy planner, graph traversal engine, cross-session memory, vector ranking, model-call ranking, and full authorization platform are explicitly out of scope
 - [x] P1 and P2 items are non-blocking follow-ups after P0 evidence and tests
-- [x] Preview correlation, roots, progress, logging, sampling, and runtime status remain conditional rather than mandatory P0 work
+- [x] Preview correlation, roots, progress, logging, sampling, runtime status, environment-variable config, metadata freshness,
+  and workflow-list resources remain deferred rather than active work
 - [x] Existing descriptor, resource, tool, prompt, completion, workflow, and recovery mechanisms remain the preferred extension points
 
 ## Feature Readiness

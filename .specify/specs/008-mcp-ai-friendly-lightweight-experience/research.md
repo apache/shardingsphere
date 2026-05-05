@@ -14,7 +14,7 @@ Adding a full parallel `list_*` tool family now would duplicate the surface and 
 
 ## Decision 2: Standardize guidance before adding new runtime features
 
-**Decision**: First normalize `next_actions`, recommended tool naming, and common recovery metadata.
+**Decision**: First normalize `next_actions` and common recovery metadata, and remove legacy recommendation-field aliases from the active contract.
 
 **Rationale**: Models fail most often when the next step is ambiguous. A consistent action shape improves existing tools without changing the protocol stack.
 
@@ -105,8 +105,9 @@ empty descriptions, placeholders, missing side-effect hints, missing enum values
 
 ## Decision 10: Keep P1 and P2 as comfort layers, not blockers
 
-**Decision**: Workflow plan lookup, metadata navigation hints, compact examples, completion tuning, algorithm property templates, freshness hints,
-startup diagnostics, environment-variable references, troubleshooting docs, and LLM usability scenarios stay behind P0.
+**Decision**: Metadata navigation hints, compact examples, completion tuning, algorithm property templates, approval-step wording,
+workflow side-effect scope, stale-plan recovery, startup diagnostics, client configuration examples, troubleshooting docs,
+registry hints, and LLM usability scenarios stay behind P0.
 
 **Rationale**: These are useful, but the first-order model failures are surface mismatch, unclear next action, missing URI hints, schema drift, unsafe preview follow-up, and weak recovery.
 
@@ -114,6 +115,20 @@ startup diagnostics, environment-variable references, troubleshooting docs, and 
 
 - Build all improvements in one large pass. Rejected because it increases review risk and hides the minimum useful change.
 - Drop P1/P2 completely. Rejected because they are cheap, concrete follow-ups once P0 is protected by tests.
+
+## Decision 12: Defer protocol-native and runtime-management ideas
+
+**Decision**: Do not add current-session workflow list resources, metadata freshness semantics, environment-variable config references,
+runtime status resources, preview tokens, or MCP-native elicitation/progress/sampling/roots in this increment.
+
+**Rationale**: These ideas may be useful later, but the current model-use pain is simpler: the model needs clear next actions,
+examples, algorithm properties, approval values, side-effect scope, first-use client setup, and safe recovery.
+
+**Alternatives considered**:
+
+- Add workflow listing and freshness fields now. Rejected because current `plan_id` return, completion, and recovery cover the main session path.
+- Add environment-variable config references now. Rejected because it is operational security convenience rather than model-native MCP usability.
+- Add MCP-native elicitation or progress now. Deferred until SDK/client support is stable and a concrete use path proves it is needed.
 
 ## Decision 11: Make code re-analysis a gate, not a scope expansion loop
 

@@ -30,6 +30,14 @@
 - `shardingsphere://capabilities` is the sole current public-surface fact source.
 - Do not preserve legacy compatibility shims, old tool names, old recommendation fields, or implicit execution defaults.
 
+## Task Status Calibration (2026-05-05)
+
+- Why there are two entries: `.specify/specs/008-mcp-ai-friendly-lightweight-experience/` is the canonical Speckit workspace; this `specs/003-mcp-ai-friendly-guided-interaction/` directory is the repository-visible synchronized handoff package.
+- User-facing baseline: `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md` mirrors the same lightweight requirement set for reviewers and maintainers who do not inspect `.specify/`.
+- `[x]` means current code, descriptors, docs, or tests provide enough evidence for the task.
+- Unchecked tasks are either not implemented or only partially complete; partials are called out inline.
+- Branch constraint was rechecked on `001-shardingsphere-mcp`; no branch switch was performed.
+
 ## Phase 1: Requirements Alignment
 
 - [x] T001 Confirm the current branch without switching branches.
@@ -78,35 +86,38 @@
 
 ## Phase 6: P1 Resource Navigation and Examples
 
-- [ ] T026 [P1] Add `self_uri` to list/detail resource responses where the current resource URI is known.
-- [ ] T027 [P1] Add `parent_uri`, `count`, and `next_resources` where they are safe and public.
-- [ ] T028 [P1] Keep resource navigation lightweight and avoid a runtime graph traversal service.
-- [ ] T029 [P1] Add compact static examples for `execute_update` preview, workflow planning, `apply_workflow` preview, and `validate_workflow`.
-- [ ] T030 [P1] Verify examples are secret-free and do not use production identifiers or environment-specific paths.
+- [x] T026 [P1] Add `self_uri` to list/detail resource responses where the current resource URI is known.
+- [x] T027 [P1] Add `parent_uri`, `count`, and `next_resources` where they are safe and public.
+- [x] T028 [P1] Keep resource navigation lightweight and avoid a runtime graph traversal service.
+- [x] T029 [P1] Add compact static examples for `execute_update` preview, workflow planning, `apply_workflow` preview, and `validate_workflow`.
+- [x] T030 [P1] Verify examples are secret-free and do not use production identifiers or environment-specific paths.
 
 ## Phase 7: P1 Completion and Algorithm Templates
 
-- [ ] T031 [P1] Add deterministic contains fallback when prefix completion has no result.
-- [ ] T032 [P1] Prefer context-scoped table and column candidates when database/schema/table context is supplied.
-- [ ] T033 [P1] Keep current-session `plan_id` completion ordered by eligible recent plans.
-- [ ] T034 [P1] Verify completion does not use vector search, model calls, cross-session history, or user behavior learning.
-- [ ] T035 [P1] Expose encrypt and mask algorithm required properties, optional properties, defaults, secret flags, and capability hints through algorithm resources.
-- [ ] T036 [P1] Clarify `approved_steps` accepted values and preview-to-execute reuse guidance.
+- [x] T031 [P1] Add deterministic contains fallback when prefix completion has no result.
+- [x] T032 [P1] Prefer context-scoped table and column candidates when database/schema/table context is supplied.
+- [x] T033 [P1] Keep current-session `plan_id` completion ordered by eligible recent plans.
+- [x] T034 [P1] Verify completion does not use vector search, model calls, cross-session history, or user behavior learning.
+- [x] T035 [P1] Expose encrypt and mask algorithm required properties, optional properties, defaults, secret flags, and capability hints through algorithm resources.
+- [x] T036 [P1] Clarify `approved_steps` accepted values and preview-to-execute reuse guidance.
+- [x] T036A [P1] Clarify workflow apply preview side-effect scopes without adding approval tokens or persistent workflow state.
+- [x] T036B [P1] Clarify stale `plan_id` recovery so the next action points to current-session completion or replanning.
 
 ## Phase 8: P2 First-Use Experience
 
-- [ ] T037 [P2] Improve HTTP startup hints with endpoint, config path, log path, token hint, and runtime database count.
-- [ ] T038 [P2] Keep STDIO stdout reserved for MCP protocol and document stderr/file logging expectations.
-- [ ] T039 [P2] Add first-use client configuration examples for common MCP clients.
-- [ ] T040 [P2] Document troubleshooting for Java version, JDBC driver, HTTP token, STDIO log pollution, empty tool/resource lists, and workflow topology mistakes.
-- [ ] T041 [P2] Normalize count and pagination wording on large resource lists.
+- [x] T037 [P2] Improve HTTP startup hints with endpoint, config path, log path, token hint, and runtime database count.
+- [x] T038 [P2] Keep STDIO stdout reserved for MCP protocol and document stderr/file logging expectations.
+- [x] T039 [P2] Add first-use client configuration examples for common MCP clients.
+- [x] T040 [P2] Add concise `server.json` or package metadata hints for metadata-first discovery, safe SQL, and encrypt/mask workflow.
+- [x] T041 [P2] Document troubleshooting for Java version, JDBC driver, HTTP token, STDIO log pollution, empty tool/resource lists, and workflow topology mistakes.
+- [x] T041A [P2] Normalize count and pagination wording on large resource lists.
 
 ## Phase 9: P2 Opt-In LLM Usability
 
-- [ ] T042 [P2] Add a small opt-in scenario for side-effecting SQL requiring preview before execute.
-- [ ] T043 [P2] Add a small opt-in scenario for metadata search returning a readable detail resource URI.
-- [ ] T044 [P2] Add a small opt-in scenario for workflow order: plan, apply preview, execute or manual artifact, then validate.
-- [ ] T045 [P2] Keep all live model credentials and real-model calls outside default CI.
+- [x] T042 [P2] Add a small opt-in scenario for side-effecting SQL requiring preview before execute.
+- [x] T043 [P2] Add a small opt-in scenario for metadata search returning a readable detail resource URI.
+- [x] T044 [P2] Add a small opt-in scenario for workflow order: plan, apply preview, execute or manual artifact, then validate.
+- [x] T045 [P2] Keep all live model credentials and real-model calls outside default CI.
 
 ## Explicitly Deferred
 

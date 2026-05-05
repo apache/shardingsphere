@@ -95,8 +95,8 @@ Documentation alignment belongs in `mcp/README.md`, `mcp/README_ZH.md`, and exis
 - Inspect recovery behavior for missing database, missing execution mode, wrong SQL tool, unknown tool/resource, and unavailable `plan_id`.
 - Decide descriptor lint placement by reusing descriptor loader or support-layer tests where possible.
 - Decide the `shardingsphere://capabilities` contract boundary by asserting section and shape without large snapshots.
-- For P1 only, inspect whether workflow session context, metadata resources, completion handlers, and algorithm resources can expose the requested hints without new storage.
-- For P2 only, inspect startup logging and config binding before documenting runtime hints or environment variable references.
+- For P1 only, inspect whether existing metadata resources, workflow outputs, completion handlers, and algorithm resources can expose the requested hints without new storage.
+- For P2 only, inspect startup logging, server instructions, package metadata, and README before documenting client configuration and troubleshooting hints.
 
 ### Phase 0 Deliverables
 
@@ -126,8 +126,8 @@ Each P0 item must leave a short implementation note before coding:
 - Define the capabilities contract assertions.
 - Define the descriptor lint rule set and failure messages.
 - Define compact example placement and shape for P1 only.
-- Define optional workflow plan summary shape if lightweight workflow query is accepted for P1.
-- Define startup and environment-variable documentation boundaries for P2 only.
+- Define approval-step, workflow side-effect scope, and stale-plan recovery wording for P1 only.
+- Define startup, client-configuration, registry/package, and troubleshooting documentation boundaries for P2 only.
 
 ### Phase 1 Design Rules
 
@@ -143,8 +143,8 @@ Each P0 item must leave a short implementation note before coding:
 2. Standardize `next_actions`, reusable preview arguments, and common recovery fields in existing response builders.
 3. Add direct `search_metadata` resource URI hints and align core output schemas.
 4. Add descriptor lint and the capabilities contract test.
-5. Add P1 examples, workflow lookup, navigation hints, completion tuning, algorithm property templates, or freshness hints only after P0 is stable.
-6. Extend P2 startup, environment-variable, troubleshooting, and opt-in LLM usability coverage only after deterministic tests protect the basic surface.
+5. Add P1 examples, navigation hints, completion tuning, algorithm property templates, approval-step wording, side-effect scopes, and stale-plan recovery only after P0 is stable.
+6. Extend P2 startup, client-configuration, troubleshooting, registry/package hints, and opt-in LLM usability coverage only after deterministic tests protect the basic surface.
 
 ## Complexity Tracking
 

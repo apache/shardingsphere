@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegist
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArtifactPayloadUtils;
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
@@ -152,6 +153,9 @@ public final class MCPErrorConverter {
         }
         if (INVALID_REQUEST.equals(errorCode) && message.startsWith("execution_mode must be one of")) {
             return createInvalidWorkflowExecutionModeRecovery();
+        }
+        if (INVALID_REQUEST.equals(errorCode) && message.startsWith("approved_steps must contain only")) {
+            return createInvalidApprovedStepsRecovery();
         }
         if (INVALID_REQUEST.equals(errorCode) && message.endsWith(" is required.")) {
             return createMissingArgumentRecovery(message.substring(0, message.length() - " is required.".length()));
@@ -273,6 +277,19 @@ public final class MCPErrorConverter {
         return result;
     }
     
+    private static Map<String, Object> createInvalidApprovedStepsRecovery() {
+        Map<String, Object> result = createBaseRecovery("invalid_enum_value",
+                "Retry apply_workflow with approved_steps copied from preview_artifacts.approval_step, or omit approved_steps to apply every artifact.");
+        result.put("field", "approved_steps");
+        result.put("allowed_values", List.of(WorkflowArtifactPayloadUtils.STEP_DDL, WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL));
+        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
+        result.put("next_actions", List.of(createToolAction("apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps after user approval.",
+                Map.of("execution_mode", "preview"), true)));
+        result.put("requires_user_approval", true);
+        result.put("ask_user_when_uncertain", true);
+        return result;
+    }
+    
     private static Map<String, Object> createMissingArgumentRecovery(final String argumentName) {
         boolean missingDatabase = "database".equals(argumentName);
         String category = missingDatabase ? "missing_database" : "missing_argument";
@@ -332,9 +349,12 @@ public final class MCPErrorConverter {
     }
     
     private static Map<String, Object> createWorkflowStateRecovery() {
-        Map<String, Object> result = createBaseRecovery("workflow_state_error", "Use the latest plan_id from a planning response, or re-run the planning tool.");
+        Map<String, Object> result = createBaseRecovery("workflow_state_error", "Use current-session completion to select an available plan_id, or re-run the matching planning tool.");
         result.put("read_resources_first", List.of("shardingsphere://capabilities"));
-        result.put("next_actions", List.of(createReadResourceAction("shardingsphere://capabilities", "Read current workflow tools, then re-run the matching planning tool in this session.")));
+        result.put("completion_first", Map.of("argument", "plan_id", "scope", "current MCP session"));
+        result.put("next_actions", List.of(
+                createCompletionAction("plan_id", "Use MCP completion for plan_id to pick an available current-session workflow plan."),
+                createReadResourceAction("shardingsphere://capabilities", "Read current workflow tools, then re-run the matching planning tool if completion has no usable plan.")));
         result.put("ask_user_when_uncertain", false);
         return result;
     }
@@ -359,6 +379,15 @@ public final class MCPErrorConverter {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("action_kind", "read_resource");
         result.put("target_resource", resourceUri);
+        result.put("reason", reason);
+        result.put("requires_user_approval", false);
+        return result;
+    }
+    
+    private static Map<String, Object> createCompletionAction(final String argumentName, final String reason) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("action_kind", "complete_argument");
+        result.put("argument_name", argumentName);
         result.put("reason", reason);
         result.put("requires_user_approval", false);
         return result;

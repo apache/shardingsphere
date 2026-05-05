@@ -123,6 +123,15 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
+    void assertApplyRejectsUnsupportedApprovedStep() {
+        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
+                mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP,
+                "session-1", createSnapshot(), List.of("review"), "review-then-execute"));
+        assertThat(actual.getMessage(), is("approved_steps must contain only `ddl`, `index_ddl`, or `rule_distsql`."));
+    }
+    
+    @Test
     void assertApplyPreviewDoesNotExecuteOrChangeLifecycle() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
@@ -169,7 +178,7 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
-    void assertApplyCompletesWhenArtifactsAreNotApproved() {
+    void assertApplySkipsUnapprovedArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));
         snapshot.getIndexPlans().add(new IndexPlan("idx_orders_order_id_cipher", "order_id_cipher", "assist lookup", "CREATE INDEX idx_orders_order_id_cipher ON orders(order_id_cipher)"));
@@ -178,15 +187,17 @@ class WorkflowExecutionServiceTest {
         workflowSessionContext.save(snapshot);
         WorkflowExecutionService executionService = new WorkflowExecutionService();
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(mock(SQLExecutionResponse.class));
         MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler = mock(MCPWorkflowApplySynchronizationHandler.class);
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
-                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of("review"), "review-then-execute");
+                executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of("ddl"), "review-then-execute");
         List<?> actualStepResults = (List<?>) actualResponse.get("step_results");
         assertThat(actualResponse.get("status"), is("completed"));
-        assertThat(((List<?>) actualResponse.get("skipped_artifacts")).size(), is(3));
-        assertThat(((Map<?, ?>) actualStepResults.get(0)).get("status"), is("skipped"));
+        assertThat(((List<?>) actualResponse.get("skipped_artifacts")).size(), is(2));
+        assertThat(((Map<?, ?>) actualStepResults.get(0)).get("status"), is("passed"));
+        assertThat(((Map<?, ?>) actualStepResults.get(1)).get("status"), is("skipped"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("executed"));
-        verify(executionFacade, never()).execute(any());
+        verify(executionFacade).execute(any());
         verify(workflowApplySynchronizationHandler, never()).synchronize(any(), any(), any(), any(), any());
     }
     

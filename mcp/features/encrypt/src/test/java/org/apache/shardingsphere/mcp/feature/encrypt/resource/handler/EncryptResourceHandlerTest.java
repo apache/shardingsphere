@@ -54,6 +54,7 @@ class EncryptResourceHandlerTest {
         Plugins.getMemberAccessor().set(((Object) handler).getClass().getDeclaredField("ruleInspectionService"), handler, ruleInspectionService);
         MCPResponse actual = handler.handle(databaseContext, new MCPUriVariables(Map.of()));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
+        assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/algorithms"));
     }
     
     @Test
@@ -70,6 +71,7 @@ class EncryptResourceHandlerTest {
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of("database", "logic_db")));
         verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
+        assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/databases/logic_db/rules"));
     }
     
     @Test
@@ -88,5 +90,7 @@ class EncryptResourceHandlerTest {
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of("database", "logic_db", "table", "orders")));
         verify(ruleInspectionService).queryEncryptRules(any(), eq("logic_db"), eq("orders"));
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
+        assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/databases/logic_db/tables/orders/rules"));
+        assertThat(actual.toPayload().get("parent_uri"), is("shardingsphere://features/encrypt/databases/logic_db/rules"));
     }
 }

@@ -43,9 +43,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
-
+    
     private String jdbcUrl;
-
+    
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
@@ -55,12 +55,12 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             throw new IOException(ex);
         }
     }
-
+    
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return H2RuntimeConfigurationTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadDatabasesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -71,7 +71,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(items.get(0).get("database")), is("logic_db"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadDatabaseCapabilitiesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -82,7 +82,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("supportsExplainAnalyze")), is("true"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertServiceCapabilitiesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -91,7 +91,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertOfficialToolNames(((List<?>) interactionClient.readResource("shardingsphere://capabilities").get("supportedTools")).stream().map(String::valueOf).toList());
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListTools(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -104,7 +104,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertToolDefinition(actual, "execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertReadSingleMetadataResourceCases")
     void assertReadSingleMetadataResource(final String name, final RuntimeTransport transport,
@@ -116,7 +116,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(items.get(0).get(key)), is(expectedValue));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertReadCollectionMetadataResourceCases")
     void assertReadCollectionMetadataResource(final String name, final RuntimeTransport transport,
@@ -127,7 +127,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(items.stream().map(each -> String.valueOf(each.get(key))).toList(), is(expectedNames));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertTableDetailResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -141,7 +141,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(getNestedNames(actualItem, "indexes", "index"), is(List.of("PRIMARY_KEY_C", "idx_orders_status")));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadViewsResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -152,7 +152,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(items.get(0).get("view")), is("active_orders"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadIndexesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -162,7 +162,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(items.stream().map(each -> String.valueOf(each.get("index"))).toList(), is(List.of("PRIMARY_KEY_C", "idx_orders_status")));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListResources(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -172,7 +172,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertTrue(getResources(actual).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListResourceTemplates(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -185,7 +185,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertTrue(actualTemplates.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectUnsupportedResourceUri(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -196,7 +196,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("message")), is("Resource not found"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteSelect(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -207,7 +207,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteSelectWithTruncation(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -220,7 +220,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("truncated")), is("true"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteUpdate(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -233,7 +233,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteExplainAnalyze(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -246,7 +246,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertFalse(((List<?>) actual.get("rows")).isEmpty());
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteQueryTimeout(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -258,7 +258,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("error_code")), is("timeout"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadSequencesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -269,7 +269,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(items.get(0).get("sequence")), is("order_seq"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertSearchSequence(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -281,7 +281,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(items.get(0).get("name")), is("order_seq"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertSearchTableAndViewMetadata(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -292,7 +292,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders", "active_orders")));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectUnsupportedObjectType(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -305,7 +305,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectExecuteMultiStatement(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -317,7 +317,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("message")), is("Only one SQL statement is allowed."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectBlankSavepointName(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -329,7 +329,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(actual.get("message")), is("Savepoint name is required."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteSavepointFlow(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -352,7 +352,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteReleaseSavepoint(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -370,7 +370,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(commitResponse.get("message")), is("Transaction committed."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteTransactionalDdlRefreshesMetadataOnCommit(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -388,7 +388,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(String.valueOf(items.get(0).get("table")), is("orders_archive"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertCloseRollsBackPendingTransaction(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -400,19 +400,19 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
         }
     }
-
+    
     private void assertOfficialToolNames(final List<String> actualToolNames) {
         assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
     }
-
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionStdioEnabled();
     }
-
+    
     private static Stream<Arguments> transports() {
         return runtimeTransports().map(each -> Arguments.of(getTransportName(each), each));
     }
-
+    
     private static Stream<Arguments> assertReadSingleMetadataResourceCases() {
         return runtimeTransports().flatMap(each -> Stream.of(
                 Arguments.of(getTransportName(each) + " database detail", each, "shardingsphere://databases/logic_db", "database", "logic_db"),
@@ -425,7 +425,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
                         "idx_orders_status"),
                 Arguments.of(getTransportName(each) + " sequence detail", each, "shardingsphere://databases/logic_db/schemas/public/sequences/order_seq", "sequence", "order_seq")));
     }
-
+    
     private static Stream<Arguments> assertReadCollectionMetadataResourceCases() {
         return runtimeTransports().flatMap(each -> Stream.of(
                 Arguments.of(getTransportName(each) + " schemas list", each, "shardingsphere://databases/logic_db/schemas", "schema", List.of("public")),
@@ -435,11 +435,11 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
                 Arguments.of(getTransportName(each) + " view columns list", each,
                         "shardingsphere://databases/logic_db/schemas/public/views/active_orders/columns", "column", List.of("order_id", "status"))));
     }
-
+    
     private static Map<String, Object> createExecuteUpdateArguments(final String sql) {
         return Map.of("database", "logic_db", "schema", "public", "sql", sql, "execution_mode", "execute");
     }
-
+    
     private static Stream<RuntimeTransport> runtimeTransports() {
         Stream.Builder<RuntimeTransport> result = Stream.builder();
         if (MCPE2ECondition.isProductionH2Enabled()) {
@@ -450,11 +450,11 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         }
         return result.build();
     }
-
+    
     private static String getTransportName(final RuntimeTransport transport) {
         return RuntimeTransport.HTTP == transport ? "http" : "stdio";
     }
-
+    
     @SuppressWarnings("unchecked")
     private void assertToolDefinition(final List<Map<String, Object>> tools, final String toolName, final String expectedTitle,
                                       final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {

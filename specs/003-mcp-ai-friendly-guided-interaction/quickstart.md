@@ -112,8 +112,8 @@ Expected result:
 ## Scenario 7: P1 and P2 Triage
 
 1. Take P1 only after P0 is stable.
-2. Prefer resource navigation fields, compact examples, deterministic completion, algorithm property templates, and `approved_steps` clarity.
-3. Take P2 for startup hints, troubleshooting, pagination wording, and a small opt-in usability set.
+2. Prefer resource navigation fields, compact examples, deterministic completion, algorithm property templates, `approved_steps` clarity, workflow side-effect scope, and stale plan recovery.
+3. Take P2 for startup hints, client configuration, package metadata hints, troubleshooting, pagination wording, and a small opt-in usability set.
 4. Re-check that no P1/P2 item introduces a new compatibility shim, planner, graph engine, vector search, memory, RBAC platform, or default-CI live-model suite.
 
 Expected result:

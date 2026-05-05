@@ -29,12 +29,12 @@ import java.util.regex.Pattern;
  * LLM E2E artifact writer.
  */
 public final class LLME2EArtifactWriter {
-
+    
     private static final Pattern JSON_SECRET_FIELD_PATTERN = Pattern.compile(
             "(?i)(\"(?:api[_-]?key|token|password|authorization|secret)\"\\s*:\\s*\")([^\"]+)(\")");
-
+    
     private static final Pattern BEARER_TOKEN_PATTERN = Pattern.compile("(?i)(Bearer\\s+)[A-Za-z0-9._~+/=-]+");
-
+    
     /**
      * Write.
      *
@@ -55,7 +55,7 @@ public final class LLME2EArtifactWriter {
             Files.writeString(artifactDirectory.resolve("final-answer.json"), redact(artifactBundle.getFinalAnswerJson()));
         }
     }
-
+    
     private Map<String, Object> createRunContext(final LLME2EArtifactBundle artifactBundle) {
         return Map.of(
                 "scenarioId", artifactBundle.getScenarioId(),
@@ -64,7 +64,7 @@ public final class LLME2EArtifactWriter {
                 "capabilityFingerprints", artifactBundle.getCapabilityFingerprints(),
                 "failureType", artifactBundle.getAssertionReport().getFailureType());
     }
-
+    
     private String redact(final String value) {
         String result = JSON_SECRET_FIELD_PATTERN.matcher(value).replaceAll("$1<redacted>$3");
         return BEARER_TOKEN_PATTERN.matcher(result).replaceAll("$1<redacted>");

@@ -53,6 +53,8 @@ public final class WorkflowExecutionService {
     
     private static final List<String> EXECUTION_MODES = List.of(EXECUTION_MODE_PREVIEW, EXECUTION_MODE_REVIEW_THEN_EXECUTE, EXECUTION_MODE_MANUAL_ONLY);
     
+    private static final List<String> APPROVED_STEPS = List.of(WorkflowArtifactPayloadUtils.STEP_DDL, WorkflowArtifactPayloadUtils.STEP_INDEX_DDL, WorkflowArtifactPayloadUtils.STEP_RULE_DISTSQL);
+    
     /**
      * Apply workflow artifacts.
      *
@@ -71,6 +73,7 @@ public final class WorkflowExecutionService {
                                      final MCPFeatureExecutionFacade executionFacade, final MCPWorkflowApplySynchronizationHandler workflowApplySynchronizationHandler,
                                      final String sessionId, final WorkflowContextSnapshot snapshot, final List<String> approvedSteps, final String executionMode) {
         String actualExecutionMode = requireExecutionMode(executionMode);
+        final List<String> actualApprovedSteps = requireApprovedSteps(approvedSteps);
         Map<String, Object> rejectedResponse = checkApplyPreconditions(sessionId, snapshot, actualExecutionMode);
         if (!rejectedResponse.isEmpty()) {
             return rejectedResponse;
@@ -82,7 +85,7 @@ public final class WorkflowExecutionService {
         if (isManualOnly(actualExecutionMode)) {
             return applyManualOnly(workflowSessionContext, snapshot, applyOutcome);
         }
-        return applyAutomatically(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowApplySynchronizationHandler, sessionId, snapshot, approvedSteps,
+        return applyAutomatically(workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade, workflowApplySynchronizationHandler, sessionId, snapshot, actualApprovedSteps,
                 actualExecutionMode, applyOutcome);
     }
     
@@ -95,6 +98,18 @@ public final class WorkflowExecutionService {
             throw new MCPInvalidRequestException("execution_mode must be one of `preview`, `review-then-execute`, or `manual-only`.");
         }
         return result;
+    }
+    
+    private List<String> requireApprovedSteps(final List<String> approvedSteps) {
+        if (null == approvedSteps || approvedSteps.isEmpty()) {
+            return List.of();
+        }
+        for (String each : approvedSteps) {
+            if (!APPROVED_STEPS.contains(each)) {
+                throw new MCPInvalidRequestException("approved_steps must contain only `ddl`, `index_ddl`, or `rule_distsql`.");
+            }
+        }
+        return approvedSteps;
     }
     
     private Map<String, Object> checkApplyPreconditions(final String sessionId, final WorkflowContextSnapshot snapshot, final String executionMode) {

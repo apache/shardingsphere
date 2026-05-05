@@ -118,6 +118,17 @@ class MCPErrorConverterTest {
     }
     
     @Test
+    void assertConvertInvalidApprovedStepsWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(
+                new MCPInvalidRequestException("approved_steps must contain only `ddl`, `index_ddl`, or `rule_distsql`.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
+        assertThat(actualRecovery.get("field"), is("approved_steps"));
+        assertThat(actualRecovery.get("allowed_values"), is(List.of("ddl", "index_ddl", "rule_distsql")));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("apply_workflow"));
+    }
+    
+    @Test
     void assertConvertMultipleStatementsWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("Only one SQL statement is allowed.")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
@@ -177,8 +188,10 @@ class MCPErrorConverterTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("workflow_state_error"));
         assertFalse(actualRecovery.containsKey("suggested_next_tools"));
+        assertThat(actualRecovery.get("completion_first"), is(Map.of("argument", "plan_id", "scope", "current MCP session")));
         assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("read_resource"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("complete_argument"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("action_kind"), is("read_resource"));
     }
     
     static Stream<Arguments> assertConvertCases() {

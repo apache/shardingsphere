@@ -277,6 +277,34 @@ bin\start.bat conf\mcp-stdio.yaml
 
 ## Client 配置与排障
 
+- 通用 STDIO client 配置形态：
+
+  ```json
+  {
+    "mcpServers": {
+      "shardingsphere": {
+        "command": "/path/to/apache-shardingsphere-mcp/bin/start.sh",
+        "args": ["conf/mcp-stdio.yaml"]
+      }
+    }
+  }
+  ```
+
+- 通用 HTTP client 配置形态：
+
+  ```json
+  {
+    "mcpServers": {
+      "shardingsphere-http": {
+        "url": "http://127.0.0.1:18088/mcp",
+        "headers": {
+          "Authorization": "Bearer <token-if-configured>"
+        }
+      }
+    }
+  }
+  ```
+
 - 启动时会向 stderr 输出简短提示：配置文件路径、日志路径、runtime database 数量、当前 transport、token 状态，
   以及第一个应该读取的 resource。
 - Client 应先读取 `shardingsphere://capabilities`，再跟随 `resourceNavigation`、`next_resources` 和 `next_actions`，
@@ -779,7 +807,9 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `index_plan`
 - `distsql_artifacts`
 
-如果要分步执行，可以通过 `approved_steps` 只执行一部分步骤，例如只执行 `ddl`、`index_ddl` 或 `rule_distsql`。
+如果要分步执行，可以把 `approved_steps` 作为执行过滤器，只允许 `ddl`、`index_ddl` 或 `rule_distsql`。
+它不是 approval token；应在用户批准 preview 后，从 `preview_artifacts[].approval_step` 复制取值。
+未知值会被拒绝，不会静默跳过。
 这类分步执行主要用于 review 或灰度流程；如果只执行了一部分，`validate_workflow` 很可能会先失败，直到剩余步骤也补执行完成。
 
 执行完成后，建议立刻调用：

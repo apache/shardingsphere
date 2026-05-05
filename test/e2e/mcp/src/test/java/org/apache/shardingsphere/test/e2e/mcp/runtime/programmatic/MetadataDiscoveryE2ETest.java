@@ -40,11 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
-
+    
     @Test
     void assertSearchMetadataTablesAndViews() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -64,7 +64,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(tableResource.statusCode(), is(200));
         assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).get(0).get("table")), is("orders"));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertSearchMetadataObjectTypeCases")
     void assertSearchMetadataByObjectType(final String name, final Map<String, Object> arguments, final List<String> expectedNames) throws IOException, InterruptedException {
@@ -75,7 +75,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actual.statusCode(), is(200));
         assertThat(getItemNames(getStructuredContent(actual.body())), is(expectedNames));
     }
-
+    
     private static Stream<Arguments> assertSearchMetadataObjectTypeCases() {
         return Stream.of(
                 Arguments.of("database objects", createSearchArguments("", "", "logic", List.of("DATABASE")), List.of("logic_db")),
@@ -83,7 +83,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
                 Arguments.of("column objects", createSearchArguments("logic_db", "", "status", List.of("COLUMN")), List.of("status", "status")),
                 Arguments.of("index objects", createSearchArguments("logic_db", "", "status", List.of("INDEX")), List.of("idx_orders_status")));
     }
-
+    
     @Test
     void assertSearchMetadataAcrossDatabasesByDefault() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -93,7 +93,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actual.statusCode(), is(200));
         assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of("metrics", "metric_id", "metric_name", "PRIMARY_KEY_3")));
     }
-
+    
     @Test
     void assertSearchMetadataWithPagination() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -117,7 +117,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertFalse((boolean) secondPagePayload.get("has_more"));
         assertFalse(secondPagePayload.containsKey("next_page_token"));
     }
-
+    
     @Test
     void assertSearchMetadataWithOutOfRangePageToken() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -129,7 +129,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(actual.statusCode(), is(200));
         assertThat(getItemNames(getStructuredContent(actual.body())), is(List.of()));
     }
-
+    
     @Test
     void assertRejectSchemaSearchWithoutDatabase() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -141,7 +141,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
         assertThat(String.valueOf(actualPayload.get("message")), is("Schema cannot be provided without database."));
     }
-
+    
     @Test
     void assertRejectInvalidPageToken() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -155,7 +155,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
         assertThat(String.valueOf(actualPayload.get("message")), is("Invalid page token."));
     }
-
+    
     @Test
     void assertRejectUnsupportedObjectType() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -169,7 +169,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(String.valueOf(actualPayload.get("error_code")), is("invalid_request"));
         assertThat(String.valueOf(actualPayload.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
     }
-
+    
     @Test
     void assertReadWarehouseIndexesResource() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -183,15 +183,15 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         assertThat(String.valueOf(actualItems.get(0).get("table")), is("facts"));
         assertTrue(String.valueOf(actualItems.get(0).get("index")).startsWith("PRIMARY_KEY_"));
     }
-
+    
     private List<String> getItemNames(final Map<String, Object> payload) {
         return getItems(payload).stream().map(each -> String.valueOf(each.get("name"))).toList();
     }
-
+    
     private List<Map<String, Object>> getItems(final Map<String, Object> payload) {
         return MCPInteractionPayloads.castToList(payload.get("items"));
     }
-
+    
     private static Map<String, Object> createSearchArguments(final String databaseName, final String schemaName, final String query, final List<String> objectTypes) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         if (!databaseName.isEmpty()) {

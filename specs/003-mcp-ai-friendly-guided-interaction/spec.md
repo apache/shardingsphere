@@ -199,11 +199,15 @@ A user or model setting up MCP can see the endpoint, client configuration shape,
 - **FR-018**: Completion MUST NOT use vector search, model calls, cross-session history, or user behavior learning in this increment.
 - **FR-019**: Encrypt and mask algorithm resources SHOULD expose required properties, optional properties, defaults, secret flags, and capability hints.
 - **FR-020**: Approval-related tool arguments, including `approved_steps`, SHOULD be documented with allowed values and preview-to-execute reuse guidance.
-- **FR-021**: Startup and client documentation SHOULD cover HTTP endpoint, STDIO behavior, token requirement, config paths,
+- **FR-021**: Workflow apply preview SHOULD distinguish rule metadata, physical structure, and physical data side-effect scopes when safely knowable.
+- **FR-022**: Stale or unavailable workflow `plan_id` recovery SHOULD point to current-session completion or replanning with reusable safe context.
+- **FR-023**: Startup and client documentation SHOULD cover HTTP endpoint, STDIO behavior, token requirement, config paths,
   log paths, Java version, JDBC driver, and empty public surface troubleshooting.
-- **FR-022**: Opt-in LLM usability additions MAY cover only a few high-value scenarios and MUST remain outside default CI.
-- **FR-023**: The increment MUST NOT add a broad tool matrix, planner, graph engine, vector search, cross-session memory, RBAC platform, benchmark leaderboard, or hidden execution shortcut.
-- **FR-024**: The increment MUST NOT preserve backward compatibility for obsolete public fields, historical tool names, or unsafe implicit defaults.
+- **FR-024**: First-use documentation SHOULD include short local STDIO, OCI/server package, and HTTP client configuration examples.
+- **FR-025**: Registry or `server.json` metadata SHOULD briefly describe metadata-first discovery, safe SQL, and encrypt/mask workflow.
+- **FR-026**: Opt-in LLM usability additions MAY cover only a few high-value scenarios and MUST remain outside default CI.
+- **FR-027**: The increment MUST NOT add a broad tool matrix, planner, graph engine, vector search, cross-session memory, RBAC platform, benchmark leaderboard, or hidden execution shortcut.
+- **FR-028**: The increment MUST NOT preserve backward compatibility for obsolete public fields, historical tool names, or unsafe implicit defaults.
 
 ### Key Entities
 
@@ -213,7 +217,9 @@ A user or model setting up MCP can see the endpoint, client configuration shape,
 - **Resource URI Derivation**: Safe mapping from metadata search results to public resource templates.
 - **Output Schema Contract**: Descriptor-declared shape that must match the actual tool payload.
 - **Algorithm Property Template**: Model-visible property requirements for encrypt and mask algorithms.
+- **Approval Step Contract**: Accepted step or artifact values that can be reused from preview to execute/apply.
 - **Startup Hint**: Runtime-visible connection and troubleshooting information for HTTP or STDIO mode.
+- **Client Configuration Hint**: Short STDIO, OCI, and HTTP client setup examples that avoid secrets and environment-specific paths.
 
 ## Success Criteria
 

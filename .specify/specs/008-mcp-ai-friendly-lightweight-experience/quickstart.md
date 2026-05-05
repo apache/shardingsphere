@@ -167,16 +167,18 @@ Expected result:
 
 P1 validation should be added only when each P1 item is implemented:
 
-- Current-session workflow plan lookup returns only current-session plans.
-- Metadata resources expose lightweight navigation without a graph engine.
+- Metadata and feature resources expose lightweight navigation without a graph engine.
 - Complex tool examples are static and secret-free.
-- Completion ordering improves with supplied context without model calls or vector search.
+- Completion ordering improves with supplied context and contains fallback without model calls or vector search.
 - Algorithm resources expose property templates without requiring a workflow plan first.
-- Metadata freshness hints are present without adding active refresh.
+- `approved_steps` values are documented and reusable from preview output.
+- Workflow apply preview reports side-effect scope clearly enough for user approval.
+- Stale `plan_id` recovery points to current-session completion or replanning.
 
 P2 validation should be added only when each P2 item is implemented:
 
 - Startup output clarifies HTTP, STDIO, token, config, log, and database-count expectations.
-- Environment variable references resolve or fail with clear messages.
+- First-use STDIO and HTTP client configuration examples are present.
+- Package or `server.json` hints summarize metadata-first discovery, safe SQL, and workflow use.
 - Troubleshooting docs cover first-run failures.
 - LLM usability scenarios remain opt-in.

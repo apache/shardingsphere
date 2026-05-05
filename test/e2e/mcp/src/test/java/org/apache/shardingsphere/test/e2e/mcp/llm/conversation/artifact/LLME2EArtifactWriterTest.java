@@ -31,10 +31,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
 class LLME2EArtifactWriterTest {
-
+    
     @TempDir
     private Path tempDir;
-
+    
     @Test
     void assertWriteRedactsSecretsAndRecordsRunContext() throws IOException {
         LLME2EArtifactBundle artifactBundle = new LLME2EArtifactBundle("scenario-id", "system", "user",

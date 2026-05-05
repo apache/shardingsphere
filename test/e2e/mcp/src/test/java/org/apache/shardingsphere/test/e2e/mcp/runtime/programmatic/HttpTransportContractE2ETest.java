@@ -38,14 +38,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-
+    
     private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
             "search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "plan_encrypt_rule", "plan_mask_rule");
-
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
-
+    
     @Test
     void assertInitializeSessionAndProtocolHeaders() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -61,7 +61,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(actualPayload.get("jsonrpc")), is("2.0"));
         assertThat(String.valueOf(actualResult.get("protocolVersion")), is(getProtocolVersion()));
     }
-
+    
     @Test
     void assertAcceptInitializeWithoutAcceptHeader() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -76,7 +76,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertTrue(actual.headers().firstValue("Content-Type").orElse("").startsWith("application/json"));
         assertFalse(actual.headers().firstValue("MCP-Session-Id").orElse("").isEmpty());
     }
-
+    
     @Test
     void assertAcceptInitializeWithUnsupportedProtocolVersion() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -89,7 +89,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
         assertThat(String.valueOf(castToMap(actualPayload.get("result")).get("protocolVersion")), is(getProtocolVersion()));
     }
-
+    
     @Test
     void assertAcceptInitializeWithoutProtocolVersion() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -102,7 +102,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> actualPayload = parseJsonBody(actual.body());
         assertThat(String.valueOf(castToMap(actualPayload.get("result")).get("protocolVersion")), is(getProtocolVersion()));
     }
-
+    
     @Test
     void assertAcceptFollowUpRequestWithLowercaseSessionHeaders() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -131,7 +131,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertTrue((Boolean) actualProtocolAvailability.get("completions"));
         assertTrue((Boolean) actualProtocolAvailability.get("resourceNavigation"));
     }
-
+    
     @Test
     void assertExposePromptAndCompletionContracts() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -150,7 +150,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertTrue(String.valueOf(completionPayload).contains("missing_context"));
         assertTrue(String.valueOf(completionPayload).contains("missingContextArguments"));
     }
-
+    
     @Test
     void assertExposeModelFacingOutputSchemas() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -171,7 +171,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> actualOutputProperties = castToMap(castToMap(actualTool.get("outputSchema")).get("properties"));
         assertThat(String.valueOf(castToMap(actualOutputProperties.get("next_actions")).get("type")), is("array"));
     }
-
+    
     @Test
     void assertRejectExecuteUpdateWithoutExecutionMode() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -190,7 +190,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(castToMap(retryAction.get("required_arguments")), is(Map.of("execution_mode", "preview")));
         assertTrue((Boolean) retryAction.get("requires_user_approval"));
     }
-
+    
     @Test
     void assertPreviewExecuteUpdateNextActions() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -209,7 +209,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(castToMap(callToolAction.get("required_arguments")).get("execution_mode")), is("execute"));
         assertTrue((Boolean) callToolAction.get("requires_user_approval"));
     }
-
+    
     @Test
     void assertPreserveUtf8ToolArgumentsForWorkflowIntent() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -222,13 +222,13 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(structuredContent.get("status")), is("clarifying"));
         assertThat(((List<?>) structuredContent.get("pending_questions")).stream().map(String::valueOf).toList(), is(List.of("Please provide logical database first.")));
     }
-
+    
     private HttpResponse<String> sendPromptGetRequest(final HttpClient httpClient, final String sessionId, final String promptName,
                                                       final Map<String, Object> arguments) throws IOException, InterruptedException {
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
                 "prompt-1", "prompts/get", Map.of("name", promptName, "arguments", arguments)));
     }
-
+    
     private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
                                                        final String argumentName, final String argumentValue, final Map<String, String> contextArguments) throws IOException, InterruptedException {
         Map<String, Object> params = new LinkedHashMap<>(3, 1F);
@@ -240,11 +240,11 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
                 "completion-1", "completion/complete", params));
     }
-
+    
     private List<Map<String, Object>> castToMapList(final Object value) {
         return ((List<?>) value).stream().map(this::castToMap).toList();
     }
-
+    
     @Test
     void assertRejectFollowUpRequestWithoutProtocolHeader() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -253,7 +253,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId));
         assertThat(actual.statusCode(), is(400));
     }
-
+    
     @Test
     void assertRejectFollowUpRequestWithProtocolMismatch() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -262,7 +262,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendCapabilitiesRequest(httpClient, Map.of("MCP-Session-Id", sessionId, "MCP-Protocol-Version", "2024-11-05"));
         assertThat(actual.statusCode(), is(400));
     }
-
+    
     @Test
     void assertRejectFollowUpRequestWithMissingSession() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -273,7 +273,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(404));
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session not found: missing-session"));
     }
-
+    
     @Test
     void assertRejectDeleteWithoutSessionHeader() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -282,7 +282,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(400));
         assertThat(String.valueOf(parseJsonBody(actual.body()).get("message")), is("Session ID required in mcp-session-id header"));
     }
-
+    
     @Test
     void assertCloseSessionOnDelete() throws IOException, InterruptedException {
         launchHttpTransport();

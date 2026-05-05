@@ -192,6 +192,39 @@ Validation rules:
 - Unknown properties should be omitted rather than guessed.
 - The template should be available from existing algorithm resources.
 
+## Approval Step Contract
+
+Represents approval values that a model may reuse from preview to execute or apply.
+
+Fields:
+
+- `argument_name`: Approval argument such as `approved_steps`.
+- `accepted_values`: Step identifiers, artifact identifiers, or a documented all-step value when supported.
+- `preview_source`: Preview response field that produced the value.
+- `requires_user_approval`: Whether visible user approval is required before reuse.
+
+Validation rules:
+
+- Values must come from preview output or descriptor contract.
+- Values must not be guessed.
+- Side-effecting execute/apply paths must preserve visible user approval.
+
+## Workflow Side-Effect Scope
+
+Represents the category of changes that workflow apply preview may perform.
+
+Fields:
+
+- `scope`: Rule metadata, physical structure, physical data, or equivalent stable category.
+- `affected_objects`: Logical database, table, column, rule, or generated artifact identifiers when safely known.
+- `approval_message`: Short statement of what execution can change.
+
+Validation rules:
+
+- The scope should be specific when the server can know it safely.
+- The scope must not understate physical or rule changes.
+- Physical data scope should appear only when data can actually be changed.
+
 ## Startup Troubleshooting Hint
 
 Represents first-use connection guidance.
@@ -211,6 +244,23 @@ Validation rules:
 - STDIO mode must keep stdout reserved for MCP protocol.
 - Hints must avoid secrets and environment-specific credentials.
 - Troubleshooting should remain concise and documentation-oriented.
+
+## Client Configuration Hint
+
+Represents first-use client setup guidance.
+
+Fields:
+
+- `transport`: HTTP or STDIO.
+- `command_or_url`: Local command, OCI package command, or HTTP endpoint shape.
+- `headers`: Non-secret header names such as `Authorization` when token mode is enabled.
+- `first_resource`: Expected first resource, normally `shardingsphere://capabilities`.
+
+Validation rules:
+
+- Examples must not include secrets or machine-specific paths.
+- The hint should be short enough to copy into common MCP client configuration.
+- Registry/package metadata should stay concise and not include long tutorials.
 
 ## Opt-In Usability Scenario
 

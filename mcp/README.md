@@ -277,6 +277,34 @@ Reference:
 
 ## Client Configuration and Troubleshooting
 
+- Generic STDIO client shape:
+
+  ```json
+  {
+    "mcpServers": {
+      "shardingsphere": {
+        "command": "/path/to/apache-shardingsphere-mcp/bin/start.sh",
+        "args": ["conf/mcp-stdio.yaml"]
+      }
+    }
+  }
+  ```
+
+- Generic HTTP client shape:
+
+  ```json
+  {
+    "mcpServers": {
+      "shardingsphere-http": {
+        "url": "http://127.0.0.1:18088/mcp",
+        "headers": {
+          "Authorization": "Bearer <token-if-configured>"
+        }
+      }
+    }
+  }
+  ```
+
 - Startup prints concise hints to stderr: configuration path, log path, runtime database count, active transport, token state,
   and the first resource to read.
 - Configure clients to read `shardingsphere://capabilities` first, then follow `resourceNavigation`, `next_resources`,
@@ -777,7 +805,9 @@ curl -sS http://127.0.0.1:18088/mcp \
 - `index_plan`
 - `distsql_artifacts`
 
-If you need partial execution, `approved_steps` can be used to limit execution to `ddl`, `index_ddl`, or `rule_distsql`.
+If you need partial execution, `approved_steps` can be used as an execution filter with only `ddl`, `index_ddl`, or `rule_distsql`.
+It is not an approval token; copy values from `preview_artifacts[].approval_step` after the user approves the preview.
+Unknown values are rejected instead of silently skipped.
 Partial execution is mainly for reviewed or staged rollouts. Until every required step has been executed, `validate_workflow` may fail as expected.
 
 After execution, validate immediately:

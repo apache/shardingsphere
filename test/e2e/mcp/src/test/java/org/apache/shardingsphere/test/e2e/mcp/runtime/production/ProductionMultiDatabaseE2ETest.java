@@ -44,15 +44,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
-
+    
     private static final String LOGIC_DATABASE_NAME = "logic_db";
-
+    
     private static final String ANALYTICS_DATABASE_NAME = "analytics_db";
-
+    
     private String firstJdbcUrl;
-
+    
     private String secondJdbcUrl;
-
+    
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
@@ -64,12 +64,12 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
             throw new IOException(ex);
         }
     }
-
+    
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return createRuntimeDatabases("H2", "H2");
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListDatabasesWithMultipleRuntimeDatabases(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -79,7 +79,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
             assertThat(items.stream().map(each -> String.valueOf(each.get("database"))).toList(), hasItems(LOGIC_DATABASE_NAME, ANALYTICS_DATABASE_NAME));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRefreshMetadataVisibleForSubsequentClientSessionsInTargetDatabaseOnly(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -98,7 +98,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
             }
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectCrossDatabaseTransactionSwitch(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -112,7 +112,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
             assertFalse(Boolean.parseBoolean(String.valueOf(actual.get("ok"))));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectMismatchedDatabaseType(final String name, final RuntimeTransport transport) {
@@ -120,23 +120,23 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> openAndCloseInteractionClient("MySQL", "H2"));
         assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
-
+    
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String firstDatabaseType, final String secondDatabaseType) {
         Map<String, RuntimeDatabaseConfiguration> result = new LinkedHashMap<>(2, 1F);
         result.put(LOGIC_DATABASE_NAME, createRuntimeDatabaseConfiguration(firstDatabaseType, firstJdbcUrl));
         result.put(ANALYTICS_DATABASE_NAME, createRuntimeDatabaseConfiguration(secondDatabaseType, secondJdbcUrl));
         return result;
     }
-
+    
     private List<String> readTableNames(final MCPInteractionClient interactionClient, final String databaseName) throws IOException, InterruptedException {
         return getPayloadItems(interactionClient.readResource(String.format("shardingsphere://databases/%s/schemas/public/tables", databaseName)))
                 .stream().map(each -> String.valueOf(each.get("table"))).toList();
     }
-
+    
     private RuntimeDatabaseConfiguration createRuntimeDatabaseConfiguration(final String databaseType, final String jdbcUrl) {
         return H2RuntimeConfigurationTestSupport.createRuntimeDatabaseConfiguration(databaseType, jdbcUrl);
     }
-
+    
     private void openAndCloseInteractionClient(final String firstDatabaseType, final String secondDatabaseType) {
         ensureRuntimeDatabasesPrepared();
         try {
@@ -146,7 +146,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
             throw new IllegalStateException(ex);
         }
     }
-
+    
     private void ensureRuntimeDatabasesPrepared() {
         if (null != firstJdbcUrl && null != secondJdbcUrl) {
             return;
@@ -158,11 +158,11 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
             throw new IllegalStateException(ex);
         }
     }
-
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionStdioEnabled();
     }
-
+    
     private static Stream<Arguments> transports() {
         Stream.Builder<Arguments> result = Stream.builder();
         if (MCPE2ECondition.isProductionH2Enabled()) {
@@ -173,7 +173,7 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
         }
         return result.build();
     }
-
+    
     private static Map<String, Object> createExecuteUpdateArguments(final String databaseName, final String sql) {
         return Map.of("database", databaseName, "schema", "public", "sql", sql, "execution_mode", "execute");
     }

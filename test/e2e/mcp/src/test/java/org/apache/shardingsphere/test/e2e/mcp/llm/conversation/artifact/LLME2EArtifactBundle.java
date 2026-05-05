@@ -27,26 +27,26 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class LLME2EArtifactBundle {
-
+    
     private final String scenarioId;
-
+    
     private final String systemPrompt;
-
+    
     private final String userPrompt;
-
+    
     private final String modelProvider;
-
+    
     private final String modelName;
-
+    
     private final Map<String, Object> capabilityFingerprints;
-
+    
     private final String finalAnswerJson;
-
+    
     private final List<String> rawModelOutputs;
-
+    
     private final List<MCPInteractionTraceRecord> interactionTrace;
-
+    
     private final List<String> mcpRuntimeLogLines;
-
+    
     private final LLME2EAssertionReport assertionReport;
 }

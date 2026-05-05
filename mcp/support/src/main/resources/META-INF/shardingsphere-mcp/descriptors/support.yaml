@@ -163,10 +163,14 @@ tools:
         required: false
         valueDefinition:
           type: ARRAY
-          description: "Optional exact step names copied from the plan response when only part of the workflow should be applied."
+          description: "Optional execution filter, not an approval token. Omit to apply every artifact after user approval, or pass only visible preview_artifacts.approval_step values."
           itemDefinition:
             type: STRING
-            description: "Workflow step name or artifact step from the plan response."
+            description: "Allowed workflow artifact step: ddl, index_ddl, or rule_distsql."
+            enumValues:
+              - ddl
+              - index_ddl
+              - rule_distsql
     outputSchema:
       type: object
       properties:

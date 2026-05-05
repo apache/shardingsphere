@@ -43,15 +43,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
 class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
-
+    
     private static final String LOGICAL_DATABASE_NAME = "logic_db";
-
+    
     private static final String PHYSICAL_DATABASE_NAME = "orders";
-
+    
     private GenericContainer<?> container;
-
+    
     private String physicalSchemaName;
-
+    
     @AfterEach
     void tearDownContainer() {
         if (null != container) {
@@ -60,7 +60,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
         }
         physicalSchemaName = null;
     }
-
+    
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the MySQL-backed production runtime smoke test.");
@@ -74,12 +74,12 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             throw new IOException(ex);
         }
     }
-
+    
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return MySQLRuntimeTestSupport.createRuntimeDatabases(container, LOGICAL_DATABASE_NAME);
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadCapabilitiesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -88,7 +88,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(String.valueOf(interactionClient.readResource("shardingsphere://databases/logic_db/capabilities").get("databaseType")), is("MySQL"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertListResourcesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -97,7 +97,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadTableDetailWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -111,7 +111,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(getNestedNames(actualItem, "columns", "column"), is(List.of("amount", "order_id", "status")));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertSearchMetadataTablesAndViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -122,7 +122,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders", "active_orders")));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadViewsWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -134,7 +134,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(String.valueOf(items.get(0).get("view")), is("active_orders"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertReadIndexesWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -146,7 +146,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(actualIndexNames, hasItems("PRIMARY", "idx_orders_status"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteSelectWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -157,7 +157,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteUpdateWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -170,7 +170,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("PENDING"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertRejectSequenceResourceWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
@@ -182,7 +182,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(String.valueOf(actual.get("message")), is("Sequence resources are not supported for the current database."));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertExecuteRollbackWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -197,7 +197,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("NEW"));
         }
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
     void assertCloseRollsBackPendingTransactionWithActualMySQLBackend(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
@@ -210,11 +210,11 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
             assertThat(MySQLRuntimeTestSupport.querySingleString(container, String.format("SELECT status FROM %s.orders WHERE order_id = 1", physicalSchemaName)), is("NEW"));
         }
     }
-
+    
     private static boolean isEnabled() {
         return MCPE2ECondition.isProductionMySQLEnabled() || MCPE2ECondition.isProductionMySQLStdioEnabled();
     }
-
+    
     private static Stream<Arguments> transports() {
         Stream.Builder<Arguments> result = Stream.builder();
         if (MCPE2ECondition.isProductionMySQLEnabled()) {
@@ -225,7 +225,7 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
         }
         return result.build();
     }
-
+    
     private static Map<String, Object> createExecuteUpdateArguments(final String sql) {
         return Map.of("database", LOGICAL_DATABASE_NAME, "schema", LOGICAL_DATABASE_NAME, "sql", sql, "execution_mode", "execute");
     }
