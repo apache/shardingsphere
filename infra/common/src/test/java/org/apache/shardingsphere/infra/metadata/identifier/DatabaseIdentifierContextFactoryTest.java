@@ -57,6 +57,7 @@ import java.util.logging.Logger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DatabaseIdentifierContextFactoryTest {
@@ -176,14 +177,14 @@ class DatabaseIdentifierContextFactoryTest {
     @Test
     void assertCreateDisablesHeterogeneousLookupWhenProtocolAndStorageAreHomogeneous() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        assertThat(actual.isHeterogeneousTableLookupEnabled(), is(false));
+        assertFalse(actual.isHeterogeneousTableLookupEnabled());
     }
     
     @Test
     void assertRefreshDisablesHeterogeneousLookupWhenProtocolAndStorageAreHomogeneous() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
-        assertThat(actual.isHeterogeneousTableLookupEnabled(), is(false));
+        assertFalse(actual.isHeterogeneousTableLookupEnabled());
     }
     
     @Test
