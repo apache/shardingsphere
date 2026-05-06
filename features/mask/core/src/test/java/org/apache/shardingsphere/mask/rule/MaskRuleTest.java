@@ -51,8 +51,16 @@ class MaskRuleTest {
     private MaskRuleConfiguration createMaskRuleConfiguration() {
         MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("foo_id", "t_mask_foo_id_md5");
         MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(maskColumnRuleConfig));
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", new Properties());
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", createMaskAlgorithmProperties("2", "2", "*"));
         return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_foo_id_md5", algorithmConfig));
+    }
+    
+    private Properties createMaskAlgorithmProperties(final String firstN, final String lastM, final String replaceChar) {
+        Properties result = new Properties();
+        result.setProperty("first-n", firstN);
+        result.setProperty("last-m", lastM);
+        result.setProperty("replace-char", replaceChar);
+        return result;
     }
     
     @Test
@@ -129,16 +137,21 @@ class MaskRuleTest {
     
     @Test
     void assertPartialUpdateWithToBeUpdatedAlgorithms() {
+        Optional<MaskTable> tableBeforeUpdate = maskRule.findMaskTable("foo_tbl");
+        assertTrue(tableBeforeUpdate.isPresent());
+        Object maskedValueBeforeUpdate = tableBeforeUpdate.get().findAlgorithm("foo_id").get().mask("123456");
         assertFalse(maskRule.partialUpdate(createPartialUpdatedAlgorithmsMaskRuleConfiguration()));
-        assertTrue(maskRule.findMaskTable("foo_tbl").isPresent());
+        Optional<MaskTable> tableAfterUpdate = maskRule.findMaskTable("foo_tbl");
+        assertTrue(tableAfterUpdate.isPresent());
+        Object maskedValueAfterUpdate = tableAfterUpdate.get().findAlgorithm("foo_id").get().mask("123456");
+        assertThat(maskedValueBeforeUpdate, is("12**56"));
+        assertThat(maskedValueAfterUpdate, is("1####6"));
     }
     
     private MaskRuleConfiguration createPartialUpdatedAlgorithmsMaskRuleConfiguration() {
         MaskColumnRuleConfiguration maskColumnRuleConfig = new MaskColumnRuleConfiguration("foo_id", "t_mask_foo_id_md5");
         MaskTableRuleConfiguration maskTableRuleConfig = new MaskTableRuleConfiguration("foo_tbl", Collections.singleton(maskColumnRuleConfig));
-        Properties props = new Properties();
-        props.setProperty("salt", "1");
-        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("md5", props);
+        AlgorithmConfiguration algorithmConfig = new AlgorithmConfiguration("KEEP_FIRST_N_LAST_M", createMaskAlgorithmProperties("1", "1", "#"));
         return new MaskRuleConfiguration(Collections.singleton(maskTableRuleConfig), Collections.singletonMap("t_mask_foo_id_md5", algorithmConfig));
     }
     
