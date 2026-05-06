@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -117,5 +118,17 @@ class ShardingSphereSchemaIdentifierTest {
         schema.refreshIdentifierContext(context);
         assertTrue(schema.containsTable("FOO_TBL"));
         assertThat(schema.getTable("FOO_TBL"), is(table));
+    }
+    
+    @Test
+    void assertGetTablePrioritizesPhysicalTableIndexWhenBothIndexesCanMatch() {
+        ShardingSphereTable lowerCaseTable = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereTable upperCaseTable = new ShardingSphereTable("FOO_TBL", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Arrays.asList(lowerCaseTable, upperCaseTable), Collections.emptyList());
+        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCaseRuleSets.newLowerCaseRuleSet().getRule(IdentifierScope.TABLE));
+        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newUpperCaseRuleSet().getRule(IdentifierScope.TABLE), scopedRules), true);
+        schema.refreshIdentifierContext(context);
+        assertThat(schema.getTable("FOO_TBL"), is(upperCaseTable));
     }
 }

@@ -174,6 +174,19 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     @Test
+    void assertCreateDisablesHeterogeneousLookupWhenProtocolAndStorageAreHomogeneous() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertThat(actual.isHeterogeneousTableLookupEnabled(), is(false));
+    }
+    
+    @Test
+    void assertRefreshDisablesHeterogeneousLookupWhenProtocolAndStorageAreHomogeneous() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertThat(actual.isHeterogeneousTableLookupEnabled(), is(false));
+    }
+    
+    @Test
     void assertCreateUsesInsensitiveRuleForDatabaseScope() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE,
                 createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));

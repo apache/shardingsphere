@@ -113,13 +113,14 @@ public final class ShardingSphereSchema {
      * @return table
      */
     private Optional<ShardingSphereTable> findTable(final IdentifierValue tableName) {
-        if (null != logicalTableIndex) {
-            Optional<ShardingSphereTable> logicalMatchedTable = logicalTableIndex.find(tableName);
-            if (logicalMatchedTable.isPresent()) {
-                return logicalMatchedTable;
-            }
+        Optional<ShardingSphereTable> physicalMatchedTable = tableIndex.find(tableName);
+        if (physicalMatchedTable.isPresent()) {
+            return physicalMatchedTable;
         }
-        return tableIndex.find(tableName);
+        if (null == logicalTableIndex) {
+            return Optional.empty();
+        }
+        return logicalTableIndex.find(tableName);
     }
     
     /**
