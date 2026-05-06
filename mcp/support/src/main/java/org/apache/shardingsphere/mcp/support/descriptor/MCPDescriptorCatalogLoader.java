@@ -322,7 +322,7 @@ public final class MCPDescriptorCatalogLoader {
                     "applied_max_rows", "applied_timeout_ms", "truncated", "next_actions");
         }
         if ("execute_update".equals(toolName)) {
-            return List.of("result_kind", "statement_class", "statement_type", "status", "returned_row_count",
+            return List.of("response_mode", "result_kind", "statement_class", "statement_type", "status", "returned_row_count",
                     "applied_max_rows", "applied_timeout_ms", "suggested_arguments", "next_actions");
         }
         if ("apply_workflow".equals(toolName)) {

@@ -11,7 +11,7 @@ The current surface already has capability contracts, common flows, search match
 completion diagnostics, and opt-in usability tests.
 This increment focuses on action ordering, compact surface summary, navigation/completion type hints, empty-state diagnostics, argument provenance,
 runtime recovery diagnostics, safe input bounds, structured clarification, current-session workflow read-back, URI encoding, configuration comfort,
-and opt-in usability metrics.
+opt-in usability metrics, exact recovery targets, response-mode clarity, row parsing comfort, and bounded ambiguity hints.
 
 ## Technical Context
 
@@ -102,6 +102,10 @@ Opt-in usability metrics belong in `test/e2e/mcp`.
 - Inspect metadata search pagination, blank-query behavior, invalid argument recovery, and URI encoding/decoding.
 - Inspect workflow clarification outputs, non-English intent handling, and current-session `plan_id` recovery.
 - Inspect runtime configuration loading, server identity metadata, HTTP authentication errors, and first-use documentation.
+- Inspect workflow recovery for exact retry target and public missing-field paths.
+- Inspect SQL response schemas for preview/executed mode markers, preview-limit wording, and row-object feasibility.
+- Inspect metadata-introspection SQL recovery, duplicate search-hit handling, and URI encoding call sites.
+- Inspect Docker/HTTP/Proxy-topology setup docs and runtime hints for secret-safe clarity.
 
 ## Phase 1: Design
 
@@ -117,6 +121,10 @@ Opt-in usability metrics belong in `test/e2e/mcp`.
 - Define current-session workflow status read-back.
 - Define percent-encoded resource identifier behavior.
 - Define secret-safe runtime status and env-placeholder configuration expectations.
+- Define exact recovery target and public argument-path rules.
+- Define response-mode markers for preview, executed, manual-only, validation, recovery, truncation, and pagination states.
+- Define optional result-row object rules that preserve positional rows.
+- Define metadata ambiguity and introspection-SQL recovery hints.
 
 ## Phase 2: Implementation Strategy
 
@@ -129,7 +137,8 @@ Opt-in usability metrics belong in `test/e2e/mcp`.
 7. Add row/search bounds, strict argument recovery, and URI encoding support.
 8. Add structured clarification, Chinese synonym guidance, and current-session workflow read-back.
 9. Add secret-safe runtime status, env-placeholder docs/config support, and clearer auth/server identity hints.
-10. Add opt-in usability metrics without changing default CI.
+10. Add exact workflow recovery targets, response-mode markers, row-object convenience, metadata ambiguity hints, and topology/setup comfort.
+11. Add opt-in usability metrics without changing default CI.
 
 ## Complexity Tracking
 

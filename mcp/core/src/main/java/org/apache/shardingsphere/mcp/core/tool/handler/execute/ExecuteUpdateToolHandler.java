@@ -66,7 +66,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql));
+        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql)).withExecutionMode(EXECUTION_MODE_EXECUTE);
     }
     
     private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
@@ -90,9 +90,12 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
     }
     
     private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
-        Map<String, Object> result = new LinkedHashMap<>(13, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        result.put("response_mode", EXECUTION_MODE_PREVIEW);
         result.put("result_kind", RESULT_KIND_PREVIEW);
         result.put("execution_mode", EXECUTION_MODE_PREVIEW);
+        result.put("preview_semantics", "classification_only");
+        result.put("affected_rows_estimated", false);
         result.put("status", "AWAITING_APPROVAL");
         result.put("would_execute", false);
         result.put("statement_class", classificationResult.getStatementClass().name().toLowerCase(Locale.ENGLISH));

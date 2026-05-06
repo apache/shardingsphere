@@ -97,8 +97,8 @@ class ToolHandlerRegistryTest {
     @Test
     void assertDispatchWithMissingRequiredArgument() {
         MCPInvalidRequestException actual =
-                assertThrows(MCPInvalidRequestException.class, () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "search_metadata", Map.of()));
-        assertThat(actual.getMessage(), is("query is required."));
+                assertThrows(MCPInvalidRequestException.class, () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "execute_query", Map.of("database", "logic_db")));
+        assertThat(actual.getMessage(), is("sql is required."));
     }
     
     @Test

@@ -315,7 +315,8 @@ Remaining gap:
 
 - Missing workflow inputs should be represented as structured questions, not only prose.
 - MCP-native elicitation should be used when supported, with current fallback fields retained.
-- Common Chinese terms for encryption, masking, reversibility, hashing, equality query, fuzzy query, phone, identity card, and email should be handled through deterministic synonyms or structured intent evidence.
+- Common Chinese terms for encryption, masking, reversibility, hashing, equality query, fuzzy query, phone, identity card,
+  and email should be handled through deterministic synonyms or structured intent evidence.
 - A current-session workflow plan should be readable by `plan_id` so a model can recover after context compaction.
 
 Non-goals:
@@ -335,3 +336,71 @@ Remaining gap:
 Non-goals:
 
 - Do not add OAuth, RBAC, tenant policy, or an observability platform in this increment.
+
+## Final Requirement Sweep (2026-05-06)
+
+This pass asks the same question again from the model's point of view: "Where would I still have to guess?"
+The answer is a set of concrete repair targets, not a larger architecture.
+
+### Recovery Target Accuracy
+
+Remaining gap:
+
+- Missing or invalid `execution_mode` in `apply_workflow` should retry `apply_workflow`, not point the model toward `execute_update` by generic recovery wording.
+- Missing workflow algorithm properties should identify public argument names such as `primary_algorithm_properties`, `assisted_query_algorithm_properties`, and `like_query_algorithm_properties`.
+- Recovery actions should include `source_tool`, `target_tool`, `argument_path`, or `suggested_value` when these are safely known.
+
+Non-goals:
+
+- Do not add durable approval tokens, cross-tool orchestration, or an automatic retry executor.
+
+### Response Mode and Preview Semantics
+
+Remaining gap:
+
+- `execute_update` schema and payload should make preview-vs-execute state obvious from stable fields.
+- Preview output should state that it summarizes classification and side-effect scope, not real affected rows.
+- Manual-only workflow output should make the "ask the user to confirm external execution before validation" contract structurally visible.
+
+Non-goals:
+
+- Do not estimate affected rows by running extra SQL.
+- Do not make manual-only artifacts execute through MCP.
+
+### Result Parsing Comfort
+
+Remaining gap:
+
+- SQL result payloads can add object-shaped rows when column labels are unique.
+- If duplicate or unnamed columns prevent object rows, the response should say so with a small status field.
+- Truncated or paginated responses should tell the model how to continue safely through `next_actions`.
+
+Non-goals:
+
+- Do not replace the lossless positional row representation.
+- Do not invent column names or collapse duplicate labels.
+
+### Metadata Intent and Ambiguity
+
+Remaining gap:
+
+- If a model uses console-style metadata SQL such as `SHOW TABLES` or `DESCRIBE`, recovery should steer it toward logical metadata resources or `search_metadata`.
+- Duplicate table/column/rule names across databases, schemas, or object types should produce an ambiguity hint and narrowing arguments.
+- URI encoding should be centralized for search result URIs, resource navigation, and workflow `resources_to_read` so non-ASCII and reserved characters behave consistently.
+
+Non-goals:
+
+- Do not add semantic metadata search, model-ranked results, or guessed URIs.
+
+### Runtime Setup Comfort
+
+Remaining gap:
+
+- Docker and HTTP examples should show bind host, bearer token, and environment-placeholder patterns without embedding secrets.
+- Runtime preflight or status hints should stay secret-free and limited to configured logical databases, feature loading, transport, and safe first checks.
+- Proxy-topology errors in encrypt/mask flows should explain that the workflow must connect to ShardingSphere-Proxy's logical view,
+  not directly to a physical database, when the server can identify that mismatch.
+
+Non-goals:
+
+- Do not add OAuth, RBAC, tenant policy, or a generalized health monitoring platform.

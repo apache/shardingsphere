@@ -52,6 +52,8 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "execute")));
+        assertThat(actual.toPayload().get("response_mode"), is("executed"));
+        assertThat(actual.toPayload().get("execution_mode"), is("execute"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
         verify(executionFacade).execute(requestCaptor.capture());
@@ -91,7 +93,10 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPResponse actual = new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "schema", "public", "sql", "update orders set status = 'PAID'", "execution_mode", "preview")));
+        assertThat(actual.toPayload().get("response_mode"), is("preview"));
         assertThat(actual.toPayload().get("result_kind"), is("preview"));
+        assertThat(actual.toPayload().get("preview_semantics"), is("classification_only"));
+        assertFalse((boolean) actual.toPayload().get("affected_rows_estimated"));
         assertFalse((boolean) actual.toPayload().get("would_execute"));
         assertThat(actual.toPayload().get("status"), is("AWAITING_APPROVAL"));
         assertThat(actual.toPayload().get("statement_class"), is("dml"));

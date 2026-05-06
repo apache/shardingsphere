@@ -137,6 +137,12 @@ class StatementClassifierTest {
                 Arguments.of("banned alter system", "ALTER SYSTEM SET shared_buffers = '128MB'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned create user", "CREATE USER foo_user IDENTIFIED BY 'pwd'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("banned alter role", "ALTER ROLE foo_role SET search_path = public", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("unsupported statement", "SHOW TABLES", IllegalArgumentException.class, "Statement is not supported by the MCP contract."));
+                Arguments.of("metadata show", "SHOW", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
+                Arguments.of("metadata show tables", "SHOW TABLES", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
+                Arguments.of("metadata describe", "DESCRIBE", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
+                Arguments.of("metadata describe table", "DESCRIBE foo_orders", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
+                Arguments.of("metadata desc", "DESC", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
+                Arguments.of("metadata desc table", "DESC foo_orders", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
+                Arguments.of("unsupported statement", "ANALYZE TABLE foo_orders", IllegalArgumentException.class, "Statement is not supported by the MCP contract."));
     }
 }

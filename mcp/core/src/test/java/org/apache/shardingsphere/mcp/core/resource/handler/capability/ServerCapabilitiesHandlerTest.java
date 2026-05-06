@@ -149,7 +149,9 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
         Map<?, ?> executeUpdateTool = findTool(capabilities, "execute_update");
         Map<?, ?> executeUpdateOutputProperties = (Map<?, ?>) ((Map<?, ?>) executeUpdateTool.get("outputSchema")).get("properties");
+        assertTrue(executeUpdateOutputProperties.containsKey("response_mode"));
         assertTrue(((List<?>) ((Map<?, ?>) executeUpdateOutputProperties.get("result_kind")).get("enum")).containsAll(List.of("preview", "result_set", "update_count", "statement_ack")));
+        assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("approval_summary"));
         assertTrue(executeUpdateOutputProperties.containsKey("approval_question"));
         Map<?, ?> applyWorkflowTool = findTool(capabilities, "apply_workflow");

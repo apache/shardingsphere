@@ -15,11 +15,14 @@
 
 ## Completeness
 
-- [x] User stories cover ordered next actions, compact surface summary, navigation/completion locality, empty states, argument provenance, safe input bounds, structured clarification, workflow read-back, runtime diagnostics, and opt-in usability metrics.
+- [x] User stories cover ordered next actions, compact surface summary, navigation/completion locality, empty states, argument provenance,
+  safe input bounds, structured clarification, workflow read-back, runtime diagnostics, and opt-in usability metrics.
 - [x] Functional requirements are prioritized into P0, P1, and P2.
 - [x] Non-goals are explicit.
 - [x] Edge cases include approval dependency, missing completion context, empty/not-found responses, normalized SQL, manual-only workflows, redaction, EXPLAIN ANALYZE risk, and safe diagnostics.
 - [x] Edge cases include unbounded SQL, broad metadata search, invalid pagination, URI encoding, Chinese intent, context-compacted workflow plans, and secret-bearing configuration examples.
+- [x] Edge cases include exact workflow retry targets, public missing-field paths, response-mode/schema alignment, preview-limit wording,
+  optional row-object results, duplicate metadata hits, and metadata-introspection SQL recovery.
 - [x] Success criteria are measurable and do not require live-model credentials.
 
 ## Testability
@@ -31,6 +34,7 @@
 - [x] SQL/search bound additions are testable through focused query, pagination, and invalid-argument tests.
 - [x] Clarification, localization, and workflow read-back additions are testable through workflow payload and current-session plan tests.
 - [x] Runtime comfort additions remain secret-safe and bounded to docs, configuration validation, status payload, or recoverable errors.
+- [x] Recovery target accuracy, result parsing comfort, ambiguity hints, and preview/execution markers are testable through deterministic payload and descriptor tests.
 - [x] Opt-in LLM usability metrics remain optional and outside default CI.
 
 ## Governance

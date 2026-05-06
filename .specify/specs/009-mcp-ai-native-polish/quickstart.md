@@ -48,6 +48,11 @@ Check that 009 asks only for:
 - Percent-encoded resource identifiers for non-ASCII or reserved object names.
 - Secret-safe runtime status, env placeholders, HTTP auth hints, and minimal client configs.
 - Opt-in next-action-follow and approval-violation usability metrics.
+- Exact retry targets and public argument paths for workflow recovery.
+- Preview/executed response-mode markers and preview-limit wording.
+- Optional SQL row objects only when column labels are unique.
+- Continuation hints for truncation, pagination, duplicate metadata hits, and metadata-introspection SQL recovery.
+- Docker/HTTP/Proxy-topology setup hints that stay secret-free.
 
 Reject any implementation proposal that adds:
 
@@ -72,7 +77,8 @@ Reject any implementation proposal that adds:
 7. Add SQL/search bounds, strict argument recovery, and URI encoding.
 8. Add structured clarification, Chinese synonym hints, and workflow read-back.
 9. Add secret-safe runtime status, env-placeholder support, and client/auth documentation.
-10. Add opt-in usability metrics.
+10. Add exact recovery targets, response-mode markers, row-object convenience, and ambiguity/continuation hints.
+11. Add opt-in usability metrics.
 
 ## 5. Suggested Verification Commands
 
@@ -109,5 +115,7 @@ For Checkstyle after Java changes:
 - Workflow plans can be recovered only within current session scope.
 - Non-English user intent is represented as structured evidence or covered by deterministic common synonyms.
 - No secrets, tokens, passwords, or production identifiers appear in examples.
+- Recovery uses exact public tool and argument names where known.
+- Preview, execute, manual-only, validation, recovery, truncation, and pagination states are machine-readable.
 - Deterministic tests cover new shape contracts.
 - Live-model checks remain opt-in.

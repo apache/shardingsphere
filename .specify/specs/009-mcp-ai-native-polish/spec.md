@@ -2,6 +2,7 @@
 
 **Feature Branch**: `[001-shardingsphere-mcp]`
 **Created**: 2026-05-05
+**Reviewed**: 2026-05-06
 **Status**: Draft
 **Input**: User request:
 "Use Spec Kit to organize the remaining ShardingSphere MCP improvements that make the MCP native, convenient,
@@ -30,6 +31,17 @@ Current ShardingSphere MCP already exposes:
 - Opt-in LLM usability scenarios and deterministic contract tests for the existing model-facing surface.
 
 The remaining work is not a rebuild. It is a compact backlog for places where a model still has to infer ordering, provenance, bounds, health, localization, or recovery details from nearby context.
+
+The 2026-05-06 sweep adds only concrete, low-design polish gaps found by repeatedly asking whether a large model can use the MCP natively, conveniently, comfortably, and clearly:
+
+- exact recovery targets for workflow calls, especially `apply_workflow.execution_mode`;
+- exact missing-field paths for workflow algorithm properties rather than synthetic names;
+- output-schema alignment for preview and executed response variants;
+- explicit preview-limit wording so models do not treat classification previews as affected-row estimates;
+- model-friendly result-row shapes where column names are unambiguous;
+- safe continuation hints for truncation, pagination, duplicate search hits, and metadata-introspection SQL;
+- centralized percent-encoding behavior for resource URIs already covered by descriptor-backed patterns;
+- secret-safe runtime and HTTP configuration comfort that remains documentation/config focused.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -158,7 +170,8 @@ As a maintainer, I want lightweight usability metrics that show whether models f
 
 As a model issuing SQL and metadata search calls, I want explicit row, pagination, and argument bounds so that broad natural-language requests do not accidentally create unbounded work.
 
-**Why this priority**: LLMs often omit limits, repeat broad searches, or pass malformed pagination values. The MCP should make the safe default obvious and reject unsafe shapes with structured recovery.
+**Why this priority**: LLMs often omit limits, repeat broad searches, or pass malformed pagination values.
+The MCP should make the safe default obvious and reject unsafe shapes with structured recovery.
 
 **Independent Test**: Execute read-only SQL without `max_rows`, run broad metadata search, pass invalid `page_size` and `page_token`, and assert deterministic defaults, caps, and recovery hints.
 
@@ -166,24 +179,33 @@ As a model issuing SQL and metadata search calls, I want explicit row, paginatio
 
 1. **Given** a model calls `execute_query` without `max_rows`, **When** the query runs, **Then** the response uses a documented default row limit and exposes whether results are truncated.
 2. **Given** a model passes a negative or non-numeric `page_token`, **When** `search_metadata` validates arguments, **Then** it returns structured recovery rather than a generic runtime failure.
-3. **Given** a model asks to list all metadata with a blank query, **When** the request includes a safe scope, **Then** the server treats blank query as list/search-all within that scope or documents why it must narrow the request.
-4. **Given** a metadata object name contains spaces, Chinese characters, or reserved URI characters, **When** a resource URI is returned or read, **Then** URI encoding and decoding preserve the identifier without guessing.
+3. **Given** a model asks to list all metadata with a blank query, **When** the request includes a safe scope,
+   **Then** the server treats blank query as list/search-all within that scope or documents why it must narrow the request.
+4. **Given** a metadata object name contains spaces, Chinese characters, or reserved URI characters,
+   **When** a resource URI is returned or read, **Then** URI encoding and decoding preserve the identifier without guessing.
 
 ---
 
 ### User Story 9 - Model asks clear questions and survives context loss (Priority: P1)
 
-As a model collecting missing workflow or execution inputs, I want structured clarification fields, language-neutral intent hints, and read-back resources so that I can ask the user naturally and resume safely.
+As a model collecting missing workflow or execution inputs, I want structured clarification fields, language-neutral intent hints,
+and read-back resources so that I can ask the user naturally and resume safely.
 
-**Why this priority**: Current fallback questions are usable, but models still translate prose, infer fields, and lose plan context after compaction. A small structured layer improves native use without adding memory.
+**Why this priority**: Current fallback questions are usable, but models still translate prose, infer fields,
+and lose plan context after compaction. A small structured layer improves native use without adding memory.
 
-**Independent Test**: Trigger missing workflow inputs, use Chinese natural-language evidence, compact/recover by `plan_id`, and assert field-level questions, localized intent hints, and current-session read-back behavior.
+**Independent Test**: Trigger missing workflow inputs, use Chinese natural-language evidence, compact/recover by `plan_id`,
+and assert field-level questions, localized intent hints, and current-session read-back behavior.
 
 **Acceptance Scenarios**:
 
-1. **Given** workflow planning lacks a required field, **When** the server asks for clarification, **Then** the response includes field name, type, allowed values, default, and secret flag where known.
-2. **Given** the user describes encryption or masking intent in Chinese, **When** the model supplies structured evidence or the server reads common synonyms, **Then** the workflow does not rely on English-only keyword guessing.
-3. **Given** the model has a `plan_id` but lost surrounding context, **When** it reads the plan status resource, **Then** it can recover status, artifacts, safe next actions, and current-session scope.
+1. **Given** workflow planning lacks a required field, **When** the server asks for clarification,
+   **Then** the response includes field name, type, allowed values, default, and secret flag where known.
+2. **Given** the user describes encryption or masking intent in Chinese,
+   **When** the model supplies structured evidence or the server reads common synonyms,
+   **Then** the workflow does not rely on English-only keyword guessing.
+3. **Given** the model has a `plan_id` but lost surrounding context, **When** it reads the plan status resource,
+   **Then** it can recover status, artifacts, safe next actions, and current-session scope.
 
 ## Edge Cases
 
@@ -229,7 +251,18 @@ As a model collecting missing workflow or execution inputs, I want structured cl
 - **FR-013**: `search_metadata.query` SHOULD support a documented blank-query/list-within-scope mode or require a narrowing next action before broad all-database scans.
 - **FR-014**: Side-effect execute responses SHOULD preserve approval provenance, such as the preview source, approval source, or equivalent audit-light context, without adding durable approval tokens.
 - **FR-015**: Preview suggested arguments SHOULD preserve all safe execution-shaping arguments already supplied by the model, including row and timeout limits where relevant.
-- **FR-016**: Tool output schemas SHOULD distinguish preview and executed response variants or expose stable common fields that let a model identify the response mode.
+- **FR-016**: Tool output schemas SHOULD distinguish preview and executed response variants or expose stable common fields
+  that let a model identify the response mode, including `execute_update.execution_mode` behavior.
+- **FR-017**: Side-effect previews SHOULD clearly state that preview is a classification and side-effect-scope summary, not a database affected-row estimate.
+- **FR-018**: SQL result payloads SHOULD expose model-friendly row objects when returned column names are unique, and a clear fallback status when duplicate or unnamed columns require positional rows.
+- **FR-019**: SQL and resource responses SHOULD expose safe continuation `next_actions` when results are truncated, paginated, or require a narrower retry.
+- **FR-020**: Wrong-tool recovery for metadata-introspection SQL such as `SHOW TABLES`, `DESCRIBE`, and dialect equivalents
+  SHOULD guide models to metadata resources or `search_metadata` when that is safer than SQL execution.
+- **FR-021**: `apply_workflow` missing or invalid `execution_mode` recovery SHOULD name `apply_workflow` as the retry target
+  and suggest `execution_mode=preview` unless the user already approved execution.
+- **FR-022**: Workflow missing-input recovery SHOULD reference exact public input names such as `primary_algorithm_properties`,
+  `assisted_query_algorithm_properties`, and `like_query_algorithm_properties` instead of synthetic or internal property paths.
+- **FR-023**: Metadata search responses SHOULD expose ambiguity or duplicate-hit hints when multiple matches share a name across databases, schemas, or object types, with safe narrowing suggestions.
 
 #### P1 - response comfort and value provenance
 
@@ -243,12 +276,14 @@ As a model collecting missing workflow or execution inputs, I want structured cl
 - **FR-108**: Unsupported tool/resource recovery MAY include deterministic prefix/template candidates, but MUST NOT use semantic search.
 - **FR-109**: Clarification responses SHOULD expose structured field-level questions with field name, input type, allowed values, default, and secret sensitivity where known.
 - **FR-110**: The server SHOULD use MCP-native elicitation when the active SDK/client path supports it, while preserving the current fallback fields for clients without elicitation.
-- **FR-111**: Natural-language workflow intent handling SHOULD support common Chinese synonyms for encrypt, mask, reversible, irreversible, equality query, fuzzy query, phone, identity card, and email.
+- **FR-111**: Natural-language workflow intent handling SHOULD support common Chinese synonyms for encrypt, mask, reversible,
+  irreversible, equality query, fuzzy query, phone, identity card, and email.
 - **FR-112**: Descriptors and prompts SHOULD tell models to provide structured intent evidence for non-English user requests instead of depending on prose keyword matching.
 - **FR-113**: Current-session workflow plans SHOULD be readable through a plan-status resource or equivalent read-back contract by `plan_id`.
 - **FR-114**: Resource URI generation and matching SHOULD support percent-encoding and decoding for non-ASCII and reserved identifier characters.
 - **FR-115**: Completion SHOULD auto-resolve single-schema context where safe or return a next action that asks the model to complete/read schema first.
-- **FR-116**: Runtime status SHOULD be available through a compact, secret-free resource or capability section that lists configured logical databases, feature availability, transport, and safe first checks.
+- **FR-116**: Runtime status SHOULD be available through a compact, secret-free resource or capability section
+  that lists configured logical databases, feature availability, transport, and safe first checks.
 
 #### P2 - diagnostics and opt-in quality signal
 
@@ -285,6 +320,10 @@ As a model collecting missing workflow or execution inputs, I want structured cl
 - **Workflow Status Snapshot**: Current-session read-back view for a workflow plan, including status, artifacts, next actions, and scope.
 - **Encoded Resource Identifier**: Percent-encoded resource path segment that preserves logical database, schema, table, and column identifiers.
 - **Runtime Status Summary**: Secret-free operational summary for configured databases, feature loading, transport, and first health checks.
+- **Response Mode Contract**: Stable payload markers that tell a model whether a response is preview, executed, manual-only, validation, recovery, or terminal.
+- **Result Row View**: Optional object-row representation for SQL results when column labels are unique, plus fallback metadata when positional rows must be preserved.
+- **Recovery Target Hint**: Exact tool/resource/argument target metadata for retry and repair actions, especially after context compaction.
+- **Ambiguity Hint**: Search or lookup metadata that tells a model a result set needs scope narrowing instead of name guessing.
 
 ## Success Criteria *(mandatory)*
 
@@ -299,6 +338,8 @@ As a model collecting missing workflow or execution inputs, I want structured cl
 - **SC-007**: Broad SQL and metadata requests have documented safe defaults, caps, and structured recovery for invalid inputs.
 - **SC-008**: A model can ask missing-input questions from structured fields and can recover a current-session workflow plan after context loss.
 - **SC-009**: Non-ASCII identifiers, Chinese workflow intent, and secret-bearing runtime configuration are handled without guessing or leaking sensitive data.
+- **SC-010**: A model can recover from missing workflow arguments, missing execution mode, and metadata-introspection SQL without guessing the retry tool or public argument name.
+- **SC-011**: A model can tell preview, execute, manual-only, validation, recovery, truncation, and pagination states from structured fields rather than prose alone.
 
 ## Assumptions
 

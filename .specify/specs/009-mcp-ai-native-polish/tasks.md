@@ -203,12 +203,28 @@
 - [ ] T078 [P] Add minimal STDIO and HTTP client configuration examples to `mcp/README.md` and `mcp/README_ZH.md`.
 - [ ] T079 [P] Evaluate lightweight workflow preflight validation only if it reuses existing validation paths and stays out of planner scope.
 
-## Phase 13: Verification
+## Phase 13: Concrete 2026-05-06 Gap Closure (No Over-Design)
 
-- [ ] T080 Run `git diff --check` for documentation-only changes.
-- [ ] T081 Run scoped MCP module tests after Java or descriptor changes.
-- [ ] T082 Run scoped Checkstyle after Java changes.
-- [ ] T083 Confirm no branch switch occurred with `git branch --show-current`.
+- [ ] T080 [P] Add `apply_workflow` missing/invalid `execution_mode` recovery tests that assert `target_tool=apply_workflow` and safe `execution_mode=preview` guidance.
+- [ ] T081 [P] Add workflow missing-property tests that assert public argument paths such as `primary_algorithm_properties`,
+  `assisted_query_algorithm_properties`, and `like_query_algorithm_properties`.
+- [ ] T082 [P] Add `execute_update` descriptor/schema tests that distinguish preview and executed response variants or stable response-mode fields.
+- [ ] T083 [P] Add preview semantics tests that assert side-effect previews do not imply affected-row estimates.
+- [ ] T084 [P] Add SQL result-shape tests for unique-column `row_objects` and duplicate-column fallback status while preserving positional rows.
+- [ ] T085 [P] Add truncation and pagination continuation tests that assert safe `next_actions`.
+- [ ] T086 [P] Add metadata-introspection SQL recovery tests for `SHOW TABLES`, `DESCRIBE`, and representative dialect equivalents.
+- [ ] T087 [P] Add metadata duplicate/ambiguous-hit tests that assert narrowing hints instead of guessed best matches.
+- [ ] T088 [P] Centralize URI encoding tests for search result URIs, resource navigation, and workflow `resources_to_read` values containing non-ASCII or reserved characters.
+- [ ] T089 [P] Add Docker/HTTP documentation checks for bind host, bearer token, and env-placeholder examples without embedded secrets.
+- [ ] T090 [P] Add Proxy-topology recovery or preflight tests for encrypt/mask workflows when the runtime appears connected to a physical database instead of Proxy's logical view.
+- [ ] T091 Update affected descriptors, README sections, and capability contracts only for the concrete fields proven by T080-T090.
+
+## Phase 14: Verification
+
+- [ ] T092 Run `git diff --check` for documentation-only changes.
+- [ ] T093 Run scoped MCP module tests after Java or descriptor changes.
+- [ ] T094 Run scoped Checkstyle after Java changes.
+- [ ] T095 Confirm no branch switch occurred with `git branch --show-current`.
 
 ## Dependencies and Execution Order
 
@@ -232,3 +248,4 @@
 - T055 through T058 can run in parallel.
 - T065 through T068 can run in parallel.
 - T074 through T079 can run in parallel after runtime/config baselines are confirmed.
+- T080 through T090 can run in parallel because each validates a distinct concrete model-guessing gap.

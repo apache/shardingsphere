@@ -112,7 +112,7 @@ class WorkflowExecutionServiceTest {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
                 mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP,
                 "session-1", createSnapshot(), List.of(), ""));
-        assertThat(actual.getMessage(), is("execution_mode is required."));
+        assertThat(actual.getMessage(), is("apply_workflow execution_mode is required."));
     }
     
     @Test

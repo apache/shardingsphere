@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowPlanPayloadBuilderTest {
-    
+
     @Test
     void assertBuildIncludesIntentInference() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -75,7 +75,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("field_semantics"), is("phone"));
         assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actual.get("intent_inference")).get("inferred_values")).get("requires_decrypt"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("unresolved_fields"), is(clarifiedIntent.getUnresolvedFields()));
-        assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query", "algorithm_properties.aes-key-value")));
+        assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query", "primary_algorithm_properties.aes-key-value")));
         List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("input_type"), is("boolean"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("allowed_values"), is(List.of(true, false)));
@@ -88,7 +88,32 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue(((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
     }
-    
+
+    @Test
+    void assertBuildUsesPublicAlgorithmPropertyInputs() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("encrypt.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
+        WorkflowRequest request = new WorkflowRequest();
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("review"), List.of("rules")));
+        snapshot.setClarifiedIntent(new ClarifiedIntent());
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("primary", "aes-key-value", true, true, "primary key", ""));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("assisted_query", "salt", true, true, "assist key", ""));
+        snapshot.getPropertyRequirements().add(new AlgorithmPropertyRequirement("like_query", "token", true, true, "like key", ""));
+        snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true,
+                Map.of("missing_properties", List.of("aes-key-value", "salt", "token"))));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        assertThat(actual.get("missing_required_inputs"), is(List.of("primary_algorithm_properties.aes-key-value", "assisted_query_algorithm_properties.salt",
+                "like_query_algorithm_properties.token")));
+        List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("field"), is("primary_algorithm_properties.aes-key-value"));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("field"), is("assisted_query_algorithm_properties.salt"));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(2)).get("field"), is("like_query_algorithm_properties.token"));
+        assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(0)).get("secret"));
+    }
+
     @Test
     void assertBuildIncludesMaskResources() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -114,7 +139,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("preview"));
         assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
-    
+
     @Test
     void assertBuildRecommendsPlanningToolAfterFailure() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();

@@ -61,7 +61,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String executionMode = toolArguments.getStringArgument("execution_mode");
         if (executionMode.isEmpty()) {
-            throw new MCPInvalidRequestException("execution_mode is required.");
+            throw new MCPInvalidRequestException("apply_workflow execution_mode is required.");
         }
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));

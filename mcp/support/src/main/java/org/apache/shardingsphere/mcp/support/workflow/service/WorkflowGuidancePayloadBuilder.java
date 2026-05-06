@@ -42,13 +42,13 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowGuidancePayloadBuilder {
-    
+
     private static final String APPLY_WORKFLOW = "apply_workflow";
-    
+
     private static final String VALIDATE_WORKFLOW = "validate_workflow";
-    
+
     private static final String EXECUTION_MODE_PREVIEW = "preview";
-    
+
     /**
      * Append model-facing next action guidance to a planning response.
      *
@@ -65,7 +65,7 @@ public final class WorkflowGuidancePayloadBuilder {
         payload.put("next_actions", createPlanningNextActions(snapshot, missingRequiredInputs));
         payload.put("requires_user_approval", false);
     }
-    
+
     /**
      * Append model-facing next action guidance to an apply response.
      *
@@ -87,7 +87,7 @@ public final class WorkflowGuidancePayloadBuilder {
         payload.put("next_actions", addSequencing(nextActions));
         payload.put("requires_user_approval", WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status) || WorkflowLifecycle.STATUS_FAILED.equals(status));
     }
-    
+
     /**
      * Append model-facing next action guidance to a validation response.
      *
@@ -101,31 +101,32 @@ public final class WorkflowGuidancePayloadBuilder {
         payload.put("next_actions", failed ? createValidationFailureActions(snapshot) : List.of(createStopAction()));
         payload.put("requires_user_approval", false);
     }
-    
+
     private static List<Map<String, Object>> createValidationFailureActions(final WorkflowContextSnapshot snapshot) {
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind before re-planning with the existing plan_id.", false, List.of("workflow_kind", "mismatches")))
                 : List.of(createToolAction(planningTool, "Re-plan with corrected metadata or algorithm choices.", Map.of("plan_id", snapshot.getPlanId()), false));
     }
-    
+
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
         for (String each : clarifiedIntent.getUnresolvedFields()) {
-            if (!result.contains(each)) {
-                result.add(each);
+            String missingInput = normalizeMissingInput(snapshot, each);
+            if (!result.contains(missingInput)) {
+                result.add(missingInput);
             }
         }
         for (WorkflowIssue each : snapshot.getIssues()) {
-            addMissingInputsFromIssue(result, each);
+            addMissingInputsFromIssue(result, snapshot, each);
         }
         if (result.isEmpty() && !clarifiedIntent.getPendingQuestions().isEmpty()) {
             result.add("user_clarification");
         }
         return result;
     }
-    
+
     private static List<Map<String, Object>> createClarificationQuestions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
         List<Map<String, Object>> result = new LinkedList<>();
         List<String> pendingQuestions = snapshot.getClarifiedIntent().getPendingQuestions();
@@ -135,7 +136,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return result;
     }
-    
+
     private static Map<String, Object> createClarificationQuestion(final WorkflowContextSnapshot snapshot, final String fieldName, final String pendingQuestion) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         String inputType = resolveClarificationInputType(snapshot, fieldName);
@@ -149,19 +150,19 @@ public final class WorkflowGuidancePayloadBuilder {
         result.put("message", pendingQuestion.isBlank() ? String.format("Please provide `%s`.", fieldName) : pendingQuestion);
         return result;
     }
-    
+
     private static String resolveClarificationInputType(final WorkflowContextSnapshot snapshot, final String fieldName) {
         if (isSecretClarificationField(snapshot, fieldName)) {
             return "secret";
         }
         return fieldName.startsWith("requires_") ? "boolean" : "string";
     }
-    
+
     private static boolean isSecretClarificationField(final WorkflowContextSnapshot snapshot, final String fieldName) {
-        if (!fieldName.startsWith("algorithm_properties.")) {
+        String propertyKey = resolveAlgorithmPropertyKey(fieldName);
+        if (propertyKey.isEmpty()) {
             return false;
         }
-        String propertyKey = fieldName.substring("algorithm_properties.".length());
         for (AlgorithmPropertyRequirement each : snapshot.getPropertyRequirements()) {
             if (propertyKey.equals(each.getPropertyKey())) {
                 return each.isSecret();
@@ -169,7 +170,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return false;
     }
-    
+
     private static Map<String, Object> createElicitationFallback(final List<Map<String, Object>> clarificationQuestions) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("native_supported", false);
@@ -177,22 +178,60 @@ public final class WorkflowGuidancePayloadBuilder {
         result.put("requires_user_response", !clarificationQuestions.isEmpty());
         return result;
     }
-    
-    private static void addMissingInputsFromIssue(final Collection<String> result, final WorkflowIssue issue) {
+
+    private static void addMissingInputsFromIssue(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {
         if (WorkflowIssueCode.DATABASE_REQUIRED.equals(issue.getCode()) && !result.contains("database")) {
             result.add("database");
         }
         Object missingProperties = issue.getDetails().get("missing_properties");
         if (missingProperties instanceof Collection) {
             for (Object each : (Collection<?>) missingProperties) {
-                String missingInput = String.format("algorithm_properties.%s", each);
+                String missingInput = resolveAlgorithmPropertyInput(snapshot, String.valueOf(each));
                 if (!result.contains(missingInput)) {
                     result.add(missingInput);
                 }
             }
         }
     }
-    
+
+    private static String normalizeMissingInput(final WorkflowContextSnapshot snapshot, final String fieldName) {
+        if (!fieldName.startsWith("algorithm_properties.")) {
+            return fieldName;
+        }
+        return resolveAlgorithmPropertyInput(snapshot, fieldName.substring("algorithm_properties.".length()));
+    }
+
+    private static String resolveAlgorithmPropertyInput(final WorkflowContextSnapshot snapshot, final String propertyKey) {
+        for (AlgorithmPropertyRequirement each : snapshot.getPropertyRequirements()) {
+            if (propertyKey.equals(each.getPropertyKey())) {
+                return String.format("%s.%s", resolveAlgorithmPropertiesArgument(each.getAlgorithmRole()), propertyKey);
+            }
+        }
+        return String.format("primary_algorithm_properties.%s", propertyKey);
+    }
+
+    private static String resolveAlgorithmPropertiesArgument(final String algorithmRole) {
+        if ("assisted_query".equals(algorithmRole)) {
+            return "assisted_query_algorithm_properties";
+        }
+        if ("like_query".equals(algorithmRole)) {
+            return "like_query_algorithm_properties";
+        }
+        return "primary_algorithm_properties";
+    }
+
+    private static String resolveAlgorithmPropertyKey(final String fieldName) {
+        int separatorIndex = fieldName.indexOf('.');
+        if (-1 == separatorIndex) {
+            return "";
+        }
+        String argumentName = fieldName.substring(0, separatorIndex);
+        if ("algorithm_properties".equals(argumentName) || argumentName.endsWith("_algorithm_properties")) {
+            return fieldName.substring(separatorIndex + 1);
+        }
+        return "";
+    }
+
     private static List<String> createResourcesToRead(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         addFeatureResources(result, snapshot);
@@ -205,7 +244,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return result;
     }
-    
+
     private static void addFeatureResources(final Collection<String> result, final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
@@ -214,7 +253,7 @@ public final class WorkflowGuidancePayloadBuilder {
             result.add("shardingsphere://features/mask/algorithms");
         }
     }
-    
+
     private static void addRuleResources(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
@@ -223,14 +262,14 @@ public final class WorkflowGuidancePayloadBuilder {
             result.add(String.format("shardingsphere://features/mask/databases/%s/rules", request.getDatabase()));
         }
     }
-    
+
     private static void addTableResources(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         result.add(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", request.getDatabase(), request.getSchema(), request.getTable()));
         if ("encrypt.rule".equals(resolveWorkflowKind(snapshot))) {
             result.add(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", request.getDatabase(), request.getSchema(), request.getTable()));
         }
     }
-    
+
     private static List<Map<String, Object>> createPlanningNextActions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
         if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
             return List.of(createUserAction("Ask for the missing inputs, then call the same planning tool with the existing plan_id.", false, missingRequiredInputs));
@@ -244,26 +283,26 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return List.of();
     }
-    
+
     private static List<Map<String, Object>> createRecoveryPlanningActions(final WorkflowContextSnapshot snapshot) {
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind, then call the matching planning tool with the existing plan_id.", false, List.of("workflow_kind", "issues")))
                 : List.of(createToolAction(planningTool, "Re-plan after resolving the reported issues.", Map.of("plan_id", snapshot.getPlanId()), false));
     }
-    
+
     private static Map<String, Object> createToolAction(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
         return MCPNextActionUtils.callTool(targetTool, reason, requiredArguments, requiresUserApproval);
     }
-    
+
     private static Map<String, Object> createUserAction(final String reason, final boolean requiresUserApproval, final List<String> requiredInputs) {
         return MCPNextActionUtils.askUser(reason, requiredInputs, requiresUserApproval);
     }
-    
+
     private static Map<String, Object> createStopAction() {
         return MCPNextActionUtils.stop("Validation passed. Report the confirmed workflow result to the user.");
     }
-    
+
     private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
         List<Map<String, Object>> result = new LinkedList<>(nextActions);
         for (int index = 0; index < result.size(); index++) {
@@ -274,7 +313,7 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return result;
     }
-    
+
     private static String resolvePlanningTool(final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
@@ -282,10 +321,10 @@ public final class WorkflowGuidancePayloadBuilder {
         }
         return "mask.rule".equals(workflowKind) ? "plan_mask_rule" : "";
     }
-    
+
     private static String resolveWorkflowKind(final WorkflowContextSnapshot snapshot) {
         WorkflowKind workflowKind = snapshot.getWorkflowKind();
         return null == workflowKind ? "" : workflowKind.getValue();
     }
-    
+
 }

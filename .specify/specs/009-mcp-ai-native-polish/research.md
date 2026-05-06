@@ -142,3 +142,38 @@
 
 - Add full OAuth, RBAC, or tenant policy. Rejected as out of scope.
 - Keep secrets directly in sample YAML. Rejected because MCP examples are likely copied into real local configs.
+
+## Decision 14: Prefer exact recovery targets and public argument paths
+
+**Decision**: Recovery payloads should name the exact public tool and argument that the model must retry or repair when the server can know it.
+
+**Rationale**: The model should not infer that a missing `execution_mode` in `apply_workflow` belongs to `execute_update`, nor translate internal property paths into public workflow arguments.
+
+**Alternatives considered**:
+
+- Keep generic recovery targets. Rejected because context-compacted models can retry the wrong tool.
+- Expose internal field paths. Rejected because public MCP arguments are the stable contract.
+
+## Decision 15: Add row-object convenience only when unambiguous
+
+**Decision**: SQL responses may expose object-shaped rows when column labels are unique, while preserving positional rows
+and explicit fallback metadata for duplicate, unnamed, or driver-specific labels.
+
+**Rationale**: Object rows are easier for models to read, but SQL permits duplicate labels and expressions. The MCP should improve comfort without corrupting result semantics.
+
+**Alternatives considered**:
+
+- Always convert rows to objects. Rejected because duplicate column labels would overwrite values.
+- Keep only positional arrays. Rejected because common unique-column results remain unnecessarily hard for models to parse.
+
+## Decision 16: Treat metadata-introspection SQL as a recovery path, not a new SQL planner
+
+**Decision**: When the model sends SQL such as `SHOW TABLES` or `DESCRIBE` to the wrong tool or an unsafe path, recovery should suggest reading metadata resources or calling `search_metadata`.
+
+**Rationale**: Models frequently use database-console habits for metadata inspection.
+The MCP already has safer logical metadata resources, so recovery can redirect without adding a SQL-planning subsystem.
+
+**Alternatives considered**:
+
+- Add a new metadata SQL execution planner. Rejected as over-design.
+- Let all introspection SQL pass through unchanged. Rejected because logical metadata resources are clearer and safer for model-native use.

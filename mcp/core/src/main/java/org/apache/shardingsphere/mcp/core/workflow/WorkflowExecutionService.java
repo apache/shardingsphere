@@ -92,7 +92,7 @@ public final class WorkflowExecutionService {
     
     private String requireExecutionMode(final String executionMode) {
         if (executionMode.isEmpty()) {
-            throw new MCPInvalidRequestException("execution_mode is required.");
+            throw new MCPInvalidRequestException("apply_workflow execution_mode is required.");
         }
         String result = executionMode.toLowerCase();
         if (!EXECUTION_MODES.contains(result)) {

@@ -147,6 +147,71 @@ Validation rules:
 - Invalid inputs should produce structured recovery instead of silent coercion when the model can repair the call.
 - A zero-row SQL result remains success; an invalid row limit or page token is a recoverable call-shape error.
 
+## ResponseModeContract
+
+Represents a stable way for a model to distinguish preview, execution, manual, validation, recovery, truncation, pagination, and terminal states.
+
+- `response_mode`: `preview`, `executed`, `manual_only`, `validation`, `recovery`, or `terminal` where applicable.
+- `execution_mode`: Public input value that produced the response when relevant.
+- `preview_semantics`: Optional wording or enum explaining whether preview is classification-only, generated-artifact preview, or validation preview.
+- `side_effect_scope`: Existing side-effect summary when present.
+- `continuation_state`: Optional `truncated`, `has_more`, `next_page_token`, or equivalent state.
+- `next_actions`: Safe continuation actions derived from the response state.
+
+Validation rules:
+
+- Preview responses must not imply that side effects already occurred.
+- Classification previews must not be presented as affected-row estimates.
+- Pagination and truncation state should be structured enough for a model to continue without prose parsing.
+
+## ResultRowView
+
+Represents an optional model-friendly SQL result view.
+
+- `rows`: Existing positional row data.
+- `row_objects`: Optional row objects keyed by column label when labels are unique and stable.
+- `row_object_status`: `available`, `duplicate_column_labels`, `unnamed_columns`, or `not_applicable`.
+- `column_labels`: Labels used to decide whether object rows are safe.
+
+Validation rules:
+
+- Positional rows remain the lossless representation.
+- Object rows must not overwrite duplicate labels.
+- The server should expose why object rows are unavailable instead of silently omitting them when that helps model parsing.
+
+## RecoveryTargetHint
+
+Represents exact retry or repair targets in structured recovery payloads.
+
+- `source_tool`: Tool that produced the error when known.
+- `target_tool`: Tool the model should retry or call next when known.
+- `target_resource`: Resource the model should read when known.
+- `argument_path`: Public argument name or path that needs repair.
+- `suggested_value`: Safe suggested value, such as `execution_mode=preview`, when applicable.
+- `source`: Whether the value is server-defaulted, server-normalized, or user-provided.
+
+Validation rules:
+
+- Recovery hints should use public MCP names, not internal Java fields or synthetic aliases.
+- `apply_workflow` recovery must not point to `execute_update` unless the actual recovery action is to change tools.
+- Suggested values must preserve preview-before-execution safety.
+
+## AmbiguityHint
+
+Represents a bounded explanation that a search or lookup result needs narrowing.
+
+- `ambiguous`: Whether multiple safe candidates remain.
+- `ambiguous_by`: `database`, `schema`, `object_type`, `name`, or another stable scope dimension.
+- `candidate_count`: Number of ambiguous candidates when cheap to compute.
+- `narrowing_arguments`: Public arguments that can disambiguate the request.
+- `next_actions`: Safe actions to read a parent resource, search within a narrower scope, or ask the user.
+
+Validation rules:
+
+- Ambiguity hints must not invent a best match.
+- Hints should be omitted or conservative when counting would require expensive scans.
+- Search remains lexical/descriptor-backed; no semantic ranking is introduced.
+
 ## ClarificationQuestion
 
 Represents a field-level question that a model can turn into natural user language.

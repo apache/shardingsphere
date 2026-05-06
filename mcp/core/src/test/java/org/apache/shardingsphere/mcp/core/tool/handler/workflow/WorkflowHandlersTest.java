@@ -92,7 +92,7 @@ class WorkflowHandlersTest {
         WorkflowExecutionToolHandler handler = new WorkflowExecutionToolHandler(new WorkflowRuntimeDefinitionRegistry(List.of(createDefinition("encrypt.rule"))));
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class,
                 () -> handler.handle(fixture.workflowContext, new MCPToolCall("session-1", Map.of("plan_id", "plan-1"))));
-        assertThat(actual.getMessage(), is("execution_mode is required."));
+        assertThat(actual.getMessage(), is("apply_workflow execution_mode is required."));
     }
     
     @Test
