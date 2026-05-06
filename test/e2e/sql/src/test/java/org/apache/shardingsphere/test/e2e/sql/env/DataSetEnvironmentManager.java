@@ -102,7 +102,7 @@ public final class DataSetEnvironmentManager {
             }
             fillDataTasks.add(new InsertTask(dataSourceMap.get(dataNode.getDataSourceName()), insertSQL, sqlValueGroups, databaseType));
         }
-        final List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
+        List<Future<Void>> futures = EXECUTOR_SERVICE_MANAGER.getExecutorService().invokeAll(fillDataTasks);
         for (Future<Void> future : futures) {
             future.get();
         }
