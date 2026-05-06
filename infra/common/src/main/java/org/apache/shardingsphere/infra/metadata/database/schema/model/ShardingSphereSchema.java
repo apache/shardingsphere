@@ -54,6 +54,9 @@ public final class ShardingSphereSchema {
     private IdentifierIndex<ShardingSphereTable> tableIndex;
     
     @Getter(AccessLevel.NONE)
+    private IdentifierIndex<ShardingSphereTable> logicalTableIndex;
+    
+    @Getter(AccessLevel.NONE)
     private IdentifierIndex<ShardingSphereView> viewIndex;
     
     /**
@@ -69,6 +72,7 @@ public final class ShardingSphereSchema {
         this.protocolType = protocolType;
         identifierContext = DatabaseIdentifierContextFactory.createDefault();
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
+        logicalTableIndex = null;
         viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         tableIndex.rebuild(Collections.emptyMap());
         viewIndex.rebuild(Collections.emptyMap());
@@ -109,6 +113,12 @@ public final class ShardingSphereSchema {
      * @return table
      */
     private Optional<ShardingSphereTable> findTable(final IdentifierValue tableName) {
+        if (null != logicalTableIndex) {
+            Optional<ShardingSphereTable> logicalMatchedTable = logicalTableIndex.find(tableName);
+            if (logicalMatchedTable.isPresent()) {
+                return logicalMatchedTable;
+            }
+        }
         return tableIndex.find(tableName);
     }
     
@@ -160,6 +170,9 @@ public final class ShardingSphereSchema {
     public void putTable(final ShardingSphereTable table) {
         refreshTableIdentifierContext(table);
         tableIndex.put(table.getName(), table);
+        if (null != logicalTableIndex) {
+            logicalTableIndex.put(table.getName(), table);
+        }
     }
     
     /**
@@ -173,6 +186,9 @@ public final class ShardingSphereSchema {
             return;
         }
         tableIndex.remove(table.getName());
+        if (null != logicalTableIndex) {
+            logicalTableIndex.remove(table.getName());
+        }
     }
     
     /**
@@ -266,9 +282,14 @@ public final class ShardingSphereSchema {
         final Collection<ShardingSphereView> views = new LinkedList<>(viewIndex.getAll());
         this.identifierContext = identifierContext;
         tableIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.TABLE);
+        logicalTableIndex = createLogicalTableIndex(identifierContext);
         viewIndex = new IdentifierIndex<>(identifierContext, IdentifierScope.VIEW);
         tables.forEach(this::refreshTableIdentifierContext);
-        tableIndex.rebuild(createTableMap(tables));
+        Map<String, ShardingSphereTable> tableMap = createTableMap(tables);
+        tableIndex.rebuild(tableMap);
+        if (null != logicalTableIndex) {
+            logicalTableIndex.rebuild(tableMap);
+        }
         viewIndex.rebuild(createViewMap(views));
     }
     
@@ -344,5 +365,12 @@ public final class ShardingSphereSchema {
     private Map<String, ShardingSphereView> createViewMap(final Collection<ShardingSphereView> views) {
         return views.stream().collect(Collectors.toMap(ShardingSphereView::getName, each -> each, (oldValue, currentValue) -> currentValue,
                 () -> new LinkedHashMap<>(views.size(), 1F)));
+    }
+    
+    private IdentifierIndex<ShardingSphereTable> createLogicalTableIndex(final DatabaseIdentifierContext context) {
+        if (!context.isHeterogeneousTableLookupEnabled()) {
+            return null;
+        }
+        return new IdentifierIndex<>(context, IdentifierScope.LOGICAL_TABLE);
     }
 }

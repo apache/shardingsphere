@@ -18,12 +18,17 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.model;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.identifier.DatabaseIdentifierContext;
 import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -100,5 +105,17 @@ class ShardingSphereSchemaIdentifierTest {
         ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
         schema.refreshIdentifierContext(new DatabaseIdentifierContext(IdentifierCaseRuleSets.newLowerCaseRuleSet()));
         assertFalse(schema.getTable("foo_tbl").containsColumn("FOO_COL"));
+    }
+    
+    @Test
+    void assertContainsTableByLogicalTableIndexWhenHeterogeneousLookupEnabled() {
+        ShardingSphereTable table = new ShardingSphereTable("foo_tbl", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", postgreSQLDatabaseType, Collections.singleton(table), Collections.emptyList());
+        Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+        scopedRules.put(IdentifierScope.LOGICAL_TABLE, IdentifierCaseRuleSets.newLowerCaseRuleSet().getRule(IdentifierScope.TABLE));
+        DatabaseIdentifierContext context = new DatabaseIdentifierContext(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newUpperCaseRuleSet().getRule(IdentifierScope.TABLE), scopedRules), true);
+        schema.refreshIdentifierContext(context);
+        assertTrue(schema.containsTable("FOO_TBL"));
+        assertThat(schema.getTable("FOO_TBL"), is(table));
     }
 }

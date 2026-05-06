@@ -153,6 +153,27 @@ class DatabaseIdentifierContextFactoryTest {
     }
     
     @Test
+    void assertCreateUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesProtocolRuleForLogicalTableAndEnablesHeterogeneousLookup() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, ORACLE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
     void assertCreateUsesInsensitiveRuleForDatabaseScope() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(ORACLE_DATABASE_TYPE,
                 createConfigurationProperties(MetadataIdentifierCaseSensitivity.SENSITIVE));
