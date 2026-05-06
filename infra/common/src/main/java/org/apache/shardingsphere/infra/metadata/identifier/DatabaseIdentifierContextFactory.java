@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.unit.StorageUn
 
 import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -81,7 +82,7 @@ public final class DatabaseIdentifierContextFactory {
         Optional<DatabaseType> storageDatabaseType = getIdentifierRuleDatabaseType(resourceMetaData);
         IdentifierCaseRuleSet storageRuleSet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
         IdentifierCaseRuleSet scopeAwareRuleSet = createScopeAwareRuleSet(protocolRuleSet, storageRuleSet);
-        return new DatabaseIdentifierContext(scopeAwareRuleSet, isHeterogeneous(protocolType, storageDatabaseType));
+        return new DatabaseIdentifierContext(scopeAwareRuleSet, isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
     }
     
     /**
@@ -112,7 +113,7 @@ public final class DatabaseIdentifierContextFactory {
         IdentifierCaseRuleSet protocolRuleSet = resolver.resolve(protocolType, actualProps, null);
         Optional<DatabaseType> storageDatabaseType = getIdentifierRuleDatabaseType(resourceMetaData);
         IdentifierCaseRuleSet storageRuleSet = resolver.resolve(storageDatabaseType.orElse(protocolType), actualProps, getFirstDataSource(resourceMetaData));
-        identifierContext.refresh(createScopeAwareRuleSet(protocolRuleSet, storageRuleSet), isHeterogeneous(protocolType, storageDatabaseType));
+        identifierContext.refresh(createScopeAwareRuleSet(protocolRuleSet, storageRuleSet), isHeterogeneous(protocolType, getStorageDatabaseTypes(resourceMetaData)));
     }
     
     private static ConfigurationProperties getProps(final ConfigurationProperties props) {
@@ -141,18 +142,23 @@ public final class DatabaseIdentifierContextFactory {
     }
     
     private static Optional<DatabaseType> getIdentifierRuleDatabaseType(final ResourceMetaData resourceMetaData) {
+        Collection<DatabaseType> storageDatabaseTypes = getStorageDatabaseTypes(resourceMetaData);
+        return storageDatabaseTypes.stream().findFirst();
+    }
+    
+    private static Collection<DatabaseType> getStorageDatabaseTypes(final ResourceMetaData resourceMetaData) {
         if (null == resourceMetaData || null == resourceMetaData.getStorageUnits() || resourceMetaData.getStorageUnits().isEmpty()) {
-            return Optional.empty();
+            return Collections.emptyList();
         }
         Collection<DatabaseType> storageDatabaseTypes = new LinkedHashSet<>(resourceMetaData.getStorageUnits().size(), 1F);
         for (StorageUnit each : resourceMetaData.getStorageUnits().values()) {
             storageDatabaseTypes.add(each.getStorageType());
         }
-        return storageDatabaseTypes.stream().findFirst();
+        return storageDatabaseTypes;
     }
     
-    private static boolean isHeterogeneous(final DatabaseType protocolType, final Optional<DatabaseType> storageDatabaseType) {
-        return storageDatabaseType.filter(optional -> null != optional.getType() && null != protocolType && null != protocolType.getType())
-                .map(optional -> !protocolType.getType().equalsIgnoreCase(optional.getType())).orElse(false);
+    private static boolean isHeterogeneous(final DatabaseType protocolType, final Collection<DatabaseType> storageDatabaseTypes) {
+        return null != protocolType && null != protocolType.getType() && storageDatabaseTypes.stream()
+                .anyMatch(each -> null != each && null != each.getType() && !protocolType.getType().equalsIgnoreCase(each.getType()));
     }
 }

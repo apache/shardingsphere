@@ -82,6 +82,12 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static final ResourceMetaData ORACLE_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls("jdbc:oracle:thin:@localhost:1521:xe");
     
+    private static final ResourceMetaData MYSQL_ORACLE_MIXED_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls(
+            "jdbc:mysql://localhost:3306/foo_db", "jdbc:oracle:thin:@localhost:1521:xe");
+    
+    private static final ResourceMetaData ORACLE_MYSQL_MIXED_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls(
+            "jdbc:oracle:thin:@localhost:1521:xe", "jdbc:mysql://localhost:3306/foo_db");
+    
     @Test
     void assertCreateDefault() {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
@@ -185,6 +191,29 @@ class DatabaseIdentifierContextFactoryTest {
         DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
         DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_INSENSITIVE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
         assertFalse(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
+    @Test
+    void assertCreateEnablesHeterogeneousLookupWhenAnyStorageTypeDiffersFromProtocolEvenIfFirstMatches() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
+    @Test
+    void assertRefreshEnablesHeterogeneousLookupWhenAnyStorageTypeDiffersFromProtocolEvenIfFirstMatches() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(actual.isHeterogeneousTableLookupEnabled());
+    }
+    
+    @Test
+    void assertCreateEnablesHeterogeneousLookupRegardlessOfStorageUnitIterationOrder() {
+        DatabaseIdentifierContext mysqlFirstActual = DatabaseIdentifierContextFactory.create(
+                MYSQL_DATABASE_TYPE, MYSQL_ORACLE_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        DatabaseIdentifierContext oracleFirstActual = DatabaseIdentifierContextFactory.create(
+                MYSQL_DATABASE_TYPE, ORACLE_MYSQL_MIXED_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        assertTrue(mysqlFirstActual.isHeterogeneousTableLookupEnabled());
+        assertTrue(oracleFirstActual.isHeterogeneousTableLookupEnabled());
     }
     
     @Test
