@@ -235,11 +235,7 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
             return;
         }
         if (toBeRemovedRuleItemConfig instanceof SingleRuleConfiguration) {
-            Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleItemConfig));
-            removeRuleItem(database.getName(), metaDataVersions);
-            metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByUnloadSingleTable(
-                    database.getName(), metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(database.getName()), database);
-            clearServicesCache();
+            removeSingleRuleConfiguration(database, toBeRemovedRuleItemConfig);
             return;
         }
         Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleItemConfig);
@@ -276,17 +272,21 @@ public final class StandaloneMetaDataManagerPersistService implements MetaDataMa
     @Override
     public void removeRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig, final String ruleType) {
         if (toBeRemovedRuleConfig instanceof SingleRuleConfiguration) {
-            metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
-            metaDataContextManager.getDatabaseRuleItemManager().drop(new DatabaseRuleNodePath(database.getName(), ruleType, null));
-            metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByUnloadSingleTable(
-                    database.getName(), metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(database.getName()), database);
-            clearServicesCache();
+            removeSingleRuleConfiguration(database, toBeRemovedRuleConfig);
             return;
         }
         Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
         metaDataContextManager.getDatabaseRuleItemManager().drop(new DatabaseRuleNodePath(database.getName(), ruleType, null));
         persistAndAlterSchemaTables(database, needReloadTables);
+        clearServicesCache();
+    }
+    
+    private void removeSingleRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig) {
+        Collection<MetaDataVersion> metaDataVersions = metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleConfig));
+        removeRuleItem(database.getName(), metaDataVersions);
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByUnloadSingleTable(
+                database.getName(), metaDataContextManager.getMetaDataContexts().getMetaData().getDatabase(database.getName()), database);
         clearServicesCache();
     }
     
