@@ -161,6 +161,7 @@ class WorkflowValidationSupportTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
+        assertThat(actualResult.get("response_mode"), is("validation"));
         assertThat(actualResult.get("status"), is("validated"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
         assertThat(actualResult.get("recommended_recovery"), is(""));
@@ -184,6 +185,7 @@ class WorkflowValidationSupportTest {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
+        assertThat(actualResult.get("response_mode"), is("validation"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(actualResult.get("recommended_recovery"), is("Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again."));

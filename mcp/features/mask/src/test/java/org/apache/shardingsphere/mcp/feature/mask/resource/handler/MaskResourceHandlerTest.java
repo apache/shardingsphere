@@ -39,18 +39,18 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MaskResourceHandlerTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertGetUriPatternArguments")
     void assertGetUriPattern(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final String expectedUriPattern) {
-        assertThat(handler.getResourceDescriptor().getUriPattern(), is(expectedUriPattern));
+        assertThat(handler.getResourceDescriptor().getUriTemplate(), is(expectedUriPattern));
     }
-    
+
     @Test
     void assertGetMaskRuleResourceKind() {
-        assertThat(new MaskRuleHandler().getResourceDescriptor().getMeta().get("resourceKind"), is("list"));
+        assertThat(new MaskRuleHandler().getResourceDescriptor().getResourceKind(), is("list"));
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertHandleArguments")
     void assertHandle(final String name, final MCPResourceHandler<MCPDatabaseHandlerContext> handler, final Map<String, String> uriVariables,
@@ -70,16 +70,16 @@ class MaskResourceHandlerTest {
         if (expectedParentUri.isEmpty()) {
             return;
         }
-        assertThat(actual.toPayload().get("parent_uri"), is(expectedParentUri));
+        assertThat(((Map<?, ?>) actual.toPayload().get("parent_resource")).get("uri"), is(expectedParentUri));
     }
-    
+
     private static Stream<Arguments> assertGetUriPatternArguments() {
         return Stream.of(
                 Arguments.of("mask algorithms URI", new MaskAlgorithmsHandler(), "shardingsphere://features/mask/algorithms"),
                 Arguments.of("mask rules URI", new MaskRulesHandler(), "shardingsphere://features/mask/databases/{database}/rules"),
                 Arguments.of("mask table rule URI", new MaskRuleHandler(), "shardingsphere://features/mask/databases/{database}/tables/{table}/rules"));
     }
-    
+
     private static Stream<Arguments> assertHandleArguments() {
         return Stream.of(
                 Arguments.of("mask algorithms", new MaskAlgorithmsHandler(), Map.of(), "", "", List.of(), List.of(Map.of("type", "MD5")),

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -36,26 +36,26 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
  * Generic workflow execution tool handler.
  */
 public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
-    
+
     private final WorkflowExecutionService executionService;
-    
+
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
-    
+
     public WorkflowExecutionToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
         executionService = new WorkflowExecutionService();
         this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
     }
-    
+
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {
         return MCPWorkflowHandlerContext.class;
     }
-    
+
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return WorkflowToolDescriptors.createExecution();
     }
-    
+
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -70,7 +70,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
                 databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.getSessionId(), snapshot,
                 toolArguments.getStringCollectionArgument("approved_steps"), executionMode));
     }
-    
+
     private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
         if (null != snapshot.getWorkflowKind()) {
             return snapshot.getWorkflowKind();

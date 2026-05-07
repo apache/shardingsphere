@@ -19,10 +19,13 @@ package org.apache.shardingsphere.mcp.bootstrap.transport;
 
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
 import io.modelcontextprotocol.spec.McpSchema.TextResourceContents;
+import io.modelcontextprotocol.spec.McpSchema.ResourceLink;
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -32,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPTransportPayloadUtilsTest {
-    
+
     @Test
     void assertCreateCallToolResult() {
         Map<String, Object> payload = Map.of("message", "ok");
@@ -41,17 +44,36 @@ class MCPTransportPayloadUtilsTest {
         assertThat(actual.content().get(0), isA(TextContent.class));
         assertThat(((TextContent) actual.content().get(0)).text(), is(JsonUtils.toJsonString(payload)));
     }
-    
+
     @Test
     void assertCreateCallToolResultWithErrorCodePayload() {
         assertFalse(MCPTransportPayloadUtils.createCallToolResult(Map.of("error_code", "invalid_request")).isError());
     }
-    
+
+    @Test
+    void assertCreateCallToolResultWithResourceLinks() {
+        Map<String, Object> payload = Map.of("resources_to_read", List.of(
+                MCPResourceHintUtils.create("shardingsphere://databases/logic_db", "logical-database", "read_first", "Read logical database.", "resources_to_read")));
+        io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(payload);
+        assertThat(actual.structuredContent(), is(payload));
+        assertThat(actual.content().get(1), isA(ResourceLink.class));
+        ResourceLink actualLink = (ResourceLink) actual.content().get(1);
+        assertThat(actualLink.uri(), is("shardingsphere://databases/logic_db"));
+        assertThat(actualLink.title(), is("logical-database"));
+        assertThat(actualLink.mimeType(), is(MCPTransportPayloadUtils.JSON_CONTENT_TYPE));
+    }
+
+    @Test
+    void assertCreateCallToolResultWithoutRawUriLink() {
+        io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(Map.of("resource_uri", "shardingsphere://databases/logic_db"));
+        assertThat(actual.content().size(), is(1));
+    }
+
     @Test
     void assertCreateCallToolResultWithErrorResponse() {
         assertTrue(MCPTransportPayloadUtils.createCallToolResult(new MCPErrorResponse("invalid_request", "")).isError());
     }
-    
+
     @Test
     void assertCreateReadResourceResult() {
         Map<String, Object> payload = Map.of("message", "ok");

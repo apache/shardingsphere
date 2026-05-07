@@ -27,28 +27,37 @@ import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade
  * Database-aware MCP handler context.
  */
 public interface MCPDatabaseHandlerContext extends MCPHandlerContext {
-    
+
+    /**
+     * Get active MCP transport.
+     *
+     * @return active MCP transport
+     */
+    default String getActiveTransport() {
+        return "unknown";
+    }
+
     /**
      * Get metadata query facade.
      *
      * @return metadata query facade
      */
     MCPMetadataQueryFacade getMetadataQueryFacade();
-    
+
     /**
      * Get SQL execution facade.
      *
      * @return SQL execution facade
      */
     MCPFeatureExecutionFacade getExecutionFacade();
-    
+
     /**
      * Get direct query facade.
      *
      * @return direct query facade
      */
     MCPFeatureQueryFacade getQueryFacade();
-    
+
     /**
      * Get capability facade.
      *

@@ -15,6 +15,24 @@
 # limitations under the License.
 #
 
+resources:
+  - uriTemplate: shardingsphere://workflows/{plan_id}
+    name: workflow-plan
+    title: Workflow Plan
+    description: "Read one current in-memory workflow plan by plan_id. Use after planning tools to review status, clarification questions, artifacts, and next actions."
+    mimeType: application/json
+    parameters:
+      - name: plan_id
+        title: Plan ID
+        description: "Workflow plan_id returned by a planning tool in the current MCP runtime."
+        required: true
+        scope: workflow-plan
+    resourceKind: detail
+    objectScope: workflow-plan
+    relatedTools:
+      - validate_workflow
+      - apply_workflow
+
 prompts:
   - name: inspect_metadata
     title: Inspect Metadata
@@ -124,6 +142,11 @@ completionTargets:
     arguments:
       - plan_id
     maxValues: 50
+  - referenceType: resource
+    reference: shardingsphere://workflows/{plan_id}
+    arguments:
+      - plan_id
+    maxValues: 50
 resourceNavigation:
   - from: apply_workflow
     to: validate_workflow
@@ -174,6 +197,14 @@ tools:
     outputSchema:
       type: object
       properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker: preview, executed, manual_only, or terminal."
+          enum:
+            - preview
+            - executed
+            - manual_only
+            - terminal
         plan_id:
           type: string
           description: "Workflow plan identifier that was applied."
@@ -252,6 +283,9 @@ tools:
               side_effect_scope:
                 type: string
                 description: "Side-effect scope such as physical-structure or rule-metadata."
+        review_focus:
+          type: object
+          description: "Compact preview review focus: artifact categories, side-effect scope, manual-only mode, and approval requirement."
         would_apply:
           type: boolean
           description: "False when execution_mode=preview, proving workflow artifacts were not applied."
@@ -310,7 +344,8 @@ tools:
           type: boolean
           description: "Whether the next manual or retry action requires user approval."
       examples:
-        - plan_id: encrypt-rule-20260505-001
+        - response_mode: preview
+          plan_id: encrypt-rule-20260505-001
           execution_mode: preview
           applied_artifacts: []
           preview_artifacts: []
@@ -352,6 +387,12 @@ tools:
     outputSchema:
       type: object
       properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for validation responses."
+          enum:
+            - validation
+            - terminal
         plan_id:
           type: string
           description: "Workflow plan identifier that was validated."
@@ -465,7 +506,8 @@ tools:
           type: boolean
           description: "Whether the next action requires user approval."
       examples:
-        - plan_id: encrypt-rule-20260505-001
+        - response_mode: validation
+          plan_id: encrypt-rule-20260505-001
           status: passed
           sections: []
           mismatches: []

@@ -46,9 +46,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class WorkflowPlanningSupportTest {
-    
+
     private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
-    
+
     @Test
     void assertEnsurePlanningContextRejectsMissingDatabase() {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
@@ -57,10 +57,10 @@ class WorkflowPlanningSupportTest {
         boolean actual = planningSupport.ensurePlanningContext(mock(MCPMetadataQueryFacade.class), request, clarifiedIntent, snapshot);
         assertFalse(actual);
         assertThat(snapshot.getStatus(), is("clarifying"));
-        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("Please provide logical database first.")));
+        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide logical database first.")));
         assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
-    
+
     @Test
     void assertEnsurePlanningContextRejectsUnsupportedIdentifier() {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
@@ -74,7 +74,7 @@ class WorkflowPlanningSupportTest {
         assertThat(snapshot.getStatus(), is("failed"));
         assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.UNSUPPORTED_IDENTIFIER));
     }
-    
+
     @Test
     void assertEnsurePlanningContextResolvesSchemaAndValidatesMetadata() {
         WorkflowRequest request = new WorkflowRequest();
@@ -90,10 +90,10 @@ class WorkflowPlanningSupportTest {
         boolean actual = planningSupport.ensurePlanningContext(metadataQueryFacade, request, clarifiedIntent, snapshot);
         assertTrue(actual);
         assertThat(request.getSchema(), is("public"));
-        assertTrue(clarifiedIntent.getPendingQuestions().isEmpty());
+        assertTrue(clarifiedIntent.getClarificationMessages().isEmpty());
         assertTrue(snapshot.getIssues().isEmpty());
     }
-    
+
     @Test
     void assertApplyResolvedIntent() {
         WorkflowRequest request = new WorkflowRequest();
@@ -104,7 +104,7 @@ class WorkflowPlanningSupportTest {
         assertThat(request.getOperationType(), is("alter"));
         assertThat(request.getFieldSemantics(), is("phone"));
     }
-    
+
     @Test
     void assertPrepareSnapshot() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -122,7 +122,7 @@ class WorkflowPlanningSupportTest {
         assertThat(snapshot.getInteractionPlan().getSummary(), is("summary"));
         assertTrue(snapshot.getIssues().isEmpty());
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("getEnsureLifecycleStateCases")
     void assertEnsureLifecycleState(final String name, final String operationType, final boolean ruleExists, final boolean expectedResult, final String expectedIssueCode) {
@@ -136,7 +136,7 @@ class WorkflowPlanningSupportTest {
             assertThat(snapshot.getIssues().get(0).getCode(), is(expectedIssueCode));
         }
     }
-    
+
     @Test
     void assertHasBlockingAlgorithmIssuesAddsFallbackQuestion() {
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
@@ -144,9 +144,9 @@ class WorkflowPlanningSupportTest {
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.ALGORITHM_NOT_FOUND, "error", "selecting-algorithm", "message", "action", false, java.util.Map.of()));
         boolean actual = planningSupport.hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, "Please use an algorithm visible in the current Proxy.");
         assertTrue(actual);
-        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("Please use an algorithm visible in the current Proxy.")));
+        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please use an algorithm visible in the current Proxy.")));
     }
-    
+
     @Test
     void assertCollectPropertyRequirementsAppliesDefaultsAndReportsMissingValues() {
         WorkflowRequest request = new WorkflowRequest();
@@ -158,11 +158,11 @@ class WorkflowPlanningSupportTest {
         boolean actual = planningSupport.collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);
         assertFalse(actual);
         assertThat(request.getPrimaryAlgorithmProperties().get("mask-char"), is("*"));
-        assertThat(clarifiedIntent.getPendingQuestions(), is(List.of("Please provide property `from-x`.")));
+        assertThat(clarifiedIntent.getClarificationMessages(), is(List.of("Please provide property `from-x`.")));
         assertThat(snapshot.getPropertyRequirements().size(), is(2));
         assertThat(snapshot.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
     }
-    
+
     private static Stream<Arguments> getEnsureLifecycleStateCases() {
         return Stream.of(
                 Arguments.of("create when rule missing", "create", false, true, null),
@@ -172,15 +172,15 @@ class WorkflowPlanningSupportTest {
                 Arguments.of("drop when rule exists", "drop", true, true, null),
                 Arguments.of("drop when rule missing", "drop", false, false, WorkflowIssueCode.DROP_TARGET_RULE_NOT_FOUND));
     }
-    
+
     private MCPDatabaseMetadata createDatabaseMetadata() {
         return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata()), List.of())));
     }
-    
+
     private MCPTableMetadata createTableMetadata() {
         return new MCPTableMetadata("logic_db", "public", "orders", List.of(createColumnMetadata()), List.of());
     }
-    
+
     private MCPColumnMetadata createColumnMetadata() {
         return new MCPColumnMetadata("logic_db", "public", "orders", "", "phone");
     }

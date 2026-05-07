@@ -29,19 +29,19 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CoreHandlerProviderTest {
-    
+
     @Test
     void assertGetToolHandlers() {
         Collection<MCPToolHandler<?>> actual = new CoreHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(),
                 is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
     }
-    
+
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new CoreHandlerProvider().getResourceHandlers();
         assertThat(actual.size(), is(20));
-        List<String> actualUriPatterns = actual.stream().map(each -> each.getResourceDescriptor().getUriPattern()).toList();
+        List<String> actualUriPatterns = actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList();
         assertTrue(actualUriPatterns.contains("shardingsphere://capabilities"));
         assertTrue(actualUriPatterns.contains("shardingsphere://runtime"));
         assertTrue(actualUriPatterns.contains("shardingsphere://workflows/{plan_id}"));

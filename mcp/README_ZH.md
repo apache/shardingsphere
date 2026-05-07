@@ -125,6 +125,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 - metadata 的 list / detail / capability discovery 统一走 `resources/read`。
 - 当前 public tools 包括 `search_metadata`、`execute_query`、`execute_update`、`plan_encrypt_rule`、`plan_mask_rule`、`apply_workflow` 和 `validate_workflow`。
 - `execute_query` 只接受只读 `SELECT` 和 `EXPLAIN ANALYZE`；DML、DDL、DCL、事务控制、savepoint 以及其他支持的有副作用 SQL 要使用 `execute_update`。
+- `execute_query.max_rows` 省略或传 `0` 时使用服务端默认值 `100`；显式传 `1` 到 `5000` 用于限制返回行数。
 - 加密与脱敏 workflow 面向由 ShardingSphere-Proxy 暴露的逻辑库；下文会单独说明这部分的前置条件和使用方式。
 - `search_metadata.object_types` 只接受 `database`、`schema`、`table`、`view`、`column`、`index`、`sequence`。
 
@@ -196,7 +197,7 @@ Descriptor 必须说明模型该如何使用这个 surface，而不是只重复 
 - `shardingsphere://runtime` 暴露轻量运行时状态，`shardingsphere://workflows/{plan_id}` 支持按 plan_id 回读 workflow plan。
 - `fingerprints` 记录 descriptor、prompt、navigation 和模型可见 schema 的确定性哈希，让测试产物能证明模型使用的是哪一版 MCP surface。
 - item-list 响应总会包含 `items`、`count` 和 `has_more`。resource read 还会包含 `self_uri`，
-  并在适用时包含 `parent_uri`、`next_resources` 或 `next_page_token`。
+  并在适用时包含 typed `parent_resource`、typed `next_resources` 或 `next_page_token`。
 - Workflow tool 响应包含 `missing_required_inputs`、`clarification_questions`、`resources_to_read`、`next_actions`
   和 `requires_user_approval`，让模型不用依赖旧推荐字段也可以继续下一步。
 - 可恢复错误 payload 保留原有 `error_code` 和 `message`，并为缺失参数、不支持的 tool/resource、非法枚举、
@@ -437,7 +438,7 @@ Workflow 同时补充了以下 feature resources：
 如果你想把一次加密或脱敏 workflow 稳定跑通，直接按下面顺序调用即可：
 
 1. 先调用对应 feature 的 planner：加密用 `plan_encrypt_rule`，脱敏用 `plan_mask_rule`，不要直接从 `apply` 开始。
-2. 如果返回 `status = clarifying`，读取 `pending_questions`，带上同一个 `plan_id` 再次调用同一个 `plan_*_rule` 补齐缺失信息。
+2. 如果返回 `status = clarifying`，读取 `clarification_questions`，按其中的 `field` 补齐参数，并带上同一个 `plan_id` 再次调用同一个 `plan_*_rule`。
 3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
 4. 调用 `apply_workflow` 并显式设置 `execution_mode=preview`，先查看 artifacts 和副作用范围，不改变运行时状态。
 5. 用户确认后，再用 `execution_mode=review-then-execute` 调用 `apply_workflow`，或者用 `manual-only` 导出人工执行包。
@@ -482,7 +483,7 @@ Workflow 同时补充了以下 feature resources：
 ### 看到不同状态时，下一步该做什么
 
 - `clarifying`
-  - 说明信息还不够。直接读取 `pending_questions`，带上同一个 `plan_id` 继续调用对应的 `plan_*_rule`。
+  - 说明信息还不够。读取 `clarification_questions`，按其中的 `field` 补齐参数，并带上同一个 `plan_id` 继续调用对应的 `plan_*_rule`。
 - `planned`
   - 说明执行包已经生成好了。此时不要再补问，应该 review artifacts，然后进入 `apply_workflow`。
 - `completed`
@@ -502,8 +503,8 @@ Workflow 同时补充了以下 feature resources：
   - 本次 workflow 的唯一标识，后续所有补问、执行、校验都依赖它。
 - `status`
   - 决定你下一步是继续补问、进入执行，还是先排错。
-- `pending_questions`
-  - 只在 `clarifying` 阶段重点处理，里面就是 MCP 还缺的关键信息。
+- `clarification_questions`
+  - typed 补问信息；按每个 `field` 补参数，`display_message` 只用于展示给用户。
 - `algorithm_recommendations`
   - 当自然语言没有给全算法信息时，这里会返回推荐算法池。
 - `derived_column_plan`
@@ -624,7 +625,9 @@ curl -sS http://127.0.0.1:18088/mcp \
 {
   "plan_id": "plan-xxx",
   "status": "clarifying",
-  "pending_questions": ["请提供属性 `aes-key-value`。"],
+  "clarification_questions": [
+    {"field": "primary_algorithm_properties.aes-key-value", "input_type": "secret", "secret": true, "display_message": "请提供属性 `aes-key-value`。"}
+  ],
   "algorithm_recommendations": [
     {"algorithm_role": "primary", "algorithm_type": "AES"},
     {"algorithm_role": "assisted_query", "algorithm_type": "MD5"}
@@ -754,7 +757,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 如果自然语言没有说清算法，或者像 `AES` 这样的算法缺少 `aes-key-value` 之类的必填属性，`plan_encrypt_rule` 会返回：
 
 - `status = clarifying`
-- `pending_questions`
+- `clarification_questions`
 - `algorithm_recommendations`
 - `property_requirements`
 
@@ -861,7 +864,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 预期结果：
 
 - 返回 `status = planned`
-- `pending_questions` 为空，因为 `drop` 不需要再追问可逆、等值、LIKE 这些能力
+- `missing_required_inputs` 为空，因为 `drop` 不需要再追问可逆、等值、LIKE 这些能力
 - `distsql_artifacts` 中会生成 `DROP ENCRYPT RULE` 或 `ALTER ENCRYPT RULE`
 - 响应里会带 warning，明确提醒物理派生列和索引仍需人工清理
 
@@ -961,7 +964,10 @@ curl -sS http://127.0.0.1:18088/mcp \
 {
   "plan_id": "plan-yyy",
   "status": "clarifying",
-  "pending_questions": ["请提供属性 `from-x`。", "请提供属性 `to-y`。"],
+  "clarification_questions": [
+    {"field": "primary_algorithm_properties.from-x", "input_type": "string", "secret": false, "display_message": "请提供属性 `from-x`。"},
+    {"field": "primary_algorithm_properties.to-y", "input_type": "string", "secret": false, "display_message": "请提供属性 `to-y`。"}
+  ],
   "algorithm_recommendations": [
     {"algorithm_role": "primary", "algorithm_type": "MASK_FROM_X_TO_Y"}
   ]

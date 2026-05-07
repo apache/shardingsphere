@@ -31,22 +31,22 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
 class EncryptMCPHandlerProviderTest {
-    
+
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new EncryptMCPHandlerProvider().getResourceHandlers();
-        assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriPattern()).toList(), is(List.of(
+        assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList(), is(List.of(
                 "shardingsphere://features/encrypt/algorithms",
                 "shardingsphere://features/encrypt/databases/{database}/rules",
                 "shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules")));
     }
-    
+
     @Test
     void assertGetToolHandlers() {
         Collection<MCPToolHandler<?>> actual = new EncryptMCPHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_encrypt_rule")));
     }
-    
+
     @Test
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new EncryptMCPHandlerProvider().getWorkflowDefinitions().iterator().next();

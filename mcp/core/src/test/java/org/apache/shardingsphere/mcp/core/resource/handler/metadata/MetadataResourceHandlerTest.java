@@ -22,6 +22,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,14 +32,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.mock;
 
 class MetadataResourceHandlerTest {
-    
+
     @Test
     void assertGetResourceDescriptor() {
         MetadataResourceHandler actual = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> List.of());
-        assertThat(actual.getResourceDescriptor().getUriPattern(), is("shardingsphere://databases"));
+        assertThat(actual.getResourceDescriptor().getUriTemplate(), is("shardingsphere://databases"));
         assertThat(actual.getResourceDescriptor().getTitle(), is("Logical Databases"));
     }
-    
+
     @Test
     void assertHandleListResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
@@ -46,25 +47,47 @@ class MetadataResourceHandlerTest {
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
         assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "count", 1, "has_more", false, "self_uri", "shardingsphere://databases")));
     }
-    
+
+    @Test
+    void assertHandleBroadListResourceGuidesSearch() {
+        MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> createDatabases(101));
+        MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
+        assertThat(((Map<?, ?>) actual.toPayload().get("large_result_guidance")).get("state"), is("broad_metadata_list"));
+        assertThat(((Map<?, ?>) actual.toPayload().get("large_result_guidance")).get("threshold"), is(100));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0);
+        assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
+        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("page_size"), is(100));
+    }
+
     @Test
     void assertHandleDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getVariable("database"))));
-        MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "logic_db"));
+        MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "逻辑 库/2026?"));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), uriVariables);
         assertThat(actual.toPayload(), is(Map.of("resource_kind", "detail", "object_scope", "logical-database", "found", true,
-                "items", List.of(Map.of("database", "logic_db")), "count", 1, "item", Map.of("database", "logic_db"),
-                "self_uri", "shardingsphere://databases/logic_db", "parent_uri", "shardingsphere://databases",
-                "next_resources", List.of("shardingsphere://databases/logic_db/schemas"))));
+                "items", List.of(Map.of("database", "逻辑 库/2026?")), "count", 1, "item", Map.of("database", "逻辑 库/2026?"),
+                "self_uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F",
+                "parent_resource", Map.of("uri", "shardingsphere://databases", "resource_kind", "logical-database", "purpose", "inspect_parent",
+                        "reason", "Read the parent metadata resource before broadening or correcting the request.", "source_field", "parent_resource"),
+                "next_resources", List.of(Map.of("uri", "shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93%2F2026%3F/schemas", "resource_kind", "schema", "purpose", "inspect_detail",
+                        "reason", "List schemas after choosing a logical database.", "source_field", "next_resources")))));
     }
-    
+
     @Test
     void assertHandleMissingDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}", (requestContext, uriVariables) -> List.of());
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), mock(MCPUriVariables.class));
         assertFalse((Boolean) actual.toPayload().get("found"));
-        assertThat(actual.toPayload().get("not_found_reason"), is("logical-database detail resource was not found for this URI."));
+        assertThat(((Map<?, ?>) actual.toPayload().get("empty_state")).get("reason"), is("logical-database detail resource was not found for this URI."));
         assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0)).get("action_kind"), is("stop"));
+    }
+
+    private List<Map<String, String>> createDatabases(final int count) {
+        List<Map<String, String>> result = new LinkedList<>();
+        for (int i = 0; i < count; i++) {
+            result.add(Map.of("database", String.format("logic_db_%03d", i)));
+        }
+        return result;
     }
 }

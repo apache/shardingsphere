@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.core.protocol.exception;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 /**
  * Exception for unsupported MCP resource URIs.

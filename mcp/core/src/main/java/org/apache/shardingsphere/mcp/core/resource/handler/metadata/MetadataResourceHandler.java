@@ -18,20 +18,21 @@
 package org.apache.shardingsphere.mcp.core.resource.handler.metadata;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriTemplateUtils;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.BiFunction;
 
 /**
@@ -39,21 +40,23 @@ import java.util.function.BiFunction;
  */
 @RequiredArgsConstructor
 public final class MetadataResourceHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
-    
-    private final String uriPattern;
-    
+
+    private static final int LARGE_RESULT_THRESHOLD = 100;
+
+    private final String uriTemplate;
+
     private final BiFunction<MCPDatabaseHandlerContext, MCPUriVariables, List<?>> metadataLoader;
-    
+
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-    
+
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
-        return MCPDescriptorRegistry.getRequiredResourceDescriptor(uriPattern);
+        return MCPDescriptorRegistry.getRequiredResourceDescriptor(uriTemplate);
     }
-    
+
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         List<?> items = metadataLoader.apply(databaseContext, uriVariables);
@@ -61,19 +64,21 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         Map<String, Object> navigationPayload = createNavigationPayload(descriptor, uriVariables);
         if (items.isEmpty()) {
             appendEmptyStateGuidance(navigationPayload, descriptor);
+        } else if (!isDetailResource(descriptor) && LARGE_RESULT_THRESHOLD < items.size()) {
+            appendLargeResultGuidance(navigationPayload, descriptor, items.size());
         }
         return isDetailResource(descriptor) ? new MCPMapResponse(createDetailPayload(descriptor, items, navigationPayload)) : new MCPItemsResponse(items, navigationPayload);
     }
-    
+
     private boolean isDetailResource(final MCPResourceDescriptor descriptor) {
-        return "detail".equals(descriptor.getMeta().get("resourceKind"));
+        return "detail".equals(descriptor.getResourceKind());
     }
-    
+
     private Map<String, Object> createDetailPayload(final MCPResourceDescriptor descriptor, final List<?> items, final Map<String, Object> navigationPayload) {
         Map<String, Object> result = new LinkedHashMap<>(navigationPayload.size() + 6, 1F);
         result.put("resource_kind", "detail");
-        if (descriptor.getMeta().containsKey("objectScope")) {
-            result.put("object_scope", descriptor.getMeta().get("objectScope"));
+        if (null != descriptor.getObjectScope()) {
+            result.put("object_scope", descriptor.getObjectScope());
         }
         result.put("found", !items.isEmpty());
         result.put("items", items);
@@ -84,48 +89,98 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         result.putAll(navigationPayload);
         return result;
     }
-    
+
     private void appendEmptyStateGuidance(final Map<String, Object> payload, final MCPResourceDescriptor descriptor) {
+        Map<String, Object> emptyState = new LinkedHashMap<>(3, 1F);
+        String resourceKind = null == descriptor.getObjectScope() ? "metadata" : descriptor.getObjectScope();
         if (isDetailResource(descriptor)) {
-            payload.put("not_found_reason", String.format("%s detail resource was not found for this URI.", descriptor.getMeta().getOrDefault("objectScope", "metadata")));
+            emptyState.put("state", "not_found");
+            emptyState.put("reason", String.format("%s detail resource was not found for this URI.", resourceKind));
         } else {
-            payload.put("empty_reason", "no_metadata_items_in_scope");
+            emptyState.put("state", "no_items");
+            emptyState.put("reason", "No metadata items are available in this scope.");
         }
-        String parentUri = String.valueOf(payload.getOrDefault("parent_uri", ""));
+        emptyState.put("resource_kind", resourceKind);
+        payload.put("empty_state", emptyState);
+        String parentUri = getResourceHintUri(payload.get("parent_resource"));
         payload.put("next_actions", parentUri.isEmpty()
                 ? List.of(MCPNextActionUtils.stop("No metadata items are available in this scope."))
                 : List.of(MCPNextActionUtils.readResource(parentUri, "Read the parent metadata resource before broadening or correcting the request.")));
     }
-    
+
+    private void appendLargeResultGuidance(final Map<String, Object> payload, final MCPResourceDescriptor descriptor, final int itemCount) {
+        Map<String, Object> largeResult = new LinkedHashMap<>(4, 1F);
+        largeResult.put("state", "broad_metadata_list");
+        largeResult.put("count", itemCount);
+        largeResult.put("threshold", LARGE_RESULT_THRESHOLD);
+        largeResult.put("reason", "This metadata resource returned many items. Use search_metadata with an explicit query or scope before reading many detail resources.");
+        payload.put("large_result_guidance", largeResult);
+        payload.put("next_actions", List.of(MCPNextActionUtils.callTool("search_metadata",
+                String.format("Narrow the broad %s metadata list before reading detail resources.", resolveGuidanceScope(descriptor)),
+                Map.of("page_size", LARGE_RESULT_THRESHOLD), false)));
+    }
+
+    private String resolveGuidanceScope(final MCPResourceDescriptor descriptor) {
+        return null == descriptor.getObjectScope() ? "logical" : descriptor.getObjectScope();
+    }
+
+    private String getResourceHintUri(final Object value) {
+        if (!(value instanceof Map)) {
+            return "";
+        }
+        Object uri = ((Map<?, ?>) value).get("uri");
+        return null == uri ? "" : uri.toString();
+    }
+
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
-        String selfUri = createConcreteUri(descriptor.getUriPattern(), variables);
+        String selfUri = MCPUriTemplateUtils.expand(descriptor.getUriTemplate(), variables);
         if (!selfUri.isEmpty()) {
             result.put("self_uri", selfUri);
         }
         String parentUri = createParentUri(selfUri);
         if (!parentUri.isEmpty()) {
-            result.put("parent_uri", parentUri);
+            result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
+                    "Read the parent metadata resource before broadening or correcting the request.", "parent_resource"));
         }
-        List<String> nextResources = MCPDescriptorRegistry.getResourceNavigationDescriptors().stream()
-                .filter(each -> descriptor.getUriPattern().equals(each.getFrom()))
+        List<Map<String, Object>> nextResources = MCPDescriptorRegistry.getResourceNavigationDescriptors().stream()
+                .filter(each -> descriptor.getUriTemplate().equals(each.getFrom()))
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
-                .map(each -> createConcreteUri(each.getTo(), variables)).filter(each -> !each.isEmpty()).toList();
+                .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), variables)).filter(each -> !each.isEmpty()).toList();
         if (!nextResources.isEmpty()) {
             result.put("next_resources", nextResources);
         }
         return result;
     }
-    
-    private String createConcreteUri(final String uriPattern, final Map<String, String> variables) {
-        String result = uriPattern;
-        for (Entry<String, String> entry : variables.entrySet()) {
-            result = result.replace("{" + entry.getKey() + "}", entry.getValue());
-        }
-        return result.contains("{") ? "" : result;
+
+    private Map<String, Object> createNextResourceHint(final String uriTemplate, final String description, final Map<String, String> variables) {
+        String uri = MCPUriTemplateUtils.expand(uriTemplate, variables);
+        return uri.isEmpty() ? Map.of() : MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, "next_resources");
     }
-    
+
+    private String resolveResourceKind(final String uri) {
+        if (uri.contains("/columns")) {
+            return "column";
+        }
+        if (uri.contains("/indexes")) {
+            return "index";
+        }
+        if (uri.contains("/tables")) {
+            return "logical-table";
+        }
+        if (uri.contains("/views")) {
+            return "view";
+        }
+        if (uri.contains("/sequences")) {
+            return "sequence";
+        }
+        if (uri.contains("/schemas")) {
+            return "schema";
+        }
+        return "logical-database";
+    }
+
     private String createParentUri(final String selfUri) {
         String prefix = "shardingsphere://";
         if (!selfUri.startsWith(prefix)) {

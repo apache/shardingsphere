@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.resource.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -31,19 +31,19 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanPayloa
  * Handler for workflow plan resource URI.
  */
 public final class WorkflowPlanHandler implements MCPResourceHandler<MCPWorkflowHandlerContext> {
-    
+
     private static final String URI_PATTERN = "shardingsphere://workflows/{plan_id}";
-    
+
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {
         return MCPWorkflowHandlerContext.class;
     }
-    
+
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
         return MCPDescriptorRegistry.getRequiredResourceDescriptor(URI_PATTERN);
     }
-    
+
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         WorkflowContextSnapshot snapshot = handlerContext.getWorkflowSessionContext().getRequired(uriVariables.getVariable("plan_id"));

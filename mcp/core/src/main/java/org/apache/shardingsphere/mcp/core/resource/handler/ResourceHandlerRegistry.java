@@ -45,47 +45,46 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceHandlerRegistry {
-    
+
     private static final Map<MCPUriPattern, MCPResourceHandler<?>> REGISTERED_RESOURCES;
-    
+
     private static final List<String> SUPPORTED_RESOURCES;
-    
+
     private static final List<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
-    
+
     static {
         REGISTERED_RESOURCES = createRegisteredResources();
         validateRegisteredResources();
         SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).collect(Collectors.toList());
         SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).collect(Collectors.toList());
     }
-    
+
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources() {
         return createRegisteredResources(MCPHandlerLoader.loadResourceHandlers());
     }
-    
+
     static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
         for (MCPResourceHandler<?> each : handlers) {
             MCPResourceDescriptor descriptor = each.getResourceDescriptor();
-            ShardingSpherePreconditions.checkState(null != descriptor,
-                    () -> new IllegalArgumentException(String.format("Resource descriptor is required for `%s`.", each.getClass().getName())));
-            String uriPattern = descriptor.getUriPattern();
-            ShardingSpherePreconditions.checkState(null != uriPattern && !uriPattern.isBlank(),
-                    () -> new IllegalArgumentException(String.format("Resource URI pattern is required for `%s`.", each.getClass().getName())));
+            ShardingSpherePreconditions.checkNotNull(descriptor, () -> new IllegalArgumentException(String.format("Resource descriptor is required for `%s`.", each.getClass().getName())));
+            String uriTemplate = descriptor.getUriTemplate();
+            ShardingSpherePreconditions.checkState(null != uriTemplate && !uriTemplate.isBlank(),
+                    () -> new IllegalArgumentException(String.format("Resource URI template is required for `%s`.", each.getClass().getName())));
             MCPHandlerContexts.validateContextType(each.getContextType(), each.getClass());
-            result.put(new MCPUriPattern(uriPattern), each);
+            result.put(new MCPUriPattern(uriTemplate), each);
         }
         return result;
     }
-    
+
     private static void validateRegisteredResources() {
         Map<String, Class<?>> registeredPatterns = new HashMap<>(REGISTERED_RESOURCES.size(), 1F);
         for (Entry<MCPUriPattern, MCPResourceHandler<?>> entry : REGISTERED_RESOURCES.entrySet()) {
             String pattern = entry.getKey().getPattern();
             Class<?> previousPatternClass = registeredPatterns.putIfAbsent(pattern, entry.getValue().getClass());
             ShardingSpherePreconditions.checkState(null == previousPatternClass,
-                    () -> new IllegalArgumentException(String.format("Duplicate resource URI pattern `%s` with `%s` and `%s`.",
+                    () -> new IllegalArgumentException(String.format("Duplicate resource URI template `%s` with `%s` and `%s`.",
                             pattern, previousPatternClass.getName(), entry.getValue().getClass().getName())));
         }
         List<Entry<MCPUriPattern, MCPResourceHandler<?>>> entries = new ArrayList<>(REGISTERED_RESOURCES.entrySet());
@@ -94,12 +93,12 @@ public final class ResourceHandlerRegistry {
             for (int j = i + 1; j < entries.size(); j++) {
                 Entry<MCPUriPattern, MCPResourceHandler<?>> other = entries.get(j);
                 ShardingSpherePreconditions.checkState(!current.getKey().isOverlaps(other.getKey()), () -> new IllegalArgumentException(
-                        String.format("Overlapping resource URI patterns `%s` with `%s` and `%s`.",
+                        String.format("Overlapping resource URI templates `%s` with `%s` and `%s`.",
                                 current.getKey().getPattern(), current.getValue().getClass().getName(), other.getValue().getClass().getName())));
             }
         }
     }
-    
+
     /**
      * Get registered resources.
      *
@@ -108,7 +107,7 @@ public final class ResourceHandlerRegistry {
     static Map<MCPUriPattern, MCPResourceHandler<?>> getRegisteredResources() {
         return REGISTERED_RESOURCES;
     }
-    
+
     /**
      * Dispatch resource URI to registered resource.
      *
@@ -125,11 +124,11 @@ public final class ResourceHandlerRegistry {
         }
         return Optional.empty();
     }
-    
+
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
         return resourceHandler.handle(MCPHandlerContexts.resolve(requestScope, resourceHandler.getContextType(), resourceHandler.getClass()), uriVariables);
     }
-    
+
     /**
      * Get supported resources.
      *
@@ -138,7 +137,7 @@ public final class ResourceHandlerRegistry {
     public static List<String> getSupportedResources() {
         return SUPPORTED_RESOURCES;
     }
-    
+
     /**
      * Get supported resource descriptors.
      *

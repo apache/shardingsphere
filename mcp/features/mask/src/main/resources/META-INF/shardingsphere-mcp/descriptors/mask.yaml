@@ -16,20 +16,20 @@
 #
 
 resources:
-  - uriPattern: shardingsphere://features/mask/algorithms
+  - uriTemplate: shardingsphere://features/mask/algorithms
     name: mask-algorithms
     title: Mask Algorithms
     description: >-
       List mask algorithm plugins visible from the current ShardingSphere-Proxy runtime, including property templates and secret-property hints.
       Read this before planning masking when the user asks for masking strategy or algorithm choice.
     mimeType: application/json
+    resourceKind: list
+    feature: mask
+    relatedTools:
+      - plan_mask_rule
     meta:
-      resourceKind: list
-      feature: mask
       runtimeVisibility: ShardingSphere-Proxy
-      relatedTools:
-        - plan_mask_rule
-  - uriPattern: shardingsphere://features/mask/databases/{database}/rules
+  - uriTemplate: shardingsphere://features/mask/databases/{database}/rules
     name: mask-rules
     title: Mask Rules
     description: "List mask table rules for one ShardingSphere logical database. Read this before altering or validating mask configuration."
@@ -40,13 +40,12 @@ resources:
         description: "ShardingSphere logical database whose mask rules should be inspected."
         required: true
         scope: logical-database
-    meta:
-      resourceKind: list
-      feature: mask
-      relatedTools:
-        - plan_mask_rule
-        - validate_workflow
-  - uriPattern: shardingsphere://features/mask/databases/{database}/tables/{table}/rules
+    resourceKind: list
+    feature: mask
+    relatedTools:
+      - plan_mask_rule
+      - validate_workflow
+  - uriTemplate: shardingsphere://features/mask/databases/{database}/tables/{table}/rules
     name: mask-table-rule
     title: Mask Table Rule
     description: "Read mask rules for one logical table. Use this before planning column-level masking so the model can preserve existing mask configuration."
@@ -62,12 +61,11 @@ resources:
         description: "ShardingSphere logical table name, not a physical table shard."
         required: true
         scope: logical-table
-    meta:
-      resourceKind: list
-      feature: mask
-      relatedTools:
-        - plan_mask_rule
-        - validate_workflow
+    resourceKind: list
+    feature: mask
+    relatedTools:
+      - plan_mask_rule
+      - validate_workflow
 prompts:
   - name: plan_mask_rule
     title: Plan Mask Rule
@@ -281,6 +279,12 @@ tools:
     outputSchema:
       type: object
       properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for workflow planning, or terminal when planning cannot continue."
+          enum:
+            - planning
+            - terminal
         plan_id:
           type: string
           description: "Workflow plan identifier for apply_workflow and validate_workflow."
@@ -290,18 +294,12 @@ tools:
         status:
           type: string
           description: "Stable workflow status, such as clarifying, planned, or failed."
-        pending_questions:
-          type: array
-          description: "User-facing clarification questions still pending."
         missing_required_inputs:
           type: array
           description: "Inputs still required before the plan can be completed."
         clarification_questions:
           type: array
-          description: "Structured questions for the model to ask the user, including field, input_type, secret flag, and message."
-        elicitation:
-          type: object
-          description: "Native elicitation availability and fallback payload fields."
+          description: "Structured questions for the model to ask the user, including field, input_type, secret flag, and display_message."
         issues:
           type: array
           description: "Warnings, conflicts, and validation issues found during planning."
@@ -329,24 +327,25 @@ tools:
         intent_inference:
           type: object
           description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        review_focus:
+          type: object
+          description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations for the next call or user question."
         resources_to_read:
           type: array
-          description: "Resource URIs the model should read when more metadata or algorithm context is useful."
+          description: "Typed resources the model should read when more metadata or algorithm context is useful."
         requires_user_approval:
           type: boolean
           description: "Whether the preferred next action needs visible user approval before side effects."
       examples:
-        - plan_id: mask-rule-20260505-001
+        - response_mode: planning
+          plan_id: mask-rule-20260505-001
           status: planned
           workflow_kind: mask.rule
-          pending_questions: []
           missing_required_inputs: []
           clarification_questions: []
-          elicitation:
-            native_supported: false
           issues: []
           global_steps: []
           current_step: review
@@ -361,7 +360,11 @@ tools:
           execution_mode: review-then-execute
           intent_inference: {}
           resources_to_read:
-            - shardingsphere://features/mask/algorithms
+            - uri: shardingsphere://features/mask/algorithms
+              resource_kind: algorithm
+              purpose: read_first
+              reason: Read mask algorithm metadata before choosing algorithm arguments.
+              source_field: resources_to_read
           next_actions:
             - action_kind: call_tool
               target_tool: apply_workflow

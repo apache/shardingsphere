@@ -41,7 +41,7 @@ import java.util.Optional;
  * Workflow planning support.
  */
 public final class WorkflowPlanningSupport {
-    
+
     /**
      * Apply resolved intent fields to the workflow request.
      *
@@ -52,7 +52,7 @@ public final class WorkflowPlanningSupport {
         request.setOperationType(clarifiedIntent.getOperationType());
         request.setFieldSemantics(clarifiedIntent.getFieldSemantics());
     }
-    
+
     /**
      * Prepare workflow snapshot for planning.
      *
@@ -78,7 +78,7 @@ public final class WorkflowPlanningSupport {
         snapshot.setClarifiedIntent(clarifiedIntent);
         return request;
     }
-    
+
     /**
      * Ensure lifecycle state matches the requested workflow operation.
      *
@@ -108,7 +108,7 @@ public final class WorkflowPlanningSupport {
         }
         return true;
     }
-    
+
     /**
      * Add one fallback clarification question when algorithm selection is blocked.
      *
@@ -119,12 +119,12 @@ public final class WorkflowPlanningSupport {
      */
     public boolean hasBlockingAlgorithmIssues(final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot, final String fallbackQuestion) {
         boolean result = snapshot.getIssues().stream().anyMatch(each -> "selecting-algorithm".equals(each.getStage()) && "error".equals(each.getSeverity()));
-        if (result && clarifiedIntent.getPendingQuestions().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add(fallbackQuestion);
+        if (result && clarifiedIntent.getClarificationMessages().isEmpty()) {
+            clarifiedIntent.getClarificationMessages().add(fallbackQuestion);
         }
         return result;
     }
-    
+
     /**
      * Collect required algorithm properties and emit missing-property clarification prompts.
      *
@@ -143,13 +143,13 @@ public final class WorkflowPlanningSupport {
             return true;
         }
         for (String each : missingRequiredProperties) {
-            clarifiedIntent.getPendingQuestions().add(String.format("Please provide property `%s`.", each));
+            clarifiedIntent.getClarificationMessages().add(String.format("Please provide property `%s`.", each));
         }
         snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING, "error", "collecting-properties",
                 "Required algorithm properties are still missing.", "Provide all required algorithm properties.", true, Map.of("missing_properties", missingRequiredProperties)));
         return false;
     }
-    
+
     /**
      * Judge whether workflow planning can continue to artifact generation.
      *
@@ -162,12 +162,12 @@ public final class WorkflowPlanningSupport {
      */
     public boolean isReadyForArtifactPlanning(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot,
                                               final List<AlgorithmPropertyRequirement> propertyRequirements, final String fallbackQuestion) {
-        if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion) || !clarifiedIntent.getPendingQuestions().isEmpty()) {
+        if (hasBlockingAlgorithmIssues(clarifiedIntent, snapshot, fallbackQuestion) || !clarifiedIntent.getClarificationMessages().isEmpty()) {
             return false;
         }
         return collectPropertyRequirements(request, clarifiedIntent, snapshot, propertyRequirements);
     }
-    
+
     /**
      * Ensure workflow planning context is complete and valid.
      *
@@ -180,7 +180,7 @@ public final class WorkflowPlanningSupport {
     public boolean ensurePlanningContext(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                          final ClarifiedIntent clarifiedIntent, final WorkflowContextSnapshot snapshot) {
         if (request.getDatabase().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("Please provide logical database first.");
+            clarifiedIntent.getClarificationMessages().add("Please provide logical database first.");
             snapshot.getIssues().add(new WorkflowIssue(WorkflowIssueCode.DATABASE_REQUIRED, "error", "intaking",
                     "Database is required before planning.", "Provide the logical database name.", true, Map.of()));
             snapshot.setStatus(WorkflowLifecycle.STATUS_CLARIFYING);
@@ -208,19 +208,19 @@ public final class WorkflowPlanningSupport {
         }
         return true;
     }
-    
+
     private void addMissingQuestions(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (request.getSchema().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("Please specify schema.");
+            clarifiedIntent.getClarificationMessages().add("Please specify schema.");
         }
         if (request.getTable().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("Please specify target table.");
+            clarifiedIntent.getClarificationMessages().add("Please specify target table.");
         }
         if (request.getColumn().isEmpty()) {
-            clarifiedIntent.getPendingQuestions().add("Please specify target column.");
+            clarifiedIntent.getClarificationMessages().add("Please specify target column.");
         }
     }
-    
+
     private boolean ensureSupportedIdentifier(final String fieldName, final String identifier, final WorkflowContextSnapshot snapshot) {
         if (identifier.isEmpty() || WorkflowSQLUtils.isSafeIdentifier(identifier)) {
             return true;
@@ -230,7 +230,7 @@ public final class WorkflowPlanningSupport {
                 "Use unquoted SQL identifiers only in V1.", false, Map.of("field", fieldName, "identifier", identifier)));
         return false;
     }
-    
+
     private String resolveSchema(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request) {
         String actualSchema = request.getSchema();
         if (!actualSchema.isEmpty()) {
@@ -254,7 +254,7 @@ public final class WorkflowPlanningSupport {
         }
         return 1 == databaseMetadata.get().getSchemas().size() ? databaseMetadata.get().getSchemas().iterator().next().getSchema() : "";
     }
-    
+
     private boolean ensureTableExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                       final WorkflowContextSnapshot snapshot) {
         if (metadataQueryFacade.queryTable(request.getDatabase(), request.getSchema(), request.getTable()).isPresent()) {
@@ -264,7 +264,7 @@ public final class WorkflowPlanningSupport {
                 String.format("Table `%s` does not exist in Proxy logical metadata.", request.getTable()), "Check database, schema and table name.", false, Map.of()));
         return false;
     }
-    
+
     private boolean ensureColumnExists(final MCPMetadataQueryFacade metadataQueryFacade, final WorkflowRequest request,
                                        final WorkflowContextSnapshot snapshot) {
         if (metadataQueryFacade.queryTableColumn(request.getDatabase(), request.getSchema(), request.getTable(), request.getColumn()).isPresent()) {
@@ -274,7 +274,7 @@ public final class WorkflowPlanningSupport {
                 String.format("Column `%s` does not exist in Proxy logical metadata.", request.getColumn()), "Check column name.", false, Map.of()));
         return false;
     }
-    
+
     private void applyDefaultProperties(final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         for (AlgorithmPropertyRequirement each : propertyRequirements) {
             if (!each.getDefaultValue().isEmpty()) {
@@ -282,7 +282,7 @@ public final class WorkflowPlanningSupport {
             }
         }
     }
-    
+
     private List<String> findMissingRequiredProperties(final WorkflowRequest request, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         List<String> result = new LinkedList<>();
         for (AlgorithmPropertyRequirement each : propertyRequirements) {

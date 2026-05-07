@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Search hit for metadata discovery.
@@ -31,49 +32,49 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class MetadataSearchHit {
-    
+
     private final String database;
-    
+
     private final String schema;
-    
+
     private final String objectType;
-    
+
     private final String table;
-    
+
     private final String view;
-    
+
     private final String name;
-    
-    @JsonProperty("resource_uri")
+
+    @JsonProperty("resource")
     @JsonInclude(Include.NON_EMPTY)
-    private final String resourceUri;
-    
-    @JsonProperty("parent_resource_uri")
+    private final Map<String, Object> resource;
+
+    @JsonProperty("parent_resource")
     @JsonInclude(Include.NON_EMPTY)
-    private final String parentResourceUri;
-    
-    @JsonProperty("next_resource_uris")
+    private final Map<String, Object> parentResource;
+
+    @JsonProperty("next_resources")
     @JsonInclude(Include.NON_EMPTY)
-    private final List<String> nextResourceUris;
-    
+    private final List<Map<String, Object>> nextResources;
+
     @JsonProperty("derivation_status")
     private final String derivationStatus;
-    
+
     @JsonProperty("derivation_reason")
     @JsonInclude(Include.NON_EMPTY)
     private final String derivationReason;
-    
+
     @JsonProperty("match_kind")
     private final String matchKind;
-    
+
     @JsonProperty("matched_fields")
     @JsonInclude(Include.NON_EMPTY)
     private final List<String> matchedFields;
-    
+
     @JsonProperty("matched_value")
     @JsonInclude(Include.NON_EMPTY)
     private final String matchedValue;
-    
+
     /**
      * Create search hit with match explanation.
      *
@@ -83,7 +84,7 @@ public final class MetadataSearchHit {
      * @return search hit with match explanation
      */
     public MetadataSearchHit withMatch(final String matchKind, final List<String> matchedFields, final String matchedValue) {
-        return new MetadataSearchHit(database, schema, objectType, table, view, name, resourceUri, parentResourceUri, nextResourceUris, derivationStatus, derivationReason,
+        return new MetadataSearchHit(database, schema, objectType, table, view, name, resource, parentResource, nextResources, derivationStatus, derivationReason,
                 matchKind, matchedFields, matchedValue);
     }
 }

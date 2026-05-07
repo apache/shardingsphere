@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptWorkflowIntentResolverTest {
-    
+
     @Test
     void assertResolveUsesExplicitArgumentsWithoutInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -43,10 +43,10 @@ class EncryptWorkflowIntentResolverTest {
         assertThat(actual.getFieldSemantics(), is("email"));
         assertThat(actual.getInferredValues(), is(Map.of()));
         assertThat(actual.getUnresolvedFields(), is(List.of()));
-        assertThat(actual.getPendingQuestions(), is(List.of()));
+        assertThat(actual.getClarificationMessages(), is(List.of()));
         assertThat(actual.getReasoningNotes(), is("Resolved from explicit arguments."));
     }
-    
+
     @Test
     void assertResolveRecordsHeuristicInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -62,7 +62,7 @@ class EncryptWorkflowIntentResolverTest {
         assertTrue((Boolean) actual.getInferredValues().get("requires_like_query"));
         assertThat(actual.getUnresolvedFields(), is(List.of()));
     }
-    
+
     @Test
     void assertResolveRecordsChineseHeuristicInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -74,14 +74,14 @@ class EncryptWorkflowIntentResolverTest {
         assertTrue((Boolean) actual.getInferredValues().get("requires_like_query"));
         assertThat(actual.getUnresolvedFields(), is(List.of()));
     }
-    
+
     @Test
     void assertResolveAddsUnresolvedFieldsWhenRequirementsNeedClarification() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
         request.setColumn("customer_phone");
         request.setNaturalLanguageIntent("create encrypt rule");
         ClarifiedIntent actual = new EncryptWorkflowIntentResolver().resolve(request);
-        assertThat(actual.getPendingQuestions(), is(List.of("Do you need reversible decryption?", "Do you need equality query?", "Do you need LIKE query?")));
+        assertThat(actual.getClarificationMessages(), is(List.of("Do you need reversible decryption?", "Do you need equality query?", "Do you need LIKE query?")));
         assertThat(actual.getUnresolvedFields(), is(List.of("requires_decrypt", "requires_equality_filter", "requires_like_query")));
         assertThat(actual.getReasoningNotes(),
                 is("Resolved from explicit arguments, heuristic inference for operation_type, field_semantics, unresolved fields: requires_decrypt, requires_equality_filter, requires_like_query."));

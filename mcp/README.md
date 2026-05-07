@@ -125,6 +125,7 @@ Notes:
 - Metadata list/detail/capability discovery is unified through `resources/read`.
 - The current public tools are `search_metadata`, `execute_query`, `execute_update`, `plan_encrypt_rule`, `plan_mask_rule`, `apply_workflow`, and `validate_workflow`.
 - `execute_query` accepts read-only `SELECT` and `EXPLAIN ANALYZE` statements only. Use `execute_update` for DML, DDL, DCL, transaction control, savepoints, and other supported side-effecting SQL.
+- `execute_query.max_rows` uses server default `100` when omitted or set to `0`; explicit values from `1` to `5000` bound returned rows.
 - The encrypt and mask workflow targets logical databases exposed by ShardingSphere-Proxy; the dedicated usage notes appear below.
 - `search_metadata.object_types` accepts `database`, `schema`, `table`, `view`, `column`, `index`, and `sequence` only.
 
@@ -196,7 +197,7 @@ Descriptors must describe what the model should use the surface for, not just re
 - `shardingsphere://runtime` exposes a small runtime status readout, and `shardingsphere://workflows/{plan_id}` lets clients read back a workflow plan by ID.
 - `fingerprints` records deterministic hashes for descriptor, prompt, navigation, and model-facing schema surfaces so test artifacts can prove which MCP surface a model used.
 - Item-list responses always include `items`, `count`, and `has_more`. Resource reads also include `self_uri`,
-  and include `parent_uri`, `next_resources`, or `next_page_token` when applicable.
+  and include typed `parent_resource`, typed `next_resources`, or `next_page_token` when applicable.
 - Workflow tool responses include `missing_required_inputs`, `clarification_questions`, `resources_to_read`, `next_actions`, and `requires_user_approval`
   so a model can continue the workflow without guessing or relying on legacy recommendation fields.
 - Recoverable error payloads keep the original `error_code` and `message`, and add `recovery` hints for missing arguments,
@@ -435,7 +436,7 @@ The `features/*/algorithms` resources expose the algorithm plugins visible from 
 If you want one encrypt or mask workflow to run end to end without ambiguity, use this order:
 
 1. Start with the feature-specific planner: `plan_encrypt_rule` for encrypt or `plan_mask_rule` for mask. Do not start from `apply`.
-2. If the response is `status = clarifying`, read `pending_questions` and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
+2. If the response is `status = clarifying`, read `clarification_questions`, send values for the listed `field` entries, and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
 3. If the response is `status = planned`, review `derived_column_plan`, `ddl_artifacts`, `distsql_artifacts`, and `index_plan`.
 4. Call `apply_workflow` with `execution_mode=preview` so MCP shows the artifacts and side-effect scope without changing runtime state.
 5. After user approval, call `apply_workflow` with `execution_mode=review-then-execute`, or use `manual-only` when the artifacts should be exported.
@@ -480,7 +481,7 @@ In addition:
 ### What to do next for each status
 
 - `clarifying`
-  - more input is required, so read `pending_questions` and call the same feature-specific `plan_*_rule` again with the same `plan_id`
+  - more input is required, so read `clarification_questions`, provide each listed `field`, and call the same feature-specific `plan_*_rule` again with the same `plan_id`
 - `planned`
   - the execution package is ready, so review the artifacts and continue with `apply_workflow`
 - `completed`
@@ -500,8 +501,8 @@ In `plan_encrypt_rule` and `plan_mask_rule`, the most important fields are:
   - the workflow identifier reused by every follow-up step
 - `status`
   - tells you whether to clarify, apply, or troubleshoot
-- `pending_questions`
-  - the missing pieces you must send back during the clarifying phase
+- `clarification_questions`
+  - typed clarification prompts; send values for each `field`, using `display_message` only as user-facing text
 - `algorithm_recommendations`
   - the recommended algorithm pool when natural language did not provide enough detail
 - `derived_column_plan`
@@ -622,7 +623,9 @@ Typical response snippet:
 {
   "plan_id": "plan-xxx",
   "status": "clarifying",
-  "pending_questions": ["Please provide property `aes-key-value`."],
+  "clarification_questions": [
+    {"field": "primary_algorithm_properties.aes-key-value", "input_type": "secret", "secret": true, "display_message": "Please provide property `aes-key-value`."}
+  ],
   "algorithm_recommendations": [
     {"algorithm_role": "primary", "algorithm_type": "AES"},
     {"algorithm_role": "assisted_query", "algorithm_type": "MD5"}
@@ -752,7 +755,7 @@ When all four validation layers are `passed`, the encrypt workflow is complete.
 If natural language does not make the algorithm clear, or if a required property such as `aes-key-value` is missing, `plan_encrypt_rule` returns:
 
 - `status = clarifying`
-- `pending_questions`
+- `clarification_questions`
 - `algorithm_recommendations`
 - `property_requirements`
 
@@ -859,7 +862,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 Expected result:
 
 - `status = planned`
-- `pending_questions` is empty because `drop` does not need encrypt capability clarification
+- `missing_required_inputs` is empty because `drop` does not need encrypt capability clarification
 - `distsql_artifacts` contains `DROP ENCRYPT RULE` or `ALTER ENCRYPT RULE`
 - the response includes warnings explaining that physical derived columns and indexes are not cleaned automatically
 
@@ -959,7 +962,10 @@ Typical response snippet:
 {
   "plan_id": "plan-yyy",
   "status": "clarifying",
-  "pending_questions": ["Please provide property `from-x`.", "Please provide property `to-y`."],
+  "clarification_questions": [
+    {"field": "primary_algorithm_properties.from-x", "input_type": "string", "secret": false, "display_message": "Please provide property `from-x`."},
+    {"field": "primary_algorithm_properties.to-y", "input_type": "string", "secret": false, "display_message": "Please provide property `to-y`."}
+  ],
   "algorithm_recommendations": [
     {"algorithm_role": "primary", "algorithm_type": "MASK_FROM_X_TO_Y"}
   ]

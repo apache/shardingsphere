@@ -99,15 +99,16 @@
 - Add semantic search or a broad metadata exploration engine. Rejected as over-design.
 - Keep silent defaulting for malformed numbers. Rejected because models need repairable errors.
 
-## Decision 10: Use structured clarification with native elicitation as an upgrade path
+## Decision 10: Make structured clarification canonical
 
-**Decision**: Represent missing inputs as field-level clarification questions and map them to MCP-native elicitation only when the client/SDK path supports it.
+**Decision**: Represent missing inputs as field-level clarification questions and remove prose-only compatibility fields once the structured contract exists.
+Map the same canonical fields to MCP-native elicitation only when the client/SDK path supports it.
 
-**Rationale**: Field-level shape helps all clients. Native elicitation improves supported clients without removing fallback compatibility.
+**Rationale**: Field-level shape removes model guessing. Keeping prose-only fields as a parallel contract would preserve the ambiguity this increment is trying to delete.
 
 **Alternatives considered**:
 
-- Replace fallback `pending_questions` immediately. Rejected because not every client path supports elicitation.
+- Keep both structured questions and prose-only `pending_questions` indefinitely. Rejected because that creates a compatibility shim and two sources of truth.
 - Keep prose-only questions. Rejected because models must infer field identity, type, choices, and secrecy.
 
 ## Decision 11: Support common Chinese workflow intent without building an NLP parser
@@ -157,7 +158,7 @@
 ## Decision 15: Add row-object convenience only when unambiguous
 
 **Decision**: SQL responses may expose object-shaped rows when column labels are unique, while preserving positional rows
-and explicit fallback metadata for duplicate, unnamed, or driver-specific labels.
+and explicit unavailable-state metadata for duplicate, unnamed, or driver-specific labels.
 
 **Rationale**: Object rows are easier for models to read, but SQL permits duplicate labels and expressions. The MCP should improve comfort without corrupting result semantics.
 
@@ -177,3 +178,50 @@ The MCP already has safer logical metadata resources, so recovery can redirect w
 
 - Add a new metadata SQL execution planner. Rejected as over-design.
 - Let all introspection SQL pass through unchanged. Rejected because logical metadata resources are clearer and safer for model-native use.
+
+## Decision 17: Make completion next actions directly executable
+
+**Decision**: `complete_argument` next actions should carry the public completion reference, argument name, known context arguments, and safe resume target when available.
+
+**Rationale**: A model should not have to join `completionTargets`, tool schemas, and prior payloads just to perform the suggested completion.
+The action can stay passive while becoming directly usable.
+
+**Alternatives considered**:
+
+- Keep only `argument_name` and prose reason. Rejected because models must infer the reference and resume call.
+- Add a new completion helper tool. Rejected because MCP already has native completion.
+
+## Decision 18: Mark resource-read errors inside the resource payload
+
+**Decision**: Resource-read failures should expose `response_kind=error`, stable `error_code`, original URI, and recovery actions in the returned JSON payload.
+
+**Rationale**: Tool results have `isError`, but `resources/read` returns resource contents. A model needs a machine field to distinguish a failed resource read from a valid resource document.
+
+**Alternatives considered**:
+
+- Rely on textual error messages inside the resource content. Rejected because models may treat the content as normal data.
+- Convert all resource failures into tool calls. Rejected because resource-first discovery should remain intact.
+
+## Decision 19: Replace bare URI lists with typed resource hints
+
+**Decision**: `resources_to_read` and `next_resources` should expose typed entries with URI, kind, purpose, reason, and source field.
+Bare URI-only list fields should be removed from canonical payloads unless the protocol itself requires a URI string.
+
+**Rationale**: Bare URIs are precise but not self-explanatory. The model still has to guess whether a URI is a parent, detail, capability, validation evidence, or next page.
+
+**Alternatives considered**:
+
+- Keep all resource references as strings. Rejected because it preserves an avoidable model-guessing step.
+- Replace URI fields with a navigation graph. Rejected as over-design and unnecessary for this increment.
+
+## Decision 20: Add resource links only as an optional protocol-native layer
+
+**Decision**: Tool results may add MCP resource-link content when the SDK and client support it, but JSON `structuredContent` remains the canonical contract.
+
+**Rationale**: Resource links can make clients more native and convenient, but they are an affordance rather than the payload source of truth.
+The implementation should not keep obsolete URI-only fields solely for compatibility.
+
+**Alternatives considered**:
+
+- Depend exclusively on resource links. Rejected because structured tool payloads are the canonical MCP result shape used by the server contracts.
+- Avoid resource links entirely. Rejected because supported clients can benefit without a large design change.

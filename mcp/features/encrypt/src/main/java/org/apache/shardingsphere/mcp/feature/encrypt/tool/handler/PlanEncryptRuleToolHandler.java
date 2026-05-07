@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.encrypt.tool.handler;
 
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPMapResponse;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -39,23 +39,23 @@ import java.util.Map;
  * Tool handler for encrypt workflow planning.
  */
 public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
-    
+
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(EncryptFeatureDefinition.PLAN_TOOL_NAME);
-    
+
     private final EncryptWorkflowPlanningService planningService = new EncryptWorkflowPlanningService();
-    
+
     private final EncryptAlgorithmPropertyTemplateService propertyTemplateService = new EncryptAlgorithmPropertyTemplateService();
-    
+
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {
         return MCPWorkflowHandlerContext.class;
     }
-    
+
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return TOOL_DESCRIPTOR;
     }
-    
+
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
@@ -65,7 +65,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
                 databaseContext.getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
-    
+
     private void bindFeatureArguments(final EncryptWorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
         String allowIndexDDL = workflowPlanningArguments.getStringArgument("allow_index_ddl");
         if (!allowIndexDDL.isEmpty()) {
@@ -81,7 +81,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
         request.getOptions().getAssistedQueryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument("assisted_query_algorithm_properties"));
         request.getOptions().getLikeQueryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument("like_query_algorithm_properties"));
     }
-    
+
     private void applyStructuredIntentEvidence(final EncryptWorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
         request.getOptions().setRequiresDecrypt(getNullableBoolean(structuredIntentEvidence, "requires_decrypt"));
         request.getOptions().setRequiresEqualityFilter(getNullableBoolean(structuredIntentEvidence, "requires_equality_filter"));
@@ -91,7 +91,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
             request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
         }
     }
-    
+
     private void applyUserOverrides(final EncryptWorkflowRequest request, final Map<String, Object> userOverrides) {
         request.setAlgorithmType(resolveOverrideValue(request.getAlgorithmType(), userOverrides.get("algorithm_type")));
         request.getOptions().setAssistedQueryAlgorithmType(resolveOverrideValue(request.getOptions().getAssistedQueryAlgorithmType(), userOverrides.get("assisted_query_algorithm_type")));
@@ -100,7 +100,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
         request.getOptions().setAssistedQueryColumnName(resolveOverrideValue(request.getOptions().getAssistedQueryColumnName(), userOverrides.get("assisted_query_column_name")));
         request.getOptions().setLikeQueryColumnName(resolveOverrideValue(request.getOptions().getLikeQueryColumnName(), userOverrides.get("like_query_column_name")));
     }
-    
+
     private Boolean getNullableBoolean(final Map<String, Object> source, final String fieldName) {
         if (!source.containsKey(fieldName) || null == source.get(fieldName)) {
             return null;
@@ -108,7 +108,7 @@ public final class PlanEncryptRuleToolHandler implements MCPToolHandler<MCPWorkf
         Object rawValue = source.get(fieldName);
         return rawValue instanceof Boolean ? (Boolean) rawValue : Boolean.parseBoolean(String.valueOf(rawValue).trim());
     }
-    
+
     private String resolveOverrideValue(final String currentValue, final Object rawValue) {
         if (null == rawValue) {
             return currentValue;

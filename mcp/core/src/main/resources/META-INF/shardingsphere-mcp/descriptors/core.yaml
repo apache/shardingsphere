@@ -16,7 +16,7 @@
 #
 
 resources:
-  - uriPattern: shardingsphere://capabilities
+  - uriTemplate: shardingsphere://capabilities
     name: server-capability-catalog
     title: ShardingSphere MCP Capability Catalog
     description: "Generated model-facing catalog for ShardingSphere MCP resources, resource templates, tools, prompts, completions, workflow relationships, side-effect notes, and navigation hints."
@@ -25,55 +25,35 @@ resources:
       audience:
         - assistant
       priority: 1.0
-    meta:
-      kind: capability-catalog
-      useBefore:
-        - choosing tools
-        - planning multi-step workflows
-  - uriPattern: shardingsphere://runtime
+    resourceKind: capability-catalog
+    useBefore:
+      - choosing tools
+      - planning multi-step workflows
+  - uriTemplate: shardingsphere://runtime
     name: runtime-status
     title: Runtime Status
-    description: "Read the current MCP runtime status, configured logical database count, and first resources to inspect before choosing tools."
+    description: "Read the current MCP runtime status, active transport, secret-free database capability summary, and first resources to inspect before choosing tools."
     mimeType: application/json
     annotations:
       audience:
         - assistant
       priority: 0.9
-    meta:
-      resourceKind: detail
-      objectScope: runtime
-      relatedResources:
-        - shardingsphere://capabilities
-        - shardingsphere://databases
-  - uriPattern: shardingsphere://workflows/{plan_id}
-    name: workflow-plan
-    title: Workflow Plan
-    description: "Read one current in-memory workflow plan by plan_id. Use after planning tools to review status, clarification questions, artifacts, and next actions."
-    mimeType: application/json
-    parameters:
-      - name: plan_id
-        title: Plan ID
-        description: "Workflow plan_id returned by a planning tool in the current MCP runtime."
-        required: true
-        scope: workflow-plan
-    meta:
-      resourceKind: detail
-      objectScope: workflow-plan
-      relatedTools:
-        - validate_workflow
-        - apply_workflow
-  - uriPattern: shardingsphere://databases
+    resourceKind: detail
+    objectScope: runtime
+    relatedResources:
+      - shardingsphere://capabilities
+      - shardingsphere://databases
+  - uriTemplate: shardingsphere://databases
     name: logical-databases
     title: Logical Databases
     description: "List ShardingSphere logical databases visible to the current MCP runtime. Read this before choosing a database argument for metadata, SQL, or workflow tools."
     mimeType: application/json
-    meta:
-      resourceKind: list
-      objectScope: logical-database
-      relatedTools:
-        - search_metadata
-        - execute_query
-  - uriPattern: shardingsphere://databases/{database}
+    resourceKind: list
+    objectScope: logical-database
+    relatedTools:
+      - search_metadata
+      - execute_query
+  - uriTemplate: shardingsphere://databases/{database}
     name: logical-database-detail
     title: Logical Database Detail
     description: "Read one ShardingSphere logical database entry and its visible metadata summary. Use this when a user names a database and the model needs to confirm it exists."
@@ -84,10 +64,9 @@ resources:
         description: "ShardingSphere logical database name, not a physical storage unit name."
         required: true
         scope: logical-database
-    meta:
-      resourceKind: detail
-      objectScope: logical-database
-  - uriPattern: shardingsphere://databases/{database}/capabilities
+    resourceKind: detail
+    objectScope: logical-database
+  - uriTemplate: shardingsphere://databases/{database}/capabilities
     name: database-capabilities
     title: Database Capabilities
     description: "Read statement, transaction, schema, and metadata-object capabilities for one logical database. Use before executing SQL or deciding whether EXPLAIN ANALYZE is available."
@@ -98,12 +77,11 @@ resources:
         description: "ShardingSphere logical database whose SQL and metadata capabilities should be inspected."
         required: true
         scope: logical-database
-    meta:
-      resourceKind: detail
-      relatedTools:
-        - execute_query
-        - execute_update
-  - uriPattern: shardingsphere://databases/{database}/schemas
+    resourceKind: detail
+    relatedTools:
+      - execute_query
+      - execute_update
+  - uriTemplate: shardingsphere://databases/{database}/schemas
     name: schemas
     title: Schemas
     description: "List schemas or namespaces visible inside one ShardingSphere logical database. Use this to fill schema arguments for metadata and SQL context."
@@ -114,10 +92,9 @@ resources:
         description: "ShardingSphere logical database that owns the schema namespace."
         required: true
         scope: logical-database
-    meta:
-      resourceKind: list
-      objectScope: schema
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}
+    resourceKind: list
+    objectScope: schema
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}
     name: schema-detail
     title: Schema Detail
     description: "Read one schema or namespace inside a logical database. Use this before listing tables, views, sequences, or indexes under that schema."
@@ -133,10 +110,9 @@ resources:
         description: "Database-native schema or namespace visible through ShardingSphere."
         required: true
         scope: schema
-    meta:
-      resourceKind: detail
-      objectScope: schema
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/sequences
+    resourceKind: detail
+    objectScope: schema
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences
     name: sequences
     title: Sequences
     description: "List sequences in a schema. Use this when SQL or workflow planning needs sequence object names visible through ShardingSphere."
@@ -152,10 +128,9 @@ resources:
         description: "Database-native schema or namespace that contains sequences."
         required: true
         scope: schema
-    meta:
-      resourceKind: list
-      objectScope: sequence
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
+    resourceKind: list
+    objectScope: sequence
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
     name: sequence-detail
     title: Sequence Detail
     description: "Read one sequence definition visible through ShardingSphere. Use this when SQL generation or review needs a concrete sequence object."
@@ -176,10 +151,9 @@ resources:
         description: "Database-native sequence object name."
         required: true
         scope: sequence
-    meta:
-      resourceKind: detail
-      objectScope: sequence
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables
+    resourceKind: detail
+    objectScope: sequence
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables
     name: tables
     title: Tables
     description: "List logical tables in a schema. Read this before planning encrypt or mask rules when the table name is uncertain."
@@ -195,13 +169,12 @@ resources:
         description: "Schema or namespace that contains logical tables."
         required: true
         scope: schema
-    meta:
-      resourceKind: list
-      objectScope: logical-table
-      relatedTools:
-        - plan_encrypt_rule
-        - plan_mask_rule
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
+    resourceKind: list
+    objectScope: logical-table
+    relatedTools:
+      - plan_encrypt_rule
+      - plan_mask_rule
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
     name: table-detail
     title: Table Detail
     description: "Read one logical table definition, including table-level metadata visible through ShardingSphere. Use this before column-level planning."
@@ -222,13 +195,12 @@ resources:
         description: "ShardingSphere logical table name, not a physical table shard."
         required: true
         scope: logical-table
-    meta:
-      resourceKind: detail
-      objectScope: logical-table
-      relatedTools:
-        - plan_encrypt_rule
-        - plan_mask_rule
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
+    resourceKind: detail
+    objectScope: logical-table
+    relatedTools:
+      - plan_encrypt_rule
+      - plan_mask_rule
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
     name: table-columns
     title: Table Columns
     description: "List columns for one logical table. Read this before planning encrypt or mask rules for a column, or before writing SQL that references columns."
@@ -249,13 +221,12 @@ resources:
         description: "ShardingSphere logical table name whose columns should be listed."
         required: true
         scope: logical-table
-    meta:
-      resourceKind: list
-      objectScope: column
-      relatedTools:
-        - plan_encrypt_rule
-        - plan_mask_rule
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
+    resourceKind: list
+    objectScope: column
+    relatedTools:
+      - plan_encrypt_rule
+      - plan_mask_rule
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
     name: table-column-detail
     title: Table Column Detail
     description: "Read one logical table column, including type and nullability metadata visible through ShardingSphere. Use this before column-level rule planning."
@@ -281,13 +252,12 @@ resources:
         description: "Logical column name visible through ShardingSphere."
         required: true
         scope: column
-    meta:
-      resourceKind: detail
-      objectScope: column
-      relatedTools:
-        - plan_encrypt_rule
-        - plan_mask_rule
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
+    resourceKind: detail
+    objectScope: column
+    relatedTools:
+      - plan_encrypt_rule
+      - plan_mask_rule
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
     name: table-indexes
     title: Table Indexes
     description: "List indexes for one logical table. Use this before planning assisted-query encryption or reviewing DDL that may create or reuse indexes."
@@ -308,12 +278,11 @@ resources:
         description: "ShardingSphere logical table name whose indexes should be listed."
         required: true
         scope: logical-table
-    meta:
-      resourceKind: list
-      objectScope: index
-      relatedTools:
-        - plan_encrypt_rule
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
+    resourceKind: list
+    objectScope: index
+    relatedTools:
+      - plan_encrypt_rule
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
     name: table-index-detail
     title: Table Index Detail
     description: "Read one index definition for a logical table. Use this when a plan must preserve or create a specific index."
@@ -339,10 +308,9 @@ resources:
         description: "Database-native index name visible for the logical table."
         required: true
         scope: index
-    meta:
-      resourceKind: detail
-      objectScope: index
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views
+    resourceKind: detail
+    objectScope: index
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views
     name: views
     title: Views
     description: "List views in a schema. Use this when SQL generation or metadata search must distinguish views from logical tables."
@@ -358,10 +326,9 @@ resources:
         description: "Schema or namespace that contains views."
         required: true
         scope: schema
-    meta:
-      resourceKind: list
-      objectScope: view
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
+    resourceKind: list
+    objectScope: view
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
     name: view-detail
     title: View Detail
     description: "Read one view definition visible through ShardingSphere. Use this before writing SQL that references a view."
@@ -382,10 +349,9 @@ resources:
         description: "Database view name visible through ShardingSphere."
         required: true
         scope: view
-    meta:
-      resourceKind: detail
-      objectScope: view
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
+    resourceKind: detail
+    objectScope: view
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
     name: view-columns
     title: View Columns
     description: "List columns exposed by one view. Use this before writing SQL that projects or filters view columns."
@@ -406,10 +372,9 @@ resources:
         description: "Database view name whose columns should be listed."
         required: true
         scope: view
-    meta:
-      resourceKind: list
-      objectScope: column
-  - uriPattern: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}
+    resourceKind: list
+    objectScope: column
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}
     name: view-column-detail
     title: View Column Detail
     description: "Read one view column definition visible through ShardingSphere. Use this when SQL should reference a specific view column."
@@ -435,9 +400,8 @@ resources:
         description: "View column name visible through ShardingSphere."
         required: true
         scope: column
-    meta:
-      resourceKind: detail
-      objectScope: column
+    resourceKind: detail
+    objectScope: column
 completionTargets:
   - referenceType: resource
     reference: shardingsphere://databases/{database}
@@ -600,12 +564,18 @@ tools:
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Requested page size for search results. Omit for default 100. Accepted range is 1 to 500."
+          description: "Requested page size for search results."
+          defaultValue: 100
+          minimumValue: 1
+          maximumValue: 500
+          examples:
+            - 100
       - name: page_token
         required: false
         valueDefinition:
           type: STRING
           description: "Non-negative pagination offset token returned by a previous search_metadata call."
+          pattern: "^[0-9]*$"
     outputSchema:
       type: object
       properties:
@@ -634,23 +604,23 @@ tools:
               name:
                 type: string
                 description: "Matched metadata object name."
-              resource_uri:
-                type: string
-                description: "Direct resources/read URI for this hit when the metadata names map safely to a descriptor resource pattern."
-              parent_resource_uri:
-                type: string
-                description: "Nearest list resource URI that contains this hit when derivable."
-              next_resource_uris:
+              resource:
+                type: object
+                description: "Typed resources/read target for this hit when the metadata names map safely to a descriptor resource pattern."
+              parent_resource:
+                type: object
+                description: "Typed nearest list resource that contains this hit when derivable."
+              next_resources:
                 type: array
-                description: "Likely child or detail resource URIs to read next from this hit."
+                description: "Typed child or detail resources to read next from this hit."
                 items:
-                  type: string
+                  type: object
               derivation_status:
                 type: string
                 description: "URI derivation status, either derived or not_safe_to_derive."
               derivation_reason:
                 type: string
-                description: "Reason resource_uri could not be safely derived."
+                description: "Reason the typed resource hint could not be safely derived."
               match_kind:
                 type: string
                 description: "Best query match kind for this hit: all, exact, prefix, or contains."
@@ -674,12 +644,31 @@ tools:
         search_context:
           type: object
           description: "Applied search scope, query, object types, page size, and page offset used for this page."
-        empty_reason:
-          type: string
-          description: "Reason no metadata hits were returned, such as no_matches_for_query or no_metadata_in_scope."
+        empty_state:
+          type: object
+          description: "Structured empty state when no metadata hits were returned."
+        ambiguity_state:
+          type: object
+          description: "Structured duplicate-name state when several returned hits require a narrower database, schema, or object-type choice."
+          properties:
+            ambiguous:
+              type: boolean
+              description: "True when returned hits should not be treated as a single best match."
+            ambiguous_by:
+              type: array
+              description: "Metadata dimensions that distinguish duplicate hits, such as name, database, schema, or object_type."
+            candidate_count:
+              type: integer
+              description: "Number of returned candidates that share duplicated names."
+            duplicated_names:
+              type: array
+              description: "Metadata names that appear more than once in the returned page."
+            narrowing_arguments:
+              type: array
+              description: "Public search_metadata arguments the model can ask for or set to narrow the search."
         next_actions:
           type: array
-          description: "Structured follow-up actions for an empty search result."
+          description: "Structured follow-up actions for empty, paginated, or duplicate-name search results."
       examples:
         - items:
             - database: logic_db
@@ -687,10 +676,24 @@ tools:
               objectType: table
               table: orders
               name: orders
-              resource_uri: shardingsphere://databases/logic_db/schemas/public/tables/orders
-              parent_resource_uri: shardingsphere://databases/logic_db/schemas/public/tables
-              next_resource_uris:
-                - shardingsphere://databases/logic_db/schemas/public/tables/orders/columns
+              resource:
+                uri: shardingsphere://databases/logic_db/schemas/public/tables/orders
+                resource_kind: table
+                purpose: inspect_detail
+                reason: Read the matched metadata detail resource.
+                source_field: resource
+              parent_resource:
+                uri: shardingsphere://databases/logic_db/schemas/public/tables
+                resource_kind: table
+                purpose: inspect_parent
+                reason: Read the parent metadata resource.
+                source_field: parent_resource
+              next_resources:
+                - uri: shardingsphere://databases/logic_db/schemas/public/tables/orders/columns
+                  resource_kind: column
+                  purpose: inspect_detail
+                  reason: Read a child metadata resource.
+                  source_field: next_resources
               derivation_status: derived
               match_kind: exact
               matched_fields:
@@ -743,12 +746,22 @@ tools:
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional maximum number of rows to return. Omit or use zero for default 100. Accepted range is 0 to 5000."
+          description: "Optional maximum number of rows to return. Omit or pass 0 to use the server default of 100."
+          defaultValue: 100
+          minimumValue: 0
+          maximumValue: 5000
+          examples:
+            - 100
       - name: timeout_ms
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional execution timeout in milliseconds. Omit or use zero for no explicit timeout. Accepted range is 0 to 300000."
+          description: "Optional execution timeout in milliseconds. Zero means no explicit timeout."
+          defaultValue: 0
+          minimumValue: 0
+          maximumValue: 300000
+          examples:
+            - 0
     outputSchema:
       type: object
       properties:
@@ -778,6 +791,12 @@ tools:
         rows:
           type: array
           description: "Returned result rows."
+        row_objects:
+          type: array
+          description: "Object-shaped row view when column labels are unique."
+        row_object_status:
+          type: string
+          description: "Whether row_objects is available or why positional rows must be used, such as unnamed_columns, duplicate_column_labels, or omitted_large_result."
         returned_row_count:
           type: integer
           description: "Number of result rows returned in this payload."
@@ -800,6 +819,8 @@ tools:
           status: OK
           columns: []
           rows: []
+          row_objects: []
+          row_object_status: available
           returned_row_count: 0
           applied_max_rows: 10
           applied_timeout_ms: 0
@@ -858,12 +879,22 @@ tools:
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional maximum row count when the statement returns rows, for example dialect-specific RETURNING. Omit or use zero for default 100. Accepted range is 0 to 5000."
+          description: "Optional maximum row count when the statement returns rows, for example dialect-specific RETURNING. Omit or pass 0 to use the server default of 100."
+          defaultValue: 100
+          minimumValue: 0
+          maximumValue: 5000
+          examples:
+            - 100
       - name: timeout_ms
         required: false
         valueDefinition:
           type: INTEGER
-          description: "Optional execution timeout in milliseconds. Omit or use zero for no explicit timeout. Accepted range is 0 to 300000."
+          description: "Optional execution timeout in milliseconds. Zero means no explicit timeout."
+          defaultValue: 0
+          minimumValue: 0
+          maximumValue: 300000
+          examples:
+            - 0
     outputSchema:
       type: object
       properties:
@@ -916,6 +947,12 @@ tools:
         returned_row_count:
           type: integer
           description: "Number of rows returned when result_kind is result_set."
+        row_objects:
+          type: array
+          description: "Object-shaped row view when result_kind is result_set and column labels are unique."
+        row_object_status:
+          type: string
+          description: "Whether row_objects is available or why positional rows must be used, such as unnamed_columns, duplicate_column_labels, or omitted_large_result."
         applied_max_rows:
           type: integer
           description: "Applied max_rows argument for executed SQL after defaulting and bounds enforcement."
@@ -955,9 +992,9 @@ tools:
         argument_provenance:
           type: object
           description: "Source of suggested argument values, such as user_provided, server_normalized, or server_suggested."
-        read_resources_first:
+        resources_to_read:
           type: array
-          description: "Resource URIs to read before retrying when metadata context is missing."
+          description: "Typed resource hints to read before retrying when metadata context is missing."
         ask_user_when_uncertain:
           type: boolean
           description: "Whether the model should ask the user before continuing."

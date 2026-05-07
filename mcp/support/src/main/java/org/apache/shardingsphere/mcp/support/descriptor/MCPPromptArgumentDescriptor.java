@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.exception;
+package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Exception for unsupported MCP tools.
+ * MCP prompt argument descriptor.
  */
-public final class UnsupportedToolException extends MCPInvalidRequestException {
+@RequiredArgsConstructor
+@Getter
+public final class MCPPromptArgumentDescriptor {
     
-    private static final long serialVersionUID = 8570810523001728350L;
+    private final String name;
     
-    @Getter
-    private final String toolName;
+    private final String title;
     
-    public UnsupportedToolException(final String toolName) {
-        super(toolName.isEmpty() ? "Unsupported tool." : String.format("Unsupported tool `%s`.", toolName));
-        this.toolName = toolName;
-    }
+    private final String description;
+    
+    private final boolean required;
 }

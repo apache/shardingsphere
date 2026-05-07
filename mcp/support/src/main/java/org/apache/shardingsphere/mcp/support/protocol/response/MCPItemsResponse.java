@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.response;
+package org.apache.shardingsphere.mcp.support.protocol.response;
+
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;

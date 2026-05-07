@@ -42,7 +42,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecuteQueryToolHandlerTest {
-    
+
     @Test
     void assertHandleReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -60,7 +60,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(requestCaptor.getValue().getMaxRows(), is(100));
         assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
-    
+
     @Test
     void assertHandleExplainAnalyze() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -72,7 +72,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.toPayload().get("statement_class"), is("explain_analyze"));
         verify(executionFacade).execute(any());
     }
-    
+
     @Test
     void assertRejectUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -83,7 +83,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.getMessage(), is("execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectOutOfRangeMaxRows() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -93,5 +93,18 @@ class ExecuteQueryToolHandlerTest {
                 Map.of("database", "logic_db", "sql", "select * from orders", "max_rows", 5001))));
         assertThat(actual.getMessage(), is("max_rows must be an integer between 0 and 5000."));
         verifyNoInteractions(executionFacade);
+    }
+
+    @Test
+    void assertHandleZeroMaxRowsAsDefault() {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
+                Map.of("database", "logic_db", "sql", "select * from orders", "max_rows", 0)));
+        ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
+        verify(executionFacade).execute(requestCaptor.capture());
+        assertThat(requestCaptor.getValue().getMaxRows(), is(100));
     }
 }

@@ -36,7 +36,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPResourceControllerTest {
-    
+
     @Test
     void assertHandle() {
         MCPResponse response = mock(MCPResponse.class);
@@ -48,19 +48,20 @@ class MCPResourceControllerTest {
             assertThat(actual, is(payload));
         }
     }
-    
+
     @Test
     void assertHandleWithUnsupportedResourceUri() {
         try (MockedStatic<ResourceHandlerRegistry> mocked = mockStatic(ResourceHandlerRegistry.class)) {
             mocked.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("unsupported://resource"))).thenReturn(Optional.empty());
             Map<String, Object> actual = createController().handle("unsupported://resource").toPayload();
-            Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
             assertThat(actual.get("error_code"), is("invalid_request"));
             assertThat(actual.get("message"), is("Unsupported resource URI `unsupported://resource`."));
-            assertThat(actualRecovery.get("category"), is("unsupported_resource_uri"));
+            assertThat(actual.get("response_kind"), is("error"));
+            final Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+            assertThat(actualRecovery.get("category"), is("unsupported_resource"));
         }
     }
-    
+
     @Test
     void assertHandleWithHandlerException() {
         try (MockedStatic<ResourceHandlerRegistry> mocked = mockStatic(ResourceHandlerRegistry.class)) {
@@ -71,7 +72,7 @@ class MCPResourceControllerTest {
             assertThat(actual.get("message"), is("Index resources are not supported."));
         }
     }
-    
+
     private MCPResourceController createController() {
         return new MCPResourceController(ResourceTestDataFactory.createRuntimeContext());
     }

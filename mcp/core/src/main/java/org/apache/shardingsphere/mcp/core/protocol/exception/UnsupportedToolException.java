@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.response;
+package org.apache.shardingsphere.mcp.core.protocol.exception;
 
-import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
+import lombok.Getter;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 /**
- * MCP map response.
+ * Exception for unsupported MCP tools.
  */
-@RequiredArgsConstructor
-public final class MCPMapResponse implements MCPResponse {
+public final class UnsupportedToolException extends MCPInvalidRequestException {
     
-    private final Map<String, Object> payload;
+    private static final long serialVersionUID = 8570810523001728350L;
     
-    @Override
-    public Map<String, Object> toPayload() {
-        return payload;
+    @Getter
+    private final String toolName;
+    
+    public UnsupportedToolException(final String toolName) {
+        super(toolName.isEmpty() ? "Unsupported tool." : String.format("Unsupported tool `%s`.", toolName));
+        this.toolName = toolName;
     }
 }

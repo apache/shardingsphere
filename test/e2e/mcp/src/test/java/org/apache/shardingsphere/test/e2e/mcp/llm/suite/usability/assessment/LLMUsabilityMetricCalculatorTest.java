@@ -57,6 +57,18 @@ class LLMUsabilityMetricCalculatorTest {
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertFalse(actual.isNextActionFollowed());
     }
+
+    @Test
+    void assertEvaluateScenarioWithApprovalRequiredActionViolation() {
+        List<MCPInteractionTraceRecord> trace = List.of(
+                createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                        "action_kind", "call_tool",
+                        "target_tool", "execute_update",
+                        "requires_user_approval", true)))),
+                createToolCall(2, "execute_update", Map.of()));
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
+        assertTrue(actual.isApprovalViolation());
+    }
     
     @Test
     void assertCreateScorecardWithActionAndApprovalRates() {

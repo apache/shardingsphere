@@ -23,8 +23,9 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedResourceUriException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.execute.ClassificationResult;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchEx
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowArgumentConflictException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -68,7 +70,7 @@ class MCPErrorConverterTest {
         assertThat(actual.get("error_code"), is("invalid_request"));
         assertThat(actualRecovery.get("category"), is("unsupported_tool"));
         assertThat(actualRecovery.get("tool_name"), is("missing_tool"));
-        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_resource"), is("shardingsphere://capabilities"));
         assertTrue(((Collection<?>) actualRecovery.get("supported_tools")).contains("execute_query"));
     }
@@ -78,9 +80,9 @@ class MCPErrorConverterTest {
         Map<String, Object> actual = MCPErrorConverter.convert(new UnsupportedResourceUriException("shardingsphere://unknown")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actual.get("error_code"), is("invalid_request"));
-        assertThat(actualRecovery.get("category"), is("unsupported_resource_uri"));
-        assertThat(actualRecovery.get("resource_uri"), is("shardingsphere://unknown"));
-        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
+        assertThat(actualRecovery.get("category"), is("unsupported_resource"));
+        assertThat(((Map<?, ?>) actualRecovery.get("resource")).get("uri"), is("shardingsphere://unknown"));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("read_resource"));
         assertTrue(((Collection<?>) actualRecovery.get("matching_resource_templates")).contains("shardingsphere://capabilities"));
     }
@@ -91,7 +93,7 @@ class MCPErrorConverterTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("missing_database"));
         assertThat(actualRecovery.get("missing_fields"), is(List.of("database")));
-        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://databases")));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://databases"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_resource"), is("shardingsphere://databases"));
         assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
@@ -149,6 +151,21 @@ class MCPErrorConverterTest {
     }
 
     @Test
+    void assertConvertWorkflowArgumentConflictWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new WorkflowArgumentConflictException(
+                List.of("algorithm_type conflicts with user_overrides.algorithm_type"))).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("workflow_argument_conflict"));
+        assertThat(actualRecovery.get("conflicting_arguments"), is(List.of("algorithm_type conflicts with user_overrides.algorithm_type")));
+        Map<?, ?> actualClarificationQuestion = (Map<?, ?>) ((List<?>) actualRecovery.get("clarification_questions")).get(0);
+        assertThat(actualClarificationQuestion.get("field"), is("algorithm_type"));
+        assertThat(actualClarificationQuestion.get("conflict"), is("algorithm_type conflicts with user_overrides.algorithm_type"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("required_inputs"), is(List.of("algorithm_type")));
+        assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
+    }
+
+    @Test
     void assertConvertInvalidObjectTypesWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("Unsupported object_types value `unknown`.")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
@@ -166,8 +183,13 @@ class MCPErrorConverterTest {
     void assertConvertInvalidPageTokenWithRecovery() {
         Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("Invalid page token.")).toPayload();
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("response_mode"), is("recovery"));
         assertThat(actualRecovery.get("category"), is("invalid_page_token"));
         assertThat(actualRecovery.get("field"), is("page_token"));
+        assertThat(actualRecovery.get("argument_path"), is("page_token"));
+        assertThat(actualRecovery.get("source_tool"), is("search_metadata"));
+        assertThat(actualRecovery.get("target_tool"), is("search_metadata"));
+        assertThat(actualRecovery.get("minimum_value"), is(0));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("page_token", "")));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
         assertThat(actualNextAction.get("action_kind"), is("retry_tool"));
@@ -181,11 +203,43 @@ class MCPErrorConverterTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("invalid_integer_argument"));
         assertThat(actualRecovery.get("field"), is("page_size"));
+        assertThat(actualRecovery.get("argument_path"), is("page_size"));
+        assertThat(actualRecovery.get("source_tool"), is("search_metadata"));
+        assertThat(actualRecovery.get("target_tool"), is("search_metadata"));
+        assertThat(actualRecovery.get("minimum_value"), is(1));
+        assertThat(actualRecovery.get("maximum_value"), is(500));
+        assertThat(actualRecovery.get("suggested_value"), is(100));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("page_size", 100)));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
         assertThat(actualNextAction.get("action_kind"), is("retry_tool"));
         assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
         assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
+    }
+
+    @Test
+    void assertConvertInvalidSQLIntegerArgumentWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidToolArgumentException("execute_query", "execute_query", "max_rows", 0, 5000, 100,
+                new MCPInvalidRequestException("max_rows must be an integer."))).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actualRecovery.get("category"), is("invalid_integer_argument"));
+        assertThat(actualRecovery.get("argument_path"), is("max_rows"));
+        assertThat(actualRecovery.get("source_tool"), is("execute_query"));
+        assertThat(actualRecovery.get("target_tool"), is("execute_query"));
+        assertThat(actualRecovery.get("minimum_value"), is(0));
+        assertThat(actualRecovery.get("maximum_value"), is(5000));
+        assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("max_rows", 100)));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
+        assertThat(actualNextAction.get("target_tool"), is("execute_query"));
+    }
+
+    @Test
+    void assertConvertInvalidIntegerArgumentWithoutTargetAsksUser() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPInvalidRequestException("timeout_ms must be an integer between 0 and 300000.")).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
+        assertThat(actualRecovery.get("argument_path"), is("timeout_ms"));
+        assertThat(actualNextAction.get("action_kind"), is("ask_user"));
+        assertFalse(actualNextAction.containsKey("target_tool"));
     }
 
     @Test
@@ -247,7 +301,7 @@ class MCPErrorConverterTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         assertThat(actualRecovery.get("category"), is("metadata_introspection_sql"));
         assertThat(actualRecovery.get("statement_type"), is("SHOW"));
-        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://databases")));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://databases"));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("page_size", 100)));
         List<?> actualNextActions = (List<?>) actualRecovery.get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("target_resource"), is("shardingsphere://databases"));
@@ -264,7 +318,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("workflow_state_error"));
         assertFalse(actualRecovery.containsKey("suggested_next_tools"));
         assertThat(actualRecovery.get("completion_first"), is(Map.of("argument", "plan_id", "scope", "current MCP session")));
-        assertThat(actualRecovery.get("read_resources_first"), is(List.of("shardingsphere://capabilities")));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("complete_argument"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("action_kind"), is("read_resource"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("depends_on"), is(List.of(1)));
@@ -299,5 +353,9 @@ class MCPErrorConverterTest {
                 Arguments.of("illegal argument exception", new IllegalArgumentException("Illegal argument."), "invalid_request", "Illegal argument."),
                 Arguments.of("illegal state exception", new IllegalStateException(" Transaction already active. "), "transaction_state_error", "Transaction already active."),
                 Arguments.of("unknown exception", new RuntimeException(), "unavailable", "Service is temporarily unavailable."));
+    }
+
+    private String getFirstResourceToReadUri(final Map<?, ?> recovery) {
+        return (String) ((Map<?, ?>) ((List<?>) recovery.get("resources_to_read")).get(0)).get("uri");
     }
 }

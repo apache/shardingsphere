@@ -31,20 +31,34 @@ import java.util.Map;
 @Getter
 @Setter
 public final class YamlMCPResourceDescriptor {
-    
+
+    private String uriTemplate;
+
     private String uriPattern;
-    
+
     private String name;
-    
+
     private String title;
-    
+
     private String description;
-    
+
     private String mimeType;
-    
+
     private Collection<YamlMCPResourceParameterDescriptor> parameters = new LinkedList<>();
-    
+
     private YamlMCPResourceAnnotations annotations;
-    
+
+    private String resourceKind;
+
+    private String objectScope;
+
+    private String feature;
+
+    private Collection<String> relatedTools = new LinkedList<>();
+
+    private Collection<String> relatedResources = new LinkedList<>();
+
+    private Collection<String> useBefore = new LinkedList<>();
+
     private Map<String, Object> meta = new LinkedHashMap<>();
 }

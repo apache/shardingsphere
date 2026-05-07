@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.protocol.response;
+package org.apache.shardingsphere.mcp.support.protocol.response;
 
 import org.junit.jupiter.api.Test;
 

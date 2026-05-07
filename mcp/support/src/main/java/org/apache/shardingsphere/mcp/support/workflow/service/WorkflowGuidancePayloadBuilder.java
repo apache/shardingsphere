@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriTemplateUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.ValidationReport;
@@ -60,10 +62,19 @@ public final class WorkflowGuidancePayloadBuilder {
         List<Map<String, Object>> clarificationQuestions = createClarificationQuestions(snapshot, missingRequiredInputs);
         payload.put("missing_required_inputs", missingRequiredInputs);
         payload.put("clarification_questions", clarificationQuestions);
-        payload.put("elicitation", createElicitationFallback(clarificationQuestions));
         payload.put("resources_to_read", createResourcesToRead(snapshot));
+        payload.put("proxy_topology_hint", createProxyTopologyHint(snapshot));
         payload.put("next_actions", createPlanningNextActions(snapshot, missingRequiredInputs));
         payload.put("requires_user_approval", false);
+    }
+
+    private static Map<String, Object> createProxyTopologyHint(final WorkflowContextSnapshot snapshot) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("expected_runtime_view", "proxy_logical_database");
+        result.put("workflow_kind", resolveWorkflowKind(snapshot));
+        result.put("reason", "Encrypt and mask workflow planning must use Proxy logical metadata; physical-database metadata can hide or misrepresent rule-visible objects.");
+        result.put("safe_recovery", "Reconnect the MCP runtime to ShardingSphere Proxy for this logical database if metadata appears to be physical-table-first.");
+        return result;
     }
 
     /**
@@ -110,10 +121,10 @@ public final class WorkflowGuidancePayloadBuilder {
     }
 
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {
-        List<String> result = new LinkedList<>();
-        ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
-        for (String each : clarifiedIntent.getUnresolvedFields()) {
-            String missingInput = normalizeMissingInput(snapshot, each);
+        final List<String> result = new LinkedList<>();
+        final ClarifiedIntent clarifiedIntent = snapshot.getClarifiedIntent();
+        for (final String each : clarifiedIntent.getUnresolvedFields()) {
+            final String missingInput = normalizeMissingInput(snapshot, each);
             if (!result.contains(missingInput)) {
                 result.add(missingInput);
             }
@@ -121,23 +132,23 @@ public final class WorkflowGuidancePayloadBuilder {
         for (WorkflowIssue each : snapshot.getIssues()) {
             addMissingInputsFromIssue(result, snapshot, each);
         }
-        if (result.isEmpty() && !clarifiedIntent.getPendingQuestions().isEmpty()) {
+        if (result.isEmpty() && !clarifiedIntent.getClarificationMessages().isEmpty()) {
             result.add("user_clarification");
         }
         return result;
     }
 
     private static List<Map<String, Object>> createClarificationQuestions(final WorkflowContextSnapshot snapshot, final List<String> missingRequiredInputs) {
-        List<Map<String, Object>> result = new LinkedList<>();
-        List<String> pendingQuestions = snapshot.getClarifiedIntent().getPendingQuestions();
+        final List<Map<String, Object>> result = new LinkedList<>();
+        final List<String> clarificationMessages = snapshot.getClarifiedIntent().getClarificationMessages();
         for (int i = 0; i < missingRequiredInputs.size(); i++) {
-            String fieldName = missingRequiredInputs.get(i);
-            result.add(createClarificationQuestion(snapshot, fieldName, i < pendingQuestions.size() ? pendingQuestions.get(i) : ""));
+            final String fieldName = missingRequiredInputs.get(i);
+            result.add(createClarificationQuestion(snapshot, fieldName, i < clarificationMessages.size() ? clarificationMessages.get(i) : ""));
         }
         return result;
     }
 
-    private static Map<String, Object> createClarificationQuestion(final WorkflowContextSnapshot snapshot, final String fieldName, final String pendingQuestion) {
+    private static Map<String, Object> createClarificationQuestion(final WorkflowContextSnapshot snapshot, final String fieldName, final String clarificationMessage) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         String inputType = resolveClarificationInputType(snapshot, fieldName);
         result.put("field", fieldName);
@@ -147,7 +158,7 @@ public final class WorkflowGuidancePayloadBuilder {
             result.put("allowed_values", List.of(true, false));
         }
         result.put("secret", isSecretClarificationField(snapshot, fieldName));
-        result.put("message", pendingQuestion.isBlank() ? String.format("Please provide `%s`.", fieldName) : pendingQuestion);
+        result.put("display_message", clarificationMessage.isBlank() ? String.format("Please provide `%s`.", fieldName) : clarificationMessage);
         return result;
     }
 
@@ -169,14 +180,6 @@ public final class WorkflowGuidancePayloadBuilder {
             }
         }
         return false;
-    }
-
-    private static Map<String, Object> createElicitationFallback(final List<Map<String, Object>> clarificationQuestions) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("native_supported", false);
-        result.put("fallback_fields", List.of("clarification_questions", "pending_questions", "next_actions"));
-        result.put("requires_user_response", !clarificationQuestions.isEmpty());
-        return result;
     }
 
     private static void addMissingInputsFromIssue(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowIssue issue) {
@@ -232,10 +235,10 @@ public final class WorkflowGuidancePayloadBuilder {
         return "";
     }
 
-    private static List<String> createResourcesToRead(final WorkflowContextSnapshot snapshot) {
-        List<String> result = new LinkedList<>();
+    private static List<Map<String, Object>> createResourcesToRead(final WorkflowContextSnapshot snapshot) {
+        final List<Map<String, Object>> result = new LinkedList<>();
         addFeatureResources(result, snapshot);
-        WorkflowRequest request = snapshot.getRequest();
+        final WorkflowRequest request = snapshot.getRequest();
         if (!request.getDatabase().isEmpty()) {
             addRuleResources(result, snapshot, request);
             if (!request.getSchema().isEmpty() && !request.getTable().isEmpty()) {
@@ -245,28 +248,38 @@ public final class WorkflowGuidancePayloadBuilder {
         return result;
     }
 
-    private static void addFeatureResources(final Collection<String> result, final WorkflowContextSnapshot snapshot) {
+    private static void addFeatureResources(final Collection<Map<String, Object>> result, final WorkflowContextSnapshot snapshot) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
-            result.add("shardingsphere://features/encrypt/algorithms");
+            result.add(MCPResourceHintUtils.create("shardingsphere://features/encrypt/algorithms", "algorithm", "read_first",
+                    "Read encrypt algorithm metadata before choosing algorithm arguments.", "resources_to_read"));
         } else if ("mask.rule".equals(workflowKind)) {
-            result.add("shardingsphere://features/mask/algorithms");
+            result.add(MCPResourceHintUtils.create("shardingsphere://features/mask/algorithms", "algorithm", "read_first",
+                    "Read mask algorithm metadata before choosing algorithm arguments.", "resources_to_read"));
         }
     }
 
-    private static void addRuleResources(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+    private static void addRuleResources(final Collection<Map<String, Object>> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         String workflowKind = resolveWorkflowKind(snapshot);
         if ("encrypt.rule".equals(workflowKind)) {
-            result.add(String.format("shardingsphere://features/encrypt/databases/%s/rules", request.getDatabase()));
+            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/encrypt/databases/%s/rules",
+                    MCPUriTemplateUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
+                    "Inspect current encrypt rules before planning changes.", "resources_to_read"));
         } else if ("mask.rule".equals(workflowKind)) {
-            result.add(String.format("shardingsphere://features/mask/databases/%s/rules", request.getDatabase()));
+            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://features/mask/databases/%s/rules",
+                    MCPUriTemplateUtils.encodePathSegment(request.getDatabase())), "rule", "inspect_detail",
+                    "Inspect current mask rules before planning changes.", "resources_to_read"));
         }
     }
 
-    private static void addTableResources(final Collection<String> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
-        result.add(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", request.getDatabase(), request.getSchema(), request.getTable()));
+    private static void addTableResources(final Collection<Map<String, Object>> result, final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
+        result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/columns", MCPUriTemplateUtils.encodePathSegment(request.getDatabase()),
+                MCPUriTemplateUtils.encodePathSegment(request.getSchema()), MCPUriTemplateUtils.encodePathSegment(request.getTable())),
+                "column", "validate_scope", "Read table columns before planning column-level workflow changes.", "resources_to_read"));
         if ("encrypt.rule".equals(resolveWorkflowKind(snapshot))) {
-            result.add(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", request.getDatabase(), request.getSchema(), request.getTable()));
+            result.add(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/schemas/%s/tables/%s/indexes", MCPUriTemplateUtils.encodePathSegment(request.getDatabase()),
+                    MCPUriTemplateUtils.encodePathSegment(request.getSchema()), MCPUriTemplateUtils.encodePathSegment(request.getTable())),
+                    "index", "validate_scope", "Read table indexes before planning assisted-query encrypt rules.", "resources_to_read"));
         }
     }
 
@@ -304,7 +317,7 @@ public final class WorkflowGuidancePayloadBuilder {
     }
 
     private static List<Map<String, Object>> addSequencing(final List<Map<String, Object>> nextActions) {
-        List<Map<String, Object>> result = new LinkedList<>(nextActions);
+        final List<Map<String, Object>> result = new LinkedList<>(nextActions);
         for (int index = 0; index < result.size(); index++) {
             result.get(index).put("order", index + 1);
             if (0 < index && "ask_user".equals(result.get(index - 1).get("action_kind"))) {

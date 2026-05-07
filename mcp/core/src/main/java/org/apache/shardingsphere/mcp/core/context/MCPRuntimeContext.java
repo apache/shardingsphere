@@ -18,31 +18,47 @@
 package org.apache.shardingsphere.mcp.core.context;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
 import org.apache.shardingsphere.mcp.core.workflow.InMemoryWorkflowSessionContext;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
+
+import java.util.Objects;
 
 /**
  * MCP runtime context.
  */
 @Getter
 public final class MCPRuntimeContext {
-    
+
+    private static final String UNKNOWN_TRANSPORT = "unknown";
+
     private final MCPSessionManager sessionManager;
-    
+
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
-    
+
     private final WorkflowSessionContext workflowSessionContext;
-    
+
+    private final String activeTransport;
+
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
-        this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext());
+        this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext(), UNKNOWN_TRANSPORT);
     }
-    
+
+    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final String activeTransport) {
+        this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext(), activeTransport);
+    }
+
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowSessionContext workflowSessionContext) {
+        this(sessionManager, databaseCapabilityProvider, workflowSessionContext, UNKNOWN_TRANSPORT);
+    }
+
+    public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowSessionContext workflowSessionContext,
+                             final String activeTransport) {
         this.sessionManager = sessionManager;
         this.databaseCapabilityProvider = databaseCapabilityProvider;
         this.workflowSessionContext = workflowSessionContext;
+        this.activeTransport = Objects.toString(activeTransport, UNKNOWN_TRANSPORT);
         sessionManager.addSessionCloseListener(workflowSessionContext::removeBySessionId);
     }
 }

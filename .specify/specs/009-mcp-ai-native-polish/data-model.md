@@ -70,6 +70,81 @@ Validation rules:
 - Completion hints must be derived from existing `completionTargets`.
 - Hints must not duplicate full completion result lists.
 
+## ExecutableCompletionAction
+
+Represents a `complete_argument` next action that a model can turn into an MCP completion request without guessing hidden joins.
+
+- `action_kind`: Always `complete_argument`.
+- `reference_type`: Completion reference type, such as tool, prompt, or resource.
+- `reference`: Public completion reference.
+- `argument_name`: Argument to complete.
+- `argument_prefix`: Optional prefix to pass to completion.
+- `context_arguments`: Known context arguments required by the completion target.
+- `missing_context_arguments`: Context arguments that must be provided before completion can work.
+- `resume_target_type`: `tool`, `resource`, or `prompt` when known.
+- `resume_target`: Public tool name, resource URI, or prompt name to use after choosing a completion value.
+- `resume_arguments`: Safe arguments to carry into the resumed call.
+- `reason`: Server-owned explanation.
+- `requires_user_approval`: Usually false; true only if the next resumed action itself needs explicit approval.
+
+Validation rules:
+
+- The action must use public descriptor names, not internal Java class names.
+- It must not invent completion references that are not registered in `completionTargets`.
+- Resume arguments must not contain secrets or unapproved side-effect execution arguments.
+
+## ResourceErrorPayload
+
+Represents an error returned inside resource content when `resources/read` cannot use tool-style `isError`.
+
+- `response_kind`: Always `error`.
+- `error_code`: Stable machine-readable error code.
+- `message`: Secret-safe human-readable message.
+- `original_uri`: Resource URI that failed.
+- `recoverable`: Whether the model can safely repair or retry.
+- `next_actions`: Recovery actions such as read parent, search metadata, complete an argument, or ask the user.
+- `trace_id`: Optional bounded identifier if available without persistence or secret exposure.
+
+Validation rules:
+
+- Resource errors must be distinguishable from normal resource payloads without relying on prose.
+- The payload must not expose JDBC credentials, bearer tokens, raw environment variables, or full stack traces.
+- Recovery actions must use public MCP names and descriptor-backed URIs only.
+
+## TypedResourceHint
+
+Represents a resource URI plus enough context for the model to know why it is useful.
+
+- `uri`: Descriptor-backed resource URI.
+- `resource_kind`: Database, schema, table, column, index, rule, algorithm, capability, or another stable public kind.
+- `purpose`: `read_first`, `inspect_parent`, `inspect_detail`, `validate_scope`, `continue_page`, or another bounded purpose.
+- `reason`: Short server-owned explanation.
+- `source_field`: Field that produced the hint, such as `resources_to_read`, `next_resources`, or `parent_resource`.
+- `required_arguments`: Optional arguments that should be carried into a follow-up tool call.
+
+Validation rules:
+
+- URI encoding rules from `EncodedResourceIdentifier` apply to every `uri`.
+- The hint must not guess resources when descriptor-backed derivation is unsafe.
+- Bare URI-only fields should be removed from canonical payloads once typed hints are introduced.
+
+## ResourceLinkHint
+
+Represents optional protocol-native resource link metadata carried with a tool result when the SDK/client path supports it.
+
+- `uri`: Linked MCP resource URI.
+- `title`: Short display title.
+- `mime_type`: Optional MIME type when known.
+- `relation`: Relationship such as `detail`, `parent`, `next_page`, `capability`, or `evidence`.
+- `description`: Short reason for reading the linked resource.
+- `canonical_payload_field`: JSON `structuredContent` field that owns the same URI because structured content remains the canonical result.
+
+Validation rules:
+
+- Resource links are additive affordances and must not replace canonical `structuredContent` fields.
+- Links must point only to public resource URIs the server can derive safely.
+- Do not keep old URI-only payload fields solely as compatibility shims for clients that ignore resource-link content.
+
 ## EmptyStateHint
 
 Represents why a response has no data and what the model should do next.
@@ -77,7 +152,7 @@ Represents why a response has no data and what the model should do next.
 - `empty_state`: Stable category such as `no_items`, `no_match`, `unsupported_scope`, `not_found`, or `missing_context`.
 - `reason`: Short server-owned explanation.
 - `safe_next_actions`: Optional next actions to read a parent, retry search, or ask the user.
-- `parent_uri`: Optional parent resource when known.
+- `parent_resource`: Optional typed parent resource when known.
 - `search_suggestion`: Optional safe query/search hint.
 
 Validation rules:
@@ -107,7 +182,7 @@ Represents a more specific safe recovery category for runtime failures.
 
 - `category`: `missing_jdbc_driver`, `authentication_failed`, `connection_timeout`, `database_unavailable`, or similar safe category.
 - `model_action`: Short safe fix instruction.
-- `read_resources_first`: Optional resources to inspect.
+- `resources_to_read`: Optional typed resources to inspect.
 - `local_check`: Optional local action such as checking `plugins/`.
 - `request_id`: Optional bounded request identifier if implemented.
 
@@ -222,13 +297,15 @@ Represents a field-level question that a model can turn into natural user langua
 - `allowed_values`: Optional allowed values for enum-like answers.
 - `default_value`: Optional server-proposed default.
 - `secret`: Whether the model must avoid echoing or storing the answer.
-- `message`: Short fallback question for clients without native elicitation.
+- `display_message`: Short user-facing question generated from the structured fields.
 
 Validation rules:
 
 - Field-level questions must not require the model to parse prose to identify the missing field.
 - Secret questions must not include existing secret values.
-- MCP-native elicitation can carry the same fields when supported, but fallback payloads must remain available.
+- Structured fields are the canonical contract.
+- MCP-native elicitation can carry the same fields when supported.
+- Prose-only compatibility fields must not be emitted once structured questions are available.
 
 ## WorkflowStatusSnapshot
 

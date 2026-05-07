@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecuteUpdateToolHandlerTest {
-    
+
     @Test
     void assertHandleUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -63,7 +63,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(requestCaptor.getValue().getMaxRows(), is(100));
         assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
-    
+
     @Test
     void assertRejectMissingExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -74,7 +74,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("execution_mode is required."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -85,7 +85,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("execute_update does not accept read-only SQL. Use execute_query for read-only SQL."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertPreviewUpdateStatementWithoutExecuting() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -113,12 +113,12 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
         assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("required_arguments")).get("execution_mode"), is("execute"));
         assertTrue((Boolean) ((Map<?, ?>) actualNextActions.get(1)).get("requires_user_approval"));
-        assertThat(actual.toPayload().get("read_resources_first"), is(List.of("shardingsphere://databases/logic_db/capabilities")));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).get(0)).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
         assertTrue((boolean) actual.toPayload().get("ask_user_when_uncertain"));
         assertFalse(actual.toPayload().containsKey("recommended_next_call"));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectUnknownExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -129,7 +129,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("execution_mode must be either `execute` or `preview`."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectExplainAnalyze() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);

@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class MCPHandlerLoaderTest {
-    
+
     @Test
     void assertLoadToolHandlers() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
@@ -50,7 +50,7 @@ class MCPHandlerLoaderTest {
             assertThat(actual, is(List.of("search_metadata", "plan_encrypt_rule")));
         }
     }
-    
+
     @Test
     void assertLoadResourceHandlers() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
@@ -59,10 +59,10 @@ class MCPHandlerLoaderTest {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
             mocked.when(() -> ShardingSphereServiceLoader.getServiceInstances(MCPHandlerProvider.class)).thenReturn(List.of(provider));
             Collection<MCPResourceHandler<?>> actual = MCPHandlerLoader.loadResourceHandlers();
-            assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriPattern()).toList(), is(List.of("shardingsphere://foo")));
+            assertThat(actual.stream().map(each -> each.getResourceDescriptor().getUriTemplate()).toList(), is(List.of("shardingsphere://foo")));
         }
     }
-    
+
     @Test
     void assertCreateToolHandlersWithNullHandlers() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
@@ -70,7 +70,7 @@ class MCPHandlerLoaderTest {
         NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createToolHandlers(provider));
         assertThat(actual.getMessage(), is(String.format("Tool handlers are required for `%s`.", provider.getClass().getName())));
     }
-    
+
     @Test
     void assertCreateToolHandlersWithNullHandler() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
@@ -81,7 +81,7 @@ class MCPHandlerLoaderTest {
         NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createToolHandlers(provider));
         assertThat(actual.getMessage(), is(String.format("Tool handler is required for `%s`.", provider.getClass().getName())));
     }
-    
+
     @Test
     void assertCreateResourceHandlersWithNullHandlers() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
@@ -89,7 +89,7 @@ class MCPHandlerLoaderTest {
         NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createResourceHandlers(provider));
         assertThat(actual.getMessage(), is(String.format("Resource handlers are required for `%s`.", provider.getClass().getName())));
     }
-    
+
     @Test
     void assertCreateResourceHandlersWithNullHandler() {
         MCPHandlerProvider provider = mock(MCPHandlerProvider.class);
@@ -100,23 +100,23 @@ class MCPHandlerLoaderTest {
         NullPointerException actual = assertThrows(NullPointerException.class, () -> MCPHandlerLoader.createResourceHandlers(provider));
         assertThat(actual.getMessage(), is(String.format("Resource handler is required for `%s`.", provider.getClass().getName())));
     }
-    
+
     private static MCPToolHandler<?> createToolHandler(final String toolName) {
         MCPToolDescriptor descriptor = createToolDescriptor(toolName);
         MCPToolHandler<?> result = mock(MCPToolHandler.class);
         when(result.getToolDescriptor()).thenReturn(descriptor);
         return result;
     }
-    
+
     private static MCPToolDescriptor createToolDescriptor(final String toolName) {
         MCPToolDescriptor result = mock(MCPToolDescriptor.class);
         when(result.getName()).thenReturn(toolName);
         return result;
     }
-    
-    private static MCPResourceHandler<?> createResourceHandler(final String uriPattern) {
+
+    private static MCPResourceHandler<?> createResourceHandler(final String uriTemplate) {
         MCPResourceHandler<?> result = mock(MCPResourceHandler.class);
-        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriPattern, "foo", "Foo", "Read the fixture foo resource.", "application/json"));
+        when(result.getResourceDescriptor()).thenReturn(new MCPResourceDescriptor(uriTemplate, "foo", "Foo", "Read the fixture foo resource.", "application/json"));
         return result;
     }
 }

@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.prompt.descriptor;
+package org.apache.shardingsphere.mcp.support.protocol;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Test;
 
-/**
- * MCP prompt argument descriptor.
- */
-@RequiredArgsConstructor
-@Getter
-public final class MCPPromptArgumentDescriptor {
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+class MCPResourceHintUtilsTest {
     
-    private final String name;
-    
-    private final String title;
-    
-    private final String description;
-    
-    private final boolean required;
+    @Test
+    void assertCreate() {
+        Map<String, Object> actual = MCPResourceHintUtils.create("shardingsphere://databases/foo_db", "logical-database", "read_first", "Read database.", "resources_to_read");
+        assertThat(actual, is(Map.of(
+                "uri", "shardingsphere://databases/foo_db",
+                "resource_kind", "logical-database",
+                "purpose", "read_first",
+                "reason", "Read database.",
+                "source_field", "resources_to_read")));
+    }
 }

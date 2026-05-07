@@ -52,7 +52,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             Map<String, Object> clarifyingResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("table", "orders", "column", "status", "natural_language_intent", "encrypt status with reversible encryption, no equality, no like"));
             assertThat(String.valueOf(clarifyingResponse.get("status")), is("clarifying"));
-            assertThat(getStringList(clarifyingResponse.get("pending_questions")), is(List.of("Please provide logical database first.")));
+            assertThat(getClarificationMessages(clarifyingResponse), is(List.of("Please provide logical database first.")));
             String planId = String.valueOf(clarifyingResponse.get("plan_id"));
             Map<String, Object> plannedResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("plan_id", planId, "database", getLogicalDatabaseName(), "algorithm_type", "AES",
@@ -105,7 +105,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
                             "natural_language_intent", "encrypt status with reversible encryption, requires equality, no like"));
             assertThat(String.valueOf(actualClarifyingResponse.get("status")), is("clarifying"));
             assertThat(getIssueCodes(actualClarifyingResponse), hasItem(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
-            assertThat(getStringList(actualClarifyingResponse.get("pending_questions")), is(List.of("Please provide property `aes-key-value`.")));
+            assertThat(getClarificationMessages(actualClarifyingResponse), is(List.of("Please provide property `aes-key-value`.")));
             List<Map<String, Object>> actualRecommendations = getMapList(actualClarifyingResponse.get("algorithm_recommendations"));
             assertThat(actualRecommendations.size(), is(2));
             assertThat(String.valueOf(actualRecommendations.get(0).get("algorithm_role")), is("primary"));
@@ -300,7 +300,7 @@ class HttpProductionProxyEncryptWorkflowE2ETest extends AbstractProductionProxyW
             Map<String, Object> actualDropPlanResponse = interactionClient.call(PLAN_TOOL_NAME,
                     Map.of("database", getLogicalDatabaseName(), "table", "orders", "column", "status", "operation_type", "drop"));
             assertThat(String.valueOf(actualDropPlanResponse.get("status")), is("planned"));
-            assertThat(getStringList(actualDropPlanResponse.get("pending_questions")), is(List.of()));
+            assertThat(getClarificationMessages(actualDropPlanResponse), is(List.of()));
             assertThat(getIssueCodes(actualDropPlanResponse), hasItem(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED));
             assertThat(getIssueCodes(actualDropPlanResponse), hasItem(WorkflowIssueCode.PHYSICAL_CLEANUP_REQUIRED));
             assertThat(getMapList(actualDropPlanResponse.get("ddl_artifacts")).size(), is(0));

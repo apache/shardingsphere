@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
@@ -40,17 +42,27 @@ final class SQLExecutionToolHandlerSupport {
     static boolean isReadOnlyStatement(final SupportedMCPStatement statementClass) {
         return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN_ANALYZE == statementClass;
     }
-    
-    static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql) {
+
+    static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql, final String sourceTool) {
         return new SQLExecutionRequest(toolCall.getSessionId(), toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), sql,
-                resolveMaxRows(toolArguments), toolArguments.getIntegerArgument("timeout_ms", DEFAULT_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS, MAX_TIMEOUT_MILLISECONDS));
+                resolveMaxRows(toolArguments, sourceTool), getIntegerArgument(toolArguments, sourceTool, "timeout_ms", DEFAULT_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS,
+                MAX_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS));
     }
     
-    private static int resolveMaxRows(final MCPToolArguments toolArguments) {
-        int result = toolArguments.getIntegerArgument("max_rows", DEFAULT_MAX_ROWS, 0, MAX_ROWS_LIMIT);
+    private static int resolveMaxRows(final MCPToolArguments toolArguments, final String sourceTool) {
+        int result = getIntegerArgument(toolArguments, sourceTool, "max_rows", DEFAULT_MAX_ROWS, 0, MAX_ROWS_LIMIT, DEFAULT_MAX_ROWS);
         return 0 == result ? DEFAULT_MAX_ROWS : result;
     }
     
+    private static int getIntegerArgument(final MCPToolArguments toolArguments, final String sourceTool, final String argumentPath, final int defaultValue, final int minimumValue,
+                                          final int maximumValue, final int suggestedValue) {
+        try {
+            return toolArguments.getIntegerArgument(argumentPath, defaultValue, minimumValue, maximumValue);
+        } catch (final MCPInvalidRequestException ex) {
+            throw new MCPInvalidToolArgumentException(sourceTool, sourceTool, argumentPath, minimumValue, maximumValue, suggestedValue, ex);
+        }
+    }
+
     static void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
         if (!value.isEmpty()) {
             target.put(key, value);

@@ -147,6 +147,7 @@ public final class WorkflowValidationSupport {
         String validationStatus = resolveValidationStatus(validationReport);
         workflowSessionContext.persist(snapshot, WorkflowLifecycle.STEP_VALIDATED, validationStatus);
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
+        result.put("response_mode", "validation");
         result.put("plan_id", snapshot.getPlanId());
         result.put("status", validationStatus);
         result.put("issues", createValidationIssues(validationReport));
@@ -228,6 +229,7 @@ public final class WorkflowValidationSupport {
     
     private Map<String, Object> createRejectedResponse(final WorkflowContextSnapshot snapshot, final String issueCode, final String message, final String userAction) {
         Map<String, Object> result = new LinkedHashMap<>(9, 1F);
+        result.put("response_mode", "terminal");
         result.put("plan_id", snapshot.getPlanId());
         result.put("status", WorkflowLifecycle.STATUS_FAILED);
         result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));

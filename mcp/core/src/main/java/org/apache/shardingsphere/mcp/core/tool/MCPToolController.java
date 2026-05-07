@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
-import org.apache.shardingsphere.mcp.api.protocol.exception.UnsupportedToolException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 
@@ -32,9 +32,9 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class MCPToolController {
-    
+
     private final MCPRuntimeContext runtimeContext;
-    
+
     /**
      * Handle tool call.
      *

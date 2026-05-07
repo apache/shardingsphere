@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPNextActionUtils {
-    
+
     /**
      * Create a read-resource action.
      *
@@ -46,7 +47,7 @@ public final class MCPNextActionUtils {
         result.put("requires_user_approval", false);
         return result;
     }
-    
+
     /**
      * Create a tool-call action.
      *
@@ -65,7 +66,7 @@ public final class MCPNextActionUtils {
         result.put("requires_user_approval", requiresUserApproval);
         return result;
     }
-    
+
     /**
      * Create a retry-tool action.
      *
@@ -86,23 +87,47 @@ public final class MCPNextActionUtils {
         result.put("requires_user_approval", requiresUserApproval);
         return result;
     }
-    
+
     /**
      * Create a completion action.
      *
+     * @param referenceType completion reference type
+     * @param reference completion reference
      * @param argumentName argument name
+     * @param argumentPrefix argument prefix
+     * @param contextArguments context arguments
+     * @param missingContextArguments missing context arguments
+     * @param resumeTargetType resume target type
+     * @param resumeTarget resume target
+     * @param resumeArguments resume arguments
      * @param reason action reason
      * @return action payload
      */
-    public static Map<String, Object> completeArgument(final String argumentName, final String reason) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+    public static Map<String, Object> completeArgument(final String referenceType, final String reference, final String argumentName, final String argumentPrefix,
+                                                       final Map<String, ?> contextArguments, final Collection<String> missingContextArguments, final String resumeTargetType,
+                                                       final String resumeTarget, final Map<String, ?> resumeArguments, final String reason) {
+        final Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("action_kind", "complete_argument");
+        result.put("reference_type", referenceType);
+        result.put("reference", reference);
         result.put("argument_name", argumentName);
+        result.put("argument_prefix", argumentPrefix);
+        result.put("context_arguments", contextArguments);
+        result.put("missing_context_arguments", missingContextArguments);
+        if (!resumeTargetType.isEmpty()) {
+            result.put("resume_target_type", resumeTargetType);
+        }
+        if (!resumeTarget.isEmpty()) {
+            result.put("resume_target", resumeTarget);
+        }
+        if (!resumeArguments.isEmpty()) {
+            result.put("resume_arguments", resumeArguments);
+        }
         result.put("reason", reason);
         result.put("requires_user_approval", false);
         return result;
     }
-    
+
     /**
      * Create an ask-user action.
      *
@@ -119,7 +144,7 @@ public final class MCPNextActionUtils {
         result.put("requires_user_approval", requiresUserApproval);
         return result;
     }
-    
+
     /**
      * Create a stop action.
      *
@@ -133,7 +158,7 @@ public final class MCPNextActionUtils {
         result.put("requires_user_approval", false);
         return result;
     }
-    
+
     /**
      * Add 1-based order values to actions.
      *
@@ -150,7 +175,7 @@ public final class MCPNextActionUtils {
         }
         return result;
     }
-    
+
     /**
      * Add action dependencies by 1-based order.
      *

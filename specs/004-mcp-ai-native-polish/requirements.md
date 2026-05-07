@@ -34,6 +34,9 @@
 - `.specify/specs/009-mcp-ai-native-polish/research.md`
 - `.specify/specs/009-mcp-ai-native-polish/data-model.md`
 - `.specify/specs/009-mcp-ai-native-polish/current-behavior-analysis.md`
+- `.specify/specs/009-mcp-ai-native-polish/final-requirement-inventory.md`
+- `.specify/specs/009-mcp-ai-native-polish/requirement-sweep-2026-05-07.md`
+- `.specify/specs/009-mcp-ai-native-polish/implementation-task-breakdown.md`
 - `.specify/specs/009-mcp-ai-native-polish/tasks.md`
 - `.specify/specs/009-mcp-ai-native-polish/checklists/requirements.md`
 
@@ -49,7 +52,7 @@
 - `shardingsphere://capabilities` 已作为模型可读 public surface。
 - capabilities 已包含 `model_contract`、`next_action_contract`、`common_flows`、`security_hints`、payload contracts、protocol availability 和 fingerprints。
 - descriptor 已覆盖 tools、resources、resource templates、prompts、completion、annotations、examples 和 output schema。
-- `search_metadata` 已包含 `resource_uri`、`parent_resource_uri`、`next_resource_uris`、search context、match kind、matched fields 和 matched value。
+- `search_metadata` 已包含 typed `resource`、`parent_resource`、`next_resources`、search context、match kind、matched fields 和 matched value。
 - SQL 响应已包含 row count、applied limits、timeout、truncation 和 `next_actions` 等 parse hints。
 - `execute_update` 与 `apply_workflow` 已有 preview-first、approval summary、approval question、side-effect scope、reusable arguments 和 user approval 要求。
 - recovery 已覆盖缺参数、execution mode、SQL tool 用错、object type、page token、stale workflow plan、unsupported tool/resource 和 unsafe SQL 等常见错误。
@@ -124,3 +127,23 @@
 - Java 改动：运行 scoped Checkstyle。
 - 每个新增模型可见字段都要有 deterministic shape test、descriptor test、payload test 或文档核对项。
 - 完成前再次确认当前分支仍为 `001-shardingsphere-mcp`。
+
+## 9. 最终需求盘点
+
+最终收敛清单见 `.specify/specs/009-mcp-ai-native-polish/final-requirement-inventory.md`。
+2026-05-07 的追问扫尾见 `.specify/specs/009-mcp-ai-native-polish/requirement-sweep-2026-05-07.md`。
+可执行拆分见 `.specify/specs/009-mcp-ai-native-polish/implementation-task-breakdown.md`。
+
+它把反复追问后的需求压缩为：
+
+- P0：URI 编码、截断/分页 continuation、ambiguity hint、recovery target、workflow response mode、next-action sequencing。
+- P1：EXPLAIN ANALYZE 风险、单 schema completion、runtime status、Proxy topology hint、empty/not-found follow-up。
+- P2：可选 request correlation、trace-aware approval metric、token-safe health check、HTTP package metadata、capability-gated MCP elicitation。
+
+最新扫尾补充把容易漏掉的体验问题单独落档：
+
+- P0：compact first-hop、直接元数据资源的大结果控制、`max_rows=0` 语义、workflow 参数冲突、preview review focus、文档漂移和字段命名契约。
+- P1：单候选 completion 推断、capability-gated elicitation、secret-free runtime readiness、结果 payload token 控制、resource hint 一致性、SQL/JDBC recovery 分类、terminal stop 和 deterministic MCP client smoke。
+- P2：分发示例、token-safe health check、capability fingerprint 可用性、descriptor authoring lint 和可选 request correlation。
+
+非目标保持不变：不做 planner、graph、vector/semantic search、跨会话记忆、approval token、RBAC、默认 real-model CI 或兼容工具矩阵。

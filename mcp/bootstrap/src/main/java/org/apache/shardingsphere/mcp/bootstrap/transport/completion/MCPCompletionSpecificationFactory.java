@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.completion;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncCompletionSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.shardingsphere.mcp.api.completion.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
@@ -31,6 +30,7 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPIndexMet
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSequenceMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
+import org.apache.shardingsphere.mcp.support.descriptor.MCPCompletionTargetDescriptor;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
@@ -50,21 +50,21 @@ import java.util.stream.Stream;
  * MCP completion specification factory.
  */
 public final class MCPCompletionSpecificationFactory {
-    
+
     private static final int DEFAULT_MAX_VALUES = 50;
-    
+
     private static final Set<String> COMPLETION_ELIGIBLE_WORKFLOW_STATUSES = Set.of(WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION,
             WorkflowLifecycle.STATUS_EXECUTED, WorkflowLifecycle.STATUS_FAILED, WorkflowLifecycle.STATUS_PLANNED, WorkflowLifecycle.STATUS_VALIDATED);
-    
+
     private final MCPRuntimeContext runtimeContext;
-    
+
     private final List<MCPCompletionTargetDescriptor> completionTargetDescriptors;
-    
+
     public MCPCompletionSpecificationFactory(final MCPRuntimeContext runtimeContext) {
         this.runtimeContext = runtimeContext;
         completionTargetDescriptors = List.copyOf(MCPDescriptorRegistry.getCompletionTargetDescriptors());
     }
-    
+
     /**
      * Create MCP completion specifications.
      *
@@ -73,11 +73,11 @@ public final class MCPCompletionSpecificationFactory {
     public List<SyncCompletionSpecification> createCompletionSpecifications() {
         return completionTargetDescriptors.stream().map(each -> new SyncCompletionSpecification(createReference(each), (exchange, request) -> handle(exchange, request, each))).toList();
     }
-    
+
     private McpSchema.CompleteReference createReference(final MCPCompletionTargetDescriptor descriptor) {
         return "prompt".equals(descriptor.getReferenceType()) ? new McpSchema.PromptReference(descriptor.getReference()) : new McpSchema.ResourceReference(descriptor.getReference());
     }
-    
+
     private McpSchema.CompleteResult handle(final McpSyncServerExchange exchange, final McpSchema.CompleteRequest request,
                                             final MCPCompletionTargetDescriptor descriptor) {
         String argumentName = request.argument().name();
@@ -97,7 +97,7 @@ public final class MCPCompletionSpecificationFactory {
                 filteredCandidates.size(), filteredCandidates.size() > returnedCandidates.size()),
                 createMeta(descriptor, argumentName, prefix, matchStrategy, contextArguments, candidates, filteredCandidates, returnedCandidates));
     }
-    
+
     private Comparator<CompletionCandidate> createCandidateComparator(final String prefix, final String argumentName) {
         String normalizedPrefix = prefix.toLowerCase(Locale.ENGLISH);
         return Comparator.comparingInt((CompletionCandidate each) -> getExactMatchRank(each, normalizedPrefix))
@@ -105,26 +105,26 @@ public final class MCPCompletionSpecificationFactory {
                 .thenComparing(each -> each.value().toLowerCase(Locale.ENGLISH))
                 .thenComparing(CompletionCandidate::value);
     }
-    
+
     private int getExactMatchRank(final CompletionCandidate candidate, final String normalizedPrefix) {
         return candidate.value().toLowerCase(Locale.ENGLISH).equals(normalizedPrefix) ? 0 : 1;
     }
-    
+
     private int comparePlanUpdateTime(final CompletionCandidate left, final CompletionCandidate right, final String argumentName) {
         if (!"plan_id".equals(argumentName)) {
             return 0;
         }
         return Comparator.nullsLast(Comparator.<Instant>reverseOrder()).compare(left.updateTime(), right.updateTime());
     }
-    
+
     private boolean matchesPrefix(final String value, final String prefix) {
         return value.toLowerCase(Locale.ENGLISH).startsWith(prefix.toLowerCase(Locale.ENGLISH));
     }
-    
+
     private boolean matchesContains(final String value, final String prefix) {
         return value.toLowerCase(Locale.ENGLISH).contains(prefix.toLowerCase(Locale.ENGLISH));
     }
-    
+
     private List<CompletionCandidate> complete(final String sessionId, final MCPCompletionTargetDescriptor descriptor, final String argumentName, final Map<String, String> contextArguments) {
         if (isAlgorithmArgument(argumentName)) {
             return completeAlgorithms(descriptor, argumentName);
@@ -136,11 +136,11 @@ public final class MCPCompletionSpecificationFactory {
             return completeMetadata(requestScope, argumentName, contextArguments);
         }
     }
-    
+
     private boolean isAlgorithmArgument(final String argumentName) {
         return "algorithm_type".equals(argumentName) || "assisted_query_algorithm_type".equals(argumentName) || "like_query_algorithm_type".equals(argumentName);
     }
-    
+
     private List<CompletionCandidate> completeMetadata(final MCPRequestScope requestScope, final String argumentName, final Map<String, String> contextArguments) {
         if ("database".equals(argumentName)) {
             return completeDatabases(requestScope);
@@ -162,12 +162,12 @@ public final class MCPCompletionSpecificationFactory {
         }
         return List.of();
     }
-    
+
     private List<CompletionCandidate> completeDatabases(final MCPRequestScope requestScope) {
         return requestScope.getMetadataQueryFacade().queryDatabases().stream()
                 .map(each -> new CompletionCandidate(each.getDatabase(), String.format("%s %s", each.getDatabaseType(), each.getDatabaseVersion()), "metadata", null)).toList();
     }
-    
+
     private List<CompletionCandidate> completeSchemas(final MCPRequestScope requestScope, final Map<String, String> contextArguments) {
         String database = contextArguments.getOrDefault("database", "");
         if (database.isEmpty()) {
@@ -176,7 +176,7 @@ public final class MCPCompletionSpecificationFactory {
         return requestScope.getMetadataQueryFacade().querySchemas(database).stream().map(MCPSchemaMetadata::getSchema)
                 .map(each -> new CompletionCandidate(each, "schema", "metadata", null)).toList();
     }
-    
+
     private List<CompletionCandidate> completeTables(final MCPRequestScope requestScope, final Map<String, String> contextArguments) {
         String database = contextArguments.getOrDefault("database", "");
         String schema = contextArguments.getOrDefault("schema", "");
@@ -186,7 +186,7 @@ public final class MCPCompletionSpecificationFactory {
         return requestScope.getMetadataQueryFacade().queryTables(database, schema).stream().map(MCPTableMetadata::getTable)
                 .map(each -> new CompletionCandidate(each, "logical table", "metadata", null)).toList();
     }
-    
+
     private List<CompletionCandidate> completeColumns(final MCPRequestScope requestScope, final Map<String, String> contextArguments) {
         String database = contextArguments.getOrDefault("database", "");
         String schema = contextArguments.getOrDefault("schema", "");
@@ -197,7 +197,7 @@ public final class MCPCompletionSpecificationFactory {
         return requestScope.getMetadataQueryFacade().queryTableColumns(database, schema, table).stream().map(MCPColumnMetadata::getColumn)
                 .map(each -> new CompletionCandidate(each, "column", "metadata", null)).toList();
     }
-    
+
     private List<CompletionCandidate> completeIndexes(final MCPRequestScope requestScope, final Map<String, String> contextArguments) {
         String database = contextArguments.getOrDefault("database", "");
         String schema = contextArguments.getOrDefault("schema", "");
@@ -212,7 +212,7 @@ public final class MCPCompletionSpecificationFactory {
             return List.of();
         }
     }
-    
+
     private List<CompletionCandidate> completeSequences(final MCPRequestScope requestScope, final Map<String, String> contextArguments) {
         String database = contextArguments.getOrDefault("database", "");
         String schema = contextArguments.getOrDefault("schema", "");
@@ -226,7 +226,7 @@ public final class MCPCompletionSpecificationFactory {
             return List.of();
         }
     }
-    
+
     private List<CompletionCandidate> completeAlgorithms(final MCPCompletionTargetDescriptor descriptor, final String argumentName) {
         boolean encryptAlgorithm = descriptor.getReference().contains("encrypt") || !"algorithm_type".equals(argumentName);
         String resourceUri = encryptAlgorithm ? "shardingsphere://features/encrypt/algorithms" : "shardingsphere://features/mask/algorithms";
@@ -238,22 +238,22 @@ public final class MCPCompletionSpecificationFactory {
         return ((List<?>) items).stream().filter(each -> each instanceof Map)
                 .map(each -> createAlgorithmCandidate((Map<?, ?>) each)).filter(each -> !each.value().isEmpty()).toList();
     }
-    
+
     private CompletionCandidate createAlgorithmCandidate(final Map<?, ?> row) {
         String value = Objects.toString(row.get("type"), "").trim();
         String label = Objects.toString(row.containsKey("description") ? row.get("description") : "algorithm", "algorithm");
         return new CompletionCandidate(value, label, "algorithm-resource", null);
     }
-    
+
     private List<CompletionCandidate> completePlanIds(final String sessionId) {
         return runtimeContext.getWorkflowSessionContext().list(sessionId).stream().filter(this::isCompletionEligiblePlan)
                 .map(each -> new CompletionCandidate(each.getPlanId(), String.format("%s %s", each.getWorkflowKind(), each.getStatus()), "workflow-session", each.getUpdateTime())).toList();
     }
-    
+
     private boolean isCompletionEligiblePlan(final WorkflowContextSnapshot snapshot) {
         return COMPLETION_ELIGIBLE_WORKFLOW_STATUSES.contains(Objects.toString(snapshot.getStatus(), ""));
     }
-    
+
     private Map<String, Object> createMeta(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix, final String matchStrategy,
                                            final Map<String, String> contextArguments, final List<CompletionCandidate> candidates,
                                            final List<CompletionCandidate> filteredCandidates, final List<CompletionCandidate> returnedCandidates) {
@@ -267,11 +267,11 @@ public final class MCPCompletionSpecificationFactory {
         result.put("candidateCount", candidates.size());
         result.put("matchedCandidateCount", filteredCandidates.size());
         result.put("returnedCandidateCount", returnedCandidates.size());
-        List<String> missingContextArguments = createMissingContextArguments(argumentName, contextArguments);
+        final List<String> missingContextArguments = createMissingContextArguments(argumentName, contextArguments);
         result.put("missingContextArguments", missingContextArguments);
-        String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
+        final String diagnostic = createDiagnostic(candidates, filteredCandidates, missingContextArguments);
         result.put("diagnostic", diagnostic);
-        List<Map<String, Object>> nextActions = createNextActions(argumentName, diagnostic, missingContextArguments);
+        final List<Map<String, Object>> nextActions = createNextActions(descriptor, argumentName, prefix, contextArguments, diagnostic, missingContextArguments);
         if (!nextActions.isEmpty()) {
             result.put("next_actions", nextActions);
         }
@@ -279,20 +279,28 @@ public final class MCPCompletionSpecificationFactory {
         result.put("valueDetails", returnedCandidates.stream().map(this::createValueDetail).toList());
         return result;
     }
-    
-    private List<Map<String, Object>> createNextActions(final String argumentName, final String diagnostic, final List<String> missingContextArguments) {
+
+    private List<Map<String, Object>> createNextActions(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String prefix,
+                                                        final Map<String, String> contextArguments, final String diagnostic, final List<String> missingContextArguments) {
         if ("missing_context".equals(diagnostic)) {
-            return List.of(MCPNextActionUtils.completeArgument(missingContextArguments.get(0), "Complete or provide the missing context argument before retrying this completion."));
+            return List.of(createCompletionAction(descriptor, missingContextArguments.get(0), "", contextArguments, missingContextArguments,
+                    "Complete or provide the missing context argument before retrying this completion."));
         }
         if ("prefix_filtered_all_candidates".equals(diagnostic)) {
-            return List.of(MCPNextActionUtils.completeArgument(argumentName, "Retry completion with a shorter or empty prefix."));
+            return List.of(createCompletionAction(descriptor, argumentName, prefix, contextArguments, List.of(), "Retry completion with a shorter or empty prefix."));
         }
         if ("no_candidates".equals(diagnostic)) {
             return List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP capabilities before choosing another argument source."));
         }
         return List.of();
     }
-    
+
+    private Map<String, Object> createCompletionAction(final MCPCompletionTargetDescriptor descriptor, final String argumentName, final String argumentPrefix,
+                                                       final Map<String, String> contextArguments, final List<String> missingContextArguments, final String reason) {
+        return MCPNextActionUtils.completeArgument(descriptor.getReferenceType(), descriptor.getReference(), argumentName, argumentPrefix, contextArguments, missingContextArguments,
+                descriptor.getReferenceType(), descriptor.getReference(), contextArguments, reason);
+    }
+
     private List<String> createMissingContextArguments(final String argumentName, final Map<String, String> contextArguments) {
         if ("schema".equals(argumentName)) {
             return createMissingArguments(contextArguments, "database");
@@ -305,11 +313,11 @@ public final class MCPCompletionSpecificationFactory {
         }
         return List.of();
     }
-    
+
     private List<String> createMissingArguments(final Map<String, String> contextArguments, final String... requiredArguments) {
         return Stream.of(requiredArguments).filter(each -> Objects.toString(contextArguments.get(each), "").isEmpty()).toList();
     }
-    
+
     private String createDiagnostic(final List<CompletionCandidate> candidates, final List<CompletionCandidate> filteredCandidates,
                                     final List<String> missingContextArguments) {
         if (!missingContextArguments.isEmpty()) {
@@ -323,7 +331,7 @@ public final class MCPCompletionSpecificationFactory {
         }
         return "ok";
     }
-    
+
     private Map<String, Object> createValueDetail(final CompletionCandidate candidate) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("value", candidate.value());
@@ -337,7 +345,7 @@ public final class MCPCompletionSpecificationFactory {
         }
         return result;
     }
-    
+
     record CompletionCandidate(String value, String label, String source, Instant updateTime) {
     }
 }

@@ -19,19 +19,20 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriTemplateUtils;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * MCP resource navigation payload builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPResourceNavigationPayloadBuilder {
-    
+
     /**
      * Create navigation payload from a resource descriptor.
      *
@@ -42,34 +43,42 @@ public final class MCPResourceNavigationPayloadBuilder {
     public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         return create(descriptor, uriVariables, "");
     }
-    
+
     /**
-     * Create navigation payload from a resource descriptor and an explicit public parent pattern.
+     * Create navigation payload from a resource descriptor and an explicit public parent URI template.
      *
      * @param descriptor resource descriptor
      * @param uriVariables URI variables
-     * @param parentUriPattern public parent URI pattern
+     * @param parentUriTemplate public parent URI template
      * @return navigation payload
      */
-    public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final String parentUriPattern) {
+    public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final String parentUriTemplate) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
-        String selfUri = createConcreteUri(descriptor.getUriPattern(), variables);
+        String selfUri = MCPUriTemplateUtils.expand(descriptor.getUriTemplate(), variables);
         if (!selfUri.isEmpty()) {
             result.put("self_uri", selfUri);
         }
-        String parentUri = createConcreteUri(parentUriPattern, variables);
+        String parentUri = MCPUriTemplateUtils.expand(parentUriTemplate, variables);
         if (!parentUri.isEmpty()) {
-            result.put("parent_uri", parentUri);
+            result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent", "Read the parent resource.", "parent_resource"));
         }
         return result;
     }
-    
-    private static String createConcreteUri(final String uriPattern, final Map<String, String> variables) {
-        String result = uriPattern;
-        for (Entry<String, String> entry : variables.entrySet()) {
-            result = result.replace("{" + entry.getKey() + "}", entry.getValue());
+
+    private static String resolveResourceKind(final String uri) {
+        if (uri.contains("/rules")) {
+            return "rule";
         }
-        return result.contains("{") ? "" : result;
+        if (uri.contains("/algorithms")) {
+            return "algorithm";
+        }
+        if (uri.contains("/columns")) {
+            return "column";
+        }
+        if (uri.contains("/indexes")) {
+            return "index";
+        }
+        return "resource";
     }
 }

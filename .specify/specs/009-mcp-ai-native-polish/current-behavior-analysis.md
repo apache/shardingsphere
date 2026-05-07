@@ -13,12 +13,12 @@
 The current MCP surface already has strong foundations and has advanced beyond the older 009 draft:
 
 - Capabilities already expose `model_contract`, `next_action_contract`, `common_flows`, `security_hints`, payload contracts, protocol availability, and fingerprints.
-- Search already exposes `searchContext`, `match_kind`, `matched_fields`, `matched_value`, and descriptor-backed resource URI hints.
+- Search already exposes `searchContext`, `match_kind`, `matched_fields`, `matched_value`, and descriptor-backed typed resource hints.
 - SQL outputs already expose `returned_row_count`, `applied_max_rows`, `applied_timeout_ms`, `truncated`, and `next_actions`.
 - Side-effect previews already expose `approval_summary`, `approval_question`, side-effect scope, reusable arguments, and approval requirements.
 - Recovery already covers invalid `object_types`, invalid page token, stale plan IDs, wrong SQL tool, unsupported tool/resource, and missing execution mode.
 - Completion already exposes diagnostics, missing context, ranking policy, candidate counts, prefix-first matching, contains fallback, and value details.
-- Resource responses already expose `self_uri`, `parent_uri`, `next_resources`, counts, and payload contracts.
+- Resource responses already expose `self_uri`, typed `parent_resource` where applicable, typed `next_resources`, counts, and payload contracts.
 - Opt-in LLM usability already covers capability discovery, search-to-detail URI, preview SQL, workflow preview/manual/validate, prompt completion, and recovery paths.
 
 The remaining improvements are narrower:
@@ -26,7 +26,7 @@ The remaining improvements are narrower:
 - Multi-action `next_actions` still rely on list order and prose for dependencies.
 - `retry_tool` can be clearer when context is compacted.
 - Capabilities are rich; a tiny `surface_summary` would make first-hop use more comfortable.
-- Resource navigation lacks source/target type hints.
+- Resource navigation should keep source/target type hints centralized and consistent.
 - Tool fields do not locally say whether completion is available.
 - Empty, zero-hit, and not-found states can explain what happened more directly.
 - Reusable arguments do not consistently expose provenance.
@@ -36,10 +36,16 @@ The remaining improvements are narrower:
 - Opt-in usability reports can measure next-action following and approval violations directly.
 - SQL and metadata calls need explicit defaults, caps, and invalid-argument recovery to avoid accidental unbounded work.
 - Blank metadata search, broad all-database search, and percent-encoded identifiers need clearer contracts.
-- Missing-input prompts need field-level structure and an MCP-native elicitation path when supported.
+- Missing-input prompts need canonical field-level structure; MCP-native elicitation remains optional only when supported.
 - Common Chinese encrypt/mask intents need deterministic synonym coverage or structured intent evidence.
 - Workflow plans need a current-session read-back surface so models can resume after context compaction.
 - Runtime setup needs secret-safe status, environment placeholders, clearer bearer-token hints, and minimal client examples.
+- `complete_argument` next actions need enough data to call native completion and resume safely.
+- Resource-read errors need a machine-readable error marker inside resource content.
+- Resource references need typed purpose/kind hints so models do not infer why to read them.
+- Descriptor schemas need machine-readable defaults, bounds, examples, and patterns instead of prose-only contracts.
+- Replaced URI-only, prose-only, or duplicate old/new payload contracts should be deleted rather than kept as compatibility shims.
+- `breaking-cleanup-analysis.md` records the field-level delete/replace/keep matrix for implementation.
 
 ## Finding 1: Capability Surface
 
@@ -237,13 +243,13 @@ Remaining gap:
 Confirmed behavior:
 
 - `MetadataResourceHandler` already distinguishes list and detail resources.
-- Detail resources already return `found`, `items`, `count`, optional `item`, `self_uri`, `parent_uri`, and `next_resources`.
+- Detail resources already return `found`, `items`, `count`, optional `item`, `self_uri`, typed `parent_resource`, and typed `next_resources`.
 - `MCPItemsResponse` already provides `items`, `count`, `has_more`, optional `next_page_token`, and navigation.
 - `SearchMetadataToolService` and `SearchMetadataToolHandler` already provide `search_context`, paging, match kind, matched fields, and derived resource URIs.
 
 Remaining gap:
 
-- A zero-hit search lacks a compact diagnostic such as `empty_reason`.
+- A zero-hit search needs the canonical compact diagnostic shape `empty_state`.
 - Detail not-found responses have `found=false`, but do not explain whether to read the parent/list resource, broaden search, or correct path arguments.
 - Prefer adding empty diagnostics in `MetadataResourceHandler` and search-specific diagnostics in `SearchMetadataToolService` or `MetadataSearchResult`.
 - Avoid widening `MCPItemsResponse` unless the hint is truly generic for every list response.
@@ -314,7 +320,7 @@ Non-goals:
 Remaining gap:
 
 - Missing workflow inputs should be represented as structured questions, not only prose.
-- MCP-native elicitation should be used when supported, with current fallback fields retained.
+- Structured clarification fields should become canonical, with MCP-native elicitation mirroring them where supported.
 - Common Chinese terms for encryption, masking, reversibility, hashing, equality query, fuzzy query, phone, identity card,
   and email should be handled through deterministic synonyms or structured intent evidence.
 - A current-session workflow plan should be readable by `plan_id` so a model can recover after context compaction.
@@ -404,3 +410,77 @@ Remaining gap:
 Non-goals:
 
 - Do not add OAuth, RBAC, tenant policy, or a generalized health monitoring platform.
+
+## Last Guess-Reduction Sweep (2026-05-06)
+
+This sweep asks again where the model still has to join catalog sections, infer protocol semantics, or parse prose.
+The items below are concrete field-level gaps and should stay additive.
+
+### Completion Continuation
+
+Confirmed behavior:
+
+- `MCPNextActionUtils.completeArgument` currently emits `action_kind`, `argument_name`, `reason`, and `requires_user_approval`.
+- `MCPCompletionSpecificationFactory` can identify missing context and returns `complete_argument` actions.
+- `MCPDescriptorCatalog` already exposes `completionTargets`, so completion references exist elsewhere in the catalog.
+
+Remaining gap:
+
+- A model must infer the completion reference, known context arguments, prefix, and resume call from other sections.
+- Add `reference_type`, `reference`, `context_arguments`, `missing_context_arguments`, `argument_prefix`,
+  `resume_target_type`, `resume_target`, and `resume_arguments` when the server can know them.
+- Keep native MCP completion as the mechanism; do not add another helper tool.
+
+### Resource Error Recognition
+
+Confirmed behavior:
+
+- `MCPTransportPayloadUtils.createCallToolResult` marks tool errors with `isError`.
+- `MCPTransportPayloadUtils.createReadResourceResult` wraps JSON as `TextResourceContents`.
+- Resource reads therefore do not expose the same tool-style `isError` marker.
+
+Remaining gap:
+
+- If a resource read fails, a model needs `response_kind=error`, `error_code`, `original_uri`, and recovery `next_actions`
+  inside the JSON payload.
+- Keep the message secret-safe and avoid raw stack traces, credentials, tokens, or environment dumps.
+
+### Typed Resource Hints
+
+Confirmed behavior:
+
+- `WorkflowGuidancePayloadBuilder.createResourcesToRead` returns a list of URI strings.
+- Metadata resources return `next_resources` as URI strings.
+- Runtime status already uses `resources_to_read` as bare URIs for first checks.
+
+Remaining gap:
+
+- Bare URIs force the model to guess whether a resource is a parent, detail, capability, algorithm catalog, validation evidence, or next page.
+- Add typed entries with `uri`, `resource_kind`, `purpose`, `reason`, and `source_field`.
+- Delete bare URI-only list fields from canonical payloads once typed resource hints replace them, unless a protocol-owned field requires a URI string.
+
+### Schema-Visible Call Shape
+
+Confirmed behavior:
+
+- `MCPToolValueDefinition.toSchemaFragment` emits type, description, enum, object properties, required fields, and `additionalProperties`.
+- Current descriptors often mention defaults and ranges in descriptions, such as `page_size` default/range and `max_rows` default/range.
+
+Remaining gap:
+
+- Models must parse descriptions to learn defaults, minimums, maximums, examples, and patterns.
+- Add schema-visible fields when descriptor metadata already knows them, and keep descriptions only as human-readable display text.
+- Do not introduce a separate validation language; stay within JSON Schema fields the SDK can carry.
+
+### Resource Links
+
+Confirmed behavior:
+
+- Tool results currently carry `structuredContent` plus text JSON.
+- Tool payloads already include structured resource hints and `next_actions` in JSON `structuredContent`.
+
+Remaining gap:
+
+- Clients that understand MCP resource links could expose direct navigation, while JSON `structuredContent` remains the canonical payload path.
+- Add resource links only as optional transport content when SDK/client support is available.
+- Do not keep old URI-only payload fields solely for clients that ignore resource links.

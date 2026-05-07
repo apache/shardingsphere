@@ -21,12 +21,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.util.directory.ClasspathResourceDirectoryReader;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mcp.api.completion.descriptor.MCPCompletionTargetDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptArgumentDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriTemplateUtils;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceNavigationDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceParameterDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -57,8 +54,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,13 +62,11 @@ import java.util.stream.Stream;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPDescriptorCatalogLoader {
-    
+
     private static final String DESCRIPTOR_DIRECTORY = "META-INF/shardingsphere-mcp/descriptors";
-    
-    private static final Pattern URI_VARIABLE_PATTERN = Pattern.compile("\\{([^}]+)}");
-    
+
     private static final Collection<String> LEGACY_RECOMMENDATION_FIELDS = List.of("recommended_next_tool", "suggested_next_tool", "suggested_next_tools");
-    
+
     /**
      * Load MCP descriptor catalog from classpath.
      *
@@ -96,13 +89,13 @@ public final class MCPDescriptorCatalogLoader {
         validate(result);
         return result;
     }
-    
+
     private static Collection<YamlMCPDescriptorCatalog> loadYamlCatalogs() {
         try (Stream<String> resources = ClasspathResourceDirectoryReader.read(DESCRIPTOR_DIRECTORY)) {
             return resources.filter(each -> each.endsWith(".yaml") || each.endsWith(".yml")).sorted().map(MCPDescriptorCatalogLoader::loadYamlCatalog).toList();
         }
     }
-    
+
     private static YamlMCPDescriptorCatalog loadYamlCatalog(final String resourceName) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(resourceName)) {
@@ -114,16 +107,56 @@ public final class MCPDescriptorCatalogLoader {
             throw new IllegalStateException(String.format("Failed to load MCP descriptor resource `%s`.", resourceName), ex);
         }
     }
-    
+
     private static Collection<MCPResourceDescriptor> swapResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors) {
         Collection<MCPResourceDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
-            result.add(new MCPResourceDescriptor(each.getUriPattern(), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(),
-                    swapResourceParameters(each.getParameters()), swapResourceAnnotations(each.getAnnotations()), emptyMapIfNull(each.getMeta())));
+            Map<String, Object> meta = emptyMapIfNull(each.getMeta());
+            result.add(new MCPResourceDescriptor(getUriTemplate(each), each.getName(), each.getTitle(), each.getDescription(), each.getMimeType(),
+                    swapResourceParameters(each.getParameters()), swapResourceAnnotations(each.getAnnotations()), getStringValue(each.getResourceKind(), meta, "resourceKind", "kind"),
+                    getStringValue(each.getObjectScope(), meta, "objectScope"), getStringValue(each.getFeature(), meta, "feature"),
+                    getStringList(each.getRelatedTools(), meta, "relatedTools"), getStringList(each.getRelatedResources(), meta, "relatedResources"),
+                    getStringList(each.getUseBefore(), meta, "useBefore"), meta));
         }
         return result;
     }
-    
+
+    private static String getUriTemplate(final YamlMCPResourceDescriptor descriptor) {
+        return null == descriptor.getUriTemplate() ? descriptor.getUriPattern() : descriptor.getUriTemplate();
+    }
+
+    private static String getStringValue(final String value, final Map<String, Object> meta, final String key) {
+        if (null != value) {
+            return value;
+        }
+        Object metaValue = meta.get(key);
+        return null == metaValue ? null : metaValue.toString();
+    }
+
+    private static String getStringValue(final String value, final Map<String, Object> meta, final String key, final String fallbackKey) {
+        String result = getStringValue(value, meta, key);
+        if (null != result) {
+            return result;
+        }
+        Object metaValue = meta.get(fallbackKey);
+        return null == metaValue ? null : metaValue.toString();
+    }
+
+    private static List<String> getStringList(final Collection<String> values, final Map<String, Object> meta, final String key) {
+        if (null != values && !values.isEmpty()) {
+            return List.copyOf(values);
+        }
+        Object value = meta.get(key);
+        if (!(value instanceof Collection)) {
+            return Collections.emptyList();
+        }
+        List<String> result = new LinkedList<>();
+        for (Object each : (Collection<?>) value) {
+            result.add(each.toString());
+        }
+        return result;
+    }
+
     private static List<MCPResourceParameterDescriptor> swapResourceParameters(final Collection<YamlMCPResourceParameterDescriptor> yamlParameters) {
         List<MCPResourceParameterDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceParameterDescriptor each : emptyIfNull(yamlParameters)) {
@@ -131,12 +164,12 @@ public final class MCPDescriptorCatalogLoader {
         }
         return result;
     }
-    
+
     private static MCPResourceAnnotations swapResourceAnnotations(final YamlMCPResourceAnnotations yamlAnnotations) {
         return null == yamlAnnotations ? MCPResourceAnnotations.EMPTY
                 : new MCPResourceAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.getLastModified());
     }
-    
+
     private static Collection<MCPToolDescriptor> swapToolDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {
         Collection<MCPToolDescriptor> result = new LinkedList<>();
         for (YamlMCPToolDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -145,7 +178,7 @@ public final class MCPDescriptorCatalogLoader {
         }
         return result;
     }
-    
+
     private static Collection<MCPPromptDescriptor> swapPromptDescriptors(final Collection<YamlMCPPromptDescriptor> yamlDescriptors) {
         Collection<MCPPromptDescriptor> result = new LinkedList<>();
         for (YamlMCPPromptDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -154,7 +187,7 @@ public final class MCPDescriptorCatalogLoader {
         }
         return result;
     }
-    
+
     private static List<MCPPromptArgumentDescriptor> swapPromptArguments(final Collection<YamlMCPPromptArgumentDescriptor> yamlArguments) {
         List<MCPPromptArgumentDescriptor> result = new LinkedList<>();
         for (YamlMCPPromptArgumentDescriptor each : emptyIfNull(yamlArguments)) {
@@ -162,7 +195,7 @@ public final class MCPDescriptorCatalogLoader {
         }
         return result;
     }
-    
+
     private static Collection<MCPCompletionTargetDescriptor> swapCompletionTargetDescriptors(final Collection<YamlMCPCompletionTargetDescriptor> yamlDescriptors) {
         Collection<MCPCompletionTargetDescriptor> result = new LinkedList<>();
         for (YamlMCPCompletionTargetDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -171,7 +204,7 @@ public final class MCPDescriptorCatalogLoader {
         }
         return result;
     }
-    
+
     private static Collection<MCPResourceNavigationDescriptor> swapResourceNavigationDescriptors(final Collection<YamlMCPResourceNavigationDescriptor> yamlDescriptors) {
         Collection<MCPResourceNavigationDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceNavigationDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -180,7 +213,7 @@ public final class MCPDescriptorCatalogLoader {
         }
         return result;
     }
-    
+
     private static List<MCPToolFieldDefinition> swapToolFields(final Collection<YamlMCPToolFieldDefinition> yamlFields) {
         List<MCPToolFieldDefinition> result = new LinkedList<>();
         for (YamlMCPToolFieldDefinition each : emptyIfNull(yamlFields)) {
@@ -188,26 +221,27 @@ public final class MCPDescriptorCatalogLoader {
         }
         return result;
     }
-    
+
     private static MCPToolValueDefinition swapValueDefinition(final YamlMCPToolValueDefinition yamlValueDefinition) {
         if (null == yamlValueDefinition) {
             throw new IllegalStateException("MCP tool value definition is required.");
         }
         boolean additionalProperties = null == yamlValueDefinition.getAdditionalProperties() || yamlValueDefinition.getAdditionalProperties();
         return new MCPToolValueDefinition(yamlValueDefinition.getType(), yamlValueDefinition.getDescription(), swapNullableValueDefinition(yamlValueDefinition.getItemDefinition()),
-                emptyIfNull(yamlValueDefinition.getEnumValues()), swapToolFields(yamlValueDefinition.getObjectProperties()), additionalProperties);
+                emptyIfNull(yamlValueDefinition.getEnumValues()), swapToolFields(yamlValueDefinition.getObjectProperties()), additionalProperties, yamlValueDefinition.getDefaultValue(),
+                yamlValueDefinition.getMinimumValue(), yamlValueDefinition.getMaximumValue(), emptyIfNull(yamlValueDefinition.getExamples()), yamlValueDefinition.getPattern());
     }
-    
+
     private static MCPToolValueDefinition swapNullableValueDefinition(final YamlMCPToolValueDefinition yamlValueDefinition) {
         return null == yamlValueDefinition ? null : swapValueDefinition(yamlValueDefinition);
     }
-    
+
     private static MCPToolAnnotations swapToolAnnotations(final YamlMCPToolAnnotations yamlAnnotations) {
         return null == yamlAnnotations ? MCPToolAnnotations.EMPTY
                 : new MCPToolAnnotations(yamlAnnotations.getTitle(), yamlAnnotations.getReadOnlyHint(), yamlAnnotations.getDestructiveHint(), yamlAnnotations.getIdempotentHint(),
                         yamlAnnotations.getOpenWorldHint(), yamlAnnotations.getReturnDirect());
     }
-    
+
     private static void validate(final MCPDescriptorCatalog catalog) {
         validateResourceDescriptors(catalog.getResourceDescriptors());
         validateToolDescriptors(catalog.getToolDescriptors());
@@ -215,30 +249,43 @@ public final class MCPDescriptorCatalogLoader {
         validateCompletionTargetDescriptors(catalog.getCompletionTargetDescriptors(), catalog.getPromptDescriptors(), catalog.getResourceDescriptors());
         validateResourceNavigationDescriptors(catalog.getResourceNavigationDescriptors(), catalog);
     }
-    
+
     private static void validateResourceDescriptors(final Collection<MCPResourceDescriptor> descriptors) {
         Map<String, MCPResourceDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPResourceDescriptor each : descriptors) {
-            checkNotBlank(each.getUriPattern(), "Resource URI pattern");
-            checkNotBlank(each.getName(), String.format("Resource name for `%s`", each.getUriPattern()));
-            checkNotBlank(each.getTitle(), String.format("Resource title for `%s`", each.getUriPattern()));
-            checkDescription(each.getDescription(), String.format("Resource description for `%s`", each.getUriPattern()));
-            checkNotBlank(each.getMimeType(), String.format("Resource MIME type for `%s`", each.getUriPattern()));
-            checkState(null == registered.putIfAbsent(each.getUriPattern(), each), String.format("Duplicate MCP resource descriptor `%s`.", each.getUriPattern()));
+            checkNotBlank(each.getUriTemplate(), "Resource URI template");
+            checkNotBlank(each.getName(), String.format("Resource name for `%s`", each.getUriTemplate()));
+            checkNotBlank(each.getTitle(), String.format("Resource title for `%s`", each.getUriTemplate()));
+            checkDescription(each.getDescription(), String.format("Resource description for `%s`", each.getUriTemplate()));
+            checkNotBlank(each.getMimeType(), String.format("Resource MIME type for `%s`", each.getUriTemplate()));
+            checkState(null == registered.putIfAbsent(each.getUriTemplate(), each), String.format("Duplicate MCP resource descriptor `%s`.", each.getUriTemplate()));
             validateResourceParameters(each);
         }
     }
-    
+
     private static void validateResourceParameters(final MCPResourceDescriptor descriptor) {
-        Collection<String> declaredParameters = descriptor.getParameters().stream().map(MCPResourceParameterDescriptor::getName).toList();
-        Matcher matcher = URI_VARIABLE_PATTERN.matcher(descriptor.getUriPattern());
-        while (matcher.find()) {
-            String variableName = matcher.group(1);
-            checkState(declaredParameters.contains(variableName),
-                    String.format("Resource descriptor `%s` must describe URI template variable `%s`.", descriptor.getUriPattern(), variableName));
+        List<String> templateVariables = MCPUriTemplateUtils.extractVariableNames(descriptor.getUriTemplate());
+        Set<String> registeredTemplateVariables = new HashSet<>();
+        for (String each : templateVariables) {
+            checkState(registeredTemplateVariables.add(each), String.format("Duplicate URI template variable `%s` in resource descriptor `%s`.", each, descriptor.getUriTemplate()));
+        }
+        Set<String> templateVariableSet = new HashSet<>(templateVariables);
+        Map<String, MCPResourceParameterDescriptor> declaredParameters = new LinkedHashMap<>(descriptor.getParameters().size(), 1F);
+        for (MCPResourceParameterDescriptor each : descriptor.getParameters()) {
+            checkNotBlank(each.getName(), String.format("Resource parameter name for `%s`", descriptor.getUriTemplate()));
+            checkNotBlank(each.getTitle(), String.format("Resource parameter `%s.%s` title", descriptor.getUriTemplate(), each.getName()));
+            checkDescription(each.getDescription(), String.format("Resource parameter `%s.%s` description", descriptor.getUriTemplate(), each.getName()));
+            checkNotBlank(each.getScope(), String.format("Resource parameter `%s.%s` scope", descriptor.getUriTemplate(), each.getName()));
+            checkState(each.isRequired(), String.format("Resource parameter `%s.%s` must be required because URI template variables are required.", descriptor.getUriTemplate(), each.getName()));
+            checkState(templateVariableSet.contains(each.getName()), String.format("Resource descriptor `%s` declares non-template parameter `%s`.", descriptor.getUriTemplate(), each.getName()));
+            checkState(null == declaredParameters.putIfAbsent(each.getName(), each), String.format("Duplicate MCP resource parameter `%s.%s`.", descriptor.getUriTemplate(), each.getName()));
+        }
+        for (String variableName : templateVariables) {
+            checkState(declaredParameters.containsKey(variableName),
+                    String.format("Resource descriptor `%s` must describe URI template variable `%s`.", descriptor.getUriTemplate(), variableName));
         }
     }
-    
+
     private static void validateToolDescriptors(final Collection<MCPToolDescriptor> descriptors) {
         Map<String, MCPToolDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPToolDescriptor each : descriptors) {
@@ -253,7 +300,7 @@ public final class MCPDescriptorCatalogLoader {
             validatePlanningExecutionMode(each);
         }
     }
-    
+
     private static void validateToolFields(final MCPToolDescriptor descriptor) {
         for (MCPToolFieldDefinition each : descriptor.getFields()) {
             checkNotBlank(each.getName(), String.format("Tool field name for `%s`", descriptor.getName()));
@@ -265,7 +312,7 @@ public final class MCPDescriptorCatalogLoader {
             }
         }
     }
-    
+
     private static void validateKnownEnumField(final MCPToolDescriptor descriptor, final MCPToolFieldDefinition field) {
         if (!List.of("execution_mode", "operation_type", "delivery_mode", "object_types").contains(field.getName())) {
             return;
@@ -274,7 +321,7 @@ public final class MCPDescriptorCatalogLoader {
         checkState(null != valueDefinition && !valueDefinition.getEnumValues().isEmpty(),
                 String.format("Tool field `%s.%s` must declare enum values.", descriptor.getName(), field.getName()));
     }
-    
+
     private static void validateToolOutputSchema(final MCPToolDescriptor descriptor) {
         Map<String, Object> outputSchema = descriptor.getOutputSchema();
         checkState("object".equals(outputSchema.get("type")), String.format("Tool `%s` outputSchema must be an object.", descriptor.getName()));
@@ -284,7 +331,7 @@ public final class MCPDescriptorCatalogLoader {
         validateRequiredOutputFields(descriptor, (Map<?, ?>) properties);
         validateSearchMetadataOutputItems(descriptor, (Map<?, ?>) properties);
     }
-    
+
     private static void validateNoLegacyRecommendationFields(final MCPToolDescriptor descriptor, final Object value) {
         if (value instanceof Map) {
             validateNoLegacyRecommendationFieldMap(descriptor, (Map<?, ?>) value);
@@ -294,7 +341,7 @@ public final class MCPDescriptorCatalogLoader {
             }
         }
     }
-    
+
     private static void validateNoLegacyRecommendationFieldMap(final MCPToolDescriptor descriptor, final Map<?, ?> value) {
         for (Entry<?, ?> entry : value.entrySet()) {
             String key = String.valueOf(entry.getKey());
@@ -302,7 +349,7 @@ public final class MCPDescriptorCatalogLoader {
             validateNoLegacyRecommendationFields(descriptor, entry.getValue());
         }
     }
-    
+
     private static void validateRequiredOutputFields(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         for (String each : createRequiredOutputFields(descriptor.getName())) {
             checkState(properties.containsKey(each), String.format("Tool `%s` outputSchema must declare `%s`.", descriptor.getName(), each));
@@ -312,7 +359,7 @@ public final class MCPDescriptorCatalogLoader {
             checkDescription(null == description ? "" : description.toString(), String.format("Tool output field `%s.%s` description", descriptor.getName(), each));
         }
     }
-    
+
     private static Collection<String> createRequiredOutputFields(final String toolName) {
         if ("search_metadata".equals(toolName)) {
             return List.of("items", "count", "next_page_token", "has_more", "search_context");
@@ -326,41 +373,41 @@ public final class MCPDescriptorCatalogLoader {
                     "applied_max_rows", "applied_timeout_ms", "suggested_arguments", "next_actions");
         }
         if ("apply_workflow".equals(toolName)) {
-            return List.of("plan_id", "status", "execution_mode", "next_actions", "requires_user_approval");
+            return List.of("response_mode", "plan_id", "status", "execution_mode", "next_actions", "requires_user_approval");
         }
         if ("validate_workflow".equals(toolName)) {
-            return List.of("plan_id", "status", "overall_status", "issues", "next_actions");
+            return List.of("response_mode", "plan_id", "status", "overall_status", "issues", "next_actions");
         }
         if ("plan_encrypt_rule".equals(toolName) || "plan_mask_rule".equals(toolName)) {
-            return List.of("plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions");
+            return List.of("response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions");
         }
         return List.of();
     }
-    
+
     private static void validateSearchMetadataOutputItems(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
         if (!"search_metadata".equals(descriptor.getName())) {
             return;
         }
-        final Object items = properties.get("items");
+        Object items = properties.get("items");
         checkState(items instanceof Map, "Tool `search_metadata` outputSchema property `items` must be an object.");
-        final Object itemSchema = ((Map<?, ?>) items).get("items");
+        Object itemSchema = ((Map<?, ?>) items).get("items");
         checkState(itemSchema instanceof Map, "Tool `search_metadata` outputSchema property `items.items` must be an object.");
-        final Object itemProperties = ((Map<?, ?>) itemSchema).get("properties");
+        Object itemProperties = ((Map<?, ?>) itemSchema).get("properties");
         checkState(itemProperties instanceof Map && !((Map<?, ?>) itemProperties).isEmpty(), "Tool `search_metadata` outputSchema property `items.items.properties` must declare properties.");
         validateSearchMetadataItemFields((Map<?, ?>) itemProperties);
     }
-    
+
     private static void validateSearchMetadataItemFields(final Map<?, ?> properties) {
-        for (String each : List.of("database", "schema", "objectType", "table", "view", "name", "resource_uri", "parent_resource_uri", "next_resource_uris", "derivation_status",
+        for (String each : List.of("database", "schema", "objectType", "table", "view", "name", "resource", "parent_resource", "next_resources", "derivation_status",
                 "match_kind", "matched_fields", "matched_value")) {
             checkState(properties.containsKey(each), String.format("Tool `search_metadata` outputSchema item must declare `%s`.", each));
-            final Object property = properties.get(each);
+            Object property = properties.get(each);
             checkState(property instanceof Map, String.format("Tool `search_metadata` outputSchema item property `%s` must be an object.", each));
-            final Object description = ((Map<?, ?>) property).get("description");
+            Object description = ((Map<?, ?>) property).get("description");
             checkDescription(null == description ? "" : description.toString(), String.format("Tool output item field `search_metadata.%s` description", each));
         }
     }
-    
+
     private static void validatePromptDescriptors(final Collection<MCPPromptDescriptor> descriptors) {
         Map<String, MCPPromptDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPPromptDescriptor each : descriptors) {
@@ -374,7 +421,7 @@ public final class MCPDescriptorCatalogLoader {
             validatePromptGuidanceMeta(each);
         }
     }
-    
+
     private static void validatePromptArguments(final MCPPromptDescriptor descriptor) {
         Map<String, MCPPromptArgumentDescriptor> registered = new LinkedHashMap<>(descriptor.getArguments().size(), 1F);
         for (MCPPromptArgumentDescriptor each : descriptor.getArguments()) {
@@ -384,18 +431,18 @@ public final class MCPDescriptorCatalogLoader {
             checkState(null == registered.putIfAbsent(each.getName(), each), String.format("Duplicate MCP prompt argument `%s.%s`.", descriptor.getName(), each.getName()));
         }
     }
-    
+
     private static void validatePromptTemplate(final MCPPromptDescriptor descriptor) {
         Set<String> declaredArguments = new HashSet<>(descriptor.getArguments().stream().map(MCPPromptArgumentDescriptor::getName).toList());
         for (String each : MCPPromptTemplateLoader.extractPlaceholders(MCPPromptTemplateLoader.load(descriptor.getTemplateResource()))) {
             checkState(declaredArguments.contains(each), String.format("Prompt template `%s` has undeclared placeholder `%s`.", descriptor.getTemplateResource(), each));
         }
     }
-    
+
     private static void validateCompletionTargetDescriptors(final Collection<MCPCompletionTargetDescriptor> descriptors, final Collection<MCPPromptDescriptor> prompts,
                                                             final Collection<MCPResourceDescriptor> resources) {
         Set<String> promptNames = prompts.stream().map(MCPPromptDescriptor::getName).collect(Collectors.toSet());
-        Set<String> resourceUris = resources.stream().map(MCPResourceDescriptor::getUriPattern).collect(Collectors.toSet());
+        Set<String> resourceUris = resources.stream().map(MCPResourceDescriptor::getUriTemplate).collect(Collectors.toSet());
         Map<String, MCPCompletionTargetDescriptor> registered = new LinkedHashMap<>(descriptors.size(), 1F);
         for (MCPCompletionTargetDescriptor each : descriptors) {
             checkNotBlank(each.getReferenceType(), "Completion reference type");
@@ -408,7 +455,7 @@ public final class MCPDescriptorCatalogLoader {
                     String.format("Duplicate MCP completion target `%s:%s`.", each.getReferenceType(), each.getReference()));
         }
     }
-    
+
     private static void validateCompletionArguments(final MCPCompletionTargetDescriptor descriptor) {
         Set<String> registered = new HashSet<>();
         for (String each : descriptor.getArguments()) {
@@ -416,7 +463,7 @@ public final class MCPDescriptorCatalogLoader {
             checkState(registered.add(each), String.format("Duplicate MCP completion argument `%s` for `%s:%s`.", each, descriptor.getReferenceType(), descriptor.getReference()));
         }
     }
-    
+
     private static void validateCompletionReference(final MCPCompletionTargetDescriptor descriptor, final Set<String> promptNames, final Set<String> resourceUris) {
         if ("prompt".equals(descriptor.getReferenceType())) {
             checkState(promptNames.contains(descriptor.getReference()), String.format("Completion target references unknown prompt `%s`.", descriptor.getReference()));
@@ -428,7 +475,7 @@ public final class MCPDescriptorCatalogLoader {
         }
         throw new IllegalStateException(String.format("Unsupported completion reference type `%s`.", descriptor.getReferenceType()));
     }
-    
+
     private static void validateResourceNavigationDescriptors(final Collection<MCPResourceNavigationDescriptor> descriptors, final MCPDescriptorCatalog catalog) {
         Set<String> publicIdentifiers = createPublicIdentifiers(catalog);
         Set<String> registered = new HashSet<>();
@@ -443,15 +490,15 @@ public final class MCPDescriptorCatalogLoader {
                     String.format("Duplicate MCP resource navigation `%s` to `%s`.", each.getFrom(), each.getTo()));
         }
     }
-    
+
     private static Set<String> createPublicIdentifiers(final MCPDescriptorCatalog catalog) {
         Set<String> result = new HashSet<>();
-        catalog.getResourceDescriptors().stream().map(MCPResourceDescriptor::getUriPattern).forEach(result::add);
+        catalog.getResourceDescriptors().stream().map(MCPResourceDescriptor::getUriTemplate).forEach(result::add);
         catalog.getToolDescriptors().stream().map(MCPToolDescriptor::getName).forEach(result::add);
         catalog.getPromptDescriptors().stream().map(MCPPromptDescriptor::getName).forEach(result::add);
         return result;
     }
-    
+
     private static void validateNavigationArguments(final MCPResourceNavigationDescriptor descriptor) {
         Set<String> registered = new HashSet<>();
         for (String each : descriptor.getRequiredArguments()) {
@@ -464,7 +511,7 @@ public final class MCPDescriptorCatalogLoader {
             checkState(registered.add(each), String.format("Duplicate carried argument `%s` for resource navigation `%s` to `%s`.", each, descriptor.getFrom(), descriptor.getTo()));
         }
     }
-    
+
     private static void validateDestructiveToolDescriptor(final MCPToolDescriptor descriptor) {
         if (!Boolean.TRUE.equals(descriptor.getAnnotations().getDestructiveHint())) {
             return;
@@ -480,7 +527,7 @@ public final class MCPDescriptorCatalogLoader {
         checkState(descriptor.getMeta().get("sideEffectScope") instanceof Collection && !((Collection<?>) descriptor.getMeta().get("sideEffectScope")).isEmpty(),
                 String.format("Destructive tool `%s` must declare sideEffectScope in meta.", descriptor.getName()));
     }
-    
+
     private static void validateExecuteUpdateDescriptor(final MCPToolDescriptor descriptor) {
         if (!"execute_update".equals(descriptor.getName())) {
             return;
@@ -491,7 +538,7 @@ public final class MCPDescriptorCatalogLoader {
         checkState(executionMode.getValueDefinition().getEnumValues().containsAll(List.of("execute", "preview")),
                 "Tool `execute_update` execution_mode must allow execute and preview.");
     }
-    
+
     private static void validatePlanningExecutionMode(final MCPToolDescriptor descriptor) {
         if ("apply_workflow".equals(descriptor.getName()) || "execute_update".equals(descriptor.getName())) {
             return;
@@ -504,46 +551,46 @@ public final class MCPDescriptorCatalogLoader {
         checkState(!executionModes.contains("preview"), String.format("Planning tool `%s` execution_mode must not expose preview.", descriptor.getName()));
         checkState(!executionModes.contains("auto-execute"), String.format("Planning tool `%s` execution_mode must not expose auto-execute.", descriptor.getName()));
     }
-    
+
     private static Optional<MCPToolFieldDefinition> findToolField(final MCPToolDescriptor descriptor, final String fieldName) {
         return descriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst();
     }
-    
+
     private static void validatePromptGuidanceMeta(final MCPPromptDescriptor descriptor) {
         checkState(isNonEmptyCollection(descriptor.getMeta().get("stopConditions")),
                 String.format("Prompt `%s` must declare stopConditions in meta.", descriptor.getName()));
         checkState(isNonEmptyCollection(descriptor.getMeta().get("askUserConditions")),
                 String.format("Prompt `%s` must declare askUserConditions in meta.", descriptor.getName()));
     }
-    
+
     private static boolean isNonEmptyCollection(final Object value) {
         return value instanceof Collection && !((Collection<?>) value).isEmpty();
     }
-    
+
     private static void checkDescription(final String value, final String label) {
         checkNotBlank(value, label);
         checkState(!value.startsWith(createPlaceholderPrefix("resource:")), String.format("%s must not be a placeholder description.", label));
         checkState(!value.startsWith(createPlaceholderPrefix("resource template:")), String.format("%s must not be a placeholder description.", label));
     }
-    
+
     private static String createPlaceholderPrefix(final String suffix) {
         return "ShardingSphere MCP " + suffix;
     }
-    
+
     private static void checkNotBlank(final String value, final String label) {
         checkState(null != value && !value.isBlank(), String.format("%s is required.", label));
     }
-    
+
     private static void checkState(final boolean expression, final String message) {
         if (!expression) {
             throw new IllegalStateException(message);
         }
     }
-    
+
     private static <T> Collection<T> emptyIfNull(final Collection<T> values) {
         return null == values ? Collections.emptyList() : values;
     }
-    
+
     private static Map<String, Object> emptyMapIfNull(final Map<String, Object> values) {
         return null == values ? Collections.emptyMap() : values;
     }

@@ -50,7 +50,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(toolArguments, sql);
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql));
+        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, "execute_query"));
     }
     
     private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {

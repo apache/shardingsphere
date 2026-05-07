@@ -55,7 +55,7 @@ class WorkflowPlanPayloadBuilderTest {
         clarifiedIntent.setReasoningNotes("Resolved from explicit arguments, heuristic inference for requires_decrypt.");
         clarifiedIntent.getInferredValues().put("requires_decrypt", true);
         clarifiedIntent.getUnresolvedFields().add("requires_like_query");
-        clarifiedIntent.getPendingQuestions().add("Do you need LIKE query?");
+        clarifiedIntent.getClarificationMessages().add("Do you need LIKE query?");
         snapshot.setClarifiedIntent(clarifiedIntent);
         snapshot.getIssues().add(new WorkflowIssue("code", "warning", "clarifying", "message", "action", true, Map.of("missing_properties", List.of("aes-key-value"))));
         snapshot.getAlgorithmCandidates().add(new AlgorithmCandidate("primary", "AES", true, true, false, 95, "reason", ""));
@@ -68,24 +68,30 @@ class WorkflowPlanPayloadBuilderTest {
         interactionPlan.getValidationStrategy().put("layers", "rules");
         snapshot.setInteractionPlan(interactionPlan);
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        assertThat(actual.get("response_mode"), is("planning"));
         assertThat(actual.get("plan_id"), is("plan-1"));
         assertThat(actual.get("workflow_kind"), is("encrypt.rule"));
-        assertThat(actual.get("pending_questions"), is(clarifiedIntent.getPendingQuestions()));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("operation_type"), is("create"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("field_semantics"), is("phone"));
         assertTrue((Boolean) ((Map<?, ?>) ((Map<?, ?>) actual.get("intent_inference")).get("inferred_values")).get("requires_decrypt"));
         assertThat(((Map<?, ?>) actual.get("intent_inference")).get("unresolved_fields"), is(clarifiedIntent.getUnresolvedFields()));
         assertThat(actual.get("missing_required_inputs"), is(List.of("requires_like_query", "primary_algorithm_properties.aes-key-value")));
+        Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
+        assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("algorithm_properties")));
+        assertThat(actualReviewFocus.get("side_effect_scope"), is(List.of()));
+        assertFalse((Boolean) actualReviewFocus.get("manual_only"));
+        assertFalse((Boolean) actualReviewFocus.get("requires_user_approval"));
+        assertThat(actualReviewFocus.get("next_review_action"), is("answer_clarification_questions"));
         List<?> actualClarificationQuestions = (List<?>) actual.get("clarification_questions");
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("input_type"), is("boolean"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("allowed_values"), is(List.of(true, false)));
-        assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("message"), is("Do you need LIKE query?"));
+        assertThat(((Map<?, ?>) actualClarificationQuestions.get(0)).get("display_message"), is("Do you need LIKE query?"));
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(1)).get("input_type"), is("secret"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(1)).get("secret"));
-        assertTrue((Boolean) ((Map<?, ?>) actual.get("elicitation")).get("requires_user_response"));
         assertFalse(actual.containsKey("recommended_next_tool"));
         assertFalse((Boolean) actual.get("requires_user_approval"));
-        assertTrue(((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
+        assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_logical_database"));
+        assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
     }
 
@@ -129,11 +135,15 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         List<?> actualResourcesToRead = (List<?>) actual.get("resources_to_read");
-        assertTrue(actualResourcesToRead.contains("shardingsphere://features/mask/algorithms"));
-        assertTrue(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
-        assertFalse(actualResourcesToRead.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
+        List<String> actualResourceUris = extractResourceUris(actualResourcesToRead);
+        assertTrue(actualResourceUris.contains("shardingsphere://features/mask/algorithms"));
+        assertTrue(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns"));
+        assertFalse(actualResourceUris.contains("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
         assertFalse(actual.containsKey("recommended_next_tool"));
         assertFalse((Boolean) actual.get("requires_user_approval"));
+        Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
+        assertTrue((Boolean) actualReviewFocus.get("requires_user_approval"));
+        assertThat(actualReviewFocus.get("next_review_action"), is("call_apply_workflow_preview"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
         assertThat(actualNextAction.get("target_tool"), is("apply_workflow"));
         assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("preview"));
@@ -152,8 +162,13 @@ class WorkflowPlanPayloadBuilderTest {
         snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Encrypt workflow plan.", List.of("Review"), List.of("rules")));
         Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
+        assertThat(actual.get("response_mode"), is("terminal"));
         assertFalse(actual.containsKey("recommended_next_tool"));
         assertThat(actualNextAction.get("action_kind"), is("call_tool"));
         assertThat(actualNextAction.get("target_tool"), is("plan_encrypt_rule"));
+    }
+
+    private List<String> extractResourceUris(final List<?> resources) {
+        return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
     }
 }

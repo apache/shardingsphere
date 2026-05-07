@@ -58,7 +58,8 @@ public final class MCPRuntimeLauncher {
     public MCPRuntimeServer launch(final MCPLaunchConfiguration config, final String configPath) throws IOException {
         ShardingSpherePreconditions.checkNotEmpty(config.getDatabases(), () -> new IllegalArgumentException("At least one runtime database must be configured."));
         config.validate();
-        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(config.getDatabases()), new MCPDatabaseCapabilityProvider(config.getDatabases()));
+        MCPRuntimeContext runtimeContext = new MCPRuntimeContext(new MCPSessionManager(config.getDatabases()), new MCPDatabaseCapabilityProvider(config.getDatabases()),
+                config.getHttpTransport().isEnabled() ? "http" : "stdio");
         MCPRuntimeServer result = config.getHttpTransport().isEnabled() ? new StreamableHttpMCPServer(config.getHttpTransport(), runtimeContext) : new StdioMCPServer(runtimeContext);
         try {
             result.start();

@@ -56,11 +56,13 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         Map<String, Object> actualPayload = getStructuredContent(actual.body());
         List<Map<String, Object>> actualItems = getItems(actualPayload);
         assertThat(getItemNames(actualPayload), is(List.of("order_items", "orders", "active_orders")));
-        assertThat(String.valueOf(actualItems.get(1).get("resource_uri")), is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
-        assertThat(((List<?>) actualItems.get(1).get("next_resource_uris")).stream().map(String::valueOf).toList(),
+        Map<String, Object> actualResource = MCPInteractionPayloads.castToMap(actualItems.get(1).get("resource"));
+        assertThat(String.valueOf(actualResource.get("uri")), is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
+        assertThat(MCPInteractionPayloads.castToList(actualItems.get(1).get("next_resources")).stream()
+                        .map(each -> String.valueOf(MCPInteractionPayloads.castToMap(each).get("uri"))).toList(),
                 is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes")));
-        HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId, String.valueOf(actualItems.get(1).get("resource_uri")));
+        HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId, String.valueOf(actualResource.get("uri")));
         assertThat(tableResource.statusCode(), is(200));
         assertThat(String.valueOf(MCPInteractionPayloads.castToList(getFirstResourcePayload(tableResource.body()).get("items")).get(0).get("table")), is("orders"));
     }

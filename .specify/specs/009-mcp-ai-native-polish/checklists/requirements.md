@@ -12,6 +12,10 @@
 - [x] Requirements preserve resource-first discovery and preview-before-side-effect behavior.
 - [x] Requirements explicitly avoid reopening current capability contracts, common flows, search match explanations, output parse hints,
   approval summaries, completion diagnostics, and structured recovery as new work.
+- [x] Requirements allow breaking model-facing payload cleanup where it removes guessing, and reject long-lived compatibility shims.
+- [x] Breaking cleanup analysis distinguishes fields to delete, replace, and keep before implementation.
+- [x] Final repeated-question inventory groups remaining work into retained P0/P1/P2 items, preserved baseline, non-goals, implementation order, and verification map.
+- [x] Implementation task breakdown turns accepted defaults into independently reviewable P0/P1/P2 slices with commands and done criteria.
 
 ## Completeness
 
@@ -23,6 +27,7 @@
 - [x] Edge cases include unbounded SQL, broad metadata search, invalid pagination, URI encoding, Chinese intent, context-compacted workflow plans, and secret-bearing configuration examples.
 - [x] Edge cases include exact workflow retry targets, public missing-field paths, response-mode/schema alignment, preview-limit wording,
   optional row-object results, duplicate metadata hits, and metadata-introspection SQL recovery.
+- [x] Edge cases include executable completion continuation, resource-read error recognition, typed resource hints, and schema-visible call-shape metadata.
 - [x] Success criteria are measurable and do not require live-model credentials.
 
 ## Testability
@@ -35,6 +40,10 @@
 - [x] Clarification, localization, and workflow read-back additions are testable through workflow payload and current-session plan tests.
 - [x] Runtime comfort additions remain secret-safe and bounded to docs, configuration validation, status payload, or recoverable errors.
 - [x] Recovery target accuracy, result parsing comfort, ambiguity hints, and preview/execution markers are testable through deterministic payload and descriptor tests.
+- [x] Completion continuation, resource error payloads, typed resource hints, schema-visible defaults/examples, and optional resource links are testable without live-model credentials.
+- [x] Cleanup of replaced URI-only, prose-only, or duplicate payload contracts is testable through negative shape assertions and documentation searches.
+- [x] Correctness fields such as `self_uri`, positional SQL rows, resource counts, and approval fields are explicitly excluded from compatibility cleanup.
+- [x] P0 slices each define deterministic tests before model-facing payload changes.
 - [x] Opt-in LLM usability metrics remain optional and outside default CI.
 
 ## Governance

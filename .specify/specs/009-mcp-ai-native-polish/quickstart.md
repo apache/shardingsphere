@@ -21,6 +21,7 @@ Review:
 
 - `.specify/specs/008-mcp-ai-friendly-lightweight-experience/spec.md`
 - `specs/003-mcp-ai-friendly-guided-interaction/requirements.md`
+- `.specify/specs/009-mcp-ai-native-polish/breaking-cleanup-analysis.md`
 - `docs/mcp/ShardingSphere-MCP-AI-Friendly-Requirements.md`
 - `mcp/README.md`
 - `mcp/README_ZH.md`
@@ -42,7 +43,7 @@ Check that 009 asks only for:
 - Argument provenance, redaction markers, and manual-only follow-up clarity.
 - Safe runtime recovery diagnostics and optional bounded request IDs.
 - Explicit SQL row, timeout, metadata pagination, and blank-query bounds.
-- Structured clarification questions plus MCP-native elicitation fallback.
+- Structured clarification questions as the canonical contract, with MCP-native elicitation mirroring those fields where supported.
 - Common Chinese encrypt/mask intent hints and structured non-English evidence.
 - Current-session workflow plan read-back by `plan_id`.
 - Percent-encoded resource identifiers for non-ASCII or reserved object names.
@@ -53,6 +54,11 @@ Check that 009 asks only for:
 - Optional SQL row objects only when column labels are unique.
 - Continuation hints for truncation, pagination, duplicate metadata hits, and metadata-introspection SQL recovery.
 - Docker/HTTP/Proxy-topology setup hints that stay secret-free.
+- Executable `complete_argument` next actions with completion reference, context arguments, and resume target.
+- Resource-read error payloads with `response_kind=error` and recovery actions.
+- Typed `resources_to_read` and `next_resources` entries with URI, kind, purpose, and reason.
+- Schema-visible defaults, bounds, examples, and patterns where descriptor metadata already knows them.
+- Optional MCP resource links as additive transport hints while keeping JSON payload fields complete.
 
 Reject any implementation proposal that adds:
 
@@ -65,6 +71,7 @@ Reject any implementation proposal that adds:
 - Full natural-language parser inside MCP.
 - Cross-session workflow memory or audit persistence.
 - Semantic metadata search engine.
+- Long-lived compatibility shims that keep old URI-only, prose-only, or duplicate old/new payload contracts alive.
 
 ## 4. Suggested Implementation Order
 
@@ -78,7 +85,18 @@ Reject any implementation proposal that adds:
 8. Add structured clarification, Chinese synonym hints, and workflow read-back.
 9. Add secret-safe runtime status, env-placeholder support, and client/auth documentation.
 10. Add exact recovery targets, response-mode markers, row-object convenience, and ambiguity/continuation hints.
-11. Add opt-in usability metrics.
+11. Add executable completion actions, resource-read error payloads, typed resource hints, schema-visible call-shape metadata, and optional resource links.
+12. Delete replaced compatibility helpers, old payload-shape tests, and stale documentation in the same review slice.
+13. Add opt-in usability metrics.
+
+## 4a. Breaking Cleanup Gate
+
+Before implementing a canonical replacement, check `breaking-cleanup-analysis.md` and classify every touched old field:
+
+- Delete old fields that are URI-only, prose-only, or duplicate old/new contracts.
+- Replace useful concepts with canonical typed or structured fields.
+- Keep correctness fields such as `self_uri`, positional SQL `rows`, resource counts, and side-effect approval fields.
+- Add negative tests proving removed fields are gone from payloads, descriptors, README examples, and capability contracts.
 
 ## 5. Suggested Verification Commands
 
@@ -117,5 +135,7 @@ For Checkstyle after Java changes:
 - No secrets, tokens, passwords, or production identifiers appear in examples.
 - Recovery uses exact public tool and argument names where known.
 - Preview, execute, manual-only, validation, recovery, truncation, and pagination states are machine-readable.
+- Completion continuation, resource purpose, resource-read error status, and schema call shape are machine-readable.
+- Old URI-only, prose-only, or duplicate compatibility contracts are removed after their canonical replacement lands.
 - Deterministic tests cover new shape contracts.
 - Live-model checks remain opt-in.

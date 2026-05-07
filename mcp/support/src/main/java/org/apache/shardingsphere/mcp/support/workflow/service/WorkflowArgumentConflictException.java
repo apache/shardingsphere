@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.completion.descriptor;
+package org.apache.shardingsphere.mcp.support.workflow.service;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
- * MCP completion target descriptor.
+ * Exception for conflicting public workflow arguments.
  */
 @Getter
-public final class MCPCompletionTargetDescriptor {
+public final class WorkflowArgumentConflictException extends MCPInvalidRequestException {
     
-    private final String referenceType;
+    private static final long serialVersionUID = -2772609954982385217L;
     
-    private final String reference;
+    private final List<String> conflictingArguments;
     
-    private final List<String> arguments;
-    
-    private final int maxValues;
-    
-    private final Map<String, Object> meta;
-    
-    public MCPCompletionTargetDescriptor(final String referenceType, final String reference, final List<String> arguments, final int maxValues, final Map<String, Object> meta) {
-        this.referenceType = referenceType;
-        this.reference = reference;
-        this.arguments = null == arguments ? Collections.emptyList() : arguments;
-        this.maxValues = maxValues;
-        this.meta = null == meta ? Collections.emptyMap() : meta;
+    public WorkflowArgumentConflictException(final List<String> conflictingArguments) {
+        super(String.format("Conflicting workflow arguments: %s.", String.join(", ", conflictingArguments)));
+        this.conflictingArguments = List.copyOf(conflictingArguments);
     }
 }

@@ -16,20 +16,20 @@
 #
 
 resources:
-  - uriPattern: shardingsphere://features/encrypt/algorithms
+  - uriTemplate: shardingsphere://features/encrypt/algorithms
     name: encrypt-algorithms
     title: Encrypt Algorithms
     description: >-
       List encrypt algorithm plugins visible from the current ShardingSphere-Proxy runtime, including property templates and secret-property hints.
       Read this before planning encryption when the user asks for algorithm choice or query behavior.
     mimeType: application/json
+    resourceKind: list
+    feature: encrypt
+    relatedTools:
+      - plan_encrypt_rule
     meta:
-      resourceKind: list
-      feature: encrypt
       runtimeVisibility: ShardingSphere-Proxy
-      relatedTools:
-        - plan_encrypt_rule
-  - uriPattern: shardingsphere://features/encrypt/databases/{database}/rules
+  - uriTemplate: shardingsphere://features/encrypt/databases/{database}/rules
     name: encrypt-rules
     title: Encrypt Rules
     description: "List encrypt table rules for one ShardingSphere logical database. Read this before altering or validating encrypt configuration."
@@ -40,13 +40,12 @@ resources:
         description: "ShardingSphere logical database whose encrypt rules should be inspected."
         required: true
         scope: logical-database
-    meta:
-      resourceKind: list
-      feature: encrypt
-      relatedTools:
-        - plan_encrypt_rule
-        - validate_workflow
-  - uriPattern: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+    resourceKind: list
+    feature: encrypt
+    relatedTools:
+      - plan_encrypt_rule
+      - validate_workflow
+  - uriTemplate: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
     name: encrypt-table-rule
     title: Encrypt Table Rule
     description: "Read encrypt rules for one logical table. Use this before planning column-level encryption so the model can preserve existing cipher and assisted-query columns."
@@ -62,12 +61,11 @@ resources:
         description: "ShardingSphere logical table name, not a physical table shard."
         required: true
         scope: logical-table
-    meta:
-      resourceKind: list
-      feature: encrypt
-      relatedTools:
-        - plan_encrypt_rule
-        - validate_workflow
+    resourceKind: list
+    feature: encrypt
+    relatedTools:
+      - plan_encrypt_rule
+      - validate_workflow
 prompts:
   - name: plan_encrypt_rule
     title: Plan Encrypt Rule
@@ -352,6 +350,12 @@ tools:
     outputSchema:
       type: object
       properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for workflow planning, or terminal when planning cannot continue."
+          enum:
+            - planning
+            - terminal
         plan_id:
           type: string
           description: "Workflow plan identifier for apply_workflow and validate_workflow."
@@ -361,18 +365,12 @@ tools:
         status:
           type: string
           description: "Stable workflow status, such as clarifying, planned, or failed."
-        pending_questions:
-          type: array
-          description: "User-facing clarification questions still pending."
         missing_required_inputs:
           type: array
           description: "Inputs still required before the plan can be completed."
         clarification_questions:
           type: array
-          description: "Structured questions for the model to ask the user, including field, input_type, secret flag, and message."
-        elicitation:
-          type: object
-          description: "Native elicitation availability and fallback payload fields."
+          description: "Structured questions for the model to ask the user, including field, input_type, secret flag, and display_message."
         issues:
           type: array
           description: "Warnings, conflicts, and validation issues found during planning."
@@ -400,24 +398,25 @@ tools:
         intent_inference:
           type: object
           description: "Resolved operation type, inferred values, unresolved fields, and reasoning notes."
+        review_focus:
+          type: object
+          description: "Compact planning review focus: artifact categories, side-effect scope, manual-only mode, and next review action."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations for the next call or user question."
         resources_to_read:
           type: array
-          description: "Resource URIs the model should read when more metadata or algorithm context is useful."
+          description: "Typed resources the model should read when more metadata or algorithm context is useful."
         requires_user_approval:
           type: boolean
           description: "Whether the preferred next action needs visible user approval before side effects."
       examples:
-        - plan_id: encrypt-rule-20260505-001
+        - response_mode: planning
+          plan_id: encrypt-rule-20260505-001
           status: planned
           workflow_kind: encrypt.rule
-          pending_questions: []
           missing_required_inputs: []
           clarification_questions: []
-          elicitation:
-            native_supported: false
           issues: []
           global_steps: []
           current_step: review
@@ -432,7 +431,11 @@ tools:
           execution_mode: review-then-execute
           intent_inference: {}
           resources_to_read:
-            - shardingsphere://features/encrypt/algorithms
+            - uri: shardingsphere://features/encrypt/algorithms
+              resource_kind: algorithm
+              purpose: read_first
+              reason: Read encrypt algorithm metadata before choosing algorithm arguments.
+              source_field: resources_to_read
           next_actions:
             - action_kind: call_tool
               target_tool: apply_workflow

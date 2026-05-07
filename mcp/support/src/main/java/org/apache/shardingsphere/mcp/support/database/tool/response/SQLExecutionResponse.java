@@ -28,9 +28,11 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * SQL execution response.
@@ -38,6 +40,8 @@ import java.util.Map;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class SQLExecutionResponse implements MCPResponse {
+
+    private static final int ROW_OBJECT_LIMIT = 100;
 
     private final ExecuteQueryResultKind resultKind;
 
@@ -184,6 +188,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         if (ExecuteQueryResultKind.RESULT_SET == resultKind) {
             result.put("columns", columns);
             result.put("rows", rows);
+            appendRowObjects(result);
             result.put("returned_row_count", rows.size());
         }
         if (ExecuteQueryResultKind.UPDATE_COUNT == resultKind) {
@@ -200,6 +205,10 @@ public final class SQLExecutionResponse implements MCPResponse {
     }
 
     private List<Map<String, Object>> createNextActions() {
+        if (ExecuteQueryResultKind.RESULT_SET == resultKind && truncated) {
+            return List.of(MCPNextActionUtils.askUser("The result was truncated by max_rows. Ask for a narrower SELECT, stronger WHERE clause, or smaller projection before retrying.",
+                    List.of("sql"), false));
+        }
         return List.of(createStopAction(ExecuteQueryResultKind.RESULT_SET == resultKind
                 ? "Return the result rows to the user or ask a follow-up question if the user requested more analysis."
                 : "Report the execution status to the user and stop unless the user asks for another operation."));
@@ -207,6 +216,50 @@ public final class SQLExecutionResponse implements MCPResponse {
 
     private Map<String, Object> createStopAction(final String reason) {
         return MCPNextActionUtils.stop(reason);
+    }
+
+    private void appendRowObjects(final Map<String, Object> payload) {
+        String rowObjectStatus = getRowObjectStatus();
+        payload.put("row_object_status", rowObjectStatus);
+        if ("available".equals(rowObjectStatus)) {
+            payload.put("row_objects", createRowObjects());
+        }
+    }
+
+    private String getRowObjectStatus() {
+        String unavailableStatus = getUnavailableRowObjectStatus();
+        if (!unavailableStatus.isEmpty()) {
+            return unavailableStatus;
+        }
+        return ROW_OBJECT_LIMIT < rows.size() ? "omitted_large_result" : "available";
+    }
+
+    private String getUnavailableRowObjectStatus() {
+        if (columns.isEmpty()) {
+            return rows.isEmpty() ? "" : "unnamed_columns";
+        }
+        Set<String> columnNames = new LinkedHashSet<>(columns.size());
+        for (ExecuteQueryColumnDefinition each : columns) {
+            if (null == each.getColumnName() || each.getColumnName().isBlank()) {
+                return "unnamed_columns";
+            }
+            if (!columnNames.add(each.getColumnName())) {
+                return "duplicate_column_labels";
+            }
+        }
+        return "";
+    }
+
+    private List<Map<String, Object>> createRowObjects() {
+        return rows.stream().map(this::createRowObject).toList();
+    }
+
+    private Map<String, Object> createRowObject(final List<Object> row) {
+        Map<String, Object> result = new LinkedHashMap<>(columns.size(), 1F);
+        for (int i = 0; i < columns.size(); i++) {
+            result.put(columns.get(i).getColumnName(), i < row.size() ? row.get(i) : null);
+        }
+        return result;
     }
 
     private static List<ExecuteQueryColumnDefinition> normalizeColumns(final List<ExecuteQueryColumnDefinition> columns) {

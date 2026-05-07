@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -92,6 +93,41 @@ class SQLExecutionResponseTest {
     }
 
     @Test
+    void assertToPayloadWithUnnamedColumns() {
+        Map<String, Object> actual = SQLExecutionResponse.resultSet(List.of(), List.of(List.of(1)), false).toPayload();
+        assertThat(actual.get("row_object_status"), is("unnamed_columns"));
+        assertFalse(actual.containsKey("row_objects"));
+    }
+
+    @Test
+    void assertToPayloadWithBlankColumnName() {
+        Map<String, Object> actual = SQLExecutionResponse.resultSet(List.of(new ExecuteQueryColumnDefinition("", "INT", "INT", false)), List.of(List.of(1)), false).toPayload();
+        assertThat(actual.get("row_object_status"), is("unnamed_columns"));
+        assertFalse(actual.containsKey("row_objects"));
+    }
+
+    @Test
+    void assertToPayloadWithDuplicateColumnLabels() {
+        List<ExecuteQueryColumnDefinition> columns = List.of(
+                new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false), new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false));
+        Map<String, Object> actual = SQLExecutionResponse.resultSet(columns, List.of(List.of(1, 2)), false).toPayload();
+        assertThat(actual.get("row_object_status"), is("duplicate_column_labels"));
+        assertFalse(actual.containsKey("row_objects"));
+    }
+
+    @Test
+    void assertToPayloadOmitsLargeRowObjects() {
+        List<ExecuteQueryColumnDefinition> columns = List.of(new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false));
+        List<List<Object>> rows = new LinkedList<>();
+        for (int i = 0; i < 101; i++) {
+            rows.add(List.of(i));
+        }
+        Map<String, Object> actual = SQLExecutionResponse.resultSet(columns, rows, false).toPayload();
+        assertThat(actual.get("row_object_status"), is("omitted_large_result"));
+        assertFalse(actual.containsKey("row_objects"));
+    }
+
+    @Test
     void assertResultSetWithDmlStatementClass() {
         SQLExecutionResponse actual = SQLExecutionResponse.resultSet(SupportedMCPStatement.DML, "SELECT", List.of(), List.of(List.of(1)), false);
         assertThat(actual.getStatementClass(), is(SupportedMCPStatement.DML));
@@ -125,19 +161,23 @@ class SQLExecutionResponseTest {
         ExecuteQueryColumnDefinition orderIdColumn = new ExecuteQueryColumnDefinition("order_id", "INT", "INT", false);
         List<ExecuteQueryColumnDefinition> columns = List.of(orderIdColumn);
         List<List<Object>> rows = List.of(List.of(1));
+        List<Map<String, Object>> rowObjects = List.of(Map.of("order_id", 1));
+        List<Map<String, Object>> truncatedResultSetNextActions = createTruncatedResultSetNextActions();
         List<Map<String, Object>> resultSetNextActions = createNextActions("Return the result rows to the user or ask a follow-up question if the user requested more analysis.");
         List<Map<String, Object>> executionNextActions = createNextActions("Report the execution status to the user and stop unless the user asks for another operation.");
         return Stream.of(
                 Arguments.of("result set with rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(columns, rows, true).withExecutionHints(10, 5000),
                         Map.ofEntries(
                                 Map.entry("result_kind", "result_set"), Map.entry("statement_class", "query"), Map.entry("statement_type", "SELECT"), Map.entry("status", "OK"),
-                                Map.entry("columns", columns), Map.entry("rows", rows), Map.entry("returned_row_count", 1), Map.entry("applied_max_rows", 10),
-                                Map.entry("applied_timeout_ms", 5000), Map.entry("truncated", true), Map.entry("next_actions", resultSetNextActions))),
+                                Map.entry("columns", columns), Map.entry("rows", rows), Map.entry("row_object_status", "available"), Map.entry("row_objects", rowObjects),
+                                Map.entry("returned_row_count", 1), Map.entry("applied_max_rows", 10), Map.entry("applied_timeout_ms", 5000), Map.entry("truncated", true),
+                                Map.entry("next_actions", truncatedResultSetNextActions))),
                 Arguments.of("result set with null rows", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.resultSet(List.of(), null, false),
                         Map.ofEntries(
                                 Map.entry("result_kind", "result_set"), Map.entry("statement_class", "query"), Map.entry("statement_type", "SELECT"), Map.entry("status", "OK"),
-                                Map.entry("columns", List.of()), Map.entry("rows", List.of()), Map.entry("returned_row_count", 0), Map.entry("applied_max_rows", 0),
-                                Map.entry("applied_timeout_ms", 0), Map.entry("truncated", false), Map.entry("next_actions", resultSetNextActions))),
+                                Map.entry("columns", List.of()), Map.entry("rows", List.of()), Map.entry("row_object_status", "available"), Map.entry("row_objects", List.of()),
+                                Map.entry("returned_row_count", 0), Map.entry("applied_max_rows", 0), Map.entry("applied_timeout_ms", 0), Map.entry("truncated", false),
+                                Map.entry("next_actions", resultSetNextActions))),
                 Arguments.of("update count", (Supplier<SQLExecutionResponse>) () -> SQLExecutionResponse.updateCount("UPDATE", 2),
                         Map.of("result_kind", "update_count", "statement_class", "dml", "statement_type", "UPDATE", "status", "OK", "affected_rows", 2, "truncated", false,
                                 "applied_max_rows", 0, "applied_timeout_ms", 0, "next_actions", executionNextActions)),
@@ -149,5 +189,11 @@ class SQLExecutionResponseTest {
 
     private static List<Map<String, Object>> createNextActions(final String reason) {
         return List.of(Map.of("action_kind", "stop", "reason", reason, "requires_user_approval", false));
+    }
+
+    private static List<Map<String, Object>> createTruncatedResultSetNextActions() {
+        return List.of(Map.of("action_kind", "ask_user",
+                "reason", "The result was truncated by max_rows. Ask for a narrower SELECT, stronger WHERE clause, or smaller projection before retrying.",
+                "required_inputs", List.of("sql"), "requires_user_approval", false));
     }
 }

@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowContextSnapshotTest {
-    
+
     @Test
     void assertCopyCreatesDetachedSnapshot() {
         WorkflowContextSnapshot originalSnapshot = createSnapshot();
@@ -39,7 +39,7 @@ class WorkflowContextSnapshotTest {
         assertThat(actualSnapshot.getPlanId(), is("plan-1"));
         assertThat(actualSnapshot.getWorkflowKind(), is(WorkflowKind.valueOf("encrypt.rule")));
         originalSnapshot.getRequest().setTable("archived_orders");
-        originalSnapshot.getClarifiedIntent().getPendingQuestions().add("another question");
+        originalSnapshot.getClarifiedIntent().getClarificationMessages().add("another question");
         originalSnapshot.getClarifiedIntent().getUnresolvedFields().add("schema");
         originalSnapshot.getClarifiedIntent().getInferredValues().put("requires_decrypt", false);
         originalSnapshot.getFeatureData().getAlgorithmProperties("primary").put("mode", "changed");
@@ -47,7 +47,7 @@ class WorkflowContextSnapshotTest {
         getStringList(originalSnapshot.getIssues().get(0).getDetails(), "missing_fields").add("schema");
         getStringList(originalSnapshot.getValidationReport().getMismatches().get(0), "layers").add("rule");
         assertThat(actualSnapshot.getRequest().getTable(), is("orders"));
-        assertThat(actualSnapshot.getClarifiedIntent().getPendingQuestions(), is(List.of("provide schema")));
+        assertThat(actualSnapshot.getClarifiedIntent().getClarificationMessages(), is(List.of("provide schema")));
         assertTrue(actualSnapshot.getClarifiedIntent().getUnresolvedFields().isEmpty());
         assertTrue(actualSnapshot.getClarifiedIntent().getInferredValues().isEmpty());
         assertThat(actualSnapshot.getFeatureData().getAlgorithmProperties("primary").get("mode"), is("strict"));
@@ -55,7 +55,7 @@ class WorkflowContextSnapshotTest {
         assertThat(actualSnapshot.getIssues().get(0).getDetails().get("missing_fields"), is(List.of("column")));
         assertThat(actualSnapshot.getValidationReport().getMismatches().get(0).get("layers"), is(List.of("ddl")));
     }
-    
+
     @Test
     void assertClearPlanningStateRemovesTransientArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -71,7 +71,7 @@ class WorkflowContextSnapshotTest {
         assertThat(snapshot.getFeatureData(), is(featureData));
         assertNull(snapshot.getValidationReport());
     }
-    
+
     private WorkflowContextSnapshot createSnapshot() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId("plan-1");
@@ -84,7 +84,7 @@ class WorkflowContextSnapshotTest {
         request.setColumn("phone");
         result.setRequest(request);
         ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
-        clarifiedIntent.getPendingQuestions().add("provide schema");
+        clarifiedIntent.getClarificationMessages().add("provide schema");
         result.setClarifiedIntent(clarifiedIntent);
         StubWorkflowFeatureData featureData = new StubWorkflowFeatureData();
         featureData.getAlgorithmProperties("primary").put("mode", "strict");
@@ -109,21 +109,21 @@ class WorkflowContextSnapshotTest {
         result.setValidationReport(validationReport);
         return result;
     }
-    
+
     @SuppressWarnings("unchecked")
     private List<String> getStringList(final Map<String, Object> source, final String key) {
         return (List<String>) source.get(key);
     }
-    
+
     private static final class StubWorkflowFeatureData implements WorkflowFeatureData {
-        
+
         private final Map<String, String> algorithmProperties = new LinkedHashMap<>(4, 1F);
-        
+
         @Override
         public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
             return "primary".equals(algorithmRole) ? algorithmProperties : Collections.emptyMap();
         }
-        
+
         @Override
         public WorkflowFeatureData copy() {
             StubWorkflowFeatureData result = new StubWorkflowFeatureData();

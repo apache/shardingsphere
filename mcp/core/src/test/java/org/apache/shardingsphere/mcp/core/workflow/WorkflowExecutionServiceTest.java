@@ -64,6 +64,7 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "manual-only");
         assertThat(actualResponse.get("status"), is("awaiting-manual-execution"));
+        assertThat(actualResponse.get("response_mode"), is("manual_only"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
         assertThat(actualResponse.get("execution_mode"), is("manual-only"));
         assertFalse(actualResponse.containsKey("recommended_next_tool"));
@@ -86,6 +87,7 @@ class WorkflowExecutionServiceTest {
                 mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-2", workflowSessionContext.getRequired("plan-1"), List.of(),
                 "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
+        assertThat(actualResponse.get("response_mode"), is("terminal"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
         assertThat(actualResponse.get("execution_mode"), is("review-then-execute"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
@@ -101,6 +103,7 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "review-then-execute");
         assertThat(actualResponse.get("status"), is("failed"));
+        assertThat(actualResponse.get("response_mode"), is("terminal"));
         assertThat(actualResponse.get("plan_id"), is("plan-1"));
         assertThat(actualResponse.get("execution_mode"), is("review-then-execute"));
         assertThat(((Map<?, ?>) ((List<?>) actualResponse.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
@@ -146,8 +149,14 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, workflowApplySynchronizationHandler, "session-1", snapshot, List.of(), "preview");
         assertThat(actualResponse.get("status"), is("preview"));
+        assertThat(actualResponse.get("response_mode"), is("preview"));
         assertFalse((boolean) actualResponse.get("would_apply"));
         assertThat(((List<?>) actualResponse.get("preview_artifacts")).size(), is(2));
+        Map<?, ?> actualReviewFocus = (Map<?, ?>) actualResponse.get("review_focus");
+        assertThat(actualReviewFocus.get("artifact_categories"), is(List.of("add-column", "rule_distsql")));
+        assertThat(actualReviewFocus.get("side_effect_scope"), is(List.of("physical-structure", "rule-metadata")));
+        assertFalse((Boolean) actualReviewFocus.get("manual_only"));
+        assertTrue((Boolean) actualReviewFocus.get("requires_user_approval"));
         assertThat(actualResponse.get("approval_summary"), is("Previewed 2 workflow artifacts with side-effect scope physical-structure, rule-metadata. Nothing has been applied."));
         assertThat(actualResponse.get("approval_question"), is("Do you approve applying the previewed workflow artifacts?"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
@@ -189,6 +198,7 @@ class WorkflowExecutionServiceTest {
         Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
                 executionFacade, MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of("ddl", "index_ddl", "rule_distsql"), "review-then-execute");
         assertThat(actualResponse.get("status"), is("completed"));
+        assertThat(actualResponse.get("response_mode"), is("executed"));
         assertFalse(actualResponse.containsKey("recommended_next_tool"));
         assertThat(((List<?>) actualResponse.get("applied_artifacts")).size(), is(3));
         assertThat(((List<?>) actualResponse.get("executed_ddl")).size(), is(2));

@@ -19,10 +19,7 @@ package org.apache.shardingsphere.mcp.support.descriptor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.mcp.api.completion.descriptor.MCPCompletionTargetDescriptor;
-import org.apache.shardingsphere.mcp.api.prompt.descriptor.MCPPromptDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
-import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceNavigationDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 
 import java.util.Collection;
@@ -36,40 +33,40 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPDescriptorRegistry {
-    
+
     private static final MCPDescriptorCatalog CATALOG = MCPDescriptorCatalogLoader.load();
-    
+
     private static final Map<String, MCPResourceDescriptor> RESOURCE_DESCRIPTORS = createResourceDescriptors();
-    
+
     private static final Map<String, MCPToolDescriptor> TOOL_DESCRIPTORS = createToolDescriptors();
-    
+
     private static final Map<String, MCPPromptDescriptor> PROMPT_DESCRIPTORS = createPromptDescriptors();
-    
+
     private static Map<String, MCPResourceDescriptor> createResourceDescriptors() {
         return CATALOG.getResourceDescriptors().stream()
-                .collect(Collectors.toMap(MCPResourceDescriptor::getUriPattern, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getResourceDescriptors().size(), 1F)));
+                .collect(Collectors.toMap(MCPResourceDescriptor::getUriTemplate, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getResourceDescriptors().size(), 1F)));
     }
-    
+
     private static Map<String, MCPToolDescriptor> createToolDescriptors() {
         return CATALOG.getToolDescriptors().stream()
                 .collect(Collectors.toMap(MCPToolDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getToolDescriptors().size(), 1F)));
     }
-    
+
     private static Map<String, MCPPromptDescriptor> createPromptDescriptors() {
         return CATALOG.getPromptDescriptors().stream()
                 .collect(Collectors.toMap(MCPPromptDescriptor::getName, each -> each, (a, b) -> b, () -> new LinkedHashMap<>(CATALOG.getPromptDescriptors().size(), 1F)));
     }
-    
+
     /**
      * Get required resource descriptor.
      *
-     * @param uriPattern URI pattern
+     * @param uriTemplate URI template
      * @return resource descriptor
      */
-    public static MCPResourceDescriptor getRequiredResourceDescriptor(final String uriPattern) {
-        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriPattern)).orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriPattern)));
+    public static MCPResourceDescriptor getRequiredResourceDescriptor(final String uriTemplate) {
+        return Optional.ofNullable(RESOURCE_DESCRIPTORS.get(uriTemplate)).orElseThrow(() -> new IllegalStateException(String.format("MCP resource descriptor is required for `%s`.", uriTemplate)));
     }
-    
+
     /**
      * Get required tool descriptor.
      *
@@ -79,7 +76,7 @@ public final class MCPDescriptorRegistry {
     public static MCPToolDescriptor getRequiredToolDescriptor(final String toolName) {
         return Optional.ofNullable(TOOL_DESCRIPTORS.get(toolName)).orElseThrow(() -> new IllegalStateException(String.format("MCP tool descriptor is required for `%s`.", toolName)));
     }
-    
+
     /**
      * Get prompt descriptors.
      *
@@ -88,7 +85,7 @@ public final class MCPDescriptorRegistry {
     public static Collection<MCPPromptDescriptor> getPromptDescriptors() {
         return CATALOG.getPromptDescriptors();
     }
-    
+
     /**
      * Get completion target descriptors.
      *
@@ -97,7 +94,7 @@ public final class MCPDescriptorRegistry {
     public static Collection<MCPCompletionTargetDescriptor> getCompletionTargetDescriptors() {
         return CATALOG.getCompletionTargetDescriptors();
     }
-    
+
     /**
      * Get resource navigation descriptors.
      *
@@ -106,11 +103,11 @@ public final class MCPDescriptorRegistry {
     public static Collection<MCPResourceNavigationDescriptor> getResourceNavigationDescriptors() {
         return CATALOG.getResourceNavigationDescriptors();
     }
-    
+
     /**
      * Create model-facing capability payload.
      *
-     * @param supportedResources supported resource URI patterns
+     * @param supportedResources supported resource URI templates
      * @param supportedTools supported tool names
      * @param supportedStatements supported statement classes
      * @return capability payload

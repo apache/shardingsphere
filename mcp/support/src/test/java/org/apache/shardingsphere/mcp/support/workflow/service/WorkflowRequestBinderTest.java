@@ -21,15 +21,17 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WorkflowRequestBinderTest {
-    
+
     @Test
     void assertBindPlanningRequestBindsCommonFieldsAndFeatureCallbacks() {
         Map<String, Object> arguments = new LinkedHashMap<>();
@@ -42,7 +44,6 @@ class WorkflowRequestBinderTest {
         arguments.put("natural_language_intent", "encrypt the user id");
         arguments.put("delivery_mode", "step-by-step");
         arguments.put("execution_mode", "manual-only");
-        arguments.put("algorithm_type", "AES");
         arguments.put("structured_intent_evidence", Map.of("field_semantics", "identifier"));
         arguments.put("user_overrides", Map.of("algorithm_type", "MD5"));
         AtomicReference<String> actualFeatureAlgorithm = new AtomicReference<>();
@@ -69,11 +70,22 @@ class WorkflowRequestBinderTest {
         assertThat(actual.getExecutionMode(), is("manual-only"));
         assertThat(actual.getFieldSemantics(), is("identifier"));
         assertThat(actual.getAlgorithmType(), is("MD5"));
-        assertThat(actualFeatureAlgorithm.get(), is("AES"));
+        assertThat(actualFeatureAlgorithm.get(), is(""));
         assertThat(actualStructuredIntentEvidence.get(), is(Map.of("field_semantics", "identifier")));
         assertThat(actualUserOverrides.get(), is(Map.of("algorithm_type", "MD5")));
     }
-    
+
+    @Test
+    void assertBindPlanningRequestRejectsConflictingUserOverrides() {
+        Map<String, Object> arguments = Map.of("algorithm_type", "AES", "user_overrides", Map.of("algorithm_type", "MD5"));
+        WorkflowArgumentConflictException actual = assertThrows(WorkflowArgumentConflictException.class,
+                () -> WorkflowRequestBinder.bindPlanningRequest(arguments,
+                        (request, workflowPlanningArguments) -> request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type")),
+                        (request, structuredIntentEvidence) -> request.setFieldSemantics(String.valueOf(structuredIntentEvidence.get("field_semantics"))),
+                        (request, userOverrides) -> request.setAlgorithmType(String.valueOf(userOverrides.get("algorithm_type")))));
+        assertThat(actual.getConflictingArguments(), is(List.of("algorithm_type conflicts with user_overrides.algorithm_type")));
+    }
+
     @Test
     void assertBindPlanningRequestSkipsMissingObjectMaps() {
         AtomicInteger actualStructuredIntentCount = new AtomicInteger();

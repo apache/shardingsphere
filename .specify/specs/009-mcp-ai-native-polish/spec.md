@@ -3,7 +3,7 @@
 **Feature Branch**: `[001-shardingsphere-mcp]`
 **Created**: 2026-05-05
 **Reviewed**: 2026-05-06
-**Status**: Draft
+**Status**: Re-baselined
 **Input**: User request:
 "Use Spec Kit to organize the remaining ShardingSphere MCP improvements that make the MCP native, convenient,
 comfortable, and clear for large models. Do not switch branches."
@@ -14,6 +14,10 @@ comfortable, and clear for large models. Do not switch branches."
 - Treat `.specify/specs/008-mcp-ai-friendly-lightweight-experience/`, `specs/003-mcp-ai-friendly-guided-interaction/`, and the current MCP code as the baseline.
 - This package captures the next small polish increment only. It MUST NOT reopen completed baseline work unless current-code evidence proves drift.
 - Do not introduce a planner, graph traversal engine, vector search, cross-session memory, approval-token platform, RBAC platform, or default-CI live-model benchmark.
+- Future implementation MAY make breaking model-facing payload changes when they reduce guessing. Do not carry parallel compatibility shims; delete obsolete fields, code, tests, and docs.
+- The 100% implementation target is defined in `implementation-baseline-100.md`; it closes retained work without turning rejected or confirmation-gated ideas into hidden scope.
+- The final repeated-question inventory is defined in `final-requirement-inventory.md`; it is the short list to use when deciding what remains after the current baseline.
+- The 2026-05-07 requirement sweep is defined in `requirement-sweep-2026-05-07.md`; it reconciles the last model-comfort questions without switching branches or expanding scope.
 
 ## Current Baseline
 
@@ -22,11 +26,11 @@ Current ShardingSphere MCP already exposes:
 - `shardingsphere://capabilities` as the model-facing public-surface source of truth.
 - Capability-level `model_contract`, `next_action_contract`, `common_flows`, `security_hints`, payload contracts, protocol availability, and fingerprints.
 - Descriptor-backed tools, resources, resource templates, prompts, completions, annotations, examples, and output schemas.
-- `search_metadata` with `resource_uri`, `parent_resource_uri`, `next_resource_uris`, URI derivation status, search context, `match_kind`, `matched_fields`, and `matched_value`.
+- `search_metadata` with typed `resource`, `parent_resource`, `next_resources`, URI derivation status, search context, `match_kind`, `matched_fields`, and `matched_value`.
 - SQL response parse hints such as `returned_row_count`, `applied_max_rows`, `applied_timeout_ms`, `truncated`, and `next_actions`.
 - Preview-first `execute_update` and `apply_workflow` with `approval_summary`, `approval_question`, side-effect scope, reusable arguments, and user approval requirements.
 - Structured recovery for missing arguments, invalid execution mode, wrong SQL tool, invalid object types, invalid page tokens, stale workflow plans, unsupported tools/resources, and unsafe SQL.
-- Resource navigation payloads such as `self_uri`, `parent_uri`, `next_resources`, count, pagination wording, and payload contracts.
+- Resource navigation payloads such as `self_uri`, typed `parent_resource`, typed `next_resources`, count, pagination wording, and payload contracts.
 - Completion diagnostics including missing context, candidate counts, deterministic ranking policy, prefix-first matching, contains fallback, and current-session plan ordering.
 - Opt-in LLM usability scenarios and deterministic contract tests for the existing model-facing surface.
 
@@ -41,7 +45,12 @@ The 2026-05-06 sweep adds only concrete, low-design polish gaps found by repeate
 - model-friendly result-row shapes where column names are unambiguous;
 - safe continuation hints for truncation, pagination, duplicate search hits, and metadata-introspection SQL;
 - centralized percent-encoding behavior for resource URIs already covered by descriptor-backed patterns;
-- secret-safe runtime and HTTP configuration comfort that remains documentation/config focused.
+- secret-safe runtime and HTTP configuration comfort that remains documentation/config focused;
+- executable completion next actions that carry the completion reference, context arguments, and safe resume target;
+- resource-read error payloads that are distinguishable inside normal `resources/read` results;
+- typed `resources_to_read` and `next_resources` hints with purpose and resource kind as the canonical shape, replacing bare URI-only lists;
+- schema-visible defaults, examples, and numeric bounds so models do not mine free-form descriptions for call shape;
+- optional MCP resource links when the transport/client path supports them, without replacing `structuredContent`.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -191,7 +200,7 @@ The MCP should make the safe default obvious and reject unsafe shapes with struc
 As a model collecting missing workflow or execution inputs, I want structured clarification fields, language-neutral intent hints,
 and read-back resources so that I can ask the user naturally and resume safely.
 
-**Why this priority**: Current fallback questions are usable, but models still translate prose, infer fields,
+**Why this priority**: Current questions are usable, but models still translate prose, infer fields,
 and lose plan context after compaction. A small structured layer improves native use without adding memory.
 
 **Independent Test**: Trigger missing workflow inputs, use Chinese natural-language evidence, compact/recover by `plan_id`,
@@ -229,6 +238,10 @@ and assert field-level questions, localized intent hints, and current-session re
 - The user asks in Chinese for reversible encryption, irreversible hashing, phone masking, or identity-card masking.
 - A model has only `plan_id` after context compaction and must recover without cross-session memory.
 - A configuration example must mention secrets without embedding real credentials.
+- A `complete_argument` action names an argument but not the completion reference, required context, or resume call.
+- A resource handler returns an error payload through `resources/read`, where the MCP result itself has no `isError` flag.
+- A `resources_to_read` or `next_resources` value is a bare URI and the model must guess why it should read it.
+- A descriptor describes defaults, bounds, or examples in prose but does not expose them as machine-readable JSON Schema fields.
 
 ## Requirements *(mandatory)*
 
@@ -254,7 +267,8 @@ and assert field-level questions, localized intent hints, and current-session re
 - **FR-016**: Tool output schemas SHOULD distinguish preview and executed response variants or expose stable common fields
   that let a model identify the response mode, including `execute_update.execution_mode` behavior.
 - **FR-017**: Side-effect previews SHOULD clearly state that preview is a classification and side-effect-scope summary, not a database affected-row estimate.
-- **FR-018**: SQL result payloads SHOULD expose model-friendly row objects when returned column names are unique, and a clear fallback status when duplicate or unnamed columns require positional rows.
+- **FR-018**: SQL result payloads SHOULD expose model-friendly row objects when returned column names are unique,
+  and a clear unavailable status when duplicate or unnamed columns require positional rows.
 - **FR-019**: SQL and resource responses SHOULD expose safe continuation `next_actions` when results are truncated, paginated, or require a narrower retry.
 - **FR-020**: Wrong-tool recovery for metadata-introspection SQL such as `SHOW TABLES`, `DESCRIBE`, and dialect equivalents
   SHOULD guide models to metadata resources or `search_metadata` when that is safer than SQL execution.
@@ -263,6 +277,15 @@ and assert field-level questions, localized intent hints, and current-session re
 - **FR-022**: Workflow missing-input recovery SHOULD reference exact public input names such as `primary_algorithm_properties`,
   `assisted_query_algorithm_properties`, and `like_query_algorithm_properties` instead of synthetic or internal property paths.
 - **FR-023**: Metadata search responses SHOULD expose ambiguity or duplicate-hit hints when multiple matches share a name across databases, schemas, or object types, with safe narrowing suggestions.
+- **FR-024**: `complete_argument` next actions SHOULD include completion reference type, completion reference, target argument, known context arguments,
+  and the safe tool or resource call to resume when the completion value is chosen.
+- **FR-025**: Tool and resource argument schemas SHOULD expose machine-readable defaults, examples, patterns, minimums, and maximums when the descriptor already knows them.
+- **FR-026**: Resource-read failures SHOULD return a payload with `response_kind=error`, `error_code`, safe message, original URI, and recovery `next_actions`,
+  because `resources/read` results do not carry the same `isError` marker as tool results.
+- **FR-027**: Workflow `resources_to_read` and resource `next_resources` SHOULD prefer typed entries with URI, resource kind, purpose, reason, and source field.
+  Bare URI-only fields SHOULD be deleted from canonical payloads unless a protocol-owned identifier field requires a URI string.
+- **FR-028**: Tool results SHOULD include protocol-native MCP resource links where the SDK and client path support them.
+  JSON `structuredContent` remains the canonical payload, not a compatibility fallback.
 
 #### P1 - response comfort and value provenance
 
@@ -275,7 +298,8 @@ and assert field-level questions, localized intent hints, and current-session re
 - **FR-107**: Database capabilities SHOULD conservatively explain EXPLAIN ANALYZE execution-risk semantics where known.
 - **FR-108**: Unsupported tool/resource recovery MAY include deterministic prefix/template candidates, but MUST NOT use semantic search.
 - **FR-109**: Clarification responses SHOULD expose structured field-level questions with field name, input type, allowed values, default, and secret sensitivity where known.
-- **FR-110**: The server SHOULD use MCP-native elicitation when the active SDK/client path supports it, while preserving the current fallback fields for clients without elicitation.
+- **FR-110**: Structured clarification fields SHOULD become the canonical missing-input contract.
+  MCP-native elicitation MAY mirror those fields when the active SDK/client path supports it, but prose-only fallback fields MUST NOT be reintroduced.
 - **FR-111**: Natural-language workflow intent handling SHOULD support common Chinese synonyms for encrypt, mask, reversible,
   irreversible, equality query, fuzzy query, phone, identity card, and email.
 - **FR-112**: Descriptors and prompts SHOULD tell models to provide structured intent evidence for non-English user requests instead of depending on prose keyword matching.
@@ -321,9 +345,13 @@ and assert field-level questions, localized intent hints, and current-session re
 - **Encoded Resource Identifier**: Percent-encoded resource path segment that preserves logical database, schema, table, and column identifiers.
 - **Runtime Status Summary**: Secret-free operational summary for configured databases, feature loading, transport, and first health checks.
 - **Response Mode Contract**: Stable payload markers that tell a model whether a response is preview, executed, manual-only, validation, recovery, or terminal.
-- **Result Row View**: Optional object-row representation for SQL results when column labels are unique, plus fallback metadata when positional rows must be preserved.
+- **Result Row View**: Optional object-row representation for SQL results when column labels are unique, plus unavailable-state metadata when positional rows must be preserved.
 - **Recovery Target Hint**: Exact tool/resource/argument target metadata for retry and repair actions, especially after context compaction.
 - **Ambiguity Hint**: Search or lookup metadata that tells a model a result set needs scope narrowing instead of name guessing.
+- **Executable Completion Action**: A `complete_argument` next action with the completion target, context arguments, and resume call information.
+- **Resource Error Payload**: A structured error shape carried inside resource content when `resources/read` cannot use tool-style `isError`.
+- **Typed Resource Hint**: A resource URI paired with kind, purpose, reason, and source field for `resources_to_read` and `next_resources`.
+- **Resource Link Hint**: Optional protocol-native link metadata attached to tool results where the transport supports it.
 
 ## Success Criteria *(mandatory)*
 
@@ -340,6 +368,7 @@ and assert field-level questions, localized intent hints, and current-session re
 - **SC-009**: Non-ASCII identifiers, Chinese workflow intent, and secret-bearing runtime configuration are handled without guessing or leaking sensitive data.
 - **SC-010**: A model can recover from missing workflow arguments, missing execution mode, and metadata-introspection SQL without guessing the retry tool or public argument name.
 - **SC-011**: A model can tell preview, execute, manual-only, validation, recovery, truncation, and pagination states from structured fields rather than prose alone.
+- **SC-012**: A model can continue completion, resource navigation, and resource-error recovery from structured fields instead of inferring completion references, resource purpose, or error status.
 
 ## Assumptions
 
@@ -347,3 +376,7 @@ and assert field-level questions, localized intent hints, and current-session re
 - Current MCP baseline from 008 and the current code remains valid and descriptor-backed.
 - This package is a requirements backlog, not an instruction to implement everything in one change.
 - Future implementation will use existing descriptor, capabilities, response, completion, and recovery mechanisms before adding new abstractions.
+- Future implementation should prefer one clean canonical contract over old/new dual payload shapes, and should remove replaced compatibility code during the same change slice.
+- `breaking-cleanup-analysis.md` is the implementation gate for deciding whether a touched old field is deleted, replaced, or retained for correctness.
+- `final-requirement-inventory.md` is the closing inventory for retained P0/P1/P2 gaps, explicit non-goals, and verification order.
+- `requirement-sweep-2026-05-07.md` is the final repeated-question addendum for compact first-hop use, direct metadata bounds, workflow conflicts, field naming, distribution handoff, deterministic MCP client smoke, and descriptor lint.

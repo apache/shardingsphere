@@ -164,8 +164,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 .filter(each -> "search_metadata".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
         Map<String, Object> actualSearchMetadataOutputProperties = castToMap(castToMap(actualSearchMetadataTool.get("outputSchema")).get("properties"));
         Map<String, Object> actualSearchMetadataItemProperties = castToMap(castToMap(castToMap(actualSearchMetadataOutputProperties.get("items")).get("items")).get("properties"));
-        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("resource_uri")).get("type")), is("string"));
-        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("next_resource_uris")).get("type")), is("array"));
+        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("resource")).get("type")), is("object"));
+        assertThat(String.valueOf(castToMap(actualSearchMetadataItemProperties.get("next_resources")).get("type")), is("array"));
         Map<String, Object> actualTool = castToMapList(actualResult.get("tools")).stream()
                 .filter(each -> "execute_update".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
         Map<String, Object> actualOutputProperties = castToMap(castToMap(actualTool.get("outputSchema")).get("properties"));
@@ -220,7 +220,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
         assertThat(String.valueOf(structuredContent.get("status")), is("clarifying"));
-        assertThat(((List<?>) structuredContent.get("pending_questions")).stream().map(String::valueOf).toList(), is(List.of("Please provide logical database first.")));
+        assertThat(castToMapList(structuredContent.get("clarification_questions")).stream().map(each -> String.valueOf(each.get("display_message"))).toList(),
+                is(List.of("Please provide logical database first.")));
     }
     
     private HttpResponse<String> sendPromptGetRequest(final HttpClient httpClient, final String sessionId, final String promptName,

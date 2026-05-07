@@ -30,37 +30,58 @@ import java.util.Map;
  */
 @Getter
 public final class MCPToolValueDefinition {
-    
+
     private final Type type;
-    
+
     private final String description;
-    
+
     private final MCPToolValueDefinition itemDefinition;
-    
+
     private final Collection<String> enumValues;
-    
+
     private final Collection<MCPToolFieldDefinition> objectProperties;
-    
+
     private final boolean additionalProperties;
-    
+
+    private final Object defaultValue;
+
+    private final Integer minimumValue;
+
+    private final Integer maximumValue;
+
+    private final Collection<Object> examples;
+
+    private final String pattern;
+
     public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition) {
         this(type, description, itemDefinition, Collections.emptyList(), Collections.emptyList(), true);
     }
-    
+
     public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues) {
         this(type, description, itemDefinition, enumValues, Collections.emptyList(), true);
     }
-    
+
     public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues,
                                   final Collection<MCPToolFieldDefinition> objectProperties, final boolean additionalProperties) {
+        this(type, description, itemDefinition, enumValues, objectProperties, additionalProperties, null, null, null, Collections.emptyList(), "");
+    }
+
+    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues,
+                                  final Collection<MCPToolFieldDefinition> objectProperties, final boolean additionalProperties, final Object defaultValue,
+                                  final Integer minimumValue, final Integer maximumValue, final Collection<Object> examples, final String pattern) {
         this.type = type;
         this.description = description;
         this.itemDefinition = itemDefinition;
         this.enumValues = null == enumValues ? Collections.emptyList() : enumValues;
         this.objectProperties = null == objectProperties ? Collections.emptyList() : objectProperties;
         this.additionalProperties = additionalProperties;
+        this.defaultValue = defaultValue;
+        this.minimumValue = minimumValue;
+        this.maximumValue = maximumValue;
+        this.examples = null == examples ? Collections.emptyList() : examples;
+        this.pattern = null == pattern ? "" : pattern;
     }
-    
+
     /**
      * To schema fragment.
      *
@@ -75,32 +96,39 @@ public final class MCPToolValueDefinition {
             case OBJECT -> toObjectSchemaFragment();
         };
     }
-    
+
     private Map<String, Object> toScalarSchemaFragment(final String type) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        final Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("type", type);
         result.put("description", description);
         if (!enumValues.isEmpty()) {
             result.put("enum", enumValues);
         }
+        appendSchemaAttributes(result);
         return result;
     }
-    
+
     private Map<String, Object> toArraySchemaFragment() {
-        return Map.of("type", "array", "description", description, "items", itemDefinition.toSchemaFragment());
+        final Map<String, Object> result = new LinkedHashMap<>(6, 1F);
+        result.put("type", "array");
+        result.put("description", description);
+        result.put("items", itemDefinition.toSchemaFragment());
+        appendSchemaAttributes(result);
+        return result;
     }
-    
+
     private Map<String, Object> toObjectSchemaFragment() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        final Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("type", "object");
         result.put("description", description);
         if (objectProperties.isEmpty()) {
             result.put("additionalProperties", additionalProperties);
+            appendSchemaAttributes(result);
             return result;
         }
-        Map<String, Object> properties = new LinkedHashMap<>(objectProperties.size(), 1F);
-        Collection<String> required = new ArrayList<>(objectProperties.size());
-        for (MCPToolFieldDefinition each : objectProperties) {
+        final Map<String, Object> properties = new LinkedHashMap<>(objectProperties.size(), 1F);
+        final Collection<String> required = new ArrayList<>(objectProperties.size());
+        for (final MCPToolFieldDefinition each : objectProperties) {
             properties.put(each.getName(), each.getValueDefinition().toSchemaFragment());
             if (each.isRequired()) {
                 required.add(each.getName());
@@ -109,22 +137,41 @@ public final class MCPToolValueDefinition {
         result.put("properties", properties);
         result.put("required", required);
         result.put("additionalProperties", additionalProperties);
+        appendSchemaAttributes(result);
         return result;
     }
-    
+
+    private void appendSchemaAttributes(final Map<String, Object> result) {
+        if (null != defaultValue) {
+            result.put("default", defaultValue);
+        }
+        if (null != minimumValue) {
+            result.put("minimum", minimumValue);
+        }
+        if (null != maximumValue) {
+            result.put("maximum", maximumValue);
+        }
+        if (!examples.isEmpty()) {
+            result.put("examples", examples);
+        }
+        if (!pattern.isEmpty()) {
+            result.put("pattern", pattern);
+        }
+    }
+
     /**
      * Tool value type.
      */
     public enum Type {
-        
+
         STRING,
-        
+
         INTEGER,
-        
+
         ARRAY,
-        
+
         BOOLEAN,
-        
+
         OBJECT
     }
 }

@@ -30,16 +30,26 @@ import java.util.LinkedList;
 @Getter
 @Setter
 public final class YamlMCPToolValueDefinition {
-    
+
     private Type type;
-    
+
     private String description;
-    
+
     private YamlMCPToolValueDefinition itemDefinition;
-    
+
     private Collection<String> enumValues = new LinkedList<>();
-    
+
     private Collection<YamlMCPToolFieldDefinition> objectProperties = new LinkedList<>();
-    
+
     private Boolean additionalProperties;
+
+    private Object defaultValue;
+
+    private Integer minimumValue;
+
+    private Integer maximumValue;
+
+    private Collection<Object> examples = new LinkedList<>();
+
+    private String pattern;
 }

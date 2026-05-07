@@ -86,7 +86,7 @@ public final class LLMUsabilityScenarioCatalog {
         result.add(createScenario("tool-search-detail-uri-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                 new LLME2EScenario("tool-search-detail-uri-" + runtimeKind, SYSTEM_PROMPT,
                         "Use search_metadata for `" + tableName + "` in " + databaseName + "." + schemaName
-                                + ", read the returned table resource_uri, then verify `" + query + "`.",
+                                + ", read the returned table resource.uri, then verify `" + query + "`.",
                         new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), searchDetailActions, searchDetailActions),
                 List.of("search_metadata"), List.of(tableResourceUri), true, false));
         List<String> workflowActions = List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query");
