@@ -53,6 +53,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -129,6 +130,23 @@ class BootstrapInitializerTest {
         assertTrue(actualParameter.getProps().isEmpty());
         assertTrue(actualParameter.getLabels().isEmpty());
         assertThat(actualParameter.getInstanceMetaData(), is(instanceMetaData));
+    }
+    
+    @Test
+    void assertInitWithRepeatedLifecycle() throws SQLException, ReflectiveOperationException {
+        InstanceMetaDataBuilder instanceMetaDataBuilder = mock(InstanceMetaDataBuilder.class);
+        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
+        registerSingletonService(InstanceMetaDataBuilder.class, instanceMetaDataBuilder);
+        ContextManagerBuilder contextManagerBuilder = mock(ContextManagerBuilder.class);
+        when(instanceMetaDataBuilder.getType()).thenReturn("Proxy");
+        when(instanceMetaDataBuilder.build(3307, "")).thenReturn(instanceMetaData);
+        when(contextManagerBuilder.isDefault()).thenReturn(true);
+        registerSingletonService(ContextManagerBuilder.class, contextManagerBuilder);
+        BootstrapInitializer bootstrapInitializer = new BootstrapInitializer();
+        bootstrapInitializer.init(createYamlProxyConfiguration(null), 3307);
+        BackendExecutorContext.getInstance().shutdown();
+        bootstrapInitializer.init(createYamlProxyConfiguration(null), 3307);
+        verify(BackendExecutorContext.getInstance(), times(2)).init();
     }
     
     private YamlProxyConfiguration createYamlProxyConfiguration(final YamlModeConfiguration modeConfig) {

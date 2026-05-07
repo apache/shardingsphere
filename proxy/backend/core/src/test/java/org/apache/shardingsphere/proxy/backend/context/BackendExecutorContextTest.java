@@ -30,16 +30,14 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,6 +55,7 @@ class BackendExecutorContextTest {
     void assertGetExecutorEngine() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
         ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
         assertThat(actual, is(BackendExecutorContext.getInstance().getExecutorEngine()));
     }
@@ -67,19 +66,28 @@ class BackendExecutorContextTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         BackendExecutorContext.getInstance().init();
         ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
+        BackendExecutorContext.getInstance().close();
         BackendExecutorContext.getInstance().init();
         assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(actual)));
     }
     
     @Test
-    void assertClose() throws ReflectiveOperationException {
+    void assertClose() {
         ContextManager contextManager = mockContextManager();
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         BackendExecutorContext.getInstance().init();
         BackendExecutorContext.getInstance().close();
-        Field executorEngineField = BackendExecutorContext.class.getDeclaredField("executorEngine");
-        ExecutorEngine executorEngine = (ExecutorEngine) Plugins.getMemberAccessor().get(executorEngineField, BackendExecutorContext.getInstance());
-        assertNull(executorEngine);
+        ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
+        assertThat(actual, is(BackendExecutorContext.getInstance().getExecutorEngine()));
+    }
+    
+    @Test
+    void assertShutdown() {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
+        BackendExecutorContext.getInstance().shutdown();
+        assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
     }
     
     private ContextManager mockContextManager() {

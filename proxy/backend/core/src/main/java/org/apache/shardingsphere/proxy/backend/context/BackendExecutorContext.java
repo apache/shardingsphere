@@ -32,6 +32,8 @@ public final class BackendExecutorContext {
     
     private volatile ExecutorEngine executorEngine;
     
+    private LifecycleState lifecycleState = LifecycleState.UNINITIALIZED;
+    
     /**
      * Get executor context instance.
      *
@@ -45,19 +47,29 @@ public final class BackendExecutorContext {
      * Initialize backend executor context.
      */
     public synchronized void init() {
-        close();
+        if (null != executorEngine) {
+            executorEngine.close();
+        }
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
+        lifecycleState = LifecycleState.RUNNING;
     }
     
     /**
      * Get executor engine.
      *
      * @return executor engine
+     * @throws IllegalStateException backend executor is unavailable in current lifecycle state
      */
     public synchronized ExecutorEngine getExecutorEngine() {
         if (null == executorEngine) {
+            if (LifecycleState.CLOSED == lifecycleState) {
+                throw new IllegalStateException(String.format("Backend executor engine is unavailable in `%s` lifecycle state.", lifecycleState));
+            }
             init();
+        }
+        if (LifecycleState.RUNNING != lifecycleState) {
+            throw new IllegalStateException(String.format("Backend executor engine is unavailable in `%s` lifecycle state.", lifecycleState));
         }
         return executorEngine;
     }
@@ -66,10 +78,27 @@ public final class BackendExecutorContext {
      * Close backend executor context.
      */
     public synchronized void close() {
-        if (null == executorEngine) {
-            return;
+        if (null != executorEngine) {
+            executorEngine.close();
+            executorEngine = null;
         }
-        executorEngine.close();
-        executorEngine = null;
+        lifecycleState = LifecycleState.UNINITIALIZED;
+    }
+    
+    /**
+     * Shutdown backend executor context.
+     */
+    public synchronized void shutdown() {
+        close();
+        lifecycleState = LifecycleState.CLOSED;
+    }
+    
+    private enum LifecycleState {
+        
+        UNINITIALIZED,
+        
+        RUNNING,
+        
+        CLOSED
     }
 }
