@@ -224,12 +224,9 @@ class StandaloneMetaDataManagerPersistServiceTest {
         when(database.getName()).thenReturn("foo_db");
         SingleRuleConfiguration ruleConfig = new SingleRuleConfiguration();
         ruleConfig.setTables(Collections.singleton("ds_0.t_order"));
-        DatabaseRuleNodePath databaseRuleNodePath = new DatabaseRuleNodePath("foo_db", "single", new DatabaseRuleItem("unique"));
-        when(metaDataPersistFacade.getDatabaseRuleService().delete("foo_db", Collections.singleton(ruleConfig))).thenReturn(Collections.singleton(new MetaDataVersion(databaseRuleNodePath)));
         metaDataManagerPersistService.removeRuleConfiguration(database, ruleConfig, "SINGLE");
-        verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", Collections.singleton(ruleConfig));
+        verify(metaDataPersistFacade.getDatabaseRuleService()).delete("foo_db", "SINGLE");
         verify(metaDataPersistFacade.getDatabaseMetaDataFacade()).persistReloadDatabaseByUnloadSingleTable(eq("foo_db"), any(), eq(database));
-        verify(metaDataPersistFacade.getDatabaseRuleService(), never()).delete("foo_db", "SINGLE");
     }
     
     @Test
