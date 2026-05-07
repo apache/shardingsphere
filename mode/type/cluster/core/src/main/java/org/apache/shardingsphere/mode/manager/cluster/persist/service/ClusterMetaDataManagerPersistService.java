@@ -208,26 +208,33 @@ public final class ClusterMetaDataManagerPersistService implements MetaDataManag
         if (null == toBeRemovedRuleItemConfig) {
             return;
         }
-        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleItemConfig);
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
+        if (toBeRemovedRuleItemConfig instanceof SingleRuleConfiguration) {
+            removeSingleRuleConfiguration(database, toBeRemovedRuleItemConfig, originalMetaDataContexts);
+            return;
+        }
+        Collection<String> needReloadTables = toBeRemovedRuleItemConfig.getLogicTableNames();
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleItemConfig));
         metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts), needReloadTables);
     }
     
-    private Collection<String> getNeedReloadTables(final ShardingSphereDatabase originalDatabase, final RuleConfiguration toBeAlteredRuleConfig) {
-        if (toBeAlteredRuleConfig instanceof SingleRuleConfiguration) {
-            Collection<String> originalSingleTables = originalDatabase.getRuleMetaData().getSingleRule(SingleRule.class).getConfiguration().getLogicTableNames();
-            return toBeAlteredRuleConfig.getLogicTableNames().stream().filter(each -> !originalSingleTables.contains(each)).collect(Collectors.toList());
-        }
-        return toBeAlteredRuleConfig.getLogicTableNames();
-    }
-    
     @Override
     public void removeRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleConfig, final String ruleType) {
-        Collection<String> needReloadTables = getNeedReloadTables(database, toBeRemovedRuleConfig);
         MetaDataContexts originalMetaDataContexts = new MetaDataContexts(metaDataContextManager.getMetaDataContexts().getMetaData(), metaDataContextManager.getMetaDataContexts().getStatistics());
+        if (toBeRemovedRuleConfig instanceof SingleRuleConfiguration) {
+            removeSingleRuleConfiguration(database, toBeRemovedRuleConfig, originalMetaDataContexts);
+            return;
+        }
+        Collection<String> needReloadTables = toBeRemovedRuleConfig.getLogicTableNames();
         metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), ruleType);
         metaDataPersistFacade.getDatabaseMetaDataFacade().persistAlteredTables(database.getName(), getReloadedMetaDataContexts(originalMetaDataContexts), needReloadTables);
+    }
+    
+    private void removeSingleRuleConfiguration(final ShardingSphereDatabase database, final RuleConfiguration toBeRemovedRuleItemConfig, final MetaDataContexts originalMetaDataContexts) {
+        metaDataPersistFacade.getDatabaseRuleService().delete(database.getName(), Collections.singleton(toBeRemovedRuleItemConfig));
+        metaDataPersistFacade.getDatabaseMetaDataFacade().persistReloadDatabaseByUnloadSingleTable(database.getName(),
+                getReloadedMetaDataContexts(originalMetaDataContexts).getMetaData().getDatabase(database.getName()),
+                originalMetaDataContexts.getMetaData().getDatabase(database.getName()));
     }
     
     @Override

@@ -126,6 +126,15 @@ class DatabaseMetaDataPersistFacadeTest {
     }
     
     @Test
+    void assertPersistReloadDatabaseByUnloadSingleTable() {
+        when(GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(any(), any()))
+                .thenReturn(Collections.singleton(new ShardingSphereSchema("Foo_Dropped", mock(DatabaseType.class))));
+        databaseMetaDataFacade.persistReloadDatabaseByUnloadSingleTable("foo_db", mock(ShardingSphereDatabase.class), mock(ShardingSphereDatabase.class));
+        verify(tableMetaDataService).drop(eq("foo_db"), eq("Foo_Dropped"), anyCollection());
+        verify(tableMetaDataService, never()).persist(anyString(), anyString(), anyCollection());
+    }
+    
+    @Test
     void assertRenameSchemaWithEmptySchema() {
         ShardingSphereDatabase database = createDatabase("foo_db", Collections.singleton(new ShardingSphereSchema("foo_schema", mock(DatabaseType.class))));
         databaseMetaDataFacade.renameSchema(createMetaData(database), database, "foo_schema", "bar_schema");

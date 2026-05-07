@@ -165,4 +165,16 @@ public final class DatabaseMetaDataPersistFacade {
             }
         });
     }
+    
+    /**
+     * Persist reload database by unload single table.
+     *
+     * @param databaseName database name
+     * @param reloadDatabase reload database
+     * @param currentDatabase current database
+     */
+    public void persistReloadDatabaseByUnloadSingleTable(final String databaseName, final ShardingSphereDatabase reloadDatabase, final ShardingSphereDatabase currentDatabase) {
+        Collection<ShardingSphereSchema> toBeAlteredSchemasWithTablesDropped = GenericSchemaManager.getToBeAlteredSchemasWithTablesDropped(reloadDatabase, currentDatabase);
+        toBeAlteredSchemasWithTablesDropped.forEach(each -> table.drop(databaseName, each.getName(), each.getAllTables()));
+    }
 }
