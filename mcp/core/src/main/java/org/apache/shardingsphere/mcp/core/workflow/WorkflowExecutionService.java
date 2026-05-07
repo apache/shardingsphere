@@ -162,11 +162,9 @@ public final class WorkflowExecutionService {
         result.put("review_focus", createPreviewReviewFocus(snapshot, previewArtifacts));
         result.put("approval_summary", createApprovalSummary(previewArtifacts));
         result.put("approval_question", createApprovalQuestion(previewArtifacts));
-        result.put("requires_user_approval", true);
+        result.put("requires_user_approval", isPreviewApprovalRequired(snapshot));
         result.put("argument_provenance", createPreviewArgumentProvenance());
-        result.put("next_actions", MCPNextActionUtils.ordered(
-                MCPNextActionUtils.askUser("Review preview_artifacts and approve only the intended workflow side effects.", List.of("approval"), true),
-                MCPNextActionUtils.dependsOn(createPreviewNextAction(snapshot), 1)));
+        result.put("next_actions", createPreviewNextActions(snapshot));
         return result;
     }
 
@@ -197,7 +195,7 @@ public final class WorkflowExecutionService {
         result.put("artifact_categories", previewArtifacts.stream().map(each -> (String) each.get("artifact_type")).distinct().toList());
         result.put("side_effect_scope", previewArtifacts.stream().map(each -> (String) each.get("side_effect_scope")).distinct().toList());
         result.put("manual_only", EXECUTION_MODE_MANUAL_ONLY.equals(resolveApprovedExecutionMode(snapshot)));
-        result.put("requires_user_approval", true);
+        result.put("requires_user_approval", isPreviewApprovalRequired(snapshot));
         result.put("approval_field", "approval");
         return result;
     }
@@ -212,8 +210,28 @@ public final class WorkflowExecutionService {
     }
 
     private Map<String, Object> createPreviewNextAction(final WorkflowContextSnapshot snapshot) {
-        return MCPNextActionUtils.callTool("apply_workflow", "Apply workflow artifacts only after the user approves the previewed side effects.",
-                Map.of("plan_id", snapshot.getPlanId(), "execution_mode", resolveApprovedExecutionMode(snapshot)), true);
+        String executionMode = resolveApprovedExecutionMode(snapshot);
+        return MCPNextActionUtils.callTool("apply_workflow", createPreviewNextActionReason(executionMode),
+                Map.of("plan_id", snapshot.getPlanId(), "execution_mode", executionMode), !EXECUTION_MODE_MANUAL_ONLY.equals(executionMode));
+    }
+    
+    private List<Map<String, Object>> createPreviewNextActions(final WorkflowContextSnapshot snapshot) {
+        if (!isPreviewApprovalRequired(snapshot)) {
+            return MCPNextActionUtils.ordered(createPreviewNextAction(snapshot));
+        }
+        return MCPNextActionUtils.ordered(
+                MCPNextActionUtils.askUser("Review preview_artifacts and approve only the intended workflow side effects.", List.of("approval"), true),
+                MCPNextActionUtils.dependsOn(createPreviewNextAction(snapshot), 1));
+    }
+    
+    private boolean isPreviewApprovalRequired(final WorkflowContextSnapshot snapshot) {
+        return !EXECUTION_MODE_MANUAL_ONLY.equals(resolveApprovedExecutionMode(snapshot));
+    }
+    
+    private String createPreviewNextActionReason(final String executionMode) {
+        return EXECUTION_MODE_MANUAL_ONLY.equals(executionMode)
+                ? "Export reviewed workflow artifacts without applying runtime side effects."
+                : "Apply workflow artifacts only after the user approves the previewed side effects.";
     }
 
     private Map<String, Object> createPreviewArgumentProvenance() {

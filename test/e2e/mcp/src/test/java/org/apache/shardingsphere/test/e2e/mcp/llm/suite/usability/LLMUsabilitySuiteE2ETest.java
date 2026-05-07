@@ -83,7 +83,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         suiteRunner.assertUsabilitySuite(testCase.suiteId(),
                 () -> scenarioCatalog.createMinimalBaseline(getRuntimeKind(), "logic_db", getRequiredRuntimeFixture().schemaName(),
                         "orders", COUNT_ORDERS_SQL, getRequiredRuntimeFixture().totalOrders()),
-                each -> conversationExecutor.runConversation(each.getScenarioId(), each, createInteractionClient()),
+                each -> conversationExecutor.runConversation(testCase.suiteId() + "/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
     }
     

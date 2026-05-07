@@ -30,6 +30,10 @@ public final class LLMUsabilityScorecard {
     
     private final String runId;
     
+    private final double overallScore;
+    
+    private final boolean fullScore;
+    
     private final double taskSuccessRate;
     
     private final double firstCorrectActionRate;

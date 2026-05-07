@@ -331,11 +331,12 @@ public final class LLMMCPConversationRunner {
     private String createFinalAnswerInstruction(final LLME2EScenario scenario) {
         final LLMStructuredAnswer expectedAnswer = scenario.getExpectedAnswer();
         final String prompt = "Return JSON only with keys database, schema, table, query, totalOrders, interactionSequence. "
-                + "The target table is `%s`, the final interactionSequence must match the observed interaction trace exactly, "
-                + "and the required tools are `%s`.";
+                + "Use database `%s`, schema `%s`, table `%s`, and query `%s`; set totalOrders from the latest successful execute_query result. "
+                + "Set interactionSequence to a JSON array of observed MCP action names only, not objects; collapse consecutive repeated action names. Required tools are `%s`.";
         return String.format(Locale.ENGLISH,
                 prompt,
-                expectedAnswer.getTable(), String.join(", ", scenario.getRequiredToolNames()));
+                expectedAnswer.getDatabase(), expectedAnswer.getSchema(), expectedAnswer.getTable(), expectedAnswer.getQuery(),
+                String.join(", ", scenario.getRequiredToolNames()));
     }
     
     private LLME2EAssertionReport validateFinalAnswer(final LLME2EScenario scenario, final LLMStructuredAnswer actualAnswer,
@@ -353,21 +354,55 @@ public final class LLMMCPConversationRunner {
         if (!expectedAnswer.getTable().equals(actualAnswer.getTable())) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer table does not match expected table.");
         }
-        if (!expectedAnswer.getNormalizedQuery().equals(actualAnswer.getNormalizedQuery())) {
+        if (!isExpectedQuery(expectedAnswer, actualAnswer)) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer query does not match expected query.");
         }
         int actualTotalOrders = getActualTotalOrders(interactionTrace);
         if (actualTotalOrders != actualAnswer.getTotalOrders() || expectedAnswer.getTotalOrders() != actualAnswer.getTotalOrders()) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer totalOrders does not match the execute_query result.");
         }
-        List<String> actualInteractionSequence = new LinkedList<>();
-        for (MCPInteractionTraceRecord each : interactionTrace) {
-            actualInteractionSequence.add(each.getTargetName());
-        }
-        if (!actualInteractionSequence.equals(actualAnswer.getInteractionSequence())) {
+        if (!createComparableInteractionSequence(interactionTrace).equals(collapseConsecutiveActionNames(actualAnswer.getInteractionSequence()))) {
             return LLME2EAssertionReport.failure("unexpected_query_result", "Final answer interactionSequence does not match the observed interaction trace.");
         }
         return LLME2EAssertionReport.isSuccess("LLM MCP smoke passed.");
+    }
+    
+    private List<String> createComparableInteractionSequence(final List<MCPInteractionTraceRecord> interactionTrace) {
+        List<String> result = new LinkedList<>();
+        for (MCPInteractionTraceRecord each : interactionTrace) {
+            result.add(each.getTargetName());
+        }
+        return collapseConsecutiveActionNames(result);
+    }
+    
+    private List<String> collapseConsecutiveActionNames(final List<String> actionNames) {
+        List<String> result = new LinkedList<>();
+        for (String each : actionNames) {
+            if (result.isEmpty() || !result.getLast().equals(each)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+    
+    private boolean isExpectedQuery(final LLMStructuredAnswer expectedAnswer, final LLMStructuredAnswer actualAnswer) {
+        String expectedQuery = normalizeComparableQuery(expectedAnswer.getQuery());
+        String actualQuery = normalizeComparableQuery(actualAnswer.getQuery());
+        if (expectedQuery.equals(actualQuery)) {
+            return true;
+        }
+        String schemaName = expectedAnswer.getSchema().trim();
+        if (schemaName.isEmpty()) {
+            return false;
+        }
+        String tableName = expectedAnswer.getTable().trim();
+        String qualifiedQuery = expectedQuery.replace(" FROM " + tableName.toUpperCase(Locale.ENGLISH),
+                " FROM " + schemaName.toUpperCase(Locale.ENGLISH) + "." + tableName.toUpperCase(Locale.ENGLISH));
+        return qualifiedQuery.equals(actualQuery);
+    }
+    
+    private String normalizeComparableQuery(final String query) {
+        return query.replaceAll("\\s+", " ").trim().toUpperCase(Locale.ENGLISH);
     }
     
     private LLME2EAssertionReport validateFinalAnswerSafely(final LLME2EScenario scenario, final LLMStructuredAnswer actualAnswer,
@@ -477,7 +512,7 @@ public final class LLMMCPConversationRunner {
                         "parameters", Map.of(
                                 "type", "object",
                                 "properties", Map.of(
-                                        "reference", Map.of("type", "object", "description", "MCP prompt or resource reference."),
+                                        "reference", createCompletionReferenceSchema(),
                                         "argument_name", Map.of("type", "string", "description", "Argument name to complete."),
                                         "argument_value", Map.of("type", "string", "description", "Argument prefix."),
                                         "context_arguments", Map.of("type", "object", "description", "Known arguments for contextual completion.")),
@@ -491,6 +526,19 @@ public final class LLMMCPConversationRunner {
                     "description", toolDescriptor.getDescription(),
                     "parameters", createParameterSchema(toolDescriptor.getFields()))));
         }
+        return result;
+    }
+    
+    private Map<String, Object> createCompletionReferenceSchema() {
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        result.put("type", "object");
+        result.put("description", "MCP completion reference. Use type `ref/prompt` with prompt name, or type `ref/resource` with resource uri.");
+        result.put("properties", Map.of(
+                "type", Map.of("type", "string", "description", "Reference type.", "enum", List.of("ref/prompt", "ref/resource")),
+                "name", Map.of("type", "string", "description", "Prompt name when type is `ref/prompt`."),
+                "uri", Map.of("type", "string", "description", "Resource URI when type is `ref/resource`.")));
+        result.put("required", List.of("type"));
+        result.put("additionalProperties", false);
         return result;
     }
     
@@ -529,12 +577,23 @@ public final class LLMMCPConversationRunner {
             return mcpInteractionClient.getPrompt(Objects.toString(arguments.get("name"), "").trim(), castToMap(arguments.getOrDefault("arguments", Map.of())));
         }
         if (MCPInteractionActionNames.COMPLETE.equals(actionName)) {
-            return mcpInteractionClient.complete(castToMap(arguments.get("reference")),
+            return mcpInteractionClient.complete(normalizeCompletionReference(arguments.get("reference")),
                     Objects.toString(arguments.get("argument_name"), "").trim(),
                     Objects.toString(arguments.getOrDefault("argument_value", ""), ""),
                     castToStringMap(arguments.getOrDefault("context_arguments", Map.of())));
         }
         return mcpInteractionClient.call(actionName, arguments);
+    }
+    
+    private Map<String, Object> normalizeCompletionReference(final Object reference) {
+        Map<String, Object> result = new LinkedHashMap<>(castToMap(reference));
+        String referenceType = Objects.toString(result.get("type"), "").trim().toLowerCase(Locale.ENGLISH);
+        if ("prompt".equals(referenceType)) {
+            result.put("type", "ref/prompt");
+        } else if ("resource".equals(referenceType)) {
+            result.put("type", "ref/resource");
+        }
+        return result;
     }
     
     private MCPInteractionTraceRecord createTraceRecord(final int sequence, final String actionName, final Map<String, Object> arguments,

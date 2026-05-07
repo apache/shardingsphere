@@ -46,6 +46,13 @@ class MaskAlgorithmPropertyTemplateServiceTest {
     }
     
     @Test
+    void assertGetSupportedAlgorithmTypes() {
+        List<String> actual = service.getSupportedAlgorithmTypes();
+        assertThat(actual, is(List.of("KEEP_FIRST_N_LAST_M", "KEEP_FROM_X_TO_Y", "MASK_FIRST_N_LAST_M", "MASK_FROM_X_TO_Y",
+                "MASK_AFTER_SPECIAL_CHARS", "MASK_BEFORE_SPECIAL_CHARS", "GENERIC_TABLE_RANDOM_REPLACE", "MD5")));
+    }
+    
+    @Test
     void assertMaskProperties() {
         List<AlgorithmPropertyRequirement> requirements = List.of(
                 new AlgorithmPropertyRequirement("primary", "special-chars", true, false, "anchor", ""),

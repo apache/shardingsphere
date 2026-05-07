@@ -35,11 +35,12 @@ class LLMUsabilityScenarioCatalogTest {
         List<LLMUsabilityScenario> actual = new LLMUsabilityScenarioCatalog().createMinimalBaseline("h2", "logic_db", "public", "orders",
                 "SELECT COUNT(*) AS total_orders FROM orders", 2);
         Map<String, LLMUsabilityScenario> actualScenarios = actual.stream().collect(Collectors.toMap(LLMUsabilityScenario::getScenarioId, each -> each));
-        assertThat(actualScenarios.keySet(), hasItems("tool-preview-update-h2", "tool-search-detail-uri-h2", "workflow-mask-preview-validate-h2"));
+        assertThat(actualScenarios.keySet(), hasItems("tool-preview-update-h2", "tool-search-detail-uri-h2", "workflow-mask-preview-validate-h2", "resource-runtime-status-h2"));
         assertThat(actualScenarios.get("tool-preview-update-h2").getLlmScenario().getRequiredToolNames(), is(List.of("execute_update", "execute_query")));
         assertThat(actualScenarios.get("tool-search-detail-uri-h2").getExpectedResourceUris(),
                 is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders")));
         assertThat(actualScenarios.get("workflow-mask-preview-validate-h2").getLlmScenario().getRequiredToolNames(),
                 is(List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query")));
+        assertThat(actualScenarios.get("resource-runtime-status-h2").getExpectedResourceUris(), is(List.of("shardingsphere://runtime")));
     }
 }

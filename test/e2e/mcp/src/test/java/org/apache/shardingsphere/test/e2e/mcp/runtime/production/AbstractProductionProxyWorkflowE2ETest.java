@@ -94,7 +94,7 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     protected final List<String> getClarificationMessages(final Map<String, Object> payload) {
         return getMapList(payload.get("clarification_questions")).stream().map(each -> String.valueOf(each.get("display_message"))).toList();
     }
-
+    
     protected final List<String> getStringList(final Object value) {
         return null == value ? List.of() : ((List<?>) value).stream().map(String::valueOf).toList();
     }

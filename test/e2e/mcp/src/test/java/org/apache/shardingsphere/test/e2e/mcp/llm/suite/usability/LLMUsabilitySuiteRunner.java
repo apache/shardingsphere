@@ -34,6 +34,7 @@ import java.util.function.Supplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class LLMUsabilitySuiteRunner {
     
@@ -52,8 +53,16 @@ final class LLMUsabilitySuiteRunner {
         Path suiteDirectory = configuration.getArtifactRoot().resolve(configuration.getRunId()).resolve(suiteId);
         reportWriter.writeScorecard(suiteDirectory, scorecard);
         String actualFailureSummary = createFailureSummary(scorecard);
+        assertThat(actualFailureSummary, scorecard.getOverallScore(), is(100.0D));
+        assertTrue(scorecard.isFullScore(), actualFailureSummary);
         assertThat(actualFailureSummary, scorecard.getScenarioResults().size(), is(scenarios.size()));
         assertThat(actualFailureSummary, scorecard.getTaskSuccessRate(), is(1.0D));
+        assertThat(actualFailureSummary, scorecard.getFirstCorrectActionRate(), is(1.0D));
+        assertThat(actualFailureSummary, scorecard.getInvalidCallRate(), is(0.0D));
+        assertThat(actualFailureSummary, scorecard.getQueryAnswerFidelity(), is(1.0D));
+        assertThat(actualFailureSummary, scorecard.getBoundaryConfusionRate(), is(0.0D));
+        assertThat(actualFailureSummary, scorecard.getNextActionFollowRate(), is(1.0D));
+        assertThat(actualFailureSummary, scorecard.getApprovalViolationRate(), is(0.0D));
         if (hasResourceHitExpectation(scenarios)) {
             assertThat(actualFailureSummary, scorecard.getResourceHitRate(), is(1.0D));
         }
@@ -82,6 +91,8 @@ final class LLMUsabilitySuiteRunner {
     
     private String createFailureSummary(final LLMUsabilityScorecard scorecard) {
         StringBuilder result = new StringBuilder("LLM usability suite did not meet the baseline.");
+        result.append(" overallScore=").append(scorecard.getOverallScore());
+        result.append(", fullScore=").append(scorecard.isFullScore());
         result.append(" taskSuccessRate=").append(scorecard.getTaskSuccessRate());
         result.append(", resourceHitRate=").append(scorecard.getResourceHitRate());
         result.append(", recoveryRate=").append(scorecard.getRecoveryRate());

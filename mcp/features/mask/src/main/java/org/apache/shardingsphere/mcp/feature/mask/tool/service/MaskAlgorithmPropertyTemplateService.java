@@ -53,6 +53,15 @@ public final class MaskAlgorithmPropertyTemplateService {
     }
     
     /**
+     * Get supported algorithm types.
+     *
+     * @return supported algorithm types
+     */
+    public List<String> getSupportedAlgorithmTypes() {
+        return new LinkedList<>(MASK_TEMPLATES.keySet());
+    }
+    
+    /**
      * Mask properties for review.
      *
      * @param requirements requirements

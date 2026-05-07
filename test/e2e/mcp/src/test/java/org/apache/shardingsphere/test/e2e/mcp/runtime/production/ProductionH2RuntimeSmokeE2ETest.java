@@ -188,6 +188,26 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("transports")
+    void assertAiNativeDeterministicInteractionLoop(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
+        useTransport(transport);
+        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
+            assertAiNativeCapabilities(interactionClient.readResource("shardingsphere://capabilities"));
+            assertAiNativeDiscovery(interactionClient);
+            Map<String, Object> searchMetadataPayload = interactionClient.call("search_metadata",
+                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("TABLE")));
+            Map<String, Object> tableHit = findPayloadItem(searchMetadataPayload, "name", "orders");
+            String tableResourceUri = String.valueOf(getMap(tableHit.get("resource")).get("uri"));
+            assertThat(tableResourceUri, is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
+            assertFalse(getMapList(tableHit.get("next_resources")).isEmpty());
+            List<Map<String, Object>> tableItems = getPayloadItems(interactionClient.readResource(tableResourceUri));
+            assertThat(String.valueOf(tableItems.get(0).get("table")), is("orders"));
+            assertAiNativeSqlPreview(interactionClient);
+            assertAiNativeSqlResult(interactionClient);
+        }
+    }
+    
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("transports")
     void assertRejectUnsupportedResourceUri(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
         useTransport(transport);
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
@@ -403,6 +423,70 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
     
     private void assertOfficialToolNames(final List<String> actualToolNames) {
         assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
+    }
+    
+    private void assertAiNativeCapabilities(final Map<String, Object> capabilities) {
+        assertTrue(capabilities.containsKey("model_contract"));
+        assertTrue(capabilities.containsKey("surface_summary"));
+        assertTrue(capabilities.containsKey("field_naming_contract"));
+        assertTrue(capabilities.containsKey("next_action_contract"));
+        assertTrue(capabilities.containsKey("common_flows"));
+        assertTrue(capabilities.containsKey("security_hints"));
+        assertTrue(capabilities.containsKey("fingerprints"));
+        assertFalse(getMap(capabilities.get("fingerprints")).isEmpty());
+        assertFalse(((List<?>) capabilities.get("common_flows")).isEmpty());
+        assertThat(getMap(capabilities.get("surface_summary")).get("read_only_sql_tool"), is("execute_query"));
+        assertThat(getMap(capabilities.get("surface_summary")).get("side_effect_sql_tool"), is("execute_update"));
+    }
+    
+    private void assertAiNativeDiscovery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+        Map<String, Object> runtimeStatus = interactionClient.readResource("shardingsphere://runtime");
+        assertThat(String.valueOf(runtimeStatus.get("status")), is("available"));
+        assertThat(String.valueOf(runtimeStatus.get("configured_database_count")), is("1"));
+        assertTrue(getResources(interactionClient.listResources()).stream().anyMatch(each -> "shardingsphere://runtime".equals(each.get("uri"))));
+        assertTrue(getResourceTemplates(interactionClient.listResourceTemplates()).stream()
+                .anyMatch(each -> "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}".equals(each.get("uriTemplate"))));
+        assertTrue(interactionClient.listTools().stream().anyMatch(each -> "execute_update".equals(each.get("name")) && getMap(each.get("outputSchema")).containsKey("properties")));
+        Map<String, Object> promptPayload = interactionClient.getPrompt("inspect_metadata", Map.of("database", "logic_db", "schema", "public", "query", "orders"));
+        assertTrue(String.valueOf(promptPayload).contains("Stop conditions"));
+        Map<String, Object> completionPayload = interactionClient.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"), "schema", "pub", Map.of("database", "logic_db"));
+        assertTrue(((List<?>) getMap(completionPayload.get("completion")).get("values")).contains("public"));
+    }
+    
+    private void assertAiNativeSqlPreview(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+        Map<String, Object> actual = interactionClient.call("execute_update",
+                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
+        assertThat(String.valueOf(actual.get("response_mode")), is("preview"));
+        assertThat(String.valueOf(actual.get("result_kind")), is("preview"));
+        assertThat(String.valueOf(actual.get("preview_semantics")), is("classification_only"));
+        assertFalse((Boolean) actual.get("would_execute"));
+        List<Map<String, Object>> nextActions = getMapList(actual.get("next_actions"));
+        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("action_kind"))).toList(), is(List.of("ask_user", "call_tool")));
+        assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
+    }
+    
+    private void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+        Map<String, Object> actual = interactionClient.call("execute_query",
+                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT order_id, status FROM orders ORDER BY order_id", "max_rows", 1));
+        assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
+        assertThat(String.valueOf(actual.get("row_object_status")), is("available"));
+        assertThat(((List<?>) actual.get("row_objects")).size(), is(1));
+        assertThat(String.valueOf(actual.get("truncated")), is("true"));
+        assertThat(String.valueOf(getMapList(actual.get("next_actions")).get(0).get("action_kind")), is("ask_user"));
+    }
+    
+    private Map<String, Object> findPayloadItem(final Map<String, Object> payload, final String key, final String expectedValue) {
+        return getPayloadItems(payload).stream().filter(each -> expectedValue.equals(each.get(key))).findFirst().orElseThrow();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getMap(final Object value) {
+        return (Map<String, Object>) value;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private List<Map<String, Object>> getMapList(final Object value) {
+        return ((List<?>) value).stream().map(each -> (Map<String, Object>) each).toList();
     }
     
     private static boolean isEnabled() {

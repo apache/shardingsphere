@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.feature.mask.tool.service;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPQueryFailedException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.workflow.model.AlgorithmPropertyRequirement;
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSQLUtils;
@@ -43,7 +44,11 @@ public final class MaskRuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName) {
-        return queryFacade.query(databaseName, "", String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        try {
+            return queryFacade.query(databaseName, "", String.format("SHOW MASK RULES FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        } catch (final MCPQueryFailedException ignored) {
+            return List.of();
+        }
     }
     
     /**
@@ -55,8 +60,12 @@ public final class MaskRuleInspectionService {
      * @return mask rules
      */
     public List<Map<String, Object>> queryMaskRules(final MCPFeatureQueryFacade queryFacade, final String databaseName, final String tableName) {
-        return queryFacade.query(
-                databaseName, "", String.format("SHOW MASK RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        try {
+            return queryFacade.query(
+                    databaseName, "", String.format("SHOW MASK RULE %s FROM %s", WorkflowSQLUtils.formatDistSQLIdentifier(tableName), WorkflowSQLUtils.formatDistSQLIdentifier(databaseName)));
+        } catch (final MCPQueryFailedException ignored) {
+            return List.of();
+        }
     }
     
     /**
@@ -66,8 +75,27 @@ public final class MaskRuleInspectionService {
      * @return mask algorithms
      */
     public List<Map<String, Object>> queryMaskAlgorithms(final MCPFeatureQueryFacade queryFacade) {
+        try {
+            return decorateMaskAlgorithms(queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS"));
+        } catch (final MCPQueryFailedException ignored) {
+            return decorateMaskAlgorithms(createFallbackMaskAlgorithms());
+        }
+    }
+    
+    private List<Map<String, Object>> createFallbackMaskAlgorithms() {
         List<Map<String, Object>> result = new LinkedList<>();
-        for (Map<String, Object> each : queryFacade.queryWithAnyDatabase("SHOW MASK ALGORITHM PLUGINS")) {
+        for (String each : propertyTemplateService.getSupportedAlgorithmTypes()) {
+            Map<String, Object> row = new LinkedHashMap<>(2, 1F);
+            row.put("type", each);
+            row.put("source", "builtin_template");
+            result.add(row);
+        }
+        return result;
+    }
+    
+    private List<Map<String, Object>> decorateMaskAlgorithms(final List<Map<String, Object>> maskAlgorithms) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (Map<String, Object> each : maskAlgorithms) {
             String type = Objects.toString(each.get("type"), "").trim().toUpperCase(Locale.ENGLISH);
             List<AlgorithmPropertyRequirement> propertyTemplates = propertyTemplateService.findRequirements(type);
             Map<String, Object> row = new LinkedHashMap<>(each);

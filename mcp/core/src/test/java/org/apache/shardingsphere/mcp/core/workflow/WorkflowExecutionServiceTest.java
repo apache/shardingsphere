@@ -185,6 +185,25 @@ class WorkflowExecutionServiceTest {
     }
     
     @Test
+    void assertApplyPreviewForManualOnlyDoesNotRequireApprovalForExport() {
+        WorkflowContextSnapshot snapshot = createSnapshot();
+        snapshot.getRequest().setExecutionMode("manual-only");
+        snapshot.getRuleArtifacts().add(new RuleArtifact("create", "CREATE MASK RULE orders"));
+        WorkflowSessionContext workflowSessionContext = new InMemoryWorkflowSessionContext();
+        workflowSessionContext.save(snapshot);
+        WorkflowExecutionService executionService = new WorkflowExecutionService();
+        Map<String, Object> actualResponse = executionService.apply(workflowSessionContext, mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class),
+                mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP, "session-1", snapshot, List.of(), "preview");
+        assertFalse((Boolean) actualResponse.get("requires_user_approval"));
+        assertFalse((Boolean) ((Map<?, ?>) actualResponse.get("review_focus")).get("requires_user_approval"));
+        List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
+        assertThat(actualNextActions.size(), is(1));
+        Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.get(0);
+        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("manual-only"));
+        assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
+    }
+    
+    @Test
     void assertApplyExecutesApprovedArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
         snapshot.getDdlArtifacts().add(new DDLArtifact("add-column", "ALTER TABLE orders ADD COLUMN order_id_cipher VARCHAR(32)", 10));

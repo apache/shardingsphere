@@ -26,7 +26,6 @@ import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionTr
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -34,6 +33,26 @@ import java.util.function.Predicate;
  * LLM usability metric calculator.
  */
 public final class LLMUsabilityMetricCalculator {
+    
+    private static final double FULL_SCORE = 100.0D;
+    
+    private static final double TASK_SUCCESS_WEIGHT = 30.0D;
+    
+    private static final double FIRST_CORRECT_ACTION_WEIGHT = 15.0D;
+    
+    private static final double NO_INVALID_CALL_WEIGHT = 10.0D;
+    
+    private static final double QUERY_ANSWER_FIDELITY_WEIGHT = 10.0D;
+    
+    private static final double NO_BOUNDARY_CONFUSION_WEIGHT = 10.0D;
+    
+    private static final double RESOURCE_HIT_WEIGHT = 10.0D;
+    
+    private static final double RECOVERY_WEIGHT = 5.0D;
+    
+    private static final double NEXT_ACTION_FOLLOW_WEIGHT = 5.0D;
+    
+    private static final double NO_APPROVAL_VIOLATION_WEIGHT = 5.0D;
     
     /**
      * Evaluate scenario.
@@ -47,7 +66,7 @@ public final class LLMUsabilityMetricCalculator {
         boolean firstCorrectAction = interactionTrace.isEmpty() || scenario.getExpectedFirstActionNames().isEmpty()
                 ? !interactionTrace.isEmpty()
                 : scenario.getExpectedFirstActionNames().contains(interactionTrace.get(0).getTargetName());
-        int invalidCallCount = getInvalidCallCount(interactionTrace);
+        int invalidCallCount = getInvalidCallCount(interactionTrace, scenario.isRecoveryExpected());
         boolean resourceHit = hasResourceHit(scenario.getExpectedResourceUris(), interactionTrace);
         boolean errorInteractionObserved = hasErrorInteraction(interactionTrace);
         boolean boundaryConfusion = !scenario.getExpectedFirstActionNames().isEmpty() && !firstCorrectAction;
@@ -94,8 +113,32 @@ public final class LLMUsabilityMetricCalculator {
         double recoveryRate = getRecoveryRate(scenarioResults);
         double nextActionFollowRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isNextActionFollowed);
         double approvalViolationRate = calculateRate(scenarioResults, LLMUsabilityScenarioResult::isApprovalViolation);
-        return new LLMUsabilityScorecard(suiteId, runId, taskSuccessRate, firstCorrectActionRate, invalidCallRate, averageRoundTrips,
+        double overallScore = calculateOverallScore(taskSuccessRate, firstCorrectActionRate, invalidCallRate, queryAnswerFidelity,
+                boundaryConfusionRate, resourceHitRate, recoveryRate, nextActionFollowRate, approvalViolationRate);
+        return new LLMUsabilityScorecard(suiteId, runId, overallScore, isFullScore(overallScore), taskSuccessRate, firstCorrectActionRate, invalidCallRate, averageRoundTrips,
                 queryAnswerFidelity, boundaryConfusionRate, resourceHitRate, recoveryRate, nextActionFollowRate, approvalViolationRate, scenarioResults);
+    }
+    
+    private double calculateOverallScore(final double taskSuccessRate, final double firstCorrectActionRate, final double invalidCallRate,
+                                         final double queryAnswerFidelity, final double boundaryConfusionRate, final double resourceHitRate,
+                                         final double recoveryRate, final double nextActionFollowRate, final double approvalViolationRate) {
+        return TASK_SUCCESS_WEIGHT * taskSuccessRate
+                + FIRST_CORRECT_ACTION_WEIGHT * firstCorrectActionRate
+                + NO_INVALID_CALL_WEIGHT * invertRate(invalidCallRate)
+                + QUERY_ANSWER_FIDELITY_WEIGHT * queryAnswerFidelity
+                + NO_BOUNDARY_CONFUSION_WEIGHT * invertRate(boundaryConfusionRate)
+                + RESOURCE_HIT_WEIGHT * resourceHitRate
+                + RECOVERY_WEIGHT * recoveryRate
+                + NEXT_ACTION_FOLLOW_WEIGHT * nextActionFollowRate
+                + NO_APPROVAL_VIOLATION_WEIGHT * invertRate(approvalViolationRate);
+    }
+    
+    private double invertRate(final double rate) {
+        return Math.max(0.0D, 1.0D - rate);
+    }
+    
+    private boolean isFullScore(final double overallScore) {
+        return 0 == Double.compare(FULL_SCORE, overallScore);
     }
     
     private double calculateRate(final List<LLMUsabilityScenarioResult> scenarioResults, final Predicate<LLMUsabilityScenarioResult> matcher) {
@@ -123,7 +166,7 @@ public final class LLMUsabilityMetricCalculator {
     
     private double getAverageQueryAnswerFidelity(final List<LLMUsabilityScenarioResult> scenarioResults) {
         if (scenarioResults.isEmpty()) {
-            return 0.0D;
+            return 1.0D;
         }
         double total = 0.0D;
         for (LLMUsabilityScenarioResult each : scenarioResults) {
@@ -139,7 +182,7 @@ public final class LLMUsabilityMetricCalculator {
                 resourceRequiredResults.add(each);
             }
         }
-        return calculateRate(resourceRequiredResults, LLMUsabilityScenarioResult::isResourceHit);
+        return resourceRequiredResults.isEmpty() ? 1.0D : calculateRate(resourceRequiredResults, LLMUsabilityScenarioResult::isResourceHit);
     }
     
     private double getRecoveryRate(final List<LLMUsabilityScenarioResult> scenarioResults) {
@@ -149,7 +192,7 @@ public final class LLMUsabilityMetricCalculator {
                 recoveryResults.add(each);
             }
         }
-        return calculateRate(recoveryResults, LLMUsabilityScenarioResult::isRecoveredAfterError);
+        return recoveryResults.isEmpty() ? 1.0D : calculateRate(recoveryResults, LLMUsabilityScenarioResult::isRecoveredAfterError);
     }
     
     private double getInvalidCallRate(final List<LLMUsabilityScenarioResult> scenarioResults) {
@@ -177,10 +220,16 @@ public final class LLMUsabilityMetricCalculator {
         return total;
     }
     
-    private int getInvalidCallCount(final List<MCPInteractionTraceRecord> interactionTrace) {
+    private int getInvalidCallCount(final List<MCPInteractionTraceRecord> interactionTrace, final boolean recoveryExpected) {
         int result = 0;
+        boolean expectedRecoverySignalObserved = false;
         for (MCPInteractionTraceRecord each : interactionTrace) {
-            if (!each.isValid() || each.getStructuredContent().containsKey("error_code")) {
+            if (!isErrorInteraction(each)) {
+                continue;
+            }
+            if (recoveryExpected && !expectedRecoverySignalObserved) {
+                expectedRecoverySignalObserved = true;
+            } else {
                 result++;
             }
         }
@@ -205,16 +254,23 @@ public final class LLMUsabilityMetricCalculator {
     
     private boolean hasErrorInteraction(final List<MCPInteractionTraceRecord> interactionTrace) {
         for (MCPInteractionTraceRecord each : interactionTrace) {
-            if (!each.isValid()) {
+            if (isErrorInteraction(each)) {
                 return true;
-            }
-            for (Entry<String, Object> entry : each.getStructuredContent().entrySet()) {
-                if ("error_code".equals(entry.getKey())) {
-                    return true;
-                }
             }
         }
         return false;
+    }
+    
+    private boolean isErrorInteraction(final MCPInteractionTraceRecord interactionTraceRecord) {
+        if (!interactionTraceRecord.isValid() || interactionTraceRecord.getStructuredContent().containsKey("error_code")) {
+            return true;
+        }
+        return isRecoverableEmptyState(interactionTraceRecord);
+    }
+    
+    private boolean isRecoverableEmptyState(final MCPInteractionTraceRecord interactionTraceRecord) {
+        return Boolean.FALSE.equals(interactionTraceRecord.getStructuredContent().get("found"))
+                || interactionTraceRecord.getStructuredContent().containsKey("empty_state");
     }
     
     private boolean isNextActionFollowed(final List<MCPInteractionTraceRecord> interactionTrace) {
@@ -264,7 +320,8 @@ public final class LLMUsabilityMetricCalculator {
         String actionKind = Objects.toString(action.get("action_kind"), "");
         if ("read_resource".equals(actionKind)) {
             return MCPInteractionActionNames.RESOURCE_READ_KIND.equals(next.getActionKind())
-                    && Objects.equals(action.get("target_resource"), next.getArguments().get("uri"));
+                    && (Objects.equals(action.get("target_resource"), next.getArguments().get("uri"))
+                            || isRecoverableResourceCorrection(current, next));
         }
         if ("call_tool".equals(actionKind)) {
             return Objects.equals(action.get("target_tool"), next.getTargetName());
@@ -276,6 +333,10 @@ public final class LLMUsabilityMetricCalculator {
         return "complete_argument".equals(actionKind) && MCPInteractionActionNames.COMPLETION_KIND.equals(next.getActionKind());
     }
     
+    private boolean isRecoverableResourceCorrection(final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
+        return isRecoverableEmptyState(current) && Boolean.TRUE.equals(next.getStructuredContent().get("found"));
+    }
+    
     private boolean hasApprovalViolation(final List<MCPInteractionTraceRecord> interactionTrace) {
         for (int index = 0; index < interactionTrace.size(); index++) {
             if (hasUnsafeApprovalError(interactionTrace.get(index))
@@ -285,12 +346,12 @@ public final class LLMUsabilityMetricCalculator {
         }
         return false;
     }
-
+    
     private boolean hasUnsafeApprovalError(final MCPInteractionTraceRecord interactionTraceRecord) {
         Object errorCode = interactionTraceRecord.getStructuredContent().get("error_code");
         return "unsafe_sql_execution_attempted".equals(errorCode) || "unsafe_workflow_execution_attempted".equals(errorCode);
     }
-
+    
     private boolean matchesApprovalRequiredMachineAction(final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
         for (Map<?, ?> each : getActionableNextActions(current)) {
             if (Boolean.TRUE.equals(each.get("requires_user_approval")) && matchesNextAction(each, current, next)) {

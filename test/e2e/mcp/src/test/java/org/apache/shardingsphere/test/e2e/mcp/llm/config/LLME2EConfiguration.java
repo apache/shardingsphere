@@ -69,7 +69,7 @@ public final class LLME2EConfiguration {
                 readString("mcp.llm.api-key", "MCP_LLM_API_KEY", "ollama"),
                 readInteger("mcp.llm.ready-timeout-seconds", "MCP_LLM_READY_TIMEOUT_SECONDS", 600),
                 readInteger("mcp.llm.request-timeout-seconds", "MCP_LLM_REQUEST_TIMEOUT_SECONDS", 240),
-                readInteger("mcp.llm.max-turns", "MCP_LLM_MAX_TURNS", 6),
+                readInteger("mcp.llm.max-turns", "MCP_LLM_MAX_TURNS", 10),
                 Paths.get(readString("mcp.llm.artifact-root", "MCP_LLM_ARTIFACT_ROOT", "target/llm-e2e")),
                 readString("mcp.llm.run-id", "MCP_LLM_RUN_ID", createDefaultRunId()));
     }

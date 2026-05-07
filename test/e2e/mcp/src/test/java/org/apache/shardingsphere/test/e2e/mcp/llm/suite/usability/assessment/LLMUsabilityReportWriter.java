@@ -46,6 +46,8 @@ public final class LLMUsabilityReportWriter {
         result.append("# LLM Usability Scorecard").append(System.lineSeparator()).append(System.lineSeparator());
         result.append("- suiteId: ").append(scorecard.getSuiteId()).append(System.lineSeparator());
         result.append("- runId: ").append(scorecard.getRunId()).append(System.lineSeparator());
+        result.append("- overallScore: ").append(scorecard.getOverallScore()).append(System.lineSeparator());
+        result.append("- fullScore: ").append(scorecard.isFullScore()).append(System.lineSeparator());
         result.append("- taskSuccessRate: ").append(scorecard.getTaskSuccessRate()).append(System.lineSeparator());
         result.append("- firstCorrectActionRate: ").append(scorecard.getFirstCorrectActionRate()).append(System.lineSeparator());
         result.append("- invalidCallRate: ").append(scorecard.getInvalidCallRate()).append(System.lineSeparator());

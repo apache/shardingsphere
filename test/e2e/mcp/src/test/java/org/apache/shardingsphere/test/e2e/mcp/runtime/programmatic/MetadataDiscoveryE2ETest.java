@@ -59,7 +59,7 @@ class MetadataDiscoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
         Map<String, Object> actualResource = MCPInteractionPayloads.castToMap(actualItems.get(1).get("resource"));
         assertThat(String.valueOf(actualResource.get("uri")), is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
         assertThat(MCPInteractionPayloads.castToList(actualItems.get(1).get("next_resources")).stream()
-                        .map(each -> String.valueOf(MCPInteractionPayloads.castToMap(each).get("uri"))).toList(),
+                .map(each -> String.valueOf(MCPInteractionPayloads.castToMap(each).get("uri"))).toList(),
                 is(List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes")));
         HttpResponse<String> tableResource = sendResourceReadRequest(httpClient, sessionId, String.valueOf(actualResource.get("uri")));

@@ -64,15 +64,6 @@ public final class LLMStructuredAnswer {
                 interactionSequence);
     }
     
-    /**
-     * Get normalized query.
-     *
-     * @return normalized query
-     */
-    public String getNormalizedQuery() {
-        return query.replaceAll("\\s+", " ").trim();
-    }
-    
     private static Map<String, Object> readPayload(final String json) {
         try {
             final Map<String, Object> result = OBJECT_MAPPER.readValue(json, new TypeReference<>() {
@@ -102,9 +93,22 @@ public final class LLMStructuredAnswer {
         Object rawInteractionSequence = payload.containsKey("interactionSequence") ? payload.get("interactionSequence") : payload.get("toolSequence");
         if (rawInteractionSequence instanceof Iterable) {
             for (Object each : (Iterable<?>) rawInteractionSequence) {
-                result.add(Objects.toString(each, ""));
+                result.add(extractInteractionName(each));
             }
         }
         return result;
+    }
+    
+    private static String extractInteractionName(final Object value) {
+        if (value instanceof Map) {
+            Map<?, ?> interaction = (Map<?, ?>) value;
+            for (String each : List.of("tool", "targetName", "name")) {
+                String result = Objects.toString(interaction.get(each), "").trim();
+                if (!result.isEmpty()) {
+                    return result;
+                }
+            }
+        }
+        return Objects.toString(value, "").trim();
     }
 }
