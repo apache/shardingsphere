@@ -37,12 +37,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EncryptResourceHandlerTest {
-
+    
     @Test
     void assertGetEncryptAlgorithmsUriPattern() {
         assertThat(new EncryptAlgorithmsHandler().getResourceDescriptor().getUriTemplate(), is("shardingsphere://features/encrypt/algorithms"));
     }
-
+    
     @Test
     void assertHandleEncryptAlgorithms() throws ReflectiveOperationException {
         EncryptAlgorithmsHandler handler = new EncryptAlgorithmsHandler();
@@ -56,12 +56,12 @@ class EncryptResourceHandlerTest {
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/algorithms"));
     }
-
+    
     @Test
     void assertGetEncryptRulesUriPattern() {
         assertThat(new EncryptRulesHandler().getResourceDescriptor().getUriTemplate(), is("shardingsphere://features/encrypt/databases/{database}/rules"));
     }
-
+    
     @Test
     void assertHandleEncryptRules() throws ReflectiveOperationException {
         EncryptRulesHandler handler = new EncryptRulesHandler();
@@ -73,14 +73,14 @@ class EncryptResourceHandlerTest {
         assertThat(((List<?>) actual.toPayload().get("items")).size(), is(1));
         assertThat(actual.toPayload().get("self_uri"), is("shardingsphere://features/encrypt/databases/logic_db/rules"));
     }
-
+    
     @Test
     void assertGetEncryptRuleUriPattern() {
         EncryptRuleHandler actual = new EncryptRuleHandler();
         assertThat(actual.getResourceDescriptor().getUriTemplate(), is("shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules"));
         assertThat(actual.getResourceDescriptor().getResourceKind(), is("list"));
     }
-
+    
     @Test
     void assertHandleEncryptRule() throws ReflectiveOperationException {
         EncryptRuleHandler handler = new EncryptRuleHandler();

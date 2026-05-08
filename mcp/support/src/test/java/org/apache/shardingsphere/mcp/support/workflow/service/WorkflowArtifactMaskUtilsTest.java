@@ -44,6 +44,7 @@ class WorkflowArtifactMaskUtilsTest {
         assertThat(actualRuleArtifact.get("sql"), is("SQL ****** '******' ******"));
         Map<?, ?> actualRedaction = (Map<?, ?>) actualRuleArtifact.get("redaction");
         assertTrue((Boolean) actualRedaction.get("applied"));
+        assertThat(actualRedaction.get("redacted_count"), is(3));
         assertThat(actualRedaction.get("redacted_properties"), is(List.of("primary.aes-key-value", "assisted_query.salt", "like_query.token")));
     }
     

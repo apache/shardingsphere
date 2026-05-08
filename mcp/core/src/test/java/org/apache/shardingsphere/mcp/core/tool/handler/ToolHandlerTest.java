@@ -42,7 +42,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ToolHandlerTest {
-
+    
     @Test
     void assertGetSearchMetadataToolDescriptor() {
         MCPToolDescriptor actual = new SearchMetadataToolHandler().getToolDescriptor();
@@ -64,7 +64,7 @@ class ToolHandlerTest {
         assertTrue(actualProperties.containsKey("ambiguity_state"));
         assertTrue(actualProperties.containsKey("next_actions"));
     }
-
+    
     @Test
     void assertHandleSearchMetadata() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -79,7 +79,7 @@ class ToolHandlerTest {
             assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("index")));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithSequence() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -91,7 +91,7 @@ class ToolHandlerTest {
             assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("order_seq"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithEmptyQuery() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -108,7 +108,7 @@ class ToolHandlerTest {
             assertTrue(actualNames.contains("order_idx"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithBlankAllDatabaseGuard() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -128,7 +128,7 @@ class ToolHandlerTest {
             assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "query", "object_types")));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithEmptyResultGuidance() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -141,7 +141,7 @@ class ToolHandlerTest {
             assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("database"), is("logic_db"));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithPaginationGuidance() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
@@ -155,7 +155,7 @@ class ToolHandlerTest {
             assertThat(actualNextAction.get("order"), is(1));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithAmbiguityGuidance() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
@@ -173,7 +173,7 @@ class ToolHandlerTest {
             assertThat(actualNextAction.get("order"), is(1));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithPaginationAndAmbiguityOrder() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
@@ -187,7 +187,7 @@ class ToolHandlerTest {
             assertThat(((Map<?, ?>) actualNextActions.get(1)).get("order"), is(2));
         }
     }
-
+    
     @Test
     void assertHandleSearchMetadataWithAmbiguityAcrossPages() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
@@ -203,21 +203,21 @@ class ToolHandlerTest {
             assertThat(((Map<?, ?>) actualNextActions.get(1)).get("action_kind"), is("ask_user"));
         }
     }
-
+    
     private MCPRuntimeContext createSearchRuntimeContext() {
         return createSearchRuntimeContext(ResourceTestDataFactory.createDatabaseMetadata());
     }
-
+    
     private MCPRuntimeContext createSearchRuntimeContext(final List<MCPDatabaseMetadata> databaseMetadata) {
         MCPRuntimeContext result = ResourceTestDataFactory.createRuntimeContext(databaseMetadata);
         result.getSessionManager().createSession("session-1");
         return result;
     }
-
+    
     private List<MCPDatabaseMetadata> createDuplicatedTableMetadata() {
         return List.of(createDatabaseMetadata("bar_db", "orders"), createDatabaseMetadata("baz_db", "orders"), createDatabaseMetadata("foo_db", "orders_archive"));
     }
-
+    
     private MCPDatabaseMetadata createDatabaseMetadata(final String databaseName, final String tableName) {
         return new MCPDatabaseMetadata(databaseName, "MySQL", "", List.of(
                 new MCPSchemaMetadata(databaseName, "public", List.of(new MCPTableMetadata(databaseName, "public", tableName, List.of(), List.of())), List.of())));

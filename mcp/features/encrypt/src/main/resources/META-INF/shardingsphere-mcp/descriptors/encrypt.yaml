@@ -407,15 +407,36 @@ tools:
           items:
             type: object
             properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
               action_kind:
                 type: string
-                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+                description: "Backward-compatible action type such as call_tool, ask_user, read_resource, or stop."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
               target_tool:
                 type: string
                 description: "Tool to call when action_kind is call_tool."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
               target_resource:
                 type: string
                 description: "Resource URI to read when action_kind is read_resource."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take this action."
@@ -425,12 +446,6 @@ tools:
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
-              order:
-                type: integer
-                description: "1-based action order when multiple actions are returned."
         resources_to_read:
           type: array
           description: "Typed resources the model should read when more metadata or algorithm context is useful."
@@ -464,8 +479,13 @@ tools:
               reason: Read encrypt algorithm metadata before choosing algorithm arguments.
               source_field: resources_to_read
           next_actions:
-            - action_kind: call_tool
+            - order: 1
+              type: tool_call
+              title: Call apply_workflow
+              action_kind: call_tool
+              tool_name: apply_workflow
               target_tool: apply_workflow
+              arguments: {}
               reason: Preview generated workflow artifacts.
               requires_user_approval: false
           requires_user_approval: false

@@ -32,19 +32,19 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPay
  * Mask algorithms handler.
  */
 public final class MaskAlgorithmsHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
-
+    
     private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
-
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-
+    
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
         return MCPDescriptorRegistry.getRequiredResourceDescriptor(MaskFeatureDefinition.ALGORITHMS_RESOURCE_URI);
     }
-
+    
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryMaskAlgorithms(databaseContext.getQueryFacade()),

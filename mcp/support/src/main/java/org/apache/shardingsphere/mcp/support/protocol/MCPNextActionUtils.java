@@ -31,7 +31,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPNextActionUtils {
-
+    
     /**
      * Create a read-resource action.
      *
@@ -40,14 +40,13 @@ public final class MCPNextActionUtils {
      * @return action payload
      */
     public static Map<String, Object> readResource(final String targetResource, final String reason) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = createBaseAction("resource_read", "Read resource", reason, false);
+        result.put("resource_uri", targetResource);
         result.put("action_kind", "read_resource");
         result.put("target_resource", targetResource);
-        result.put("reason", reason);
-        result.put("requires_user_approval", false);
         return result;
     }
-
+    
     /**
      * Create a tool-call action.
      *
@@ -58,15 +57,15 @@ public final class MCPNextActionUtils {
      * @return action payload
      */
     public static Map<String, Object> callTool(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = createBaseAction("tool_call", "Call " + targetTool, reason, requiresUserApproval);
+        result.put("tool_name", targetTool);
+        result.put("arguments", requiredArguments);
         result.put("action_kind", "call_tool");
         result.put("target_tool", targetTool);
-        result.put("reason", reason);
         result.put("required_arguments", requiredArguments);
-        result.put("requires_user_approval", requiresUserApproval);
         return result;
     }
-
+    
     /**
      * Create a retry-tool action.
      *
@@ -77,17 +76,17 @@ public final class MCPNextActionUtils {
      * @return action payload
      */
     public static Map<String, Object> retryTool(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = createBaseAction("tool_call", null == targetTool || targetTool.isBlank() ? "Retry tool" : "Retry " + targetTool, reason, requiresUserApproval);
+        result.put("arguments", requiredArguments);
         result.put("action_kind", "retry_tool");
         if (null != targetTool && !targetTool.isBlank()) {
+            result.put("tool_name", targetTool);
             result.put("target_tool", targetTool);
         }
-        result.put("reason", reason);
         result.put("required_arguments", requiredArguments);
-        result.put("requires_user_approval", requiresUserApproval);
         return result;
     }
-
+    
     /**
      * Create a completion action.
      *
@@ -106,7 +105,7 @@ public final class MCPNextActionUtils {
     public static Map<String, Object> completeArgument(final String referenceType, final String reference, final String argumentName, final String argumentPrefix,
                                                        final Map<String, ?> contextArguments, final Collection<String> missingContextArguments, final String resumeTargetType,
                                                        final String resumeTarget, final Map<String, ?> resumeArguments, final String reason) {
-        final Map<String, Object> result = new LinkedHashMap<>(12, 1F);
+        Map<String, Object> result = createBaseAction("completion", "Complete " + argumentName, reason, false);
         result.put("action_kind", "complete_argument");
         result.put("reference_type", referenceType);
         result.put("reference", reference);
@@ -123,11 +122,9 @@ public final class MCPNextActionUtils {
         if (!resumeArguments.isEmpty()) {
             result.put("resume_arguments", resumeArguments);
         }
-        result.put("reason", reason);
-        result.put("requires_user_approval", false);
         return result;
     }
-
+    
     /**
      * Create an ask-user action.
      *
@@ -137,14 +134,13 @@ public final class MCPNextActionUtils {
      * @return action payload
      */
     public static Map<String, Object> askUser(final String reason, final List<String> requiredInputs, final boolean requiresUserApproval) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = createBaseAction("ask_user", requiresUserApproval ? "Ask user for approval" : "Ask user", reason, requiresUserApproval);
+        result.put("question", reason);
         result.put("action_kind", "ask_user");
-        result.put("reason", reason);
         result.put("required_inputs", requiredInputs);
-        result.put("requires_user_approval", requiresUserApproval);
         return result;
     }
-
+    
     /**
      * Create a stop action.
      *
@@ -152,13 +148,21 @@ public final class MCPNextActionUtils {
      * @return action payload
      */
     public static Map<String, Object> stop(final String reason) {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        Map<String, Object> result = createBaseAction("terminal", "Stop", reason, false);
         result.put("action_kind", "stop");
-        result.put("reason", reason);
-        result.put("requires_user_approval", false);
         return result;
     }
-
+    
+    private static Map<String, Object> createBaseAction(final String type, final String title, final String reason, final boolean requiresUserApproval) {
+        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        result.put("order", 1);
+        result.put("type", type);
+        result.put("title", title);
+        result.put("requires_user_approval", requiresUserApproval);
+        result.put("reason", reason);
+        return result;
+    }
+    
     /**
      * Add 1-based order values to actions.
      *
@@ -175,7 +179,7 @@ public final class MCPNextActionUtils {
         }
         return result;
     }
-
+    
     /**
      * Add action dependencies by 1-based order.
      *

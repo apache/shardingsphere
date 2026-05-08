@@ -29,7 +29,7 @@ import java.util.Locale;
  * Classify one SQL statement into the MCP statement classes.
  */
 public final class StatementClassifier {
-
+    
     /**
      * Classify one SQL statement.
      *
@@ -68,7 +68,7 @@ public final class StatementClassifier {
         SupportedMCPStatement statementClass = resolveStatementClass(statementStructure);
         return new ClassificationResult(statementClass, statementStructure.getStatementType(), actualSql, resolveTargetObjectName(statementStructure, statementClass), "");
     }
-
+    
     private String normalizeSingleStatement(final String sql) {
         String result = sql.trim();
         if (result.isEmpty()) {
@@ -87,7 +87,7 @@ public final class StatementClassifier {
         }
         return result;
     }
-
+    
     private int findStatementDelimiter(final String sql) {
         int result = 0;
         while (result < sql.length()) {
@@ -111,7 +111,7 @@ public final class StatementClassifier {
         }
         return -1;
     }
-
+    
     private boolean isBannedCommand(final String upperSql, final String sql) {
         return upperSql.startsWith("USE ")
                 || upperSql.startsWith("SET ")
@@ -120,7 +120,7 @@ public final class StatementClassifier {
                 || upperSql.startsWith("CALL ")
                 || containsBannedDialectPattern(tokenize(sql));
     }
-
+    
     private boolean isMetadataIntrospectionStatement(final String upperSql) {
         return "SHOW".equals(upperSql)
                 || upperSql.startsWith("SHOW ")
@@ -129,11 +129,11 @@ public final class StatementClassifier {
                 || "DESC".equals(upperSql)
                 || upperSql.startsWith("DESC ");
     }
-
+    
     private boolean containsBannedDialectPattern(final List<Token> tokens) {
         return containsSelectIntoFile(tokens) || containsKeywordSequence(tokens, "ALTER", "SYSTEM") || containsUserOrRoleManagement(tokens);
     }
-
+    
     private boolean containsSelectIntoFile(final List<Token> tokens) {
         for (int index = 0; index + 1 < tokens.size(); index++) {
             if (!isKeyword(tokens.get(index), "INTO")) {
@@ -145,7 +145,7 @@ public final class StatementClassifier {
         }
         return false;
     }
-
+    
     private boolean containsUserOrRoleManagement(final List<Token> tokens) {
         return containsKeywordSequence(tokens, "CREATE", "USER")
                 || containsKeywordSequence(tokens, "ALTER", "USER")
@@ -154,7 +154,7 @@ public final class StatementClassifier {
                 || containsKeywordSequence(tokens, "ALTER", "ROLE")
                 || containsKeywordSequence(tokens, "DROP", "ROLE");
     }
-
+    
     private boolean containsKeywordSequence(final List<Token> tokens, final String firstKeyword, final String secondKeyword) {
         for (int index = 0; index + 1 < tokens.size(); index++) {
             if (isKeyword(tokens.get(index), firstKeyword) && isKeyword(tokens.get(index + 1), secondKeyword)) {
@@ -163,21 +163,21 @@ public final class StatementClassifier {
         }
         return false;
     }
-
+    
     private boolean isTransactionControlStatement(final String upperSql) {
         return "BEGIN".equals(upperSql)
                 || upperSql.startsWith("START TRANSACTION")
                 || "COMMIT".equals(upperSql)
                 || "ROLLBACK".equals(upperSql);
     }
-
+    
     private boolean isSavepointStatement(final String upperSql) {
         return "SAVEPOINT".equals(upperSql)
                 || upperSql.startsWith("SAVEPOINT ")
                 || upperSql.startsWith("ROLLBACK TO SAVEPOINT")
                 || upperSql.startsWith("RELEASE SAVEPOINT");
     }
-
+    
     private String extractStatementType(final String upperSql) {
         if (upperSql.startsWith("START TRANSACTION")) {
             return "START TRANSACTION";
@@ -190,7 +190,7 @@ public final class StatementClassifier {
         }
         return upperSql.split("\\s+")[0];
     }
-
+    
     private StatementStructure resolveStatementStructure(final String sql) {
         int startIndex = skipInsignificant(sql, 0);
         if (!matchesKeyword(sql, startIndex, "WITH")) {
@@ -219,7 +219,7 @@ public final class StatementClassifier {
         }
         return new StatementStructure(mainSql, extractLeadingKeyword(mainSql), containsDataModifyingCommonTableExpression(commonTableExpressions), commonTableExpressions);
     }
-
+    
     private SupportedMCPStatement resolveStatementClass(final StatementStructure statementStructure) {
         String statementType = statementStructure.getStatementType();
         if ("SELECT".equals(statementType)) {
@@ -236,11 +236,11 @@ public final class StatementClassifier {
         }
         throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
     }
-
+    
     private String resolveTargetObjectName(final StatementStructure statementStructure, final SupportedMCPStatement statementClass) {
         return resolveTargetObjectName(statementStructure, statementClass, new LinkedList<>());
     }
-
+    
     private String resolveTargetObjectName(final StatementStructure statementStructure, final SupportedMCPStatement statementClass, final Collection<String> visitedAliases) {
         if ("SELECT".equals(statementStructure.getStatementType())) {
             String result = extractSelectTargetObjectName(statementStructure, visitedAliases);
@@ -251,7 +251,7 @@ public final class StatementClassifier {
         }
         return extractDirectTargetObjectName(statementStructure.getMainSql(), statementStructure.getStatementType());
     }
-
+    
     private String extractSelectTargetObjectName(final StatementStructure statementStructure, final Collection<String> visitedAliases) {
         List<Token> tokens = tokenize(statementStructure.getMainSql());
         for (int each : findKeywordIndexes(tokens, "FROM")) {
@@ -275,7 +275,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private String extractDirectTargetObjectName(final String sql, final String statementType) {
         List<Token> tokens = tokenize(sql);
         if ("INSERT".equals(statementType) || "MERGE".equals(statementType)) {
@@ -305,7 +305,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private String extractDataModifyingTargetObjectName(final StatementStructure statementStructure, final Collection<String> visitedAliases) {
         for (CommonTableExpression each : statementStructure.getCommonTableExpressions()) {
             SupportedMCPStatement statementClass = resolveStatementClass(each.getStatementStructure());
@@ -323,7 +323,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private boolean containsDataModifyingCommonTableExpression(final Collection<CommonTableExpression> commonTableExpressions) {
         for (CommonTableExpression each : commonTableExpressions) {
             if (SupportedMCPStatement.DML == resolveStatementClass(each.getStatementStructure())) {
@@ -332,7 +332,7 @@ public final class StatementClassifier {
         }
         return false;
     }
-
+    
     private CommonTableExpressionResolution resolveCommonTableExpression(final String sql, final int startIndex) {
         int result = skipInsignificant(sql, startIndex);
         result = skipIdentifier(sql, result);
@@ -358,13 +358,13 @@ public final class StatementClassifier {
         return new CommonTableExpressionResolution(normalizeIdentifier(sql.substring(skipInsignificant(sql, startIndex), aliasStopIndex)),
                 sql.substring(result + 1, stopIndex).trim(), skipInsignificant(sql, stopIndex + 1));
     }
-
+    
     private Collection<String> appendVisitedAlias(final Collection<String> visitedAliases, final String aliasName) {
         Collection<String> result = new LinkedList<>(visitedAliases);
         result.add(aliasName);
         return result;
     }
-
+    
     private CommonTableExpression findCommonTableExpression(final StatementStructure statementStructure, final String aliasName) {
         String normalizedAliasName = normalizeIdentifierForComparison(aliasName);
         for (CommonTableExpression each : statementStructure.getCommonTableExpressions()) {
@@ -374,7 +374,7 @@ public final class StatementClassifier {
         }
         return null;
     }
-
+    
     private String extractObjectNameAfterTypeKeyword(final List<Token> tokens, final List<String> typeKeywords, final String... optionalKeywords) {
         for (int index = 0; index < tokens.size(); index++) {
             if (typeKeywords.contains(tokens.get(index).getUpperText())) {
@@ -383,7 +383,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private String extractObjectNameAfterKeyword(final List<Token> tokens, final String keyword, final String... optionalKeywords) {
         for (int index = 0; index < tokens.size(); index++) {
             if (isKeyword(tokens.get(index), keyword)) {
@@ -392,7 +392,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private String readObjectName(final List<Token> tokens, final int startIndex, final String... optionalKeywords) {
         int result = startIndex;
         while (result < tokens.size()) {
@@ -408,7 +408,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private String readQualifiedName(final List<Token> tokens, final int startIndex) {
         if (startIndex >= tokens.size() || !tokens.get(startIndex).isIdentifier()) {
             return "";
@@ -421,7 +421,7 @@ public final class StatementClassifier {
         }
         return result.toString();
     }
-
+    
     private List<Integer> findKeywordIndexes(final List<Token> tokens, final String keyword) {
         List<Integer> result = new ArrayList<>();
         for (int index = 0; index < tokens.size(); index++) {
@@ -431,7 +431,7 @@ public final class StatementClassifier {
         }
         return result;
     }
-
+    
     private List<Token> tokenize(final String sql) {
         List<Token> result = new ArrayList<>();
         int currentIndex = 0;
@@ -467,7 +467,7 @@ public final class StatementClassifier {
         }
         return result;
     }
-
+    
     private boolean isKeyword(final Token token, final String... keywords) {
         for (String each : keywords) {
             if (isKeyword(token, each)) {
@@ -476,15 +476,15 @@ public final class StatementClassifier {
         }
         return false;
     }
-
+    
     private boolean isKeyword(final Token token, final String keyword) {
         return !token.isQuotedIdentifier() && token.getUpperText().equals(keyword);
     }
-
+    
     private int skipParenthesizedSegment(final String sql, final int startIndex) {
         return skipInsignificant(sql, findClosingParenthesis(sql, startIndex) + 1);
     }
-
+    
     private int findClosingParenthesis(final String sql, final int startIndex) {
         int parenthesesDepth = 0;
         int result = startIndex;
@@ -517,7 +517,7 @@ public final class StatementClassifier {
         }
         throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
     }
-
+    
     private int skipIdentifier(final String sql, final int startIndex) {
         if (startIndex >= sql.length()) {
             throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
@@ -536,7 +536,7 @@ public final class StatementClassifier {
         }
         return result;
     }
-
+    
     private int skipQuotedText(final String sql, final int startIndex) {
         char closingChar = '[' == sql.charAt(startIndex) ? ']' : sql.charAt(startIndex);
         int result = startIndex + 1;
@@ -552,7 +552,7 @@ public final class StatementClassifier {
         }
         throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
     }
-
+    
     private String extractLeadingKeyword(final String sql) {
         int startIndex = skipInsignificant(sql, 0);
         int stopIndex = startIndex;
@@ -564,7 +564,7 @@ public final class StatementClassifier {
         }
         return sql.substring(startIndex, stopIndex).toUpperCase(Locale.ENGLISH);
     }
-
+    
     private boolean matchesKeyword(final String sql, final int startIndex, final String keyword) {
         int keywordLength = keyword.length();
         if (startIndex + keywordLength > sql.length() || !sql.regionMatches(true, startIndex, keyword, 0, keywordLength)) {
@@ -572,14 +572,14 @@ public final class StatementClassifier {
         }
         return startIndex + keywordLength == sql.length() || !isIdentifierCharacter(sql.charAt(startIndex + keywordLength));
     }
-
+    
     private int skipKeyword(final String sql, final int startIndex, final String keyword) {
         if (!matchesKeyword(sql, startIndex, keyword)) {
             throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
         }
         return startIndex + keyword.length();
     }
-
+    
     private int skipInsignificant(final String sql, final int startIndex) {
         int result = startIndex;
         while (result < sql.length()) {
@@ -599,31 +599,31 @@ public final class StatementClassifier {
         }
         return result;
     }
-
+    
     private boolean isIdentifierCharacter(final char value) {
         return Character.isLetterOrDigit(value) || '_' == value || '$' == value;
     }
-
+    
     private boolean isWordCharacter(final char value) {
         return isIdentifierCharacter(value);
     }
-
+    
     private boolean isQuotedIdentifierStart(final char value) {
         return '"' == value || '`' == value || '[' == value;
     }
-
+    
     private boolean isQuotedTextStart(final char value) {
         return '\'' == value || isQuotedIdentifierStart(value);
     }
-
+    
     private boolean isLineCommentStart(final String sql, final int startIndex) {
         return startIndex + 1 < sql.length() && '-' == sql.charAt(startIndex) && '-' == sql.charAt(startIndex + 1);
     }
-
+    
     private boolean isBlockCommentStart(final String sql, final int startIndex) {
         return startIndex + 1 < sql.length() && '/' == sql.charAt(startIndex) && '*' == sql.charAt(startIndex + 1);
     }
-
+    
     private int skipLineComment(final String sql, final int startIndex) {
         int result = startIndex + 2;
         while (result < sql.length() && '\n' != sql.charAt(result)) {
@@ -631,7 +631,7 @@ public final class StatementClassifier {
         }
         return result;
     }
-
+    
     private int skipBlockComment(final String sql, final int startIndex) {
         int result = startIndex + 2;
         while (result + 1 < sql.length()) {
@@ -642,7 +642,7 @@ public final class StatementClassifier {
         }
         throw new IllegalArgumentException("Statement is not supported by the MCP contract.");
     }
-
+    
     private String normalizeIdentifier(final String identifier) {
         if (identifier.length() >= 2 && '"' == identifier.charAt(0) && '"' == identifier.charAt(identifier.length() - 1)) {
             return identifier.substring(1, identifier.length() - 1).replace("\"\"", "\"");
@@ -655,11 +655,11 @@ public final class StatementClassifier {
         }
         return identifier;
     }
-
+    
     private String normalizeIdentifierForComparison(final String identifier) {
         return normalizeIdentifier(identifier).toUpperCase(Locale.ENGLISH);
     }
-
+    
     private String extractSavepointName(final String sql) {
         String[] tokens = sql.split("\\s+");
         if ("SAVEPOINT".equalsIgnoreCase(tokens[0]) && tokens.length >= 2) {
@@ -673,7 +673,7 @@ public final class StatementClassifier {
         }
         return "";
     }
-
+    
     private void validateSavepointName(final String statementType, final String savepointName) {
         if (!savepointName.isEmpty()) {
             return;
@@ -682,17 +682,17 @@ public final class StatementClassifier {
             throw new IllegalArgumentException("Savepoint name is required.");
         }
     }
-
+    
     private static final class StatementStructure {
-
+        
         private final String mainSql;
-
+        
         private final String statementType;
-
+        
         private final boolean containsDataModifyingCommonTableExpression;
-
+        
         private final Collection<CommonTableExpression> commonTableExpressions;
-
+        
         private StatementStructure(final String mainSql, final String statementType, final boolean containsDataModifyingCommonTableExpression,
                                    final Collection<CommonTableExpression> commonTableExpressions) {
             this.mainSql = mainSql;
@@ -700,97 +700,97 @@ public final class StatementClassifier {
             this.containsDataModifyingCommonTableExpression = containsDataModifyingCommonTableExpression;
             this.commonTableExpressions = commonTableExpressions;
         }
-
+        
         private String getMainSql() {
             return mainSql;
         }
-
+        
         private String getStatementType() {
             return statementType;
         }
-
+        
         private boolean isContainsDataModifyingCommonTableExpression() {
             return containsDataModifyingCommonTableExpression;
         }
-
+        
         private Collection<CommonTableExpression> getCommonTableExpressions() {
             return commonTableExpressions;
         }
     }
-
+    
     private static final class CommonTableExpression {
-
+        
         private final String aliasName;
-
+        
         private final StatementStructure statementStructure;
-
+        
         private CommonTableExpression(final String aliasName, final StatementStructure statementStructure) {
             this.aliasName = aliasName;
             this.statementStructure = statementStructure;
         }
-
+        
         private String getAliasName() {
             return aliasName;
         }
-
+        
         private StatementStructure getStatementStructure() {
             return statementStructure;
         }
     }
-
+    
     private static final class CommonTableExpressionResolution {
-
+        
         private final String aliasName;
-
+        
         private final String sql;
-
+        
         private final int nextIndex;
-
+        
         private CommonTableExpressionResolution(final String aliasName, final String sql, final int nextIndex) {
             this.aliasName = aliasName;
             this.sql = sql;
             this.nextIndex = nextIndex;
         }
-
+        
         private String getAliasName() {
             return aliasName;
         }
-
+        
         private String getSql() {
             return sql;
         }
-
+        
         private int getNextIndex() {
             return nextIndex;
         }
     }
-
+    
     private static final class Token {
-
+        
         private final String text;
-
+        
         private final String upperText;
-
+        
         private final boolean quotedIdentifier;
-
+        
         private Token(final String text, final boolean quotedIdentifier) {
             this.text = text;
             this.upperText = text.toUpperCase(Locale.ENGLISH);
             this.quotedIdentifier = quotedIdentifier;
         }
-
+        
         private String getText() {
             return text;
         }
-
+        
         private String getUpperText() {
             return upperText;
         }
-
+        
         private boolean isQuotedIdentifier() {
             return quotedIdentifier;
         }
-
+        
         private boolean isIdentifier() {
             return quotedIdentifier || !text.isEmpty() && (Character.isLetterOrDigit(text.charAt(0)) || '_' == text.charAt(0) || '$' == text.charAt(0));
         }

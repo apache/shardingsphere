@@ -42,11 +42,11 @@ final class SQLExecutionToolHandlerSupport {
     static boolean isReadOnlyStatement(final SupportedMCPStatement statementClass) {
         return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN_ANALYZE == statementClass;
     }
-
+    
     static SQLExecutionRequest createExecutionRequest(final MCPToolCall toolCall, final MCPToolArguments toolArguments, final String sql, final String sourceTool) {
         return new SQLExecutionRequest(toolCall.getSessionId(), toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), sql,
                 resolveMaxRows(toolArguments, sourceTool), getIntegerArgument(toolArguments, sourceTool, "timeout_ms", DEFAULT_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS,
-                MAX_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS));
+                        MAX_TIMEOUT_MILLISECONDS, DEFAULT_TIMEOUT_MILLISECONDS));
     }
     
     private static int resolveMaxRows(final MCPToolArguments toolArguments, final String sourceTool) {
@@ -62,7 +62,7 @@ final class SQLExecutionToolHandlerSupport {
             throw new MCPInvalidToolArgumentException(sourceTool, sourceTool, argumentPath, minimumValue, maximumValue, suggestedValue, ex);
         }
     }
-
+    
     static void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
         if (!value.isEmpty()) {
             target.put(key, value);

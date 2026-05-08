@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mcp.support.database.response;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
+import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,12 +30,13 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class MCPDatabaseCapabilityResponse implements MCPResponse {
-
+    
     private final MCPDatabaseCapability databaseCapability;
-
+    
     @Override
     public Map<String, Object> toPayload() {
         Map<String, Object> result = new LinkedHashMap<>(32, 1F);
+        result.put("response_mode", MCPResponseMode.DETAIL);
         result.put("database", databaseCapability.getDatabaseName());
         result.put("databaseType", databaseCapability.getDatabaseType());
         result.put("supportedObjectTypes", databaseCapability.getSupportedMetadataObjectTypes());

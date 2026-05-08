@@ -40,7 +40,7 @@ import java.util.function.BiFunction;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class CoreResourceHandlers {
-
+    
     static Collection<MCPResourceHandler<?>> createHandlers() {
         Collection<MCPResourceHandler<?>> result = new LinkedList<>();
         result.add(new ServerCapabilitiesHandler());
@@ -108,11 +108,11 @@ final class CoreResourceHandlers {
                         uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("index")))));
         return result;
     }
-
+    
     private static List<?> singletonOrEmpty(final Optional<?> metadata) {
         return metadata.map(Collections::singletonList).orElse(Collections.emptyList());
     }
-
+    
     private static MetadataResourceHandler createMetadataResourceHandler(final String uriTemplate,
                                                                          final BiFunction<MCPDatabaseHandlerContext, MCPUriVariables, List<?>> metadataLoader) {
         return new MetadataResourceHandler(uriTemplate, metadataLoader);

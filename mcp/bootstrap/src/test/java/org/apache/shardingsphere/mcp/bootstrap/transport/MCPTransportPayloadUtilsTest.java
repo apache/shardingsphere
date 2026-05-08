@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPTransportPayloadUtilsTest {
-
+    
     @Test
     void assertCreateCallToolResult() {
         Map<String, Object> payload = Map.of("message", "ok");
@@ -45,12 +45,12 @@ class MCPTransportPayloadUtilsTest {
         assertThat(actual.content().get(0), isA(TextContent.class));
         assertThat(((TextContent) actual.content().get(0)).text(), is(JsonUtils.toJsonString(payload)));
     }
-
+    
     @Test
     void assertCreateCallToolResultWithErrorCodePayload() {
         assertFalse(MCPTransportPayloadUtils.createCallToolResult(Map.of("error_code", "invalid_request")).isError());
     }
-
+    
     @Test
     void assertCreateCallToolResultWithResourceLinks() {
         Map<String, Object> payload = Map.of("resources_to_read", List.of(
@@ -63,7 +63,7 @@ class MCPTransportPayloadUtilsTest {
         assertThat(actualLink.title(), is("logical-database"));
         assertThat(actualLink.mimeType(), is(MCPTransportPayloadUtils.JSON_CONTENT_TYPE));
     }
-
+    
     @Test
     void assertCreateCallToolResultWithBoundedPrioritizedResourceLinks() {
         Map<String, Object> payload = Map.of(
@@ -79,20 +79,20 @@ class MCPTransportPayloadUtilsTest {
         assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://capabilities"));
         assertThat(((ResourceLink) actual.content().get(2)).uri(), is("shardingsphere://databases/logic_db"));
         assertThat(((ResourceLink) actual.content().get(3)).uri(), is("shardingsphere://databases"));
-        assertThat(((Map<?, ?>) ((ResourceLink) actual.content().get(1)).meta()).get("source_field"), is("resources_to_read"));
+        assertThat(((Map<?, ?>) actual.content().get(1).meta()).get("source_field"), is("resources_to_read"));
     }
-
+    
     @Test
     void assertCreateCallToolResultWithoutRawUriLink() {
         io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(Map.of("resource_uri", "shardingsphere://databases/logic_db"));
         assertThat(actual.content().size(), is(1));
     }
-
+    
     @Test
     void assertCreateCallToolResultWithErrorResponse() {
         assertTrue(MCPTransportPayloadUtils.createCallToolResult(new MCPErrorResponse("invalid_request", "")).isError());
     }
-
+    
     @Test
     void assertCreateReadResourceResult() {
         Map<String, Object> payload = Map.of("message", "ok");
@@ -100,7 +100,7 @@ class MCPTransportPayloadUtilsTest {
         assertThat(actual.contents().get(0), isA(TextResourceContents.class));
         assertThat(((TextResourceContents) actual.contents().get(0)).text(), is(JsonUtils.toJsonString(payload)));
     }
-
+    
     private List<Map<String, Object>> createResourceHints(final String uriPrefix, final String sourceField, final int count) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (int i = 0; i < count; i++) {

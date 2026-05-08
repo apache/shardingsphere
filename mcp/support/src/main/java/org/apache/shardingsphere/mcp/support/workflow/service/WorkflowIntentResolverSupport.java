@@ -97,6 +97,28 @@ public final class WorkflowIntentResolverSupport {
         if (containsAny(naturalLanguageIntent, "email", "邮箱", "邮件") || columnName.contains("email")) {
             return recordInferredValue(clarifiedIntent, "field_semantics", "email");
         }
+        if (containsAny(naturalLanguageIntent, "bank card", "银行卡", "银行卡号", "卡号")
+                || containsAny(columnName, "bank_card", "card_no", "card_number")) {
+            return recordInferredValue(clarifiedIntent, "field_semantics", "bank_card");
+        }
+        if (containsAny(naturalLanguageIntent, "passport", "护照") || columnName.contains("passport")) {
+            return recordInferredValue(clarifiedIntent, "field_semantics", "passport");
+        }
+        if (containsAny(naturalLanguageIntent, "license plate", "车牌", "车牌号")
+                || containsAny(columnName, "license_plate", "plate_no", "plate_number")) {
+            return recordInferredValue(clarifiedIntent, "field_semantics", "license_plate");
+        }
+        if (containsAny(naturalLanguageIntent, "birth date", "birthday", "出生日期", "生日")
+                || containsAny(columnName, "birth_date", "birthday", "date_of_birth")) {
+            return recordInferredValue(clarifiedIntent, "field_semantics", "birth_date");
+        }
+        if (containsAny(naturalLanguageIntent, "address", "地址", "住址") || containsAny(columnName, "address", "addr")) {
+            return recordInferredValue(clarifiedIntent, "field_semantics", "address");
+        }
+        if (containsAny(naturalLanguageIntent, "real name", "full name", "姓名", "名字")
+                || containsAny(columnName, "real_name", "full_name", "name")) {
+            return recordInferredValue(clarifiedIntent, "field_semantics", "name");
+        }
         return recordInferredValue(clarifiedIntent, "field_semantics", columnName);
     }
     

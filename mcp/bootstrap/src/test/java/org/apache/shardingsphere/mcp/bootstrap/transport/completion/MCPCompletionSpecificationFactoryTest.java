@@ -52,6 +52,7 @@ class MCPCompletionSpecificationFactoryTest {
                 new McpSchema.CompleteRequest(new McpSchema.PromptReference("inspect_metadata"), new McpSchema.CompleteRequest.CompleteArgument("database", "logic")));
         assertThat(actual.completion().values(), is(List.of("logic_db")));
         assertFalse(actual.completion().hasMore());
+        assertThat(actual.meta().get("response_mode"), is("list"));
         assertThat(actual.meta().get("diagnostic"), is("ok"));
         assertThat(actual.meta().get("matchStrategy"), is("prefix"));
         assertThat(actual.meta().get("matchedCandidateCount"), is(1));
@@ -78,9 +79,10 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.completion().values(), is(List.of()));
         assertThat(actual.meta().get("diagnostic"), is("missing_context"));
         assertThat(actual.meta().get("missingContextArguments"), is(List.of("database", "schema")));
+        assertThat(((Map<?, ?>) actual.meta().get("recovery")).get("recovery_category"), is("missing_context"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("complete_argument"));
-        assertThat(actualNextAction.get("argument_name"), is("database"));
+        assertThat(actualNextAction.get("action_kind"), is("read_resource"));
+        assertThat(actualNextAction.get("target_resource"), is("shardingsphere://databases"));
     }
     
     @Test

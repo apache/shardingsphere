@@ -29,6 +29,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 class MCPNextActionUtilsTest {
     
     @Test
+    void assertCallToolUsesCanonicalAndLegacyFields() {
+        Map<String, Object> actual = MCPNextActionUtils.callTool("search_metadata", "Search metadata.", Map.of("page_size", 100), false);
+        assertThat(actual.get("order"), is(1));
+        assertThat(actual.get("type"), is("tool_call"));
+        assertThat(actual.get("title"), is("Call search_metadata"));
+        assertThat(actual.get("tool_name"), is("search_metadata"));
+        assertThat(actual.get("target_tool"), is("search_metadata"));
+        assertThat(actual.get("arguments"), is(Map.of("page_size", 100)));
+        assertThat(actual.get("required_arguments"), is(Map.of("page_size", 100)));
+        assertFalse((Boolean) actual.get("requires_user_approval"));
+    }
+    
+    @Test
     void assertOrderedCopiesActions() {
         Map<String, Object> action = Map.of("action_kind", "stop");
         List<Map<String, Object>> actual = MCPNextActionUtils.ordered(action);

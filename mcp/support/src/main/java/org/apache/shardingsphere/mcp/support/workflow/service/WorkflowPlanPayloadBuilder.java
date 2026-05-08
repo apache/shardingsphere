@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
+import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -36,7 +37,7 @@ import java.util.Map;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowPlanPayloadBuilder {
-
+    
     /**
      * Build one workflow-plan payload map.
      *
@@ -58,15 +59,16 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("delivery_mode", snapshot.getInteractionPlan().getDeliveryMode());
         result.put("execution_mode", snapshot.getInteractionPlan().getExecutionMode());
         result.put("intent_inference", createIntentInference(snapshot.getClarifiedIntent()));
+        result.put("argument_provenance", createArgumentProvenance(snapshot));
         result.put("review_focus", createReviewFocus(snapshot));
         WorkflowGuidancePayloadBuilder.appendPlanningGuidance(result, snapshot);
         return result;
     }
-
+    
     private static String resolveResponseMode(final WorkflowContextSnapshot snapshot) {
         return WorkflowLifecycle.STATUS_FAILED.equals(snapshot.getStatus()) ? "terminal" : "planning";
     }
-
+    
     private static Map<String, Object> createIntentInference(final ClarifiedIntent clarifiedIntent) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("operation_type", clarifiedIntent.getOperationType());
@@ -76,7 +78,7 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("reasoning_notes", clarifiedIntent.getReasoningNotes());
         return result;
     }
-
+    
     private static Map<String, Object> createReviewFocus(final WorkflowContextSnapshot snapshot) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("artifact_categories", createReviewArtifactCategories(snapshot));
@@ -86,7 +88,42 @@ public final class WorkflowPlanPayloadBuilder {
         result.put("next_review_action", createNextReviewAction(snapshot));
         return result;
     }
-
+    
+    private static Map<String, Object> createArgumentProvenance(final WorkflowContextSnapshot snapshot) {
+        WorkflowRequest request = snapshot.getRequest();
+        if (null == request) {
+            return Map.of("plan_id", "server_generated");
+        }
+        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
+        result.put("plan_id", "server_generated");
+        putUserProvided(result, "database", request.getDatabase());
+        Map<String, Object> inferredValues = getInferredValues(snapshot);
+        putArgumentProvenance(result, "schema", request.getSchema(), inferredValues.containsKey("schema") ? "inferred_from_intent" : "user_provided");
+        putUserProvided(result, "table", request.getTable());
+        putUserProvided(result, "column", request.getColumn());
+        putArgumentProvenance(result, "operation_type", request.getOperationType(), inferredValues.containsKey("operation_type") ? "inferred_from_intent" : "user_provided");
+        putUserProvided(result, "natural_language_intent", request.getNaturalLanguageIntent());
+        putArgumentProvenance(result, "field_semantics", request.getFieldSemantics(), inferredValues.containsKey("field_semantics") ? "inferred_from_intent" : "user_provided");
+        result.put("delivery_mode", "server_defaulted");
+        result.put("execution_mode", "server_defaulted");
+        putUserProvided(result, "algorithm_type", request.getAlgorithmType());
+        return result;
+    }
+    
+    private static Map<String, Object> getInferredValues(final WorkflowContextSnapshot snapshot) {
+        return null == snapshot.getClarifiedIntent() ? Map.of() : snapshot.getClarifiedIntent().getInferredValues();
+    }
+    
+    private static void putUserProvided(final Map<String, Object> target, final String key, final String value) {
+        putArgumentProvenance(target, key, value, "user_provided");
+    }
+    
+    private static void putArgumentProvenance(final Map<String, Object> target, final String key, final String value, final String provenance) {
+        if (!value.isEmpty()) {
+            target.put(key, provenance);
+        }
+    }
+    
     private static List<String> createReviewArtifactCategories(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         if (!snapshot.getDdlArtifacts().isEmpty()) {
@@ -103,7 +140,7 @@ public final class WorkflowPlanPayloadBuilder {
         }
         return result;
     }
-
+    
     private static List<String> createReviewSideEffectScope(final WorkflowContextSnapshot snapshot) {
         List<String> result = new LinkedList<>();
         if (!snapshot.getDdlArtifacts().isEmpty() || !snapshot.getIndexPlans().isEmpty()) {
@@ -114,7 +151,7 @@ public final class WorkflowPlanPayloadBuilder {
         }
         return result;
     }
-
+    
     private static String createNextReviewAction(final WorkflowContextSnapshot snapshot) {
         if (WorkflowLifecycle.STATUS_CLARIFYING.equals(snapshot.getStatus())) {
             return "answer_clarification_questions";

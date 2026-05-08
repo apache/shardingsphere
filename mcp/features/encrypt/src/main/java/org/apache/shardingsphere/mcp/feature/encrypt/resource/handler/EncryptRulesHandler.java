@@ -32,19 +32,19 @@ import org.apache.shardingsphere.mcp.support.descriptor.MCPResourceNavigationPay
  * Encrypt rules handler.
  */
 public final class EncryptRulesHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
-
+    
     private final EncryptRuleInspectionService ruleInspectionService = new EncryptRuleInspectionService();
-
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-
+    
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
         return MCPDescriptorRegistry.getRequiredResourceDescriptor(EncryptFeatureDefinition.RULES_RESOURCE_URI);
     }
-
+    
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         return new MCPItemsResponse(ruleInspectionService.queryEncryptRules(databaseContext.getQueryFacade(), uriVariables.getVariable("database")),

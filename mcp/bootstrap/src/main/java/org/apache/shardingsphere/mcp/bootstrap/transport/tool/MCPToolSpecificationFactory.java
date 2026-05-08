@@ -44,11 +44,11 @@ import java.util.Optional;
  * MCP tool specification factory.
  */
 public final class MCPToolSpecificationFactory {
-
+    
     private final List<MCPToolDescriptor> toolDescriptors;
-
+    
     private final MCPToolController toolController;
-
+    
     /**
      * Create MCP tool specification factory.
      *
@@ -58,7 +58,7 @@ public final class MCPToolSpecificationFactory {
         toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
         toolController = new MCPToolController(runtimeContext);
     }
-
+    
     /**
      * Create MCP tool specifications.
      *
@@ -67,7 +67,7 @@ public final class MCPToolSpecificationFactory {
     public List<SyncToolSpecification> createToolSpecifications() {
         return toolDescriptors.stream().map(each -> new Builder().tool(createTool(each)).callHandler(this::handle).build()).toList();
     }
-
+    
     private McpSchema.Tool createTool(final MCPToolDescriptor toolDescriptor) {
         McpSchema.Tool.Builder result = McpSchema.Tool.builder()
                 .name(toolDescriptor.getName())
@@ -85,7 +85,7 @@ public final class MCPToolSpecificationFactory {
         }
         return result.build();
     }
-
+    
     private McpSchema.JsonSchema createInputSchema(final List<MCPToolFieldDefinition> fields) {
         Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
         List<String> required = new ArrayList<>(fields.size());
@@ -97,12 +97,12 @@ public final class MCPToolSpecificationFactory {
         }
         return new McpSchema.JsonSchema("object", properties, required, false, Collections.emptyMap(), Collections.emptyMap());
     }
-
+    
     private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {
         return new McpSchema.ToolAnnotations(annotations.getTitle(), annotations.getReadOnlyHint(), annotations.getDestructiveHint(), annotations.getIdempotentHint(),
                 annotations.getOpenWorldHint(), annotations.getReturnDirect());
     }
-
+    
     private McpSchema.CallToolResult handle(final McpSyncServerExchange exchange, final McpSchema.CallToolRequest request) {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
         MCPResponse response = toolController.handle(exchange.sessionId(), request.name(), arguments);
@@ -112,15 +112,15 @@ public final class MCPToolSpecificationFactory {
         }
         return MCPTransportPayloadUtils.createCallToolResult(response);
     }
-
+    
     private boolean shouldElicit(final McpSyncServerExchange exchange, final String toolName, final Map<String, Object> payload) {
         return isPlanningTool(toolName) && supportsFormElicitation(exchange) && hasClarificationQuestions(payload);
     }
-
+    
     private boolean isPlanningTool(final String toolName) {
         return "plan_encrypt_rule".equals(toolName) || "plan_mask_rule".equals(toolName);
     }
-
+    
     private boolean supportsFormElicitation(final McpSyncServerExchange exchange) {
         McpSchema.ClientCapabilities clientCapabilities = exchange.getClientCapabilities();
         if (null == clientCapabilities || null == clientCapabilities.elicitation()) {
@@ -129,21 +129,21 @@ public final class MCPToolSpecificationFactory {
         McpSchema.ClientCapabilities.Elicitation elicitation = clientCapabilities.elicitation();
         return null != elicitation.form() || null == elicitation.url();
     }
-
+    
     private boolean hasClarificationQuestions(final Map<String, Object> payload) {
         Object clarificationQuestions = payload.get("clarification_questions");
         return clarificationQuestions instanceof List<?> && !((List<?>) clarificationQuestions).isEmpty();
     }
-
+    
     private MCPResponse handleElicitation(final McpSyncServerExchange exchange, final String toolName, final Map<String, Object> arguments,
-                                         final MCPResponse fallbackResponse, final Map<String, Object> payload) {
+                                          final MCPResponse fallbackResponse, final Map<String, Object> payload) {
         McpSchema.ElicitResult elicitedResult = exchange.createElicitation(createElicitRequest(toolName, payload));
         if (McpSchema.ElicitResult.Action.ACCEPT != elicitedResult.action() || null == elicitedResult.content()) {
             return fallbackResponse;
         }
         return toolController.handle(exchange.sessionId(), toolName, mergeElicitedArguments(arguments, payload, elicitedResult.content()));
     }
-
+    
     private McpSchema.ElicitRequest createElicitRequest(final String toolName, final Map<String, Object> payload) {
         return McpSchema.ElicitRequest.builder()
                 .message(String.format("Provide missing ShardingSphere workflow inputs for `%s`.", toolName))
@@ -151,7 +151,7 @@ public final class MCPToolSpecificationFactory {
                 .meta(Map.of("tool", toolName, "plan_id", Objects.toString(payload.get("plan_id"), "")))
                 .build();
     }
-
+    
     private Map<String, Object> createElicitRequestedSchema(final Map<String, Object> payload) {
         List<?> clarificationQuestions = (List<?>) payload.get("clarification_questions");
         Map<String, Object> properties = new LinkedHashMap<>(clarificationQuestions.size(), 1F);
@@ -168,7 +168,7 @@ public final class MCPToolSpecificationFactory {
         result.put("additionalProperties", false);
         return result;
     }
-
+    
     private void addElicitProperty(final Map<String, Object> properties, final List<String> required, final Map<?, ?> question) {
         String field = Objects.toString(question.get("field"), "").trim();
         if (field.isEmpty()) {
@@ -177,7 +177,7 @@ public final class MCPToolSpecificationFactory {
         properties.put(field, createElicitPropertySchema(question));
         required.add(field);
     }
-
+    
     private Map<String, Object> createElicitPropertySchema(final Map<?, ?> question) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("type", "boolean".equals(Objects.toString(question.get("input_type"), "")) ? "boolean" : "string");
@@ -187,7 +187,7 @@ public final class MCPToolSpecificationFactory {
         }
         return result;
     }
-
+    
     private Map<String, Object> mergeElicitedArguments(final Map<String, Object> arguments, final Map<String, Object> payload, final Map<String, Object> elicitedContent) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
         if (!result.containsKey("plan_id") && payload.containsKey("plan_id")) {
@@ -198,7 +198,7 @@ public final class MCPToolSpecificationFactory {
         }
         return result;
     }
-
+    
     private void putElicitedArgument(final Map<String, Object> arguments, final String field, final Object value) {
         if (null == value || value instanceof String stringValue && stringValue.trim().isEmpty()) {
             return;
@@ -212,17 +212,17 @@ public final class MCPToolSpecificationFactory {
             arguments.put(field, value);
         }
     }
-
+    
     private boolean isAlgorithmPropertiesArgument(final String argumentName) {
         return "primary_algorithm_properties".equals(argumentName) || "assisted_query_algorithm_properties".equals(argumentName) || "like_query_algorithm_properties".equals(argumentName);
     }
-
+    
     private void putNestedArgument(final Map<String, Object> arguments, final String argumentName, final String fieldName, final Object value) {
         Map<String, Object> nestedArguments = createNestedArguments(arguments.get(argumentName));
         nestedArguments.put(fieldName, value);
         arguments.put(argumentName, nestedArguments);
     }
-
+    
     private Map<String, Object> createNestedArguments(final Object rawValue) {
         Map<String, Object> result = new LinkedHashMap<>(rawValue instanceof Map<?, ?> ? ((Map<?, ?>) rawValue).size() : 4, 1F);
         if (rawValue instanceof Map<?, ?>) {

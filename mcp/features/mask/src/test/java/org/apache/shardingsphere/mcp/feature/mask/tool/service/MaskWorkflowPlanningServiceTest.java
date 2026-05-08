@@ -51,7 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class MaskWorkflowPlanningServiceTest {
-
+    
     @Test
     void assertPlanRejectsMissingPlanningContext() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -61,7 +61,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
-
+    
     @Test
     void assertPlanRejectsLifecycleMismatchForCreate() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
@@ -73,7 +73,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
-
+    
     @Test
     void assertPlanDropWorkflow() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
@@ -87,7 +87,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getRuleArtifacts().size(), is(1));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertPlanWithNaturalLanguageInferenceArguments")
     void assertPlanWithNaturalLanguageInference(final String name, final String naturalLanguageIntent, final boolean ruleExists,
@@ -105,7 +105,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getClarifiedIntent().getFieldSemantics(), is(expectedFieldSemantics));
         assertThat(actual.getStatus(), is(expectedStatus));
     }
-
+    
     @Test
     void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
@@ -124,7 +124,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages().get(0), is("Please use a mask algorithm visible in the current Proxy."));
     }
-
+    
     @Test
     void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
@@ -143,7 +143,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
     }
-
+    
     @Test
     void assertPlanCreatesRuleArtifact() throws ReflectiveOperationException {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
@@ -162,7 +162,7 @@ class MaskWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("planned"));
         assertThat(actual.getRuleArtifacts().size(), is(1));
     }
-
+    
     private MCPMetadataQueryFacade createResolvedMetadataQueryFacade() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
@@ -170,7 +170,7 @@ class MaskWorkflowPlanningServiceTest {
         when(metadataQueryFacade.queryTableColumn("logic_db", "public", "orders", "phone")).thenReturn(Optional.of(createColumnMetadata()));
         return metadataQueryFacade;
     }
-
+    
     private WorkflowRequest createRequest(final String operationType) {
         WorkflowRequest result = new WorkflowRequest();
         result.setDatabase("logic_db");
@@ -179,7 +179,7 @@ class MaskWorkflowPlanningServiceTest {
         result.setOperationType(operationType);
         return result;
     }
-
+    
     private WorkflowRequest createNaturalLanguageRequest(final String naturalLanguageIntent) {
         WorkflowRequest result = new WorkflowRequest();
         result.setDatabase("logic_db");
@@ -188,19 +188,19 @@ class MaskWorkflowPlanningServiceTest {
         result.setNaturalLanguageIntent(naturalLanguageIntent);
         return result;
     }
-
+    
     private MCPDatabaseMetadata createDatabaseMetadata() {
         return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata()), List.of())));
     }
-
+    
     private MCPTableMetadata createTableMetadata() {
         return new MCPTableMetadata("logic_db", "public", "orders", List.of(createColumnMetadata()), List.of());
     }
-
+    
     private MCPColumnMetadata createColumnMetadata() {
         return new MCPColumnMetadata("logic_db", "public", "orders", "", "phone");
     }
-
+    
     private MaskWorkflowPlanningService createService(final MaskRuleInspectionService ruleInspectionService,
                                                       final MaskAlgorithmRecommendationService algorithmRecommendationService,
                                                       final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
@@ -212,12 +212,12 @@ class MaskWorkflowPlanningServiceTest {
         setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
         return result;
     }
-
+    
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
     }
-
+    
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
         return Stream.of(
                 Arguments.of("create from default verb", "mask phone column", false, "create", "phone", "clarifying"),

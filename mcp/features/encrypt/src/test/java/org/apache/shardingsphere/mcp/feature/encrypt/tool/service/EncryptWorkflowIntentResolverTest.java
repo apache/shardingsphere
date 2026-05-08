@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EncryptWorkflowIntentResolverTest {
-
+    
     @Test
     void assertResolveUsesExplicitArgumentsWithoutInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -46,7 +46,7 @@ class EncryptWorkflowIntentResolverTest {
         assertThat(actual.getClarificationMessages(), is(List.of()));
         assertThat(actual.getReasoningNotes(), is("Resolved from explicit arguments."));
     }
-
+    
     @Test
     void assertResolveRecordsHeuristicInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -62,7 +62,7 @@ class EncryptWorkflowIntentResolverTest {
         assertTrue((Boolean) actual.getInferredValues().get("requires_like_query"));
         assertThat(actual.getUnresolvedFields(), is(List.of()));
     }
-
+    
     @Test
     void assertResolveRecordsChineseHeuristicInference() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();
@@ -74,7 +74,7 @@ class EncryptWorkflowIntentResolverTest {
         assertTrue((Boolean) actual.getInferredValues().get("requires_like_query"));
         assertThat(actual.getUnresolvedFields(), is(List.of()));
     }
-
+    
     @Test
     void assertResolveAddsUnresolvedFieldsWhenRequirementsNeedClarification() {
         EncryptWorkflowRequest request = new EncryptWorkflowRequest();

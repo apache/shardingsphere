@@ -32,40 +32,40 @@ import java.util.Map;
 @Getter
 @Setter
 public final class WorkflowContextSnapshot {
-
+    
     private String planId;
-
+    
     private WorkflowKind workflowKind;
-
+    
     private String sessionId;
-
+    
     private String status;
-
+    
     private Instant updateTime = Instant.now();
-
+    
     private WorkflowRequest request;
-
+    
     private ClarifiedIntent clarifiedIntent;
-
+    
     private WorkflowFeatureData featureData;
-
+    
     private InteractionPlan interactionPlan;
-
+    
     private final List<WorkflowIssue> issues = new LinkedList<>();
-
+    
     private final List<AlgorithmCandidate> algorithmCandidates = new LinkedList<>();
-
+    
     private final List<AlgorithmPropertyRequirement> propertyRequirements = new LinkedList<>();
-
+    
     @Setter
     private ValidationReport validationReport;
-
+    
     private final List<DDLArtifact> ddlArtifacts = new LinkedList<>();
-
+    
     private final List<RuleArtifact> ruleArtifacts = new LinkedList<>();
-
+    
     private final List<IndexPlan> indexPlans = new LinkedList<>();
-
+    
     /**
      * Clear planning artifacts before rebuilding them.
      */
@@ -78,7 +78,7 @@ public final class WorkflowContextSnapshot {
         ruleArtifacts.clear();
         indexPlans.clear();
     }
-
+    
     /**
      * Create a defensive copy of the workflow snapshot.
      *
@@ -104,11 +104,11 @@ public final class WorkflowContextSnapshot {
         result.setValidationReport(copyValidationReport(validationReport));
         return result;
     }
-
+    
     private static Instant copyInstant(final Instant original) {
         return null == original ? null : Instant.ofEpochMilli(original.toEpochMilli());
     }
-
+    
     private static ClarifiedIntent copyClarifiedIntent(final ClarifiedIntent original) {
         if (null == original) {
             return null;
@@ -122,7 +122,7 @@ public final class WorkflowContextSnapshot {
         original.getInferredValues().forEach((key, value) -> result.getInferredValues().put(key, copyValue(value)));
         return result;
     }
-
+    
     private static InteractionPlan copyInteractionPlan(final InteractionPlan original) {
         if (null == original) {
             return null;
@@ -137,23 +137,23 @@ public final class WorkflowContextSnapshot {
         result.getValidationStrategy().putAll(copyMap(original.getValidationStrategy()));
         return result;
     }
-
+    
     private static WorkflowIssue copyWorkflowIssue(final WorkflowIssue original) {
         return new WorkflowIssue(original.getCode(), original.getSeverity(), original.getStage(), original.getMessage(),
                 original.getUserAction(), original.isRetryable(), copyMap(original.getDetails()));
     }
-
+    
     private static AlgorithmCandidate copyAlgorithmCandidate(final AlgorithmCandidate original) {
         return new AlgorithmCandidate(original.getAlgorithmRole(), original.getAlgorithmType(), original.getSupportsDecrypt(),
                 original.getSupportsEquivalentFilter(), original.getSupportsLike(), original.getRecommendationScore(),
                 original.getRecommendationReason(), original.getRiskNotes());
     }
-
+    
     private static AlgorithmPropertyRequirement copyPropertyRequirement(final AlgorithmPropertyRequirement original) {
         return new AlgorithmPropertyRequirement(original.getAlgorithmRole(), original.getPropertyKey(), original.isRequired(),
                 original.isSecret(), original.getDescription(), original.getDefaultValue());
     }
-
+    
     private static ValidationReport copyValidationReport(final ValidationReport original) {
         if (null == original) {
             return null;
@@ -167,20 +167,20 @@ public final class WorkflowContextSnapshot {
         original.getMismatches().forEach(each -> result.getMismatches().add(copyMap(each)));
         return result;
     }
-
+    
     private static ValidationSection copyValidationSection(final ValidationSection original) {
         if (null == original) {
             return null;
         }
         return new ValidationSection(original.getStatus(), copyValue(original.getEvidence()), copyValue(original.getDetails()));
     }
-
+    
     private static Map<String, Object> copyMap(final Map<?, ?> original) {
         Map<String, Object> result = new LinkedHashMap<>(original.size(), 1F);
         original.forEach((key, value) -> result.put(String.valueOf(key), copyValue(value)));
         return result;
     }
-
+    
     private static Object copyValue(final Object original) {
         if (original instanceof Map) {
             return copyMap((Map<?, ?>) original);

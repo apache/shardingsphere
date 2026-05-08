@@ -28,37 +28,44 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabase
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Handler for runtime status resource URI.
  */
 public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabaseHandlerContext> {
-
+    
     private static final String URI_PATTERN = "shardingsphere://runtime";
-
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-
+    
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
         return MCPDescriptorRegistry.getRequiredResourceDescriptor(URI_PATTERN);
     }
-
+    
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
+        result.put("response_mode", MCPResponseMode.RUNTIME);
+        result.put("server_status", "ready");
         result.put("status", "available");
+        result.put("transport", handlerContext.getActiveTransport());
         result.put("active_transport", handlerContext.getActiveTransport());
         result.put("configured_database_count", databases.size());
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
+        result.put("readiness", Map.of("ready", true, "token_safe", true, "resource_uri", URI_PATTERN));
+        result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("capability_fingerprint", MCPDescriptorRegistry.getDescriptorCatalogFingerprint());
         result.put("resources_to_read", List.of(
                 MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first", "Read full MCP capabilities before choosing tools.", "resources_to_read"),
@@ -66,22 +73,23 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read the full capability catalog before choosing tools.")));
         return new MCPMapResponse(result);
     }
-
+    
     private Map<String, Object> createDatabaseStatus(final MCPDatabaseHandlerContext handlerContext, final MCPDatabaseMetadata database) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Optional<MCPDatabaseCapability> capability = handlerContext.getCapabilityFacade().provide(database.getDatabase());
+        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("database", database.getDatabase());
         result.put("database_type", database.getDatabaseType());
+        result.put("driver_category", database.getDatabaseType().toLowerCase());
         result.put("schema_count", database.getSchemas().size());
-        result.put("capabilities", createCapabilityStatus(handlerContext, database.getDatabase()));
+        result.put("metadata_visibility", "ready");
+        result.put("capabilities", capability.map(this::createCapabilityStatus).orElseGet(this::createUnavailableCapabilityStatus));
+        result.put("capability_visibility", capability.isPresent() ? "ready" : "unavailable");
+        result.put("feature_visibility", "ready");
         result.put("resource", MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s", MCPUriTemplateUtils.encodePathSegment(database.getDatabase())),
                 "logical-database", "inspect_detail", "Read this logical database resource for metadata details.", "databases"));
         return result;
     }
-
-    private Map<String, Object> createCapabilityStatus(final MCPDatabaseHandlerContext handlerContext, final String databaseName) {
-        return handlerContext.getCapabilityFacade().provide(databaseName).map(this::createCapabilityStatus).orElseGet(this::createUnavailableCapabilityStatus);
-    }
-
+    
     private Map<String, Object> createCapabilityStatus(final MCPDatabaseCapability capability) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("available", true);
@@ -90,7 +98,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("supported_metadata_object_types", capability.getSupportedMetadataObjectTypes().stream().map(Enum::name).toList());
         return result;
     }
-
+    
     private Map<String, Object> createUnavailableCapabilityStatus() {
         Map<String, Object> result = new LinkedHashMap<>(1, 1F);
         result.put("available", false);

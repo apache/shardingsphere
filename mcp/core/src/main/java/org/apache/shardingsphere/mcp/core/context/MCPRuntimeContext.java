@@ -30,29 +30,29 @@ import java.util.Objects;
  */
 @Getter
 public final class MCPRuntimeContext {
-
+    
     private static final String UNKNOWN_TRANSPORT = "unknown";
-
+    
     private final MCPSessionManager sessionManager;
-
+    
     private final MCPDatabaseCapabilityProvider databaseCapabilityProvider;
-
+    
     private final WorkflowSessionContext workflowSessionContext;
-
+    
     private final String activeTransport;
-
+    
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider) {
         this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext(), UNKNOWN_TRANSPORT);
     }
-
+    
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final String activeTransport) {
         this(sessionManager, databaseCapabilityProvider, new InMemoryWorkflowSessionContext(), activeTransport);
     }
-
+    
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowSessionContext workflowSessionContext) {
         this(sessionManager, databaseCapabilityProvider, workflowSessionContext, UNKNOWN_TRANSPORT);
     }
-
+    
     public MCPRuntimeContext(final MCPSessionManager sessionManager, final MCPDatabaseCapabilityProvider databaseCapabilityProvider, final WorkflowSessionContext workflowSessionContext,
                              final String activeTransport) {
         this.sessionManager = sessionManager;

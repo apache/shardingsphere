@@ -39,23 +39,23 @@ import java.util.Map;
  * Tool handler for mask workflow planning.
  */
 public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
-
+    
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = WorkflowToolDescriptors.createPlanning(MaskFeatureDefinition.PLAN_TOOL_NAME);
-
+    
     private final MaskWorkflowPlanningService planningService = new MaskWorkflowPlanningService();
-
+    
     private final MaskAlgorithmPropertyTemplateService propertyTemplateService = new MaskAlgorithmPropertyTemplateService();
-
+    
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {
         return MCPWorkflowHandlerContext.class;
     }
-
+    
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return TOOL_DESCRIPTOR;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
@@ -64,19 +64,19 @@ public final class PlanMaskRuleToolHandler implements MCPToolHandler<MCPWorkflow
                 databaseContext.getQueryFacade(), toolCall.getSessionId(), request);
         return new MCPMapResponse(new WorkflowToolResponseBuilder(propertyTemplateService).buildPlanResponse(snapshot));
     }
-
+    
     private void bindFeatureArguments(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
         request.setAlgorithmType(workflowPlanningArguments.getStringArgument("algorithm_type"));
         request.getPrimaryAlgorithmProperties().putAll(workflowPlanningArguments.getMapArgument("primary_algorithm_properties"));
     }
-
+    
     private void applyStructuredIntentEvidence(final WorkflowRequest request, final Map<String, Object> structuredIntentEvidence) {
         Object fieldSemantics = structuredIntentEvidence.get("field_semantics");
         if (null != fieldSemantics) {
             request.setFieldSemantics(String.valueOf(fieldSemantics).trim());
         }
     }
-
+    
     private void applyUserOverrides(final WorkflowRequest request, final Map<String, Object> userOverrides) {
         Object algorithmType = userOverrides.get("algorithm_type");
         if (null != algorithmType && !String.valueOf(algorithmType).trim().isEmpty()) {

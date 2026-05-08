@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryColumnDefinition;
 import org.apache.shardingsphere.mcp.support.database.protocol.ExecuteQueryResultKind;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -40,37 +41,37 @@ import java.util.Set;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public final class SQLExecutionResponse implements MCPResponse {
-
+    
     private static final int ROW_OBJECT_LIMIT = 100;
-
+    
     private final ExecuteQueryResultKind resultKind;
-
+    
     private final SupportedMCPStatement statementClass;
-
+    
     private final List<ExecuteQueryColumnDefinition> columns;
-
+    
     private final List<List<Object>> rows;
-
+    
     private final int affectedRows;
-
+    
     private final String statementType;
-
+    
     private final String status;
-
+    
     private final String message;
-
+    
     private final boolean truncated;
-
+    
     private final int appliedMaxRows;
-
+    
     private final int appliedTimeoutMs;
-
+    
     private final String normalizedSql;
-
+    
     private final String responseMode;
-
+    
     private final String executionMode;
-
+    
     /**
      * Create a result-set response.
      *
@@ -82,7 +83,7 @@ public final class SQLExecutionResponse implements MCPResponse {
     public static SQLExecutionResponse resultSet(final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
         return resultSet(SupportedMCPStatement.QUERY, "SELECT", columns, rows, truncated);
     }
-
+    
     /**
      * Create a result-set response.
      *
@@ -95,9 +96,10 @@ public final class SQLExecutionResponse implements MCPResponse {
      */
     public static SQLExecutionResponse resultSet(final SupportedMCPStatement statementClass, final String statementType,
                                                  final List<ExecuteQueryColumnDefinition> columns, final List<List<Object>> rows, final boolean truncated) {
-        return new SQLExecutionResponse(ExecuteQueryResultKind.RESULT_SET, statementClass, normalizeColumns(columns), normalizeRows(rows), 0, statementType, "OK", "", truncated, 0, 0, "", "", "");
+        return new SQLExecutionResponse(ExecuteQueryResultKind.RESULT_SET, statementClass, normalizeColumns(columns), normalizeRows(rows), 0, statementType, "OK", "", truncated, 0, 0, "",
+                MCPResponseMode.QUERY, "");
     }
-
+    
     /**
      * Create an update-count response.
      *
@@ -108,7 +110,7 @@ public final class SQLExecutionResponse implements MCPResponse {
     public static SQLExecutionResponse updateCount(final String statementType, final int affectedRows) {
         return updateCount(SupportedMCPStatement.DML, statementType, affectedRows);
     }
-
+    
     /**
      * Create an update-count response.
      *
@@ -119,9 +121,9 @@ public final class SQLExecutionResponse implements MCPResponse {
      */
     public static SQLExecutionResponse updateCount(final SupportedMCPStatement statementClass, final String statementType, final int affectedRows) {
         return new SQLExecutionResponse(ExecuteQueryResultKind.UPDATE_COUNT, statementClass, Collections.emptyList(), Collections.emptyList(), affectedRows, statementType, "OK", "",
-                false, 0, 0, "", "", "");
+                false, 0, 0, "", MCPResponseMode.EXECUTED, "");
     }
-
+    
     /**
      * Create a statement acknowledgement response.
      *
@@ -132,9 +134,9 @@ public final class SQLExecutionResponse implements MCPResponse {
      */
     public static SQLExecutionResponse statementAck(final SupportedMCPStatement statementClass, final String statementType, final String message) {
         return new SQLExecutionResponse(ExecuteQueryResultKind.STATEMENT_ACK, statementClass, Collections.emptyList(), Collections.emptyList(), 0, statementType, "OK", message, false,
-                0, 0, "", "", "");
+                0, 0, "", MCPResponseMode.EXECUTED, "");
     }
-
+    
     /**
      * Create a copy with applied execution hints.
      *
@@ -146,7 +148,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         return new SQLExecutionResponse(resultKind, statementClass, columns, rows, affectedRows, statementType, status, message, truncated, appliedMaxRows, appliedTimeoutMs, normalizedSql,
                 responseMode, executionMode);
     }
-
+    
     /**
      * Create a copy with normalized SQL.
      *
@@ -157,7 +159,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         return new SQLExecutionResponse(resultKind, statementClass, columns, rows, affectedRows, statementType, status, message, truncated, appliedMaxRows, appliedTimeoutMs,
                 null == normalizedSql ? "" : normalizedSql, responseMode, executionMode);
     }
-
+    
     /**
      * Create a copy with side-effect tool execution mode markers.
      *
@@ -166,15 +168,13 @@ public final class SQLExecutionResponse implements MCPResponse {
      */
     public SQLExecutionResponse withExecutionMode(final String executionMode) {
         return new SQLExecutionResponse(resultKind, statementClass, columns, rows, affectedRows, statementType, status, message, truncated, appliedMaxRows, appliedTimeoutMs, normalizedSql,
-                "executed", null == executionMode ? "" : executionMode);
+                MCPResponseMode.EXECUTED, null == executionMode ? "" : executionMode);
     }
-
+    
     @Override
     public Map<String, Object> toPayload() {
         Map<String, Object> result = new LinkedHashMap<>(32, 1F);
-        if (!responseMode.isEmpty()) {
-            result.put("response_mode", responseMode);
-        }
+        result.put("response_mode", responseMode);
         result.put("result_kind", resultKind.name().toLowerCase(Locale.ENGLISH));
         if (!executionMode.isEmpty()) {
             result.put("execution_mode", executionMode);
@@ -203,7 +203,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         result.put("next_actions", createNextActions());
         return result;
     }
-
+    
     private List<Map<String, Object>> createNextActions() {
         if (ExecuteQueryResultKind.RESULT_SET == resultKind && truncated) {
             return List.of(MCPNextActionUtils.askUser("The result was truncated by max_rows. Ask for a narrower SELECT, stronger WHERE clause, or smaller projection before retrying.",
@@ -213,11 +213,11 @@ public final class SQLExecutionResponse implements MCPResponse {
                 ? "Return the result rows to the user or ask a follow-up question if the user requested more analysis."
                 : "Report the execution status to the user and stop unless the user asks for another operation."));
     }
-
+    
     private Map<String, Object> createStopAction(final String reason) {
         return MCPNextActionUtils.stop(reason);
     }
-
+    
     private void appendRowObjects(final Map<String, Object> payload) {
         String rowObjectStatus = getRowObjectStatus();
         payload.put("row_object_status", rowObjectStatus);
@@ -225,7 +225,7 @@ public final class SQLExecutionResponse implements MCPResponse {
             payload.put("row_objects", createRowObjects());
         }
     }
-
+    
     private String getRowObjectStatus() {
         String unavailableStatus = getUnavailableRowObjectStatus();
         if (!unavailableStatus.isEmpty()) {
@@ -233,7 +233,7 @@ public final class SQLExecutionResponse implements MCPResponse {
         }
         return ROW_OBJECT_LIMIT < rows.size() ? "omitted_large_result" : "available";
     }
-
+    
     private String getUnavailableRowObjectStatus() {
         if (columns.isEmpty()) {
             return rows.isEmpty() ? "" : "unnamed_columns";
@@ -249,11 +249,11 @@ public final class SQLExecutionResponse implements MCPResponse {
         }
         return "";
     }
-
+    
     private List<Map<String, Object>> createRowObjects() {
         return rows.stream().map(this::createRowObject).toList();
     }
-
+    
     private Map<String, Object> createRowObject(final List<Object> row) {
         Map<String, Object> result = new LinkedHashMap<>(columns.size(), 1F);
         for (int i = 0; i < columns.size(); i++) {
@@ -261,11 +261,11 @@ public final class SQLExecutionResponse implements MCPResponse {
         }
         return result;
     }
-
+    
     private static List<ExecuteQueryColumnDefinition> normalizeColumns(final List<ExecuteQueryColumnDefinition> columns) {
         return null == columns ? Collections.emptyList() : columns;
     }
-
+    
     private static List<List<Object>> normalizeRows(final List<List<Object>> rows) {
         return null == rows ? Collections.emptyList() : rows;
     }

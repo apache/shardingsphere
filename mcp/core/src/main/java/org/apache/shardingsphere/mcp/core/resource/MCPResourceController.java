@@ -36,9 +36,9 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class MCPResourceController {
-
+    
     private final MCPRuntimeContext runtimeContext;
-
+    
     /**
      * Handle resource URI.
      *
@@ -54,7 +54,7 @@ public final class MCPResourceController {
             return createResourceErrorResponse(resourceUri, MCPErrorConverter.convert(ex));
         }
     }
-
+    
     private MCPResponse createResourceErrorResponse(final String resourceUri, final MCPErrorResponse errorResponse) {
         final Map<String, Object> errorPayload = errorResponse.toPayload();
         final Map<String, Object> result = new LinkedHashMap<>(6, 1F);
@@ -70,7 +70,7 @@ public final class MCPResourceController {
         }
         return new MCPMapResponse(result);
     }
-
+    
     @SuppressWarnings("unchecked")
     private Map<String, Object> getRecovery(final Map<String, Object> errorPayload) {
         final Object recovery = errorPayload.get("recovery");

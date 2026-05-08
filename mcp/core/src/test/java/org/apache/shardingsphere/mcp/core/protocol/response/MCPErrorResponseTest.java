@@ -28,14 +28,15 @@ class MCPErrorResponseTest {
     
     @Test
     void assertToPayload() {
-        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message").toPayload();
-        assertThat(actual, is(Map.of("error_code", "invalid_request", "message", "foo_message")));
+        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message", Map.of(), "request-1").toPayload();
+        assertThat(actual, is(Map.of("response_mode", "recovery", "request_id", "request-1", "error_code", "invalid_request", "message", "foo_message")));
     }
     
     @Test
     void assertToPayloadWithRecovery() {
-        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message", Map.of("recoverable", true)).toPayload();
-        assertThat(actual, is(Map.of("error_code", "invalid_request", "message", "foo_message", "recovery", Map.of("recoverable", true))));
+        Map<String, Object> actual = new MCPErrorResponse("invalid_request", "foo_message", Map.of("recoverable", true), "request-1").toPayload();
+        assertThat(actual, is(Map.of("response_mode", "recovery", "request_id", "request-1", "error_code", "invalid_request", "message", "foo_message", "recovery",
+                Map.of("recoverable", true, "request_id", "request-1"))));
     }
     
     @Test

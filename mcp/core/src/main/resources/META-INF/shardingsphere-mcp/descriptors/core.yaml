@@ -579,6 +579,11 @@ tools:
     outputSchema:
       type: object
       properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for metadata search payloads."
+          enum:
+            - search
         items:
           type: array
           description: "Matched metadata objects with logical path fields, object type, and direct resource navigation hints when derivable."
@@ -640,7 +645,13 @@ tools:
           description: "Opaque token for the next result page when more items exist."
         has_more:
           type: boolean
-          description: "Whether another page is available and next_page_token should be used."
+          description: "Whether another page or continuation action is available."
+        continuation_mode:
+          type: string
+          description: "Continuation model for this result: none or pagination for search_metadata."
+          enum:
+            - none
+            - pagination
         search_context:
           type: object
           description: "Applied search scope, query, object types, page size, and page offset used for this page."
@@ -675,15 +686,36 @@ tools:
           items:
             type: object
             properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
               action_kind:
                 type: string
-                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+                description: "Backward-compatible action type such as call_tool, ask_user, read_resource, or stop."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
               target_tool:
                 type: string
                 description: "Tool to call when action_kind is call_tool."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
               target_resource:
                 type: string
                 description: "Resource URI to read when action_kind is read_resource."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take this action."
@@ -693,14 +725,9 @@ tools:
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
-              order:
-                type: integer
-                description: "1-based action order when multiple actions are returned."
       examples:
-        - items:
+        - response_mode: search
+          items:
             - database: logic_db
               schema: public
               objectType: table
@@ -731,6 +758,7 @@ tools:
               matched_value: orders
           count: 1
           has_more: false
+          continuation_mode: none
           total_match_count: 1
           search_context:
             query: orders
@@ -796,6 +824,11 @@ tools:
     outputSchema:
       type: object
       properties:
+        response_mode:
+          type: string
+          description: "Stable response mode marker for read-only SQL results."
+          enum:
+            - query
         result_kind:
           type: string
           description: "Result kind. execute_query returns result_set for row results."
@@ -846,15 +879,36 @@ tools:
           items:
             type: object
             properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
               action_kind:
                 type: string
-                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+                description: "Backward-compatible action type such as call_tool, ask_user, read_resource, or stop."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
               target_tool:
                 type: string
                 description: "Tool to call when action_kind is call_tool."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
               target_resource:
                 type: string
                 description: "Resource URI to read when action_kind is read_resource."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take this action."
@@ -864,14 +918,9 @@ tools:
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
-              order:
-                type: integer
-                description: "1-based action order when multiple actions are returned."
       examples:
-        - result_kind: result_set
+        - response_mode: query
+          result_kind: result_set
           statement_class: query
           statement_type: SELECT
           status: OK
@@ -884,7 +933,10 @@ tools:
           applied_timeout_ms: 0
           truncated: false
           next_actions:
-            - action_kind: stop
+            - order: 1
+              type: terminal
+              title: Stop
+              action_kind: stop
               reason: Return the result rows to the user.
               requires_user_approval: false
     annotations:
@@ -1049,7 +1101,7 @@ tools:
           description: "Preview-only arguments to reuse when the user approves execution."
         argument_provenance:
           type: object
-          description: "Source of suggested argument values, such as user_provided, server_normalized, or server_suggested."
+          description: "Source of suggested argument values, such as user_provided, server_generated, or server_defaulted."
         resources_to_read:
           type: array
           description: "Typed resource hints to read before retrying when metadata context is missing."
@@ -1062,15 +1114,36 @@ tools:
           items:
             type: object
             properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
               action_kind:
                 type: string
-                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+                description: "Backward-compatible action type such as call_tool, ask_user, read_resource, or stop."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
               target_tool:
                 type: string
                 description: "Tool to call when action_kind is call_tool."
+              resource_uri:
+                type: string
+                description: "Canonical resource URI when type is resource_read."
               target_resource:
                 type: string
                 description: "Resource URI to read when action_kind is read_resource."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take this action."
@@ -1080,12 +1153,6 @@ tools:
               required_inputs:
                 type: array
                 description: "User inputs needed before continuing."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
-              order:
-                type: integer
-                description: "1-based action order when multiple actions are returned."
               depends_on:
                 type: array
                 description: "Action order values that must complete before this action."
@@ -1107,7 +1174,11 @@ tools:
           suggested_arguments:
             execution_mode: execute
           next_actions:
-            - action_kind: ask_user
+            - order: 1
+              type: ask_user
+              title: Ask user for approval
+              action_kind: ask_user
+              question: Ask the user to approve the previewed side effects before execution.
               reason: Ask the user to approve the previewed side effects before execution.
               requires_user_approval: true
     annotations:

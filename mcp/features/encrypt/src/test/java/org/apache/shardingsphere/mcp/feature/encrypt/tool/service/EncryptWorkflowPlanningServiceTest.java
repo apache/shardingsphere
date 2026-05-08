@@ -58,7 +58,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class EncryptWorkflowPlanningServiceTest {
-
+    
     @Test
     void assertPlanRejectsMissingPlanningContext() throws ReflectiveOperationException {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -69,7 +69,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.DATABASE_REQUIRED));
     }
-
+    
     @Test
     void assertPlanRejectsLifecycleMismatchForCreate() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -82,7 +82,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("failed"));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.RULE_STATE_MISMATCH));
     }
-
+    
     @Test
     void assertPlanDropWorkflow() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -99,7 +99,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getIssues().size(), is(2));
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.ENCRYPT_DROP_SCOPE_LIMITED));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("assertPlanWithNaturalLanguageInferenceArguments")
     void assertPlanWithNaturalLanguageInference(final String name, final String naturalLanguageIntent, final boolean ruleExists,
@@ -121,7 +121,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is(expectedStatus));
         assertThat(actual.getClarifiedIntent().getClarificationMessages().isEmpty(), is(!expectedHasClarificationMessages));
     }
-
+    
     @Test
     void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -141,7 +141,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getStatus(), is("clarifying"));
         assertThat(actual.getClarifiedIntent().getClarificationMessages().get(0), is("Please use an encrypt algorithm that is visible in the current Proxy and satisfies the requirements."));
     }
-
+    
     @Test
     void assertPlanInfersEncryptCapabilitiesFromNaturalLanguage() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -172,7 +172,7 @@ class EncryptWorkflowPlanningServiceTest {
         EncryptWorkflowState actualState = (EncryptWorkflowState) actual.getFeatureData();
         assertThat(actualState.getDerivedColumnPlan().getCipherColumnName(), is("phone_cipher"));
     }
-
+    
     @Test
     void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -193,7 +193,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertThat(actual.getIssues().get(0).getCode(), is(WorkflowIssueCode.REQUIRED_PROPERTY_MISSING));
         assertThat(actual.getClarifiedIntent().getClarificationMessages().get(0), is("Please provide property `aes-key-value`."));
     }
-
+    
     @Test
     void assertPlanCreatesArtifactsWithoutIndexDdl() throws ReflectiveOperationException {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
@@ -224,7 +224,7 @@ class EncryptWorkflowPlanningServiceTest {
         assertTrue(actual.getIndexPlans().isEmpty());
         verify(indexPlanningService, never()).planIndexes(any(), any(), any());
     }
-
+    
     private MCPMetadataQueryFacade createResolvedMetadataQueryFacade() {
         MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
         when(metadataQueryFacade.queryDatabase("logic_db")).thenReturn(Optional.of(createDatabaseMetadata()));
@@ -233,13 +233,13 @@ class EncryptWorkflowPlanningServiceTest {
         when(metadataQueryFacade.queryTableColumns("logic_db", "public", "orders")).thenReturn(List.of(createColumnMetadata()));
         return metadataQueryFacade;
     }
-
+    
     private MCPFeatureQueryFacade createQueryFacade() {
         MCPFeatureQueryFacade result = mock(MCPFeatureQueryFacade.class);
         when(result.queryColumnDefinition("logic_db", "public", "orders", "phone")).thenReturn("VARCHAR(32)");
         return result;
     }
-
+    
     private EncryptWorkflowRequest createRequest(final String operationType) {
         EncryptWorkflowRequest result = new EncryptWorkflowRequest();
         result.setDatabase("logic_db");
@@ -251,7 +251,7 @@ class EncryptWorkflowPlanningServiceTest {
         result.getOptions().setRequiresLikeQuery(false);
         return result;
     }
-
+    
     private EncryptWorkflowRequest createNaturalLanguageRequest(final String naturalLanguageIntent) {
         EncryptWorkflowRequest result = new EncryptWorkflowRequest();
         result.setDatabase("logic_db");
@@ -260,26 +260,26 @@ class EncryptWorkflowPlanningServiceTest {
         result.setNaturalLanguageIntent(naturalLanguageIntent);
         return result;
     }
-
+    
     private MCPDatabaseMetadata createDatabaseMetadata() {
         return new MCPDatabaseMetadata("logic_db", "MySQL", "8.0", List.of(new MCPSchemaMetadata("logic_db", "public", List.of(createTableMetadata()), List.of())));
     }
-
+    
     private MCPTableMetadata createTableMetadata() {
         return new MCPTableMetadata("logic_db", "public", "orders", List.of(createColumnMetadata()), List.of());
     }
-
+    
     private MCPColumnMetadata createColumnMetadata() {
         return new MCPColumnMetadata("logic_db", "public", "orders", "", "phone");
     }
-
+    
     private DerivedColumnPlan createDerivedColumnPlan() {
         DerivedColumnPlan result = new DerivedColumnPlan();
         result.setCipherColumnRequired(true);
         result.setCipherColumnName("phone_cipher");
         return result;
     }
-
+    
     private EncryptWorkflowPlanningService createService(final EncryptRuleInspectionService ruleInspectionService,
                                                          final EncryptAlgorithmRecommendationService algorithmRecommendationService,
                                                          final EncryptAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
@@ -297,12 +297,12 @@ class EncryptWorkflowPlanningServiceTest {
         setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
         return result;
     }
-
+    
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
     }
-
+    
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {
         return Stream.of(
                 Arguments.of("create from default verb", "encrypt phone column", false, "create", "phone", "clarifying", true),

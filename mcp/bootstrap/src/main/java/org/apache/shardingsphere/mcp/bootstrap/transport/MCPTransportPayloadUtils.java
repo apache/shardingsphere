@@ -37,11 +37,11 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPTransportPayloadUtils {
-
+    
     public static final String JSON_CONTENT_TYPE = "application/json";
-
+    
     private static final int RESOURCE_LINK_LIMIT = 24;
-
+    
     /**
      * Create MCP tool result for a structured payload.
      *
@@ -51,7 +51,7 @@ public final class MCPTransportPayloadUtils {
     public static McpSchema.CallToolResult createCallToolResult(final MCPResponse response) {
         return createCallToolResult(response.toPayload(), response instanceof MCPErrorResponse);
     }
-
+    
     /**
      * Create MCP tool result for a structured payload.
      *
@@ -61,7 +61,7 @@ public final class MCPTransportPayloadUtils {
     public static McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload) {
         return createCallToolResult(payload, false);
     }
-
+    
     private static McpSchema.CallToolResult createCallToolResult(final Map<String, Object> payload, final boolean error) {
         CallToolResult.Builder result = CallToolResult.builder().structuredContent(payload).addTextContent(JsonUtils.toJsonString(payload)).isError(error);
         ResourceLinks resourceLinks = createResourceLinks(payload);
@@ -73,7 +73,7 @@ public final class MCPTransportPayloadUtils {
         }
         return result.build();
     }
-
+    
     private static ResourceLinks createResourceLinks(final Map<String, Object> payload) {
         List<ResourceLinkCandidate> candidates = new LinkedList<>();
         collectResourceLinkCandidates(payload, "", candidates);
@@ -91,7 +91,7 @@ public final class MCPTransportPayloadUtils {
         }
         return new ResourceLinks(links, uniqueCandidates.size());
     }
-
+    
     private static void collectResourceLinkCandidates(final Object value, final String sourceField, final List<ResourceLinkCandidate> result) {
         if (value instanceof Map<?, ?>) {
             collectResourceLinksFromMap((Map<?, ?>) value, sourceField, result);
@@ -101,7 +101,7 @@ public final class MCPTransportPayloadUtils {
             }
         }
     }
-
+    
     private static void collectResourceLinksFromMap(final Map<?, ?> value, final String sourceField, final List<ResourceLinkCandidate> result) {
         if (isResourceHint(value)) {
             String uri = Objects.toString(value.get("uri"), "");
@@ -111,17 +111,17 @@ public final class MCPTransportPayloadUtils {
             collectResourceLinkCandidates(entry.getValue(), Objects.toString(entry.getKey(), sourceField), result);
         }
     }
-
+    
     private static String resolveSourceField(final Map<?, ?> value, final String sourceField) {
         String result = Objects.toString(value.get("source_field"), "");
         return result.isEmpty() ? sourceField : result;
     }
-
+    
     private static int compareResourceLinkCandidates(final ResourceLinkCandidate left, final ResourceLinkCandidate right) {
         int result = Integer.compare(resolveResourceLinkPriority(left.sourceField()), resolveResourceLinkPriority(right.sourceField()));
         return 0 == result ? Integer.compare(left.order(), right.order()) : result;
     }
-
+    
     private static int resolveResourceLinkPriority(final String sourceField) {
         if ("resources_to_read".equals(sourceField)) {
             return 0;
@@ -137,11 +137,11 @@ public final class MCPTransportPayloadUtils {
         }
         return 4;
     }
-
+    
     private static boolean isResourceHint(final Map<?, ?> value) {
         return value.containsKey("uri") && value.containsKey("resource_kind") && !Objects.toString(value.get("uri"), "").isBlank();
     }
-
+    
     private static McpSchema.ResourceLink createResourceLink(final ResourceLinkCandidate candidate) {
         return McpSchema.ResourceLink.builder()
                 .name(resolveResourceLinkName(candidate.uri()))
@@ -152,7 +152,7 @@ public final class MCPTransportPayloadUtils {
                 .meta(createResourceLinkMeta(candidate))
                 .build();
     }
-
+    
     private static String resolveResourceLinkName(final String uri) {
         int separatorIndex = uri.lastIndexOf('/');
         if (separatorIndex < 0 || separatorIndex == uri.length() - 1) {
@@ -160,7 +160,7 @@ public final class MCPTransportPayloadUtils {
         }
         return uri.substring(separatorIndex + 1);
     }
-
+    
     private static Map<String, Object> createResourceLinkMeta(final ResourceLinkCandidate candidate) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("resource_kind", Objects.toString(candidate.hint().get("resource_kind"), ""));
@@ -168,7 +168,7 @@ public final class MCPTransportPayloadUtils {
         result.put("source_field", candidate.sourceField());
         return result;
     }
-
+    
     /**
      * Create MCP resource result for a structured payload.
      *
@@ -179,10 +179,10 @@ public final class MCPTransportPayloadUtils {
     public static McpSchema.ReadResourceResult createReadResourceResult(final String uri, final Map<String, Object> payload) {
         return new McpSchema.ReadResourceResult(List.of(new McpSchema.TextResourceContents(uri, JSON_CONTENT_TYPE, JsonUtils.toJsonString(payload))));
     }
-
+    
     private record ResourceLinkCandidate(Map<?, ?> hint, String uri, String sourceField, int order) {
     }
-
+    
     private record ResourceLinks(List<McpSchema.ResourceLink> links, int totalCount) {
 
         private int omittedCount() {

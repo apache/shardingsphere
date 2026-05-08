@@ -57,16 +57,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ResourceHandlerTest {
-
+    
     private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertGetResourceDescriptor(final HandlerCase handlerCase) {
         assertThat(handlerCase.getHandler().getResourceDescriptor().getUriTemplate(), is(handlerCase.getExpectedUriPattern()));
         assertFalse(handlerCase.getHandler().getResourceDescriptor().getDescription().isBlank());
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("handlerCases")
     void assertHandle(final HandlerCase handlerCase) {
@@ -91,7 +91,7 @@ class ResourceHandlerTest {
             assertMetadataResponse(handlerCase, actual, actualPayload);
         }
     }
-
+    
     @Test
     void assertHandleWithUnsupportedIndexResource() {
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
@@ -105,7 +105,7 @@ class ResourceHandlerTest {
             assertThat(actual.getMessage(), is("Index resources are not supported for the current database."));
         }
     }
-
+    
     @Test
     void assertHandleWithUnsupportedSequenceResource() {
         try (MCPRequestScope requestContext = new MCPRequestScope(runtimeContext)) {
@@ -119,15 +119,15 @@ class ResourceHandlerTest {
             assertThat(actual.getMessage(), is("Sequence resources are not supported for the current database."));
         }
     }
-
+    
     private MCPUriVariables parseUriVariables(final String uriTemplate, final String resourceUri) {
         return new MCPUriPattern(uriTemplate).parse(resourceUri).orElseThrow();
     }
-
+    
     private <T extends MCPHandlerContext> MCPResponse handle(final MCPResourceHandler<T> handler, final MCPRequestScope requestContext, final MCPUriVariables uriVariables) {
         return handler.handle(handler.getContextType().cast(requestContext), uriVariables);
     }
-
+    
     private void assertMetadataResponse(final HandlerCase handlerCase, final MCPResponse actual, final Map<String, Object> actualPayload) {
         if (actualPayload.containsKey("resource_kind")) {
             assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMapResponse.class));
@@ -142,7 +142,7 @@ class ResourceHandlerTest {
         assertNextResources(handlerCase.getResourceUri(), actualPayload);
         assertThat(extractMetadataNames(actualPayload), is(handlerCase.getExpectedObjectNames()));
     }
-
+    
     private void assertParentResource(final String resourceUri, final Map<String, Object> actualPayload) {
         String expectedParentUri = createParentUri(resourceUri);
         if (expectedParentUri.isEmpty()) {
@@ -151,14 +151,14 @@ class ResourceHandlerTest {
         }
         assertThat(((Map<?, ?>) actualPayload.get("parent_resource")).get("uri"), is(expectedParentUri));
     }
-
+    
     private String createParentUri(final String resourceUri) {
         String prefix = "shardingsphere://";
         String path = resourceUri.substring(prefix.length());
         int lastSeparatorIndex = path.lastIndexOf('/');
         return 0 > lastSeparatorIndex ? "" : prefix + path.substring(0, lastSeparatorIndex);
     }
-
+    
     private void assertNextResources(final String resourceUri, final Map<String, Object> actualPayload) {
         if (!"shardingsphere://databases/logic_db/schemas/public/tables/orders".equals(resourceUri)) {
             return;
@@ -167,7 +167,7 @@ class ResourceHandlerTest {
                 "shardingsphere://databases/logic_db/schemas/public/tables/orders/columns",
                 "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes")));
     }
-
+    
     private List<String> extractResourceUris(final List<?> resources) {
         final List<String> result = new LinkedList<>();
         for (final Object each : resources) {
@@ -175,7 +175,7 @@ class ResourceHandlerTest {
         }
         return result;
     }
-
+    
     private List<String> extractMetadataNames(final Map<String, Object> payload) {
         final List<String> result = new LinkedList<>();
         for (final Object each : getMetadataItems(payload)) {
@@ -209,12 +209,12 @@ class ResourceHandlerTest {
         }
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     private List<Object> getMetadataItems(final Map<String, Object> payload) {
         return (List<Object>) payload.get("items");
     }
-
+    
     private static Stream<HandlerCase> handlerCases() {
         return Stream.of(
                 new HandlerCase("server capabilities", new ServerCapabilitiesHandler(), "shardingsphere://capabilities",
@@ -304,27 +304,27 @@ class ResourceHandlerTest {
                         "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                         "shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes/order_idx", HandlerResultType.METADATA, "", List.of("order_idx")));
     }
-
+    
     private static List<?> singletonOrEmpty(final Optional<?> metadata) {
         return metadata.map(Collections::singletonList).orElse(Collections.emptyList());
     }
-
+    
     private static final class HandlerCase {
-
+        
         private final String description;
-
+        
         private final MCPResourceHandler<?> handler;
-
+        
         private final String expectedUriPattern;
-
+        
         private final String resourceUri;
-
+        
         private final HandlerResultType expectedType;
-
+        
         private final String expectedDatabase;
-
+        
         private final List<String> expectedObjectNames;
-
+        
         private HandlerCase(final String description, final MCPResourceHandler<?> handler, final String expectedUriPattern, final String resourceUri,
                             final HandlerResultType expectedType, final String expectedDatabase, final List<String> expectedObjectNames) {
             this.description = description;
@@ -335,43 +335,43 @@ class ResourceHandlerTest {
             this.expectedDatabase = expectedDatabase;
             this.expectedObjectNames = expectedObjectNames;
         }
-
+        
         private MCPResourceHandler<?> getHandler() {
             return handler;
         }
-
+        
         private String getExpectedUriPattern() {
             return expectedUriPattern;
         }
-
+        
         private String getResourceUri() {
             return resourceUri;
         }
-
+        
         private HandlerResultType getExpectedType() {
             return expectedType;
         }
-
+        
         private String getExpectedDatabase() {
             return expectedDatabase;
         }
-
+        
         private List<String> getExpectedObjectNames() {
             return expectedObjectNames;
         }
-
+        
         @Override
         public String toString() {
             return description;
         }
     }
-
+    
     private enum HandlerResultType {
-
+        
         SERVICE_CAPABILITY,
-
+        
         DATABASE_CAPABILITY,
-
+        
         METADATA
     }
 }

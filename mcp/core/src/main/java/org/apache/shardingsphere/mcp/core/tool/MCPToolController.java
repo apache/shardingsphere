@@ -32,9 +32,9 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 public final class MCPToolController {
-
+    
     private final MCPRuntimeContext runtimeContext;
-
+    
     /**
      * Handle tool call.
      *

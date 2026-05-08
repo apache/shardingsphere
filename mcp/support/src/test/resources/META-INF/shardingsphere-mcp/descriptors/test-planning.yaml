@@ -142,15 +142,24 @@ tools:
           items:
             type: object
             properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
               action_kind:
                 type: string
                 description: "Action type such as call_tool, ask_user, read_resource, or stop."
               reason:
                 type: string
                 description: "Why the model should take this action."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
       examples:
         - response_mode: planning
           plan_id: encrypt-rule-20260505-001
@@ -160,7 +169,10 @@ tools:
           resources_to_read: []
           review_focus: {}
           next_actions:
-            - action_kind: call_tool
+            - order: 1
+              type: tool_call
+              title: Call apply_workflow
+              action_kind: call_tool
               reason: Preview generated workflow artifacts.
               requires_user_approval: false
     annotations:

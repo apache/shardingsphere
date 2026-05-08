@@ -33,12 +33,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class MCPDatabaseCapabilityResponseTest {
-
+    
     @Test
     void assertToPayload() {
         MCPDatabaseCapability actualCapability = new MCPDatabaseCapability("logic_db", "8.0.32", TypedSPILoader.getService(MCPDatabaseCapabilityOption.class, "MySQL"));
         Map<String, Object> actual = new MCPDatabaseCapabilityResponse(actualCapability).toPayload();
         assertThat(actual, is(Map.ofEntries(
+                Map.entry("response_mode", "detail"),
                 Map.entry("database", "logic_db"),
                 Map.entry("databaseType", "MySQL"),
                 Map.entry("supportedObjectTypes", EnumSet.of(SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,

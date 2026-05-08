@@ -35,23 +35,23 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
  * Generic workflow validation tool handler.
  */
 public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
-
+    
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
-
+    
     public WorkflowValidationToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
         this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
     }
-
+    
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {
         return MCPWorkflowHandlerContext.class;
     }
-
+    
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return WorkflowToolDescriptors.createValidation();
     }
-
+    
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -61,7 +61,7 @@ public final class WorkflowValidationToolHandler implements MCPToolHandler<MCPWo
         return new MCPMapResponse(workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getValidationHandler().validate(workflowContext.getWorkflowSessionContext(),
                 databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(), databaseContext.getExecutionFacade(), toolCall.getSessionId(), snapshot));
     }
-
+    
     private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
         if (null != snapshot.getWorkflowKind()) {
             return snapshot.getWorkflowKind();

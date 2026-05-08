@@ -27,7 +27,7 @@ import java.util.Locale;
  * Encrypt workflow intent resolver.
  */
 final class EncryptWorkflowIntentResolver {
-
+    
     ClarifiedIntent resolve(final EncryptWorkflowRequest request) {
         ClarifiedIntent result = new ClarifiedIntent();
         result.setOperationType(WorkflowIntentResolverSupport.resolveOperationType(request, result));
@@ -38,7 +38,7 @@ final class EncryptWorkflowIntentResolver {
         result.setReasoningNotes(WorkflowIntentResolverSupport.summarizeReasoning(result));
         return result;
     }
-
+    
     private Boolean resolveRequiresDecrypt(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
@@ -56,7 +56,7 @@ final class EncryptWorkflowIntentResolver {
         addClarificationMessage(clarifiedIntent, "requires_decrypt", "Do you need reversible decryption?");
         return null;
     }
-
+    
     private Boolean resolveRequiresEqualityFilter(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
@@ -74,7 +74,7 @@ final class EncryptWorkflowIntentResolver {
         addClarificationMessage(clarifiedIntent, "requires_equality_filter", "Do you need equality query?");
         return null;
     }
-
+    
     private Boolean resolveRequiresLikeQuery(final EncryptWorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
         if (isDropWorkflow(clarifiedIntent)) {
             return null;
@@ -92,16 +92,16 @@ final class EncryptWorkflowIntentResolver {
         addClarificationMessage(clarifiedIntent, "requires_like_query", "Do you need LIKE query?");
         return null;
     }
-
+    
     private boolean isDropWorkflow(final ClarifiedIntent clarifiedIntent) {
         return "drop".equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
-
+    
     private Boolean inferOption(final ClarifiedIntent clarifiedIntent, final String fieldName, final boolean value) {
         clarifiedIntent.getInferredValues().put(fieldName, value);
         return value;
     }
-
+    
     private boolean containsAny(final String value, final String... candidates) {
         for (String each : candidates) {
             if (value.contains(each)) {
@@ -110,7 +110,7 @@ final class EncryptWorkflowIntentResolver {
         }
         return false;
     }
-
+    
     private void addClarificationMessage(final ClarifiedIntent clarifiedIntent, final String unresolvedField, final String message) {
         if (!clarifiedIntent.getUnresolvedFields().contains(unresolvedField)) {
             clarifiedIntent.getUnresolvedFields().add(unresolvedField);

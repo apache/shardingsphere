@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowPlanPayloadBuilderTest {
-
+    
     @Test
     void assertBuildIncludesIntentInference() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -94,7 +94,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
     }
-
+    
     @Test
     void assertBuildUsesPublicAlgorithmPropertyInputs() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -119,7 +119,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(2)).get("field"), is("like_query_algorithm_properties.token"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(0)).get("secret"));
     }
-
+    
     @Test
     void assertBuildIncludesMaskResources() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -149,7 +149,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("preview"));
         assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
-
+    
     @Test
     void assertBuildRecommendsPlanningToolAfterFailure() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -167,7 +167,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualNextAction.get("action_kind"), is("call_tool"));
         assertThat(actualNextAction.get("target_tool"), is("plan_encrypt_rule"));
     }
-
+    
     private List<String> extractResourceUris(final List<?> resources) {
         return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
     }

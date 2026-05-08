@@ -45,24 +45,24 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceHandlerRegistry {
-
+    
     private static final Map<MCPUriPattern, MCPResourceHandler<?>> REGISTERED_RESOURCES;
-
+    
     private static final List<String> SUPPORTED_RESOURCES;
-
+    
     private static final List<MCPResourceDescriptor> SUPPORTED_RESOURCE_DESCRIPTORS;
-
+    
     static {
         REGISTERED_RESOURCES = createRegisteredResources();
         validateRegisteredResources();
         SUPPORTED_RESOURCES = REGISTERED_RESOURCES.keySet().stream().map(MCPUriPattern::getPattern).collect(Collectors.toList());
         SUPPORTED_RESOURCE_DESCRIPTORS = REGISTERED_RESOURCES.values().stream().map(MCPResourceHandler::getResourceDescriptor).collect(Collectors.toList());
     }
-
+    
     private static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources() {
         return createRegisteredResources(MCPHandlerLoader.loadResourceHandlers());
     }
-
+    
     static Map<MCPUriPattern, MCPResourceHandler<?>> createRegisteredResources(final Collection<MCPResourceHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No resource handlers are registered."));
         Map<MCPUriPattern, MCPResourceHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
@@ -77,7 +77,7 @@ public final class ResourceHandlerRegistry {
         }
         return result;
     }
-
+    
     private static void validateRegisteredResources() {
         Map<String, Class<?>> registeredPatterns = new HashMap<>(REGISTERED_RESOURCES.size(), 1F);
         for (Entry<MCPUriPattern, MCPResourceHandler<?>> entry : REGISTERED_RESOURCES.entrySet()) {
@@ -98,7 +98,7 @@ public final class ResourceHandlerRegistry {
             }
         }
     }
-
+    
     /**
      * Get registered resources.
      *
@@ -107,7 +107,7 @@ public final class ResourceHandlerRegistry {
     static Map<MCPUriPattern, MCPResourceHandler<?>> getRegisteredResources() {
         return REGISTERED_RESOURCES;
     }
-
+    
     /**
      * Dispatch resource URI to registered resource.
      *
@@ -124,11 +124,11 @@ public final class ResourceHandlerRegistry {
         }
         return Optional.empty();
     }
-
+    
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPResourceHandler<T> resourceHandler, final MCPUriVariables uriVariables) {
         return resourceHandler.handle(MCPHandlerContexts.resolve(requestScope, resourceHandler.getContextType(), resourceHandler.getClass()), uriVariables);
     }
-
+    
     /**
      * Get supported resources.
      *
@@ -137,7 +137,7 @@ public final class ResourceHandlerRegistry {
     public static List<String> getSupportedResources() {
         return SUPPORTED_RESOURCES;
     }
-
+    
     /**
      * Get supported resource descriptors.
      *

@@ -25,6 +25,21 @@
           "description": "Launch the container in stdio mode for MCP clients."
         }
       ]
+    },
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/apache/shardingsphere-mcp:5.5.4-SNAPSHOT",
+      "version": "5.5.4-SNAPSHOT",
+      "transport": {
+        "type": "streamable-http"
+      },
+      "environmentVariables": [
+        {
+          "name": "SHARDINGSPHERE_MCP_TRANSPORT",
+          "value": "http",
+          "description": "Launch the container in Streamable HTTP mode for local or remote MCP clients."
+        }
+      ]
     }
   ]
 }

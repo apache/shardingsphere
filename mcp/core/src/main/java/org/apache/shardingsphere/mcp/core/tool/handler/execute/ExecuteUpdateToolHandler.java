@@ -29,6 +29,7 @@ import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPSta
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
 import java.util.LinkedHashMap;
@@ -40,25 +41,25 @@ import java.util.Map;
  * Execute side-effecting SQL tool handler.
  */
 public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
-
+    
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("execute_update");
-
+    
     private static final String EXECUTION_MODE_EXECUTE = "execute";
-
+    
     private static final String EXECUTION_MODE_PREVIEW = "preview";
-
+    
     private static final String RESULT_KIND_PREVIEW = "preview";
-
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-
+    
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return TOOL_DESCRIPTOR;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -71,7 +72,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, "execute_update"))
                 .withExecutionMode(EXECUTION_MODE_EXECUTE);
     }
-
+    
     private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult.getStatementClass())) {
@@ -80,7 +81,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         }
         return classificationResult;
     }
-
+    
     private String resolveExecutionMode(final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument("execution_mode");
         if (result.isEmpty()) {
@@ -91,10 +92,10 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         }
         throw new MCPInvalidRequestException("execution_mode must be either `execute` or `preview`.");
     }
-
+    
     private MCPResponse createPreviewResponse(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
-        result.put("response_mode", EXECUTION_MODE_PREVIEW);
+        result.put("response_mode", MCPResponseMode.PREVIEW);
         result.put("result_kind", RESULT_KIND_PREVIEW);
         result.put("execution_mode", EXECUTION_MODE_PREVIEW);
         result.put("preview_semantics", "classification_only");
@@ -122,17 +123,17 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
                         suggestedArguments, true), 1)));
         return new MCPMapResponse(result);
     }
-
+    
     private String createApprovalSummary(final ClassificationResult classificationResult) {
         return String.format("Previewed %s statement with side-effect scope %s. It has not been executed.", classificationResult.getStatementType(),
                 String.join(", ", createSideEffectScope(classificationResult.getStatementClass())));
     }
-
+    
     private String createApprovalQuestion(final ClassificationResult classificationResult) {
         return String.format("Do you approve executing this %s statement with side-effect scope %s?", classificationResult.getStatementType(),
                 String.join(", ", createSideEffectScope(classificationResult.getStatementClass())));
     }
-
+    
     private List<String> createSideEffectScope(final SupportedMCPStatement statementClass) {
         return switch (statementClass) {
             case DML -> List.of("physical-data");
@@ -142,7 +143,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
             default -> List.of("unknown-side-effect");
         };
     }
-
+    
     private Map<String, Object> createSuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> arguments = new LinkedHashMap<>(6, 1F);
         arguments.put("database", toolArguments.getStringArgument("database"));
@@ -154,7 +155,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         arguments.put("execution_mode", EXECUTION_MODE_EXECUTE);
         return arguments;
     }
-
+    
     private Map<String, Object> createArgumentProvenance(final Map<String, Object> suggestedArguments) {
         Map<String, Object> result = new LinkedHashMap<>(suggestedArguments.size(), 1F);
         if (suggestedArguments.containsKey("database")) {
@@ -163,11 +164,11 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         if (suggestedArguments.containsKey("schema")) {
             result.put("schema", "user_provided");
         }
-        result.put("sql", "server_normalized");
-        result.put("execution_mode", "server_suggested");
+        result.put("sql", "server_generated");
+        result.put("execution_mode", "server_defaulted");
         return result;
     }
-
+    
     private Map<String, Object> createQuerySuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));
@@ -175,7 +176,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("sql", classificationResult.getNormalizedSql());
         return result;
     }
-
+    
     private List<Map<String, Object>> createResourcesToRead(final MCPToolArguments toolArguments) {
         String database = toolArguments.getStringArgument("database");
         if (database.isEmpty()) {
@@ -184,5 +185,5 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         return List.of(MCPResourceHintUtils.create(String.format("shardingsphere://databases/%s/capabilities", MCPUriTemplateUtils.encodePathSegment(database)), "logical-database-capability",
                 "read_first", "Read logical database capabilities before approving execution.", "resources_to_read"));
     }
-
+    
 }

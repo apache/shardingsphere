@@ -74,11 +74,26 @@ public final class WorkflowArtifactMaskUtils {
     
     private static Map<String, Object> createRedactionPayload(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {
         List<String> redactedProperties = collectSecretPropertyNames(propertySource, propertyRequirements).stream().toList();
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("applied", !redactedProperties.isEmpty());
         result.put("marker", "******");
         result.put("redacted_properties", redactedProperties);
+        result.put("redacted_count", redactedProperties.size());
+        result.put("redaction_summary", createRedactionSummary(redactedProperties));
         return result;
+    }
+    
+    private static Map<String, Object> createRedactionSummary(final List<String> redactedProperties) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("categories", redactedProperties.stream().map(WorkflowArtifactMaskUtils::createRedactedCategory).distinct().toList());
+        result.put("marker", "******");
+        result.put("redacted_count", redactedProperties.size());
+        return result;
+    }
+    
+    private static String createRedactedCategory(final String redactedProperty) {
+        int separatorIndex = redactedProperty.indexOf('.');
+        return 0 > separatorIndex ? redactedProperty : redactedProperty.substring(separatorIndex + 1);
     }
     
     private static Set<String> collectSecretValues(final WorkflowPropertySource propertySource, final List<AlgorithmPropertyRequirement> propertyRequirements) {

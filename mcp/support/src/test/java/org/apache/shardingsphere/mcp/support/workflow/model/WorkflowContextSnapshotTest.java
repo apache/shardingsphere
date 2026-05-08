@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowContextSnapshotTest {
-
+    
     @Test
     void assertCopyCreatesDetachedSnapshot() {
         WorkflowContextSnapshot originalSnapshot = createSnapshot();
@@ -55,7 +55,7 @@ class WorkflowContextSnapshotTest {
         assertThat(actualSnapshot.getIssues().get(0).getDetails().get("missing_fields"), is(List.of("column")));
         assertThat(actualSnapshot.getValidationReport().getMismatches().get(0).get("layers"), is(List.of("ddl")));
     }
-
+    
     @Test
     void assertClearPlanningStateRemovesTransientArtifacts() {
         WorkflowContextSnapshot snapshot = createSnapshot();
@@ -71,7 +71,7 @@ class WorkflowContextSnapshotTest {
         assertThat(snapshot.getFeatureData(), is(featureData));
         assertNull(snapshot.getValidationReport());
     }
-
+    
     private WorkflowContextSnapshot createSnapshot() {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId("plan-1");
@@ -109,21 +109,21 @@ class WorkflowContextSnapshotTest {
         result.setValidationReport(validationReport);
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     private List<String> getStringList(final Map<String, Object> source, final String key) {
         return (List<String>) source.get(key);
     }
-
+    
     private static final class StubWorkflowFeatureData implements WorkflowFeatureData {
-
+        
         private final Map<String, String> algorithmProperties = new LinkedHashMap<>(4, 1F);
-
+        
         @Override
         public Map<String, String> getAlgorithmProperties(final String algorithmRole) {
             return "primary".equals(algorithmRole) ? algorithmProperties : Collections.emptyMap();
         }
-
+        
         @Override
         public WorkflowFeatureData copy() {
             StubWorkflowFeatureData result = new StubWorkflowFeatureData();

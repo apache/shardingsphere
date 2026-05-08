@@ -34,19 +34,19 @@ import java.util.Set;
  * Handler for server capabilities resource URI.
  */
 public final class ServerCapabilitiesHandler implements MCPResourceHandler<MCPServiceHandlerContext> {
-
+    
     private static final String URI_PATTERN = "shardingsphere://capabilities";
-
+    
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {
         return MCPServiceHandlerContext.class;
     }
-
+    
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
         return MCPDescriptorRegistry.getRequiredResourceDescriptor(URI_PATTERN);
     }
-
+    
     @Override
     public MCPResponse handle(final MCPServiceHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         return new MCPMapResponse(MCPDescriptorRegistry.createCapabilityPayload(

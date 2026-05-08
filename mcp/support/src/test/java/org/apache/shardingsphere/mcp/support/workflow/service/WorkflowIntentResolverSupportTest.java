@@ -76,8 +76,12 @@ class WorkflowIntentResolverSupportTest {
         chineseIdCardRequest.setNaturalLanguageIntent("脱敏身份证");
         WorkflowRequest chineseEmailRequest = new WorkflowRequest();
         chineseEmailRequest.setNaturalLanguageIntent("保护邮箱");
+        WorkflowRequest bankCardRequest = new WorkflowRequest();
+        bankCardRequest.setNaturalLanguageIntent("脱敏银行卡号");
+        WorkflowRequest addressRequest = new WorkflowRequest();
+        addressRequest.setColumn("contact_address");
         WorkflowRequest defaultRequest = new WorkflowRequest();
-        defaultRequest.setColumn("customer_name");
+        defaultRequest.setColumn("customer_code");
         return Stream.of(
                 Arguments.of("explicit field semantics", explicitRequest, "email"),
                 Arguments.of("phone heuristic", phoneRequest, "phone"),
@@ -85,6 +89,8 @@ class WorkflowIntentResolverSupportTest {
                 Arguments.of("id card heuristic", idCardRequest, "id_card"),
                 Arguments.of("chinese id card heuristic", chineseIdCardRequest, "id_card"),
                 Arguments.of("chinese email heuristic", chineseEmailRequest, "email"),
-                Arguments.of("fallback to column", defaultRequest, "customer_name"));
+                Arguments.of("bank card heuristic", bankCardRequest, "bank_card"),
+                Arguments.of("address heuristic", addressRequest, "address"),
+                Arguments.of("fallback to column", defaultRequest, "customer_code"));
     }
 }

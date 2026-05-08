@@ -312,19 +312,37 @@ tools:
           description: "Manual-only confirmation contract to satisfy before validate_workflow is called."
         argument_provenance:
           type: object
-          description: "Source of reusable apply arguments, such as server_generated_current_session or server_suggested."
+          description: "Source of reusable apply arguments, such as server_generated or server_defaulted."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations after applying or exporting workflow artifacts."
           items:
             type: object
             properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
               action_kind:
                 type: string
-                description: "Action type such as call_tool, ask_user, or stop."
+                description: "Backward-compatible action type such as call_tool, ask_user, or stop."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
               target_tool:
                 type: string
                 description: "Tool to call when action_kind is call_tool."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take the action."
@@ -334,12 +352,6 @@ tools:
               required_inputs:
                 type: array
                 description: "User inputs required when action_kind is ask_user."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
-              order:
-                type: integer
-                description: "1-based action order when multiple actions are returned."
               depends_on:
                 type: array
                 description: "Action order values that must complete before this action."
@@ -358,7 +370,11 @@ tools:
           skipped_artifacts: []
           manual_artifacts: []
           next_actions:
-            - action_kind: ask_user
+            - order: 1
+              type: ask_user
+              title: Ask user for approval
+              action_kind: ask_user
+              question: Ask the user to approve the previewed artifacts before execution.
               reason: Ask the user to approve the previewed artifacts before execution.
               requires_user_approval: true
           requires_user_approval: true
@@ -481,12 +497,30 @@ tools:
           items:
             type: object
             properties:
+              order:
+                type: integer
+                description: "1-based action order."
+              type:
+                type: string
+                description: "Canonical action type such as tool_call, resource_read, ask_user, completion, or terminal."
+              title:
+                type: string
+                description: "Short model-facing action title."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
               action_kind:
                 type: string
-                description: "Action type such as call_tool, ask_user, or stop."
+                description: "Backward-compatible action type such as call_tool, ask_user, or stop."
+              tool_name:
+                type: string
+                description: "Canonical tool name when type is tool_call."
               target_tool:
                 type: string
                 description: "Tool to call when action_kind is call_tool."
+              arguments:
+                type: object
+                description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take the action."
@@ -496,12 +530,6 @@ tools:
               required_inputs:
                 type: array
                 description: "User inputs required when action_kind is ask_user."
-              requires_user_approval:
-                type: boolean
-                description: "Whether the next action requires user approval."
-              order:
-                type: integer
-                description: "1-based action order when multiple actions are returned."
               depends_on:
                 type: array
                 description: "Action order values that must complete before this action."
@@ -516,7 +544,10 @@ tools:
           mismatches: []
           recommended_recovery: ""
           next_actions:
-            - action_kind: stop
+            - order: 1
+              type: terminal
+              title: Stop
+              action_kind: stop
               reason: Validation passed. Report the confirmed workflow result to the user.
               requires_user_approval: false
           requires_user_approval: false

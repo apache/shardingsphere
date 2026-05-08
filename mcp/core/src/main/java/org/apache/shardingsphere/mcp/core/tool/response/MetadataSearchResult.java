@@ -29,14 +29,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Getter
 public final class MetadataSearchResult {
-
+    
     private final List<MetadataSearchHit> items;
-
+    
     private final String nextPageToken;
-
+    
     private final Map<String, Object> searchContext;
-
+    
     private final int totalMatchCount;
-
+    
     private final List<MetadataSearchHit> ambiguityCandidates;
 }

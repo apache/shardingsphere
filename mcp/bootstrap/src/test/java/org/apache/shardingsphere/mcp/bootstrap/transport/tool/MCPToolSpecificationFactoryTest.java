@@ -56,7 +56,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MCPToolSpecificationFactoryTest {
-
+    
     @Test
     void assertCreateToolSpecifications() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
@@ -81,7 +81,7 @@ class MCPToolSpecificationFactoryTest {
             assertNotNull(actual.get(0).callHandler());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleNullArguments() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
@@ -101,7 +101,7 @@ class MCPToolSpecificationFactoryTest {
             assertFalse(actual.isError());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleErrorResponse() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
@@ -114,11 +114,15 @@ class MCPToolSpecificationFactoryTest {
             McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
             when(exchange.sessionId()).thenReturn("session-id");
             CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("search_metadata", Map.of("query", "foo_query")));
-            assertThat(actual.structuredContent(), is(Map.of("error_code", "invalid_request", "message", "")));
+            @SuppressWarnings("unchecked")
+            Map<String, Object> actualPayload = (Map<String, Object>) actual.structuredContent();
+            assertThat(actualPayload.get("response_mode"), is("recovery"));
+            assertThat(actualPayload.get("error_code"), is("invalid_request"));
+            assertThat(actualPayload.get("message"), is(""));
             assertTrue(actual.isError());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsHandleInteractiveElicitation() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
@@ -139,7 +143,7 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange).createElicitation(any());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsFallbackWithoutElicitation() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
@@ -158,17 +162,17 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange, never()).createElicitation(any());
         }
     }
-
+    
     @Test
     void assertCreateToolSpecificationsFallbackWhenElicitationDeclined() {
         assertCreateToolSpecificationsFallbackWhenElicitationAction(McpSchema.ElicitResult.Action.DECLINE);
     }
-
+    
     @Test
     void assertCreateToolSpecificationsFallbackWhenElicitationCancelled() {
         assertCreateToolSpecificationsFallbackWhenElicitationAction(McpSchema.ElicitResult.Action.CANCEL);
     }
-
+    
     private void assertCreateToolSpecificationsFallbackWhenElicitationAction(final McpSchema.ElicitResult.Action action) {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
@@ -185,7 +189,7 @@ class MCPToolSpecificationFactoryTest {
             verify(exchange).createElicitation(any());
         }
     }
-
+    
     private McpSyncServerExchange createElicitationExchange(final McpSchema.ElicitResult elicitationResult) {
         McpSyncServerExchange result = mock(McpSyncServerExchange.class);
         when(result.sessionId()).thenReturn("session-id");
@@ -193,7 +197,7 @@ class MCPToolSpecificationFactoryTest {
         when(result.createElicitation(any())).thenReturn(elicitationResult);
         return result;
     }
-
+    
     private Map<String, Object> createClarifyingPayload() {
         return Map.of(
                 "plan_id", "plan-1",
@@ -202,7 +206,7 @@ class MCPToolSpecificationFactoryTest {
                         Map.of("field", "primary_algorithm_properties.aes-key-value", "input_type", "secret", "secret", true, "display_message", "Provide AES key."),
                         Map.of("field", "requires_like_query", "input_type", "boolean", "secret", false, "display_message", "Enable LIKE query?")));
     }
-
+    
     private MCPToolDescriptor createToolDescriptor(final String toolName) {
         return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", List.of(
                 new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),

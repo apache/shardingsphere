@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
 
 class MaskMCPHandlerProviderTest {
-
+    
     @Test
     void assertGetResourceHandlers() {
         Collection<MCPResourceHandler<?>> actual = new MaskMCPHandlerProvider().getResourceHandlers();
@@ -40,13 +40,13 @@ class MaskMCPHandlerProviderTest {
                 "shardingsphere://features/mask/databases/{database}/rules",
                 "shardingsphere://features/mask/databases/{database}/tables/{table}/rules")));
     }
-
+    
     @Test
     void assertGetToolHandlers() {
         Collection<MCPToolHandler<?>> actual = new MaskMCPHandlerProvider().getToolHandlers();
         assertThat(actual.stream().map(each -> each.getToolDescriptor().getName()).toList(), is(List.of("plan_mask_rule")));
     }
-
+    
     @Test
     void assertGetWorkflowDefinitions() {
         WorkflowRuntimeDefinition actual = new MaskMCPHandlerProvider().getWorkflowDefinitions().iterator().next();

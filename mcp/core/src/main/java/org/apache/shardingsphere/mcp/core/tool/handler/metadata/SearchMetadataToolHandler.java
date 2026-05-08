@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 
 import java.util.LinkedHashMap;
@@ -44,23 +45,23 @@ import java.util.Set;
  * Handler for search-metadata tool.
  */
 public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
-
+    
     private static final Set<SupportedMCPMetadataObjectType> SUPPORTED_OBJECT_TYPES = Set.of(
             SupportedMCPMetadataObjectType.DATABASE, SupportedMCPMetadataObjectType.SCHEMA, SupportedMCPMetadataObjectType.TABLE,
             SupportedMCPMetadataObjectType.VIEW, SupportedMCPMetadataObjectType.COLUMN, SupportedMCPMetadataObjectType.INDEX, SupportedMCPMetadataObjectType.SEQUENCE);
-
+    
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("search_metadata");
-
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-
+    
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return TOOL_DESCRIPTOR;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -70,9 +71,9 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
                 resolvePageSize(toolArguments),
                 toolArguments.getStringArgument("page_token"));
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
-        return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken(), createSearchPayloadMetadata(request, searchResult));
+        return new MCPItemsResponse(searchResult.getItems(), searchResult.getNextPageToken(), createSearchPayloadMetadata(request, searchResult), MCPResponseMode.SEARCH);
     }
-
+    
     private int resolvePageSize(final MCPToolArguments toolArguments) {
         try {
             return toolArguments.getIntegerArgument("page_size", SearchMetadataToolService.DEFAULT_PAGE_SIZE, 1, SearchMetadataToolService.MAX_PAGE_SIZE);
@@ -81,7 +82,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
                     SearchMetadataToolService.DEFAULT_PAGE_SIZE, ex);
         }
     }
-
+    
     private Map<String, Object> createSearchPayloadMetadata(final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("search_context", searchResult.getSearchContext());
@@ -101,7 +102,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         }
         return result;
     }
-
+    
     private List<Map<String, Object>> createResultNextActions(final MetadataSearchRequest request, final MetadataSearchResult searchResult, final List<String> duplicatedNames) {
         List<Map<String, Object>> result = new LinkedList<>();
         if (!searchResult.getNextPageToken().isEmpty()) {
@@ -117,11 +118,11 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         }
         return addOrder(result);
     }
-
+    
     private boolean isBroadSearchGuarded(final MetadataSearchResult searchResult) {
         return Boolean.TRUE.equals(searchResult.getSearchContext().get("broad_search_guarded"));
     }
-
+    
     private List<Map<String, Object>> addOrder(final List<Map<String, Object>> actions) {
         List<Map<String, Object>> result = new LinkedList<>();
         int order = 1;
@@ -132,7 +133,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         }
         return result;
     }
-
+    
     private Map<String, Object> createNextPageArguments(final MetadataSearchRequest request, final String nextPageToken) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         putIfNotEmpty(result, "database", request.getDatabase());
@@ -145,13 +146,13 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         result.put("page_token", nextPageToken);
         return result;
     }
-
+    
     private void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
         if (!value.isEmpty()) {
             target.put(key, value);
         }
     }
-
+    
     private List<String> findDuplicatedNames(final List<MetadataSearchHit> items) {
         Set<String> observedNames = new LinkedHashSet<>();
         Set<String> duplicatedNames = new LinkedHashSet<>();
@@ -162,7 +163,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         }
         return new LinkedList<>(duplicatedNames);
     }
-
+    
     private Map<String, Object> createAmbiguityState(final List<MetadataSearchHit> items, final List<String> duplicatedNames) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("state", "duplicate_names");
@@ -174,7 +175,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         result.put("reason", "Multiple metadata hits share the same name; choose an explicit database, schema, or object type before reading a specific resource.");
         return result;
     }
-
+    
     private List<String> createAmbiguousDimensions(final List<MetadataSearchHit> items, final List<String> duplicatedNames) {
         Set<String> databases = new LinkedHashSet<>();
         Set<String> schemas = new LinkedHashSet<>();
@@ -193,19 +194,19 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         addDimensionIfAmbiguous(result, "object_type", objectTypes);
         return result;
     }
-
+    
     private void addIfNotEmpty(final Set<String> values, final String value) {
         if (null != value && !value.isEmpty()) {
             values.add(value);
         }
     }
-
+    
     private void addDimensionIfAmbiguous(final List<String> result, final String dimension, final Set<String> values) {
         if (1 < values.size()) {
             result.add(dimension);
         }
     }
-
+    
     private int countDuplicatedCandidates(final List<MetadataSearchHit> items, final List<String> duplicatedNames) {
         int result = 0;
         for (MetadataSearchHit each : items) {
@@ -215,21 +216,22 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         }
         return result;
     }
-
+    
     private Map<String, Object> createEmptyState(final MetadataSearchRequest request) {
-        final Map<String, Object> result = new LinkedHashMap<>(2, 1F);
+        final Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("state", request.getQuery().isEmpty() ? "no_items" : "no_match");
+        result.put("category", request.getQuery().isEmpty() ? "empty_scope" : "not_found");
         result.put("reason", request.getQuery().isEmpty() ? "No metadata is available in the requested scope." : "No metadata matched the query in the requested scope.");
         return result;
     }
-
+    
     private Map<String, Object> createEmptySearchNextAction(final MetadataSearchRequest request) {
         if (!request.getQuery().isEmpty() || !request.getSchema().isEmpty()) {
             return MCPNextActionUtils.callTool("search_metadata", "Retry search_metadata with a broader scope.", createBroadenedSearchArguments(request), false);
         }
         return MCPNextActionUtils.readResource("shardingsphere://databases", "Read configured databases before choosing a narrower metadata search.");
     }
-
+    
     private Map<String, Object> createBroadenedSearchArguments(final MetadataSearchRequest request) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         if (!request.getDatabase().isEmpty()) {

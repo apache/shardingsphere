@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDescriptorCatalogLoaderTest {
-
+    
     @Test
     void assertLoadValidatesDescriptorQuality() {
         MCPDescriptorCatalog actual = MCPDescriptorCatalogLoader.load();
@@ -48,7 +48,7 @@ class MCPDescriptorCatalogLoaderTest {
         assertResourceDescriptor(actual);
         assertNoLegacyRecommendationFields(actual);
     }
-
+    
     @Test
     void assertLoadValidatesEnumFields() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
@@ -56,26 +56,26 @@ class MCPDescriptorCatalogLoaderTest {
         MCPToolFieldDefinition actualExecutionMode = findField(actual, "execution_mode");
         assertThat(actualExecutionMode.getValueDefinition().getEnumValues(), is(List.of("preview", "review-then-execute", "manual-only")));
     }
-
+    
     private void assertOutputProperties(final MCPDescriptorCatalog catalog, final String toolName, final Set<String> expectedProperties) {
         Map<?, ?> actualProperties = (Map<?, ?>) findTool(catalog, toolName).getOutputSchema().get("properties");
         for (String each : expectedProperties) {
             assertTrue(actualProperties.containsKey(each));
         }
     }
-
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
     }
-
+    
     private MCPResourceDescriptor findResource(final MCPDescriptorCatalog catalog, final String uriTemplate) {
         return catalog.getResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
-
+    
     private MCPToolFieldDefinition findField(final MCPToolDescriptor toolDescriptor, final String fieldName) {
         return toolDescriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst().orElseThrow();
     }
-
+    
     private void assertResourceDescriptor(final MCPDescriptorCatalog catalog) {
         MCPResourceDescriptor actual = findResource(catalog, "shardingsphere://workflows/{plan_id}");
         assertThat(actual.getResourceKind(), is("detail"));
@@ -84,13 +84,13 @@ class MCPDescriptorCatalogLoaderTest {
         assertTrue(actual.getMeta().isEmpty());
         assertThat(findResource(catalog, "shardingsphere://legacy/resource").getResourceKind(), is("detail"));
     }
-
+    
     private void assertNoLegacyRecommendationFields(final MCPDescriptorCatalog catalog) {
         for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
             assertFalse(containsLegacyRecommendationField(each.getOutputSchema()));
         }
     }
-
+    
     private boolean containsLegacyRecommendationField(final Object value) {
         if (value instanceof Map) {
             return containsLegacyRecommendationFieldMap((Map<?, ?>) value);
@@ -104,7 +104,7 @@ class MCPDescriptorCatalogLoaderTest {
         }
         return false;
     }
-
+    
     private boolean containsLegacyRecommendationFieldMap(final Map<?, ?> value) {
         if (value.containsKey("recommended_next_tool") || value.containsKey("suggested_next_tool") || value.containsKey("suggested_next_tools")) {
             return true;
