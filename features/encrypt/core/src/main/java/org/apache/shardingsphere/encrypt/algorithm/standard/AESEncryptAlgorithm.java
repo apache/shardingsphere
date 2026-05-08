@@ -53,9 +53,8 @@ public final class AESEncryptAlgorithm implements EncryptAlgorithm {
     }
     
     @Override
-    public String encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
-        Object result = cryptographicAlgorithm.encrypt(plainValue);
-        return null == result ? null : String.valueOf(result);
+    public Object encrypt(final Object plainValue, final AlgorithmSQLContext algorithmSQLContext) {
+        return cryptographicAlgorithm.encrypt(plainValue);
     }
     
     @Override

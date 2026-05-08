@@ -45,7 +45,7 @@ public final class AESCryptographicAlgorithm implements CryptographicAlgorithm {
     @HighFrequencyInvocation
     @SneakyThrows(GeneralSecurityException.class)
     @Override
-    public String encrypt(final Object plainValue) {
+    public Object encrypt(final Object plainValue) {
         if (null == plainValue) {
             return null;
         }
