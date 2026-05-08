@@ -48,7 +48,7 @@ class SessionManagedStdioTransportProviderTest {
     void assertProtocolVersions() {
         SessionManagedStdioTransportProvider provider = new SessionManagedStdioTransportProvider(new MCPSessionManager(Collections.emptyMap()), MCPTransportJsonMapperFactory.create());
         List<String> actual = provider.protocolVersions();
-        assertThat(actual, is(List.of(MCPTransportConstants.PROTOCOL_VERSION)));
+        assertThat(actual, is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
     
     @Test

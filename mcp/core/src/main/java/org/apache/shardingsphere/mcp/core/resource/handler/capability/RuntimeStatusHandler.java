@@ -56,22 +56,52 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
+        boolean hasConfiguredDatabase = !databases.isEmpty();
         Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
-        result.put("server_status", "ready");
-        result.put("status", "available");
+        result.put("server_status", hasConfiguredDatabase ? "ready" : "configuration_required");
+        result.put("status", hasConfiguredDatabase ? "available" : "configuration_required");
         result.put("transport", handlerContext.getActiveTransport());
         result.put("active_transport", handlerContext.getActiveTransport());
         result.put("configured_database_count", databases.size());
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
-        result.put("readiness", Map.of("ready", true, "token_safe", true, "resource_uri", URI_PATTERN));
+        result.put("readiness", createReadiness(hasConfiguredDatabase));
         result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
         result.put("capability_fingerprint", MCPDescriptorRegistry.getDescriptorCatalogFingerprint());
-        result.put("resources_to_read", List.of(
-                MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first", "Read full MCP capabilities before choosing tools.", "resources_to_read"),
-                MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first", "Read logical databases before choosing a database scope.", "resources_to_read")));
-        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read the full capability catalog before choosing tools.")));
+        result.put("resources_to_read", createResourcesToRead(hasConfiguredDatabase));
+        result.put("next_actions", createNextActions(hasConfiguredDatabase));
         return new MCPMapResponse(result);
+    }
+    
+    private Map<String, Object> createReadiness(final boolean hasConfiguredDatabase) {
+        Map<String, Object> result = new LinkedHashMap<>(hasConfiguredDatabase ? 3 : 4, 1F);
+        result.put("ready", hasConfiguredDatabase);
+        result.put("token_safe", true);
+        result.put("resource_uri", URI_PATTERN);
+        if (hasConfiguredDatabase) {
+            return result;
+        }
+        result.put("reason", "No runtime databases are configured.");
+        return result;
+    }
+    
+    private List<Map<String, Object>> createResourcesToRead(final boolean hasConfiguredDatabase) {
+        Map<String, Object> capabilitiesResource = MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first",
+                "Read full MCP capabilities before choosing tools.", "resources_to_read");
+        if (!hasConfiguredDatabase) {
+            return List.of(capabilitiesResource);
+        }
+        return List.of(capabilitiesResource, MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first",
+                "Read logical databases before choosing a database scope.", "resources_to_read"));
+    }
+    
+    private List<Map<String, Object>> createNextActions(final boolean hasConfiguredDatabase) {
+        Map<String, Object> capabilityAction = MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read the full capability catalog before choosing tools.");
+        if (hasConfiguredDatabase) {
+            return List.of(capabilityAction);
+        }
+        return MCPNextActionUtils.ordered(capabilityAction, MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
+                "Ask the operator to configure at least one runtimeDatabases entry before metadata discovery or SQL execution.", List.of("runtimeDatabases"), false), 1));
     }
     
     private Map<String, Object> createDatabaseStatus(final MCPDatabaseHandlerContext handlerContext, final MCPDatabaseMetadata database) {

@@ -22,7 +22,17 @@
         {
           "name": "SHARDINGSPHERE_MCP_TRANSPORT",
           "value": "stdio",
-          "description": "Launch the container in stdio mode for MCP clients."
+          "description": "Launch the container in stdio mode for MCP clients.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SHARDINGSPHERE_MCP_CONFIG",
+          "description": "Optional absolute config path inside the OCI container. Mount the YAML file before setting this value.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
         }
       ]
     },
@@ -37,7 +47,17 @@
         {
           "name": "SHARDINGSPHERE_MCP_TRANSPORT",
           "value": "http",
-          "description": "Launch the container in Streamable HTTP mode for local or remote MCP clients."
+          "description": "Launch the container in Streamable HTTP mode for local or remote MCP clients.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
+        },
+        {
+          "name": "SHARDINGSPHERE_MCP_CONFIG",
+          "description": "Optional absolute config path inside the OCI container. Mount the YAML file before setting this value.",
+          "isRequired": false,
+          "format": "string",
+          "isSecret": false
         }
       ]
     }

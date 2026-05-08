@@ -315,6 +315,7 @@ bin\start.bat conf\mcp-stdio.yaml
 - 如果 HTTP 返回 `401`，检查 `transport.http.accessToken`，并发送 `Authorization: Bearer <token>`。
 - 如果启动提示 runtime database 缺失或数量为 0，修正 `runtimeDatabases`；MCP resources 暴露的是 ShardingSphere 逻辑库，
   不是物理存储单元。
+- 如果 `shardingsphere://runtime` 返回 `server_status=configuration_required`，先配置至少一个 `runtimeDatabases` 条目，再做 metadata discovery 或 SQL execution。
 - 如果 JDBC metadata 或 SQL 执行因为驱动失败，请把目标 JDBC driver jar 放入 `plugins/`，或加入嵌入式运行时 classpath。
 - STDIO 模式下 stdout 只用于 MCP 协议帧，诊断信息应写到 stderr 或 `logs/mcp.log`。
 - Workflow tools 规划的是 ShardingSphere 逻辑规则变更；apply 前先 preview，并确认用户已批准副作用。
@@ -1138,11 +1139,23 @@ docker run --rm -p 18088:18088 \
   ghcr.io/apache/shardingsphere-mcp:5.5.4
 ```
 
+### 使用自定义 runtime 配置运行已发布镜像
+
+```bash
+docker run --rm -i \
+  -e SHARDINGSPHERE_MCP_TRANSPORT=stdio \
+  -e SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/custom-mcp.yaml \
+  -v /path/to/mcp-stdio.yaml:/opt/shardingsphere-mcp/conf/custom-mcp.yaml:ro \
+  -v /path/to/plugins:/opt/shardingsphere-mcp/plugins:ro \
+  ghcr.io/apache/shardingsphere-mcp:5.5.4
+```
+
 说明：
 
 - `SHARDINGSPHERE_MCP_TRANSPORT=stdio` 会切到发行包内置的 `conf/mcp-stdio.yaml`。
 - 如果不设置 `SHARDINGSPHERE_MCP_TRANSPORT`，Docker image 会保持现有的 HTTP 默认启动方式。
-- 如果容器内需要指定自定义配置文件，可以设置 `SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/your-config.yaml`。
+- 如果容器内需要指定自定义配置文件，请先挂载 YAML 文件，再设置 `SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/your-config.yaml`。
+- HTTP 模式也使用同一个 `SHARDINGSPHERE_MCP_CONFIG` 模式；保留端口映射，并挂载启用 HTTP 的 YAML 文件。
 - `.github/workflows/mcp-build.yml` 会先发布 GHCR image，再执行 `mcp-publisher publish`。
 
 ## 开发参考

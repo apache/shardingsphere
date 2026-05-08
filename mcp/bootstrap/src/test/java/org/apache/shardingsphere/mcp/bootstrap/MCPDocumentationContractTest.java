@@ -17,17 +17,24 @@
 
 package org.apache.shardingsphere.mcp.bootstrap;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDocumentationContractTest {
+    
+    private static final ObjectMapper JSON_MAPPER = new ObjectMapper();
     
     @Test
     void assertHttpDockerAndPlaceholderDocs() throws IOException {
@@ -47,12 +54,36 @@ class MCPDocumentationContractTest {
         }
     }
     
+    @Test
+    void assertRegistryMetadataIncludesConfigVariable() throws IOException {
+        Map<String, Object> actual = JSON_MAPPER.readValue(resolveMCPDirectory().resolve("server.json").toFile(), new TypeReference<>() {
+        });
+        List<?> packages = (List<?>) actual.get("packages");
+        assertFalse(packages.isEmpty());
+        for (Object each : packages) {
+            Map<?, ?> actualConfigVariable = findEnvironmentVariable((Map<?, ?>) each, "SHARDINGSPHERE_MCP_CONFIG");
+            assertFalse((Boolean) actualConfigVariable.get("isRequired"));
+            assertFalse((Boolean) actualConfigVariable.get("isSecret"));
+            assertThat(actualConfigVariable.get("format"), is("string"));
+        }
+    }
+    
+    private Map<?, ?> findEnvironmentVariable(final Map<?, ?> packageMetadata, final String name) {
+        return ((List<?>) packageMetadata.get("environmentVariables")).stream()
+                .map(each -> (Map<?, ?>) each)
+                .filter(each -> name.equals(each.get("name")))
+                .findFirst()
+                .orElseThrow();
+    }
+    
     private void assertDocumentationIncludesRuntimeSafety(final String content) {
         assertTrue(content.contains("transport.http.bindHost"));
         assertTrue(content.contains("transport.http.allowRemoteAccess"));
         assertTrue(content.contains("transport.http.accessToken"));
         assertTrue(content.contains("${ENV_NAME}"));
         assertTrue(content.contains("Authorization: Bearer <token>"));
+        assertTrue(content.contains("SHARDINGSPHERE_MCP_CONFIG"));
+        assertTrue(content.contains("configuration_required"));
     }
     
     private Path resolveMCPDirectory() {

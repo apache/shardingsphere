@@ -22,6 +22,7 @@ import io.modelcontextprotocol.spec.HttpHeaders;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.InitializeResult;
 import io.modelcontextprotocol.spec.McpStreamableServerSession;
+import io.modelcontextprotocol.spec.ProtocolVersions;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
@@ -66,8 +67,9 @@ class StreamableHttpMCPServletTest {
         assertThat(actual.protocolVersions(), is(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
     
-    @Test
-    void assertSetSessionFactoryWithSupportedProtocolVersion() throws ReflectiveOperationException {
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("supportedProtocolVersions")
+    void assertSetSessionFactoryWithSupportedProtocolVersion(final String name, final String requestedProtocolVersion) throws ReflectiveOperationException {
         HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
         MCPSessionManager sessionManager = mock(MCPSessionManager.class);
         McpStreamableServerSession.Factory sessionFactory = mock(McpStreamableServerSession.Factory.class);
@@ -81,11 +83,17 @@ class StreamableHttpMCPServletTest {
         actual.setSessionFactory(sessionFactory);
         ArgumentCaptor<McpStreamableServerSession.Factory> actualFactory = ArgumentCaptor.forClass(McpStreamableServerSession.Factory.class);
         verify(delegate).setSessionFactory(actualFactory.capture());
-        McpSchema.InitializeRequest expectedInitializeRequest = new McpSchema.InitializeRequest(MCPTransportConstants.PROTOCOL_VERSION,
+        McpSchema.InitializeRequest expectedInitializeRequest = new McpSchema.InitializeRequest(requestedProtocolVersion,
                 new McpSchema.ClientCapabilities(Map.of(), null, null, null), new McpSchema.Implementation("foo_client", "1.0.0"));
         assertThat(actualFactory.getValue().startSession(expectedInitializeRequest), is(expectedInit));
         verify(sessionFactory).startSession(expectedInitializeRequest);
         verify(sessionManager).createSession("session-id");
+    }
+    
+    private static Stream<Arguments> supportedProtocolVersions() {
+        return Stream.of(
+                Arguments.of("latest protocol version", MCPTransportConstants.PROTOCOL_VERSION),
+                Arguments.of("compatible protocol version", ProtocolVersions.MCP_2025_06_18));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -226,6 +234,35 @@ class StreamableHttpMCPServletTest {
         actual.service(request, response);
         verify(response).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
         verify(response).setHeader(HttpHeaders.PROTOCOL_VERSION, MCPTransportConstants.PROTOCOL_VERSION);
+    }
+    
+    @Test
+    void assertServicePostWithNegotiatedProtocolHeader() throws ServletException, IOException, ReflectiveOperationException {
+        HttpServletStreamableServerTransportProvider delegate = mock(HttpServletStreamableServerTransportProvider.class);
+        MCPSessionManager sessionManager = mock(MCPSessionManager.class);
+        McpStreamableServerSession.Factory sessionFactory = mock(McpStreamableServerSession.Factory.class);
+        McpStreamableServerSession session = mock(McpStreamableServerSession.class);
+        when(session.getId()).thenReturn("session-id");
+        when(sessionFactory.startSession(any(McpSchema.InitializeRequest.class))).thenReturn(new McpStreamableServerSession.McpStreamableServerSessionInit(session,
+                Mono.just(new InitializeResult(ProtocolVersions.MCP_2025_06_18, McpSchema.ServerCapabilities.builder().tools(Boolean.FALSE).build(),
+                        new McpSchema.Implementation(MCPTransportConstants.SERVER_NAME, "development"), "runtime"))));
+        StreamableHttpMCPServlet actual = createServlet(delegate, sessionManager, mock(MCPSessionExecutionCoordinator.class));
+        actual.setSessionFactory(sessionFactory);
+        ArgumentCaptor<McpStreamableServerSession.Factory> actualFactory = ArgumentCaptor.forClass(McpStreamableServerSession.Factory.class);
+        verify(delegate).setSessionFactory(actualFactory.capture());
+        actualFactory.getValue().startSession(new McpSchema.InitializeRequest(ProtocolVersions.MCP_2025_06_18,
+                new McpSchema.ClientCapabilities(Map.of(), null, null, null), new McpSchema.Implementation("foo_client", "1.0.0")));
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(request.getMethod()).thenReturn("POST");
+        when(request.getHeader(HttpHeaders.ACCEPT)).thenReturn(null);
+        when(request.getHeaderNames()).thenReturn(Collections.emptyEnumeration());
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        doAnswer(invocation -> {
+            ((HttpServletResponse) invocation.getArgument(1)).setHeader(HttpHeaders.MCP_SESSION_ID, "session-id");
+            return null;
+        }).when(delegate).service(any(HttpServletRequest.class), any(HttpServletResponse.class));
+        actual.service(request, response);
+        verify(response).setHeader(HttpHeaders.PROTOCOL_VERSION, ProtocolVersions.MCP_2025_06_18);
     }
     
     @Test

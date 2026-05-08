@@ -33,11 +33,17 @@ class ProtocolVersionHeaderConstraintTest {
     void assertValidateWithProtocolMismatch() {
         ServerTransportSecurityException ex = assertThrows(ServerTransportSecurityException.class, () -> new ProtocolVersionHeaderConstraint().validate(ProtocolVersions.MCP_2025_03_26));
         assertThat(ex.getStatusCode(), is(400));
-        assertThat(ex.getMessage(), is("Protocol version mismatch."));
+        assertThat(ex.getMessage(), is(String.format("Unsupported MCP protocol version `%s`. Supported versions are %s.", ProtocolVersions.MCP_2025_03_26,
+                MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS)));
     }
     
     @Test
-    void assertValidateWithSupportedProtocolVersion() {
+    void assertValidateWithLatestProtocolVersion() {
         assertDoesNotThrow(() -> new ProtocolVersionHeaderConstraint().validate(MCPTransportConstants.PROTOCOL_VERSION));
+    }
+    
+    @Test
+    void assertValidateWithCompatibleProtocolVersion() {
+        assertDoesNotThrow(() -> new ProtocolVersionHeaderConstraint().validate(ProtocolVersions.MCP_2025_06_18));
     }
 }

@@ -41,8 +41,10 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamableServerTransportProvider {
@@ -63,12 +65,16 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
     
     private final MCPSessionExecutionCoordinator sessionExecutionCoordinator;
     
+    private final Map<String, String> sessionProtocolVersions;
+    
     private final AtomicBoolean closed;
     
     StreamableHttpMCPServlet(final MCPSessionManager sessionManager, final McpJsonMapper jsonMapper, final String bindHost, final String accessToken, final String endpointPath) {
         delegate = createDelegate(sessionManager, jsonMapper, bindHost, accessToken, endpointPath);
         this.sessionManager = sessionManager;
         sessionExecutionCoordinator = new MCPSessionExecutionCoordinator(sessionManager);
+        sessionProtocolVersions = new ConcurrentHashMap<>();
+        sessionManager.addSessionCloseListener(sessionProtocolVersions::remove);
         closed = new AtomicBoolean();
     }
     
@@ -88,7 +94,9 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
         delegate.setSessionFactory(initializeRequest -> {
             McpSchema.InitializeRequest actualInitializeRequest = negotiateInitializeRequest(initializeRequest);
             McpStreamableServerSession.McpStreamableServerSessionInit result = sessionFactory.startSession(actualInitializeRequest);
-            sessionManager.createSession(result.session().getId());
+            String sessionId = result.session().getId();
+            sessionManager.createSession(sessionId);
+            sessionProtocolVersions.put(sessionId, actualInitializeRequest.protocolVersion());
             return result;
         });
     }
@@ -199,20 +207,24 @@ final class StreamableHttpMCPServlet extends HttpServlet implements McpStreamabl
             @Override
             public void setHeader(final String name, final String value) {
                 super.setHeader(name, value);
-                addNegotiatedProtocolHeader(name);
+                addNegotiatedProtocolHeader(name, value);
             }
             
             @Override
             public void addHeader(final String name, final String value) {
                 super.addHeader(name, value);
-                addNegotiatedProtocolHeader(name);
+                addNegotiatedProtocolHeader(name, value);
             }
             
-            private void addNegotiatedProtocolHeader(final String name) {
+            private void addNegotiatedProtocolHeader(final String name, final String sessionId) {
                 if (SESSION_HEADER.equalsIgnoreCase(name)) {
-                    super.setHeader(PROTOCOL_HEADER, MCPTransportConstants.PROTOCOL_VERSION);
+                    super.setHeader(PROTOCOL_HEADER, findNegotiatedProtocolVersion(sessionId));
                 }
             }
         };
+    }
+    
+    private String findNegotiatedProtocolVersion(final String sessionId) {
+        return sessionProtocolVersions.getOrDefault(Objects.toString(sessionId, ""), MCPTransportConstants.PROTOCOL_VERSION);
     }
 }

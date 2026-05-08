@@ -27,6 +27,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RuntimeStatusHandlerTest {
@@ -45,6 +46,25 @@ class RuntimeStatusHandlerTest {
             assertTrue(String.valueOf(actual.get("capability_fingerprint")).matches("[0-9a-f]{64}"));
             assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
+        }
+    }
+    
+    @Test
+    void assertHandleWithEmptyRuntimeDatabase() {
+        try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext(List.of(), "http"))) {
+            Map<String, Object> actual = new RuntimeStatusHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+            assertThat(actual.get("server_status"), is("configuration_required"));
+            assertThat(actual.get("status"), is("configuration_required"));
+            assertThat(actual.get("configured_database_count"), is(0));
+            assertThat(((List<?>) actual.get("databases")).size(), is(0));
+            Map<?, ?> readiness = (Map<?, ?>) actual.get("readiness");
+            assertFalse((Boolean) readiness.get("ready"));
+            assertThat(readiness.get("reason"), is("No runtime databases are configured."));
+            assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities")));
+            List<?> nextActions = (List<?>) actual.get("next_actions");
+            assertThat(((Map<?, ?>) nextActions.get(0)).get("action_kind"), is("read_resource"));
+            assertThat(((Map<?, ?>) nextActions.get(1)).get("action_kind"), is("ask_user"));
+            assertThat(((Map<?, ?>) nextActions.get(1)).get("required_inputs"), is(List.of("runtimeDatabases")));
         }
     }
     

@@ -315,6 +315,7 @@ Reference:
 - For HTTP `401`, check `transport.http.accessToken` and send `Authorization: Bearer <token>`.
 - If startup reports zero or missing runtime databases, fix `runtimeDatabases`; MCP resources expose ShardingSphere logical databases,
   not physical storage units.
+- If `shardingsphere://runtime` reports `server_status=configuration_required`, configure at least one `runtimeDatabases` entry before metadata discovery or SQL execution.
 - If JDBC metadata or SQL execution fails with a driver error, add the target JDBC driver jar under `plugins/` or the embedding classpath.
 - In STDIO mode, keep stdout reserved for MCP protocol frames. Send diagnostics to stderr or `logs/mcp.log`.
 - Workflow tools plan ShardingSphere logical rule changes; preview before apply and confirm the user approved side effects.
@@ -1136,11 +1137,23 @@ docker run --rm -p 18088:18088 \
   ghcr.io/apache/shardingsphere-mcp:5.5.4
 ```
 
+### Run the published image with custom runtime config
+
+```bash
+docker run --rm -i \
+  -e SHARDINGSPHERE_MCP_TRANSPORT=stdio \
+  -e SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/custom-mcp.yaml \
+  -v /path/to/mcp-stdio.yaml:/opt/shardingsphere-mcp/conf/custom-mcp.yaml:ro \
+  -v /path/to/plugins:/opt/shardingsphere-mcp/plugins:ro \
+  ghcr.io/apache/shardingsphere-mcp:5.5.4
+```
+
 Notes:
 
 - `SHARDINGSPHERE_MCP_TRANSPORT=stdio` selects the packaged `conf/mcp-stdio.yaml`.
 - Leaving `SHARDINGSPHERE_MCP_TRANSPORT` unset keeps the Docker image on the HTTP default.
-- If you need a custom config path inside the container, set `SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/your-config.yaml`.
+- If you need a custom config path inside the container, mount the YAML file and set `SHARDINGSPHERE_MCP_CONFIG=/opt/shardingsphere-mcp/conf/your-config.yaml`.
+- Use the same `SHARDINGSPHERE_MCP_CONFIG` pattern for HTTP; keep the port mapping and mount an HTTP-enabled YAML file.
 - `.github/workflows/mcp-build.yml` publishes the GHCR image and then runs `mcp-publisher publish`.
 
 ## Development Pointers

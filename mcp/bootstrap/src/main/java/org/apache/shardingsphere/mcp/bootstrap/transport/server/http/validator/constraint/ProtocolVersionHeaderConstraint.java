@@ -35,6 +35,11 @@ public final class ProtocolVersionHeaderConstraint implements SessionRequiredTra
     @Override
     public void validate(final String value) throws ServerTransportSecurityException {
         ShardingSpherePreconditions.checkNotEmpty(value, () -> new ServerTransportSecurityException(400, "MCP-Protocol-Version header is required."));
-        ShardingSpherePreconditions.checkState(MCPTransportConstants.PROTOCOL_VERSION.equals(value), () -> new ServerTransportSecurityException(400, "Protocol version mismatch."));
+        ShardingSpherePreconditions.checkState(MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS.contains(value), () -> createUnsupportedProtocolVersionException(value));
+    }
+    
+    private ServerTransportSecurityException createUnsupportedProtocolVersionException(final String protocolVersion) {
+        return new ServerTransportSecurityException(400, String.format("Unsupported MCP protocol version `%s`. Supported versions are %s.", protocolVersion,
+                MCPTransportConstants.SUPPORTED_PROTOCOL_VERSIONS));
     }
 }
