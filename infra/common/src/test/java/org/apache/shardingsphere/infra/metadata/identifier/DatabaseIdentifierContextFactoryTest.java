@@ -76,6 +76,8 @@ class DatabaseIdentifierContextFactoryTest {
     
     private static final ResourceMetaData MYSQL_QUOTED_INSENSITIVE_RESOURCE_META_DATA = createResourceMetaDataWithMySQLLowerCaseTableNames(2);
     
+    private static final ResourceMetaData MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA = createResourceMetaDataWithMySQLLowerCaseTableNames(0);
+    
     private static final ResourceMetaData POSTGRESQL_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls("jdbc:postgresql://localhost:5432/foo_db");
     
     private static final ResourceMetaData OPEN_GAUSS_RESOURCE_META_DATA = createResourceMetaDataWithStorageUrls("jdbc:opengauss://localhost:5432/foo_db");
@@ -178,6 +180,36 @@ class DatabaseIdentifierContextFactoryTest {
         assertTrue(actual.isHeterogeneousTableLookupEnabled());
         assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
         assertTrue(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertRefreshUsesInsensitiveRuleForLogicalTableWhenMySQLLowerCaseTableNamesIsZero() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.createDefault();
+        DatabaseIdentifierContextFactory.refresh(actual, MYSQL_DATABASE_TYPE, MYSQL_SENSITIVE_STORAGE_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertFalse(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+    }
+    
+    @Test
+    void assertCreateKeepsPostgreSQLLogicalTableRuleWithResourceMetadata() {
+        DatabaseIdentifierContext actual = DatabaseIdentifierContextFactory.create(POSTGRESQL_DATABASE_TYPE, POSTGRESQL_RESOURCE_META_DATA, new ConfigurationProperties(new Properties()));
+        IdentifierCaseRule actualLogicalTableRule = actual.getRule(IdentifierScope.LOGICAL_TABLE);
+        IdentifierCaseRule actualTableRule = actual.getRule(IdentifierScope.TABLE);
+        assertTrue(actualLogicalTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertTrue(actualTableRule.matches("t_order", "T_ORDER", QuoteCharacter.NONE));
+        assertFalse(actualLogicalTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
+        assertFalse(actualTableRule.matches("T_ORDER", "t_order", QuoteCharacter.NONE));
     }
     
     @Test
