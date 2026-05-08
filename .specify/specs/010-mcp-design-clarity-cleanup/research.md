@@ -28,7 +28,7 @@ Manual creation preserves the workflow without violating the branch constraint.
 
 ## Decision 2: Treat This as a Clarity Cleanup, Not a Product Expansion
 
-**Decision**: Focus requirements on readability, responsibility boundaries, contract discoverability, legacy cleanup, and E2E clarity.
+**Decision**: Focus requirements on readability, responsibility boundaries, contract discoverability, legacy deletion, and E2E clarity.
 
 **Rationale**: The evaluated issues are over-design, transitional design, inconsistent style, and unclear code. Adding new MCP capabilities would increase scope and make the cleanup harder to verify.
 
@@ -61,12 +61,12 @@ Manual creation preserves the workflow without violating the branch constraint.
 ## Decision 6: Remove Legacy Aliases from Public Contracts
 
 **Decision**: Remove legacy aliases and transitional fields from public model-facing contracts.
-Keep internal-only fallback parsing only when a focused test proves it is still needed during implementation.
+Do not preserve compatibility adapters for unpublished descriptor or payload shapes.
 
 **Rationale**: The user confirmed compatibility does not need to be preserved.
 The cleanest contract should win when readability, elegance, and consistency improve.
 
-**Rejected Alternative**: Preserve aliases behind compatibility adapters.
+**Rejected Alternative**: Preserve aliases behind compatibility adapters or internal fallback parsing.
 That would keep transitional design in the product surface and weaken the clarity goal.
 
 ## Decision 7: Keep E2E Tests Scenario-Centered
@@ -76,6 +76,29 @@ That would keep transitional design in the product surface and weaken the clarit
 **Rationale**: E2E code should tell what behavior is protected. It should not require each test to reconstruct protocol payload mechanics.
 
 **Rejected Alternative**: Build a generic test automation framework. The E2E module needs a smaller harness, not a larger one.
+
+## Decision 8: Let Code Explain the Design
+
+**Decision**: Requirements for the 100/100 target must be satisfied by code names, types, factories, helpers, and tests rather than JAVADOC, ordinary comments, README text, or handoff prose.
+
+**Rationale**: The user explicitly wants clarity to come from code. Repository style also says code that needs comments should be extracted into small methods with meaningful names.
+
+**Rejected Alternative**: Keep unclear constructors, compatibility logic, or mixed responsibilities and explain them with comments. That would preserve the readability problem.
+
+## Decision 9: Score the Whole MCP Surface, Not an API Slice
+
+**Decision**: The scorecard must cover production MCP modules plus `test/e2e/mcp`.
+The `mcp/api` cleanup is treated as completed evidence inside the production
+score, not as the final module score.
+
+**Rationale**: The user clarified that the target is the whole MCP module and
+the MCP end-to-end tests. The highest-value cleanup points were outside
+`mcp/api`: descriptor loading, completion, metadata search, statement
+classification, and E2E harness code.
+
+**Rejected Alternative**: Keep an API-only perfect result and list other modules
+as a vague backlog. That hides the actual work and misrepresents the
+module score.
 
 ## Evidence Inputs
 
@@ -87,8 +110,28 @@ The requirement inventory is based on static review of these areas:
 - `mcp/features/encrypt` and `mcp/features/mask` workflow planning services and tests.
 - `test/e2e/mcp` LLM conversation runner, runtime fixtures, production smoke tests, HTTP contract tests, and usability metrics.
 
-## Open Questions for Implementation
+## Final Findings For 100/100
 
-- Should statement classification use existing ShardingSphere parser metadata directly, or stay lightweight with documented lexical scope?
-- Which E2E test classes are stable enough to split first without increasing flakiness?
-- Can descriptor linting cover the public contract drift without requiring a full MCP runtime startup?
+1. `MCPDescriptorCatalogLoader` and `MCPDescriptorCatalog` are split by
+   descriptor lifecycle and payload construction.
+2. `MCPCompletionSpecificationFactory` no longer owns candidate production.
+3. E2E payload assertions are named in helpers before scenario assertions reach
+   into nested payloads.
+4. `LLMMCPConversationRunner` is split from the MCP tool bridge, safety
+   validator, final-answer validator, interaction coverage, and artifact state.
+5. `SearchMetadataToolService` orchestrates collaborators for collection,
+   matching, paging, and resource URI derivation.
+6. `StatementClassifier` orchestrates scanner, structure resolver, class
+   resolver, and target resolver helpers.
+
+## Closed Implementation Questions
+
+- Statement classification stays lightweight. Its scope is encoded by
+  `SQLStatementScanner`, `SQLStatementStructureResolver`,
+  `SQLStatementClassResolver`, `SQLStatementTargetResolver`, and focused tests.
+- The H2 production smoke tests were split first because they exercise real
+  runtime paths without requiring external services.
+- Descriptor linting and contract tests cover public contract drift without
+  requiring a full MCP runtime startup.
+- A generic E2E wait/retry helper was rejected because the remaining loops have
+  different return types, retry intervals, and failure semantics.

@@ -36,20 +36,19 @@ class MCPResourceDescriptorTest {
     }
 
     @Test
-    void assertGetUriPattern() {
+    void assertGetUriTemplate() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json");
-        assertThat(actual.getUriPattern(), is("shardingsphere://databases/{database}"));
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases/{database}"));
     }
 
     @Test
-    void assertLegacyMetaIsTyped() {
+    void assertMetaDoesNotChangeTypedFields() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",
                 "List encrypt algorithms.", "application/json", List.of(), MCPResourceAnnotations.EMPTY,
                 Map.of("resourceKind", "list", "feature", "encrypt", "relatedTools", List.of("plan_encrypt_rule"), "runtimeVisibility", "ShardingSphere-Proxy"));
-        assertThat(actual.getResourceKind(), is("list"));
-        assertThat(actual.getFeature(), is("encrypt"));
-        assertThat(actual.getRelatedTools(), is(List.of("plan_encrypt_rule")));
-        assertThat(actual.getMeta(), is(Map.of("runtimeVisibility", "ShardingSphere-Proxy")));
+        assertThat(actual.getResourceKind(), is((String) null));
+        assertThat(actual.getFeature(), is((String) null));
+        assertThat(actual.getRelatedTools(), is(List.of()));
+        assertThat(actual.getMeta(), is(Map.of("resourceKind", "list", "feature", "encrypt", "relatedTools", List.of("plan_encrypt_rule"), "runtimeVisibility", "ShardingSphere-Proxy")));
     }
 }

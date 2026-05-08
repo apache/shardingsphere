@@ -34,6 +34,7 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 /**
@@ -222,10 +223,8 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
-        String selfUri = MCPUriTemplateUtils.expand(descriptor.getUriTemplate(), variables);
-        if (!selfUri.isEmpty()) {
-            result.put("self_uri", selfUri);
-        }
+        Optional<String> selfUri = MCPUriTemplateUtils.expandIfComplete(descriptor.getUriTemplate(), variables);
+        selfUri.ifPresent(uri -> result.put("self_uri", uri));
         String parentUri = createParentUri(selfUri);
         if (!parentUri.isEmpty()) {
             result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent",
@@ -234,16 +233,16 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         List<Map<String, Object>> nextResources = MCPDescriptorRegistry.getResourceNavigationDescriptors().stream()
                 .filter(each -> descriptor.getUriTemplate().equals(each.getFrom()))
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
-                .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), variables)).filter(each -> !each.isEmpty()).toList();
+                .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), variables)).flatMap(Optional::stream).toList();
         if (!nextResources.isEmpty()) {
             result.put("next_resources", nextResources);
         }
         return result;
     }
     
-    private Map<String, Object> createNextResourceHint(final String uriTemplate, final String description, final Map<String, String> variables) {
-        String uri = MCPUriTemplateUtils.expand(uriTemplate, variables);
-        return uri.isEmpty() ? Map.of() : MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, "next_resources");
+    private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final Map<String, String> variables) {
+        return MCPUriTemplateUtils.expandIfComplete(uriTemplate, variables)
+                .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, "next_resources"));
     }
     
     private String resolveResourceKind(final String uri) {
@@ -268,12 +267,15 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         return "logical-database";
     }
     
-    private String createParentUri(final String selfUri) {
-        String prefix = "shardingsphere://";
-        if (!selfUri.startsWith(prefix)) {
+    private String createParentUri(final Optional<String> selfUri) {
+        if (selfUri.isEmpty()) {
             return "";
         }
-        String path = selfUri.substring(prefix.length());
+        String prefix = "shardingsphere://";
+        if (!selfUri.get().startsWith(prefix)) {
+            return "";
+        }
+        String path = selfUri.get().substring(prefix.length());
         int lastSeparatorIndex = path.lastIndexOf('/');
         return 0 > lastSeparatorIndex ? "" : prefix + path.substring(0, lastSeparatorIndex);
     }

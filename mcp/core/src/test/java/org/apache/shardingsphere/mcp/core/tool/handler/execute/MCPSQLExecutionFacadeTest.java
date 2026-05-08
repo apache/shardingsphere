@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
+import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapabilityProvider;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.mcp.support.database.exception.DatabaseCapabilityNotFoundException;
 import org.apache.shardingsphere.mcp.support.database.exception.StatementClassNotSupportedException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.core.session.MCPSessionExecutionCoordinator;
-import org.apache.shardingsphere.mcp.core.session.MCPSessionManager;
-import org.apache.shardingsphere.mcp.core.session.MCPSessionNotExistedException;
-import org.apache.shardingsphere.mcp.core.tool.handler.execute.audit.AuditRecorder;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
@@ -100,8 +101,8 @@ class MCPSQLExecutionFacadeTest {
         when(capabilityProvider.provide("logic_db")).thenReturn(Optional.of(capability));
         try (
                 MockedConstruction<StatementClassifier> mocked = mockConstruction(StatementClassifier.class,
-                        (mock, context) -> when(mock.classify(anyString())).thenThrow(new UnsupportedOperationException("Statement is banned by the MCP contract.")))) {
-            UnsupportedOperationException actual = assertThrows(UnsupportedOperationException.class, () -> facade.execute(request));
+                        (mock, context) -> when(mock.classify(anyString())).thenThrow(new MCPBannedSQLStatementException()))) {
+            MCPBannedSQLStatementException actual = assertThrows(MCPBannedSQLStatementException.class, () -> facade.execute(request));
             assertThat(actual.getMessage(), is("Statement is banned by the MCP contract."));
             assertThat(mocked.constructed().size(), is(1));
         }

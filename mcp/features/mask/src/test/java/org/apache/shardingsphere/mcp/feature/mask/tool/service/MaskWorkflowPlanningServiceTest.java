@@ -31,14 +31,13 @@ import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnaps
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,7 +52,7 @@ import static org.mockito.Mockito.when;
 class MaskWorkflowPlanningServiceTest {
     
     @Test
-    void assertPlanRejectsMissingPlanningContext() throws ReflectiveOperationException {
+    void assertPlanRejectsMissingPlanningContext() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         MaskWorkflowPlanningService service = createService(mock(MaskRuleInspectionService.class), mock(MaskAlgorithmRecommendationService.class),
                 mock(MaskAlgorithmPropertyTemplateService.class), mock(MaskRuleDistSQLPlanningService.class));
@@ -63,7 +62,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsLifecycleMismatchForCreate() throws ReflectiveOperationException {
+    void assertPlanRejectsLifecycleMismatchForCreate() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -75,7 +74,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanDropWorkflow() throws ReflectiveOperationException {
+    void assertPlanDropWorkflow() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of(Map.of("column", "phone")));
         MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(MaskRuleDistSQLPlanningService.class);
@@ -92,7 +91,7 @@ class MaskWorkflowPlanningServiceTest {
     @MethodSource("assertPlanWithNaturalLanguageInferenceArguments")
     void assertPlanWithNaturalLanguageInference(final String name, final String naturalLanguageIntent, final boolean ruleExists,
                                                 final String expectedOperationType, final String expectedFieldSemantics,
-                                                final String expectedStatus) throws ReflectiveOperationException {
+                                                final String expectedStatus) {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("column", "phone")) : List.of());
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of(Map.of("type", "MASK_FROM_X_TO_Y")));
@@ -107,7 +106,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
+    void assertPlanStopsOnBlockingAlgorithmIssue() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
@@ -126,7 +125,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
+    void assertPlanRequiresMissingProperties() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
@@ -145,7 +144,7 @@ class MaskWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanCreatesRuleArtifact() throws ReflectiveOperationException {
+    void assertPlanCreatesRuleArtifact() {
         MaskRuleInspectionService ruleInspectionService = mock(MaskRuleInspectionService.class);
         when(ruleInspectionService.queryMaskRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryMaskAlgorithms(any())).thenReturn(List.of());
@@ -204,18 +203,9 @@ class MaskWorkflowPlanningServiceTest {
     private MaskWorkflowPlanningService createService(final MaskRuleInspectionService ruleInspectionService,
                                                       final MaskAlgorithmRecommendationService algorithmRecommendationService,
                                                       final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
-                                                      final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService) throws ReflectiveOperationException {
-        MaskWorkflowPlanningService result = new MaskWorkflowPlanningService();
-        setField(result, "ruleInspectionService", ruleInspectionService);
-        setField(result, "algorithmRecommendationService", algorithmRecommendationService);
-        setField(result, "algorithmPropertyTemplateService", algorithmPropertyTemplateService);
-        setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
-        return result;
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
+                                                      final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService) {
+        return new MaskWorkflowPlanningService(new WorkflowPlanningSupport(), new MaskWorkflowIntentResolver(), ruleInspectionService,
+                algorithmRecommendationService, algorithmPropertyTemplateService, ruleDistSQLPlanningService);
     }
     
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {

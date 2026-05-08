@@ -20,14 +20,15 @@ package org.apache.shardingsphere.mcp.core.tool.handler;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.infra.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
+import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.api.MCPHandlerProvider;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
@@ -53,26 +54,26 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 class ToolHandlerRegistryTest {
-    
+
     @Test
     void assertGetSupportedTools() {
         assertThat(ToolHandlerRegistry.getSupportedTools(), contains("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow"));
     }
-    
+
     @Test
     void assertGetSupportedToolDescriptors() {
         List<MCPToolDescriptor> actual = ToolHandlerRegistry.getSupportedToolDescriptors();
         assertThat(actual.stream().map(MCPToolDescriptor::getName).toList(), is(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
         assertThat(actual.stream().map(each -> each.getFields().size()).toList(), is(List.of(6, 5, 6, 3, 1)));
     }
-    
+
     @Test
     void assertFindRegisteredTool() {
         Optional<MCPToolHandler<?>> actual = ToolHandlerRegistry.findRegisteredTool("search_metadata");
         assertTrue(actual.isPresent());
         assertThat(actual.orElseThrow().getToolDescriptor().getName(), is("search_metadata"));
     }
-    
+
     @Test
     void assertDispatch() {
         MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
@@ -83,24 +84,34 @@ class ToolHandlerRegistryTest {
             assertThat(((List<?>) actual.orElseThrow().toPayload().get("items")).size(), is(1));
         }
     }
-    
+
     @Test
     void assertFindRegisteredToolWithUnknownToolName() {
         assertFalse(ToolHandlerRegistry.findRegisteredTool("unknown_tool").isPresent());
     }
-    
+
     @Test
     void assertDispatchWithUnknownToolName() {
         assertFalse(ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "unknown_tool", Map.of()).isPresent());
     }
-    
+
     @Test
     void assertDispatchWithMissingRequiredArgument() {
         MCPInvalidRequestException actual =
                 assertThrows(MCPInvalidRequestException.class, () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "execute_query", Map.of("database", "logic_db")));
         assertThat(actual.getMessage(), is("sql is required."));
     }
-    
+
+    @Test
+    void assertDispatchWithMissingExecutionMode() {
+        MCPExecutionModeRequiredException actual = assertThrows(MCPExecutionModeRequiredException.class,
+                () -> ToolHandlerRegistry.dispatch(mock(MCPRequestScope.class), "session-1", "execute_update",
+                        Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1")));
+        assertThat(actual.getMessage(), is("execute_update execution_mode is required."));
+        assertThat(actual.getToolName(), is("execute_update"));
+        assertThat(actual.getAllowedValues(), is(List.of("execute", "preview")));
+    }
+
     @Test
     void assertGetSupportedToolsWithNoToolHandlers() {
         try (MockedStatic<ShardingSphereServiceLoader> mocked = mockStatic(ShardingSphereServiceLoader.class)) {
@@ -114,7 +125,7 @@ class ToolHandlerRegistryTest {
             assertThat(actualCause.getMessage(), is("No tool handlers are registered."));
         }
     }
-    
+
     @Test
     void assertCreateRegisteredToolsWithInvalidHandlers() {
         MCPToolHandler<?> firstHandler = createToolHandler("search_metadata");
@@ -137,7 +148,7 @@ class ToolHandlerRegistryTest {
         actual = assertThrows(IllegalArgumentException.class, () -> ToolHandlerRegistry.createRegisteredTools(List.of(unsupportedHandler)));
         assertThat(actual.getMessage(), is(String.format("Unsupported handler context type `%s` for `%s`.", MCPHandlerContext.class.getName(), unsupportedHandler.getClass().getName())));
     }
-    
+
     @Test
     void assertCreateRegisteredTools() {
         MCPToolHandler<?> firstHandler = createToolHandler("search_metadata");
@@ -146,7 +157,7 @@ class ToolHandlerRegistryTest {
         assertThat(actual.size(), is(2));
         assertThat(actual.keySet().stream().toList(), is(List.of("search_metadata", "execute_query")));
     }
-    
+
     private static MCPToolHandler<?> createToolHandler(final String toolName) {
         MCPToolDescriptor descriptor = mock(MCPToolDescriptor.class);
         when(descriptor.getName()).thenReturn(toolName);
@@ -155,10 +166,10 @@ class ToolHandlerRegistryTest {
         when(result.getToolDescriptor()).thenReturn(descriptor);
         return result;
     }
-    
+
     private static ClassLoader createIsolatedToolHandlerRegistryClassLoader() {
         return new ClassLoader(ToolHandlerRegistry.class.getClassLoader()) {
-            
+
             @Override
             protected Class<?> loadClass(final String name, final boolean resolve) throws ClassNotFoundException {
                 if (!ToolHandlerRegistry.class.getName().equals(name)) {
@@ -178,7 +189,7 @@ class ToolHandlerRegistryTest {
             }
         };
     }
-    
+
     private static byte[] readToolHandlerRegistryClass(final String name) throws ClassNotFoundException {
         String resourceName = name.replace('.', '/') + ".class";
         try (InputStream inputStream = ToolHandlerRegistry.class.getClassLoader().getResourceAsStream(resourceName)) {

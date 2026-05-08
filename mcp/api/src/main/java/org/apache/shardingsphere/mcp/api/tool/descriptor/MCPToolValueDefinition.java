@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -53,33 +54,95 @@ public final class MCPToolValueDefinition {
 
     private final String pattern;
 
-    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition) {
-        this(type, description, itemDefinition, Collections.emptyList(), Collections.emptyList(), true);
-    }
-
-    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues) {
-        this(type, description, itemDefinition, enumValues, Collections.emptyList(), true);
-    }
-
-    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues,
-                                  final Collection<MCPToolFieldDefinition> objectProperties, final boolean additionalProperties) {
-        this(type, description, itemDefinition, enumValues, objectProperties, additionalProperties, null, null, null, Collections.emptyList(), "");
-    }
-
-    public MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues,
-                                  final Collection<MCPToolFieldDefinition> objectProperties, final boolean additionalProperties, final Object defaultValue,
-                                  final Integer minimumValue, final Integer maximumValue, final Collection<Object> examples, final String pattern) {
+    @Builder
+    private MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues,
+                                   final Collection<MCPToolFieldDefinition> objectProperties, final Boolean additionalProperties, final Object defaultValue,
+                                   final Integer minimumValue, final Integer maximumValue, final Collection<Object> examples, final String pattern) {
         this.type = type;
         this.description = description;
         this.itemDefinition = itemDefinition;
         this.enumValues = null == enumValues ? Collections.emptyList() : enumValues;
         this.objectProperties = null == objectProperties ? Collections.emptyList() : objectProperties;
-        this.additionalProperties = additionalProperties;
+        this.additionalProperties = null == additionalProperties || additionalProperties;
         this.defaultValue = defaultValue;
         this.minimumValue = minimumValue;
         this.maximumValue = maximumValue;
         this.examples = null == examples ? Collections.emptyList() : examples;
         this.pattern = null == pattern ? "" : pattern;
+    }
+
+    /**
+     * Create string value definition.
+     *
+     * @param description value description
+     * @return string value definition
+     */
+    public static MCPToolValueDefinition string(final String description) {
+        return builder().type(Type.STRING).description(description).build();
+    }
+
+    /**
+     * Create enum string value definition.
+     *
+     * @param description value description
+     * @param enumValues enum values
+     * @return enum string value definition
+     */
+    public static MCPToolValueDefinition stringEnum(final String description, final Collection<String> enumValues) {
+        return builder().type(Type.STRING).description(description).enumValues(enumValues).build();
+    }
+
+    /**
+     * Create integer value definition.
+     *
+     * @param description value description
+     * @return integer value definition
+     */
+    public static MCPToolValueDefinition integer(final String description) {
+        return builder().type(Type.INTEGER).description(description).build();
+    }
+
+    /**
+     * Create array value definition.
+     *
+     * @param description value description
+     * @param itemDefinition item value definition
+     * @return array value definition
+     */
+    public static MCPToolValueDefinition array(final String description, final MCPToolValueDefinition itemDefinition) {
+        return builder().type(Type.ARRAY).description(description).itemDefinition(itemDefinition).build();
+    }
+
+    /**
+     * Create boolean value definition.
+     *
+     * @param description value description
+     * @return boolean value definition
+     */
+    public static MCPToolValueDefinition bool(final String description) {
+        return builder().type(Type.BOOLEAN).description(description).build();
+    }
+
+    /**
+     * Create object value definition.
+     *
+     * @param description value description
+     * @return object value definition
+     */
+    public static MCPToolValueDefinition object(final String description) {
+        return builder().type(Type.OBJECT).description(description).build();
+    }
+
+    /**
+     * Create object value definition.
+     *
+     * @param description value description
+     * @param objectProperties object properties
+     * @param additionalProperties whether additional properties are allowed
+     * @return object value definition
+     */
+    public static MCPToolValueDefinition object(final String description, final Collection<MCPToolFieldDefinition> objectProperties, final boolean additionalProperties) {
+        return builder().type(Type.OBJECT).description(description).objectProperties(objectProperties).additionalProperties(additionalProperties).build();
     }
 
     /**

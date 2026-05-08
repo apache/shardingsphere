@@ -26,13 +26,14 @@ import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * MCP resource navigation payload builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPResourceNavigationPayloadBuilder {
-    
+
     /**
      * Create navigation payload from a resource descriptor.
      *
@@ -43,7 +44,7 @@ public final class MCPResourceNavigationPayloadBuilder {
     public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         return create(descriptor, uriVariables, "");
     }
-    
+
     /**
      * Create navigation payload from a resource descriptor and an explicit public parent URI template.
      *
@@ -55,17 +56,16 @@ public final class MCPResourceNavigationPayloadBuilder {
     public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final String parentUriTemplate) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
         Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
-        String selfUri = MCPUriTemplateUtils.expand(descriptor.getUriTemplate(), variables);
-        if (!selfUri.isEmpty()) {
-            result.put("self_uri", selfUri);
-        }
-        String parentUri = MCPUriTemplateUtils.expand(parentUriTemplate, variables);
-        if (!parentUri.isEmpty()) {
-            result.put("parent_resource", MCPResourceHintUtils.create(parentUri, resolveResourceKind(parentUri), "inspect_parent", "Read the parent resource.", "parent_resource"));
-        }
+        MCPUriTemplateUtils.expandIfComplete(descriptor.getUriTemplate(), variables).ifPresent(uri -> result.put("self_uri", uri));
+        Optional<String> parentUri = MCPUriTemplateUtils.expandIfComplete(parentUriTemplate, variables);
+        parentUri.filter(uri -> !uri.isEmpty()).ifPresent(uri -> result.put("parent_resource", createParentResourceHint(uri)));
         return result;
     }
-    
+
+    private static Map<String, Object> createParentResourceHint(final String uri) {
+        return MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", "parent_resource");
+    }
+
     private static String resolveResourceKind(final String uri) {
         if (uri.contains("/rules")) {
             return "rule";

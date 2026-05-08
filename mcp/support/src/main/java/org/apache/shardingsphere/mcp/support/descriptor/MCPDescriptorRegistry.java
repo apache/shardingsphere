@@ -113,7 +113,7 @@ public final class MCPDescriptorRegistry {
      * @return capability payload
      */
     public static Map<String, Object> createCapabilityPayload(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
-        return CATALOG.toPayload(supportedResources, supportedTools, supportedStatements);
+        return MCPDescriptorCatalogPayloadBuilder.build(CATALOG, supportedResources, supportedTools, supportedStatements);
     }
     
     /**
@@ -122,6 +122,6 @@ public final class MCPDescriptorRegistry {
      * @return descriptor catalog fingerprint
      */
     public static String getDescriptorCatalogFingerprint() {
-        return CATALOG.getDescriptorCatalogFingerprint();
+        return MCPDescriptorCatalogPayloadBuilder.createDescriptorCatalogFingerprint(CATALOG);
     }
 }

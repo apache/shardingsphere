@@ -71,7 +71,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'"))));
-        assertThat(actual.getMessage(), is("execution_mode is required."));
+        assertThat(actual.getMessage(), is("execute_update execution_mode is required."));
         verifyNoInteractions(executionFacade);
     }
     
@@ -127,7 +127,7 @@ class ExecuteUpdateToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> new ExecuteUpdateToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "update orders set status = 'PAID'", "execution_mode", "dry-run"))));
-        assertThat(actual.getMessage(), is("execution_mode must be either `execute` or `preview`."));
+        assertThat(actual.getMessage(), is("execute_update execution_mode must be one of [execute, preview]."));
         verifyNoInteractions(executionFacade);
     }
     

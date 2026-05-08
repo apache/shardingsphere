@@ -23,7 +23,6 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
@@ -37,7 +36,7 @@ public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPSer
     
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping",
             "Return a fixture ping response for packaged plugin discovery.",
-            List.of(new MCPToolFieldDefinition("message", new MCPToolValueDefinition(Type.STRING, "Fixture message.", null), true)));
+            List.of(new MCPToolFieldDefinition("message", MCPToolValueDefinition.string("Fixture message."), true)));
     
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {

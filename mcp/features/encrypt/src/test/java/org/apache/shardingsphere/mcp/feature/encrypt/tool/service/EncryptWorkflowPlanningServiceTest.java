@@ -34,14 +34,13 @@ import org.apache.shardingsphere.mcp.support.workflow.model.RuleArtifact;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssue;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowIssueCode;
+import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowPlanningSupport;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.internal.configuration.plugins.Plugins;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -60,7 +59,7 @@ import static org.mockito.Mockito.when;
 class EncryptWorkflowPlanningServiceTest {
     
     @Test
-    void assertPlanRejectsMissingPlanningContext() throws ReflectiveOperationException {
+    void assertPlanRejectsMissingPlanningContext() {
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
         EncryptWorkflowPlanningService service = createService(mock(EncryptRuleInspectionService.class), mock(EncryptAlgorithmRecommendationService.class),
                 mock(EncryptAlgorithmPropertyTemplateService.class), mock(DerivedColumnNamingService.class), mock(PhysicalDDLPlanningService.class),
@@ -71,7 +70,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRejectsLifecycleMismatchForCreate() throws ReflectiveOperationException {
+    void assertPlanRejectsLifecycleMismatchForCreate() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         WorkflowSessionContext workflowSessionContext = new TestWorkflowSessionContext();
@@ -84,7 +83,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanDropWorkflow() throws ReflectiveOperationException {
+    void assertPlanDropWorkflow() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of(Map.of("logic_column", "phone")));
         EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService = mock(EncryptRuleDistSQLPlanningService.class);
@@ -104,7 +103,7 @@ class EncryptWorkflowPlanningServiceTest {
     @MethodSource("assertPlanWithNaturalLanguageInferenceArguments")
     void assertPlanWithNaturalLanguageInference(final String name, final String naturalLanguageIntent, final boolean ruleExists,
                                                 final String expectedOperationType, final String expectedFieldSemantics, final String expectedStatus,
-                                                final boolean expectedHasClarificationMessages) throws ReflectiveOperationException {
+                                                final boolean expectedHasClarificationMessages) {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(ruleExists ? List.of(Map.of("logic_column", "phone")) : List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
@@ -123,7 +122,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanStopsOnBlockingAlgorithmIssue() throws ReflectiveOperationException {
+    void assertPlanStopsOnBlockingAlgorithmIssue() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
@@ -143,7 +142,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanInfersEncryptCapabilitiesFromNaturalLanguage() throws ReflectiveOperationException {
+    void assertPlanInfersEncryptCapabilitiesFromNaturalLanguage() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of(
@@ -174,7 +173,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanRequiresMissingProperties() throws ReflectiveOperationException {
+    void assertPlanRequiresMissingProperties() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
@@ -195,7 +194,7 @@ class EncryptWorkflowPlanningServiceTest {
     }
     
     @Test
-    void assertPlanCreatesArtifactsWithoutIndexDdl() throws ReflectiveOperationException {
+    void assertPlanCreatesArtifactsWithoutIndexDdl() {
         EncryptRuleInspectionService ruleInspectionService = mock(EncryptRuleInspectionService.class);
         when(ruleInspectionService.queryEncryptRules(any(), any(), any())).thenReturn(List.of());
         when(ruleInspectionService.queryEncryptAlgorithms(any())).thenReturn(List.of());
@@ -286,21 +285,10 @@ class EncryptWorkflowPlanningServiceTest {
                                                          final DerivedColumnNamingService derivedColumnNamingService,
                                                          final PhysicalDDLPlanningService physicalDDLPlanningService,
                                                          final IndexPlanningService indexPlanningService,
-                                                         final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) throws ReflectiveOperationException {
-        EncryptWorkflowPlanningService result = new EncryptWorkflowPlanningService();
-        setField(result, "ruleInspectionService", ruleInspectionService);
-        setField(result, "algorithmRecommendationService", algorithmRecommendationService);
-        setField(result, "algorithmPropertyTemplateService", algorithmPropertyTemplateService);
-        setField(result, "derivedColumnNamingService", derivedColumnNamingService);
-        setField(result, "physicalDDLPlanningService", physicalDDLPlanningService);
-        setField(result, "indexPlanningService", indexPlanningService);
-        setField(result, "ruleDistSQLPlanningService", ruleDistSQLPlanningService);
-        return result;
-    }
-    
-    private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
-        Field field = target.getClass().getDeclaredField(fieldName);
-        Plugins.getMemberAccessor().set(field, target, value);
+                                                         final EncryptRuleDistSQLPlanningService ruleDistSQLPlanningService) {
+        return new EncryptWorkflowPlanningService(new WorkflowPlanningSupport(), new EncryptWorkflowIntentResolver(), ruleInspectionService,
+                algorithmRecommendationService, algorithmPropertyTemplateService, derivedColumnNamingService, physicalDDLPlanningService,
+                indexPlanningService, ruleDistSQLPlanningService);
     }
     
     private static Stream<Arguments> assertPlanWithNaturalLanguageInferenceArguments() {

@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidApprovedStepsException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
@@ -94,11 +96,11 @@ public final class WorkflowExecutionService {
     
     private String requireExecutionMode(final String executionMode) {
         if (executionMode.isEmpty()) {
-            throw new MCPInvalidRequestException("apply_workflow execution_mode is required.");
+            throw new MCPExecutionModeRequiredException("apply_workflow", EXECUTION_MODES);
         }
         String result = executionMode.toLowerCase();
         if (!EXECUTION_MODES.contains(result)) {
-            throw new MCPInvalidRequestException("execution_mode must be one of `preview`, `review-then-execute`, or `manual-only`.");
+            throw new MCPInvalidExecutionModeException("apply_workflow", EXECUTION_MODES);
         }
         return result;
     }
@@ -109,7 +111,7 @@ public final class WorkflowExecutionService {
         }
         for (String each : approvedSteps) {
             if (!APPROVED_STEPS.contains(each)) {
-                throw new MCPInvalidRequestException("approved_steps must contain only `ddl`, `index_ddl`, or `rule_distsql`.");
+                throw new MCPInvalidApprovedStepsException(APPROVED_STEPS);
             }
         }
         return approvedSteps;

@@ -37,7 +37,7 @@ import java.util.Map;
  * Mask workflow planning service.
  */
 public final class MaskWorkflowPlanningService {
-    
+
     private static final List<String> INTERACTION_STEPS = List.of(
             "Confirm database, table, column and target lifecycle",
             "Inspect existing mask rules and logical metadata",
@@ -47,21 +47,42 @@ public final class MaskWorkflowPlanningService {
             "Review artifacts and choose execution mode",
             "Execute or export artifacts",
             "Validate and summarize");
-    
+
     private static final List<String> VALIDATION_LAYERS = List.of("rules", "logical_metadata", "sql_executability");
-    
-    private final WorkflowPlanningSupport planningSupport = new WorkflowPlanningSupport();
-    
-    private final MaskWorkflowIntentResolver intentResolver = new MaskWorkflowIntentResolver();
-    
-    private final MaskRuleInspectionService ruleInspectionService = new MaskRuleInspectionService();
-    
-    private final MaskAlgorithmRecommendationService algorithmRecommendationService = new MaskAlgorithmRecommendationService();
-    
-    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService = new MaskAlgorithmPropertyTemplateService();
-    
-    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService = new MaskRuleDistSQLPlanningService();
-    
+
+    private final WorkflowPlanningSupport planningSupport;
+
+    private final MaskWorkflowIntentResolver intentResolver;
+
+    private final MaskRuleInspectionService ruleInspectionService;
+
+    private final MaskAlgorithmRecommendationService algorithmRecommendationService;
+
+    private final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService;
+
+    private final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService;
+
+    /**
+     * Create mask workflow planning service.
+     */
+    public MaskWorkflowPlanningService() {
+        this(new WorkflowPlanningSupport(), new MaskWorkflowIntentResolver(), new MaskRuleInspectionService(),
+                new MaskAlgorithmRecommendationService(), new MaskAlgorithmPropertyTemplateService(), new MaskRuleDistSQLPlanningService());
+    }
+
+    MaskWorkflowPlanningService(final WorkflowPlanningSupport planningSupport, final MaskWorkflowIntentResolver intentResolver,
+                                final MaskRuleInspectionService ruleInspectionService,
+                                final MaskAlgorithmRecommendationService algorithmRecommendationService,
+                                final MaskAlgorithmPropertyTemplateService algorithmPropertyTemplateService,
+                                final MaskRuleDistSQLPlanningService ruleDistSQLPlanningService) {
+        this.planningSupport = planningSupport;
+        this.intentResolver = intentResolver;
+        this.ruleInspectionService = ruleInspectionService;
+        this.algorithmRecommendationService = algorithmRecommendationService;
+        this.algorithmPropertyTemplateService = algorithmPropertyTemplateService;
+        this.ruleDistSQLPlanningService = ruleDistSQLPlanningService;
+    }
+
     /**
      * Plan mask workflow.
      *
@@ -95,23 +116,23 @@ public final class MaskWorkflowPlanningService {
         }
         return workflowSessionContext.persist(result, WorkflowLifecycle.STEP_REVIEW, WorkflowLifecycle.STATUS_PLANNED);
     }
-    
+
     private WorkflowRequest prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowRequest request) {
         WorkflowRequest result = WorkflowRequest.merge(snapshot.getRequest(), request);
         return planningSupport.prepareSnapshot(snapshot, MaskFeatureDefinition.WORKFLOW_KIND, result, null,
                 intentResolver.resolve(result), "Mask workflow plan.", INTERACTION_STEPS, VALIDATION_LAYERS);
     }
-    
+
     private boolean ensureLifecycleState(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                          final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
         boolean ruleExists = maskRules.stream().anyMatch(each -> request.getColumn().equalsIgnoreCase(WorkflowRuleValueUtils.getRuleValue(each, "column")));
         return planningSupport.ensureLifecycleState("Mask rule", clarifiedIntent, ruleExists, snapshot);
     }
-    
+
     private boolean isDropWorkflow(final ClarifiedIntent clarifiedIntent) {
         return WorkflowLifecycle.OPERATION_DROP.equalsIgnoreCase(clarifiedIntent.getOperationType());
     }
-    
+
     private boolean planNonDrop(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                 final List<Map<String, Object>> existingRules, final WorkflowContextSnapshot snapshot) {
         planAlgorithms(queryFacade, clarifiedIntent, request, snapshot);
@@ -121,7 +142,7 @@ public final class MaskWorkflowPlanningService {
         planArtifacts(clarifiedIntent, request, existingRules, snapshot);
         return true;
     }
-    
+
     private void planAlgorithms(final MCPFeatureQueryFacade queryFacade, final ClarifiedIntent clarifiedIntent, final WorkflowRequest request, final WorkflowContextSnapshot snapshot) {
         List<Map<String, Object>> maskAlgorithms = ruleInspectionService.queryMaskAlgorithms(queryFacade);
         List<AlgorithmCandidate> algorithmCandidates = algorithmRecommendationService.recommendMaskAlgorithms(clarifiedIntent, request, maskAlgorithms, snapshot.getIssues());
@@ -130,11 +151,11 @@ public final class MaskWorkflowPlanningService {
             request.setAlgorithmType(algorithmCandidates.get(0).getAlgorithmType());
         }
     }
-    
+
     private List<AlgorithmPropertyRequirement> findPropertyRequirements(final WorkflowRequest request) {
         return algorithmPropertyTemplateService.findRequirements(request.getAlgorithmType());
     }
-    
+
     private void planArtifacts(final ClarifiedIntent clarifiedIntent, final WorkflowRequest request,
                                final List<Map<String, Object>> maskRules, final WorkflowContextSnapshot snapshot) {
         snapshot.getRuleArtifacts().add(isDropWorkflow(clarifiedIntent)

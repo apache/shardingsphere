@@ -135,7 +135,7 @@ class WorkflowExecutionServiceTest {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
                 mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP,
                 "session-1", createSnapshot(), List.of(), "auto-execute"));
-        assertThat(actual.getMessage(), is("execution_mode must be one of `preview`, `review-then-execute`, or `manual-only`."));
+        assertThat(actual.getMessage(), is("apply_workflow execution_mode must be one of [preview, review-then-execute, manual-only]."));
     }
     
     @Test
@@ -144,7 +144,7 @@ class WorkflowExecutionServiceTest {
         MCPInvalidRequestException actual = assertThrows(MCPInvalidRequestException.class, () -> executionService.apply(new InMemoryWorkflowSessionContext(),
                 mock(MCPMetadataQueryFacade.class), mock(MCPFeatureQueryFacade.class), mock(MCPFeatureExecutionFacade.class), MCPWorkflowApplySynchronizationHandler.NO_OP,
                 "session-1", createSnapshot(), List.of("review"), "review-then-execute"));
-        assertThat(actual.getMessage(), is("approved_steps must contain only `ddl`, `index_ddl`, or `rule_distsql`."));
+        assertThat(actual.getMessage(), is("approved_steps must contain only [ddl, index_ddl, rule_distsql]."));
     }
     
     @Test

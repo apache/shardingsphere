@@ -17,20 +17,23 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
+import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowExecutionService;
 import org.apache.shardingsphere.mcp.core.workflow.WorkflowRuntimeDefinitionRegistry;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
-import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.workflow.MCPWorkflowHandlerContext;
 import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowKind;
+
+import java.util.List;
 
 /**
  * Generic workflow execution tool handler.
@@ -61,7 +64,7 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String executionMode = toolArguments.getStringArgument("execution_mode");
         if (executionMode.isEmpty()) {
-            throw new MCPInvalidRequestException("apply_workflow execution_mode is required.");
+            throw new MCPExecutionModeRequiredException("apply_workflow", List.of("preview", "review-then-execute", "manual-only"));
         }
         MCPDatabaseHandlerContext databaseContext = workflowContext.getDatabaseContext();
         WorkflowContextSnapshot snapshot = workflowContext.getWorkflowSessionContext().getRequired(toolArguments.getStringArgument("plan_id"));
@@ -75,6 +78,6 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         if (null != snapshot.getWorkflowKind()) {
             return snapshot.getWorkflowKind();
         }
-        throw new MCPInvalidRequestException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()));
+        throw new MCPWorkflowStateException(String.format("Workflow kind is required for plan_id `%s`.", snapshot.getPlanId()), snapshot.getPlanId());
     }
 }

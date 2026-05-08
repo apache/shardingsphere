@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mcp.core.tool.request;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataObjectTypesException;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,9 +39,9 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public final class MCPToolArguments {
-    
+
     private final Map<String, Object> arguments;
-    
+
     /**
      * Get object types.
      *
@@ -66,7 +67,7 @@ public final class MCPToolArguments {
         }
         return result;
     }
-    
+
     private SupportedMCPMetadataObjectType resolveObjectType(final Object objectType, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
         String actualValue = Objects.toString(objectType, "").trim();
         if (actualValue.isEmpty()) {
@@ -77,12 +78,16 @@ public final class MCPToolArguments {
             if (supportedObjectTypes.contains(result)) {
                 return result;
             }
-        } catch (final IllegalArgumentException ex) {
-            throw new MCPInvalidRequestException(String.format("Unsupported object_types value `%s`.", actualValue), ex);
+        } catch (final IllegalArgumentException ignored) {
+            throw new MCPInvalidMetadataObjectTypesException(actualValue, createAllowedObjectTypes(supportedObjectTypes));
         }
-        throw new MCPInvalidRequestException(String.format("Unsupported object_types value `%s`.", actualValue));
+        throw new MCPInvalidMetadataObjectTypesException(actualValue, createAllowedObjectTypes(supportedObjectTypes));
     }
-    
+
+    private List<String> createAllowedObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
+        return supportedObjectTypes.stream().map(each -> each.name().toLowerCase(Locale.ENGLISH)).toList();
+    }
+
     /**
      * Get string argument.
      *
@@ -92,7 +97,7 @@ public final class MCPToolArguments {
     public String getStringArgument(final String name) {
         return Objects.toString(arguments.get(name), "").trim();
     }
-    
+
     /**
      * Get integer argument.
      *
@@ -118,7 +123,7 @@ public final class MCPToolArguments {
             return defaultValue;
         }
     }
-    
+
     /**
      * Get bounded integer argument.
      *
@@ -137,7 +142,7 @@ public final class MCPToolArguments {
         }
         return result;
     }
-    
+
     private int parseIntegerArgument(final String name, final Object value, final int defaultValue) {
         if (null == value) {
             return defaultValue;
@@ -152,7 +157,7 @@ public final class MCPToolArguments {
             throw new MCPInvalidRequestException(String.format("%s must be an integer.", name), ex);
         }
     }
-    
+
     /**
      * Get boolean argument.
      *
@@ -174,7 +179,7 @@ public final class MCPToolArguments {
         }
         return Boolean.parseBoolean(actualValue);
     }
-    
+
     /**
      * Get string collection argument.
      *
@@ -195,7 +200,7 @@ public final class MCPToolArguments {
         }
         return result;
     }
-    
+
     /**
      * Get string map argument.
      *

@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,20 +63,50 @@ public final class MCPUriTemplateUtils {
     }
 
     /**
-     * Expand URI template with variables.
+     * Expand URI template when all variables are present.
      *
      * @param uriTemplate URI template
      * @param variables URI variables
-     * @return concrete URI, or empty text when variables are missing
+     * @return expanded URI, or empty when at least one variable is missing
      */
-    public static String expand(final String uriTemplate, final Map<String, String> variables) {
-        String result = uriTemplate;
-        for (Entry<String, String> entry : variables.entrySet()) {
-            result = result.replace("{" + entry.getKey() + "}", encodePathSegment(entry.getValue()));
+    public static Optional<String> expandIfComplete(final String uriTemplate, final Map<String, String> variables) {
+        List<String> missingVariableNames = getMissingVariableNames(uriTemplate, variables);
+        if (!missingVariableNames.isEmpty()) {
+            return Optional.empty();
         }
-        return isTemplated(result) ? "" : result;
+        return Optional.of(expandKnownVariables(uriTemplate, variables));
     }
-    
+
+    /**
+     * Expand URI template with all required variables.
+     *
+     * @param uriTemplate URI template
+     * @param variables URI variables
+     * @return expanded URI
+     */
+    public static String expandRequired(final String uriTemplate, final Map<String, String> variables) {
+        return expandIfComplete(uriTemplate, variables).orElseThrow(
+                () -> new IllegalArgumentException(String.format("Missing URI template variables %s for `%s`.", getMissingVariableNames(uriTemplate, variables), uriTemplate)));
+    }
+
+    private static List<String> getMissingVariableNames(final String uriTemplate, final Map<String, String> variables) {
+        List<String> result = new LinkedList<>();
+        for (String each : extractVariableNames(uriTemplate)) {
+            if (null == variables || null == variables.get(each)) {
+                result.add(each);
+            }
+        }
+        return result;
+    }
+
+    private static String expandKnownVariables(final String uriTemplate, final Map<String, String> variables) {
+        String result = uriTemplate;
+        for (String each : extractVariableNames(uriTemplate)) {
+            result = result.replace("{" + each + "}", encodePathSegment(variables.get(each)));
+        }
+        return result;
+    }
+
     /**
      * Encode one MCP resource URI path segment.
      *

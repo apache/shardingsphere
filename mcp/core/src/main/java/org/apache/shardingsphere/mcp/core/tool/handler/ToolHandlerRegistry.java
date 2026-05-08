@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSpherePreconditions;
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
@@ -31,6 +30,8 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerContexts;
 import org.apache.shardingsphere.mcp.core.handler.MCPHandlerLoader;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -45,23 +46,23 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ToolHandlerRegistry {
-    
+
     private static final Map<String, MCPToolHandler<?>> REGISTERED_TOOL_HANDLERS;
-    
+
     private static final Collection<String> SUPPORTED_TOOLS;
-    
+
     private static final List<MCPToolDescriptor> SUPPORTED_TOOL_DESCRIPTORS;
-    
+
     static {
         REGISTERED_TOOL_HANDLERS = createRegisteredTools();
         SUPPORTED_TOOLS = REGISTERED_TOOL_HANDLERS.keySet();
         SUPPORTED_TOOL_DESCRIPTORS = REGISTERED_TOOL_HANDLERS.values().stream().map(MCPToolHandler::getToolDescriptor).collect(Collectors.toList());
     }
-    
+
     private static Map<String, MCPToolHandler<?>> createRegisteredTools() {
         return createRegisteredTools(MCPHandlerLoader.loadToolHandlers());
     }
-    
+
     static Map<String, MCPToolHandler<?>> createRegisteredTools(final Collection<MCPToolHandler<?>> handlers) {
         ShardingSpherePreconditions.checkNotEmpty(handlers, () -> new IllegalStateException("No tool handlers are registered."));
         Map<String, MCPToolHandler<?>> result = new LinkedHashMap<>(handlers.size(), 1F);
@@ -79,7 +80,7 @@ public final class ToolHandlerRegistry {
         }
         return result;
     }
-    
+
     /**
      * Get supported tools.
      *
@@ -88,7 +89,7 @@ public final class ToolHandlerRegistry {
     public static Collection<String> getSupportedTools() {
         return SUPPORTED_TOOLS;
     }
-    
+
     /**
      * Get supported tool descriptors.
      *
@@ -97,7 +98,7 @@ public final class ToolHandlerRegistry {
     public static List<MCPToolDescriptor> getSupportedToolDescriptors() {
         return SUPPORTED_TOOL_DESCRIPTORS;
     }
-    
+
     /**
      * Find registered tool.
      *
@@ -107,7 +108,7 @@ public final class ToolHandlerRegistry {
     public static Optional<MCPToolHandler<?>> findRegisteredTool(final String toolName) {
         return Optional.ofNullable(REGISTERED_TOOL_HANDLERS.get(toolName));
     }
-    
+
     /**
      * Dispatch tool call to registered tool.
      *
@@ -126,25 +127,31 @@ public final class ToolHandlerRegistry {
         checkRequiredArguments(arguments, toolHandler.get().getToolDescriptor());
         return Optional.of(dispatch(requestScope, toolHandler.get(), new MCPToolCall(sessionId, arguments)));
     }
-    
+
     private static <T extends MCPHandlerContext> MCPResponse dispatch(final MCPRequestScope requestScope, final MCPToolHandler<T> toolHandler, final MCPToolCall toolCall) {
         return toolHandler.handle(MCPHandlerContexts.resolve(requestScope, toolHandler.getContextType(), toolHandler.getClass()), toolCall);
     }
-    
+
     private static void checkRequiredArguments(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor) {
         for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
             if (!each.isRequired()) {
                 continue;
             }
-            ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> new MCPInvalidRequestException(String.format("%s is required.", each.getName())));
+            ShardingSpherePreconditions.checkContainsKey(arguments, each.getName(), () -> createMissingArgumentException(toolDescriptor, each));
             if (Type.STRING == each.getValueDefinition().getType()) {
-                checkRequiredTextArgument(arguments, each.getName());
+                checkRequiredTextArgument(arguments, toolDescriptor, each);
             }
         }
     }
-    
-    private static void checkRequiredTextArgument(final Map<String, Object> arguments, final String argumentName) {
-        String actualValue = Objects.toString(arguments.get(argumentName), "").trim();
-        ShardingSpherePreconditions.checkState(!actualValue.isEmpty(), () -> new MCPInvalidRequestException(String.format("%s is required.", argumentName)));
+
+    private static void checkRequiredTextArgument(final Map<String, Object> arguments, final MCPToolDescriptor toolDescriptor, final MCPToolFieldDefinition fieldDefinition) {
+        String actualValue = Objects.toString(arguments.get(fieldDefinition.getName()), "").trim();
+        ShardingSpherePreconditions.checkState(!actualValue.isEmpty(), () -> createMissingArgumentException(toolDescriptor, fieldDefinition));
+    }
+
+    private static RuntimeException createMissingArgumentException(final MCPToolDescriptor toolDescriptor, final MCPToolFieldDefinition fieldDefinition) {
+        return "execution_mode".equals(fieldDefinition.getName())
+                ? new MCPExecutionModeRequiredException(toolDescriptor.getName(), fieldDefinition.getValueDefinition().getEnumValues().stream().toList())
+                : new MCPMissingToolArgumentException(fieldDefinition.getName());
     }
 }

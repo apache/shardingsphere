@@ -80,7 +80,7 @@ public final class MCPSQLExecutionFacade implements MCPFeatureExecutionFacade {
         ClassificationResult classificationResult;
         try {
             classificationResult = new StatementClassifier().classify(executionRequest.getSql());
-        } catch (final UnsupportedOperationException | IllegalArgumentException ex) {
+        } catch (final MCPUnsupportedException | IllegalArgumentException ex) {
             throw recordFailure(executionRequest, SupportedMCPStatement.QUERY.name(), ex);
         }
         ShardingSpherePreconditions.checkContains(actualDatabaseCapability.getSupportedStatementClasses(), classificationResult.getStatementClass(),

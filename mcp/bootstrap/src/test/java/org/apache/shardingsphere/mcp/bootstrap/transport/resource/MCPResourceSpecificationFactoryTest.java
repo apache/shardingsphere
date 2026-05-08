@@ -107,6 +107,6 @@ class MCPResourceSpecificationFactoryTest {
         return new MCPResourceDescriptor("shardingsphere://databases/{database}", "logical-database-detail", "Logical Database Detail",
                 "Read one logical database detail.", "application/json",
                 List.of(new MCPResourceParameterDescriptor("database", "Logical Database", "ShardingSphere logical database name.", true, "logical-database")),
-                null, Map.of("resourceKind", "detail"));
+                null, "detail", null, null, List.of(), List.of(), List.of(), Map.of());
     }
 }

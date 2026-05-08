@@ -34,8 +34,6 @@ public final class YamlMCPResourceDescriptor {
     
     private String uriTemplate;
     
-    private String uriPattern;
-    
     private String name;
     
     private String title;

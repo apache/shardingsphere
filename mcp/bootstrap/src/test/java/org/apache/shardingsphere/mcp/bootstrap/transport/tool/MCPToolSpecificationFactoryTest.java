@@ -28,7 +28,6 @@ import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
@@ -236,18 +235,18 @@ class MCPToolSpecificationFactoryTest {
     
     private MCPToolDescriptor createToolDescriptor(final String toolName) {
         return new MCPToolDescriptor(toolName, "Search Metadata", "Search database metadata.", List.of(
-                new MCPToolFieldDefinition("query", new MCPToolValueDefinition(Type.STRING, "Search query.", null), true),
-                new MCPToolFieldDefinition("object_types", new MCPToolValueDefinition(Type.ARRAY, "Optional object-type filter.",
-                        new MCPToolValueDefinition(Type.STRING, "Object type.", null, List.of("TABLE", "VIEW"))), false)),
+                new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true),
+                new MCPToolFieldDefinition("object_types", MCPToolValueDefinition.array("Optional object-type filter.",
+                        MCPToolValueDefinition.stringEnum("Object type.", List.of("TABLE", "VIEW"))), false)),
                 Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true, false),
                 Map.of("relatedResources", List.of("shardingsphere://databases")));
     }
     
     private MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
         return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", List.of(
-                new MCPToolFieldDefinition("custom_properties", new MCPToolValueDefinition(Type.OBJECT, "Custom properties.", null, List.of(), List.of(), true), false),
-                new MCPToolFieldDefinition("intent", new MCPToolValueDefinition(Type.OBJECT, "Intent.", null, List.of(),
-                        List.of(new MCPToolFieldDefinition("requires_review", new MCPToolValueDefinition(Type.BOOLEAN, "Requires review.", null), false)), false), false)),
+                new MCPToolFieldDefinition("custom_properties", MCPToolValueDefinition.object("Custom properties."), false),
+                new MCPToolFieldDefinition("intent", MCPToolValueDefinition.object("Intent.",
+                        List.of(new MCPToolFieldDefinition("requires_review", MCPToolValueDefinition.bool("Requires review."), false)), false), false)),
                 Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true, false), Map.of("workflowRole", "plan"));
     }
 }

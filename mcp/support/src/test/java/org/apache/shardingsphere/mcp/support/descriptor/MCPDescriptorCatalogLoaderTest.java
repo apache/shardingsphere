@@ -46,7 +46,7 @@ class MCPDescriptorCatalogLoaderTest {
                 "approval_question", "review_focus"));
         assertOutputProperties(actual, "validate_workflow", Set.of("response_mode", "plan_id", "status", "next_actions", "sections", "mismatches"));
         assertResourceDescriptor(actual);
-        assertNoLegacyRecommendationFields(actual);
+        assertNoBannedRecommendationFields(actual);
     }
     
     @Test
@@ -82,22 +82,22 @@ class MCPDescriptorCatalogLoaderTest {
         assertThat(actual.getObjectScope(), is("workflow-plan"));
         assertThat(actual.getRelatedTools(), is(List.of("validate_workflow", "apply_workflow")));
         assertTrue(actual.getMeta().isEmpty());
-        assertThat(findResource(catalog, "shardingsphere://legacy/resource").getResourceKind(), is("detail"));
+        assertThat(findResource(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
     }
     
-    private void assertNoLegacyRecommendationFields(final MCPDescriptorCatalog catalog) {
+    private void assertNoBannedRecommendationFields(final MCPDescriptorCatalog catalog) {
         for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
-            assertFalse(containsLegacyRecommendationField(each.getOutputSchema()));
+            assertFalse(containsBannedRecommendationField(each.getOutputSchema()));
         }
     }
     
-    private boolean containsLegacyRecommendationField(final Object value) {
+    private boolean containsBannedRecommendationField(final Object value) {
         if (value instanceof Map) {
-            return containsLegacyRecommendationFieldMap((Map<?, ?>) value);
+            return containsBannedRecommendationFieldMap((Map<?, ?>) value);
         }
         if (value instanceof Iterable) {
             for (Object each : (Iterable<?>) value) {
-                if (containsLegacyRecommendationField(each)) {
+                if (containsBannedRecommendationField(each)) {
                     return true;
                 }
             }
@@ -105,12 +105,12 @@ class MCPDescriptorCatalogLoaderTest {
         return false;
     }
     
-    private boolean containsLegacyRecommendationFieldMap(final Map<?, ?> value) {
+    private boolean containsBannedRecommendationFieldMap(final Map<?, ?> value) {
         if (value.containsKey("recommended_next_tool") || value.containsKey("suggested_next_tool") || value.containsKey("suggested_next_tools")) {
             return true;
         }
         for (Object each : value.values()) {
-            if (containsLegacyRecommendationField(each)) {
+            if (containsBannedRecommendationField(each)) {
                 return true;
             }
         }

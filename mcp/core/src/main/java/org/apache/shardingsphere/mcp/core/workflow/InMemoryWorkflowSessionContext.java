@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mcp.core.workflow;
 
-import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.support.workflow.WorkflowSessionContext;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowContextSnapshot;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowLifecycle;
@@ -97,8 +97,8 @@ public final class InMemoryWorkflowSessionContext implements WorkflowSessionCont
     
     @Override
     public WorkflowContextSnapshot getRequired(final String planId) {
-        return find(planId).orElseThrow(() -> new MCPInvalidRequestException(
-                String.format("Unknown or unavailable plan_id `%s`. Call the planning tool again in the current MCP session.", planId)));
+        return find(planId).orElseThrow(() -> new MCPWorkflowStateException(
+                String.format("Unknown or unavailable plan_id `%s`. Call the planning tool again in the current MCP session.", planId), planId));
     }
     
     @Override

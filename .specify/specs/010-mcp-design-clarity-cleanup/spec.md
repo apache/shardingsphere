@@ -19,7 +19,7 @@
 
 **Feature Branch**: `001-shardingsphere-mcp`
 **Created**: 2026-05-08
-**Status**: Draft
+**Status**: Implemented
 **Input**: User asks to organize the over-design, transitional-design, inconsistent-style, and unclear-code findings for `shardingsphere-mcp` and `mcp-e2e` with Speckit, without switching branches.
 
 ## Goal
@@ -28,6 +28,28 @@ Define a clarity-first cleanup backlog for `shardingsphere-mcp` and `test/e2e/mc
 
 The goal is not to add a larger architecture. The goal is to make the existing MCP modules easier to read, safer to change, and more convenient to extend.
 The cleanup removes mixed responsibilities, hard-coded transitional behavior, stringly typed contracts, and oversized test harnesses.
+
+## 100-Point Clarity Target
+
+The target score is **100/100** for the whole MCP implementation area:
+`mcp/api`, `mcp/support`, `mcp/core`, `mcp/features`, `mcp/bootstrap`, and
+`test/e2e/mcp`.
+The score must be earned by code shape, names, types, construction paths, and focused tests.
+JAVADOC, ordinary comments, README text, or external explanation cannot compensate for unclear code.
+
+- **Design target**: API value objects are canonical data holders, transport code
+  is protocol translation only, descriptor loading is split by responsibility,
+  recovery is structured, and no public payload carries duplicate legacy aliases.
+- **Readability target**: Common code paths can be read without jumping through
+  unrelated concerns, common descriptor/value construction uses named code, and
+  ambiguous sentinel return values are removed or renamed.
+- **Convenience target**: A contributor can add a tool, resource, workflow
+  action, recovery hint, or E2E assertion through discoverable factories and
+  helpers without feature-specific bootstrap branches or raw nested maps.
+
+The initial full-scope baseline was **85/100**. The final score is **100/100**
+and is recorded in `scorecard.md`.
+Implementation is complete because the scorecard gates pass.
 
 ## User Scenarios & Testing
 
@@ -80,7 +102,7 @@ An E2E test author should understand MCP runtime, HTTP/STDIO contract, and LLM u
 
 ## Edge Cases
 
-- Existing MCP clients may rely on legacy aliases; this cleanup may intentionally break those aliases when the clearer contract is documented and tested.
+- Existing MCP clients may rely on legacy aliases; this cleanup may intentionally break those aliases when the clearer contract is encoded in code and covered by tests.
 - Some SQL safety checks may still require lightweight lexical checks; this specification forbids broad hidden parsing, not all local inspection.
 - Live LLM tests remain opt-in and must not become a default CI requirement.
 - The repository may contain unrelated dirty files; implementation must avoid reverting or rewriting them.
@@ -94,7 +116,7 @@ An E2E test author should understand MCP runtime, HTTP/STDIO contract, and LLM u
   No implementation task may require `git switch`, `git checkout`, branch creation, or a Spec Kit script that performs those actions.
 - **DCC-FR-002**: Statement classification MUST be narrowed to MCP safety and routing needs.
   Otherwise tokenizer, CTE handling, and target-object extraction MUST be split into named helpers with explicit supported scope.
-- **DCC-FR-003**: Descriptor catalog loading MUST separate YAML IO, descriptor swapping, legacy cleanup, descriptor validation, and model-facing contract construction.
+- **DCC-FR-003**: Descriptor catalog loading MUST separate YAML IO, descriptor swapping, legacy rejection, descriptor validation, and model-facing contract construction.
 - **DCC-FR-004**: Bootstrap transport code MUST NOT hard-code feature tool names or feature-specific workflow argument names.
 - **DCC-FR-005**: High-frequency public payload contracts MUST use small typed models or centralized factories/constants instead of scattered string literals.
   This includes `next_actions`, recovery hints, resource hints, and workflow apply payloads.
@@ -109,29 +131,46 @@ An E2E test author should understand MCP runtime, HTTP/STDIO contract, and LLM u
 - **DCC-FR-014**: Giant smoke tests MUST be grouped by product surface, such as metadata resources, tool schema, SQL execution, workflow guidance, and transport contracts.
 - **DCC-FR-015**: Runtime fixture support MUST separate generic database/runtime setup from LLM scenario data and repeated wait/retry behavior.
 - **DCC-FR-016**: Public behavior MAY change when the new shape is more reasonable, readable, and elegant.
-  Every intentional behavior or contract change MUST be documented and tested.
+  Every intentional behavior or contract change MUST be traceable through code names, contract tests, and focused assertions.
 - **DCC-FR-017**: New abstractions MUST be accepted only when they reduce a mixed responsibility, remove meaningful duplication, or make a public contract easier to find.
   No DI framework, planner framework, or broad rewrite is in scope.
+- **DCC-FR-018**: No implementation task may treat JAVADOC, comments, README text, or external explanation as the fix for unclear production or test code.
+  The clearer behavior MUST be expressed by names, types, factories, helpers, and tests.
+- **DCC-FR-019**: Public API descriptor/value classes MUST NOT own legacy compatibility parsing, hidden meta cleanup, or transitional alias mapping.
+  Legacy fields should be deleted from the target contract or rejected by descriptor validation.
+- **DCC-FR-020**: Common descriptor/value construction MUST avoid long ambiguous positional constructors.
+  Tool value definitions and repeated schema fragments MUST expose small named factories or equivalent code paths that make the intent obvious at call sites.
+- **DCC-FR-021**: Public helpers MUST NOT hide failure behind ambiguous sentinel values.
+  Existing helpers such as URI template expansion MUST either use intention-revealing names or return/throw an explicit success/failure shape.
+- **DCC-FR-022**: Recovery payloads MUST use the same canonical action vocabulary at every public level.
+  Fields such as `target_tool`, `target_resource`, `required_arguments`, and `action_kind` MUST NOT appear in public model-facing output.
 
 ### Key Entities
 
-- **Responsibility Boundary**: A documented primary reason for a class or helper to change.
+- **Responsibility Boundary**: A primary reason for a class or helper to change, visible from names, dependencies, and tests.
 - **Public MCP Contract**: A model-facing field shape, descriptor schema, recovery payload, or next action payload.
 - **Contract Cleanup Boundary**: The single place where old aliases or transitional fields are removed or, if unavoidable, accepted as internal-only input.
 - **E2E Scenario Harness**: Test support that runs runtime, transport, LLM usability, and payload assertions.
 - **Clarity Gate**: A review or test condition that prevents the same mixed-responsibility pattern from returning.
+- **Score Gate**: A concrete scorecard item that proves design, readability, or convenience reached the 100-point target through code and tests.
 
 ## Success Criteria
 
 ### Measurable Outcomes
 
 - **DCC-SC-001**: No bootstrap transport class contains hard-coded encrypt/mask planning tool names or feature-specific workflow argument names.
-- **DCC-SC-002**: Descriptor loading no longer has one class responsible for YAML IO, legacy cleanup, per-tool output contract policy, and model guidance payload construction.
+- **DCC-SC-002**: Descriptor loading no longer has one class responsible for YAML IO, legacy rejection, per-tool output contract policy, and model guidance payload construction.
 - **DCC-SC-003**: Statement classification no longer hides tokenizer, CTE, and target-object extraction as private implementation details inside one oversized class without explicit scope.
 - **DCC-SC-004**: Common model-facing payloads have either typed contract helpers or centralized key factories with focused tests.
 - **DCC-SC-005**: E2E payload assertions for common MCP responses avoid repeated raw nested casts in scenario tests.
-- **DCC-SC-006**: The largest MCP and MCP E2E classes have a documented reason to remain large, or are split by responsibility with equivalent test coverage.
+- **DCC-SC-006**: The largest MCP and MCP E2E classes either have one obvious primary responsibility from code structure, or are split by responsibility with equivalent test coverage.
 - **DCC-SC-007**: All implementation PRs for this feature report branch status, scoped test commands, Checkstyle status, and intentional contract changes.
+- **DCC-SC-008**: No public MCP runtime payload emits `action_kind`, `target_tool`, `target_resource`, or `required_arguments`.
+- **DCC-SC-009**: `MCPResourceDescriptor` and related API value classes contain only canonical state and behavior; legacy meta compatibility is handled outside `mcp/api`.
+- **DCC-SC-010**: Common `MCPToolValueDefinition` call sites read through named factory/helper methods rather than repeated long positional constructors.
+- **DCC-SC-011**: URI template expansion APIs make missing-variable behavior explicit in method names, return types, or exceptions.
+- **DCC-SC-012**: No production clarity issue is marked complete because comments or JAVADOC explain it.
+- **DCC-SC-013**: The final `scorecard.md` marks the whole MCP and MCP E2E scope as 100/100 with command evidence and residual-risk notes.
 
 ## Assumptions
 

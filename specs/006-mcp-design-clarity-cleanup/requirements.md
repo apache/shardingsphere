@@ -23,6 +23,8 @@ This is the repo-visible handoff for `.specify/specs/010-mcp-design-clarity-clea
 
 The goal is to turn the current review findings for `shardingsphere-mcp` and `test/e2e/mcp` into an implementation-ready cleanup backlog.
 The guiding rule is clarity first: remove mixed responsibilities and transitional behavior without introducing broad new abstractions.
+The target was to raise the whole MCP and MCP E2E clarity score to 100/100.
+That score must come from code shape, names, types, construction paths, helpers, and tests, not JAVADOC, comments, README text, or handoff explanation.
 
 ## 2. Branch Constraint
 
@@ -43,20 +45,27 @@ The guiding rule is clarity first: remove mixed responsibilities and transitiona
 ## 4. P0 Requirements: Core Clarity
 
 - **DCC-P0-01 Statement classification boundary**: Narrow `StatementClassifier` to MCP safety/routing needs.
-  Otherwise split tokenizer, CTE handling, and target-object extraction into explicit helpers with documented supported scope.
-- **DCC-P0-02 Descriptor loader boundary**: Separate descriptor YAML IO, descriptor swapping, validation, legacy cleanup, and model-facing catalog payload construction.
+  Otherwise split tokenizer, CTE handling, and target-object extraction into explicit helpers whose names and tests show the supported scope.
+- **DCC-P0-02 Descriptor loader boundary**: Separate descriptor YAML IO, descriptor swapping, validation, legacy rejection, and model-facing catalog payload construction.
 - **DCC-P0-03 Bootstrap transport boundary**: Remove hard-coded encrypt/mask planning tool names and feature-specific workflow argument names from bootstrap transport.
 - **DCC-P0-04 Public payload contract ownership**: Centralize or lightly type recurring public contracts such as `next_actions`, recovery hints, resource hints, and workflow apply payloads.
 - **DCC-P0-05 Structured recovery**: Replace exception-message-prefix recovery decisions with error codes, structured exception data, or dedicated recovery providers.
 - **DCC-P0-06 Legacy cleanup**: Remove legacy aliases and transitional fields from public model-facing contracts unless an internal-only fallback is explicitly justified.
+- **DCC-P0-07 API value-object purity**: Keep API descriptor/value classes as canonical data holders.
+  Delete legacy meta parsing, cleanup, and transitional alias mapping from the target contract.
+- **DCC-P0-08 Named construction**: Replace repeated long positional construction for common descriptor/value shapes with named factories or equivalent helpers.
+- **DCC-P0-09 Explicit helper failure**: Rename or split public helper APIs that hide failure behind ambiguous sentinel values.
+- **DCC-P0-10 Code explains code**: Do not accept comments, JAVADOC, README text, or handoff prose as the fix for unclear production or test code.
 
 ## 5. Implementation Order
 
-1. Remove bootstrap transport coupling to feature-specific planning tools and workflow argument names.
-2. Clean public payload contracts and delete legacy aliases from model-facing output.
-3. Split descriptor loading/catalog and structured recovery responsibilities.
-4. Narrow or split statement classification and metadata/completion responsibilities.
-5. Clean the MCP E2E runner, payload assertion helpers, smoke test grouping, and fixtures.
+1. Move completion candidate production out of bootstrap transport code.
+2. Add named E2E payload assertion helpers and replace raw nested map assertions in touched scenarios.
+3. Split the H2 production smoke coverage by product surface.
+4. Split the LLM E2E runner into conversation loop, MCP tool bridge, validation, artifact, and scoring responsibilities.
+5. Split metadata search internals by matching, paging, and payload assembly where this lowers reading cost.
+6. Split statement classification after the recovery and approval contracts are stable.
+7. Re-run the scorecard and scoped verification evidence before claiming 100/100.
 
 ## 6. P1 Requirements: Service and Feature Testability
 
@@ -78,16 +87,29 @@ The guiding rule is clarity first: remove mixed responsibilities and transitiona
 - Do not add a DI framework, planner framework, semantic/vector search, cross-session memory, RBAC, approval-token system, rollback orchestration, or live LLM default CI gate.
 - Do not change MCP product behavior just to make classes smaller.
 - Do not rewrite the entire MCP module or E2E suite in one pass.
+- Do not add comments or JAVADOC as a substitute for clearer code.
 
 ## 9. Acceptance Gates
 
 - Bootstrap transport does not contain feature tool-name or feature argument-name branches.
-- Descriptor loading no longer has one class responsible for IO, legacy fallback, validation policy, and model guidance construction.
+- Descriptor loading no longer has one class responsible for IO, legacy rejection, validation policy, and model guidance construction.
 - Statement classification has explicit responsibility boundaries and focused tests.
 - Common model-facing payloads have discoverable contract ownership.
 - E2E scenario tests avoid repeated raw nested casts for common payload shapes.
-- Every implementation slice documents and tests intentional public behavior or contract changes.
+- Every implementation slice makes intentional public behavior or contract changes visible through canonical names and tests.
+- No public MCP runtime payload emits `action_kind`, `target_tool`, `target_resource`, or `required_arguments`.
+- `mcp/api` descriptor/value classes do not own legacy compatibility parsing or hidden cleanup behavior.
+- Common schema/value construction and URI expansion call sites are intention-revealing without extra prose.
+- The final scorecard marks the whole MCP and MCP E2E scope as 100/100 with command evidence.
 - Final handoff includes branch status, commands with exit codes, scoped test evidence, Checkstyle status for touched Java modules, and remaining risks.
+
+## 11. Final Status
+
+- Score: **100/100** in `.specify/specs/010-mcp-design-clarity-cleanup/scorecard.md`.
+- Production MCP: **70/70**.
+- MCP E2E: **30/30**.
+- Extra retry/wait generalization was rejected because the existing readiness
+  loops represent different lifecycles and failure semantics.
 
 ## 10. Verification Plan
 
@@ -101,8 +123,8 @@ git diff --check
 Java changes:
 
 ```bash
-./mvnw -pl mcp -am -DskipITs -Dspotless.skip=true test
-./mvnw -pl mcp -am -Pcheck checkstyle:check
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features,mcp/bootstrap -am -DskipITs -Dspotless.skip=true test
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features,mcp/bootstrap,test/e2e/mcp -am -Pcheck -DskipITs -DskipTests checkstyle:check
 ```
 
 E2E changes:

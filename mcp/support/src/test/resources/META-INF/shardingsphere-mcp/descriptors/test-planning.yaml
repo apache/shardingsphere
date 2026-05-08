@@ -16,10 +16,10 @@
 #
 
 resources:
-  - uriPattern: shardingsphere://legacy/resource
-    name: legacy_resource
-    title: Legacy Resource
-    description: "Legacy uriPattern resource descriptor compatibility."
+  - uriTemplate: shardingsphere://workflow/test-resource
+    name: workflow_test_resource
+    title: Workflow Test Resource
+    description: "Workflow descriptor resource used by descriptor catalog loader tests."
     mimeType: application/json
     resourceKind: detail
 

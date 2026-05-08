@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPBannedSQLStatementException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -124,25 +127,25 @@ class StatementClassifierTest {
     private static Stream<Arguments> assertClassifyWithInvalidStatementCases() {
         return Stream.of(
                 Arguments.of("blank sql", "   ", IllegalArgumentException.class, "sql cannot be empty."),
-                Arguments.of("multiple statements", "SELECT 1; SELECT 2", IllegalArgumentException.class, "Only one SQL statement is allowed."),
+                Arguments.of("multiple statements", "SELECT 1; SELECT 2", MCPMultipleSQLStatementsException.class, "Only one SQL statement is allowed."),
                 Arguments.of("savepoint without name", "SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("release savepoint without name", "RELEASE SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
                 Arguments.of("rollback to savepoint without name", "ROLLBACK TO SAVEPOINT", IllegalArgumentException.class, "Savepoint name is required."),
-                Arguments.of("banned use", "USE foo_db", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned set", "SET search_path public", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned copy", "COPY foo_orders FROM '/tmp/foo.csv'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned load", "LOAD DATA INFILE '/tmp/foo.csv' INTO TABLE foo_orders", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned call", "CALL foo_refresh_orders()", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned select into outfile", "SELECT * FROM foo_orders INTO OUTFILE '/tmp/foo.csv'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned alter system", "ALTER SYSTEM SET shared_buffers = '128MB'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned create user", "CREATE USER foo_user IDENTIFIED BY 'pwd'", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
-                Arguments.of("banned alter role", "ALTER ROLE foo_role SET search_path = public", UnsupportedOperationException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned use", "USE foo_db", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned set", "SET search_path public", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned copy", "COPY foo_orders FROM '/tmp/foo.csv'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned load", "LOAD DATA INFILE '/tmp/foo.csv' INTO TABLE foo_orders", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned call", "CALL foo_refresh_orders()", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned select into outfile", "SELECT * FROM foo_orders INTO OUTFILE '/tmp/foo.csv'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned alter system", "ALTER SYSTEM SET shared_buffers = '128MB'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned create user", "CREATE USER foo_user IDENTIFIED BY 'pwd'", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
+                Arguments.of("banned alter role", "ALTER ROLE foo_role SET search_path = public", MCPBannedSQLStatementException.class, "Statement is banned by the MCP contract."),
                 Arguments.of("metadata show", "SHOW", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata show tables", "SHOW TABLES", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata describe", "DESCRIBE", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata describe table", "DESCRIBE foo_orders", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata desc", "DESC", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
                 Arguments.of("metadata desc table", "DESC foo_orders", MetadataIntrospectionSQLStatementException.class, "Metadata introspection SQL should use MCP metadata resources."),
-                Arguments.of("unsupported statement", "ANALYZE TABLE foo_orders", IllegalArgumentException.class, "Statement is not supported by the MCP contract."));
+                Arguments.of("unsupported statement", "ANALYZE TABLE foo_orders", MCPUnsupportedSQLStatementException.class, "Statement is not supported by the MCP contract."));
     }
 }

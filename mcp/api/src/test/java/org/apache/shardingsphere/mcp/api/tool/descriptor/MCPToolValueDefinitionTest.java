@@ -38,18 +38,17 @@ class MCPToolValueDefinitionTest {
     
     private static Stream<Arguments> assertToSchemaFragmentCases() {
         return Stream.of(
-                Arguments.of("string", new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "foo description", null),
+                Arguments.of("string", MCPToolValueDefinition.string("foo description"),
                         Map.of("type", "string", "description", "foo description")),
-                Arguments.of("string enum", new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "foo description", null, List.of("foo", "bar")),
+                Arguments.of("string enum", MCPToolValueDefinition.stringEnum("foo description", List.of("foo", "bar")),
                         Map.of("type", "string", "description", "foo description", "enum", List.of("foo", "bar"))),
-                Arguments.of("integer", new MCPToolValueDefinition(MCPToolValueDefinition.Type.INTEGER, "bar description", null),
+                Arguments.of("integer", MCPToolValueDefinition.integer("bar description"),
                         Map.of("type", "integer", "description", "bar description")),
-                Arguments.of("array", new MCPToolValueDefinition(MCPToolValueDefinition.Type.ARRAY, "baz description",
-                        new MCPToolValueDefinition(MCPToolValueDefinition.Type.STRING, "item description", null, List.of("foo"))),
+                Arguments.of("array", MCPToolValueDefinition.array("baz description", MCPToolValueDefinition.stringEnum("item description", List.of("foo"))),
                         Map.of("type", "array", "description", "baz description", "items", Map.of("type", "string", "description", "item description", "enum", List.of("foo")))),
-                Arguments.of("boolean", new MCPToolValueDefinition(MCPToolValueDefinition.Type.BOOLEAN, "qux description", null),
+                Arguments.of("boolean", MCPToolValueDefinition.bool("qux description"),
                         Map.of("type", "boolean", "description", "qux description")),
-                Arguments.of("object", new MCPToolValueDefinition(MCPToolValueDefinition.Type.OBJECT, "quux description", null),
+                Arguments.of("object", MCPToolValueDefinition.object("quux description"),
                         Map.of("type", "object", "description", "quux description", "additionalProperties", true)));
     }
 }

@@ -23,11 +23,10 @@ import org.apache.shardingsphere.test.e2e.mcp.support.OfficialMCPToolNames;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeConfigurationTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPPayloadAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPInteractionClient;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -42,10 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @EnabledIf("isEnabled")
-class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
-    
+abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProductionRuntimeE2ETest {
+
     private String jdbcUrl;
-    
+
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         try {
@@ -55,377 +54,17 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
             throw new IOException(ex);
         }
     }
-    
+
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return H2RuntimeConfigurationTestSupport.createRuntimeDatabases("logic_db", jdbcUrl);
     }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertReadDatabasesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases"));
-            assertThat(items.size(), is(1));
-            assertThat(String.valueOf(items.get(0).get("database")), is("logic_db"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertReadDatabaseCapabilitiesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.readResource("shardingsphere://databases/logic_db/capabilities");
-            assertThat(String.valueOf(actual.get("databaseType")), is("H2"));
-            assertThat(String.valueOf(actual.get("supportsExplainAnalyze")), is("true"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertServiceCapabilitiesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertOfficialToolNames(((List<?>) interactionClient.readResource("shardingsphere://capabilities").get("supportedTools")).stream().map(String::valueOf).toList());
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertListTools(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> actual = interactionClient.listTools();
-            assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
-            assertToolDefinition(actual, "search_metadata", "Search Metadata", "", "object_types", "array");
-            assertToolDefinition(actual, "execute_query", "Execute Read-Only SQL", "sql", "timeout_ms", "integer");
-            assertToolDefinition(actual, "execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertReadSingleMetadataResourceCases")
-    void assertReadSingleMetadataResource(final String name, final RuntimeTransport transport,
-                                          final String resourceUri, final String key, final String expectedValue) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(resourceUri));
-            assertThat(items.size(), is(1));
-            assertThat(String.valueOf(items.get(0).get(key)), is(expectedValue));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertReadCollectionMetadataResourceCases")
-    void assertReadCollectionMetadataResource(final String name, final RuntimeTransport transport,
-                                              final String resourceUri, final String key, final List<String> expectedNames) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(resourceUri));
-            assertThat(items.stream().map(each -> String.valueOf(each.get(key))).toList(), is(expectedNames));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertTableDetailResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
-            assertThat(items.size(), is(1));
-            Map<String, Object> actualItem = items.get(0);
-            assertThat(String.valueOf(actualItem.get("table")), is("orders"));
-            assertThat(getNestedNames(actualItem, "columns", "column"), is(List.of("amount", "order_id", "status")));
-            assertThat(getNestedNames(actualItem, "indexes", "index"), is(List.of("PRIMARY_KEY_C", "idx_orders_status")));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertReadViewsResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases/logic_db/schemas/public/views"));
-            assertThat(items.size(), is(1));
-            assertThat(String.valueOf(items.get(0).get("view")), is("active_orders"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertReadIndexesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases/logic_db/schemas/public/tables/orders/indexes"));
-            assertThat(items.stream().map(each -> String.valueOf(each.get("index"))).toList(), is(List.of("PRIMARY_KEY_C", "idx_orders_status")));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertListResources(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.listResources();
-            assertTrue(getResources(actual).stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertListResourceTemplates(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<String> actualTemplates = getResourceTemplates(interactionClient.listResourceTemplates()).stream()
-                    .map(each -> String.valueOf(each.get("uriTemplate"))).toList();
-            assertTrue(actualTemplates.contains("shardingsphere://databases/{database}"));
-            assertTrue(actualTemplates.contains("shardingsphere://databases/{database}/schemas/{schema}"));
-            assertTrue(actualTemplates.contains("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertAiNativeDeterministicInteractionLoop(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            assertAiNativeCapabilities(interactionClient.readResource("shardingsphere://capabilities"));
-            assertAiNativeDiscovery(interactionClient);
-            Map<String, Object> searchMetadataPayload = interactionClient.call("search_metadata",
-                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("TABLE")));
-            Map<String, Object> tableHit = findPayloadItem(searchMetadataPayload, "name", "orders");
-            String tableResourceUri = String.valueOf(getMap(tableHit.get("resource")).get("uri"));
-            assertThat(tableResourceUri, is("shardingsphere://databases/logic_db/schemas/public/tables/orders"));
-            assertFalse(getMapList(tableHit.get("next_resources")).isEmpty());
-            List<Map<String, Object>> tableItems = getPayloadItems(interactionClient.readResource(tableResourceUri));
-            assertThat(String.valueOf(tableItems.get(0).get("table")), is("orders"));
-            assertAiNativeSqlPreview(interactionClient);
-            assertAiNativeSqlResult(interactionClient);
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertRejectUnsupportedResourceUri(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.readResource("unsupported://resource");
-            assertThat(String.valueOf(actual.get("error_code")), is("json_rpc_error"));
-            assertThat(String.valueOf(actual.get("message")), is("Resource not found"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteSelect(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql", "SELECT status FROM orders ORDER BY order_id", "max_rows", 10));
-            assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteSelectWithTruncation(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql", "SELECT order_id, status FROM orders ORDER BY order_id", "max_rows", 1));
-            assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
-            assertThat(((List<?>) actual.get("rows")).size(), is(1));
-            assertThat(String.valueOf(actual.get("truncated")), is("true"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteUpdate(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> payload = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-            assertThat(String.valueOf(payload.get("result_kind")), is("update_count"));
-            assertThat(String.valueOf(payload.get("affected_rows")), is("1"));
-            assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteExplainAnalyze(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql", "EXPLAIN ANALYZE SELECT * FROM orders ORDER BY order_id", "max_rows", 10));
-            assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
-            assertThat(String.valueOf(actual.get("statement_type")), is("EXPLAIN ANALYZE"));
-            assertFalse(((List<?>) actual.get("rows")).isEmpty());
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteQueryTimeout(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql",
-                            "SELECT COUNT(*) FROM SYSTEM_RANGE(1, 200000) a CROSS JOIN SYSTEM_RANGE(1, 200000) b", "timeout_ms", 1));
-            assertThat(String.valueOf(actual.get("error_code")), is("timeout"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertReadSequencesResource(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource("shardingsphere://databases/logic_db/schemas/public/sequences"));
-            assertThat(items.size(), is(1));
-            assertThat(String.valueOf(items.get(0).get("sequence")), is("order_seq"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertSearchSequence(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.call("search_metadata",
-                    Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("SEQUENCE"))));
-            assertThat(items.size(), is(1));
-            assertThat(String.valueOf(items.get(0).get("name")), is("order_seq"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertSearchTableAndViewMetadata(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.call("search_metadata",
-                    Map.of("database", "logic_db", "schema", "public", "query", "order", "object_types", List.of("TABLE", "VIEW"))));
-            assertThat(items.stream().map(each -> String.valueOf(each.get("name"))).toList(), is(List.of("order_items", "orders", "active_orders")));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertRejectUnsupportedObjectType(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("search_metadata",
-                    Map.of("database", "logic_db", "schema", "public", "query", "order",
-                            "object_types", List.of("TABLE", "VIEW", "INDEX", "MATERIALIZED_VIEW", "SEQUENCE")));
-            assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
-            assertThat(String.valueOf(actual.get("message")), is("Unsupported object_types value `MATERIALIZED_VIEW`."));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertRejectExecuteMultiStatement(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_query",
-                    Map.of("database", "logic_db", "schema", "public", "sql", "SELECT 1; SELECT 2"));
-            assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
-            assertThat(String.valueOf(actual.get("message")), is("Only one SQL statement is allowed."));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertRejectBlankSavepointName(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            Map<String, Object> actual = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("SAVEPOINT"));
-            assertThat(String.valueOf(actual.get("error_code")), is("invalid_request"));
-            assertThat(String.valueOf(actual.get("message")), is("Savepoint name is required."));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteSavepointFlow(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_update", createExecuteUpdateArguments("BEGIN"));
-            interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-            Map<String, Object> savepointResponse = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("SAVEPOINT sp_1"));
-            interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("UPDATE orders SET status = 'DONE' WHERE order_id = 1"));
-            Map<String, Object> rollbackResponse = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("ROLLBACK TO SAVEPOINT sp_1"));
-            Map<String, Object> commitResponse = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("COMMIT"));
-            assertThat(String.valueOf(savepointResponse.get("message")), is("Savepoint created."));
-            assertThat(String.valueOf(rollbackResponse.get("message")), is("Savepoint rolled back."));
-            assertThat(String.valueOf(commitResponse.get("message")), is("Transaction committed."));
-            assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("PENDING"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteReleaseSavepoint(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_update", createExecuteUpdateArguments("BEGIN"));
-            Map<String, Object> savepointResponse = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("SAVEPOINT sp_release"));
-            Map<String, Object> releaseResponse = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("RELEASE SAVEPOINT sp_release"));
-            Map<String, Object> commitResponse = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("COMMIT"));
-            assertThat(String.valueOf(savepointResponse.get("message")), is("Savepoint created."));
-            assertThat(String.valueOf(releaseResponse.get("message")), is("Savepoint released."));
-            assertThat(String.valueOf(commitResponse.get("message")), is("Transaction committed."));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertExecuteTransactionalDdlRefreshesMetadataOnCommit(final String name, final RuntimeTransport transport) throws IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_update", createExecuteUpdateArguments("BEGIN"));
-            interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("CREATE TABLE orders_archive (order_id INT PRIMARY KEY)"));
-            Map<String, Object> commitResponse = interactionClient.call("execute_update",
-                    createExecuteUpdateArguments("COMMIT"));
-            List<Map<String, Object>> items = getPayloadItems(interactionClient.readResource(
-                    "shardingsphere://databases/logic_db/schemas/public/tables/orders_archive"));
-            assertThat(String.valueOf(commitResponse.get("message")), is("Transaction committed."));
-            assertThat(items.size(), is(1));
-            assertThat(String.valueOf(items.get(0).get("table")), is("orders_archive"));
-        }
-    }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("transports")
-    void assertCloseRollsBackPendingTransaction(final String name, final RuntimeTransport transport) throws SQLException, IOException, InterruptedException {
-        useTransport(transport);
-        try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
-            interactionClient.call("execute_update", createExecuteUpdateArguments("BEGIN"));
-            interactionClient.call("execute_update", createExecuteUpdateArguments("UPDATE orders SET status = 'PENDING' WHERE order_id = 1"));
-            interactionClient.close();
-            assertThat(H2RuntimeTestSupport.querySingleString(jdbcUrl, "SELECT status FROM public.orders WHERE order_id = 1"), is("NEW"));
-        }
-    }
-    
-    private void assertOfficialToolNames(final List<String> actualToolNames) {
+
+    protected void assertOfficialToolNames(final List<String> actualToolNames) {
         assertThat(actualToolNames, containsInAnyOrder(OfficialMCPToolNames.getAll().toArray()));
     }
-    
-    private void assertAiNativeCapabilities(final Map<String, Object> capabilities) {
+
+    protected void assertAiNativeCapabilities(final Map<String, Object> capabilities) {
         assertTrue(capabilities.containsKey("model_contract"));
         assertTrue(capabilities.containsKey("surface_summary"));
         assertTrue(capabilities.containsKey("field_naming_contract"));
@@ -438,8 +77,8 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         assertThat(getMap(capabilities.get("surface_summary")).get("read_only_sql_tool"), is("execute_query"));
         assertThat(getMap(capabilities.get("surface_summary")).get("side_effect_sql_tool"), is("execute_update"));
     }
-    
-    private void assertAiNativeDiscovery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+
+    protected void assertAiNativeDiscovery(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         Map<String, Object> runtimeStatus = interactionClient.readResource("shardingsphere://runtime");
         assertThat(String.valueOf(runtimeStatus.get("status")), is("available"));
         assertThat(String.valueOf(runtimeStatus.get("configured_database_count")), is("1"));
@@ -452,8 +91,8 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         Map<String, Object> completionPayload = interactionClient.complete(Map.of("type", "ref/prompt", "name", "inspect_metadata"), "schema", "pub", Map.of("database", "logic_db"));
         assertTrue(((List<?>) getMap(completionPayload.get("completion")).get("values")).contains("public"));
     }
-    
-    private void assertAiNativeSqlPreview(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+
+    protected void assertAiNativeSqlPreview(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         Map<String, Object> actual = interactionClient.call("execute_update",
                 Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "preview"));
         assertThat(String.valueOf(actual.get("response_mode")), is("preview"));
@@ -464,8 +103,8 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
         assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
     }
-    
-    private void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+
+    protected void assertAiNativeSqlResult(final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         Map<String, Object> actual = interactionClient.call("execute_query",
                 Map.of("database", "logic_db", "schema", "public", "sql", "SELECT order_id, status FROM orders ORDER BY order_id", "max_rows", 1));
         assertThat(String.valueOf(actual.get("result_kind")), is("result_set"));
@@ -474,30 +113,24 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         assertThat(String.valueOf(actual.get("truncated")), is("true"));
         assertThat(String.valueOf(getMapList(actual.get("next_actions")).get(0).get("type")), is("ask_user"));
     }
-    
-    private Map<String, Object> findPayloadItem(final Map<String, Object> payload, final String key, final String expectedValue) {
-        return getPayloadItems(payload).stream().filter(each -> expectedValue.equals(each.get(key))).findFirst().orElseThrow();
+
+    protected Map<String, Object> getMap(final Object value) {
+        return MCPPayloadAssertions.getMap(value);
     }
-    
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> getMap(final Object value) {
-        return (Map<String, Object>) value;
+
+    protected List<Map<String, Object>> getMapList(final Object value) {
+        return MCPPayloadAssertions.getMapList(value);
     }
-    
-    @SuppressWarnings("unchecked")
-    private List<Map<String, Object>> getMapList(final Object value) {
-        return ((List<?>) value).stream().map(each -> (Map<String, Object>) each).toList();
-    }
-    
-    private static boolean isEnabled() {
+
+    protected static boolean isEnabled() {
         return MCPE2ECondition.isProductionH2Enabled() || MCPE2ECondition.isProductionStdioEnabled();
     }
-    
-    private static Stream<Arguments> transports() {
+
+    protected static Stream<Arguments> transports() {
         return runtimeTransports().map(each -> Arguments.of(getTransportName(each), each));
     }
-    
-    private static Stream<Arguments> assertReadSingleMetadataResourceCases() {
+
+    protected static Stream<Arguments> assertReadSingleMetadataResourceCases() {
         return runtimeTransports().flatMap(each -> Stream.of(
                 Arguments.of(getTransportName(each) + " database detail", each, "shardingsphere://databases/logic_db", "database", "logic_db"),
                 Arguments.of(getTransportName(each) + " schema detail", each, "shardingsphere://databases/logic_db/schemas/public", "schema", "public"),
@@ -509,8 +142,8 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
                         "idx_orders_status"),
                 Arguments.of(getTransportName(each) + " sequence detail", each, "shardingsphere://databases/logic_db/schemas/public/sequences/order_seq", "sequence", "order_seq")));
     }
-    
-    private static Stream<Arguments> assertReadCollectionMetadataResourceCases() {
+
+    protected static Stream<Arguments> assertReadCollectionMetadataResourceCases() {
         return runtimeTransports().flatMap(each -> Stream.of(
                 Arguments.of(getTransportName(each) + " schemas list", each, "shardingsphere://databases/logic_db/schemas", "schema", List.of("public")),
                 Arguments.of(getTransportName(each) + " tables list", each, "shardingsphere://databases/logic_db/schemas/public/tables", "table", List.of("order_items", "orders")),
@@ -519,12 +152,16 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
                 Arguments.of(getTransportName(each) + " view columns list", each,
                         "shardingsphere://databases/logic_db/schemas/public/views/active_orders/columns", "column", List.of("order_id", "status"))));
     }
-    
-    private static Map<String, Object> createExecuteUpdateArguments(final String sql) {
+
+    protected static Map<String, Object> createExecuteUpdateArguments(final String sql) {
         return Map.of("database", "logic_db", "schema", "public", "sql", sql, "execution_mode", "execute");
     }
-    
-    private static Stream<RuntimeTransport> runtimeTransports() {
+
+    protected String getJdbcUrl() {
+        return jdbcUrl;
+    }
+
+    protected static Stream<RuntimeTransport> runtimeTransports() {
         Stream.Builder<RuntimeTransport> result = Stream.builder();
         if (MCPE2ECondition.isProductionH2Enabled()) {
             result.add(RuntimeTransport.HTTP);
@@ -534,23 +171,13 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         }
         return result.build();
     }
-    
-    private static String getTransportName(final RuntimeTransport transport) {
+
+    protected static String getTransportName(final RuntimeTransport transport) {
         return RuntimeTransport.HTTP == transport ? "http" : "stdio";
     }
-    
-    @SuppressWarnings("unchecked")
-    private void assertToolDefinition(final List<Map<String, Object>> tools, final String toolName, final String expectedTitle,
-                                      final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {
-        Map<String, Object> actualTool = tools.stream().filter(each -> toolName.equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
-        assertThat(String.valueOf(actualTool.get("title")), is(expectedTitle));
-        Map<String, Object> actualInputSchema = (Map<String, Object>) actualTool.get("inputSchema");
-        List<String> actualRequiredFields = ((List<?>) actualInputSchema.get("required")).stream().map(String::valueOf).toList();
-        Map<String, Object> actualProperties = (Map<String, Object>) actualInputSchema.get("properties");
-        Map<String, Object> actualProperty = (Map<String, Object>) actualProperties.get(expectedPropertyField);
-        if (!expectedRequiredField.isEmpty()) {
-            assertTrue(actualRequiredFields.contains(expectedRequiredField));
-        }
-        assertThat(String.valueOf(actualProperty.get("type")), is(expectedPropertyType));
+
+    protected void assertToolDefinition(final List<Map<String, Object>> tools, final String toolName, final String expectedTitle,
+                                        final String expectedRequiredField, final String expectedPropertyField, final String expectedPropertyType) {
+        MCPPayloadAssertions.assertToolDefinition(tools, toolName, expectedTitle, expectedRequiredField, expectedPropertyField, expectedPropertyType);
     }
 }
