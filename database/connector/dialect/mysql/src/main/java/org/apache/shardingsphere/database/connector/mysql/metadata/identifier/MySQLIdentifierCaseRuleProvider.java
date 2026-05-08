@@ -46,8 +46,7 @@ public final class MySQLIdentifierCaseRuleProvider implements IdentifierCaseRule
         if (null == context.getDataSource()) {
             return Optional.empty();
         }
-        try {
-            Connection connection = context.getDataSource().getConnection();
+        try (Connection connection = context.getDataSource().getConnection()) {
             if (null == connection) {
                 return Optional.empty();
             }
