@@ -212,6 +212,27 @@ It reconciles the remaining model-comfort questions that are easy to miss after 
 
 This addendum does not reopen rejected system-sized ideas such as planners, graph traversal, vector search, cross-session memory, approval-token platforms, RBAC, or default-CI live-model suites.
 
+## 2026-05-08 Continuous Optimization 100 Addendum
+
+The stricter sustained-improvement closure lives in `continuous-optimization-100.md`.
+
+It turns the post-baseline 90-to-100 scoring review into bounded requirements and tasks:
+
+- hard caps for direct metadata list resources;
+- a blank all-database `search_metadata` guard that preserves scoped blank-query discovery;
+- bounded and prioritized protocol-native `ResourceLink` content while keeping JSON `structuredContent` canonical;
+- global pre-pagination ambiguity and total match counts for metadata search;
+- live Qwen full-score evidence when the local Ollama `qwen3:1.7b` service is ready;
+- compact runtime fingerprint references, manual artifact summaries, context-loss LLM E2E, and descriptor anti-regression checks.
+
+This addendum does not change the original accepted 009 baseline. It defines the extra evidence needed before claiming continuous-optimization 100.
+
+2026-05-08 closure status:
+
+- Continuous optimization code and descriptor requirements are implemented with deterministic tests.
+- The Qwen live gate is scoped to the local Ollama `qwen3:1.7b` E2E stack, not a cloud-hosted Qwen credential path.
+- Live continuous-optimization 100 requires rerunning the same opt-in suite against local Ollama and observing `overallScore=100.0`, `fullScore=true`.
+
 ## Verification Map
 
 - Documentation-only changes: run `git diff --check`.

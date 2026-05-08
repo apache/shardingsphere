@@ -1164,6 +1164,7 @@ docker exec ollama-mcp-llm-e2e ollama pull qwen3:1.7b
 MCP_LLM_E2E_ENABLED=true \
 MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
 MCP_LLM_MODEL=qwen3:1.7b \
+MCP_LLM_API_KEY=ollama \
 ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMSmokeE2ETest \
   -Dsurefire.failIfNoSpecifiedTests=true
@@ -1175,6 +1176,7 @@ MCP_LLM_MODEL=qwen3:1.7b \
 MCP_LLM_E2E_ENABLED=true \
 MCP_LLM_BASE_URL=http://127.0.0.1:11434/v1 \
 MCP_LLM_MODEL=qwen3:1.7b \
+MCP_LLM_API_KEY=ollama \
 ./mvnw -pl test/e2e/mcp test -DskipITs -Dspotless.skip=true \
   -Dtest=LLMUsabilitySuiteE2ETest \
   -Dsurefire.failIfNoSpecifiedTests=true

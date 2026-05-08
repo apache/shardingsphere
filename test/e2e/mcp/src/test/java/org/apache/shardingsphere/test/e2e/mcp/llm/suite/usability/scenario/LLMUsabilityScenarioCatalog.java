@@ -140,6 +140,17 @@ public final class LLMUsabilityScenarioCatalog {
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query")),
                 List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, true));
         if ("h2".equals(runtimeKind)) {
+            result.add(createScenario("workflow-context-recovery-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
+                    new LLME2EScenario("workflow-context-recovery-" + runtimeKind, SYSTEM_PROMPT,
+                            "Read `shardingsphere://features/mask/algorithms`, plan a mask rule for " + databaseName + "." + schemaName + "." + tableName
+                                    + ".status with algorithm_type `MD5`. Then simulate partial context loss: keep only the returned plan_id, read `shardingsphere://runtime`, "
+                                    + "read `shardingsphere://workflows/{plan_id}` by replacing `{plan_id}` with the returned plan_id, export it with execution_mode `manual-only`, "
+                                    + "validate the workflow, then verify `" + query + "`." + toolContext,
+                            new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of(
+                                    MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query")),
+                            List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query"),
+                            List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query")),
+                    List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://runtime"), true, false));
             result.add(createScenario("resource-database-disambiguation-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
                     new LLME2EScenario("resource-database-disambiguation-" + runtimeKind, SYSTEM_PROMPT,
                             "First call " + MCPInteractionActionNames.READ_RESOURCE + " with uri `shardingsphere://databases` to inspect the available databases. "

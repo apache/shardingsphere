@@ -304,6 +304,9 @@ tools:
         manual_artifact_package:
           type: object
           description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
+        manual_artifact_summary:
+          type: object
+          description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation requirement, and validate_workflow arguments."
         manual_follow_up:
           type: object
           description: "Manual-only confirmation contract to satisfy before validate_workflow is called."

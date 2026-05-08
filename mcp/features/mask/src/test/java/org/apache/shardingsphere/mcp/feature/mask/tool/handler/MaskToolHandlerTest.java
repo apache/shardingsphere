@@ -54,13 +54,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 class MaskToolHandlerTest {
-    
+
     @Test
     void assertGetPlanMaskRuleToolDescriptor() {
         MCPToolDescriptor actual = new PlanMaskRuleToolHandler().getToolDescriptor();
         assertThat(actual.getName(), is("plan_mask_rule"));
     }
-    
+
     @Test
     void assertHandlePlanMaskRule() throws ReflectiveOperationException {
         PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
@@ -73,7 +73,6 @@ class MaskToolHandlerTest {
                 "database", "logic_db",
                 "table", "orders",
                 "column", "phone",
-                "algorithm_type", "MASK_FROM_X_TO_Y",
                 "structured_intent_evidence", Map.of("field_semantics", "phone"),
                 "user_overrides", Map.of("algorithm_type", "KEEP_FIRST_N_LAST_M"))));
         assertThat(actual.toPayload().get("plan_id"), is("plan-1"));
@@ -83,7 +82,7 @@ class MaskToolHandlerTest {
         assertThat(actualRequest.getAlgorithmType(), is("KEEP_FIRST_N_LAST_M"));
         assertThat(actualRequest.getFieldSemantics(), is("phone"));
     }
-    
+
     @Test
     void assertHandlePlanMaskRuleWithMaskedArtifacts() throws ReflectiveOperationException {
         PlanMaskRuleToolHandler handler = new PlanMaskRuleToolHandler();
@@ -101,7 +100,7 @@ class MaskToolHandlerTest {
         assertThat(((List<?>) actualPayload.get("index_plan")).size(), is(0));
         assertTrue(String.valueOf(((Map<?, ?>) ((List<?>) actualPayload.get("distsql_artifacts")).get(0)).get("sql")).contains("keep_first_n_last_m"));
     }
-    
+
     private WorkflowContextSnapshot createSnapshot(final String planId, final String status) {
         WorkflowContextSnapshot result = new WorkflowContextSnapshot();
         result.setPlanId(planId);
@@ -112,7 +111,7 @@ class MaskToolHandlerTest {
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }
-    
+
     private WorkflowContextSnapshot createDetailedSnapshot() {
         WorkflowRequest request = new WorkflowRequest();
         request.getPrimaryAlgorithmProperties().put("first-n", "3");
@@ -125,7 +124,7 @@ class MaskToolHandlerTest {
         result.setInteractionPlan(createInteractionPlan());
         return result;
     }
-    
+
     private InteractionPlan createInteractionPlan() {
         InteractionPlan result = new InteractionPlan();
         result.setCurrentStep("review");
@@ -133,12 +132,12 @@ class MaskToolHandlerTest {
         result.setExecutionMode("review-then-execute");
         return result;
     }
-    
+
     private void setField(final Object target, final String fieldName, final Object value) throws ReflectiveOperationException {
         Field field = target.getClass().getDeclaredField(fieldName);
         Plugins.getMemberAccessor().set(field, target, value);
     }
-    
+
     private WorkflowContextFixture createWorkflowContextFixture() {
         MCPWorkflowHandlerContext result = mock(MCPWorkflowHandlerContext.class);
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
@@ -153,7 +152,7 @@ class MaskToolHandlerTest {
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
         return new WorkflowContextFixture(result, workflowSessionContext, metadataQueryFacade, queryFacade, executionFacade);
     }
-    
+
     private record WorkflowContextFixture(MCPWorkflowHandlerContext workflowContext, WorkflowSessionContext workflowSessionContext,
                                           MCPMetadataQueryFacade metadataQueryFacade, MCPFeatureQueryFacade queryFacade,
                                           MCPFeatureExecutionFacade executionFacade) {

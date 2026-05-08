@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
 import org.junit.jupiter.api.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,24 @@ class MCPTransportPayloadUtilsTest {
     }
 
     @Test
+    void assertCreateCallToolResultWithBoundedPrioritizedResourceLinks() {
+        Map<String, Object> payload = Map.of(
+                "next_resources", createResourceHints("shardingsphere://databases/next_", "next_resources", 30),
+                "parent_resource", MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "inspect_parent", "Read parent.", "parent_resource"),
+                "resource", MCPResourceHintUtils.create("shardingsphere://databases/logic_db", "logical-database", "inspect_detail", "Read detail.", "resource"),
+                "resources_to_read", List.of(MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first", "Read capabilities.", "resources_to_read")));
+        io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(payload);
+        assertThat(actual.structuredContent(), is(payload));
+        assertThat(actual.content().size(), is(25));
+        assertThat(actual.meta().get("resource_links_emitted"), is(24));
+        assertThat(actual.meta().get("resource_links_omitted"), is(9));
+        assertThat(((ResourceLink) actual.content().get(1)).uri(), is("shardingsphere://capabilities"));
+        assertThat(((ResourceLink) actual.content().get(2)).uri(), is("shardingsphere://databases/logic_db"));
+        assertThat(((ResourceLink) actual.content().get(3)).uri(), is("shardingsphere://databases"));
+        assertThat(((Map<?, ?>) ((ResourceLink) actual.content().get(1)).meta()).get("source_field"), is("resources_to_read"));
+    }
+
+    @Test
     void assertCreateCallToolResultWithoutRawUriLink() {
         io.modelcontextprotocol.spec.McpSchema.CallToolResult actual = MCPTransportPayloadUtils.createCallToolResult(Map.of("resource_uri", "shardingsphere://databases/logic_db"));
         assertThat(actual.content().size(), is(1));
@@ -80,5 +99,13 @@ class MCPTransportPayloadUtilsTest {
         io.modelcontextprotocol.spec.McpSchema.ReadResourceResult actual = MCPTransportPayloadUtils.createReadResourceResult("shardingsphere://capabilities", payload);
         assertThat(actual.contents().get(0), isA(TextResourceContents.class));
         assertThat(((TextResourceContents) actual.contents().get(0)).text(), is(JsonUtils.toJsonString(payload)));
+    }
+
+    private List<Map<String, Object>> createResourceHints(final String uriPrefix, final String sourceField, final int count) {
+        List<Map<String, Object>> result = new LinkedList<>();
+        for (int i = 0; i < count; i++) {
+            result.add(MCPResourceHintUtils.create(uriPrefix + i, "logical-database", "inspect_detail", "Read resource.", sourceField));
+        }
+        return result;
     }
 }

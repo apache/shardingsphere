@@ -29,6 +29,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class MetadataResourceHandlerTest {
@@ -45,18 +46,26 @@ class MetadataResourceHandlerTest {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases",
                 (requestContext, uriVariables) -> List.of(Map.of("database", "logic_db")));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
-        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "count", 1, "has_more", false, "self_uri", "shardingsphere://databases")));
+        assertThat(actual.toPayload(), is(Map.of("items", List.of(Map.of("database", "logic_db")), "count", 1, "has_more", false, "self_uri", "shardingsphere://databases",
+                "total_count", 1, "returned_count", 1, "truncated", false)));
     }
 
     @Test
     void assertHandleBroadListResourceGuidesSearch() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases", (requestContext, uriVariables) -> createDatabases(101));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), new MCPUriVariables(Map.of()));
-        assertThat(((Map<?, ?>) actual.toPayload().get("large_result_guidance")).get("state"), is("broad_metadata_list"));
-        assertThat(((Map<?, ?>) actual.toPayload().get("large_result_guidance")).get("threshold"), is(100));
-        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0);
+        Map<?, ?> actualPayload = actual.toPayload();
+        assertThat(((List<?>) actualPayload.get("items")).size(), is(100));
+        assertThat(actualPayload.get("count"), is(100));
+        assertThat(actualPayload.get("total_count"), is(101));
+        assertThat(actualPayload.get("returned_count"), is(100));
+        assertTrue((Boolean) actualPayload.get("truncated"));
+        assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("state"), is("broad_metadata_list"));
+        assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("threshold"), is(100));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
         assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
         assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("page_size"), is(100));
+        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("object_types"), is(List.of("database")));
     }
 
     @Test

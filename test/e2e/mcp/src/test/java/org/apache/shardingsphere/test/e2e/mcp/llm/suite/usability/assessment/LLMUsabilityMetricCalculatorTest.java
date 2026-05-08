@@ -77,7 +77,8 @@ class LLMUsabilityMetricCalculatorTest {
                         Map.of("found", false, "empty_state", Map.of("state", "not_found"), "next_actions", List.of(Map.of(
                                 "action_kind", "read_resource",
                                 "target_resource", "shardingsphere://databases/unknown/schemas/unknown/tables",
-                                "requires_user_approval", false))), 0L),
+                                "requires_user_approval", false))),
+                        0L),
                 MCPInteractionTraceRecord.createResourceRead(2, "shardingsphere://databases/logic_db/schemas/public/tables/orders",
                         Map.of("found", true), 0L));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createRecoveryScenario(), createArtifactBundle(trace));

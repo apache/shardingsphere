@@ -74,10 +74,22 @@ public final class SearchMetadataToolService {
     public MetadataSearchResult execute(final MetadataSearchRequest request) {
         ShardingSpherePreconditions.checkState(request.getSchema().isEmpty() || !request.getDatabase().isEmpty(), () -> new MCPInvalidRequestException("Schema cannot be provided without database."));
         Set<SupportedMCPMetadataObjectType> searchObjectTypes = getSearchObjectTypes(request.getObjectTypes());
+        if (isBlankAllDatabaseSearch(request)) {
+            return executeBlankAllDatabaseSearch(request);
+        }
         List<MetadataSearchHit> metadataItems = request.getDatabase().isEmpty()
                 ? metadataQueryFacade.queryDatabases().stream().flatMap(each -> readSearchResults(each.getDatabase(), request.getSchema(), searchObjectTypes).stream()).collect(Collectors.toList())
                 : readSearchResults(request.getDatabase(), request.getSchema(), searchObjectTypes);
-        return paginate(metadataItems, request, searchObjectTypes);
+        return paginate(metadataItems, request, searchObjectTypes, false);
+    }
+
+    private boolean isBlankAllDatabaseSearch(final MetadataSearchRequest request) {
+        return request.getDatabase().isEmpty() && request.getQuery().isEmpty() && request.getObjectTypes().isEmpty();
+    }
+
+    private MetadataSearchResult executeBlankAllDatabaseSearch(final MetadataSearchRequest request) {
+        Set<SupportedMCPMetadataObjectType> searchObjectTypes = Set.of(SupportedMCPMetadataObjectType.DATABASE);
+        return paginate(metadataQueryFacade.queryDatabases().stream().map(this::createSearchHit).collect(Collectors.toList()), request, searchObjectTypes, true);
     }
 
     private List<MetadataSearchHit> readSearchResults(final String databaseName, final String schemaName, final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
@@ -368,18 +380,19 @@ public final class SearchMetadataToolService {
         return DATABASES_RESOURCE_URI + "/" + String.join("/", encodedSegments);
     }
 
-    private MetadataSearchResult paginate(final List<MetadataSearchHit> metadataItems, final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes) {
+    private MetadataSearchResult paginate(final List<MetadataSearchHit> metadataItems, final MetadataSearchRequest request,
+                                          final Set<SupportedMCPMetadataObjectType> searchObjectTypes, final boolean broadSearchGuarded) {
         int actualOffset = resolvePageOffset(request.getPageToken());
         int actualPageSize = resolvePageSize(request.getPageSize());
-        Map<String, Object> searchContext = createSearchContext(request, searchObjectTypes, actualPageSize, actualOffset);
+        Map<String, Object> searchContext = createSearchContext(request, searchObjectTypes, actualPageSize, actualOffset, broadSearchGuarded);
         List<MetadataSearchHit> filteredItems = filterByQuery(metadataItems, request.getQuery());
         filteredItems.sort(this::compareSearchHits);
         if (actualOffset > filteredItems.size()) {
-            return new MetadataSearchResult(Collections.emptyList(), "", searchContext);
+            return new MetadataSearchResult(Collections.emptyList(), "", searchContext, filteredItems.size(), filteredItems);
         }
         int actualEndIndex = Math.min(actualOffset + actualPageSize, filteredItems.size());
         String nextPageToken = actualEndIndex < filteredItems.size() ? String.valueOf(actualEndIndex) : "";
-        return new MetadataSearchResult(new LinkedList<>(filteredItems.subList(actualOffset, actualEndIndex)), nextPageToken, searchContext);
+        return new MetadataSearchResult(new LinkedList<>(filteredItems.subList(actualOffset, actualEndIndex)), nextPageToken, searchContext, filteredItems.size(), filteredItems);
     }
 
     private int resolvePageOffset(final String pageToken) {
@@ -402,8 +415,8 @@ public final class SearchMetadataToolService {
     }
 
     private Map<String, Object> createSearchContext(final MetadataSearchRequest request, final Set<SupportedMCPMetadataObjectType> searchObjectTypes,
-                                                    final int actualPageSize, final int actualOffset) {
-        Map<String, Object> result = new LinkedHashMap<>(7, 1F);
+                                                    final int actualPageSize, final int actualOffset, final boolean broadSearchGuarded) {
+        Map<String, Object> result = new LinkedHashMap<>(10, 1F);
         result.put("query", request.getQuery());
         result.put("database", request.getDatabase());
         result.put("database_scope", request.getDatabase().isEmpty() ? "all_query_databases" : "single_database");
@@ -411,6 +424,11 @@ public final class SearchMetadataToolService {
         result.put("object_types", createObjectTypeNames(searchObjectTypes));
         result.put("page_size", actualPageSize);
         result.put("page_offset", actualOffset);
+        if (broadSearchGuarded) {
+            result.put("broad_search_guarded", true);
+            result.put("guard_reason", "Blank cross-database metadata search lists databases only instead of expanding every object type.");
+            result.put("recommended_narrowing_arguments", List.of("database", "query", "object_types"));
+        }
         return result;
     }
 

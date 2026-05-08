@@ -51,6 +51,8 @@ public final class WorkflowGuidancePayloadBuilder {
 
     private static final String EXECUTION_MODE_PREVIEW = "preview";
 
+    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
+
     /**
      * Append model-facing next action guidance to a planning response.
      *
@@ -108,16 +110,29 @@ public final class WorkflowGuidancePayloadBuilder {
      */
     public static void appendValidationGuidance(final Map<String, Object> payload, final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
         boolean failed = WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus());
-        payload.put("recommended_recovery", failed ? "Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again." : "");
+        payload.put("recommended_recovery", failed ? createValidationRecovery(snapshot) : "");
         payload.put("next_actions", failed ? createValidationFailureActions(snapshot) : List.of(createStopAction()));
-        payload.put("requires_user_approval", false);
+        payload.put("requires_user_approval", failed && isManualOnlyWorkflow(snapshot));
+    }
+
+    private static String createValidationRecovery(final WorkflowContextSnapshot snapshot) {
+        return isManualOnlyWorkflow(snapshot)
+                ? "Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run validate_workflow again."
+                : "Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again.";
     }
 
     private static List<Map<String, Object>> createValidationFailureActions(final WorkflowContextSnapshot snapshot) {
+        if (isManualOnlyWorkflow(snapshot)) {
+            return List.of(createUserAction("Confirm the manual artifacts were executed outside MCP, then run validate_workflow again.", true, List.of("manual_artifacts_executed")));
+        }
         String planningTool = resolvePlanningTool(snapshot);
         return planningTool.isEmpty()
                 ? List.of(createUserAction("Confirm the workflow kind before re-planning with the existing plan_id.", false, List.of("workflow_kind", "mismatches")))
                 : List.of(createToolAction(planningTool, "Re-plan with corrected metadata or algorithm choices.", Map.of("plan_id", snapshot.getPlanId()), false));
+    }
+
+    private static boolean isManualOnlyWorkflow(final WorkflowContextSnapshot snapshot) {
+        return null != snapshot.getRequest() && EXECUTION_MODE_MANUAL_ONLY.equalsIgnoreCase(snapshot.getRequest().getExecutionMode());
     }
 
     private static List<String> createMissingRequiredInputs(final WorkflowContextSnapshot snapshot) {

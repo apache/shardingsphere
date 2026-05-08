@@ -85,18 +85,19 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     private Map<String, Object> createSearchPayloadMetadata(final MetadataSearchRequest request, final MetadataSearchResult searchResult) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("search_context", searchResult.getSearchContext());
+        result.put("total_match_count", searchResult.getTotalMatchCount());
         if (searchResult.getItems().isEmpty()) {
             result.put("empty_state", createEmptyState(request));
             result.put("next_actions", List.of(createEmptySearchNextAction(request)));
             return result;
         }
-        List<String> duplicatedNames = findDuplicatedNames(searchResult.getItems());
+        List<String> duplicatedNames = findDuplicatedNames(searchResult.getAmbiguityCandidates());
         List<Map<String, Object>> nextActions = createResultNextActions(request, searchResult, duplicatedNames);
         if (!nextActions.isEmpty()) {
             result.put("next_actions", nextActions);
         }
         if (!duplicatedNames.isEmpty()) {
-            result.put("ambiguity_state", createAmbiguityState(searchResult.getItems(), duplicatedNames));
+            result.put("ambiguity_state", createAmbiguityState(searchResult.getAmbiguityCandidates(), duplicatedNames));
         }
         return result;
     }
@@ -106,11 +107,19 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         if (!searchResult.getNextPageToken().isEmpty()) {
             result.add(MCPNextActionUtils.callTool("search_metadata", "Continue this metadata search with next_page_token.", createNextPageArguments(request, searchResult.getNextPageToken()), false));
         }
+        if (isBroadSearchGuarded(searchResult)) {
+            result.add(MCPNextActionUtils.askUser("Blank cross-database metadata search listed databases only. Choose a database, query, or object type before searching deeper metadata.",
+                    List.of("database", "query", "object_types"), false));
+        }
         if (!duplicatedNames.isEmpty()) {
             result.add(MCPNextActionUtils.askUser("Multiple metadata hits share the same name. Ask the user to choose database, schema, or object type before using a specific resource.",
                     List.of("database", "schema", "object_types"), false));
         }
         return addOrder(result);
+    }
+
+    private boolean isBroadSearchGuarded(final MetadataSearchResult searchResult) {
+        return Boolean.TRUE.equals(searchResult.getSearchContext().get("broad_search_guarded"));
     }
 
     private List<Map<String, Object>> addOrder(final List<Map<String, Object>> actions) {

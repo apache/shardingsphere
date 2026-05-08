@@ -120,6 +120,49 @@
 
 TB035 is complete as a bounded no-op for this slice: public HTTP package metadata is not part of the accepted release surface.
 
+## 2026-05-08 Continuous Optimization 100 Queue
+
+This queue implements `continuous-optimization-100.md`. It is the stricter sustained-improvement closure after the accepted 009 baseline, not a reset of the completed P0/P1/P2 slices.
+
+### Accepted Defaults
+
+- Keep JSON `structuredContent` canonical.
+- Add or cap protocol-native content only at the transport boundary.
+- Prefer fixed in-code limits over new configuration knobs unless a test proves the limit must be user-controlled.
+- Preserve scoped blank-query metadata discovery; only guard the blank query across all databases and all object types.
+- Treat Qwen live scoring as opt-in local Ollama evidence; an unavailable service or missing `qwen3:1.7b` model is a validation blocker, not a product feature failure.
+
+### Slice CO-A: Context Size And Broad Discovery
+
+- [x] TB037 [CO-A] Add tests for broad direct metadata list resources that assert capped `items`, `total_count`, `returned_count`, `truncated`, and narrowing `next_actions`.
+- [x] TB038 [CO-A] Implement direct non-detail metadata list capping in `MetadataResourceHandler`; leave detail resources unchanged.
+- [x] TB039 [CO-A] Add tests for blank all-database `search_metadata` calls that assert compact database or scope guidance instead of all-object expansion.
+- [x] TB040 [CO-A] Implement the blank all-database search guard without changing non-empty cross-database searches or database-scoped blank searches.
+- [x] TB041 [CO-A] Update descriptor payload contracts and README snippets only for the new emitted fields.
+
+### Slice CO-B: ResourceLink And Ambiguity
+
+- [x] TB042 [CO-B] Add transport tests for ResourceLink priority, maximum emitted link count, and omitted-link metadata.
+- [x] TB043 [CO-B] Implement bounded ResourceLink collection in `MCPTransportPayloadUtils` and put count metadata in `CallToolResult.meta`.
+- [x] TB044 [CO-B] Add search tests for duplicate names split across pages and `total_match_count`.
+- [x] TB045 [CO-B] Extend `MetadataSearchResult` and search payload metadata with pre-pagination match count and global ambiguity details.
+- [x] TB046 [CO-B] Update search output schema for `total_match_count` and any global ambiguity fields.
+
+### Slice CO-C: Recovery Durability And Manual Boundaries
+
+- [x] TB047 [CO-C] Add runtime-status tests for a compact capability or descriptor-catalog fingerprint reference plus typed capabilities resource hint.
+- [x] TB048 [CO-C] Implement the runtime fingerprint reference without exposing secrets or duplicating the full capability catalog.
+- [x] TB049 [CO-C] Add manual-only workflow tests for a compact manual artifact summary.
+- [x] TB050 [CO-C] Implement manual artifact summary with counts, external-execution requirement, approval requirement, and validation next action.
+- [x] TB051 [CO-C] Add descriptor anti-regression tests for model-critical metadata on new tools, resources, prompts, completion targets, annotations, examples, and side-effect metadata.
+
+### Slice CO-D: Live And Long-Context Evidence
+
+- [x] TB052 [CO-D] Add or extend an opt-in LLM E2E scenario that simulates context loss and recovers through `plan_id`, `shardingsphere://workflows/{plan_id}`, runtime status, or typed resource hints.
+- [x] TB053 [CO-D] Run the deterministic non-LLM MCP smoke for touched HTTP/STDIO transport paths when transport behavior changes.
+- [x] TB054 [CO-D] Run the Qwen LLM usability suite against the local Ollama `qwen3:1.7b` E2E stack and require `overallScore=100.0`; cloud-hosted Qwen credentials are not part of this gate.
+- [x] TB055 [CO-D] Record the deterministic score, local Ollama live score or readiness blocker, capability fingerprints, and final repeated-question review result.
+
 ## Cross-Slice Guardrails
 
 - Add deterministic tests before changing each model-facing payload.

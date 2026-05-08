@@ -333,6 +333,33 @@ tools:
         next_actions:
           type: array
           description: "Ordered model-facing recommendations for the next call or user question."
+          items:
+            type: object
+            properties:
+              action_kind:
+                type: string
+                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+              target_tool:
+                type: string
+                description: "Tool to call when action_kind is call_tool."
+              target_resource:
+                type: string
+                description: "Resource URI to read when action_kind is read_resource."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_arguments:
+                type: object
+                description: "Arguments to provide to the target tool."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
+              order:
+                type: integer
+                description: "1-based action order when multiple actions are returned."
         resources_to_read:
           type: array
           description: "Typed resources the model should read when more metadata or algorithm context is useful."

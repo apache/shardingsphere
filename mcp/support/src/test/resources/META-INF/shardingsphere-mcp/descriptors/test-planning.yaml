@@ -139,3 +139,34 @@ tools:
         next_actions:
           type: array
           description: "Ordered structured model-facing recommendations for the next call or user question."
+          items:
+            type: object
+            properties:
+              action_kind:
+                type: string
+                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
+      examples:
+        - response_mode: planning
+          plan_id: encrypt-rule-20260505-001
+          workflow_kind: encrypt.rule
+          status: planned
+          missing_required_inputs: []
+          resources_to_read: []
+          review_focus: {}
+          next_actions:
+            - action_kind: call_tool
+              reason: Preview generated workflow artifacts.
+              requires_user_approval: false
+    annotations:
+      title: Plan Encrypt Rule
+      readOnlyHint: true
+      destructiveHint: false
+      idempotentHint: false
+      openWorldHint: true
+      returnDirect: false

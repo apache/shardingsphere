@@ -80,6 +80,17 @@ class SearchMetadataToolServiceTest {
     }
 
     @Test
+    void assertExecuteBlankAllDatabaseSearchGuardsObjectExpansion() {
+        MetadataSearchResult actual = execute(createDatabaseMetadata(), new MetadataSearchRequest("", "", "", Set.of(), 10, ""));
+        assertThat(actual.getItems().size(), is(4));
+        assertThat(actual.getTotalMatchCount(), is(4));
+        assertThat(actual.getSearchContext().get("object_types"), is(List.of("database")));
+        assertTrue((Boolean) actual.getSearchContext().get("broad_search_guarded"));
+        assertThat(actual.getSearchContext().get("recommended_narrowing_arguments"), is(List.of("database", "query", "object_types")));
+        assertFalse(actual.getItems().stream().map(MetadataSearchHit::getName).collect(Collectors.toSet()).contains("orders"));
+    }
+
+    @Test
     void assertExecuteSearchWithPagination() {
         Set<SupportedMCPMetadataObjectType> objectTypes = new LinkedHashSet<>(Arrays.asList(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW));
         MetadataSearchResult actual = execute(createDatabaseMetadata(),
@@ -97,6 +108,7 @@ class SearchMetadataToolServiceTest {
         assertThat(actualSearchContext.get("object_types"), is(List.of("table", "view")));
         assertThat(actualSearchContext.get("page_size"), is(1));
         assertThat(actualSearchContext.get("page_offset"), is(0));
+        assertThat(actual.getTotalMatchCount(), is(4));
         assertThat(actual.getNextPageToken(), is("1"));
     }
 

@@ -80,7 +80,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(actual.get("metadata_search_tool"), is("search_metadata"));
         assertThat(actual.get("side_effect_sql_tool"), is("execute_update"));
     }
-    
+
     private void assertFieldNamingContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("field_naming_contract");
         assertTrue(((List<?>) actual.get("protocol_fields")).contains("resourceTemplates"));
@@ -145,7 +145,7 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> runtimeStatus = findResource(capabilities, "shardingsphere://runtime");
         Map<?, ?> runtimeStatusPayloadContract = (Map<?, ?>) runtimeStatus.get("payload_contract");
         assertThat(runtimeStatusPayloadContract.get("response_kind"), is("runtime-status"));
-        assertTrue(((List<?>) runtimeStatusPayloadContract.get("stable_fields")).containsAll(List.of("active_transport", "databases")));
+        assertTrue(((List<?>) runtimeStatusPayloadContract.get("stable_fields")).containsAll(List.of("active_transport", "databases", "capability_fingerprint")));
         Map<?, ?> databaseDetail = findResource(capabilities, "shardingsphere://databases/{database}");
         Map<?, ?> payloadContract = (Map<?, ?>) databaseDetail.get("payload_contract");
         assertThat(payloadContract.get("response_kind"), is("detail"));
@@ -155,7 +155,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(((Map<?, ?>) databaseCapabilities.get("payload_contract")).get("response_kind"), is("detail-object"));
         Map<?, ?> databases = findResource(capabilities, "shardingsphere://databases");
         Map<?, ?> databaseListPayloadContract = (Map<?, ?>) databases.get("payload_contract");
-        assertThat(databaseListPayloadContract.get("stable_fields"), is(List.of("items", "count", "has_more")));
+        assertThat(databaseListPayloadContract.get("stable_fields"), is(List.of("items", "count", "has_more", "total_count", "returned_count", "truncated")));
         assertThat(databaseListPayloadContract.get("optional_fields"), is(List.of(
                 "next_page_token", "self_uri", "parent_resource", "next_resources", "empty_state", "large_result_guidance", "next_actions")));
         Map<?, ?> databaseParameter = ((List<?>) databaseDetail.get("parameters")).stream().map(each -> (Map<?, ?>) each).filter(each -> "database".equals(each.get("name"))).findFirst().orElseThrow();
@@ -167,6 +167,8 @@ class ServerCapabilitiesHandlerTest {
 
     private void assertCoreToolSchemas(final Map<String, Object> capabilities) {
         Map<?, ?> searchMetadataTool = findTool(capabilities, "search_metadata");
+        Map<?, ?> searchMetadataOutputProperties = (Map<?, ?>) ((Map<?, ?>) searchMetadataTool.get("outputSchema")).get("properties");
+        assertTrue(searchMetadataOutputProperties.containsKey("total_match_count"));
         Map<?, ?> objectTypesSchema = findInputSchema(searchMetadataTool, "object_types");
         assertTrue(((List<?>) ((Map<?, ?>) objectTypesSchema.get("items")).get("enum")).containsAll(List.of("database", "schema", "table", "view", "column", "index", "sequence")));
         Map<?, ?> executeUpdateTool = findTool(capabilities, "execute_update");

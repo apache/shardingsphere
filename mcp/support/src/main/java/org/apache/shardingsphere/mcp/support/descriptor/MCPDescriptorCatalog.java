@@ -54,15 +54,6 @@ public final class MCPDescriptorCatalog {
 
     private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
 
-    public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors) {
-        this(resourceDescriptors, toolDescriptors, Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    }
-
-    public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
-                                final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors) {
-        this(resourceDescriptors, toolDescriptors, promptDescriptors, completionTargetDescriptors, Collections.emptyList());
-    }
-
     public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
                                 final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors,
                                 final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors) {
@@ -109,6 +100,21 @@ public final class MCPDescriptorCatalog {
         return result;
     }
 
+    /**
+     * Get descriptor catalog fingerprint.
+     *
+     * @return descriptor catalog fingerprint
+     */
+    public String getDescriptorCatalogFingerprint() {
+        List<Map<String, Object>> resources = resourceDescriptors.stream().filter(each -> !each.isTemplated()).map(this::toResourcePayload).toList();
+        List<Map<String, Object>> resourceTemplates = resourceDescriptors.stream().filter(MCPResourceDescriptor::isTemplated).map(this::toResourcePayload).toList();
+        List<Map<String, Object>> tools = toolDescriptors.stream().map(this::toToolPayload).toList();
+        List<Map<String, Object>> prompts = promptDescriptors.stream().map(this::toPromptPayload).toList();
+        List<Map<String, Object>> completionTargets = completionTargetDescriptors.stream().map(this::toCompletionTargetPayload).toList();
+        List<Map<String, Object>> resourceNavigation = resourceNavigationDescriptors.stream().map(this::toResourceNavigationPayload).toList();
+        return String.valueOf(createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation).get("descriptorCatalog"));
+    }
+
     private List<Map<String, Object>> createNextActionContract() {
         return List.of(
                 createNextActionContractEntry("read_resource", List.of("target_resource", "reason", "requires_user_approval"),
@@ -147,7 +153,7 @@ public final class MCPDescriptorCatalog {
         result.put("completion_rule", "Use local completion hints on fields, prompts, and resources before guessing identifiers.");
         return result;
     }
-    
+
     private Map<String, Object> createFieldNamingContract() {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("protocol_fields", List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability"));
@@ -256,7 +262,7 @@ public final class MCPDescriptorCatalog {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("response_kind", "list");
         result.put("item_scope", createObjectScope(descriptor));
-        result.put("stable_fields", List.of("items", "count", "has_more"));
+        result.put("stable_fields", List.of("items", "count", "has_more", "total_count", "returned_count", "truncated"));
         result.put("optional_fields", List.of("next_page_token", "self_uri", "parent_resource", "next_resources", "empty_state", "large_result_guidance", "next_actions"));
         result.put("empty_state", Map.of("items", List.of(), "count", 0, "has_more", false));
         result.put("pagination", "next_page_token is present only when has_more is true.");
@@ -303,11 +309,11 @@ public final class MCPDescriptorCatalog {
         result.put("not_found_behavior", "The resource returns a not_found error when the logical database capability is unavailable.");
         return result;
     }
-    
+
     private Map<String, Object> createRuntimeStatusResourcePayloadContract() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("response_kind", "runtime-status");
-        result.put("stable_fields", List.of("status", "active_transport", "configured_database_count", "databases", "resources_to_read", "next_actions"));
+        result.put("stable_fields", List.of("status", "active_transport", "configured_database_count", "databases", "capability_fingerprint", "resources_to_read", "next_actions"));
         result.put("database_fields", List.of("database", "database_type", "schema_count", "capabilities", "resource"));
         result.put("secret_rule", "Runtime status never exposes JDBC credentials, bearer tokens, raw environment variables, or stack traces.");
         return result;

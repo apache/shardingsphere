@@ -77,8 +77,9 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCases")
-    void assertMinimalBaseline(final UsabilitySuiteTestCase testCase) throws IOException {
+    void assertMinimalBaseline(final UsabilitySuiteTestCase testCase) throws IOException, InterruptedException {
         currentTestCase = testCase;
+        conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
         suiteRunner.assertUsabilitySuite(testCase.suiteId(),
                 () -> scenarioCatalog.createMinimalBaseline(getRuntimeKind(), "logic_db", getRequiredRuntimeFixture().schemaName(),

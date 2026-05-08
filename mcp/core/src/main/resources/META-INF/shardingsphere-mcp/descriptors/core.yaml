@@ -644,12 +644,15 @@ tools:
         search_context:
           type: object
           description: "Applied search scope, query, object types, page size, and page offset used for this page."
+        total_match_count:
+          type: integer
+          description: "Total matched metadata objects before pagination for this search scope."
         empty_state:
           type: object
           description: "Structured empty state when no metadata hits were returned."
         ambiguity_state:
           type: object
-          description: "Structured duplicate-name state when several returned hits require a narrower database, schema, or object-type choice."
+          description: "Structured duplicate-name state when matched hits require a narrower database, schema, or object-type choice."
           properties:
             ambiguous:
               type: boolean
@@ -669,6 +672,33 @@ tools:
         next_actions:
           type: array
           description: "Structured follow-up actions for empty, paginated, or duplicate-name search results."
+          items:
+            type: object
+            properties:
+              action_kind:
+                type: string
+                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+              target_tool:
+                type: string
+                description: "Tool to call when action_kind is call_tool."
+              target_resource:
+                type: string
+                description: "Resource URI to read when action_kind is read_resource."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_arguments:
+                type: object
+                description: "Arguments to provide to the target tool."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
+              order:
+                type: integer
+                description: "1-based action order when multiple actions are returned."
       examples:
         - items:
             - database: logic_db
@@ -701,6 +731,7 @@ tools:
               matched_value: orders
           count: 1
           has_more: false
+          total_match_count: 1
           search_context:
             query: orders
             database: logic_db
@@ -812,6 +843,33 @@ tools:
         next_actions:
           type: array
           description: "Ordered structured model-facing recommendations after SQL execution."
+          items:
+            type: object
+            properties:
+              action_kind:
+                type: string
+                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+              target_tool:
+                type: string
+                description: "Tool to call when action_kind is call_tool."
+              target_resource:
+                type: string
+                description: "Resource URI to read when action_kind is read_resource."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_arguments:
+                type: object
+                description: "Arguments to provide to the target tool."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
+              order:
+                type: integer
+                description: "1-based action order when multiple actions are returned."
       examples:
         - result_kind: result_set
           statement_class: query
@@ -1001,6 +1059,36 @@ tools:
         next_actions:
           type: array
           description: "Ordered structured model-facing recommendations after preview or execution."
+          items:
+            type: object
+            properties:
+              action_kind:
+                type: string
+                description: "Action type such as call_tool, ask_user, read_resource, or stop."
+              target_tool:
+                type: string
+                description: "Tool to call when action_kind is call_tool."
+              target_resource:
+                type: string
+                description: "Resource URI to read when action_kind is read_resource."
+              reason:
+                type: string
+                description: "Why the model should take this action."
+              required_arguments:
+                type: object
+                description: "Arguments to provide to the target tool."
+              required_inputs:
+                type: array
+                description: "User inputs needed before continuing."
+              requires_user_approval:
+                type: boolean
+                description: "Whether the next action requires user approval."
+              order:
+                type: integer
+                description: "1-based action order when multiple actions are returned."
+              depends_on:
+                type: array
+                description: "Action order values that must complete before this action."
         truncated:
           type: boolean
           description: "Whether returned rows were truncated."

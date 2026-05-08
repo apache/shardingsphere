@@ -39,6 +39,7 @@ class RuntimeStatusHandlerTest {
             assertThat(actual.get("active_transport"), is("http"));
             assertThat(actual.get("configured_database_count"), is(3));
             assertTrue(((List<?>) actual.get("databases")).stream().map(each -> ((Map<?, ?>) each).get("database")).anyMatch("logic_db"::equals));
+            assertTrue(String.valueOf(actual.get("capability_fingerprint")).matches("[0-9a-f]{64}"));
             assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
         }

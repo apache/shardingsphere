@@ -67,6 +67,9 @@ public final class MCPDescriptorCatalogLoader {
 
     private static final Collection<String> LEGACY_RECOMMENDATION_FIELDS = List.of("recommended_next_tool", "suggested_next_tool", "suggested_next_tools");
 
+    private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
+            "next_actions", "resources_to_read", "resource", "parent_resource", "next_resources", "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state");
+
     /**
      * Load MCP descriptor catalog from classpath.
      *
@@ -295,6 +298,7 @@ public final class MCPDescriptorCatalogLoader {
             checkState(null == registered.putIfAbsent(each.getName(), each), String.format("Duplicate MCP tool descriptor `%s`.", each.getName()));
             validateToolFields(each);
             validateToolOutputSchema(each);
+            validateToolAnnotations(each);
             validateDestructiveToolDescriptor(each);
             validateExecuteUpdateDescriptor(each);
             validatePlanningExecutionMode(each);
@@ -328,8 +332,14 @@ public final class MCPDescriptorCatalogLoader {
         Object properties = outputSchema.get("properties");
         checkState(properties instanceof Map && !((Map<?, ?>) properties).isEmpty(), String.format("Tool `%s` outputSchema must declare properties.", descriptor.getName()));
         validateNoLegacyRecommendationFields(descriptor, outputSchema);
+        validateOutputExamples(descriptor, outputSchema);
         validateRequiredOutputFields(descriptor, (Map<?, ?>) properties);
         validateSearchMetadataOutputItems(descriptor, (Map<?, ?>) properties);
+        validateModelCriticalOutputHints(descriptor, (Map<?, ?>) properties);
+    }
+
+    private static void validateOutputExamples(final MCPToolDescriptor descriptor, final Map<String, Object> outputSchema) {
+        checkState(isNonEmptyCollection(outputSchema.get("examples")), String.format("Tool `%s` outputSchema must declare examples.", descriptor.getName()));
     }
 
     private static void validateNoLegacyRecommendationFields(final MCPToolDescriptor descriptor, final Object value) {
@@ -362,7 +372,7 @@ public final class MCPDescriptorCatalogLoader {
 
     private static Collection<String> createRequiredOutputFields(final String toolName) {
         if ("search_metadata".equals(toolName)) {
-            return List.of("items", "count", "next_page_token", "has_more", "search_context");
+            return List.of("items", "count", "next_page_token", "has_more", "search_context", "total_match_count");
         }
         if ("execute_query".equals(toolName)) {
             return List.of("result_kind", "statement_class", "statement_type", "status", "returned_row_count",
@@ -373,7 +383,7 @@ public final class MCPDescriptorCatalogLoader {
                     "applied_max_rows", "applied_timeout_ms", "suggested_arguments", "next_actions");
         }
         if ("apply_workflow".equals(toolName)) {
-            return List.of("response_mode", "plan_id", "status", "execution_mode", "next_actions", "requires_user_approval");
+            return List.of("response_mode", "plan_id", "status", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_summary");
         }
         if ("validate_workflow".equals(toolName)) {
             return List.of("response_mode", "plan_id", "status", "overall_status", "issues", "next_actions");
@@ -382,6 +392,54 @@ public final class MCPDescriptorCatalogLoader {
             return List.of("response_mode", "plan_id", "workflow_kind", "status", "missing_required_inputs", "resources_to_read", "next_actions");
         }
         return List.of();
+    }
+
+    private static void validateModelCriticalOutputHints(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
+        for (Entry<?, ?> entry : properties.entrySet()) {
+            String fieldName = String.valueOf(entry.getKey());
+            if (MODEL_CRITICAL_HINT_FIELDS.contains(fieldName)) {
+                validateModelCriticalOutputHint(descriptor, fieldName, entry.getValue());
+            }
+            validateNestedModelCriticalOutputHints(descriptor, entry.getValue());
+        }
+    }
+
+    private static void validateNestedModelCriticalOutputHints(final MCPToolDescriptor descriptor, final Object value) {
+        if (!(value instanceof Map)) {
+            return;
+        }
+        Object properties = ((Map<?, ?>) value).get("properties");
+        if (properties instanceof Map) {
+            validateModelCriticalOutputHints(descriptor, (Map<?, ?>) properties);
+        }
+        Object items = ((Map<?, ?>) value).get("items");
+        if (items instanceof Map) {
+            validateNestedModelCriticalOutputHints(descriptor, items);
+        }
+    }
+
+    private static void validateModelCriticalOutputHint(final MCPToolDescriptor descriptor, final String fieldName, final Object property) {
+        checkState(property instanceof Map, String.format("Tool `%s` model-critical output field `%s` must be an object.", descriptor.getName(), fieldName));
+        Object description = ((Map<?, ?>) property).get("description");
+        checkDescription(null == description ? "" : description.toString(), String.format("Tool model-critical output field `%s.%s` description", descriptor.getName(), fieldName));
+        if ("next_actions".equals(fieldName)) {
+            validateNextActionsSchema(descriptor, (Map<?, ?>) property);
+        }
+    }
+
+    private static void validateNextActionsSchema(final MCPToolDescriptor descriptor, final Map<?, ?> property) {
+        checkState("array".equals(property.get("type")), String.format("Tool `%s` next_actions must be an array.", descriptor.getName()));
+        Object items = property.get("items");
+        checkState(items instanceof Map, String.format("Tool `%s` next_actions items must be an object.", descriptor.getName()));
+        Object properties = ((Map<?, ?>) items).get("properties");
+        checkState(properties instanceof Map, String.format("Tool `%s` next_actions items must declare properties.", descriptor.getName()));
+        for (String each : List.of("action_kind", "reason", "requires_user_approval")) {
+            checkState(((Map<?, ?>) properties).containsKey(each), String.format("Tool `%s` next_actions item must declare `%s`.", descriptor.getName(), each));
+            Object field = ((Map<?, ?>) properties).get(each);
+            checkState(field instanceof Map, String.format("Tool `%s` next_actions item field `%s` must be an object.", descriptor.getName(), each));
+            Object description = ((Map<?, ?>) field).get("description");
+            checkDescription(null == description ? "" : description.toString(), String.format("Tool next_actions item field `%s.%s` description", descriptor.getName(), each));
+        }
     }
 
     private static void validateSearchMetadataOutputItems(final MCPToolDescriptor descriptor, final Map<?, ?> properties) {
@@ -489,6 +547,13 @@ public final class MCPDescriptorCatalogLoader {
             checkState(registered.add(each.getFrom() + "->" + each.getTo()),
                     String.format("Duplicate MCP resource navigation `%s` to `%s`.", each.getFrom(), each.getTo()));
         }
+    }
+
+    private static void validateToolAnnotations(final MCPToolDescriptor descriptor) {
+        checkState(!descriptor.getAnnotations().isEmpty(), String.format("Tool `%s` must declare MCP annotations.", descriptor.getName()));
+        checkState(null != descriptor.getAnnotations().getReadOnlyHint(), String.format("Tool `%s` annotations must declare readOnlyHint.", descriptor.getName()));
+        checkState(null != descriptor.getAnnotations().getDestructiveHint(), String.format("Tool `%s` annotations must declare destructiveHint.", descriptor.getName()));
+        checkState(null != descriptor.getAnnotations().getOpenWorldHint(), String.format("Tool `%s` annotations must declare openWorldHint.", descriptor.getName()));
     }
 
     private static Set<String> createPublicIdentifiers(final MCPDescriptorCatalog catalog) {

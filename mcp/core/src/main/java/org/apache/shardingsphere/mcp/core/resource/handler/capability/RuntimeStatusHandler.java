@@ -59,6 +59,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("active_transport", handlerContext.getActiveTransport());
         result.put("configured_database_count", databases.size());
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
+        result.put("capability_fingerprint", MCPDescriptorRegistry.getDescriptorCatalogFingerprint());
         result.put("resources_to_read", List.of(
                 MCPResourceHintUtils.create("shardingsphere://capabilities", "capability", "read_first", "Read full MCP capabilities before choosing tools.", "resources_to_read"),
                 MCPResourceHintUtils.create("shardingsphere://databases", "logical-database", "read_first", "Read logical databases before choosing a database scope.", "resources_to_read")));

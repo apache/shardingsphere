@@ -36,6 +36,7 @@ import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowLifecycleU
 import org.apache.shardingsphere.mcp.support.workflow.service.WorkflowSynchronizationException;
 import org.apache.shardingsphere.mcp.support.workflow.spi.MCPWorkflowApplySynchronizationHandler;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -214,7 +215,7 @@ public final class WorkflowExecutionService {
         return MCPNextActionUtils.callTool("apply_workflow", createPreviewNextActionReason(executionMode),
                 Map.of("plan_id", snapshot.getPlanId(), "execution_mode", executionMode), !EXECUTION_MODE_MANUAL_ONLY.equals(executionMode));
     }
-    
+
     private List<Map<String, Object>> createPreviewNextActions(final WorkflowContextSnapshot snapshot) {
         if (!isPreviewApprovalRequired(snapshot)) {
             return MCPNextActionUtils.ordered(createPreviewNextAction(snapshot));
@@ -223,11 +224,11 @@ public final class WorkflowExecutionService {
                 MCPNextActionUtils.askUser("Review preview_artifacts and approve only the intended workflow side effects.", List.of("approval"), true),
                 MCPNextActionUtils.dependsOn(createPreviewNextAction(snapshot), 1));
     }
-    
+
     private boolean isPreviewApprovalRequired(final WorkflowContextSnapshot snapshot) {
         return !EXECUTION_MODE_MANUAL_ONLY.equals(resolveApprovedExecutionMode(snapshot));
     }
-    
+
     private String createPreviewNextActionReason(final String executionMode) {
         return EXECUTION_MODE_MANUAL_ONLY.equals(executionMode)
                 ? "Export reviewed workflow artifacts without applying runtime side effects."
@@ -352,6 +353,7 @@ public final class WorkflowExecutionService {
         result.put("manual_artifacts", manualArtifactPackage.isEmpty() ? List.of() : List.of(manualArtifactPackage));
         result.put(WorkflowArtifactPayloadUtils.PAYLOAD_KEY_MANUAL_ARTIFACT_PACKAGE, manualArtifactPackage);
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status) && !manualArtifactPackage.isEmpty()) {
+            result.put("manual_artifact_summary", createManualArtifactSummary(planId, manualArtifactPackage));
             result.put("manual_follow_up", createManualFollowUp());
         }
         WorkflowGuidancePayloadBuilder.appendApplyGuidance(result, status);
@@ -373,6 +375,27 @@ public final class WorkflowExecutionService {
                 "confirmation_required", true,
                 "confirmation_field", "manual_artifacts_executed",
                 "validation_tool", "validate_workflow");
+    }
+
+    private static Map<String, Object> createManualArtifactSummary(final String planId, final Map<String, Object> manualArtifactPackage) {
+        int ddlArtifactCount = getCollectionSize(manualArtifactPackage, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DDL_ARTIFACTS);
+        int indexPlanCount = getCollectionSize(manualArtifactPackage, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_INDEX_PLAN);
+        int distSqlArtifactCount = getCollectionSize(manualArtifactPackage, WorkflowArtifactPayloadUtils.PAYLOAD_KEY_DISTSQL_ARTIFACTS);
+        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
+        result.put("ddl_artifact_count", ddlArtifactCount);
+        result.put("index_plan_count", indexPlanCount);
+        result.put("distsql_artifact_count", distSqlArtifactCount);
+        result.put("total_artifact_count", ddlArtifactCount + indexPlanCount + distSqlArtifactCount);
+        result.put("external_execution_required", true);
+        result.put("requires_user_confirmation", true);
+        result.put("recommended_validation_tool", "validate_workflow");
+        result.put("recommended_validation_arguments", Map.of("plan_id", planId));
+        return result;
+    }
+
+    private static int getCollectionSize(final Map<String, Object> payload, final String key) {
+        Object value = payload.get(key);
+        return value instanceof Collection ? ((Collection<?>) value).size() : 0;
     }
 
     private static List<String> createAppliedArtifacts(final List<String> executedDdl, final List<String> executedDistSql) {

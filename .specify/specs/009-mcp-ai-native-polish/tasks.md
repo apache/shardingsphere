@@ -2,7 +2,7 @@
 
 **Input**: Design documents from `/.specify/specs/009-mcp-ai-native-polish/`
 **Prerequisites**: `spec.md`, `plan.md`, `research.md`, `data-model.md`, `current-behavior-analysis.md`, `breaking-cleanup-analysis.md`,
-`implementation-baseline-100.md`, `final-requirement-inventory.md`, `implementation-task-breakdown.md`, `quickstart.md`
+`implementation-baseline-100.md`, `final-requirement-inventory.md`, `implementation-task-breakdown.md`, `continuous-optimization-100.md`, `quickstart.md`
 **Tests**: Required for new model-facing contracts. Real-model E2E remains opt-in.
 
 **Organization**: Tasks are grouped by user story to enable independent review and implementation.
@@ -11,6 +11,7 @@
 Unchecked rows after this re-baseline are intentionally open. They represent either a small remaining implementation gap or a protocol behavior decision that needs explicit user confirmation.
 `final-requirement-inventory.md` is the final repeated-question inventory for retained, rejected, and baseline-preserving requirements.
 `implementation-task-breakdown.md` is the accepted-default execution queue for the next code slices.
+`continuous-optimization-100.md` is the 2026-05-08 addendum for closing the stricter sustained-improvement score after the original baseline is already accepted.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -263,11 +264,28 @@ Use `implementation-task-breakdown.md` for the next executable task queue.
 - [x] T113 [P1] Implement retained response comfort tasks after P0 is stable.
 - [x] T114 [P2] Keep optional diagnostics and packaging work bounded, opt-in, or documentation-focused.
 
+## Phase 16: Continuous Optimization 100 Closure (2026-05-08)
+
+Use `continuous-optimization-100.md` for the score gate. This phase closes the stricter continuous-optimization view and does not rewrite the original accepted baseline.
+
+- [x] T115 [P0] Add direct metadata list hard-cap tests and implementation for non-detail list resources.
+- [x] T116 [P0] Add `search_metadata` blank all-database guard tests and implementation while preserving scoped blank-query discovery.
+- [x] T117 [P0] Add bounded, prioritized ResourceLink transport tests and implementation while keeping JSON `structuredContent` canonical.
+- [x] T118 [P0] Add global pre-pagination metadata ambiguity and `total_match_count` tests and implementation.
+- [x] T119 [P0] Run or record the opt-in Qwen LLM usability full-score gate against local Ollama `qwen3:1.7b`; cloud-hosted Qwen credentials are not part of this gate.
+- [x] T120 [P1] Add runtime capability fingerprint reference tests and implementation without exposing secrets.
+- [x] T121 [P1] Add manual artifact summary tests and implementation for manual-only workflow responses.
+- [x] T122 [P1] Add context-loss recovery LLM E2E coverage using existing workflow plan read-back and runtime/resource hints.
+- [x] T123 [P1] Expand descriptor anti-regression checks for model-critical metadata without adding model calls.
+- [x] T124 [P] Update capability payload contracts, descriptor schemas, README references, and SpecKit docs only for fields emitted by T115-T123.
+- [x] T125 Run scoped MCP tests, scoped Checkstyle for touched modules, `git diff --check`, and branch verification before reporting continuous-optimization scoring.
+
 ## Dependencies and Execution Order
 
 - Phase 1 blocks all implementation.
 - Phase 2 blocks user-story work.
 - Phase 15 is the next implementation queue after the accepted defaults.
+- Phase 16 is the continuous-optimization 100 closure after the original 009 baseline is accepted.
 - User Stories 1, 2, and 3 are P0 and should land before broader response polish.
 - User Stories 4 and 5 can proceed after current response shapes are verified.
 - User Story 8 is P0 and should land with or before response-shape changes that affect query/search safety.
@@ -287,3 +305,5 @@ Use `implementation-task-breakdown.md` for the next executable task queue.
 - T065 through T068 can run in parallel.
 - T074 through T079 can run in parallel after runtime/config baselines are confirmed.
 - T080 through T095 can run in parallel because each validates a distinct concrete model-guessing gap.
+- T115 through T118 can start with independent tests, but T119 should run after the code and descriptor shape settle.
+- T120 through T123 can proceed after T115 through T118 define the final payload surface.
