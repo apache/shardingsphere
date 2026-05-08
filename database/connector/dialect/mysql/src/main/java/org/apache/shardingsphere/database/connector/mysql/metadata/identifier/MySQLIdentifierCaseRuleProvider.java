@@ -19,13 +19,17 @@ package org.apache.shardingsphere.database.connector.mysql.metadata.identifier;
 
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProvider;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleProviderContext;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRule;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSet;
 import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierCaseRuleSets;
+import org.apache.shardingsphere.database.connector.core.metadata.identifier.IdentifierScope;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,18 +46,33 @@ public final class MySQLIdentifierCaseRuleProvider implements IdentifierCaseRule
         if (null == context.getDataSource()) {
             return Optional.empty();
         }
-        try (
-                Connection connection = context.getDataSource().getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES);
-                ResultSet resultSet = preparedStatement.executeQuery()) {
-            return resultSet.next() ? createRuleSet(resultSet.getInt(1)) : Optional.empty();
+        try {
+            Connection connection = context.getDataSource().getConnection();
+            if (null == connection) {
+                return Optional.empty();
+            }
+            try (
+                    PreparedStatement preparedStatement = connection.prepareStatement(QUERY_LOWER_CASE_TABLE_NAMES);
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next() ? createRuleSet(resultSet.getInt(1)) : Optional.empty();
+            }
         } catch (final SQLException ignored) {
             return Optional.empty();
         }
     }
     
     private Optional<IdentifierCaseRuleSet> createRuleSet(final int lowerCaseTableNames) {
-        return 1 == lowerCaseTableNames || 2 == lowerCaseTableNames ? Optional.of(IdentifierCaseRuleSets.newMySQLInsensitiveRuleSet()) : Optional.empty();
+        if (1 == lowerCaseTableNames || 2 == lowerCaseTableNames) {
+            return Optional.of(IdentifierCaseRuleSets.newMySQLInsensitiveRuleSet());
+        }
+        if (0 == lowerCaseTableNames) {
+            Map<IdentifierScope, IdentifierCaseRule> scopedRules = new EnumMap<>(IdentifierScope.class);
+            scopedRules.put(IdentifierScope.SCHEMA, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.SCHEMA));
+            scopedRules.put(IdentifierScope.TABLE, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.TABLE));
+            scopedRules.put(IdentifierScope.VIEW, IdentifierCaseRuleSets.newSensitiveRuleSet().getRule(IdentifierScope.VIEW));
+            return Optional.of(new IdentifierCaseRuleSet(IdentifierCaseRuleSets.newInsensitiveRuleSet().getRule(IdentifierScope.TABLE), scopedRules));
+        }
+        return Optional.empty();
     }
     
     @Override
