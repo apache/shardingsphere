@@ -186,8 +186,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(recovery.get("category"), is("missing_execution_mode"));
         assertThat(recovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         Map<String, Object> retryAction = castToMapList(recovery.get("next_actions")).iterator().next();
-        assertThat(String.valueOf(retryAction.get("action_kind")), is("retry_tool"));
-        assertThat(castToMap(retryAction.get("required_arguments")), is(Map.of("execution_mode", "preview")));
+        assertThat(String.valueOf(retryAction.get("type")), is("tool_call"));
+        assertThat(castToMap(retryAction.get("arguments")), is(Map.of("execution_mode", "preview")));
         assertTrue((Boolean) retryAction.get("requires_user_approval"));
     }
     
@@ -203,10 +203,10 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(String.valueOf(structuredContent.get("result_kind")), is("preview"));
         assertFalse((Boolean) structuredContent.get("would_execute"));
         List<Map<String, Object>> nextActions = castToMapList(structuredContent.get("next_actions"));
-        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("action_kind"))).toList(), is(List.of("ask_user", "call_tool")));
+        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
         Map<String, Object> callToolAction = nextActions.get(1);
-        assertThat(String.valueOf(callToolAction.get("target_tool")), is("execute_update"));
-        assertThat(String.valueOf(castToMap(callToolAction.get("required_arguments")).get("execution_mode")), is("execute"));
+        assertThat(String.valueOf(callToolAction.get("tool_name")), is("execute_update"));
+        assertThat(String.valueOf(castToMap(callToolAction.get("arguments")).get("execution_mode")), is("execute"));
         assertTrue((Boolean) callToolAction.get("requires_user_approval"));
     }
     

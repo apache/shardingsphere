@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition.Type;
 import org.apache.shardingsphere.mcp.bootstrap.transport.MCPTransportPayloadUtils;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
@@ -44,6 +45,10 @@ import java.util.Optional;
  * MCP tool specification factory.
  */
 public final class MCPToolSpecificationFactory {
+    
+    private static final String WORKFLOW_ROLE_KEY = "workflowRole";
+    
+    private static final String PLANNING_WORKFLOW_ROLE = "plan";
     
     private final List<MCPToolDescriptor> toolDescriptors;
     
@@ -107,18 +112,28 @@ public final class MCPToolSpecificationFactory {
         Map<String, Object> arguments = Optional.ofNullable(request.arguments()).orElse(Map.of());
         MCPResponse response = toolController.handle(exchange.sessionId(), request.name(), arguments);
         Map<String, Object> payload = response.toPayload();
-        if (shouldElicit(exchange, request.name(), payload)) {
-            return MCPTransportPayloadUtils.createCallToolResult(handleElicitation(exchange, request.name(), arguments, response, payload));
+        Optional<MCPToolDescriptor> toolDescriptor = findToolDescriptor(request.name());
+        if (toolDescriptor.isPresent() && shouldElicit(exchange, toolDescriptor.get(), payload)) {
+            return MCPTransportPayloadUtils.createCallToolResult(handleElicitation(exchange, toolDescriptor.get(), arguments, response, payload));
         }
         return MCPTransportPayloadUtils.createCallToolResult(response);
     }
     
-    private boolean shouldElicit(final McpSyncServerExchange exchange, final String toolName, final Map<String, Object> payload) {
-        return isPlanningTool(toolName) && supportsFormElicitation(exchange) && hasClarificationQuestions(payload);
+    private Optional<MCPToolDescriptor> findToolDescriptor(final String toolName) {
+        for (MCPToolDescriptor each : toolDescriptors) {
+            if (toolName.equals(each.getName())) {
+                return Optional.of(each);
+            }
+        }
+        return Optional.empty();
     }
     
-    private boolean isPlanningTool(final String toolName) {
-        return "plan_encrypt_rule".equals(toolName) || "plan_mask_rule".equals(toolName);
+    private boolean shouldElicit(final McpSyncServerExchange exchange, final MCPToolDescriptor toolDescriptor, final Map<String, Object> payload) {
+        return isPlanningTool(toolDescriptor) && supportsFormElicitation(exchange) && hasClarificationQuestions(payload);
+    }
+    
+    private boolean isPlanningTool(final MCPToolDescriptor toolDescriptor) {
+        return PLANNING_WORKFLOW_ROLE.equals(Objects.toString(toolDescriptor.getMeta().get(WORKFLOW_ROLE_KEY), "").trim());
     }
     
     private boolean supportsFormElicitation(final McpSyncServerExchange exchange) {
@@ -135,13 +150,13 @@ public final class MCPToolSpecificationFactory {
         return clarificationQuestions instanceof List<?> && !((List<?>) clarificationQuestions).isEmpty();
     }
     
-    private MCPResponse handleElicitation(final McpSyncServerExchange exchange, final String toolName, final Map<String, Object> arguments,
+    private MCPResponse handleElicitation(final McpSyncServerExchange exchange, final MCPToolDescriptor toolDescriptor, final Map<String, Object> arguments,
                                           final MCPResponse fallbackResponse, final Map<String, Object> payload) {
-        McpSchema.ElicitResult elicitedResult = exchange.createElicitation(createElicitRequest(toolName, payload));
+        McpSchema.ElicitResult elicitedResult = exchange.createElicitation(createElicitRequest(toolDescriptor.getName(), payload));
         if (McpSchema.ElicitResult.Action.ACCEPT != elicitedResult.action() || null == elicitedResult.content()) {
             return fallbackResponse;
         }
-        return toolController.handle(exchange.sessionId(), toolName, mergeElicitedArguments(arguments, payload, elicitedResult.content()));
+        return toolController.handle(exchange.sessionId(), toolDescriptor.getName(), mergeElicitedArguments(arguments, payload, elicitedResult.content(), toolDescriptor));
     }
     
     private McpSchema.ElicitRequest createElicitRequest(final String toolName, final Map<String, Object> payload) {
@@ -188,33 +203,78 @@ public final class MCPToolSpecificationFactory {
         return result;
     }
     
-    private Map<String, Object> mergeElicitedArguments(final Map<String, Object> arguments, final Map<String, Object> payload, final Map<String, Object> elicitedContent) {
+    private Map<String, Object> mergeElicitedArguments(final Map<String, Object> arguments, final Map<String, Object> payload, final Map<String, Object> elicitedContent,
+                                                       final MCPToolDescriptor toolDescriptor) {
         Map<String, Object> result = new LinkedHashMap<>(arguments);
         if (!result.containsKey("plan_id") && payload.containsKey("plan_id")) {
             result.put("plan_id", payload.get("plan_id"));
         }
         for (Entry<String, Object> entry : elicitedContent.entrySet()) {
-            putElicitedArgument(result, entry.getKey(), entry.getValue());
+            putElicitedArgument(result, entry.getKey(), entry.getValue(), toolDescriptor);
         }
         return result;
     }
     
-    private void putElicitedArgument(final Map<String, Object> arguments, final String field, final Object value) {
+    private void putElicitedArgument(final Map<String, Object> arguments, final String field, final Object value, final MCPToolDescriptor toolDescriptor) {
         if (null == value || value instanceof String stringValue && stringValue.trim().isEmpty()) {
             return;
         }
         int separatorIndex = field.indexOf('.');
-        if (0 < separatorIndex && isAlgorithmPropertiesArgument(field.substring(0, separatorIndex))) {
+        if (0 < separatorIndex && separatorIndex < field.length() - 1 && isObjectArgument(toolDescriptor, field.substring(0, separatorIndex))) {
             putNestedArgument(arguments, field.substring(0, separatorIndex), field.substring(separatorIndex + 1), value);
-        } else if (field.startsWith("requires_") || "field_semantics".equals(field)) {
-            putNestedArgument(arguments, "structured_intent_evidence", field, value);
-        } else {
-            arguments.put(field, value);
+            return;
         }
+        if (hasArgument(toolDescriptor, field)) {
+            arguments.put(field, value);
+            return;
+        }
+        Optional<String> objectArgumentName = findObjectArgumentName(toolDescriptor, field);
+        if (objectArgumentName.isPresent()) {
+            putNestedArgument(arguments, objectArgumentName.get(), field, value);
+            return;
+        }
+        arguments.put(field, value);
     }
     
-    private boolean isAlgorithmPropertiesArgument(final String argumentName) {
-        return "primary_algorithm_properties".equals(argumentName) || "assisted_query_algorithm_properties".equals(argumentName) || "like_query_algorithm_properties".equals(argumentName);
+    private boolean hasArgument(final MCPToolDescriptor toolDescriptor, final String argumentName) {
+        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
+            if (argumentName.equals(each.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean isObjectArgument(final MCPToolDescriptor toolDescriptor, final String argumentName) {
+        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
+            if (argumentName.equals(each.getName()) && Type.OBJECT == each.getValueDefinition().getType()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private Optional<String> findObjectArgumentName(final MCPToolDescriptor toolDescriptor, final String fieldName) {
+        String result = null;
+        for (MCPToolFieldDefinition each : toolDescriptor.getFields()) {
+            if (Type.OBJECT != each.getValueDefinition().getType() || !hasObjectProperty(each, fieldName)) {
+                continue;
+            }
+            if (null != result) {
+                return Optional.empty();
+            }
+            result = each.getName();
+        }
+        return Optional.ofNullable(result);
+    }
+    
+    private boolean hasObjectProperty(final MCPToolFieldDefinition fieldDefinition, final String fieldName) {
+        for (MCPToolFieldDefinition each : fieldDefinition.getValueDefinition().getObjectProperties()) {
+            if (fieldName.equals(each.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
     
     private void putNestedArgument(final Map<String, Object> arguments, final String argumentName, final String fieldName, final Object value) {
@@ -224,7 +284,7 @@ public final class MCPToolSpecificationFactory {
     }
     
     private Map<String, Object> createNestedArguments(final Object rawValue) {
-        Map<String, Object> result = new LinkedHashMap<>(rawValue instanceof Map<?, ?> ? ((Map<?, ?>) rawValue).size() : 4, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(rawValue instanceof Map<?, ?> ? ((Map<?, ?>) rawValue).size() + 1 : 4, 1F);
         if (rawValue instanceof Map<?, ?>) {
             for (Entry<?, ?> entry : ((Map<?, ?>) rawValue).entrySet()) {
                 result.put(Objects.toString(entry.getKey(), ""), entry.getValue());

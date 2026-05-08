@@ -154,9 +154,6 @@ tools:
               requires_user_approval:
                 type: boolean
                 description: "Whether the next action requires user approval."
-              action_kind:
-                type: string
-                description: "Action type such as call_tool, ask_user, read_resource, or stop."
               reason:
                 type: string
                 description: "Why the model should take this action."
@@ -172,7 +169,6 @@ tools:
             - order: 1
               type: tool_call
               title: Call apply_workflow
-              action_kind: call_tool
               reason: Preview generated workflow artifacts.
               requires_user_approval: false
     annotations:

@@ -70,7 +70,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(actual.get("metadata_first_resource"), is("shardingsphere://databases"));
         assertTrue(((Map<?, ?>) actual.get("sql_tool_selection")).containsKey("side_effecting"));
         assertTrue(actual.containsKey("workflow_session_rule"));
-        assertTrue(actual.containsKey("legacy_compatibility_rule"));
+        assertTrue(actual.containsKey("next_action_rule"));
         assertTrue(actual.containsKey("recovery_rule"));
     }
     
@@ -225,8 +225,7 @@ class ServerCapabilitiesHandlerTest {
     }
     
     private Map<?, ?> findInputField(final Map<?, ?> tool, final String fieldName) {
-        Map<?, ?> field = ((List<?>) tool.get("inputFields")).stream().map(each -> (Map<?, ?>) each).filter(each -> fieldName.equals(each.get("name"))).findFirst().orElseThrow();
-        return field;
+        return ((List<?>) tool.get("inputFields")).stream().map(each -> (Map<?, ?>) each).filter(each -> fieldName.equals(each.get("name"))).findFirst().orElseThrow();
     }
     
     private Map<?, ?> findPrompt(final Map<String, Object> capabilities, final String promptName) {

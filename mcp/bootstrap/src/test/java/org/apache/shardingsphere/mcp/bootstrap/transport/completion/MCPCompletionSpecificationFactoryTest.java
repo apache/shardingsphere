@@ -81,8 +81,8 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.meta().get("missingContextArguments"), is(List.of("database", "schema")));
         assertThat(((Map<?, ?>) actual.meta().get("recovery")).get("recovery_category"), is("missing_context"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("read_resource"));
-        assertThat(actualNextAction.get("target_resource"), is("shardingsphere://databases"));
+        assertThat(actualNextAction.get("type"), is("resource_read"));
+        assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://databases"));
     }
     
     @Test
@@ -94,7 +94,7 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.completion().values(), is(List.of()));
         assertThat(actual.meta().get("diagnostic"), is("prefix_filtered_all_candidates"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("complete_argument"));
+        assertThat(actualNextAction.get("type"), is("completion"));
         assertThat(actualNextAction.get("argument_name"), is("database"));
     }
     
@@ -107,8 +107,8 @@ class MCPCompletionSpecificationFactoryTest {
         assertThat(actual.completion().values(), is(List.of()));
         assertThat(actual.meta().get("diagnostic"), is("no_candidates"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.meta().get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("read_resource"));
-        assertThat(actualNextAction.get("target_resource"), is("shardingsphere://capabilities"));
+        assertThat(actualNextAction.get("type"), is("resource_read"));
+        assertThat(actualNextAction.get("resource_uri"), is("shardingsphere://capabilities"));
     }
     
     @Test

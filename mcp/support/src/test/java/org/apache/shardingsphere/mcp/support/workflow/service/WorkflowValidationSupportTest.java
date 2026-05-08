@@ -167,7 +167,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("recommended_recovery"), is(""));
         assertFalse(actualResult.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("stop"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("terminal"));
         assertFalse((Boolean) ((Map<?, ?>) actualNextActions.get(0)).get("requires_user_approval"));
         assertThat(workflowSessionContext.getRequired("plan-1").getStatus(), is("validated"));
         assertThat(workflowSessionContext.getRequired("plan-1").getInteractionPlan().getCurrentStep(), is("validated"));
@@ -189,7 +189,7 @@ class WorkflowValidationSupportTest {
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(actualResult.get("recommended_recovery"), is("Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again."));
-        assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
     
     @Test
@@ -204,7 +204,7 @@ class WorkflowValidationSupportTest {
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
         assertFalse(actualResult.containsKey("recommended_next_tool"));
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("target_tool"), is("plan_encrypt_rule"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("tool_name"), is("plan_encrypt_rule"));
     }
     
     @Test
@@ -221,10 +221,10 @@ class WorkflowValidationSupportTest {
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0);
         assertThat(actualResult.get("recommended_recovery"), is("Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run validate_workflow again."));
         assertTrue((Boolean) actualResult.get("requires_user_approval"));
-        assertThat(actualNextAction.get("action_kind"), is("ask_user"));
+        assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("manual_artifacts_executed")));
         assertTrue((Boolean) actualNextAction.get("requires_user_approval"));
-        assertFalse(actualNextAction.containsKey("target_tool"));
+        assertFalse(actualNextAction.containsKey("tool_name"));
     }
     
     @Test

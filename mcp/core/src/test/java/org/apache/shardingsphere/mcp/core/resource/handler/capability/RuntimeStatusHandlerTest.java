@@ -62,8 +62,8 @@ class RuntimeStatusHandlerTest {
             assertThat(readiness.get("reason"), is("No runtime databases are configured."));
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities")));
             List<?> nextActions = (List<?>) actual.get("next_actions");
-            assertThat(((Map<?, ?>) nextActions.get(0)).get("action_kind"), is("read_resource"));
-            assertThat(((Map<?, ?>) nextActions.get(1)).get("action_kind"), is("ask_user"));
+            assertThat(((Map<?, ?>) nextActions.get(0)).get("type"), is("resource_read"));
+            assertThat(((Map<?, ?>) nextActions.get(1)).get("type"), is("ask_user"));
             assertThat(((Map<?, ?>) nextActions.get(1)).get("required_inputs"), is(List.of("runtimeDatabases")));
         }
     }

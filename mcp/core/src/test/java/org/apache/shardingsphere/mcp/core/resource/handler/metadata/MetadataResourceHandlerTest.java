@@ -65,9 +65,9 @@ class MetadataResourceHandlerTest {
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("state"), is("broad_metadata_list"));
         assertThat(((Map<?, ?>) actualPayload.get("large_result_guidance")).get("threshold"), is(100));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
-        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("page_size"), is(100));
-        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("object_types"), is(List.of("database")));
+        assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("page_size"), is(100));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("object_types"), is(List.of("database")));
     }
     
     @Test
@@ -93,7 +93,7 @@ class MetadataResourceHandlerTest {
         assertThat(((Map<?, ?>) actual.toPayload().get("empty_state")).get("reason"), is("logical-database detail resource was not found for this URI."));
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("recovery_category"), is("not_found"));
         assertThat(((Map<?, ?>) actual.toPayload().get("recovery")).get("category"), is("not_found"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0)).get("action_kind"), is("stop"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("next_actions")).get(0)).get("type"), is("terminal"));
     }
     
     private List<Map<String, String>> createDatabases(final int count) {

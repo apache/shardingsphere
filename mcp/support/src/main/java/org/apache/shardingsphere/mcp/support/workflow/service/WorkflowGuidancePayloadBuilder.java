@@ -335,7 +335,7 @@ public final class WorkflowGuidancePayloadBuilder {
         final List<Map<String, Object>> result = new LinkedList<>(nextActions);
         for (int index = 0; index < result.size(); index++) {
             result.get(index).put("order", index + 1);
-            if (0 < index && "ask_user".equals(result.get(index - 1).get("action_kind"))) {
+            if (0 < index && "ask_user".equals(result.get(index - 1).get("type"))) {
                 result.get(index).put("depends_on", List.of(index));
             }
         }

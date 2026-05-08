@@ -71,7 +71,7 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("execution_mode"), is("manual-only"));
         assertFalse(actualResponse.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
         assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
         assertTrue((Boolean) actualResponse.get("requires_user_approval"));
         assertThat(((Map<?, ?>) actualResponse.get("manual_follow_up")).get("confirmation_field"), is("manual_artifacts_executed"));
@@ -171,9 +171,9 @@ class WorkflowExecutionServiceTest {
         assertThat(actualResponse.get("approval_summary"), is("Previewed 2 workflow artifacts with side-effect scope physical-structure, rule-metadata. Nothing has been applied."));
         assertThat(actualResponse.get("approval_question"), is("Do you approve applying the previewed workflow artifacts?"));
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
         Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.get(1);
-        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("review-then-execute"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("review-then-execute"));
         assertThat(actualNextAction.get("depends_on"), is(List.of(1)));
         assertTrue((Boolean) actualNextAction.get("requires_user_approval"));
         assertThat(((Map<?, ?>) actualResponse.get("argument_provenance")).get("plan_id"), is("server_generated"));
@@ -211,7 +211,7 @@ class WorkflowExecutionServiceTest {
         List<?> actualNextActions = (List<?>) actualResponse.get("next_actions");
         assertThat(actualNextActions.size(), is(1));
         Map<?, ?> actualNextAction = (Map<?, ?>) actualNextActions.get(0);
-        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("manual-only"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("manual-only"));
         assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
     

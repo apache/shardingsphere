@@ -39,8 +39,8 @@ class LLMUsabilityMetricCalculatorTest {
     void assertEvaluateScenarioWithFollowedNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
                 createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
-                        "action_kind", "call_tool",
-                        "target_tool", "search_metadata")))),
+                        "type", "tool_call",
+                        "tool_name", "search_metadata")))),
                 createToolCall(2, "search_metadata", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isNextActionFollowed());
@@ -51,8 +51,8 @@ class LLMUsabilityMetricCalculatorTest {
     void assertEvaluateScenarioWithMissedNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
                 createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
-                        "action_kind", "read_resource",
-                        "target_resource", "shardingsphere://capabilities")))),
+                        "type", "resource_read",
+                        "resource_uri", "shardingsphere://capabilities")))),
                 MCPInteractionTraceRecord.createCompletion(2, Map.of(), Map.of(), 0L));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertFalse(actual.isNextActionFollowed());
@@ -62,8 +62,8 @@ class LLMUsabilityMetricCalculatorTest {
     void assertEvaluateScenarioWithApprovalRequiredActionViolation() {
         List<MCPInteractionTraceRecord> trace = List.of(
                 createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
-                        "action_kind", "call_tool",
-                        "target_tool", "execute_update",
+                        "type", "tool_call",
+                        "tool_name", "execute_update",
                         "requires_user_approval", true)))),
                 createToolCall(2, "execute_update", Map.of()));
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
@@ -75,8 +75,8 @@ class LLMUsabilityMetricCalculatorTest {
         List<MCPInteractionTraceRecord> trace = List.of(
                 MCPInteractionTraceRecord.createResourceRead(1, "shardingsphere://databases/unknown/schemas/unknown/tables/orders",
                         Map.of("found", false, "empty_state", Map.of("state", "not_found"), "next_actions", List.of(Map.of(
-                                "action_kind", "read_resource",
-                                "target_resource", "shardingsphere://databases/unknown/schemas/unknown/tables",
+                                "type", "resource_read",
+                                "resource_uri", "shardingsphere://databases/unknown/schemas/unknown/tables",
                                 "requires_user_approval", false))),
                         0L),
                 MCPInteractionTraceRecord.createResourceRead(2, "shardingsphere://databases/logic_db/schemas/public/tables/orders",
@@ -93,8 +93,8 @@ class LLMUsabilityMetricCalculatorTest {
         LLMUsabilityMetricCalculator calculator = new LLMUsabilityMetricCalculator();
         LLMUsabilityScenarioResult followed = calculator.evaluateScenario(createScenario(), createArtifactBundle(List.of(
                 createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
-                        "action_kind", "call_tool",
-                        "target_tool", "search_metadata")))),
+                        "type", "tool_call",
+                        "tool_name", "search_metadata")))),
                 createToolCall(2, "search_metadata", Map.of()))));
         LLMUsabilityScenarioResult approvalViolation = calculator.evaluateScenario(createScenario(), createArtifactBundle(List.of(
                 MCPInteractionTraceRecord.createInvalidAction(1, "tool_call", "execute_update", Map.of(), "unsafe_sql_execution_attempted"))));
@@ -109,8 +109,8 @@ class LLMUsabilityMetricCalculatorTest {
     void assertCreateScorecardWithFullScore() {
         LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(List.of(
                 createToolCall(1, "execute_update", Map.of("next_actions", List.of(Map.of(
-                        "action_kind", "call_tool",
-                        "target_tool", "search_metadata")))),
+                        "type", "tool_call",
+                        "tool_name", "search_metadata")))),
                 createToolCall(2, "search_metadata", Map.of()))));
         LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
         assertThat(actual.getOverallScore(), is(100.0D));

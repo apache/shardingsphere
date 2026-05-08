@@ -49,7 +49,7 @@ class WorkflowPlanHandlerTest {
             Map<String, Object> actual = new WorkflowPlanHandler().handle(requestScope, new MCPUriVariables(Map.of("plan_id", "plan-1"))).toPayload();
             assertThat(actual.get("plan_id"), is("plan-1"));
             assertThat(actual.get("workflow_kind"), is("mask.rule"));
-            assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("target_tool"), is("apply_workflow"));
+            assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("tool_name"), is("apply_workflow"));
         }
     }
     

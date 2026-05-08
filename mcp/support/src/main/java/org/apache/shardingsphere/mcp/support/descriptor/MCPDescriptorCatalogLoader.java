@@ -68,6 +68,8 @@ public final class MCPDescriptorCatalogLoader {
     
     private static final Collection<String> LEGACY_RECOMMENDATION_FIELDS = List.of("recommended_next_tool", "suggested_next_tool", "suggested_next_tools");
     
+    private static final Collection<String> LEGACY_NEXT_ACTION_FIELDS = List.of("action_kind", "target_tool", "target_resource", "required_arguments");
+    
     private static final Collection<String> MODEL_CRITICAL_HINT_FIELDS = List.of(
             "next_actions", "resources_to_read", "resource", "parent_resource", "next_resources", "manual_artifact_summary", "manual_follow_up", "empty_state", "ambiguity_state",
             "recovery");
@@ -480,6 +482,9 @@ public final class MCPDescriptorCatalogLoader {
         checkState(items instanceof Map, String.format("Tool `%s` next_actions items must be an object.", descriptor.getName()));
         Object properties = ((Map<?, ?>) items).get("properties");
         checkState(properties instanceof Map, String.format("Tool `%s` next_actions items must declare properties.", descriptor.getName()));
+        for (String each : LEGACY_NEXT_ACTION_FIELDS) {
+            checkState(!((Map<?, ?>) properties).containsKey(each), String.format("Tool `%s` next_actions item must not declare legacy `%s`.", descriptor.getName(), each));
+        }
         for (String each : List.of("order", "type", "title", "requires_user_approval")) {
             checkState(((Map<?, ?>) properties).containsKey(each), String.format("Tool `%s` next_actions item must declare `%s`.", descriptor.getName(), each));
             Object field = ((Map<?, ?>) properties).get(each);

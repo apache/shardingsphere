@@ -120,25 +120,24 @@ public final class MCPDescriptorCatalog {
     private List<Map<String, Object>> createNextActionContract() {
         return List.of(
                 createNextActionContractEntry("resource_read", List.of("order", "type", "title", "resource_uri", "requires_user_approval"),
-                        List.of("action_kind", "target_resource", "reason", "depends_on"), "Read an MCP resource before choosing another call."),
+                        List.of("reason", "depends_on"), "Read an MCP resource before choosing another call."),
                 createNextActionContractEntry("tool_call", List.of("order", "type", "title", "tool_name", "arguments", "requires_user_approval"),
-                        List.of("action_kind", "target_tool", "required_arguments", "reason", "depends_on"), "Call another MCP tool with server-suggested arguments."),
+                        List.of("reason", "depends_on"), "Call another MCP tool with server-suggested arguments."),
                 createNextActionContractEntry("completion",
                         List.of("order", "type", "title", "reference_type", "reference", "argument_name", "context_arguments", "requires_user_approval"),
-                        List.of("action_kind", "argument_prefix", "missing_context_arguments", "resume_target_type", "resume_target", "resume_arguments", "reason", "depends_on"),
+                        List.of("argument_prefix", "missing_context_arguments", "resume_target_type", "resume_target", "resume_arguments", "reason", "depends_on"),
                         "Use MCP completion for one argument before retrying."),
                 createNextActionContractEntry("ask_user", List.of("order", "type", "title", "question", "requires_user_approval"),
-                        List.of("action_kind", "required_inputs", "reason", "depends_on"), "Ask the user for missing input or approval."),
+                        List.of("required_inputs", "reason", "depends_on"), "Ask the user for missing input or approval."),
                 createNextActionContractEntry("terminal", List.of("order", "type", "title", "requires_user_approval"),
-                        List.of("action_kind", "reason", "depends_on"), "Stop the current MCP flow and report the result."));
+                        List.of("reason", "depends_on"), "Stop the current MCP flow and report the result."));
     }
     
     private Map<String, Object> createNextActionContractEntry(final String actionType, final List<String> requiredFields, final List<String> optionalFields, final String description) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("type", actionType);
         result.put("required_fields", requiredFields);
         result.put("optional_fields", optionalFields);
-        result.put("legacy_alias_fields", List.of("action_kind", "target_tool", "target_resource", "required_arguments"));
         result.put("description", description);
         return result;
     }
@@ -232,7 +231,7 @@ public final class MCPDescriptorCatalog {
                 "side_effecting", "Use execute_update with execution_mode=preview before asking for user approval."));
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
         result.put("side_effect_rule", "Preview before side effects and continue only after explicit user approval.");
-        result.put("legacy_compatibility_rule", "Do not rely on legacy tool names or legacy recommendation fields; follow next_actions instead.");
+        result.put("next_action_rule", "Use canonical next_actions fields: type, tool_name, resource_uri, arguments, and requires_user_approval.");
         result.put("detail_resource_rule", "Read each resource payload_contract before assuming detail fields.");
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
         return result;

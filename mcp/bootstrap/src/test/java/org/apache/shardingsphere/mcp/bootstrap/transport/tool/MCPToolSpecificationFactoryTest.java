@@ -126,21 +126,41 @@ class MCPToolSpecificationFactoryTest {
     @Test
     void assertCreateToolSpecificationsHandleInteractiveElicitation() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            String toolName = "custom_planning_tool";
             Map<String, Object> clarifyingPayload = createClarifyingPayload();
             Map<String, Object> expectedPayload = Map.of("status", "planned");
             MCPResponse clarifyingResponse = () -> clarifyingPayload;
             MCPResponse plannedResponse = () -> expectedPayload;
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("plan_encrypt_rule")));
-            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("plan_encrypt_rule"), any()))
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor(toolName)));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq(toolName), any()))
                     .thenReturn(Optional.of(clarifyingResponse), Optional.of(plannedResponse));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT,
-                    Map.of("primary_algorithm_properties.aes-key-value", "foo_secret", "requires_like_query", true)));
-            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("plan_encrypt_rule", Map.of()));
+                    Map.of("custom_properties.secret-key", "foo_secret", "requires_review", true)));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
             assertThat(actual.structuredContent(), is(expectedPayload));
             verify(exchange).createElicitation(any());
+            mockedToolHandlerRegistry.verify(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq(toolName), eq(createElicitedArguments())));
+        }
+    }
+    
+    @Test
+    void assertCreateToolSpecificationsSkipElicitationForNonPlanningTool() {
+        try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
+            Map<String, Object> expectedPayload = createClarifyingPayload();
+            MCPResponse response = () -> expectedPayload;
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("custom_tool")));
+            mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("custom_tool"), eq(Map.of())))
+                    .thenReturn(Optional.of(response));
+            MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
+            when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
+            SyncToolSpecification actualSpecification = new MCPToolSpecificationFactory(runtimeContext).createToolSpecifications().get(0);
+            McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT, Map.of()));
+            CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("custom_tool", Map.of()));
+            assertThat(actual.structuredContent(), is(expectedPayload));
+            verify(exchange, never()).createElicitation(any());
         }
     }
     
@@ -149,7 +169,7 @@ class MCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
             MCPResponse response = () -> expectedPayload;
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("plan_encrypt_rule")));
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("plan_encrypt_rule")));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("plan_encrypt_rule"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
@@ -177,7 +197,7 @@ class MCPToolSpecificationFactoryTest {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
             MCPResponse response = () -> expectedPayload;
-            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("plan_encrypt_rule")));
+            mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("plan_encrypt_rule")));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("plan_encrypt_rule"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
@@ -203,8 +223,15 @@ class MCPToolSpecificationFactoryTest {
                 "plan_id", "plan-1",
                 "status", "clarifying",
                 "clarification_questions", List.of(
-                        Map.of("field", "primary_algorithm_properties.aes-key-value", "input_type", "secret", "secret", true, "display_message", "Provide AES key."),
-                        Map.of("field", "requires_like_query", "input_type", "boolean", "secret", false, "display_message", "Enable LIKE query?")));
+                        Map.of("field", "custom_properties.secret-key", "input_type", "secret", "secret", true, "display_message", "Provide secret key."),
+                        Map.of("field", "requires_review", "input_type", "boolean", "secret", false, "display_message", "Require review?")));
+    }
+    
+    private Map<String, Object> createElicitedArguments() {
+        return Map.of(
+                "plan_id", "plan-1",
+                "custom_properties", Map.of("secret-key", "foo_secret"),
+                "intent", Map.of("requires_review", true));
     }
     
     private MCPToolDescriptor createToolDescriptor(final String toolName) {
@@ -214,5 +241,13 @@ class MCPToolSpecificationFactoryTest {
                         new MCPToolValueDefinition(Type.STRING, "Object type.", null, List.of("TABLE", "VIEW"))), false)),
                 Map.of("type", "object"), new MCPToolAnnotations("Search Metadata", true, false, true, true, false),
                 Map.of("relatedResources", List.of("shardingsphere://databases")));
+    }
+    
+    private MCPToolDescriptor createPlanningToolDescriptor(final String toolName) {
+        return new MCPToolDescriptor(toolName, "Plan Custom Rule", "Plan a custom rule.", List.of(
+                new MCPToolFieldDefinition("custom_properties", new MCPToolValueDefinition(Type.OBJECT, "Custom properties.", null, List.of(), List.of(), true), false),
+                new MCPToolFieldDefinition("intent", new MCPToolValueDefinition(Type.OBJECT, "Intent.", null, List.of(),
+                        List.of(new MCPToolFieldDefinition("requires_review", new MCPToolValueDefinition(Type.BOOLEAN, "Requires review.", null), false)), false), false)),
+                Map.of("type", "object"), new MCPToolAnnotations("Plan Custom Rule", false, false, true, true, false), Map.of("workflowRole", "plan"));
     }
 }

@@ -99,7 +99,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         try (MCPInteractionClient interactionClient = createOpenedInteractionClient()) {
             List<Map<String, Object>> actual = interactionClient.listTools();
             assertOfficialToolNames(actual.stream().map(each -> String.valueOf(each.get("name"))).toList());
-            assertToolDefinition(actual, "search_metadata", "Search Metadata", "query", "object_types", "array");
+            assertToolDefinition(actual, "search_metadata", "Search Metadata", "", "object_types", "array");
             assertToolDefinition(actual, "execute_query", "Execute Read-Only SQL", "sql", "timeout_ms", "integer");
             assertToolDefinition(actual, "execute_update", "Execute Update SQL", "sql", "timeout_ms", "integer");
         }
@@ -461,7 +461,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         assertThat(String.valueOf(actual.get("preview_semantics")), is("classification_only"));
         assertFalse((Boolean) actual.get("would_execute"));
         List<Map<String, Object>> nextActions = getMapList(actual.get("next_actions"));
-        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("action_kind"))).toList(), is(List.of("ask_user", "call_tool")));
+        assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
         assertTrue((Boolean) nextActions.get(1).get("requires_user_approval"));
     }
     
@@ -472,7 +472,7 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         assertThat(String.valueOf(actual.get("row_object_status")), is("available"));
         assertThat(((List<?>) actual.get("row_objects")).size(), is(1));
         assertThat(String.valueOf(actual.get("truncated")), is("true"));
-        assertThat(String.valueOf(getMapList(actual.get("next_actions")).get(0).get("action_kind")), is("ask_user"));
+        assertThat(String.valueOf(getMapList(actual.get("next_actions")).get(0).get("type")), is("ask_user"));
     }
     
     private Map<String, Object> findPayloadItem(final Map<String, Object> payload, final String key, final String expectedValue) {
@@ -548,7 +548,9 @@ class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParameterizedProd
         List<String> actualRequiredFields = ((List<?>) actualInputSchema.get("required")).stream().map(String::valueOf).toList();
         Map<String, Object> actualProperties = (Map<String, Object>) actualInputSchema.get("properties");
         Map<String, Object> actualProperty = (Map<String, Object>) actualProperties.get(expectedPropertyField);
-        assertTrue(actualRequiredFields.contains(expectedRequiredField));
+        if (!expectedRequiredField.isEmpty()) {
+            assertTrue(actualRequiredFields.contains(expectedRequiredField));
+        }
         assertThat(String.valueOf(actualProperty.get("type")), is(expectedPropertyType));
     }
 }

@@ -303,8 +303,8 @@ public final class LLMUsabilityMetricCalculator {
     }
     
     private boolean isMachineAction(final Map<?, ?> action) {
-        String actionKind = Objects.toString(action.get("action_kind"), "");
-        return "read_resource".equals(actionKind) || "call_tool".equals(actionKind) || "retry_tool".equals(actionKind) || "complete_argument".equals(actionKind);
+        String type = Objects.toString(action.get("type"), "");
+        return "resource_read".equals(type) || "tool_call".equals(type) || "completion".equals(type);
     }
     
     private boolean matchesAnyNextAction(final List<Map<?, ?>> actions, final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
@@ -317,20 +317,17 @@ public final class LLMUsabilityMetricCalculator {
     }
     
     private boolean matchesNextAction(final Map<?, ?> action, final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {
-        String actionKind = Objects.toString(action.get("action_kind"), "");
-        if ("read_resource".equals(actionKind)) {
+        String type = Objects.toString(action.get("type"), "");
+        if ("resource_read".equals(type)) {
             return MCPInteractionActionNames.RESOURCE_READ_KIND.equals(next.getActionKind())
-                    && (Objects.equals(action.get("target_resource"), next.getArguments().get("uri"))
+                    && (Objects.equals(action.get("resource_uri"), next.getArguments().get("uri"))
                             || isRecoverableResourceCorrection(current, next));
         }
-        if ("call_tool".equals(actionKind)) {
-            return Objects.equals(action.get("target_tool"), next.getTargetName());
-        }
-        if ("retry_tool".equals(actionKind)) {
-            String targetTool = Objects.toString(action.get("target_tool"), current.getTargetName());
+        if ("tool_call".equals(type)) {
+            String targetTool = Objects.toString(action.get("tool_name"), current.getTargetName());
             return Objects.equals(targetTool, next.getTargetName());
         }
-        return "complete_argument".equals(actionKind) && MCPInteractionActionNames.COMPLETION_KIND.equals(next.getActionKind());
+        return "completion".equals(type) && MCPInteractionActionNames.COMPLETION_KIND.equals(next.getActionKind());
     }
     
     private boolean isRecoverableResourceCorrection(final MCPInteractionTraceRecord current, final MCPInteractionTraceRecord next) {

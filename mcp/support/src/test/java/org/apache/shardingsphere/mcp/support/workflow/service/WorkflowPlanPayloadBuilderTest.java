@@ -92,7 +92,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertFalse((Boolean) actual.get("requires_user_approval"));
         assertThat(((Map<?, ?>) actual.get("proxy_topology_hint")).get("expected_runtime_view"), is("proxy_logical_database"));
         assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
-        assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
     
     @Test
@@ -145,8 +145,8 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue((Boolean) actualReviewFocus.get("requires_user_approval"));
         assertThat(actualReviewFocus.get("next_review_action"), is("call_apply_workflow_preview"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("target_tool"), is("apply_workflow"));
-        assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("execution_mode"), is("preview"));
+        assertThat(actualNextAction.get("tool_name"), is("apply_workflow"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
         assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
     
@@ -164,8 +164,8 @@ class WorkflowPlanPayloadBuilderTest {
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
         assertThat(actual.get("response_mode"), is("terminal"));
         assertFalse(actual.containsKey("recommended_next_tool"));
-        assertThat(actualNextAction.get("action_kind"), is("call_tool"));
-        assertThat(actualNextAction.get("target_tool"), is("plan_encrypt_rule"));
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("plan_encrypt_rule"));
     }
     
     private List<String> extractResourceUris(final List<?> resources) {

@@ -108,11 +108,11 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("sql"), is("server_generated"));
         assertThat(((Map<?, ?>) actual.toPayload().get("argument_provenance")).get("execution_mode"), is("server_defaulted"));
         List<?> actualNextActions = (List<?>) actual.toPayload().get("next_actions");
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("ask_user"));
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("order"), is(1));
-        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("target_tool"), is("execute_update"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("tool_name"), is("execute_update"));
         assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
-        assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("required_arguments")).get("execution_mode"), is("execute"));
+        assertThat(((Map<?, ?>) ((Map<?, ?>) actualNextActions.get(1)).get("arguments")).get("execution_mode"), is("execute"));
         assertTrue((Boolean) ((Map<?, ?>) actualNextActions.get(1)).get("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actual.toPayload().get("resources_to_read")).get(0)).get("uri"), is("shardingsphere://databases/logic_db/capabilities"));
         assertTrue((boolean) actual.toPayload().get("ask_user_when_uncertain"));

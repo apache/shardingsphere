@@ -76,7 +76,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("unsupported_tool"));
         assertThat(actualRecovery.get("tool_name"), is("missing_tool"));
         assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_resource"), is("shardingsphere://capabilities"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("resource_uri"), is("shardingsphere://capabilities"));
         assertTrue(((Collection<?>) actualRecovery.get("supported_tools")).contains("execute_query"));
     }
     
@@ -88,7 +88,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("unsupported_resource"));
         assertThat(((Map<?, ?>) actualRecovery.get("resource")).get("uri"), is("shardingsphere://unknown"));
         assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("read_resource"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("type"), is("resource_read"));
         assertTrue(((Collection<?>) actualRecovery.get("matching_resource_templates")).contains("shardingsphere://capabilities"));
     }
     
@@ -100,7 +100,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("recovery_category"), is("missing_context"));
         assertThat(actualRecovery.get("missing_fields"), is(List.of("database")));
         assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://databases"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_resource"), is("shardingsphere://databases"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("resource_uri"), is("shardingsphere://databases"));
         assertTrue((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
     
@@ -112,8 +112,8 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("missing_fields"), is(List.of("execution_mode")));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("retry_tool"));
-        assertThat(actualNextAction.get("target_tool"), is("execute_update"));
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("execute_update"));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
@@ -128,8 +128,8 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("allowed_values"), is(List.of("preview", "review-then-execute", "manual-only")));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("retry_tool"));
-        assertThat(actualNextAction.get("target_tool"), is("apply_workflow"));
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("apply_workflow"));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
@@ -142,7 +142,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("allowed_values"), is(List.of("preview", "review-then-execute", "manual-only")));
         assertFalse(actualRecovery.containsKey("suggested_next_tool"));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("apply_workflow"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("tool_name"), is("apply_workflow"));
     }
     
     @Test
@@ -153,7 +153,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("invalid_enum_value"));
         assertThat(actualRecovery.get("field"), is("approved_steps"));
         assertThat(actualRecovery.get("allowed_values"), is(List.of("ddl", "index_ddl", "rule_distsql")));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("apply_workflow"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("tool_name"), is("apply_workflow"));
     }
     
     @Test
@@ -166,7 +166,7 @@ class MCPErrorConverterTest {
         Map<?, ?> actualClarificationQuestion = (Map<?, ?>) ((List<?>) actualRecovery.get("clarification_questions")).get(0);
         assertThat(actualClarificationQuestion.get("field"), is("algorithm_type"));
         assertThat(actualClarificationQuestion.get("conflict"), is("algorithm_type conflicts with user_overrides.algorithm_type"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("ask_user"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("type"), is("ask_user"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("required_inputs"), is(List.of("algorithm_type")));
         assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
     }
@@ -180,8 +180,8 @@ class MCPErrorConverterTest {
         assertTrue(((Collection<?>) actualRecovery.get("allowed_values")).contains("table"));
         assertTrue(((Collection<?>) ((Map<?, ?>) actualRecovery.get("suggested_arguments")).get("object_types")).contains("table"));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("retry_tool"));
-        assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
         assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
@@ -198,8 +198,8 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("minimum_value"), is(0));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("page_token", "")));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("retry_tool"));
-        assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
         assertFalse((Boolean) actualRecovery.get("ask_user_when_uncertain"));
     }
     
@@ -217,8 +217,8 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("suggested_value"), is(100));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("page_size", 100)));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("action_kind"), is("retry_tool"));
-        assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
+        assertThat(actualNextAction.get("type"), is("tool_call"));
+        assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
         assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
@@ -235,7 +235,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("maximum_value"), is(5000));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("max_rows", 100)));
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
-        assertThat(actualNextAction.get("target_tool"), is("execute_query"));
+        assertThat(actualNextAction.get("tool_name"), is("execute_query"));
     }
     
     @Test
@@ -244,8 +244,8 @@ class MCPErrorConverterTest {
         Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0);
         assertThat(actualRecovery.get("argument_path"), is("timeout_ms"));
-        assertThat(actualNextAction.get("action_kind"), is("ask_user"));
-        assertFalse(actualNextAction.containsKey("target_tool"));
+        assertThat(actualNextAction.get("type"), is("ask_user"));
+        assertFalse(actualNextAction.containsKey("tool_name"));
     }
     
     @Test
@@ -265,7 +265,7 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("category"), is("unsafe_sql_attempted"));
         assertFalse(actualRecovery.containsKey("suggested_next_tool"));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("target_tool"), is("execute_update"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("tool_name"), is("execute_update"));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
@@ -282,7 +282,7 @@ class MCPErrorConverterTest {
         assertFalse(actualRecovery.containsKey("suggested_next_tool"));
         assertThat(actualRecovery.get("normalized_sql"), is("UPDATE orders SET status = 'PAID'"));
         assertThat(actualRecovery.get("suggested_arguments"), is(suggestedArguments));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("required_arguments"), is(suggestedArguments));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("arguments"), is(suggestedArguments));
         assertTrue((Boolean) actualRecovery.get("requires_user_approval"));
     }
     
@@ -310,8 +310,8 @@ class MCPErrorConverterTest {
         assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://databases"));
         assertThat(actualRecovery.get("suggested_arguments"), is(Map.of("page_size", 100)));
         List<?> actualNextActions = (List<?>) actualRecovery.get("next_actions");
-        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("target_resource"), is("shardingsphere://databases"));
-        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("target_tool"), is("search_metadata"));
+        assertThat(((Map<?, ?>) actualNextActions.get(0)).get("resource_uri"), is("shardingsphere://databases"));
+        assertThat(((Map<?, ?>) actualNextActions.get(1)).get("tool_name"), is("search_metadata"));
         assertThat(((Map<?, ?>) actualNextActions.get(1)).get("depends_on"), is(List.of(1)));
         assertFalse((Boolean) actualRecovery.get("requires_user_approval"));
     }
@@ -325,8 +325,8 @@ class MCPErrorConverterTest {
         assertFalse(actualRecovery.containsKey("suggested_next_tools"));
         assertThat(actualRecovery.get("completion_first"), is(Map.of("argument", "plan_id", "scope", "current MCP session")));
         assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("action_kind"), is("complete_argument"));
-        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("action_kind"), is("read_resource"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("type"), is("completion"));
+        assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("type"), is("resource_read"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("depends_on"), is(List.of(1)));
     }
     

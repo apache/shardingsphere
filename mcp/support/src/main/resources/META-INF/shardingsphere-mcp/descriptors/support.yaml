@@ -331,27 +331,18 @@ tools:
               requires_user_approval:
                 type: boolean
                 description: "Whether the next action requires user approval."
-              action_kind:
-                type: string
-                description: "Backward-compatible action type such as call_tool, ask_user, or stop."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
-              target_tool:
-                type: string
-                description: "Tool to call when action_kind is call_tool."
               arguments:
                 type: object
                 description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take the action."
-              required_arguments:
-                type: object
-                description: "Arguments to provide to the target tool."
               required_inputs:
                 type: array
-                description: "User inputs required when action_kind is ask_user."
+                description: "User inputs required when type is ask_user."
               depends_on:
                 type: array
                 description: "Action order values that must complete before this action."
@@ -373,7 +364,6 @@ tools:
             - order: 1
               type: ask_user
               title: Ask user for approval
-              action_kind: ask_user
               question: Ask the user to approve the previewed artifacts before execution.
               reason: Ask the user to approve the previewed artifacts before execution.
               requires_user_approval: true
@@ -509,27 +499,18 @@ tools:
               requires_user_approval:
                 type: boolean
                 description: "Whether the next action requires user approval."
-              action_kind:
-                type: string
-                description: "Backward-compatible action type such as call_tool, ask_user, or stop."
               tool_name:
                 type: string
                 description: "Canonical tool name when type is tool_call."
-              target_tool:
-                type: string
-                description: "Tool to call when action_kind is call_tool."
               arguments:
                 type: object
                 description: "Canonical arguments to provide to the target tool."
               reason:
                 type: string
                 description: "Why the model should take the action."
-              required_arguments:
-                type: object
-                description: "Arguments to provide to the target tool."
               required_inputs:
                 type: array
-                description: "User inputs required when action_kind is ask_user."
+                description: "User inputs required when type is ask_user."
               depends_on:
                 type: array
                 description: "Action order values that must complete before this action."
@@ -547,7 +528,6 @@ tools:
             - order: 1
               type: terminal
               title: Stop
-              action_kind: stop
               reason: Validation passed. Report the confirmed workflow result to the user.
               requires_user_approval: false
           requires_user_approval: false

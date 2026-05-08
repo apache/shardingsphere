@@ -124,7 +124,7 @@ class ToolHandlerTest {
             assertThat(actualSearchContext.get("object_types"), is(List.of("database")));
             assertTrue((Boolean) actualSearchContext.get("broad_search_guarded"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
-            assertThat(actualNextAction.get("action_kind"), is("ask_user"));
+            assertThat(actualNextAction.get("type"), is("ask_user"));
             assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "query", "object_types")));
         }
     }
@@ -136,9 +136,9 @@ class ToolHandlerTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(((Map<?, ?>) actualPayload.get("empty_state")).get("state"), is("no_match"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
-            assertThat(actualNextAction.get("action_kind"), is("call_tool"));
-            assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
-            assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("database"), is("logic_db"));
+            assertThat(actualNextAction.get("type"), is("tool_call"));
+            assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("database"), is("logic_db"));
         }
     }
     
@@ -149,9 +149,9 @@ class ToolHandlerTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actualPayload.get("next_page_token"), is("1"));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
-            assertThat(actualNextAction.get("action_kind"), is("call_tool"));
-            assertThat(actualNextAction.get("target_tool"), is("search_metadata"));
-            assertThat(((Map<?, ?>) actualNextAction.get("required_arguments")).get("page_token"), is("1"));
+            assertThat(actualNextAction.get("type"), is("tool_call"));
+            assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("page_token"), is("1"));
             assertThat(actualNextAction.get("order"), is(1));
         }
     }
@@ -168,7 +168,7 @@ class ToolHandlerTest {
             assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));
             assertThat(actualAmbiguityState.get("narrowing_arguments"), is(List.of("database", "schema", "object_types")));
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
-            assertThat(actualNextAction.get("action_kind"), is("ask_user"));
+            assertThat(actualNextAction.get("type"), is("ask_user"));
             assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "schema", "object_types")));
             assertThat(actualNextAction.get("order"), is(1));
         }
@@ -181,9 +181,9 @@ class ToolHandlerTest {
             Map<String, Object> actualPayload = actual.toPayload();
             assertThat(actualPayload.get("next_page_token"), is("2"));
             List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
-            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("call_tool"));
+            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("tool_call"));
             assertThat(((Map<?, ?>) actualNextActions.get(0)).get("order"), is(1));
-            assertThat(((Map<?, ?>) actualNextActions.get(1)).get("action_kind"), is("ask_user"));
+            assertThat(((Map<?, ?>) actualNextActions.get(1)).get("type"), is("ask_user"));
             assertThat(((Map<?, ?>) actualNextActions.get(1)).get("order"), is(2));
         }
     }
@@ -199,8 +199,8 @@ class ToolHandlerTest {
             assertThat(actualAmbiguityState.get("candidate_count"), is(2));
             assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));
             List<?> actualNextActions = (List<?>) actualPayload.get("next_actions");
-            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("action_kind"), is("call_tool"));
-            assertThat(((Map<?, ?>) actualNextActions.get(1)).get("action_kind"), is("ask_user"));
+            assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("tool_call"));
+            assertThat(((Map<?, ?>) actualNextActions.get(1)).get("type"), is("ask_user"));
         }
     }
     
