@@ -65,6 +65,9 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     private final ProxyBackendHandler proxyBackendHandler;
     
     @Getter
+    private Collection<Integer> columnTypes;
+    
+    @Getter
     private volatile ResponseType responseType;
     
     public PostgreSQLComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
@@ -92,7 +95,9 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
+        columnTypes = new LinkedList<>();
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
+            columnTypes.add(each.getColumnType());
             result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
         }
         return result;
@@ -127,7 +132,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData());
+        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData(), columnTypes);
     }
     
     @Override

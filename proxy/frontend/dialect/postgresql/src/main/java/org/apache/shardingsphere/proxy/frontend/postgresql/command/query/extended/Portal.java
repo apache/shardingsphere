@@ -70,6 +70,9 @@ public final class Portal {
     private final String name;
     
     @Getter
+    private Collection<Integer> columnTypes;
+    
+    @Getter
     private final SQLStatement sqlStatement;
     
     private final List<PostgreSQLValueFormat> resultFormats;
@@ -129,8 +132,10 @@ public final class Portal {
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
+        columnTypes = new LinkedList<>();
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
             PostgreSQLValueFormat valueFormat = determineValueFormat(columnIndex);
+            columnTypes.add(each.getColumnType());
             result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName(), valueFormat.getCode()));
         }
         return result;
@@ -148,6 +153,9 @@ public final class Portal {
         List<DatabasePacket> result = new LinkedList<>();
         for (int i = 0; i < fetchSize && hasNext(); i++) {
             result.add(nextPacket());
+        }
+        if (responseHeader instanceof QueryResponseHeader) {
+            createRowDescriptionPacket((QueryResponseHeader) responseHeader);
         }
         if (responseHeader instanceof UpdateResponseHeader && sqlStatement instanceof SetStatement) {
             result.addAll(createParameterStatusResponse((SetStatement) sqlStatement));
@@ -171,7 +179,7 @@ public final class Portal {
     }
     
     private PostgreSQLPacket nextPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(getData(proxyBackendHandler.getRowData()));
+        return new PostgreSQLDataRowPacket(getData(proxyBackendHandler.getRowData()), columnTypes);
     }
     
     private List<Object> getData(final QueryResponseRow queryResponseRow) {

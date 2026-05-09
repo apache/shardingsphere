@@ -30,7 +30,21 @@ import org.apache.shardingsphere.database.protocol.postgresql.payload.PostgreSQL
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.sql.SQLXML;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.regex.Pattern;
 
 /**
  * Data row packet for PostgreSQL.
@@ -39,18 +53,40 @@ import java.util.Collection;
 @Getter
 public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
     
+    private static final Pattern OFFSET_PATTERN = Pattern.compile("^[+-](?:0[0-9]|1[0-4]):[0-5][0-9](?::[0-5][0-9])?$");
+    
     private static final byte[] HEX_DIGITS = "0123456789abcdef".getBytes(StandardCharsets.US_ASCII);
     
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd HH:mm:ss")
+            .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true)
+            .toFormatter();
+    
+    private static final DateTimeFormatter TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .appendPattern("HH:mm:ss")
+            .appendFraction(ChronoField.MICRO_OF_SECOND, 0, 6, true)
+            .toFormatter();
+    
     private final Collection<Object> data;
+    
+    private final Collection<Integer> columnTypes;
     
     @Override
     protected void write(final PostgreSQLPacketPayload payload) {
         payload.writeInt2(data.size());
+        Iterator<Integer> columnTypeIterator;
+        
+        if (columnTypes != null) {
+            columnTypeIterator = columnTypes.iterator();
+        } else {
+            columnTypeIterator = Collections.nCopies(data.size(), Types.VARCHAR).iterator();
+        }
         for (Object each : data) {
+            int columnType = columnTypeIterator.hasNext() ? columnTypeIterator.next() : Types.VARCHAR;
             if (each instanceof BinaryCell) {
                 writeBinaryValue(payload, (BinaryCell) each);
             } else {
-                writeTextValue(payload, each);
+                writeTextValue(payload, each, columnType);
             }
         }
     }
@@ -66,7 +102,7 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
         binaryProtocolValue.write(payload, value);
     }
     
-    private void writeTextValue(final PostgreSQLPacketPayload payload, final Object each) {
+    private void writeTextValue(final PostgreSQLPacketPayload payload, final Object each, final int columnType) {
         if (null == each) {
             payload.writeInt4(0xFFFFFFFF);
         } else if (each instanceof byte[]) {
@@ -79,11 +115,72 @@ public final class PostgreSQLDataRowPacket extends PostgreSQLIdentifierPacket {
             byte[] columnData = ((Boolean) each ? "t" : "f").getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
+        } else if (Types.TIME_WITH_TIMEZONE == columnType) {
+            String formatted = "";
+            if (each instanceof LocalTime) {
+                formatted = TIME_FORMATTER.format((LocalTime) each);
+            } else if (each instanceof OffsetTime) {
+                formatted = TIME_FORMATTER.format(((OffsetTime) each).withOffsetSameInstant(ZoneOffset.UTC).toLocalTime());
+            } else {
+                formatted = formatToPostgresTimestamp(each.toString());
+            }
+            byte[] columnData = formatted.getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
+        } else if (Types.TIMESTAMP_WITH_TIMEZONE == columnType) {
+            String formatted = "";
+            if (each instanceof LocalDateTime) {
+                formatted = DATE_TIME_FORMATTER.format((LocalDateTime) each);
+            } else if (each instanceof OffsetDateTime) {
+                formatted = DATE_TIME_FORMATTER.format(((OffsetDateTime) each).withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime());
+            } else if (each instanceof Timestamp) {
+                formatted = DATE_TIME_FORMATTER.format(((Timestamp) each).toLocalDateTime());
+            } else {
+                formatted = formatToPostgresTimestamp(each.toString());
+            }
+            
+            byte[] columnData = formatted.getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
+        } else if (Types.TIME == columnType) {
+            String formatted = "";
+            if (each instanceof LocalTime) {
+                formatted = TIME_FORMATTER.format((LocalTime) each);
+            } else if (each instanceof Time) {
+                formatted = TIME_FORMATTER.format(((Time) each).toLocalTime());
+                
+            } else {
+                formatted = formatToPostgresTimestamp(each.toString());
+            }
+            byte[] columnData = formatted.getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
+        } else if (Types.TIMESTAMP == columnType) {
+            String formatted = "";
+            if (each instanceof LocalDateTime) {
+                formatted = DATE_TIME_FORMATTER.format((LocalDateTime) each);
+            } else if (each instanceof Timestamp) {
+                formatted = DATE_TIME_FORMATTER.format(((Timestamp) each).toLocalDateTime());
+            } else {
+                formatted = formatToPostgresTimestamp(each.toString());
+            }
+            byte[] columnData = formatted.getBytes(payload.getCharset());
+            payload.writeInt4(columnData.length);
+            payload.writeBytes(columnData);
         } else {
             byte[] columnData = each.toString().getBytes(payload.getCharset());
             payload.writeInt4(columnData.length);
             payload.writeBytes(columnData);
         }
+    }
+    
+    private String formatToPostgresTimestamp(final String s) {
+        String cleaned = s.replaceAll("([+\\-]\\d{2}:?\\d{2}|Z)$", "").trim();
+        if (cleaned.contains(".")) {
+            return cleaned.replaceAll("(\\.\\d+?)0+(?=[Z+\\-\\s]|$)", "$1")
+                    .replaceAll("\\.0*(?=[Z+\\-\\s]|$)", "");
+        }
+        return s;
     }
     
     private byte[] encodeByteaText(final byte[] value) {

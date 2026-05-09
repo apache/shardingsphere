@@ -67,6 +67,9 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     @Getter
     private volatile ResponseType responseType;
     
+    @Getter
+    private Collection<Integer> columnTypes;
+    
     public OpenGaussComQueryExecutor(final PortalContext portalContext, final PostgreSQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.portalContext = portalContext;
         DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "openGauss");
@@ -92,7 +95,9 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     private Collection<PostgreSQLColumnDescription> createColumnDescriptions(final QueryResponseHeader queryResponseHeader) {
         Collection<PostgreSQLColumnDescription> result = new LinkedList<>();
         int columnIndex = 0;
+        columnTypes = new LinkedList<>();
         for (QueryHeader each : queryResponseHeader.getQueryHeaders()) {
+            columnTypes.add(each.getColumnType());
             result.add(new PostgreSQLColumnDescription(each.getColumnLabel(), ++columnIndex, each.getColumnType(), each.getColumnLength(), each.getColumnTypeName()));
         }
         return result;
@@ -126,7 +131,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData());
+        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData(), columnTypes);
     }
     
     @Override

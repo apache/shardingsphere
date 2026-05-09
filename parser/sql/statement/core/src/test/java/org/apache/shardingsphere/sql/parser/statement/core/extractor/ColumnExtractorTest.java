@@ -49,6 +49,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -143,8 +144,14 @@ class ColumnExtractorTest {
                         Arrays.asList("foo_between_function_column", "foo_between_binary_left", "bar_between_binary_right")),
                 Arguments.of("AggregationProjectionWithFunctionParameters", createAggregationProjectionExpression(),
                         Arrays.asList("foo_agg_direct", "foo_agg_func_direct", "foo_agg_func_binary_left", "bar_agg_func_binary_right")),
+                Arguments.of("AggregationProjectionWithWindow", createAggregationProjectionWithWindow(),
+                        Arrays.asList("foo_agg_window_param", "foo_agg_window_partition", "bar_agg_window_partition_func",
+                                "foo_agg_window_order_column", "foo_agg_window_order_expr_left", "bar_agg_window_order_expr_right", "foo_agg_window_frame_column")),
                 Arguments.of("FunctionSegmentWithNestedBinary", createFunctionWithColumnAndBinaryParameter(),
-                        Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")));
+                        Arrays.asList("foo_function_direct", "foo_function_binary_left", "bar_function_binary_right")),
+                Arguments.of("FunctionSegmentWithWindow", createFunctionWithWindow(),
+                        Arrays.asList("foo_function_param", "foo_window_partition", "bar_window_partition_func",
+                                "foo_window_order_column", "foo_window_order_expr_left", "bar_window_order_expr_right", "foo_window_frame_column")));
     }
     
     private static Collection<WhereSegment> createWhereSegments() {
@@ -265,6 +272,13 @@ class ColumnExtractorTest {
         return result;
     }
     
+    private static AggregationProjectionSegment createAggregationProjectionWithWindow() {
+        AggregationProjectionSegment result = new AggregationProjectionSegment(0, 0, AggregationType.SUM, "SUM(expr) OVER window");
+        result.getParameters().add(createColumnSegment("foo_agg_window_param"));
+        result.setWindow(createWindowItemSegment("agg_window"));
+        return result;
+    }
+    
     private static FunctionSegment createFunctionWithSingleColumnParameter(final String columnName) {
         FunctionSegment result = new FunctionSegment(0, 0, "FUNC", "func");
         result.getParameters().add(createColumnSegment(columnName));
@@ -276,6 +290,29 @@ class ColumnExtractorTest {
         result.getParameters().add(createColumnSegment("foo_function_direct"));
         result.getParameters().add(createBinaryOperation("foo_function_binary_left", "bar_function_binary_right"));
         return result;
+    }
+    
+    private static FunctionSegment createFunctionWithWindow() {
+        FunctionSegment result = new FunctionSegment(0, 0, "RANK", "RANK() OVER window");
+        result.getParameters().add(createColumnSegment("foo_function_param"));
+        result.setWindow(createWindowItemSegment("window"));
+        return result;
+    }
+    
+    private static WindowItemSegment createWindowItemSegment(final String name) {
+        WindowItemSegment result = new WindowItemSegment(0, 0);
+        result.setPartitionListSegments(Arrays.asList(createColumnSegment("foo_" + name + "_partition"), createFunctionWithSingleColumnParameter("bar_" + name + "_partition_func")));
+        result.setOrderBySegment(createWindowOrderBySegment(name));
+        result.setFrameClause(createFunctionWithSingleColumnParameter("foo_" + name + "_frame_column"));
+        return result;
+    }
+    
+    private static OrderBySegment createWindowOrderBySegment(final String name) {
+        Collection<OrderByItemSegment> orderByItems = new LinkedList<>();
+        orderByItems.add(new ColumnOrderByItemSegment(createColumnSegment("foo_" + name + "_order_column"), OrderDirection.ASC, NullsOrderType.FIRST));
+        orderByItems.add(new ExpressionOrderByItemSegment(0, 0, "order_by_expr", OrderDirection.ASC, NullsOrderType.FIRST,
+                createBinaryOperation("foo_" + name + "_order_expr_left", "bar_" + name + "_order_expr_right")));
+        return new OrderBySegment(0, 0, orderByItems);
     }
     
     private static ColumnSegment createColumnSegment(final String columnName) {
