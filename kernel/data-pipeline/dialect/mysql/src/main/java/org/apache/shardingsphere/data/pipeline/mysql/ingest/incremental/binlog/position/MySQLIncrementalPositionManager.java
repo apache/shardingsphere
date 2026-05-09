@@ -32,6 +32,8 @@ import java.sql.SQLException;
  */
 public final class MySQLIncrementalPositionManager implements DialectIncrementalPositionManager {
     
+    private static final String MYSQL_DATABASE_PRODUCT_NAME = "MySQL";
+    
     private static final String SHOW_MASTER_STATUS_SQL = "SHOW MASTER STATUS";
     
     private static final String SHOW_BINARY_LOG_STATUS_SQL = "SHOW BINARY LOG STATUS";
@@ -51,7 +53,7 @@ public final class MySQLIncrementalPositionManager implements DialectIncremental
     }
     
     private MySQLBinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
-        String sql = getShowBinaryLogStatusSQL(connection);
+        String sql = getShowBinlogStatusSQL(connection);
         try (
                 PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -60,10 +62,17 @@ public final class MySQLIncrementalPositionManager implements DialectIncremental
         }
     }
     
-    private String getShowBinaryLogStatusSQL(final Connection connection) throws SQLException {
+    private String getShowBinlogStatusSQL(final Connection connection) throws SQLException {
         DatabaseMetaData databaseMetaData = connection.getMetaData();
+        return isShowBinaryLogStatusSupported(databaseMetaData) ? SHOW_BINARY_LOG_STATUS_SQL : SHOW_MASTER_STATUS_SQL;
+    }
+    
+    private boolean isShowBinaryLogStatusSupported(final DatabaseMetaData databaseMetaData) throws SQLException {
+        if (!MYSQL_DATABASE_PRODUCT_NAME.equals(databaseMetaData.getDatabaseProductName())) {
+            return false;
+        }
         int majorVersion = databaseMetaData.getDatabaseMajorVersion();
-        return majorVersion > 8 || 8 == majorVersion && databaseMetaData.getDatabaseMinorVersion() >= 4 ? SHOW_BINARY_LOG_STATUS_SQL : SHOW_MASTER_STATUS_SQL;
+        return majorVersion > 8 || 8 == majorVersion && databaseMetaData.getDatabaseMinorVersion() >= 4;
     }
     
     @Override

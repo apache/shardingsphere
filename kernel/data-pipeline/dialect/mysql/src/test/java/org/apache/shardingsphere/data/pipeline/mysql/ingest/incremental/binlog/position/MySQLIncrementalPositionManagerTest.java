@@ -40,6 +40,10 @@ import static org.mockito.Mockito.when;
 
 class MySQLIncrementalPositionManagerTest {
     
+    private static final String MYSQL_DATABASE_PRODUCT_NAME = "MySQL";
+    
+    private static final String MARIADB_DATABASE_PRODUCT_NAME = "MariaDB";
+    
     private static final String SHOW_MASTER_STATUS_SQL = "SHOW MASTER STATUS";
     
     private static final String SHOW_BINARY_LOG_STATUS_SQL = "SHOW BINARY LOG STATUS";
@@ -66,29 +70,35 @@ class MySQLIncrementalPositionManagerTest {
     
     @Test
     void assertInitWithDataSourceByShowMasterStatus() throws SQLException {
-        assertInitWithDataSource(8, 3, SHOW_MASTER_STATUS_SQL);
+        assertInitWithDataSource(MYSQL_DATABASE_PRODUCT_NAME, 8, 3, SHOW_MASTER_STATUS_SQL);
     }
     
     @Test
     void assertInitWithDataSourceByShowBinaryLogStatus() throws SQLException {
-        assertInitWithDataSource(8, 4, SHOW_BINARY_LOG_STATUS_SQL);
+        assertInitWithDataSource(MYSQL_DATABASE_PRODUCT_NAME, 8, 4, SHOW_BINARY_LOG_STATUS_SQL);
     }
     
     @Test
     void assertInitWithDataSourceByShowBinaryLogStatusForHigherMajorVersion() throws SQLException {
-        assertInitWithDataSource(9, 0, SHOW_BINARY_LOG_STATUS_SQL);
+        assertInitWithDataSource(MYSQL_DATABASE_PRODUCT_NAME, 9, 0, SHOW_BINARY_LOG_STATUS_SQL);
     }
     
-    private void assertInitWithDataSource(final int majorVersion, final int minorVersion, final String expectedStatusSQL) throws SQLException {
+    @Test
+    void assertInitWithDataSourceByShowMasterStatusForMariaDB() throws SQLException {
+        assertInitWithDataSource(MARIADB_DATABASE_PRODUCT_NAME, 11, 4, SHOW_MASTER_STATUS_SQL);
+    }
+    
+    private void assertInitWithDataSource(final String productName, final int majorVersion, final int minorVersion, final String expectedStatusSQL) throws SQLException {
         Connection connection = mock(Connection.class);
-        MySQLBinlogPosition actual = (MySQLBinlogPosition) incrementalPositionManager.init(createDataSource(connection, majorVersion, minorVersion, expectedStatusSQL), "");
+        MySQLBinlogPosition actual = (MySQLBinlogPosition) incrementalPositionManager.init(createDataSource(connection, productName, majorVersion, minorVersion, expectedStatusSQL), "");
         assertThat(actual.getFilename(), is(LOG_FILE_NAME));
         assertThat(actual.getPosition(), is(LOG_POSITION));
         verify(connection).prepareStatement(expectedStatusSQL);
     }
     
-    private DataSource createDataSource(final Connection connection, final int majorVersion, final int minorVersion, final String expectedStatusSQL) throws SQLException {
+    private DataSource createDataSource(final Connection connection, final String productName, final int majorVersion, final int minorVersion, final String expectedStatusSQL) throws SQLException {
         DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getDatabaseProductName()).thenReturn(productName);
         when(databaseMetaData.getDatabaseMajorVersion()).thenReturn(majorVersion);
         when(databaseMetaData.getDatabaseMinorVersion()).thenReturn(minorVersion);
         when(connection.getMetaData()).thenReturn(databaseMetaData);
