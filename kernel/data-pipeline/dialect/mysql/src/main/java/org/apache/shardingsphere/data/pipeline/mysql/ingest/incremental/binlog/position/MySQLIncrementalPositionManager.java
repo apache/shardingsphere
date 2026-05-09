@@ -22,6 +22,7 @@ import org.apache.shardingsphere.data.pipeline.core.ingest.position.DialectIncre
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +31,10 @@ import java.sql.SQLException;
  * Incremental position manager for MySQL.
  */
 public final class MySQLIncrementalPositionManager implements DialectIncrementalPositionManager {
+    
+    private static final String SHOW_MASTER_STATUS_SQL = "SHOW MASTER STATUS";
+    
+    private static final String SHOW_BINARY_LOG_STATUS_SQL = "SHOW BINARY LOG STATUS";
     
     @Override
     public MySQLBinlogPosition init(final String data) {
@@ -40,13 +45,25 @@ public final class MySQLIncrementalPositionManager implements DialectIncremental
     
     @Override
     public MySQLBinlogPosition init(final DataSource dataSource, final String slotNameSuffix) throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            return getBinlogPosition(connection);
+        }
+    }
+    
+    private MySQLBinlogPosition getBinlogPosition(final Connection connection) throws SQLException {
+        String sql = getShowBinaryLogStatusSQL(connection);
         try (
-                Connection connection = dataSource.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement("SHOW MASTER STATUS");
+                PreparedStatement preparedStatement = connection.prepareStatement(sql);
                 ResultSet resultSet = preparedStatement.executeQuery()) {
             resultSet.next();
             return new MySQLBinlogPosition(resultSet.getString(1), resultSet.getLong(2));
         }
+    }
+    
+    private String getShowBinaryLogStatusSQL(final Connection connection) throws SQLException {
+        DatabaseMetaData databaseMetaData = connection.getMetaData();
+        int majorVersion = databaseMetaData.getDatabaseMajorVersion();
+        return majorVersion > 8 || 8 == majorVersion && databaseMetaData.getDatabaseMinorVersion() >= 4 ? SHOW_BINARY_LOG_STATUS_SQL : SHOW_MASTER_STATUS_SQL;
     }
     
     @Override
