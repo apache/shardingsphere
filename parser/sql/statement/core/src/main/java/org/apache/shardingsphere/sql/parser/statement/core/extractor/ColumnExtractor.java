@@ -46,6 +46,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.ite
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.order.item.OrderByItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.WindowItemSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.CollectionTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.JoinTableSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SubqueryTableSegment;
@@ -193,6 +194,7 @@ public final class ColumnExtractor {
                 result.addAll(extract(each));
             }
         }
+        expression.getWindow().ifPresent(optional -> extractColumnsInWindowItemSegment(optional, result));
     }
     
     private static void extractColumnsInFunctionSegment(final FunctionSegment expression, final Collection<ColumnSegment> result) {
@@ -201,6 +203,32 @@ public final class ColumnExtractor {
                 result.add((ColumnSegment) each);
             } else {
                 result.addAll(extract(each));
+            }
+        }
+        expression.getWindow().ifPresent(optional -> extractColumnsInWindowItemSegment(optional, result));
+    }
+    
+    private static void extractColumnsInWindowItemSegment(final WindowItemSegment windowItemSegment, final Collection<ColumnSegment> result) {
+        if (null != windowItemSegment.getPartitionListSegments()) {
+            for (ExpressionSegment each : windowItemSegment.getPartitionListSegments()) {
+                result.addAll(extract(each));
+            }
+        }
+        if (null != windowItemSegment.getOrderBySegment()) {
+            extractColumnsInOrderBySegment(windowItemSegment.getOrderBySegment(), result);
+        }
+        if (null != windowItemSegment.getFrameClause()) {
+            result.addAll(extract(windowItemSegment.getFrameClause()));
+        }
+    }
+    
+    private static void extractColumnsInOrderBySegment(final OrderBySegment orderBySegment, final Collection<ColumnSegment> result) {
+        for (OrderByItemSegment each : orderBySegment.getOrderByItems()) {
+            if (each instanceof ColumnOrderByItemSegment) {
+                result.add(((ColumnOrderByItemSegment) each).getColumn());
+            }
+            if (each instanceof ExpressionOrderByItemSegment) {
+                result.addAll(extract(((ExpressionOrderByItemSegment) each).getExpr()));
             }
         }
     }
