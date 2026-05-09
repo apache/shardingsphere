@@ -253,7 +253,7 @@ tools:
         required: false
         valueDefinition:
           type: STRING
-          description: "Preferred final mode for later apply_workflow after preview and user approval."
+          description: "Preferred final mode for later apply_workflow. Use manual-only when the user asks to export artifacts, run them manually, or keep runtime side effects out of MCP."
           enumValues:
             - review-then-execute
             - manual-only

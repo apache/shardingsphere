@@ -39,26 +39,26 @@ import java.util.List;
  * Generic workflow execution tool handler.
  */
 public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWorkflowHandlerContext> {
-    
+
     private final WorkflowExecutionService executionService;
-    
+
     private final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry;
-    
+
     public WorkflowExecutionToolHandler(final WorkflowRuntimeDefinitionRegistry workflowRuntimeDefinitionRegistry) {
         executionService = new WorkflowExecutionService();
         this.workflowRuntimeDefinitionRegistry = workflowRuntimeDefinitionRegistry;
     }
-    
+
     @Override
     public Class<MCPWorkflowHandlerContext> getContextType() {
         return MCPWorkflowHandlerContext.class;
     }
-    
+
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return WorkflowToolDescriptors.createExecution();
     }
-    
+
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext workflowContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -71,9 +71,9 @@ public final class WorkflowExecutionToolHandler implements MCPToolHandler<MCPWor
         WorkflowKind workflowKind = getRequiredWorkflowKind(snapshot);
         return new MCPMapResponse(executionService.apply(workflowContext.getWorkflowSessionContext(), databaseContext.getMetadataQueryFacade(), databaseContext.getQueryFacade(),
                 databaseContext.getExecutionFacade(), workflowRuntimeDefinitionRegistry.getRequired(workflowKind).getApplySynchronizationHandler(), toolCall.getSessionId(), snapshot,
-                toolArguments.getStringCollectionArgument("approved_steps"), executionMode));
+                toolArguments.getStringCollectionArgument("approved_steps"), executionMode, toolArguments.getBooleanArgument("approved_by_user", false)));
     }
-    
+
     private WorkflowKind getRequiredWorkflowKind(final WorkflowContextSnapshot snapshot) {
         if (null != snapshot.getWorkflowKind()) {
             return snapshot.getWorkflowKind();

@@ -46,6 +46,7 @@ class RuntimeStatusHandlerTest {
             assertTrue(String.valueOf(actual.get("capability_fingerprint")).matches("[0-9a-f]{64}"));
             assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
+            assertThat(actual.get("next_actions"), is(List.of()));
         }
     }
     

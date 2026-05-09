@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactBundle;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EArtifactWriter;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.client.LLMChatModelClient;
@@ -32,10 +33,11 @@ import java.nio.file.Path;
 /**
  * Execute one LLM conversation scenario and persist the generated artifacts.
  */
+@RequiredArgsConstructor
 public final class LLMConversationExecutor {
 
     @Getter
-    private final LLME2EConfiguration configuration = LLME2EConfiguration.load();
+    private final LLME2EConfiguration configuration;
 
     private final LLME2EArtifactWriter artifactWriter = new LLME2EArtifactWriter();
 

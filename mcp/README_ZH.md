@@ -442,7 +442,7 @@ Workflow 同时补充了以下 feature resources：
 2. 如果返回 `status = clarifying`，读取 `clarification_questions`，按其中的 `field` 补齐参数，并带上同一个 `plan_id` 再次调用同一个 `plan_*_rule`。
 3. 如果返回 `status = planned`，重点 review `derived_column_plan`、`ddl_artifacts`、`distsql_artifacts`、`index_plan`。
 4. 调用 `apply_workflow` 并显式设置 `execution_mode=preview`，先查看 artifacts 和副作用范围，不改变运行时状态。
-5. 用户确认后，再用 `execution_mode=review-then-execute` 调用 `apply_workflow`，或者用 `manual-only` 导出人工执行包。
+5. 用户确认后，再用 `execution_mode=review-then-execute` 和 `approved_by_user=true` 调用 `apply_workflow`，或者用 `manual-only` 导出人工执行包。
 6. 如果 `apply` 返回 `awaiting-manual-execution`，先把 `manual_artifact_package` 里的 SQL / DistSQL 在 Proxy 上手工执行完，再进入下一步。
 7. 调用 `validate_workflow`，确认返回中的校验层级都通过。
 8. 如果 `validate` 失败，优先看 `issues` 和 `mismatches`，修复后再继续补执行或重新规划。
@@ -479,7 +479,7 @@ Workflow 同时补充了以下 feature resources：
   - MCP 会把选定模式写回 plan 响应，便于 client 决定一次展示完整计划还是按步骤组织对话。
 - 规划阶段的 `execution_mode` 支持 `review-then-execute` 和 `manual-only`，表示最终 apply 的偏好。
 - `apply_workflow` 必须显式传入 `execution_mode`
-  - 先用 `preview` 预览，再在用户确认后使用 `review-then-execute`，或者用 `manual-only` 只导出人工执行包。
+  - 先用 `preview` 预览，再在用户确认后使用带 `approved_by_user=true` 的 `review-then-execute`，或者用 `manual-only` 只导出人工执行包。
 
 ### 看到不同状态时，下一步该做什么
 
@@ -709,7 +709,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 典型响应片段如下：
@@ -773,7 +773,7 @@ curl -sS http://127.0.0.1:18088/mcp \
 
 #### 执行与校验
 
-规划阶段默认的最终模式是 `review-then-execute`，但 `apply_workflow` 仍必须显式传入安全模式。
+规划阶段默认的最终模式是 `review-then-execute`，但 `apply_workflow` 必须先 `preview`，真实副作用执行必须显式传入 `approved_by_user=true`。
 先预览：
 
 ```bash
@@ -793,7 +793,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 如果只想让 MCP 生成 SQL 和 DistSQL，不自动执行，可以改为：
@@ -1029,7 +1029,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 第 4 步：校验脱敏规则

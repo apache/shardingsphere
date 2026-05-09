@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -33,11 +34,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ServerCapabilitiesHandlerTest {
-    
+
     @Test
     void assertHandleReturnsCoreModelSurfaceContract() {
         try (MCPRequestScope requestScope = new MCPRequestScope(ResourceTestDataFactory.createRuntimeContext())) {
             Map<String, Object> actual = new ServerCapabilitiesHandler().handle(requestScope, new MCPUriVariables(Map.of())).toPayload();
+            assertGoldenTopLevelKeys(actual);
             assertTrue(((Collection<?>) actual.get("supportedResources")).contains("shardingsphere://capabilities"));
             assertTrue(((Collection<?>) actual.get("supportedTools")).containsAll(List.of("search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow")));
             assertFalse(((List<?>) actual.get("resources")).isEmpty());
@@ -62,7 +64,13 @@ class ServerCapabilitiesHandlerTest {
             assertCoreToolSchemas(actual);
         }
     }
-    
+
+    private void assertGoldenTopLevelKeys(final Map<String, Object> capabilities) {
+        assertThat(capabilities.keySet(), is(Set.of("response_mode", "supportedResources", "supportedTools", "supportedStatementClasses", "model_contract",
+                "surface_summary", "field_naming_contract", "next_action_contract", "common_flows", "security_hints", "resources", "resourceTemplates", "tools", "prompts",
+                "completionTargets", "resourceNavigation", "protocolAvailability", "fingerprints")));
+    }
+
     private void assertModelContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("model_contract");
         assertThat(actual.get("public_surface_source"), is("shardingsphere://capabilities"));
@@ -73,21 +81,21 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(actual.containsKey("next_action_rule"));
         assertTrue(actual.containsKey("recovery_rule"));
     }
-    
+
     private void assertSurfaceSummary(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("surface_summary");
         assertThat(actual.get("first_resource"), is("shardingsphere://capabilities"));
         assertThat(actual.get("metadata_search_tool"), is("search_metadata"));
         assertThat(actual.get("side_effect_sql_tool"), is("execute_update"));
     }
-    
+
     private void assertFieldNamingContract(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("field_naming_contract");
         assertTrue(((List<?>) actual.get("protocol_fields")).contains("resourceTemplates"));
         assertThat(actual.get("payload_fields"), is("ShardingSphere-owned structured payload fields use snake_case."));
         assertTrue(String.valueOf(actual.get("alias_rule")).contains("Do not assume"));
     }
-    
+
     private void assertNextActionContract(final Map<String, Object> capabilities) {
         Map<?, ?> callTool = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "tool_call");
         assertThat(callTool.get("required_fields"), is(List.of("order", "type", "title", "tool_name", "arguments", "requires_user_approval")));
@@ -100,7 +108,7 @@ class ServerCapabilitiesHandlerTest {
         Map<?, ?> stop = findByKey((List<?>) capabilities.get("next_action_contract"), "type", "terminal");
         assertThat(stop.get("required_fields"), is(List.of("order", "type", "title", "requires_user_approval")));
     }
-    
+
     private void assertCommonFlows(final Map<String, Object> capabilities) {
         Collection<?> supportedTools = (Collection<?>) capabilities.get("supportedTools");
         Collection<?> supportedResources = (Collection<?>) capabilities.get("supportedResources");
@@ -109,12 +117,14 @@ class ServerCapabilitiesHandlerTest {
         assertReferencedFlowEntries(inspectMetadata, supportedTools, supportedResources);
         Map<?, ?> sideEffectingSql = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "side_effecting_sql");
         assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool execute_update execution_mode=preview"));
+        assertTrue(((List<?>) sideEffectingSql.get("steps")).contains("call_tool execute_update execution_mode=execute approved_by_user=true"));
         assertReferencedFlowEntries(sideEffectingSql, supportedTools, supportedResources);
         Map<?, ?> workflow = findByKey((List<?>) capabilities.get("common_flows"), "flow_id", "workflow_plan_apply_validate");
+        assertTrue(((List<?>) workflow.get("steps")).contains("call_tool apply_workflow review-then-execute approved_by_user=true"));
         assertThat(workflow.get("stop_condition"), is("Reuse the same current-session plan_id and stop after validation succeeds."));
         assertReferencedFlowEntries(workflow, supportedTools, supportedResources);
     }
-    
+
     private void assertReferencedFlowEntries(final Map<?, ?> flow, final Collection<?> supportedTools, final Collection<?> supportedResources) {
         for (Object each : (List<?>) flow.get("referenced_tools")) {
             assertTrue(supportedTools.contains(each), "Unknown flow tool: " + each);
@@ -123,21 +133,21 @@ class ServerCapabilitiesHandlerTest {
             assertTrue(supportedResources.contains(each), "Unknown flow resource: " + each);
         }
     }
-    
+
     private void assertSecurityHints(final Map<String, Object> capabilities) {
         Map<?, ?> actual = (Map<?, ?>) capabilities.get("security_hints");
         assertTrue(actual.containsKey("http_access_token"));
         assertTrue(actual.containsKey("remote_access"));
         assertTrue(actual.containsKey("stdio_stdout"));
     }
-    
+
     private void assertLegacyPayloadFieldsAbsent(final Map<String, Object> capabilities) {
         String actual = JsonUtils.toJsonString(capabilities);
         for (String each : List.of("pending_questions", "parent_uri", "next_resource_uris", "read_resources_first", "empty_reason", "not_found_reason")) {
             assertFalse(actual.contains(each));
         }
     }
-    
+
     private void assertResourcePayloadContracts(final Map<String, Object> capabilities) {
         Map<?, ?> capabilityCatalog = findResource(capabilities, "shardingsphere://capabilities");
         assertThat(((Map<?, ?>) capabilityCatalog.get("payload_contract")).get("response_kind"), is("capability-catalog"));
@@ -164,7 +174,7 @@ class ServerCapabilitiesHandlerTest {
         assertThat(navigation.get("from_type"), is("resource"));
         assertThat(navigation.get("to_type"), is("resource"));
     }
-    
+
     private void assertCoreToolSchemas(final Map<String, Object> capabilities) {
         Map<?, ?> searchMetadataTool = findTool(capabilities, "search_metadata");
         Map<?, ?> searchMetadataOutputProperties = (Map<?, ?>) ((Map<?, ?>) searchMetadataTool.get("outputSchema")).get("properties");
@@ -178,15 +188,19 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(executeUpdateOutputProperties.containsKey("preview_semantics"));
         assertTrue(executeUpdateOutputProperties.containsKey("approval_summary"));
         assertTrue(executeUpdateOutputProperties.containsKey("approval_question"));
+        assertThat(getInputFieldNames(executeUpdateTool), is(List.of("database", "schema", "sql", "execution_mode", "approved_by_user", "max_rows", "timeout_ms")));
+        assertThat(findInputSchema(executeUpdateTool, "approved_by_user").get("type"), is("boolean"));
         Map<?, ?> applyWorkflowTool = findTool(capabilities, "apply_workflow");
+        assertThat(getInputFieldNames(applyWorkflowTool), is(List.of("plan_id", "execution_mode", "approved_steps", "approved_by_user")));
         Map<?, ?> planIdField = findInputField(applyWorkflowTool, "plan_id");
         assertTrue((Boolean) ((Map<?, ?>) planIdField.get("completion")).get("available"));
+        assertThat(findInputSchema(applyWorkflowTool, "approved_by_user").get("type"), is("boolean"));
         Map<?, ?> inspectMetadataPrompt = findPrompt(capabilities, "inspect_metadata");
         Map<?, ?> schemaArgument = findPromptArgument(inspectMetadataPrompt, "schema");
         assertThat(((Map<?, ?>) schemaArgument.get("completion")).get("required_context_arguments"), is(List.of("database")));
         assertNoLegacyRecommendationFields(capabilities);
     }
-    
+
     private void assertNoLegacyRecommendationFields(final Object value) {
         if (value instanceof Map) {
             assertNoLegacyRecommendationFieldMap((Map<?, ?>) value);
@@ -196,7 +210,7 @@ class ServerCapabilitiesHandlerTest {
             }
         }
     }
-    
+
     private void assertNoLegacyRecommendationFieldMap(final Map<?, ?> value) {
         assertFalse(value.containsKey("recommended_next_tool"));
         assertFalse(value.containsKey("suggested_next_tool"));
@@ -205,33 +219,37 @@ class ServerCapabilitiesHandlerTest {
             assertNoLegacyRecommendationFields(each);
         }
     }
-    
+
     private Map<?, ?> findResource(final Map<String, Object> capabilities, final String uriTemplate) {
         List<?> resources = (List<?>) capabilities.get(uriTemplate.contains("{") ? "resourceTemplates" : "resources");
         String uriFieldName = uriTemplate.contains("{") ? "uriTemplate" : "uri";
         return resources.stream().map(each -> (Map<?, ?>) each).filter(each -> uriTemplate.equals(each.get(uriFieldName))).findFirst().orElseThrow();
     }
-    
+
     private Map<?, ?> findTool(final Map<String, Object> capabilities, final String toolName) {
         return ((List<?>) capabilities.get("tools")).stream().map(each -> (Map<?, ?>) each).filter(each -> toolName.equals(each.get("name"))).findFirst().orElseThrow();
     }
-    
+
     private Map<?, ?> findByKey(final List<?> values, final String key, final String expectedValue) {
         return values.stream().map(each -> (Map<?, ?>) each).filter(each -> expectedValue.equals(each.get(key))).findFirst().orElseThrow();
     }
-    
+
     private Map<?, ?> findInputSchema(final Map<?, ?> tool, final String fieldName) {
         return (Map<?, ?>) findInputField(tool, fieldName).get("schema");
     }
-    
+
     private Map<?, ?> findInputField(final Map<?, ?> tool, final String fieldName) {
         return ((List<?>) tool.get("inputFields")).stream().map(each -> (Map<?, ?>) each).filter(each -> fieldName.equals(each.get("name"))).findFirst().orElseThrow();
     }
-    
+
+    private List<String> getInputFieldNames(final Map<?, ?> tool) {
+        return ((List<?>) tool.get("inputFields")).stream().map(each -> String.valueOf(((Map<?, ?>) each).get("name"))).toList();
+    }
+
     private Map<?, ?> findPrompt(final Map<String, Object> capabilities, final String promptName) {
         return ((List<?>) capabilities.get("prompts")).stream().map(each -> (Map<?, ?>) each).filter(each -> promptName.equals(each.get("name"))).findFirst().orElseThrow();
     }
-    
+
     private Map<?, ?> findPromptArgument(final Map<?, ?> prompt, final String argumentName) {
         return ((List<?>) prompt.get("arguments")).stream().map(each -> (Map<?, ?>) each).filter(each -> argumentName.equals(each.get("name"))).findFirst().orElseThrow();
     }

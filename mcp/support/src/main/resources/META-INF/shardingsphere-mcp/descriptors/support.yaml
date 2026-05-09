@@ -194,6 +194,11 @@ tools:
               - ddl
               - index_ddl
               - rule_distsql
+      - name: approved_by_user
+        required: false
+        valueDefinition:
+          type: BOOLEAN
+          description: "Must be true when execution_mode=review-then-execute. Preview and manual-only calls do not require this field."
     outputSchema:
       type: object
       properties:
@@ -306,10 +311,10 @@ tools:
           description: "Manual-only artifact package returned when execution_mode=manual-only; contains generated DDL, DistSQL, index plan, and algorithm properties needed for operator execution."
         manual_artifact_summary:
           type: object
-          description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation requirement, and validate_workflow arguments."
+          description: "Manual-only compact artifact summary with counts, external execution requirement, confirmation gate, and validation arguments to use after manual execution."
         manual_follow_up:
           type: object
-          description: "Manual-only confirmation contract to satisfy before validate_workflow is called."
+          description: "Manual-only confirmation contract; validate_workflow is blocked until manual_artifacts_executed is confirmed, while independent read-only execute_query checks remain allowed."
         argument_provenance:
           type: object
           description: "Source of reusable apply arguments, such as server_generated or server_defaulted."

@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowPlanPayloadBuilderTest {
-    
+
     @Test
     void assertBuildIncludesIntentInference() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -94,7 +94,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertTrue(extractResourceUris((List<?>) actual.get("resources_to_read")).contains("shardingsphere://features/encrypt/algorithms"));
         assertThat(((Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
-    
+
     @Test
     void assertBuildUsesPublicAlgorithmPropertyInputs() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -119,7 +119,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualClarificationQuestions.get(2)).get("field"), is("like_query_algorithm_properties.token"));
         assertTrue((Boolean) ((Map<?, ?>) actualClarificationQuestions.get(0)).get("secret"));
     }
-    
+
     @Test
     void assertBuildIncludesMaskResources() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -149,7 +149,31 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
         assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
     }
-    
+
+    @Test
+    void assertBuildKeepsManualOnlyPlanFreeOfRuntimeApproval() {
+        WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
+        snapshot.setPlanId("plan-1");
+        snapshot.setWorkflowKind(WorkflowKind.valueOf("mask.rule"));
+        snapshot.setStatus(WorkflowLifecycle.STATUS_PLANNED);
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        clarifiedIntent.getInferredValues().put("execution_mode", "manual-only");
+        snapshot.setClarifiedIntent(clarifiedIntent);
+        WorkflowRequest request = new WorkflowRequest();
+        request.setExecutionMode("manual-only");
+        snapshot.setRequest(request);
+        snapshot.setInteractionPlan(InteractionPlan.create("plan-1", request, "Mask workflow plan.", List.of("Review"), List.of("rules")));
+        Map<String, Object> actual = WorkflowPlanPayloadBuilder.build(snapshot);
+        Map<?, ?> actualReviewFocus = (Map<?, ?>) actual.get("review_focus");
+        assertTrue((Boolean) actualReviewFocus.get("manual_only"));
+        assertFalse((Boolean) actualReviewFocus.get("requires_user_approval"));
+        assertThat(((Map<?, ?>) actual.get("argument_provenance")).get("execution_mode"), is("inferred_from_intent"));
+        Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actual.get("next_actions")).get(0);
+        assertThat(actualNextAction.get("tool_name"), is("apply_workflow"));
+        assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("execution_mode"), is("preview"));
+        assertFalse((Boolean) actualNextAction.get("requires_user_approval"));
+    }
+
     @Test
     void assertBuildRecommendsPlanningToolAfterFailure() {
         WorkflowContextSnapshot snapshot = new WorkflowContextSnapshot();
@@ -167,7 +191,7 @@ class WorkflowPlanPayloadBuilderTest {
         assertThat(actualNextAction.get("type"), is("tool_call"));
         assertThat(actualNextAction.get("tool_name"), is("plan_encrypt_rule"));
     }
-    
+
     private List<String> extractResourceUris(final List<?> resources) {
         return resources.stream().map(each -> (String) ((Map<?, ?>) each).get("uri")).toList();
     }

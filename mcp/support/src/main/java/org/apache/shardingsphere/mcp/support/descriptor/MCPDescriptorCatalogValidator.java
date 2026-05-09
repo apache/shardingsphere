@@ -448,6 +448,11 @@ final class MCPDescriptorCatalogValidator {
         Collection<String> executionModes = executionMode.getValueDefinition().getEnumValues();
         checkState(executionModes.contains("preview"), String.format("Destructive tool `%s` execution_mode must allow preview.", descriptor.getName()));
         checkState(!executionModes.contains("auto-execute"), String.format("Destructive tool `%s` execution_mode must not expose auto-execute.", descriptor.getName()));
+        MCPToolFieldDefinition approvedByUser = findToolField(descriptor, "approved_by_user").orElseThrow(
+                () -> new IllegalStateException(String.format("Destructive tool `%s` must declare approved_by_user.", descriptor.getName())));
+        checkState(!approvedByUser.isRequired(), String.format("Destructive tool `%s` approved_by_user must not be required for preview.", descriptor.getName()));
+        checkState(MCPToolValueDefinition.Type.BOOLEAN == approvedByUser.getValueDefinition().getType(),
+                String.format("Destructive tool `%s` approved_by_user must be boolean.", descriptor.getName()));
         checkState(Boolean.TRUE.equals(descriptor.getMeta().get("requiresUserApproval")),
                 String.format("Destructive tool `%s` must declare requiresUserApproval=true in meta.", descriptor.getName()));
         checkState(descriptor.getMeta().get("sideEffectScope") instanceof Collection && !((Collection<?>) descriptor.getMeta().get("sideEffectScope")).isEmpty(),

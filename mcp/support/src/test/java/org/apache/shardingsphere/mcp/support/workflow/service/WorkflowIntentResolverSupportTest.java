@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.mcp.support.workflow.service;
 
+import org.apache.shardingsphere.mcp.support.workflow.model.ClarifiedIntent;
 import org.apache.shardingsphere.mcp.support.workflow.model.WorkflowRequest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -28,19 +30,35 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class WorkflowIntentResolverSupportTest {
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("getResolveOperationTypeCases")
     void assertResolveOperationType(final String name, final WorkflowRequest request, final String expectedOperationType) {
         assertThat(WorkflowIntentResolverSupport.resolveOperationType(request), is(expectedOperationType));
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("getResolveFieldSemanticsCases")
     void assertResolveFieldSemantics(final String name, final WorkflowRequest request, final String expectedFieldSemantics) {
         assertThat(WorkflowIntentResolverSupport.resolveFieldSemantics(request), is(expectedFieldSemantics));
     }
-    
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("getResolveExecutionModeCases")
+    void assertResolveExecutionMode(final String name, final WorkflowRequest request, final String expectedExecutionMode) {
+        assertThat(WorkflowIntentResolverSupport.resolveExecutionMode(request, null), is(expectedExecutionMode));
+    }
+
+    @Test
+    void assertResolveExecutionModeRecordsManualInference() {
+        WorkflowRequest request = new WorkflowRequest();
+        request.setExecutionMode("");
+        request.setNaturalLanguageIntent("export artifacts for manual execution outside MCP");
+        ClarifiedIntent clarifiedIntent = new ClarifiedIntent();
+        assertThat(WorkflowIntentResolverSupport.resolveExecutionMode(request, clarifiedIntent), is("manual-only"));
+        assertThat(clarifiedIntent.getInferredValues().get("execution_mode"), is("manual-only"));
+    }
+
     private static Stream<Arguments> getResolveOperationTypeCases() {
         WorkflowRequest explicitRequest = new WorkflowRequest();
         explicitRequest.setOperationType("alter");
@@ -61,7 +79,7 @@ class WorkflowIntentResolverSupportTest {
                 Arguments.of("chinese alter intent heuristic", chineseAlterRequest, "alter"),
                 Arguments.of("default create", defaultRequest, "create"));
     }
-    
+
     private static Stream<Arguments> getResolveFieldSemanticsCases() {
         WorkflowRequest explicitRequest = new WorkflowRequest();
         explicitRequest.setFieldSemantics("email");
@@ -92,5 +110,27 @@ class WorkflowIntentResolverSupportTest {
                 Arguments.of("bank card heuristic", bankCardRequest, "bank_card"),
                 Arguments.of("address heuristic", addressRequest, "address"),
                 Arguments.of("fallback to column", defaultRequest, "customer_code"));
+    }
+
+    private static Stream<Arguments> getResolveExecutionModeCases() {
+        WorkflowRequest explicitRequest = new WorkflowRequest();
+        explicitRequest.setExecutionMode("manual-only");
+        WorkflowRequest manualRequest = new WorkflowRequest();
+        manualRequest.setExecutionMode("");
+        manualRequest.setNaturalLanguageIntent("export reviewable artifacts for manual execution");
+        WorkflowRequest noSideEffectRequest = new WorkflowRequest();
+        noSideEffectRequest.setExecutionMode("");
+        noSideEffectRequest.setNaturalLanguageIntent("keep runtime side effects out of MCP");
+        WorkflowRequest chineseManualRequest = new WorkflowRequest();
+        chineseManualRequest.setExecutionMode("");
+        chineseManualRequest.setNaturalLanguageIntent("导出脚本，不要执行");
+        WorkflowRequest defaultRequest = new WorkflowRequest();
+        defaultRequest.setExecutionMode("");
+        return Stream.of(
+                Arguments.of("explicit execution mode", explicitRequest, "manual-only"),
+                Arguments.of("manual execution intent", manualRequest, "manual-only"),
+                Arguments.of("no side effect intent", noSideEffectRequest, "manual-only"),
+                Arguments.of("chinese manual intent", chineseManualRequest, "manual-only"),
+                Arguments.of("default execution mode", defaultRequest, ""));
     }
 }

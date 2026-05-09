@@ -19,18 +19,21 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
-import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Backend;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.OllamaLLMRuntimeSupport;
+import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenario;
 import org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.scenario.LLMUsabilityScenarioCatalog;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.condition.EnabledIf;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,99 +42,109 @@ import java.util.Map;
 @Tag("llm-e2e")
 @EnabledIf("isEnabled")
 class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
-    
+
+    private static final String SUITE_ID = "llm-usability-h2";
+
+    private static final String RUNTIME_KIND = "h2";
+
+    private static final String DATABASE_NAME = "logic_db";
+
+    private static final String TABLE_NAME = "orders";
+
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
-    
-    private final LLMConversationExecutor conversationExecutor = new LLMConversationExecutor();
-    
+
+    private static OllamaLLMRuntimeSupport.ModelRuntime llmRuntime;
+
     private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
-    
+
     private final LLMUsabilitySuiteRunner suiteRunner = new LLMUsabilitySuiteRunner();
-    
+
     private final LLMUsabilityScenarioCatalog scenarioCatalog = new LLMUsabilityScenarioCatalog();
-    
-    private UsabilitySuiteTestCase currentTestCase;
-    
+
     private Fixture currentRuntimeFixture;
-    
+
+    @BeforeAll
+    static void prepareLLMRuntime() throws InterruptedException {
+        llmRuntime = OllamaLLMRuntimeSupport.prepare(LLME2EConfiguration.load());
+    }
+
+    @AfterAll
+    static void closeLLMRuntime() {
+        if (null != llmRuntime) {
+            llmRuntime.close();
+            llmRuntime = null;
+        }
+    }
+
     @AfterEach
     void closeRuntimeFixture() {
         if (null != currentRuntimeFixture) {
             currentRuntimeFixture.close();
             currentRuntimeFixture = null;
         }
-        currentTestCase = null;
-    }
-    
-    static List<UsabilitySuiteTestCase> getTestCases() {
-        return List.of(
-                new UsabilitySuiteTestCase("minimal-usability-h2", RuntimeTransport.HTTP, Backend.H2),
-                new UsabilitySuiteTestCase("minimal-usability-mysql", RuntimeTransport.HTTP, Backend.MYSQL),
-                new UsabilitySuiteTestCase("minimal-usability-h2-stdio", RuntimeTransport.STDIO, Backend.H2),
-                new UsabilitySuiteTestCase("minimal-usability-mysql-stdio", RuntimeTransport.STDIO, Backend.MYSQL));
     }
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isLLMEnabled();
     }
-    
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("getTestCases")
-    void assertMinimalBaseline(final UsabilitySuiteTestCase testCase) throws IOException, InterruptedException {
-        currentTestCase = testCase;
+
+    @Test
+    void assertUsabilityBaseline() throws IOException, InterruptedException {
+        LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration());
         conversationExecutor.assertModelReady();
         prepareRuntimeFixture();
-        suiteRunner.assertUsabilitySuite(testCase.suiteId(),
-                () -> scenarioCatalog.createMinimalBaseline(getRuntimeKind(), "logic_db", getRequiredRuntimeFixture().schemaName(),
-                        "orders", COUNT_ORDERS_SQL, getRequiredRuntimeFixture().totalOrders()),
-                each -> conversationExecutor.runConversation(testCase.suiteId() + "/" + each.getScenarioId(), each, createInteractionClient()),
+        suiteRunner.assertCoreSuite(SUITE_ID + "/core",
+                this::createCoreScenarios,
+                each -> conversationExecutor.runConversation(SUITE_ID + "/core/" + each.getScenarioId(), each, createInteractionClient()),
+                conversationExecutor.getConfiguration());
+        suiteRunner.recordExtendedSuite(SUITE_ID + "/extended",
+                this::createExtendedScenarios,
+                each -> conversationExecutor.runConversation(SUITE_ID + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
     }
-    
+
+    private List<LLMUsabilityScenario> createCoreScenarios() {
+        Fixture fixture = getRequiredRuntimeFixture();
+        return scenarioCatalog.createCoreGate(RUNTIME_KIND, DATABASE_NAME, fixture.schemaName(), TABLE_NAME, COUNT_ORDERS_SQL,
+                fixture.totalOrders());
+    }
+
+    private List<LLMUsabilityScenario> createExtendedScenarios() {
+        Fixture fixture = getRequiredRuntimeFixture();
+        return scenarioCatalog.createExtendedScore(RUNTIME_KIND, DATABASE_NAME, fixture.schemaName(), TABLE_NAME, COUNT_ORDERS_SQL,
+                fixture.totalOrders());
+    }
+
+    private static LLME2EConfiguration getRequiredLLMConfiguration() {
+        if (null == llmRuntime) {
+            throw new IllegalStateException("LLM runtime was not initialized.");
+        }
+        return llmRuntime.getConfiguration();
+    }
+
     @Override
     protected RuntimeTransport getTransport() {
-        return getRequiredTestCase().transport();
+        return RuntimeTransport.HTTP;
     }
-    
+
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return getRequiredRuntimeFixture().runtimeDatabases();
     }
-    
+
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         if (null != currentRuntimeFixture) {
             return;
         }
-        UsabilitySuiteTestCase testCase = getRequiredTestCase();
-        currentRuntimeFixture = Backend.H2 == testCase.backend()
-                ? runtimeFixtureFactory.createMultiDatabaseH2Fixture(getTempDir(), "logic_db", "analytics_db", testCase.transport())
-                : runtimeFixtureFactory.createMySQLFixture("logic_db", "Docker is required for the MySQL-backed usability suite.");
+        currentRuntimeFixture = runtimeFixtureFactory.createMultiDatabaseH2Fixture(getTempDir(), DATABASE_NAME, "analytics_db",
+                getTransport());
     }
-    
-    private String getRuntimeKind() {
-        return Backend.H2 == getRequiredTestCase().backend() ? "h2" : "mysql";
-    }
-    
-    private UsabilitySuiteTestCase getRequiredTestCase() {
-        if (null == currentTestCase) {
-            throw new IllegalStateException("LLM usability suite test case was not initialized.");
-        }
-        return currentTestCase;
-    }
-    
+
     private Fixture getRequiredRuntimeFixture() {
         if (null == currentRuntimeFixture) {
             throw new IllegalStateException("LLM usability runtime fixture was not initialized.");
         }
         return currentRuntimeFixture;
-    }
-    
-    private record UsabilitySuiteTestCase(String suiteId, RuntimeTransport transport, Backend backend) {
-
-        @Override
-        public String toString() {
-            return suiteId;
-        }
     }
 }

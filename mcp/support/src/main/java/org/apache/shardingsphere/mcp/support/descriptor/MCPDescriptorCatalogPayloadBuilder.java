@@ -149,10 +149,11 @@ final class MCPDescriptorCatalogPayloadBuilder {
                 createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool execute_query"),
                         "Use one SELECT or EXPLAIN ANALYZE statement and stop after the result is reported.",
                         List.of("execute_query"), List.of("shardingsphere://databases/{database}/capabilities")),
-                createCommonFlow("side_effecting_sql", List.of("call_tool execute_update execution_mode=preview", "ask_user approval", "call_tool execute_update execution_mode=execute"),
+                createCommonFlow("side_effecting_sql", List.of("call_tool execute_update execution_mode=preview", "ask_user approved_by_user",
+                        "call_tool execute_update execution_mode=execute approved_by_user=true"),
                         "Never execute until the previewed SQL and side-effect scope are approved by the user.", List.of("execute_update"), List.of()),
                 createCommonFlow("workflow_plan_apply_validate", List.of("call_tool descriptor-backed feature planning tool", "call_tool apply_workflow execution_mode=preview",
-                        "ask_user approval", "call_tool apply_workflow approved mode", "call_tool validate_workflow"),
+                        "ask_user approved_by_user", "call_tool apply_workflow review-then-execute approved_by_user=true", "call_tool validate_workflow"),
                         "Reuse the same current-session plan_id and stop after validation succeeds.",
                         List.of("apply_workflow", "validate_workflow"), List.of()),
                 createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "read_resource shardingsphere://capabilities when suggested", "ask_user only when uncertain"),
@@ -206,7 +207,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
                 "read_only", "Use execute_query for one SELECT or EXPLAIN ANALYZE statement.",
                 "side_effecting", "Use execute_update with execution_mode=preview before asking for user approval."));
         result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
-        result.put("side_effect_rule", "Preview before side effects and continue only after explicit user approval.");
+        result.put("side_effect_rule", "Preview before side effects and continue only after explicit user approval with approved_by_user=true.");
         result.put("next_action_rule", "Use canonical next_actions fields: type, tool_name, resource_uri, arguments, and requires_user_approval.");
         result.put("detail_resource_rule", "Read each resource payload_contract before assuming detail fields.");
         result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");

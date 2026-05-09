@@ -27,16 +27,18 @@ import java.util.List;
 import java.util.Locale;
 
 public final class LLMUsabilityScenarioCatalog {
-    
+
     private static final String SYSTEM_PROMPT = """
             You are evaluating an MCP server.
-            Use the provided MCP actions exactly as needed.
-            Do not guess database structure or query results.
+            Use MCP resources, metadata search, SQL tools, prompts, completions, and workflow tools only when they help the task.
+            Inspect MCP context before touching unknown runtime, metadata, or side-effecting operations.
+            Preview side effects and ask the user before execution.
+            Do not guess database structure, workflow state, or query results.
             Return JSON only when asked for the final answer.
             """.trim();
-    
+
     /**
-     * Create the minimal usability baseline scenarios for one runtime kind.
+     * Create core gate scenarios.
      *
      * @param runtimeKind runtime kind
      * @param databaseName database name
@@ -44,141 +46,157 @@ public final class LLMUsabilityScenarioCatalog {
      * @param tableName table name
      * @param query query
      * @param totalOrders total orders
-     * @return minimal usability baseline scenarios
+     * @return core gate scenarios
      */
-    public List<LLMUsabilityScenario> createMinimalBaseline(final String runtimeKind, final String databaseName, final String schemaName,
-                                                            final String tableName, final String query, final int totalOrders) {
+    public List<LLMUsabilityScenario> createCoreGate(final String runtimeKind, final String databaseName, final String schemaName, final String tableName,
+                                                     final String query, final int totalOrders) {
         List<LLMUsabilityScenario> result = new LinkedList<>();
         String tableResourceUri = String.format(Locale.ENGLISH, "shardingsphere://databases/%s/schemas/%s/tables/%s", databaseName, schemaName, tableName);
-        String toolContext = " Use database `" + databaseName + "` and schema `" + schemaName
-                + "` in SQL, metadata, and workflow tool arguments unless this scenario explicitly asks for a different invalid first call.";
-        result.add(createScenario("resource-capabilities-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
-                new LLME2EScenario("resource-capabilities-" + runtimeKind, SYSTEM_PROMPT,
-                        "First call " + MCPInteractionActionNames.READ_RESOURCE + " with uri `shardingsphere://capabilities`. "
-                                + "Then use search_metadata to locate `" + tableName + "` in " + databaseName + "." + schemaName
-                                + " and verify the count using the SQL `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+        String toolContext = String.format(Locale.ENGLISH, " Use logical database `%s` and schema `%s` when the MCP action needs explicit runtime scope.", databaseName, schemaName);
+        result.add(createScenario("natural-metadata-lookup-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind, List.of("natural", "metadata"),
+                new LLME2EScenario("natural-metadata-lookup-" + runtimeKind, SYSTEM_PROMPT,
+                        "A user wants to inspect the live `" + tableName + "` table shape and confirm how many rows are visible. "
+                                + "Use MCP metadata instead of guessing, then verify the count with `" + query + "`." + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
+                        List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "search_metadata", "execute_query"),
+                        List.of("search_metadata", "execute_query")),
+                List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "search_metadata"), List.of(), false, false));
+        result.add(createScenario("natural-read-only-sql-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind, List.of("natural", "read-only-sql"),
+                new LLME2EScenario("natural-read-only-sql-" + runtimeKind, SYSTEM_PROMPT,
+                        "A user asks how many rows are in `" + tableName + "` right now. Answer only after checking the database with `" + query + "`." + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "search_metadata", "execute_query"),
-                        List.of(MCPInteractionActionNames.READ_RESOURCE, "search_metadata", "execute_query")),
-                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://capabilities"), true, false));
-        result.add(createScenario("resource-table-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
-                new LLME2EScenario("resource-table-" + runtimeKind, SYSTEM_PROMPT,
-                        "First call " + MCPInteractionActionNames.READ_RESOURCE + " with uri `" + tableResourceUri + "`. "
-                                + "Then verify the count in " + databaseName + "." + schemaName + "." + tableName + " using `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+                        List.of("execute_query")),
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "search_metadata", "execute_query"), List.of(), false, false));
+        String previewUpdateSql = "UPDATE orders SET status = status WHERE order_id = -1";
+        result.add(createScenario("natural-side-effect-preview-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind, List.of("natural", "side-effect-preview"),
+                new LLME2EScenario("natural-side-effect-preview-" + runtimeKind, SYSTEM_PROMPT,
+                        "A user is considering SQL `" + previewUpdateSql + "`. Review its side-effect scope without changing data before doing any row-count check. "
+                                + "After the preview result is available, verify the row count with `" + query + "`." + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
+                        List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_update", "execute_query"),
+                        List.of("execute_update", "execute_query")),
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_update"), List.of(), false, false));
+        List<String> workflowActions = List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "execute_query");
+        List<String> workflowRequiredActions = List.of("plan_mask_rule", "apply_workflow", "execute_query");
+        result.add(createScenario("natural-workflow-manual-export-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind, List.of("natural", "workflow"),
+                new LLME2EScenario("natural-workflow-manual-export-" + runtimeKind, SYSTEM_PROMPT,
+                        "Prepare a mask-rule workflow for logical database `" + databaseName + "`, schema `" + schemaName + "`, table `" + tableName
+                                + "`, and column `status` using MD5. Keep runtime side effects out of MCP, export reviewable artifacts for manual execution, "
+                                + "and finish by verifying `" + query + "`.",
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
+                        workflowActions, workflowRequiredActions),
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule"), List.of(), false, false));
+        result.add(createScenario("natural-table-resource-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind, List.of("natural", "resource"),
+                new LLME2EScenario("natural-table-resource-" + runtimeKind, SYSTEM_PROMPT,
+                        "The user points to `" + tableResourceUri + "` as the table context. Read the live table detail when useful, then verify `" + query + "`." + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query"),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query")),
                 List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, false));
-        result.add(createScenario("tool-list-tables-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
-                new LLME2EScenario("tool-list-tables-" + runtimeKind, SYSTEM_PROMPT,
-                        "Use search_metadata first for " + databaseName + "." + schemaName + " to locate `" + tableName + "`, then verify `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
-                        List.of("search_metadata", "execute_query"),
-                        List.of("search_metadata", "execute_query")),
-                List.of("search_metadata"), List.of(), false, false));
-        String previewUpdateSql = "UPDATE orders SET status = status WHERE order_id = -1";
-        List<String> previewSqlActions = List.of("execute_update", "execute_query");
-        result.add(createScenario("tool-preview-update-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
-                new LLME2EScenario("tool-preview-update-" + runtimeKind, SYSTEM_PROMPT,
-                        "First preview the SQL `" + previewUpdateSql + "` with execute_update and execution_mode `preview`. "
-                                + "Do not execute the update. Then verify `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), previewSqlActions, previewSqlActions),
-                List.of("execute_update"), List.of(), false, false));
-        List<String> searchDetailActions = List.of("search_metadata", MCPInteractionActionNames.READ_RESOURCE, "execute_query");
-        result.add(createScenario("tool-search-detail-uri-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
-                new LLME2EScenario("tool-search-detail-uri-" + runtimeKind, SYSTEM_PROMPT,
-                        "Use search_metadata for `" + tableName + "` in " + databaseName + "." + schemaName
-                                + ", read the returned table resource.uri, then verify `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), searchDetailActions, searchDetailActions),
-                List.of("search_metadata"), List.of(tableResourceUri), true, false));
-        List<String> workflowActions = List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query");
-        result.add(createScenario("workflow-mask-preview-validate-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
-                new LLME2EScenario("workflow-mask-preview-validate-" + runtimeKind, SYSTEM_PROMPT,
-                        "Read `shardingsphere://features/mask/algorithms`, plan a mask rule for " + databaseName + "." + schemaName + "." + tableName
-                                + ".status with algorithm_type `MD5`, preview apply_workflow, export it with execution_mode `manual-only`, validate the workflow, then verify `" + query + "`."
-                                + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), workflowActions, workflowActions),
-                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://features/mask/algorithms"), true, false));
+        return result;
+    }
+
+    /**
+     * Create extended score scenarios.
+     *
+     * @param runtimeKind runtime kind
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName table name
+     * @param query query
+     * @param totalOrders total orders
+     * @return extended score scenarios
+     */
+    public List<LLMUsabilityScenario> createExtendedScore(final String runtimeKind, final String databaseName, final String schemaName, final String tableName,
+                                                          final String query, final int totalOrders) {
+        List<LLMUsabilityScenario> result = new LinkedList<>();
+        String tableResourceUri = String.format(Locale.ENGLISH, "shardingsphere://databases/%s/schemas/%s/tables/%s", databaseName, schemaName, tableName);
+        String toolContext = String.format(Locale.ENGLISH, " Use logical database `%s` and schema `%s` when the MCP action needs explicit runtime scope.", databaseName, schemaName);
         List<String> promptCompletionActions = List.of(
                 MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE, "execute_query");
-        result.add(createScenario("prompt-completion-inspect-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind,
-                new LLME2EScenario("prompt-completion-inspect-" + runtimeKind, SYSTEM_PROMPT,
-                        "First call " + MCPInteractionActionNames.LIST_PROMPTS + ", then get the `inspect_metadata` prompt for database `" + databaseName + "` and query `"
-                                + tableName + "`. Use " + MCPInteractionActionNames.COMPLETE + " for table prefix `ord`, then verify `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()), promptCompletionActions, promptCompletionActions),
+        result.add(createScenario("extended-prompt-completion-inspect-" + runtimeKind, LLMUsabilityDimension.TOOL, runtimeKind, List.of("extended", "prompt", "completion"),
+                new LLME2EScenario("extended-prompt-completion-inspect-" + runtimeKind, SYSTEM_PROMPT,
+                        "Use the MCP prompt list, the `inspect_metadata` prompt with database `" + databaseName + "`, schema `" + schemaName
+                                + "`, and query `" + tableName + "`, and MCP completion support with reference `{\"type\":\"ref/prompt\",\"name\":\"inspect_metadata\"}`, "
+                                + "argument_name `schema`, argument_value `pub`, and context_arguments `{\"database\":\"" + databaseName + "\"}`. Then verify `" + query + "`."
+                                + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders), promptCompletionActions, promptCompletionActions),
                 List.of(MCPInteractionActionNames.LIST_PROMPTS, MCPInteractionActionNames.GET_PROMPT, MCPInteractionActionNames.COMPLETE), List.of(), false, false));
-        result.add(createScenario("resource-list-discovery-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
-                new LLME2EScenario("resource-list-discovery-" + runtimeKind, SYSTEM_PROMPT,
-                        "First call " + MCPInteractionActionNames.LIST_RESOURCES + " to discover the available metadata resources. "
-                                + "Then read `" + tableResourceUri + "` and verify `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+        result.add(createScenario("extended-resource-list-discovery-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind, List.of("extended", "resource-discovery"),
+                new LLME2EScenario("extended-resource-list-discovery-" + runtimeKind, SYSTEM_PROMPT,
+                        "Discover the available metadata resources, read exact table resource `" + tableResourceUri
+                                + "`, and verify `" + query + "`. Do not read placeholder URI text from tool schema descriptions." + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "execute_query"),
                         List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE, "execute_query")),
                 List.of(MCPInteractionActionNames.LIST_RESOURCES), List.of(tableResourceUri), true, false));
-        result.add(createScenario("resource-runtime-status-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
-                new LLME2EScenario("resource-runtime-status-" + runtimeKind, SYSTEM_PROMPT,
-                        "First call " + MCPInteractionActionNames.READ_RESOURCE + " with uri `shardingsphere://runtime` to inspect active transport and configured databases. "
-                                + "Then verify `" + query + "` without guessing hidden runtime details." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+        result.add(createScenario("extended-runtime-status-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind, List.of("extended", "runtime-diagnostics"),
+                new LLME2EScenario("extended-runtime-status-" + runtimeKind, SYSTEM_PROMPT,
+                        "Read exact runtime resource `shardingsphere://runtime` and configured databases before answering. "
+                                + "Follow any read-only resource next_actions from the runtime response before verifying `" + query + "`." + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query"),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query")),
                 List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://runtime"), true, false));
-        result.add(createScenario("recovery-missing-database-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
-                new LLME2EScenario("recovery-missing-database-" + runtimeKind, SYSTEM_PROMPT,
-                        "First call search_metadata with only schema `" + schemaName + "` and query `" + tableName + "`. "
-                                + "After the server rejects it, recover with the correct database and finish by verifying `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+        result.add(createScenario("extended-recovery-missing-database-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind, List.of("extended", "recovery"),
+                new LLME2EScenario("extended-recovery-missing-database-" + runtimeKind, SYSTEM_PROMPT,
+                        "The user only remembers schema `" + schemaName + "` and table `" + tableName + "`. Search metadata broadly with query `" + tableName
+                                + "` and object type `table` without setting database or schema. If more than one database contains `" + tableName + "`, choose logical database `"
+                                + databaseName + "` and do not use `analytics_db`. Then verify `" + query + "`.",
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of("search_metadata", "execute_query"),
                         List.of("search_metadata", "execute_query")),
                 List.of("search_metadata"), List.of(), false, true));
-        result.add(createScenario("recovery-bad-resource-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
-                new LLME2EScenario("recovery-bad-resource-" + runtimeKind, SYSTEM_PROMPT,
-                        "First call " + MCPInteractionActionNames.READ_RESOURCE + " with uri `shardingsphere://databases/unknown/schemas/unknown/tables/" + tableName + "`. "
-                                + "After the server rejects it, recover by reading `" + tableResourceUri + "` and finish by verifying `" + query + "`." + toolContext,
-                        new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+        result.add(createScenario("extended-recovery-bad-resource-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind, List.of("extended", "recovery", "resource"),
+                new LLME2EScenario("extended-recovery-bad-resource-" + runtimeKind, SYSTEM_PROMPT,
+                        "The user pasted stale resource `shardingsphere://databases/unknown/schemas/unknown/tables/" + tableName
+                                + "`. Read the stale resource, recover by reading exact live table resource `" + tableResourceUri + "`, and verify `" + query + "`." + toolContext,
+                        createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query"),
                         List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query")),
                 List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, true));
         if ("h2".equals(runtimeKind)) {
-            result.add(createScenario("workflow-context-recovery-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
-                    new LLME2EScenario("workflow-context-recovery-" + runtimeKind, SYSTEM_PROMPT,
-                            "Read `shardingsphere://features/mask/algorithms`, plan a mask rule for " + databaseName + "." + schemaName + "." + tableName
-                                    + ".status with algorithm_type `MD5`. Then simulate partial context loss: keep only the returned plan_id, read `shardingsphere://runtime`, "
-                                    + "read `shardingsphere://workflows/{plan_id}` by replacing `{plan_id}` with the returned plan_id, export it with execution_mode `manual-only`, "
-                                    + "validate the workflow, then verify `" + query + "`." + toolContext,
+            result.add(createScenario("extended-workflow-context-recovery-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind, List.of("extended", "workflow", "recovery"),
+                new LLME2EScenario("extended-workflow-context-recovery-" + runtimeKind, SYSTEM_PROMPT,
+                            "Read exact runtime resource `shardingsphere://runtime`, plan a MD5 mask workflow for `" + tableName
+                                    + "` column `status` without qualifying the column name, then use the exact plan_id from the planning response to preview and export manual artifacts. "
+                                    + "Do not validate the workflow before manual artifacts are executed. Then verify `" + query + "`." + toolContext,
                             new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of(
-                                    MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query")),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query"),
-                            List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "validate_workflow", "execute_query")),
+                                    MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "execute_query")),
+                            List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "execute_query"),
+                            List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "execute_query")),
                     List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://runtime"), true, false));
-            result.add(createScenario("resource-database-disambiguation-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind,
-                    new LLME2EScenario("resource-database-disambiguation-" + runtimeKind, SYSTEM_PROMPT,
-                            "First call " + MCPInteractionActionNames.READ_RESOURCE + " with uri `shardingsphere://databases` to inspect the available databases. "
-                                    + "Choose the live transactional database instead of the analytics snapshot, locate `" + tableName + "` in "
-                                    + databaseName + "." + schemaName + ", and then verify `" + query + "`." + toolContext,
-                            new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+            result.add(createScenario("extended-database-disambiguation-" + runtimeKind, LLMUsabilityDimension.RESOURCE, runtimeKind, List.of("extended", "multi-database"),
+                    new LLME2EScenario("extended-database-disambiguation-" + runtimeKind, SYSTEM_PROMPT,
+                            "Before any metadata search or SQL, read exact database list resource `shardingsphere://databases`, choose the live transactional database instead of the "
+                                    + "analytics snapshot, locate `" + tableName + "`, and verify `" + query + "`." + toolContext,
+                            createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                             List.of(MCPInteractionActionNames.READ_RESOURCE, "search_metadata", "execute_query"),
                             List.of(MCPInteractionActionNames.READ_RESOURCE, "search_metadata", "execute_query")),
                     List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://databases"), true, false));
         }
         if ("mysql".equals(runtimeKind)) {
-            result.add(createScenario("recovery-unsupported-sequence-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind,
-                    new LLME2EScenario("recovery-unsupported-sequence-" + runtimeKind, SYSTEM_PROMPT,
-                            "First call " + MCPInteractionActionNames.READ_RESOURCE + " with uri `shardingsphere://databases/" + databaseName + "/schemas/" + schemaName + "/sequences`. "
-                                    + "After the server rejects it because sequences are unsupported, recover by reading `" + tableResourceUri + "` and finish by verifying `"
+            result.add(createScenario("extended-recovery-unsupported-sequence-" + runtimeKind, LLMUsabilityDimension.RECOVERY, runtimeKind, List.of("extended", "recovery", "unsupported-resource"),
+                    new LLME2EScenario("extended-recovery-unsupported-sequence-" + runtimeKind, SYSTEM_PROMPT,
+                            "The user asks about sequence metadata near `" + tableName + "` on this MySQL runtime. Recover safely if sequence resources are unsupported, then verify `"
                                     + query + "`." + toolContext,
-                            new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of()),
+                            createAnswer(databaseName, schemaName, tableName, query, totalOrders),
                             List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query"),
                             List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_query")),
                     List.of(MCPInteractionActionNames.READ_RESOURCE), List.of(tableResourceUri), true, true));
         }
         return result;
     }
-    
+
+    private LLMStructuredAnswer createAnswer(final String databaseName, final String schemaName, final String tableName, final String query, final int totalOrders) {
+        return new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of());
+    }
+
     private LLMUsabilityScenario createScenario(final String scenarioId, final LLMUsabilityDimension dimension, final String runtimeKind,
-                                                final LLME2EScenario llmScenario, final List<String> expectedFirstActionNames,
-                                                final List<String> expectedResourceUris, final boolean resourceHitRequired,
-                                                final boolean recoveryExpected) {
-        return new LLMUsabilityScenario(scenarioId, dimension, runtimeKind, llmScenario, expectedFirstActionNames, expectedResourceUris, resourceHitRequired, recoveryExpected);
+                                                final List<String> tags, final LLME2EScenario llmScenario,
+                                                final List<String> expectedFirstActionNames, final List<String> expectedResourceUris,
+                                                final boolean resourceHitRequired, final boolean recoveryExpected) {
+        return new LLMUsabilityScenario(scenarioId, dimension, runtimeKind, tags, llmScenario, expectedFirstActionNames, expectedResourceUris, resourceHitRequired, recoveryExpected);
     }
 }

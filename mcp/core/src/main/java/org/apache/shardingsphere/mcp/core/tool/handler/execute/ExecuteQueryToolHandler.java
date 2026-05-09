@@ -23,36 +23,53 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Execute read-only SQL query tool handler.
  */
 public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
-    
+
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("execute_query");
-    
+
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-    
+
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return TOOL_DESCRIPTOR;
     }
-    
+
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
         String sql = toolArguments.getStringArgument("sql");
         checkReadOnlyQuery(toolArguments, sql);
-        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, "execute_query"));
+        SQLExecutionToolHandlerSupport.checkExecutionArguments(toolArguments, "execute_query");
+        return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments,
+                resolveSchema(databaseContext, toolArguments), sql, "execute_query"));
     }
-    
+
+    private String resolveSchema(final MCPDatabaseHandlerContext databaseContext, final MCPToolArguments toolArguments) {
+        String result = toolArguments.getStringArgument("schema");
+        if (!result.isEmpty()) {
+            return result;
+        }
+        String database = toolArguments.getStringArgument("database");
+        if (database.isEmpty()) {
+            return "";
+        }
+        List<MCPSchemaMetadata> schemas = databaseContext.getMetadataQueryFacade().querySchemas(database);
+        return 1 == schemas.size() ? schemas.iterator().next().getSchema() : "";
+    }
+
     private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (!SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult.getStatementClass())) {
@@ -60,7 +77,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
                     "execute_query", "execute_update", classificationResult, createSuggestedArguments(toolArguments, classificationResult));
         }
     }
-    
+
     private Map<String, Object> createSuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));

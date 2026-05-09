@@ -960,6 +960,11 @@ tools:
           enumValues:
             - execute
             - preview
+      - name: approved_by_user
+        required: false
+        valueDefinition:
+          type: BOOLEAN
+          description: "Must be true when execution_mode=execute. Preview calls do not require this field."
       - name: max_rows
         required: false
         valueDefinition:
@@ -1136,6 +1141,7 @@ tools:
           approval_question: Do you approve executing this UPDATE statement with side-effect scope physical-data?
           suggested_arguments:
             execution_mode: execute
+            approved_by_user: true
           next_actions:
             - order: 1
               type: ask_user

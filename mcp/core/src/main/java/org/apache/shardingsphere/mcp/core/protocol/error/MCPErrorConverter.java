@@ -35,6 +35,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgum
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUserApprovalRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
@@ -164,6 +165,9 @@ public final class MCPErrorConverter {
         }
         if (cause instanceof MCPInvalidToolArgumentException) {
             return createInvalidToolArgumentRecovery((MCPInvalidToolArgumentException) cause);
+        }
+        if (cause instanceof MCPUserApprovalRequiredException) {
+            return createUserApprovalRequiredRecovery((MCPUserApprovalRequiredException) cause);
         }
         if (cause instanceof WorkflowArgumentConflictException) {
             return createWorkflowArgumentConflictRecovery((WorkflowArgumentConflictException) cause);
@@ -332,6 +336,22 @@ public final class MCPErrorConverter {
         result.put("suggested_arguments", Map.of("execution_mode", "preview"));
         result.put("next_actions", List.of(MCPNextActionUtils.callTool("apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps after user approval.",
                 Map.of("execution_mode", "preview"), true)));
+        result.put("requires_user_approval", true);
+        result.put("ask_user_when_uncertain", true);
+        return result;
+    }
+
+    private static Map<String, Object> createUserApprovalRequiredRecovery(final MCPUserApprovalRequiredException cause) {
+        Map<String, Object> result = createBaseRecovery("approval_required", "Ask the user to approve the previewed side effects before retrying real execution.");
+        result.put("missing_fields", List.of("approved_by_user"));
+        result.put("field", "approved_by_user");
+        result.put("source_tool", cause.getToolName());
+        result.put("tool_name", cause.getToolName());
+        result.put("suggested_arguments", cause.getSuggestedArguments());
+        result.put("next_actions", MCPNextActionUtils.ordered(
+                MCPNextActionUtils.askUser("Ask the user to approve the exact previewed side effects.", List.of("approved_by_user"), true),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool(cause.getToolName(),
+                        "Retry only after approval, preserving the previewed arguments and approved_by_user=true.", cause.getSuggestedArguments(), true), 1)));
         result.put("requires_user_approval", true);
         result.put("ask_user_when_uncertain", true);
         return result;

@@ -23,7 +23,9 @@ import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
+import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.spi.MCPFeatureExecutionFacade;
+import org.apache.shardingsphere.mcp.support.database.spi.MCPMetadataQueryFacade;
 import org.apache.shardingsphere.mcp.support.database.tool.request.SQLExecutionRequest;
 import org.apache.shardingsphere.mcp.support.database.tool.response.SQLExecutionResponse;
 import org.junit.jupiter.api.Test;
@@ -42,7 +44,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecuteQueryToolHandlerTest {
-    
+
     @Test
     void assertHandleReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -60,7 +62,22 @@ class ExecuteQueryToolHandlerTest {
         assertThat(requestCaptor.getValue().getMaxRows(), is(100));
         assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
-    
+
+    @Test
+    void assertHandleReadOnlyQueryWithSingleSchemaDefault() {
+        MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
+        when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of())));
+        MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
+        when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
+        new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1", Map.of("database", "logic_db", "sql", "select * from orders")));
+        ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);
+        verify(executionFacade).execute(requestCaptor.capture());
+        assertThat(requestCaptor.getValue().getSchema(), is("public"));
+    }
+
     @Test
     void assertHandleExplainAnalyze() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -72,7 +89,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.toPayload().get("statement_class"), is("explain_analyze"));
         verify(executionFacade).execute(any());
     }
-    
+
     @Test
     void assertRejectUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -83,7 +100,7 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.getMessage(), is("execute_query only supports read-only QUERY and EXPLAIN_ANALYZE statements. Use execute_update for side-effecting SQL."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertRejectOutOfRangeMaxRows() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -94,13 +111,16 @@ class ExecuteQueryToolHandlerTest {
         assertThat(actual.getMessage(), is("max_rows must be an integer between 0 and 5000."));
         verifyNoInteractions(executionFacade);
     }
-    
+
     @Test
     void assertHandleZeroMaxRowsAsDefault() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
         when(executionFacade.execute(any())).thenReturn(SQLExecutionResponse.resultSet(List.of(), List.of(), false));
+        MCPMetadataQueryFacade metadataQueryFacade = mock(MCPMetadataQueryFacade.class);
+        when(metadataQueryFacade.querySchemas("logic_db")).thenReturn(List.of(new MCPSchemaMetadata("logic_db", "public", List.of(), List.of())));
         MCPDatabaseHandlerContext databaseContext = mock(MCPDatabaseHandlerContext.class);
         when(databaseContext.getExecutionFacade()).thenReturn(executionFacade);
+        when(databaseContext.getMetadataQueryFacade()).thenReturn(metadataQueryFacade);
         new ExecuteQueryToolHandler().handle(databaseContext, new MCPToolCall("session-1",
                 Map.of("database", "logic_db", "sql", "select * from orders", "max_rows", 0)));
         ArgumentCaptor<SQLExecutionRequest> requestCaptor = ArgumentCaptor.forClass(SQLExecutionRequest.class);

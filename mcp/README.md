@@ -440,7 +440,7 @@ If you want one encrypt or mask workflow to run end to end without ambiguity, us
 2. If the response is `status = clarifying`, read `clarification_questions`, send values for the listed `field` entries, and call the same feature-specific `plan_*_rule` again with the same `plan_id`.
 3. If the response is `status = planned`, review `derived_column_plan`, `ddl_artifacts`, `distsql_artifacts`, and `index_plan`.
 4. Call `apply_workflow` with `execution_mode=preview` so MCP shows the artifacts and side-effect scope without changing runtime state.
-5. After user approval, call `apply_workflow` with `execution_mode=review-then-execute`, or use `manual-only` when the artifacts should be exported.
+5. After user approval, call `apply_workflow` with `execution_mode=review-then-execute` and `approved_by_user=true`, or use `manual-only` when the artifacts should be exported.
 6. If apply returns `awaiting-manual-execution`, execute the returned `manual_artifact_package` against ShardingSphere-Proxy first, then continue.
 7. Call `validate_workflow` and make sure the returned validation layers pass.
 8. If validation fails, inspect `issues` and `mismatches`, then either finish the remaining apply steps or re-plan after fixing the environment.
@@ -477,7 +477,7 @@ In addition:
   - MCP echoes the selected mode in the plan response so the client can decide whether to present the whole plan at once or drive the conversation step by step
 - Planning `execution_mode` supports `review-then-execute` and `manual-only` as the preferred final apply mode.
 - `apply_workflow` requires explicit `execution_mode`
-  - use `preview` first, then `review-then-execute` after approval, or `manual-only` to export a manual artifact package only
+  - use `preview` first, then `review-then-execute` with `approved_by_user=true` after approval, or `manual-only` to export a manual artifact package only
 
 ### What to do next for each status
 
@@ -707,7 +707,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 Typical response snippet:
@@ -771,7 +771,7 @@ Continue with the same `plan_id` and send the missing fields back to `plan_encry
 
 #### Apply and validate
 
-The planned default final mode is `review-then-execute`, but `apply_workflow` requires an explicit safety mode.
+The planned default final mode is `review-then-execute`, but `apply_workflow` requires `preview` first and `approved_by_user=true` for real side effects.
 Preview first:
 
 ```bash
@@ -791,7 +791,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"encrypt-apply-2\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 If you want MCP to export the artifacts without executing them, switch to `manual-only`:
@@ -1027,7 +1027,7 @@ curl -sS http://127.0.0.1:18088/mcp \
   -H 'Accept: application/json, text/event-stream' \
   -H "MCP-Session-Id: ${SESSION_ID}" \
   -H "MCP-Protocol-Version: ${PROTOCOL_VERSION}" \
-  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\"}}}"
+  --data "{\"jsonrpc\":\"2.0\",\"id\":\"mask-apply-complete-1\",\"method\":\"tools/call\",\"params\":{\"name\":\"apply_workflow\",\"arguments\":{\"plan_id\":\"${PLAN_ID}\",\"execution_mode\":\"review-then-execute\",\"approved_by_user\":true}}}"
 ```
 
 Step 4: validate the final rule state

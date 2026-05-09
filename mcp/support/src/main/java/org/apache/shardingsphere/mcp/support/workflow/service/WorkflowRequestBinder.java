@@ -32,10 +32,10 @@ import java.util.function.Supplier;
  * Workflow request binder.
  */
 public final class WorkflowRequestBinder {
-    
+
     private WorkflowRequestBinder() {
     }
-    
+
     /**
      * Bind workflow planning request from MCP arguments.
      *
@@ -63,7 +63,7 @@ public final class WorkflowRequestBinder {
         }
         return result;
     }
-    
+
     /**
      * Bind workflow planning request from MCP arguments.
      *
@@ -79,9 +79,9 @@ public final class WorkflowRequestBinder {
                                                       final BiConsumer<WorkflowRequest, Map<String, Object>> userOverrideBinder) {
         return bindPlanningRequest(WorkflowRequest::new, arguments, featureArgumentBinder, structuredIntentBinder, userOverrideBinder);
     }
-    
+
     private static void bindCommonPlanningFields(final WorkflowRequest request, final WorkflowPlanningArguments workflowPlanningArguments) {
-        request.setPlanId(workflowPlanningArguments.getStringArgument("plan_id"));
+        request.setPlanId(normalizePlanId(workflowPlanningArguments.getStringArgument("plan_id")));
         request.setDatabase(workflowPlanningArguments.getStringArgument("database"));
         request.setSchema(workflowPlanningArguments.getStringArgument("schema"));
         request.setTable(workflowPlanningArguments.getStringArgument("table"));
@@ -91,19 +91,24 @@ public final class WorkflowRequestBinder {
         request.setDeliveryMode(workflowPlanningArguments.getStringArgument("delivery_mode"));
         request.setExecutionMode(workflowPlanningArguments.getStringArgument("execution_mode"));
     }
-    
+
+    private static String normalizePlanId(final String planId) {
+        String result = planId.trim();
+        return "plan_id".equals(result) || "{plan_id}".equals(result) || "<plan_id>".equals(result) ? "" : result;
+    }
+
     private static void applyObjectMap(final Object rawValue, final Consumer<Map<String, Object>> consumer) {
         Map<String, Object> actualValue = getObjectMap(rawValue);
         if (!actualValue.isEmpty()) {
             consumer.accept(actualValue);
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     private static Map<String, Object> getObjectMap(final Object rawValue) {
         return rawValue instanceof Map ? (Map<String, Object>) rawValue : Map.of();
     }
-    
+
     private static void validateUserOverrideConflicts(final Map<String, Object> arguments, final Map<String, Object> userOverrides) {
         if (userOverrides.isEmpty()) {
             return;
@@ -116,7 +121,7 @@ public final class WorkflowRequestBinder {
             throw new WorkflowArgumentConflictException(conflicts);
         }
     }
-    
+
     private static void addUserOverrideConflict(final Collection<String> conflicts, final Map<String, Object> arguments, final Entry<String, Object> entry) {
         if (!arguments.containsKey(entry.getKey())) {
             return;
@@ -127,7 +132,7 @@ public final class WorkflowRequestBinder {
             conflicts.add(String.format("%s conflicts with user_overrides.%s", entry.getKey(), entry.getKey()));
         }
     }
-    
+
     private static String normalizeComparableValue(final Object value) {
         return null == value ? "" : String.valueOf(value).trim();
     }

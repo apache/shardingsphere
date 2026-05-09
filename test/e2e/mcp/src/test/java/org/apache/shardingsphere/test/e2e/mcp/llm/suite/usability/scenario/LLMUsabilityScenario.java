@@ -27,23 +27,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class LLMUsabilityScenario {
-    
+
     private final String scenarioId;
-    
+
     private final LLMUsabilityDimension dimension;
-    
+
     private final String runtimeKind;
-    
+
+    private final List<String> tags;
+
     private final LLME2EScenario llmScenario;
-    
+
     private final List<String> expectedFirstActionNames;
-    
+
     private final List<String> expectedResourceUris;
-    
+
     private final boolean resourceHitRequired;
-    
+
     private final boolean recoveryExpected;
-    
+
     /**
      * Is query scenario.
      *

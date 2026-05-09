@@ -19,15 +19,19 @@ package org.apache.shardingsphere.test.e2e.mcp.llm.suite.smoke;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.llm.config.LLME2EConfiguration;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.LLMConversationExecutor;
 import org.apache.shardingsphere.test.e2e.mcp.llm.conversation.artifact.LLME2EAssertionReport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Backend;
 import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.LLMRuntimeFixtureFactory.Fixture;
+import org.apache.shardingsphere.test.e2e.mcp.llm.fixture.OllamaLLMRuntimeSupport;
 import org.apache.shardingsphere.test.e2e.mcp.llm.scenario.LLME2EScenario;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.AbstractConfigBackedRuntimeE2ETest;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.RuntimeTransport;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.condition.EnabledIf;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,19 +47,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Tag("llm-e2e")
 @EnabledIf("isEnabled")
 class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
-    
+
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
-    
-    private final LLMConversationExecutor conversationExecutor = new LLMConversationExecutor();
-    
+
+    private static OllamaLLMRuntimeSupport.ModelRuntime llmRuntime;
+
     private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
-    
+
     private final LLMSmokeScenarioFactory scenarioFactory = new LLMSmokeScenarioFactory();
-    
+
     private SmokeTestCase currentTestCase;
-    
+
     private Fixture currentRuntimeFixture;
-    
+
+    @BeforeAll
+    static void prepareLLMRuntime() throws InterruptedException {
+        llmRuntime = OllamaLLMRuntimeSupport.prepare(LLME2EConfiguration.load());
+    }
+
+    @AfterAll
+    static void closeLLMRuntime() {
+        if (null != llmRuntime) {
+            llmRuntime.close();
+            llmRuntime = null;
+        }
+    }
+
     @AfterEach
     void closeRuntimeFixture() {
         if (null != currentRuntimeFixture) {
@@ -64,7 +81,7 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         }
         currentTestCase = null;
     }
-    
+
     static List<SmokeTestCase> getTestCases() {
         return List.of(
                 new SmokeTestCase("minimal-smoke-h2", RuntimeTransport.HTTP, Backend.H2),
@@ -72,11 +89,11 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 new SmokeTestCase("minimal-smoke-h2-stdio", RuntimeTransport.STDIO, Backend.H2),
                 new SmokeTestCase("minimal-smoke-mysql-stdio", RuntimeTransport.STDIO, Backend.MYSQL));
     }
-    
+
     private static boolean isEnabled() {
         return MCPE2ECondition.isLLMEnabled();
     }
-    
+
     @ParameterizedTest(name = "{0}")
     @MethodSource("getTestCases")
     void assertSmoke(final SmokeTestCase testCase) throws IOException {
@@ -84,6 +101,7 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         prepareRuntimeFixture();
         LLME2EScenario scenario = scenarioFactory.createMinimalSmokeScenario(testCase.scenarioId(), "logic_db",
                 getRequiredRuntimeFixture().schemaName(), "orders", COUNT_ORDERS_SQL, getRequiredRuntimeFixture().totalOrders());
+        LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration());
         LLMConversationExecutor.ConversationResult actualResult = conversationExecutor.runConversation(
                 scenario.getScenarioId(), scenario, createInteractionClient());
         LLME2EAssertionReport assertionReport = actualResult.artifactBundle().getAssertionReport();
@@ -91,17 +109,17 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 () -> String.format(Locale.ENGLISH, "%s: %s (artifacts: %s)",
                         assertionReport.getFailureType(), assertionReport.getMessage(), actualResult.artifactDirectory()));
     }
-    
+
     @Override
     protected RuntimeTransport getTransport() {
         return getRequiredTestCase().transport();
     }
-    
+
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return getRequiredRuntimeFixture().runtimeDatabases();
     }
-    
+
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         if (null != currentRuntimeFixture) {
@@ -112,21 +130,28 @@ class LLMSmokeE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 ? runtimeFixtureFactory.createSingleDatabaseH2Fixture(getTempDir(), testCase.scenarioId(), "logic_db", testCase.transport())
                 : runtimeFixtureFactory.createMySQLFixture("logic_db", "Docker is required for the MySQL-backed LLM MCP smoke test.");
     }
-    
+
     private SmokeTestCase getRequiredTestCase() {
         if (null == currentTestCase) {
             throw new IllegalStateException("LLM smoke test case was not initialized.");
         }
         return currentTestCase;
     }
-    
+
     private Fixture getRequiredRuntimeFixture() {
         if (null == currentRuntimeFixture) {
             throw new IllegalStateException("LLM smoke runtime fixture was not initialized.");
         }
         return currentRuntimeFixture;
     }
-    
+
+    private static LLME2EConfiguration getRequiredLLMConfiguration() {
+        if (null == llmRuntime) {
+            throw new IllegalStateException("LLM runtime was not initialized.");
+        }
+        return llmRuntime.getConfiguration();
+    }
+
     private record SmokeTestCase(String scenarioId, RuntimeTransport transport, Backend backend) {
 
         @Override

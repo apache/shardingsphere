@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPExecutionModeRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidExecutionModeException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUserApprovalRequiredException;
 import org.apache.shardingsphere.mcp.core.tool.request.MCPToolArguments;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
@@ -49,6 +50,8 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
 
     private static final String EXECUTION_MODE_PREVIEW = "preview";
 
+    private static final String APPROVED_BY_USER = "approved_by_user";
+
     private static final List<String> EXECUTION_MODES = List.of(EXECUTION_MODE_EXECUTE, EXECUTION_MODE_PREVIEW);
 
     private static final String RESULT_KIND_PREVIEW = "preview";
@@ -72,8 +75,15 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         if (EXECUTION_MODE_PREVIEW.equals(executionMode)) {
             return createPreviewResponse(toolArguments, classificationResult);
         }
+        requireUserApproval(toolArguments, classificationResult);
         return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments, sql, "execute_update"))
                 .withExecutionMode(EXECUTION_MODE_EXECUTE);
+    }
+
+    private void requireUserApproval(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
+        if (!toolArguments.getBooleanArgument(APPROVED_BY_USER, false)) {
+            throw new MCPUserApprovalRequiredException("execute_update", createSuggestedArguments(toolArguments, classificationResult));
+        }
     }
 
     private ClassificationResult checkUpdateStatement(final MCPToolArguments toolArguments, final String sql) {
@@ -113,7 +123,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         classificationResult.getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
         result.put("requires_user_approval", true);
         result.put("ask_user_when_uncertain", true);
-        result.put("approval_guidance", "Review normalized_sql and side_effect_scope before calling execute_update with execution_mode=execute.");
+        result.put("approval_guidance", "Review normalized_sql and side_effect_scope before calling execute_update with execution_mode=execute and approved_by_user=true.");
         result.put("approval_summary", createApprovalSummary(classificationResult));
         result.put("approval_question", createApprovalQuestion(classificationResult));
         Map<String, Object> suggestedArguments = createSuggestedArguments(toolArguments, classificationResult);
@@ -121,7 +131,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         result.put("resources_to_read", createResourcesToRead(toolArguments));
         result.put("argument_provenance", createArgumentProvenance(suggestedArguments));
         result.put("next_actions", MCPNextActionUtils.ordered(
-                MCPNextActionUtils.askUser("Review normalized_sql and side_effect_scope with the user before execution.", List.of("approval"), true),
+                MCPNextActionUtils.askUser("Review normalized_sql and side_effect_scope with the user before execution.", List.of(APPROVED_BY_USER), true),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("execute_update", "After explicit approval, call execute_update with suggested_arguments.",
                         suggestedArguments, true), 1)));
         return new MCPMapResponse(result);
@@ -156,6 +166,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         }
         arguments.put("sql", classificationResult.getNormalizedSql());
         arguments.put("execution_mode", EXECUTION_MODE_EXECUTE);
+        arguments.put(APPROVED_BY_USER, true);
         return arguments;
     }
 
@@ -169,6 +180,7 @@ public final class ExecuteUpdateToolHandler implements MCPToolHandler<MCPDatabas
         }
         result.put("sql", "server_generated");
         result.put("execution_mode", "server_defaulted");
+        result.put(APPROVED_BY_USER, "user_provided");
         return result;
     }
 

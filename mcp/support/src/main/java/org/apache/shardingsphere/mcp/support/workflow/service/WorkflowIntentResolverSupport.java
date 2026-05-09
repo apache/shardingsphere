@@ -30,7 +30,9 @@ import java.util.Locale;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class WorkflowIntentResolverSupport {
-    
+
+    private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
+
     /**
      * Resolve workflow operation type from explicit fields and heuristics.
      *
@@ -40,7 +42,7 @@ public final class WorkflowIntentResolverSupport {
     public static String resolveOperationType(final WorkflowRequest request) {
         return resolveOperationType(request, null);
     }
-    
+
     /**
      * Resolve workflow operation type from explicit fields and heuristics.
      *
@@ -62,7 +64,7 @@ public final class WorkflowIntentResolverSupport {
         }
         return recordInferredValue(clarifiedIntent, "operation_type", "create");
     }
-    
+
     /**
      * Resolve field semantics from explicit fields and heuristics.
      *
@@ -72,7 +74,7 @@ public final class WorkflowIntentResolverSupport {
     public static String resolveFieldSemantics(final WorkflowRequest request) {
         return resolveFieldSemantics(request, null);
     }
-    
+
     /**
      * Resolve field semantics from explicit fields and heuristics.
      *
@@ -121,7 +123,19 @@ public final class WorkflowIntentResolverSupport {
         }
         return recordInferredValue(clarifiedIntent, "field_semantics", columnName);
     }
-    
+
+    static String resolveExecutionMode(final WorkflowRequest request, final ClarifiedIntent clarifiedIntent) {
+        String actualExecutionMode = request.getExecutionMode().toLowerCase(Locale.ENGLISH);
+        if (!actualExecutionMode.isEmpty()) {
+            return actualExecutionMode;
+        }
+        String naturalLanguageIntent = getNaturalLanguageIntent(request);
+        return containsAny(naturalLanguageIntent, "manual", "manual-only", "manual only", "manual execution", "manual artifacts",
+                "export", "outside mcp", "without applying", "do not apply", "no runtime side effects", "side effects out of mcp",
+                "手动", "手工", "人工", "导出", "不要执行", "不执行", "不要应用", "不应用", "不产生副作用")
+                ? recordInferredValue(clarifiedIntent, "execution_mode", EXECUTION_MODE_MANUAL_ONLY) : "";
+    }
+
     /**
      * Create one reasoning summary for workflow intent resolution.
      *
@@ -142,11 +156,11 @@ public final class WorkflowIntentResolverSupport {
         result.append('.');
         return result.toString();
     }
-    
+
     private static String getNaturalLanguageIntent(final WorkflowRequest request) {
         return request.getNaturalLanguageIntent().toLowerCase(Locale.ENGLISH);
     }
-    
+
     private static boolean containsAny(final String value, final String... candidates) {
         for (String each : candidates) {
             if (value.contains(each)) {
@@ -155,7 +169,7 @@ public final class WorkflowIntentResolverSupport {
         }
         return false;
     }
-    
+
     private static String recordInferredValue(final ClarifiedIntent clarifiedIntent, final String fieldName, final String value) {
         if (null != clarifiedIntent) {
             clarifiedIntent.getInferredValues().put(fieldName, value);

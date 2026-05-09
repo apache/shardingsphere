@@ -37,9 +37,6 @@ final class LLMMCPSafetyValidator {
         if (MCPInteractionActionNames.GET_PROMPT.equals(actionName) && Objects.toString(arguments.get("name"), "").trim().isEmpty()) {
             return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.PROMPT_GET_KIND, "invalid_tool_arguments", "Model returned an empty prompt name."));
         }
-        if (MCPInteractionActionNames.COMPLETE.equals(actionName) && !isValidCompletionArguments(arguments)) {
-            return Optional.of(new LLMMCPToolCallValidationFailure(MCPInteractionActionNames.COMPLETION_KIND, "invalid_tool_arguments", "Model returned invalid completion arguments."));
-        }
         if ("execute_query".equals(actionName) && !isReadOnlyQuery(arguments)) {
             return Optional.of(new LLMMCPToolCallValidationFailure("tool_call", "unsafe_sql_attempted", "Model attempted a non-read-only SQL statement."));
         }
@@ -63,10 +60,5 @@ final class LLMMCPSafetyValidator {
     private boolean isSafeWorkflowExecutionMode(final Map<String, Object> arguments) {
         String executionMode = Objects.toString(arguments.get("execution_mode"), "");
         return EXECUTION_MODE_PREVIEW.equals(executionMode) || EXECUTION_MODE_MANUAL_ONLY.equals(executionMode);
-    }
-    
-    private boolean isValidCompletionArguments(final Map<String, Object> arguments) {
-        return arguments.get("reference") instanceof Map && !LLMMCPJsonValues.castToMap(arguments.get("reference")).isEmpty()
-                && !Objects.toString(arguments.get("argument_name"), "").trim().isEmpty();
     }
 }

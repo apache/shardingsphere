@@ -154,7 +154,7 @@ abstract class ProductionH2RuntimeSmokeE2ETest extends AbstractTransportParamete
     }
 
     protected static Map<String, Object> createExecuteUpdateArguments(final String sql) {
-        return Map.of("database", "logic_db", "schema", "public", "sql", sql, "execution_mode", "execute");
+        return Map.of("database", "logic_db", "schema", "public", "sql", sql, "execution_mode", "execute", "approved_by_user", true);
     }
 
     protected String getJdbcUrl() {

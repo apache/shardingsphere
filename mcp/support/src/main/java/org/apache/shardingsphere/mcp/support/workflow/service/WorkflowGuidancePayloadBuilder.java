@@ -87,12 +87,12 @@ public final class WorkflowGuidancePayloadBuilder {
      */
     public static void appendApplyGuidance(final Map<String, Object> payload, final String status) {
         List<Map<String, Object>> nextActions = new LinkedList<>();
-        if (WorkflowLifecycle.STATUS_COMPLETED.equals(status) || WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
+        if (WorkflowLifecycle.STATUS_COMPLETED.equals(status)) {
             nextActions.add(createToolAction(VALIDATE_WORKFLOW, "Validate the runtime state after workflow artifacts are applied or exported.",
                     Map.of("plan_id", Objects.toString(payload.get("plan_id"), "")), false));
         }
         if (WorkflowLifecycle.STATUS_AWAITING_MANUAL_EXECUTION.equals(status)) {
-            nextActions.add(0, createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", true, List.of("manual_artifacts_executed")));
+            nextActions.add(createUserAction("Confirm the manual artifacts were executed outside MCP before validation.", true, List.of("manual_artifacts_executed")));
         }
         if (WorkflowLifecycle.STATUS_FAILED.equals(status)) {
             nextActions.add(createUserAction("Inspect issues and retry apply_workflow only after the failed artifact is corrected.", true, List.of("issues")));

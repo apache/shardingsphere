@@ -26,7 +26,7 @@ Model path:
 1. Read shardingsphere://databases/{{database}}/capabilities before execution when statement support is uncertain.
 2. Use execute_query only for one SELECT or EXPLAIN ANALYZE statement.
 3. Use execute_update with execution_mode=preview for DML, DDL, DCL, transaction control, or savepoint statements before asking the user for approval.
-4. After the user approves the preview, call execute_update with execution_mode=execute and the reviewed SQL.
+4. After the user approves the preview, call execute_update with execution_mode=execute, approved_by_user=true, and the reviewed SQL.
 5. Never split or batch multiple SQL statements into one MCP call.
 
 Ask-user conditions:

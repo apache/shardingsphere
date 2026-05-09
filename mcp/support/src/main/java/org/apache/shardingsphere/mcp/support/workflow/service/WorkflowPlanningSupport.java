@@ -70,6 +70,7 @@ public final class WorkflowPlanningSupport {
     public <T extends WorkflowRequest> T prepareSnapshot(final WorkflowContextSnapshot snapshot, final WorkflowKind workflowKind, final T request, final WorkflowFeatureData featureData,
                                                          final ClarifiedIntent clarifiedIntent, final String summary,
                                                          final List<String> interactionSteps, final List<String> validationLayers) {
+        request.setExecutionMode(WorkflowIntentResolverSupport.resolveExecutionMode(request, clarifiedIntent));
         snapshot.setWorkflowKind(workflowKind);
         snapshot.setRequest(request);
         snapshot.setFeatureData(featureData);

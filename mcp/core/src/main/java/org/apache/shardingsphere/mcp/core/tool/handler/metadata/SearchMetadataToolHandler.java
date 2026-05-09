@@ -234,11 +234,10 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     
     private Map<String, Object> createBroadenedSearchArguments(final MetadataSearchRequest request) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        if (!request.getDatabase().isEmpty()) {
-            result.put("database", request.getDatabase());
-        }
         if (!request.getQuery().isEmpty()) {
             result.put("query", request.getQuery());
+        } else if (!request.getDatabase().isEmpty()) {
+            result.put("database", request.getDatabase());
         }
         return result;
     }

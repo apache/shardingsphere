@@ -32,11 +32,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @EnabledIf("isEnabled")
 class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
-    
+
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
     }
-    
+
     @Test
     void assertExecuteSelectOverHttpSession() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -48,7 +48,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("result_kind")), is("result_set"));
     }
-    
+
     @Test
     void assertRejectCrossDatabaseTransactionSwitch() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -61,7 +61,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("transaction_state_error"));
     }
-    
+
     @Test
     void assertExecuteSingleStatementValidation() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -73,7 +73,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         Map<String, Object> payload = getStructuredContent(actual.body());
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
     }
-    
+
     @Test
     void assertRejectMissingRequiredSqlArgument() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -85,7 +85,7 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
         assertThat(String.valueOf(payload.get("message")), is("sql is required."));
     }
-    
+
     @Test
     void assertRejectUnsupportedTool() throws IOException, InterruptedException {
         launchHttpTransport();
@@ -97,15 +97,15 @@ class ExecuteQueryTransactionE2ETest extends AbstractHttpProgrammaticRuntimeE2ET
         assertThat(String.valueOf(payload.get("error_code")), is("json_rpc_error"));
         assertFalse(String.valueOf(payload.get("message")).isEmpty());
     }
-    
+
     private Map<String, Object> createExecuteSQLArguments(final String databaseName, final String schemaName, final String sql) {
-        return Map.of("database", databaseName, "schema", schemaName, "sql", sql, "execution_mode", "execute");
+        return Map.of("database", databaseName, "schema", schemaName, "sql", sql, "execution_mode", "execute", "approved_by_user", true);
     }
-    
+
     private Map<String, Object> createExecuteQueryArguments(final String databaseName, final String schemaName, final String sql) {
         return createExecuteQueryArguments(databaseName, schemaName, sql, -1);
     }
-    
+
     private Map<String, Object> createExecuteQueryArguments(final String databaseName, final String schemaName, final String sql, final int maxRows) {
         return -1 == maxRows
                 ? Map.of("database", databaseName, "schema", schemaName, "sql", sql)

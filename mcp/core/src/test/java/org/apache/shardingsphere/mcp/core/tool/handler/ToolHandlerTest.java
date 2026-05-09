@@ -39,6 +39,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ToolHandlerTest {
@@ -138,7 +139,8 @@ class ToolHandlerTest {
             Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualPayload.get("next_actions")).get(0);
             assertThat(actualNextAction.get("type"), is("tool_call"));
             assertThat(actualNextAction.get("tool_name"), is("search_metadata"));
-            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("database"), is("logic_db"));
+            assertThat(((Map<?, ?>) actualNextAction.get("arguments")).get("query"), is("missing"));
+            assertFalse(((Map<?, ?>) actualNextAction.get("arguments")).containsKey("database"));
         }
     }
     

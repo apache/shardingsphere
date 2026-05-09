@@ -98,7 +98,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     private List<Map<String, Object>> createNextActions(final boolean hasConfiguredDatabase) {
         Map<String, Object> capabilityAction = MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read the full capability catalog before choosing tools.");
         if (hasConfiguredDatabase) {
-            return List.of(capabilityAction);
+            return List.of();
         }
         return MCPNextActionUtils.ordered(capabilityAction, MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
                 "Ask the operator to configure at least one runtimeDatabases entry before metadata discovery or SQL execution.", List.of("runtimeDatabases"), false), 1));
