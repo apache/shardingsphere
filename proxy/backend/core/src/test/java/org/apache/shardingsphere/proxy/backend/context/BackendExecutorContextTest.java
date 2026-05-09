@@ -48,7 +48,7 @@ class BackendExecutorContextTest {
     
     @AfterEach
     void tearDown() {
-        BackendExecutorContext.getInstance().close();
+        BackendExecutorContext.getInstance().shutdown();
     }
     
     @Test
@@ -66,19 +66,8 @@ class BackendExecutorContextTest {
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
         BackendExecutorContext.getInstance().init();
         ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
-        BackendExecutorContext.getInstance().close();
         BackendExecutorContext.getInstance().init();
         assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(actual)));
-    }
-    
-    @Test
-    void assertClose() {
-        ContextManager contextManager = mockContextManager();
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
-        BackendExecutorContext.getInstance().init();
-        BackendExecutorContext.getInstance().close();
-        ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
-        assertThat(actual, is(BackendExecutorContext.getInstance().getExecutorEngine()));
     }
     
     @Test
@@ -88,6 +77,18 @@ class BackendExecutorContextTest {
         BackendExecutorContext.getInstance().init();
         BackendExecutorContext.getInstance().shutdown();
         assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
+    }
+    
+    @Test
+    void assertInitAfterShutdown() {
+        ContextManager contextManager = mockContextManager();
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
+        final ExecutorEngine actual = BackendExecutorContext.getInstance().getExecutorEngine();
+        BackendExecutorContext.getInstance().shutdown();
+        assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
+        BackendExecutorContext.getInstance().init();
+        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(actual)));
     }
     
     private ContextManager mockContextManager() {

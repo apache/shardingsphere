@@ -51,6 +51,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.executor.ProxyJDBCExecutor;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.connector.sane.DialectSaneQueryResultEngine;
+import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.enums.TransactionIsolationLevel;
@@ -71,6 +72,7 @@ import org.apache.shardingsphere.test.infra.framework.extension.mock.StaticMockS
 import org.apache.shardingsphere.transaction.api.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionHook;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -185,6 +187,12 @@ class ProxySQLExecutorTest {
         when(contextManager.getDatabase("foo_db")).thenReturn(database);
         when(contextManager.getDatabaseType()).thenReturn(fixtureDatabaseType);
         when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
+    }
+    
+    @AfterEach
+    void tearDown() {
+        BackendExecutorContext.getInstance().shutdown();
     }
     
     @Test

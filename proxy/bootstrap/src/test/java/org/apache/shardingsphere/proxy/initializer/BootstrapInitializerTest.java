@@ -133,7 +133,7 @@ class BootstrapInitializerTest {
     }
     
     @Test
-    void assertInitWithRepeatedLifecycle() throws SQLException, ReflectiveOperationException {
+    void assertInitWithRepeatedBootstrap() throws SQLException, ReflectiveOperationException {
         InstanceMetaDataBuilder instanceMetaDataBuilder = mock(InstanceMetaDataBuilder.class);
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         registerSingletonService(InstanceMetaDataBuilder.class, instanceMetaDataBuilder);

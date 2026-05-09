@@ -45,11 +45,12 @@ public final class BackendExecutorContext {
     
     /**
      * Initialize backend executor context.
+     *
+     * <p>The proxy bootstrap lifecycle uses this method to create a fresh backend executor.
+     * It may explicitly restore the context from the closed state for repeated proxy lifecycles in the same JVM.</p>
      */
     public synchronized void init() {
-        if (null != executorEngine) {
-            executorEngine.close();
-        }
+        closeExecutorEngine();
         executorEngine = ExecutorEngine.createExecutorEngineWithSize(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE));
         lifecycleState = LifecycleState.RUNNING;
@@ -75,22 +76,20 @@ public final class BackendExecutorContext {
     }
     
     /**
-     * Close backend executor context.
+     * Shutdown backend executor context.
+     *
+     * <p>After shutdown, request-side executor lookup is rejected until the next explicit lifecycle initialization.</p>
      */
-    public synchronized void close() {
+    public synchronized void shutdown() {
+        closeExecutorEngine();
+        lifecycleState = LifecycleState.CLOSED;
+    }
+    
+    private void closeExecutorEngine() {
         if (null != executorEngine) {
             executorEngine.close();
             executorEngine = null;
         }
-        lifecycleState = LifecycleState.UNINITIALIZED;
-    }
-    
-    /**
-     * Shutdown backend executor context.
-     */
-    public synchronized void shutdown() {
-        close();
-        lifecycleState = LifecycleState.CLOSED;
     }
     
     private enum LifecycleState {

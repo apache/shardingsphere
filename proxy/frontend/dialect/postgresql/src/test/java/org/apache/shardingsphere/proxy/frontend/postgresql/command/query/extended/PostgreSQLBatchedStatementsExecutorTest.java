@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.context.statement.type.dml.InsertS
 import org.apache.shardingsphere.infra.binder.context.statement.type.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -41,6 +42,7 @@ import org.apache.shardingsphere.infra.spi.type.typed.TypedSPILoader;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.connector.ProxyDatabaseConnectionManager;
 import org.apache.shardingsphere.proxy.backend.connector.jdbc.statement.JDBCBackendStatement;
+import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.assignment.SetAssignmentSegment;
@@ -73,7 +75,9 @@ import java.util.Properties;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -115,7 +119,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
                 new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
                 Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        initBackendExecutorContext(contextManager);
         PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgresqlPreparedStatement, parameterSets);
         prepareExecutionUnitParameters(actual, parameterSets);
         int actualUpdated = actual.executeBatch();
@@ -126,6 +130,32 @@ class PostgreSQLBatchedStatementsExecutorTest {
             inOrder.verify(preparedStatement).setObject(2, each.get(1).toString());
             inOrder.verify(preparedStatement).addBatch();
         }
+    }
+    
+    @Test
+    void assertExecuteBatchAfterRepeatedProxyLifecycle() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:postgresql://127.0.0.1/db");
+        when(databaseConnectionManager.getConnections(any(), nullable(String.class), anyInt(), anyInt(), any(ConnectionMode.class))).thenReturn(Collections.singletonList(connection));
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+        when(preparedStatement.getConnection()).thenReturn(connection);
+        when(preparedStatement.executeBatch()).thenReturn(new int[]{1, 1, 1});
+        when(backendStatement.createStorageResource(any(ExecutionUnit.class), eq(connection), anyInt(), any(ConnectionMode.class), any(StatementOption.class), nullable(DatabaseType.class)))
+                .thenReturn(preparedStatement);
+        ContextManager contextManager = mockContextManager(databaseType);
+        initBackendExecutorContext(contextManager);
+        final ExecutorEngine previousExecutorEngine = BackendExecutorContext.getInstance().getExecutorEngine();
+        BackendExecutorContext.getInstance().shutdown();
+        assertThrows(IllegalStateException.class, () -> BackendExecutorContext.getInstance().getExecutorEngine());
+        BackendExecutorContext.getInstance().init();
+        assertThat(BackendExecutorContext.getInstance().getExecutorEngine(), is(not(previousExecutorEngine)));
+        PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
+                new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
+        List<List<Object>> parameterSets = Arrays.asList(Arrays.asList(1, new PostgreSQLTypeUnspecifiedSQLParameter("foo")),
+                Arrays.asList(2, new PostgreSQLTypeUnspecifiedSQLParameter("bar")), Arrays.asList(3, new PostgreSQLTypeUnspecifiedSQLParameter("baz")));
+        PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(mockConnectionSession(), postgresqlPreparedStatement, parameterSets);
+        prepareExecutionUnitParameters(actual, parameterSets);
+        assertThat(actual.executeBatch(), is(3));
     }
     
     @Test
@@ -143,7 +173,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("UPDATE t SET col = ? WHERE id = ?", mockUpdateStatementContext(),
                 new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
         List<List<Object>> parameterSets = Collections.singletonList(Arrays.asList(10, "foo"));
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        initBackendExecutorContext(contextManager);
         PostgreSQLBatchedStatementsExecutor actual = new PostgreSQLBatchedStatementsExecutor(connectionSession, postgresqlPreparedStatement, parameterSets);
         prepareExecutionUnitParameters(actual, parameterSets);
         try {
@@ -165,7 +195,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     @Test
     void assertCreateExecutorWithoutParameterSets() throws ReflectiveOperationException {
         ContextManager contextManager = mockContextManager(databaseType);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        initBackendExecutorContext(contextManager);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("INSERT INTO t (id, col) VALUES (?, ?)", mockInsertStatementContext(),
                 new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
@@ -182,7 +212,7 @@ class PostgreSQLBatchedStatementsExecutorTest {
     @Test
     void assertPrepareForRestOfParametersWithoutParameterAware() throws ReflectiveOperationException {
         ContextManager contextManager = mockContextManager(databaseType);
-        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        initBackendExecutorContext(contextManager);
         ConnectionSession connectionSession = mockConnectionSession();
         PostgreSQLServerPreparedStatement postgresqlPreparedStatement = new PostgreSQLServerPreparedStatement("UPDATE t SET col = ? WHERE id = ?", mockUpdateStatementContext(),
                 new HintValueContext(), Arrays.asList(PostgreSQLBinaryColumnType.INT4, PostgreSQLBinaryColumnType.VARCHAR), Arrays.asList(0, 1));
@@ -192,6 +222,11 @@ class PostgreSQLBatchedStatementsExecutorTest {
                 .get(PostgreSQLBatchedStatementsExecutor.class.getDeclaredField("executionUnitParams"), actual);
         int actualParamGroups = executionUnitParams.values().stream().mapToInt(List::size).sum();
         assertThat(actualParamGroups, is(2));
+    }
+    
+    private void initBackendExecutorContext(final ContextManager contextManager) {
+        when(ProxyContext.getInstance().getContextManager()).thenReturn(contextManager);
+        BackendExecutorContext.getInstance().init();
     }
     
     private InsertStatementContext mockInsertStatementContext() {
