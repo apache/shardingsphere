@@ -38,6 +38,15 @@
         </assertion>
     </test-case>
     
+    <test-case sql="CREATE ENCRYPT RULE t_user_recreated (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))));" db-types="MySQL, PostgreSQL">
+        <assertion expected-data-file="create_recreated_encrypt_rule.xml">
+            <initial-sql sql="CREATE ENCRYPT RULE t_user_recreated (COLUMNS((NAME=pwd,CIPHER=pwd_cipher,ENCRYPT_ALGORITHM(TYPE(NAME='AES',PROPERTIES('aes-key-value'='123456abc', 'digest-algorithm-name'='SHA-1'))))));
+            DROP ENCRYPT RULE t_user_recreated;" />
+            <assertion-sql sql="SHOW ENCRYPT TABLE RULE t_user_recreated;" />
+            <destroy-sql sql="DROP ENCRYPT RULE t_user_recreated " />
+        </assertion>
+    </test-case>
+
     <test-case sql="CREATE TABLE temp (country_id INT PRIMARY KEY, country_name VARCHAR(50), continent_name VARCHAR(50), creation_date DATE NOT NULL);" db-types="MySQL, PostgreSQL">
         <assertion expected-data-file="create_single_table_rules.xml">
             <initial-sql sql="CREATE SHARDING TABLE RULE t_order (DATANODES('ds_2.t_order_${0..3}'),TABLE_STRATEGY(TYPE='standard',SHARDING_COLUMN=order_id,SHARDING_ALGORITHM(TYPE(NAME='inline',PROPERTIES('algorithm-expression'='t_order_${order_id % 4}')))));
