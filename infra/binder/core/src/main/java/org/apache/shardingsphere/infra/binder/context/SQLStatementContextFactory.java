@@ -100,6 +100,7 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof InsertStatement) {
             return new InsertStatementContext((InsertStatement) sqlStatement, metaData, currentDatabaseName);
         }
+        
         return new CommonSQLStatementContext(sqlStatement);
     }
     

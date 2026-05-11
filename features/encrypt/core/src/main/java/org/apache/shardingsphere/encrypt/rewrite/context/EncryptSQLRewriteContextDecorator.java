@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.common.generator.builde
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.predicate.WhereSegment;
 import org.apache.shardingsphere.sql.parser.statement.core.segment.generic.table.SimpleTableSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.MergeStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -64,6 +65,11 @@ public final class EncryptSQLRewriteContextDecorator implements SQLRewriteContex
     }
     
     private boolean containsEncryptTable(final EncryptRule rule, final SQLStatementContext sqlStatementContext) {
+        if (sqlStatementContext.getSqlStatement() instanceof MergeStatement) {
+            MergeStatement mergeStatement = (MergeStatement) sqlStatementContext.getSqlStatement();
+            return mergeStatement.getTarget() instanceof SimpleTableSegment
+                    && rule.findEncryptTable(((SimpleTableSegment) mergeStatement.getTarget()).getTableName().getIdentifier().getValue()).isPresent();
+        }
         for (SimpleTableSegment each : sqlStatementContext.getTablesContext().getSimpleTables()) {
             if (rule.findEncryptTable(each.getTableName().getIdentifier().getValue()).isPresent()) {
                 return true;

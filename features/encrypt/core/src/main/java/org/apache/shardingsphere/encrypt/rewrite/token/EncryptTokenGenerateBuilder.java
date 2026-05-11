@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptI
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptInsertDerivedColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptInsertOnUpdateTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.insert.EncryptInsertValuesTokenGenerator;
+import org.apache.shardingsphere.encrypt.rewrite.token.generator.merge.EncryptMergeTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate.EncryptInsertPredicateColumnTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate.EncryptInsertPredicateValueTokenGenerator;
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.predicate.EncryptPredicateColumnTokenGenerator;
@@ -77,6 +78,7 @@ public final class EncryptTokenGenerateBuilder implements SQLTokenGeneratorBuild
         addSQLTokenGenerator(result, new EncryptInsertCipherNameTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertDerivedColumnsTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptInsertOnUpdateTokenGenerator(rule, database));
+        addSQLTokenGenerator(result, new EncryptMergeTokenGenerator(rule, database));
         addSQLTokenGenerator(result, new EncryptGroupByItemTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptIndexColumnTokenGenerator(rule));
         addSQLTokenGenerator(result, new EncryptCreateTableTokenGenerator(rule));
