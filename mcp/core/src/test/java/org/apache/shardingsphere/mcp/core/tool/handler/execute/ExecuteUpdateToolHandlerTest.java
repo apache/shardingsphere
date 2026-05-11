@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 class ExecuteUpdateToolHandlerTest {
-
+    
     @Test
     void assertHandleUpdateStatement() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -63,7 +63,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(requestCaptor.getValue().getMaxRows(), is(100));
         assertThat(requestCaptor.getValue().getTimeoutMs(), is(0));
     }
-
+    
     @Test
     void assertRejectUnapprovedExecution() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -74,7 +74,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("execute_update approved_by_user=true is required for real side effects."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertRejectMissingExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -85,7 +85,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("execute_update execution_mode is required."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertRejectReadOnlyQuery() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -96,7 +96,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("execute_update does not accept read-only SQL. Use execute_query for read-only SQL."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertPreviewUpdateStatementWithoutExecuting() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -134,7 +134,7 @@ class ExecuteUpdateToolHandlerTest {
         assertFalse(actual.toPayload().containsKey("recommended_next_call"));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertRejectUnknownExecutionMode() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);
@@ -145,7 +145,7 @@ class ExecuteUpdateToolHandlerTest {
         assertThat(actual.getMessage(), is("execute_update execution_mode must be one of [execute, preview]."));
         verifyNoInteractions(executionFacade);
     }
-
+    
     @Test
     void assertRejectExplainAnalyze() {
         MCPFeatureExecutionFacade executionFacade = mock(MCPFeatureExecutionFacade.class);

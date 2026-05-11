@@ -31,29 +31,29 @@ import java.util.Map;
  */
 @Getter
 public final class MCPToolValueDefinition {
-
+    
     private final Type type;
-
+    
     private final String description;
-
+    
     private final MCPToolValueDefinition itemDefinition;
-
+    
     private final Collection<String> enumValues;
-
+    
     private final Collection<MCPToolFieldDefinition> objectProperties;
-
+    
     private final boolean additionalProperties;
-
+    
     private final Object defaultValue;
-
+    
     private final Integer minimumValue;
-
+    
     private final Integer maximumValue;
-
+    
     private final Collection<Object> examples;
-
+    
     private final String pattern;
-
+    
     @Builder
     private MCPToolValueDefinition(final Type type, final String description, final MCPToolValueDefinition itemDefinition, final Collection<String> enumValues,
                                    final Collection<MCPToolFieldDefinition> objectProperties, final Boolean additionalProperties, final Object defaultValue,
@@ -70,7 +70,7 @@ public final class MCPToolValueDefinition {
         this.examples = null == examples ? Collections.emptyList() : examples;
         this.pattern = null == pattern ? "" : pattern;
     }
-
+    
     /**
      * Create string value definition.
      *
@@ -80,7 +80,7 @@ public final class MCPToolValueDefinition {
     public static MCPToolValueDefinition string(final String description) {
         return builder().type(Type.STRING).description(description).build();
     }
-
+    
     /**
      * Create enum string value definition.
      *
@@ -91,7 +91,7 @@ public final class MCPToolValueDefinition {
     public static MCPToolValueDefinition stringEnum(final String description, final Collection<String> enumValues) {
         return builder().type(Type.STRING).description(description).enumValues(enumValues).build();
     }
-
+    
     /**
      * Create integer value definition.
      *
@@ -101,7 +101,7 @@ public final class MCPToolValueDefinition {
     public static MCPToolValueDefinition integer(final String description) {
         return builder().type(Type.INTEGER).description(description).build();
     }
-
+    
     /**
      * Create array value definition.
      *
@@ -112,7 +112,7 @@ public final class MCPToolValueDefinition {
     public static MCPToolValueDefinition array(final String description, final MCPToolValueDefinition itemDefinition) {
         return builder().type(Type.ARRAY).description(description).itemDefinition(itemDefinition).build();
     }
-
+    
     /**
      * Create boolean value definition.
      *
@@ -122,7 +122,7 @@ public final class MCPToolValueDefinition {
     public static MCPToolValueDefinition bool(final String description) {
         return builder().type(Type.BOOLEAN).description(description).build();
     }
-
+    
     /**
      * Create object value definition.
      *
@@ -132,7 +132,7 @@ public final class MCPToolValueDefinition {
     public static MCPToolValueDefinition object(final String description) {
         return builder().type(Type.OBJECT).description(description).build();
     }
-
+    
     /**
      * Create object value definition.
      *
@@ -144,7 +144,7 @@ public final class MCPToolValueDefinition {
     public static MCPToolValueDefinition object(final String description, final Collection<MCPToolFieldDefinition> objectProperties, final boolean additionalProperties) {
         return builder().type(Type.OBJECT).description(description).objectProperties(objectProperties).additionalProperties(additionalProperties).build();
     }
-
+    
     /**
      * To schema fragment.
      *
@@ -159,7 +159,7 @@ public final class MCPToolValueDefinition {
             case OBJECT -> toObjectSchemaFragment();
         };
     }
-
+    
     private Map<String, Object> toScalarSchemaFragment(final String type) {
         final Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("type", type);
@@ -170,7 +170,7 @@ public final class MCPToolValueDefinition {
         appendSchemaAttributes(result);
         return result;
     }
-
+    
     private Map<String, Object> toArraySchemaFragment() {
         final Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("type", "array");
@@ -179,7 +179,7 @@ public final class MCPToolValueDefinition {
         appendSchemaAttributes(result);
         return result;
     }
-
+    
     private Map<String, Object> toObjectSchemaFragment() {
         final Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("type", "object");
@@ -203,7 +203,7 @@ public final class MCPToolValueDefinition {
         appendSchemaAttributes(result);
         return result;
     }
-
+    
     private void appendSchemaAttributes(final Map<String, Object> result) {
         if (null != defaultValue) {
             result.put("default", defaultValue);
@@ -221,20 +221,20 @@ public final class MCPToolValueDefinition {
             result.put("pattern", pattern);
         }
     }
-
+    
     /**
      * Tool value type.
      */
     public enum Type {
-
+        
         STRING,
-
+        
         INTEGER,
-
+        
         ARRAY,
-
+        
         BOOLEAN,
-
+        
         OBJECT
     }
 }

@@ -36,6 +36,10 @@ public final class LLMUsabilityScorecard {
     
     private final double taskSuccessRate;
     
+    private final double naturalTaskSuccessRate;
+    
+    private final double protocolContractSuccessRate;
+    
     private final double firstCorrectActionRate;
     
     private final double invalidCallRate;
@@ -53,6 +57,10 @@ public final class LLMUsabilityScorecard {
     private final double nextActionFollowRate;
     
     private final double approvalViolationRate;
+    
+    private final double nativeToolCallRate;
+    
+    private final double harnessRecoveryRate;
     
     private final List<LLMUsabilityScenarioResult> scenarioResults;
 }

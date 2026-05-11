@@ -66,7 +66,7 @@ class PackagedDistributionSmokeE2ETest {
         try (
                 PackagedDistributionHttpRuntime runtime = new PackagedDistributionHttpRuntime(distribution);
                 MCPInteractionClient interactionClient = runtime.openInteractionClient()) {
-            assertOfficialPackagedRuntime(distribution.home(), interactionClient);
+            assertOfficialPackagedRuntime(distribution.home(), RuntimeTransport.HTTP, interactionClient);
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE", "VIEW"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items", "active_orders"));
@@ -81,7 +81,7 @@ class PackagedDistributionSmokeE2ETest {
         PreparedPackagedDistribution distribution = PackagedDistributionTestSupport.prepare(tempDir.resolve("stdio"), RuntimeTransport.STDIO);
         try (MCPInteractionClient interactionClient = new PackagedDistributionStdioInteractionClient(distribution.home(), distribution.configFile())) {
             interactionClient.open();
-            assertOfficialPackagedRuntime(distribution.home(), interactionClient);
+            assertOfficialPackagedRuntime(distribution.home(), RuntimeTransport.STDIO, interactionClient);
             List<String> actualSearchItems = getItemNames(interactionClient.call("search_metadata",
                     Map.of("database", "orders", "query", "order", "object_types", List.of("TABLE"))));
             assertThat(actualSearchItems, hasItems("orders", "order_items"));
@@ -101,13 +101,39 @@ class PackagedDistributionSmokeE2ETest {
         assertFalse(Files.exists(distributionHome.resolve("ext-lib")));
     }
     
-    private void assertOfficialPackagedRuntime(final Path distributionHome, final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
+    private void assertOfficialPackagedRuntime(final Path distributionHome, final RuntimeTransport transport,
+                                               final MCPInteractionClient interactionClient) throws IOException, InterruptedException {
         assertBootstrapDirectoriesCreated(distributionHome);
         assertLegacyExtensionDirectoryRemoved(distributionHome);
         assertOfficialFeatureJarsPackaged(distributionHome);
+        assertRuntimeDiagnostics(interactionClient.readResource("shardingsphere://runtime"), transport);
         assertDatabaseNames(interactionClient.readResource("shardingsphere://databases"), "orders", "billing");
         assertSupportedTools(interactionClient.readResource("shardingsphere://capabilities").get("supportedTools"));
         assertOfficialToolNames(interactionClient.listTools().stream().map(each -> String.valueOf(each.get("name"))).toList());
+    }
+    
+    private void assertRuntimeDiagnostics(final Map<String, Object> runtimeStatus, final RuntimeTransport transport) {
+        assertThat(runtimeStatus.get("status"), is("available"));
+        assertThat(runtimeStatus.get("active_transport"), is(getTransportName(transport)));
+        Map<String, Object> actualRedactionSummary = MCPInteractionPayloads.castToMap(runtimeStatus.get("redaction_summary"));
+        assertThat(actualRedactionSummary.get("marker"), is("******"));
+        Map<String, Object> actualDiagnostics = MCPInteractionPayloads.castToMap(runtimeStatus.get("diagnostics"));
+        assertThat(actualDiagnostics.get("current_category"), is("ready"));
+        assertTrue(((List<?>) actualDiagnostics.get("safe_categories")).contains("invalid_configuration"));
+        assertTrue(MCPInteractionPayloads.castToList(actualDiagnostics.get("operator_next_actions")).stream().anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
+        assertRuntimeStatusSecretSafe(runtimeStatus);
+    }
+    
+    private String getTransportName(final RuntimeTransport transport) {
+        return RuntimeTransport.HTTP == transport ? "http" : "stdio";
+    }
+    
+    private void assertRuntimeStatusSecretSafe(final Map<String, Object> runtimeStatus) {
+        String actualPayload = String.valueOf(runtimeStatus);
+        assertFalse(actualPayload.contains("Authorization: Bearer"));
+        assertFalse(actualPayload.contains("runtime-secret"));
+        assertFalse(actualPayload.contains("jdbc:"));
+        assertFalse(actualPayload.contains("at org.apache."));
     }
     
     private void assertOfficialFeatureJarsPackaged(final Path distributionHome) throws IOException {

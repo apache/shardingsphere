@@ -33,7 +33,7 @@ import java.util.Optional;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPResourceNavigationPayloadBuilder {
-
+    
     /**
      * Create navigation payload from a resource descriptor.
      *
@@ -44,7 +44,7 @@ public final class MCPResourceNavigationPayloadBuilder {
     public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         return create(descriptor, uriVariables, "");
     }
-
+    
     /**
      * Create navigation payload from a resource descriptor and an explicit public parent URI template.
      *
@@ -61,11 +61,11 @@ public final class MCPResourceNavigationPayloadBuilder {
         parentUri.filter(uri -> !uri.isEmpty()).ifPresent(uri -> result.put("parent_resource", createParentResourceHint(uri)));
         return result;
     }
-
+    
     private static Map<String, Object> createParentResourceHint(final String uri) {
         return MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_parent", "Read the parent resource.", "parent_resource");
     }
-
+    
     private static String resolveResourceKind(final String uri) {
         if (uri.contains("/rules")) {
             return "rule";

@@ -49,6 +49,8 @@ public final class LLMUsabilityReportWriter {
         result.append("- overallScore: ").append(scorecard.getOverallScore()).append(System.lineSeparator());
         result.append("- fullScore: ").append(scorecard.isFullScore()).append(System.lineSeparator());
         result.append("- taskSuccessRate: ").append(scorecard.getTaskSuccessRate()).append(System.lineSeparator());
+        result.append("- naturalTaskSuccessRate: ").append(scorecard.getNaturalTaskSuccessRate()).append(System.lineSeparator());
+        result.append("- protocolContractSuccessRate: ").append(scorecard.getProtocolContractSuccessRate()).append(System.lineSeparator());
         result.append("- firstCorrectActionRate: ").append(scorecard.getFirstCorrectActionRate()).append(System.lineSeparator());
         result.append("- invalidCallRate: ").append(scorecard.getInvalidCallRate()).append(System.lineSeparator());
         result.append("- averageRoundTrips: ").append(scorecard.getAverageRoundTrips()).append(System.lineSeparator());
@@ -58,6 +60,8 @@ public final class LLMUsabilityReportWriter {
         result.append("- recoveryRate: ").append(scorecard.getRecoveryRate()).append(System.lineSeparator());
         result.append("- nextActionFollowRate: ").append(scorecard.getNextActionFollowRate()).append(System.lineSeparator());
         result.append("- approvalViolationRate: ").append(scorecard.getApprovalViolationRate()).append(System.lineSeparator());
+        result.append("- nativeToolCallRate: ").append(scorecard.getNativeToolCallRate()).append(System.lineSeparator());
+        result.append("- harnessRecoveryRate: ").append(scorecard.getHarnessRecoveryRate()).append(System.lineSeparator());
         result.append(System.lineSeparator()).append("## Scenario Results").append(System.lineSeparator());
         for (LLMUsabilityScenarioResult each : scorecard.getScenarioResults()) {
             result.append("- ").append(each.getScenarioId()).append(": ")

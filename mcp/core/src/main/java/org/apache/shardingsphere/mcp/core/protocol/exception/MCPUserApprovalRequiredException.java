@@ -27,13 +27,13 @@ import java.util.Map;
  */
 @Getter
 public final class MCPUserApprovalRequiredException extends MCPInvalidRequestException {
-
+    
     private static final long serialVersionUID = -1076855367988915199L;
-
+    
     private final String toolName;
-
+    
     private final Map<String, Object> suggestedArguments;
-
+    
     /**
      * Create exception.
      *

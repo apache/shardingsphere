@@ -29,9 +29,19 @@ import java.util.Map;
 @Getter
 public final class MCPInteractionTraceRecord {
     
+    public static final String MODEL_TOOL_CALL_ORIGIN = "model_tool_call";
+    
+    public static final String PROTOCOL_BRIDGE_ORIGIN = "protocol_bridge";
+    
+    public static final String HARNESS_TEXT_RECOVERY_ORIGIN = "harness_text_recovery";
+    
+    public static final String HARNESS_ARGUMENT_NORMALIZATION_ORIGIN = "harness_argument_normalization";
+    
     private final int sequence;
     
     private final String actionKind;
+    
+    private final String actionOrigin;
     
     private final String targetName;
     
@@ -44,19 +54,6 @@ public final class MCPInteractionTraceRecord {
     private final long latencyMillis;
     
     /**
-     * Create resource list.
-     *
-     * @param sequence sequence
-     * @param structuredContent structured content
-     * @param latencyMillis latency millis
-     * @return interaction trace record
-     */
-    public static MCPInteractionTraceRecord createResourceList(final int sequence, final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_LIST_KIND, MCPInteractionActionNames.LIST_RESOURCES,
-                Map.of(), structuredContent, true, latencyMillis);
-    }
-    
-    /**
      * Create resource read.
      *
      * @param sequence sequence
@@ -66,37 +63,8 @@ public final class MCPInteractionTraceRecord {
      * @return interaction trace record
      */
     public static MCPInteractionTraceRecord createResourceRead(final int sequence, final String resourceUri, final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, MCPInteractionActionNames.READ_RESOURCE,
+        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.RESOURCE_READ_KIND, PROTOCOL_BRIDGE_ORIGIN, MCPInteractionActionNames.READ_RESOURCE,
                 Map.of("uri", resourceUri), structuredContent, true, latencyMillis);
-    }
-    
-    /**
-     * Create prompt list.
-     *
-     * @param sequence sequence
-     * @param structuredContent structured content
-     * @param latencyMillis latency millis
-     * @return interaction trace record
-     */
-    public static MCPInteractionTraceRecord createPromptList(final int sequence, final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_LIST_KIND, MCPInteractionActionNames.LIST_PROMPTS,
-                Map.of(), structuredContent, true, latencyMillis);
-    }
-    
-    /**
-     * Create prompt get.
-     *
-     * @param sequence sequence
-     * @param promptName prompt name
-     * @param promptArguments prompt arguments
-     * @param structuredContent structured content
-     * @param latencyMillis latency millis
-     * @return interaction trace record
-     */
-    public static MCPInteractionTraceRecord createPromptGet(final int sequence, final String promptName, final Map<String, Object> promptArguments,
-                                                            final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.PROMPT_GET_KIND, MCPInteractionActionNames.GET_PROMPT,
-                Map.of("name", promptName, "arguments", promptArguments), structuredContent, true, latencyMillis);
     }
     
     /**
@@ -110,7 +78,7 @@ public final class MCPInteractionTraceRecord {
      */
     public static MCPInteractionTraceRecord createCompletion(final int sequence, final Map<String, Object> arguments,
                                                              final Map<String, Object> structuredContent, final long latencyMillis) {
-        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.COMPLETION_KIND, MCPInteractionActionNames.COMPLETE,
+        return new MCPInteractionTraceRecord(sequence, MCPInteractionActionNames.COMPLETION_KIND, PROTOCOL_BRIDGE_ORIGIN, MCPInteractionActionNames.COMPLETE,
                 arguments, structuredContent, true, latencyMillis);
     }
     
@@ -126,6 +94,6 @@ public final class MCPInteractionTraceRecord {
      */
     public static MCPInteractionTraceRecord createInvalidAction(final int sequence, final String actionKind, final String targetName,
                                                                 final Map<String, Object> arguments, final String failureType) {
-        return new MCPInteractionTraceRecord(sequence, actionKind, targetName, arguments, Map.of("error_code", failureType), false, 0L);
+        return new MCPInteractionTraceRecord(sequence, actionKind, MODEL_TOOL_CALL_ORIGIN, targetName, arguments, Map.of("error_code", failureType), false, 0L);
     }
 }

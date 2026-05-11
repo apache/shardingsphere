@@ -28,19 +28,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPResourceDescriptorTest {
-
+    
     @Test
     void assertIsTemplated() {
         assertTrue(new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json").isTemplated());
         assertFalse(new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", "application/json").isTemplated());
     }
-
+    
     @Test
     void assertGetUriTemplate() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json");
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases/{database}"));
     }
-
+    
     @Test
     void assertMetaDoesNotChangeTypedFields() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",

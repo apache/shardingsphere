@@ -24,6 +24,7 @@ import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.support.database.MCPDatabaseHandlerContext;
 import org.apache.shardingsphere.mcp.support.database.capability.MCPDatabaseCapability;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.descriptor.MCPDescriptorRegistry;
 import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
@@ -57,7 +58,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
     public MCPResponse handle(final MCPDatabaseHandlerContext handlerContext, final MCPUriVariables uriVariables) {
         List<MCPDatabaseMetadata> databases = handlerContext.getMetadataQueryFacade().queryDatabases();
         boolean hasConfiguredDatabase = !databases.isEmpty();
-        Map<String, Object> result = new LinkedHashMap<>(12, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(13, 1F);
         result.put("response_mode", MCPResponseMode.RUNTIME);
         result.put("server_status", hasConfiguredDatabase ? "ready" : "configuration_required");
         result.put("status", hasConfiguredDatabase ? "available" : "configuration_required");
@@ -67,6 +68,7 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
         result.put("databases", databases.stream().map(each -> createDatabaseStatus(handlerContext, each)).toList());
         result.put("readiness", createReadiness(hasConfiguredDatabase));
         result.put("redaction_summary", Map.of("categories", List.of(), "redacted_count", 0, "marker", "******"));
+        result.put("diagnostics", createDiagnostics(hasConfiguredDatabase));
         result.put("capability_fingerprint", MCPDescriptorRegistry.getDescriptorCatalogFingerprint());
         result.put("resources_to_read", createResourcesToRead(hasConfiguredDatabase));
         result.put("next_actions", createNextActions(hasConfiguredDatabase));
@@ -82,6 +84,43 @@ public final class RuntimeStatusHandler implements MCPResourceHandler<MCPDatabas
             return result;
         }
         result.put("reason", "No runtime databases are configured.");
+        return result;
+    }
+    
+    private Map<String, Object> createDiagnostics(final boolean hasConfiguredDatabase) {
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("current_category", hasConfiguredDatabase ? "ready" : RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION);
+        result.put("safe_categories", createSafeRuntimeCategories());
+        result.put("operator_next_actions", createDiagnosticOperatorActions());
+        result.put("secret_policy", "Expose only categories and operator actions; never expose JDBC URLs, credentials, raw environment variables, or stack traces.");
+        return result;
+    }
+    
+    private List<String> createSafeRuntimeCategories() {
+        return List.of(
+                RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER,
+                RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED,
+                RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT,
+                RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION,
+                RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE,
+                RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED);
+    }
+    
+    private List<Map<String, Object>> createDiagnosticOperatorActions() {
+        return List.of(
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER, "Install the configured runtime database JDBC driver."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED, "Check runtime database credentials outside MCP."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT, "Check database reachability and timeout settings."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION, "Fix runtimeDatabases databaseType, driver, or binding configuration."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE, "Check database service availability and network access."),
+                createDiagnosticOperatorAction(RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED, "Inspect runtime database connection settings outside MCP."));
+    }
+    
+    private Map<String, Object> createDiagnosticOperatorAction(final String category, final String operatorAction) {
+        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        result.put("category", category);
+        result.put("operator_action", operatorAction);
+        result.put("secret_safe", true);
         return result;
     }
     

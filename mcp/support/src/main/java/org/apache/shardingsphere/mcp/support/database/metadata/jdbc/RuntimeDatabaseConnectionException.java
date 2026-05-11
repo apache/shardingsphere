@@ -30,6 +30,18 @@ import java.util.Objects;
 @Getter
 public final class RuntimeDatabaseConnectionException extends RuntimeException {
     
+    public static final String CATEGORY_MISSING_JDBC_DRIVER = "missing_jdbc_driver";
+    
+    public static final String CATEGORY_AUTHENTICATION_FAILED = "authentication_failed";
+    
+    public static final String CATEGORY_CONNECTION_TIMEOUT = "connection_timeout";
+    
+    public static final String CATEGORY_INVALID_CONFIGURATION = "invalid_configuration";
+    
+    public static final String CATEGORY_DATABASE_UNAVAILABLE = "database_unavailable";
+    
+    public static final String CATEGORY_CONNECTION_FAILED = "connection_failed";
+    
     private static final long serialVersionUID = -757957427736251437L;
     
     private final String databaseName;
@@ -50,7 +62,18 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
      * @return runtime database connection exception
      */
     public static RuntimeDatabaseConnectionException missingJdbcDriver(final String databaseName, final Throwable cause) {
-        return new RuntimeDatabaseConnectionException(databaseName, "missing_jdbc_driver", cause);
+        return new RuntimeDatabaseConnectionException(databaseName, CATEGORY_MISSING_JDBC_DRIVER, cause);
+    }
+    
+    /**
+     * Create invalid runtime database configuration exception.
+     *
+     * @param databaseName database name
+     * @param cause cause
+     * @return runtime database connection exception
+     */
+    public static RuntimeDatabaseConnectionException invalidConfiguration(final String databaseName, final Throwable cause) {
+        return new RuntimeDatabaseConnectionException(databaseName, CATEGORY_INVALID_CONFIGURATION, cause);
     }
     
     /**
@@ -68,14 +91,14 @@ public final class RuntimeDatabaseConnectionException extends RuntimeException {
         String sqlState = Objects.toString(cause.getSQLState(), "");
         String message = Objects.toString(cause.getMessage(), "").toLowerCase(Locale.ENGLISH);
         if (cause instanceof SQLTimeoutException || message.contains("timeout") || message.contains("timed out")) {
-            return "connection_timeout";
+            return CATEGORY_CONNECTION_TIMEOUT;
         }
         if (sqlState.startsWith("28") || message.contains("authentication") || message.contains("access denied") || message.contains("password")) {
-            return "authentication_failed";
+            return CATEGORY_AUTHENTICATION_FAILED;
         }
         if (sqlState.startsWith("08") || message.contains("no suitable driver")) {
-            return "database_unavailable";
+            return CATEGORY_DATABASE_UNAVAILABLE;
         }
-        return "connection_failed";
+        return CATEGORY_CONNECTION_FAILED;
     }
 }

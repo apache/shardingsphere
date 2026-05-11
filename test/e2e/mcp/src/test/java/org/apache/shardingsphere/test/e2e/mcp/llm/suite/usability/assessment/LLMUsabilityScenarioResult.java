@@ -33,6 +33,8 @@ public final class LLMUsabilityScenarioResult {
     
     private final String runtimeKind;
     
+    private final List<String> tags;
+    
     private final boolean success;
     
     private final String failureType;
@@ -56,6 +58,10 @@ public final class LLMUsabilityScenarioResult {
     private final boolean nextActionFollowed;
     
     private final boolean approvalViolation;
+    
+    private final boolean nativeToolCallCoverage;
+    
+    private final boolean harnessRecoveryUsed;
     
     private final List<MCPInteractionTraceRecord> interactionTrace;
 }

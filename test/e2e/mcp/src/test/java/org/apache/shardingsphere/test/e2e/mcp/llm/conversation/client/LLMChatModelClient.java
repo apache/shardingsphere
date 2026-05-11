@@ -41,11 +41,15 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 public final class LLMChatModelClient {
-
+    
+    private static final long INITIAL_READINESS_INTERVAL_MILLIS = 250L;
+    
+    private static final long MAX_READINESS_INTERVAL_MILLIS = 2000L;
+    
     private final LLME2EConfiguration config;
-
+    
     private final HttpClient httpClient;
-
+    
     /**
      * Wait until ready.
      *
@@ -53,9 +57,13 @@ public final class LLMChatModelClient {
      * @throws IllegalStateException model service is not ready
      */
     public void waitUntilReady() throws InterruptedException {
-        long deadline = System.currentTimeMillis() + config.getReadyTimeoutSeconds() * 1000L;
+        long startTime = System.currentTimeMillis();
+        long deadline = startTime + config.getReadyTimeoutSeconds() * 1000L;
+        long intervalMillis = INITIAL_READINESS_INTERVAL_MILLIS;
+        int attemptCount = 0;
         Exception lastFailure = null;
         while (System.currentTimeMillis() < deadline) {
+            attemptCount++;
             try {
                 if (isModelListReady()) {
                     return;
@@ -65,7 +73,7 @@ public final class LLMChatModelClient {
             } catch (final IllegalStateException ex) {
                 lastFailure = ex;
                 if (isNonRetryableReadinessFailure(ex)) {
-                    throw createReadinessException(lastFailure);
+                    throw createReadinessException(lastFailure, attemptCount, startTime);
                 }
             }
             try {
@@ -77,34 +85,44 @@ public final class LLMChatModelClient {
             } catch (final IllegalStateException ex) {
                 lastFailure = ex;
                 if (isNonRetryableReadinessFailure(ex)) {
-                    throw createReadinessException(lastFailure);
+                    throw createReadinessException(lastFailure, attemptCount, startTime);
                 }
             }
-            Thread.sleep(2000L);
+            intervalMillis = waitForNextReadinessAttempt(deadline, intervalMillis);
         }
-        throw createReadinessException(lastFailure);
+        throw createReadinessException(lastFailure, attemptCount, startTime);
     }
-
+    
+    private long waitForNextReadinessAttempt(final long deadline, final long intervalMillis) throws InterruptedException {
+        long remainingMillis = deadline - System.currentTimeMillis();
+        if (0L >= remainingMillis) {
+            return intervalMillis;
+        }
+        Thread.sleep(Math.min(intervalMillis, remainingMillis));
+        return Math.min(MAX_READINESS_INTERVAL_MILLIS, intervalMillis * 2L);
+    }
+    
     private boolean isNonRetryableReadinessFailure(final Exception cause) {
         String message = Objects.toString(cause.getMessage(), "");
         return message.contains("HTTP 401");
     }
-
-    private IllegalStateException createReadinessException(final Exception cause) {
-        IllegalStateException result = new IllegalStateException(createReadinessFailureMessage(cause));
+    
+    private IllegalStateException createReadinessException(final Exception cause, final int attemptCount, final long startTimeMillis) {
+        IllegalStateException result = new IllegalStateException(createReadinessFailureMessage(cause, attemptCount, System.currentTimeMillis() - startTimeMillis));
         if (null != cause) {
             result.initCause(cause);
         }
         return result;
     }
-
-    private String createReadinessFailureMessage(final Exception cause) {
-        String result = String.format("Model service is not ready for `%s`.", config.getModelName());
+    
+    private String createReadinessFailureMessage(final Exception cause, final int attemptCount, final long elapsedMillis) {
+        String result = String.format("Model service is not ready for `%s` after %d readiness attempt(s), elapsedMillis=%d, timeoutSeconds=%d.",
+                config.getModelName(), attemptCount, elapsedMillis, config.getReadyTimeoutSeconds());
         return null == cause || null == cause.getMessage() || cause.getMessage().isBlank()
                 ? result
                 : result + " Last readiness failure: " + cause.getMessage();
     }
-
+    
     private boolean isModelListReady() throws IOException, InterruptedException {
         HttpResponse<String> response = sendModelListRequest();
         if (200 != response.statusCode()) {
@@ -112,7 +130,7 @@ public final class LLMChatModelClient {
         }
         return containsModel(response.body());
     }
-
+    
     private boolean isCompletionProbeReady() throws IOException, InterruptedException {
         HttpResponse<String> response = sendReadinessCompletionRequest();
         if (200 != response.statusCode()) {
@@ -120,11 +138,11 @@ public final class LLMChatModelClient {
         }
         return hasCompletionChoice(response.body());
     }
-
+    
     private String createHttpReadinessFailure(final String requestKind, final HttpResponse<String> response) {
         return String.format("%s readiness request returned HTTP %d%s.", requestKind, response.statusCode(), createErrorCodeSuffix(response.body()));
     }
-
+    
     private String createErrorCodeSuffix(final String responseBody) {
         try {
             Map<String, Object> payload = parseJsonObject(responseBody, "Failed to parse readiness error response.");
@@ -134,7 +152,7 @@ public final class LLMChatModelClient {
             return "";
         }
     }
-
+    
     /**
      * Complete.
      *
@@ -183,7 +201,7 @@ public final class LLMChatModelClient {
         Preconditions.checkState(!message.isEmpty(), "Model completion response does not contain one assistant message.");
         return new LLMChatCompletion(Objects.toString(message.get("content"), "").trim(), createToolCalls(message.get("tool_calls")), response.body());
     }
-
+    
     private HttpResponse<String> sendModelListRequest() throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder(URI.create(config.getModelsUrl()))
                 .timeout(Duration.ofSeconds(Math.min(config.getRequestTimeoutSeconds(), 30)))
@@ -192,7 +210,7 @@ public final class LLMChatModelClient {
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
+    
     private HttpResponse<String> sendReadinessCompletionRequest() throws IOException, InterruptedException {
         Map<String, Object> requestPayload = new LinkedHashMap<>(8, 1F);
         requestPayload.put("model", config.getModelName());
@@ -208,16 +226,16 @@ public final class LLMChatModelClient {
                 .build();
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
-
+    
     private boolean containsModel(final String responseBody) {
         Map<String, Object> payload = parseJsonObject(responseBody, "Failed to parse model-list response.");
         return castToList(payload.get("data")).stream().anyMatch(each -> config.getModelName().equals(Objects.toString(each.get("id"), "").trim()));
     }
-
+    
     private boolean hasCompletionChoice(final String responseBody) {
         return !castToList(parseJsonObject(responseBody, "Failed to parse readiness completion response.").get("choices")).isEmpty();
     }
-
+    
     private List<Map<String, Object>> createMessages(final List<LLMChatMessage> messages) {
         List<Map<String, Object>> result = new LinkedList<>();
         for (LLMChatMessage each : messages) {
@@ -238,12 +256,12 @@ public final class LLMChatModelClient {
         }
         return result;
     }
-
+    
     private List<Map<String, Object>> createToolCalls(final List<LLMToolCall> toolCalls) {
         return toolCalls.stream()
                 .map(each -> Map.of("id", each.getId(), "type", "function", "function", Map.of("name", each.getName(), "arguments", each.getArgumentsJson()))).collect(Collectors.toList());
     }
-
+    
     private List<LLMToolCall> createToolCalls(final Object rawValue) {
         List<LLMToolCall> result = new LinkedList<>();
         for (Map<String, Object> each : castToList(rawValue)) {
@@ -253,7 +271,7 @@ public final class LLMChatModelClient {
         }
         return result;
     }
-
+    
     private List<Map<String, Object>> castToList(final Object value) {
         if (null == value) {
             return List.of();
@@ -261,7 +279,7 @@ public final class LLMChatModelClient {
         return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
         });
     }
-
+    
     private Map<String, Object> castToMap(final Object value) {
         if (null == value) {
             return Map.of();
@@ -269,7 +287,7 @@ public final class LLMChatModelClient {
         return JsonUtils.fromJsonString(JsonUtils.toJsonString(value), new TypeReference<>() {
         });
     }
-
+    
     private Map<String, Object> parseJsonObject(final String responseBody, final String errorMessage) {
         try {
             return JsonUtils.fromJsonString(responseBody, new TypeReference<>() {

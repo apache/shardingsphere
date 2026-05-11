@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPDescriptorCatalogLoaderTest {
-
+    
     @Test
     void assertLoadValidatesDescriptorQuality() {
         MCPDescriptorCatalog actual = MCPDescriptorCatalogLoader.load();
@@ -44,11 +44,11 @@ class MCPDescriptorCatalogLoaderTest {
                 "response_mode", "plan_id", "execution_mode", "next_actions", "requires_user_approval", "manual_artifact_package", "manual_artifact_summary", "manual_follow_up", "argument_provenance",
                 "approval_summary",
                 "approval_question", "review_focus"));
-        assertOutputProperties(actual, "validate_workflow", Set.of("response_mode", "plan_id", "status", "next_actions", "sections", "mismatches"));
+        assertOutputProperties(actual, "validate_workflow", Set.of("response_mode", "plan_id", "status", "recovery_guidance", "next_actions", "sections", "mismatches"));
         assertResourceDescriptor(actual);
-        assertNoBannedRecommendationFields(actual);
+        assertNoBannedPublicAliasFields(actual);
     }
-
+    
     @Test
     void assertLoadValidatesEnumFields() {
         MCPDescriptorCatalog catalog = MCPDescriptorCatalogLoader.load();
@@ -57,26 +57,26 @@ class MCPDescriptorCatalogLoaderTest {
         assertThat(actualExecutionMode.getValueDefinition().getEnumValues(), is(List.of("preview", "review-then-execute", "manual-only")));
         assertFalse(findField(actual, "approved_by_user").isRequired());
     }
-
+    
     private void assertOutputProperties(final MCPDescriptorCatalog catalog, final String toolName, final Set<String> expectedProperties) {
         Map<?, ?> actualProperties = (Map<?, ?>) findTool(catalog, toolName).getOutputSchema().get("properties");
         for (String each : expectedProperties) {
             assertTrue(actualProperties.containsKey(each));
         }
     }
-
+    
     private MCPToolDescriptor findTool(final MCPDescriptorCatalog catalog, final String toolName) {
         return catalog.getToolDescriptors().stream().filter(each -> toolName.equals(each.getName())).findFirst().orElseThrow();
     }
-
+    
     private MCPResourceDescriptor findResource(final MCPDescriptorCatalog catalog, final String uriTemplate) {
         return catalog.getResourceDescriptors().stream().filter(each -> uriTemplate.equals(each.getUriTemplate())).findFirst().orElseThrow();
     }
-
+    
     private MCPToolFieldDefinition findField(final MCPToolDescriptor toolDescriptor, final String fieldName) {
         return toolDescriptor.getFields().stream().filter(each -> fieldName.equals(each.getName())).findFirst().orElseThrow();
     }
-
+    
     private void assertResourceDescriptor(final MCPDescriptorCatalog catalog) {
         MCPResourceDescriptor actual = findResource(catalog, "shardingsphere://workflows/{plan_id}");
         assertThat(actual.getResourceKind(), is("detail"));
@@ -85,33 +85,34 @@ class MCPDescriptorCatalogLoaderTest {
         assertTrue(actual.getMeta().isEmpty());
         assertThat(findResource(catalog, "shardingsphere://workflow/test-resource").getResourceKind(), is("detail"));
     }
-
-    private void assertNoBannedRecommendationFields(final MCPDescriptorCatalog catalog) {
+    
+    private void assertNoBannedPublicAliasFields(final MCPDescriptorCatalog catalog) {
         for (MCPToolDescriptor each : catalog.getToolDescriptors()) {
-            assertFalse(containsBannedRecommendationField(each.getOutputSchema()));
+            assertFalse(containsBannedPublicAliasField(each.getOutputSchema()));
         }
     }
-
-    private boolean containsBannedRecommendationField(final Object value) {
+    
+    private boolean containsBannedPublicAliasField(final Object value) {
         if (value instanceof Map) {
-            return containsBannedRecommendationFieldMap((Map<?, ?>) value);
+            return containsBannedPublicAliasFieldMap((Map<?, ?>) value);
         }
         if (value instanceof Iterable) {
             for (Object each : (Iterable<?>) value) {
-                if (containsBannedRecommendationField(each)) {
+                if (containsBannedPublicAliasField(each)) {
                     return true;
                 }
             }
         }
         return false;
     }
-
-    private boolean containsBannedRecommendationFieldMap(final Map<?, ?> value) {
-        if (value.containsKey("recommended_next_tool") || value.containsKey("suggested_next_tool") || value.containsKey("suggested_next_tools")) {
+    
+    private boolean containsBannedPublicAliasFieldMap(final Map<?, ?> value) {
+        if (value.containsKey("recommended_next_tool") || value.containsKey("suggested_next_tool") || value.containsKey("suggested_next_tools")
+                || value.containsKey("recommended_recovery") || value.containsKey("suggested_next_action")) {
             return true;
         }
         for (Object each : value.values()) {
-            if (containsBannedRecommendationField(each)) {
+            if (containsBannedPublicAliasField(each)) {
                 return true;
             }
         }

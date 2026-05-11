@@ -45,6 +45,10 @@ public final class MySQLRuntimeTestSupport {
     
     private static final Duration JDBC_READY_TIMEOUT = Duration.ofSeconds(30);
     
+    private static final long JDBC_READY_INITIAL_INTERVAL_MILLIS = 250L;
+    
+    private static final long JDBC_READY_MAX_INTERVAL_MILLIS = 1000L;
+    
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM %s.orders";
     
     private static final String DATABASE_NAME = "orders";
@@ -210,26 +214,43 @@ public final class MySQLRuntimeTestSupport {
     
     private static Connection getConnection(final GenericContainer<?> container) throws SQLException {
         String jdbcUrl = createJdbcUrl(container);
+        long startTime = System.currentTimeMillis();
         long deadline = System.currentTimeMillis() + JDBC_READY_TIMEOUT.toMillis();
+        long intervalMillis = JDBC_READY_INITIAL_INTERVAL_MILLIS;
+        int attemptCount = 0;
         SQLException lastException = null;
         while (System.currentTimeMillis() < deadline) {
+            attemptCount++;
             try {
                 return DriverManager.getConnection(jdbcUrl, USERNAME, PASSWORD);
             } catch (final SQLException ex) {
                 lastException = ex;
-                sleepBeforeRetry();
+                intervalMillis = sleepBeforeRetry(deadline, intervalMillis);
             }
         }
-        throw null == lastException ? new SQLException("MySQL JDBC connection did not become ready in time.") : lastException;
+        throw createJdbcReadyException(lastException, attemptCount, startTime);
     }
     
-    private static void sleepBeforeRetry() throws SQLException {
-        try {
-            Thread.sleep(1000L);
-        } catch (final InterruptedException interruptedException) {
-            Thread.currentThread().interrupt();
-            throw new SQLException("Interrupted while waiting for MySQL JDBC readiness.", interruptedException);
+    private static long sleepBeforeRetry(final long deadline, final long intervalMillis) throws SQLException {
+        long remainingMillis = deadline - System.currentTimeMillis();
+        if (0L >= remainingMillis) {
+            return intervalMillis;
         }
+        try {
+            Thread.sleep(Math.min(intervalMillis, remainingMillis));
+            return Math.min(JDBC_READY_MAX_INTERVAL_MILLIS, intervalMillis * 2L);
+        } catch (final InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            throw new SQLException("Interrupted while waiting for MySQL JDBC readiness.", ex);
+        }
+    }
+    
+    private static SQLException createJdbcReadyException(final SQLException cause, final int attemptCount, final long startTimeMillis) {
+        String result = String.format("MySQL JDBC connection did not become ready after %d attempt(s), elapsedMillis=%d, timeoutMillis=%d.",
+                attemptCount, System.currentTimeMillis() - startTimeMillis, JDBC_READY_TIMEOUT.toMillis());
+        return null == cause || null == cause.getMessage() || cause.getMessage().isBlank()
+                ? new SQLException(result)
+                : new SQLException(result + " Last readiness failure: " + cause.getMessage(), cause);
     }
     
     private static String createJdbcUrl(final GenericContainer<?> container) {

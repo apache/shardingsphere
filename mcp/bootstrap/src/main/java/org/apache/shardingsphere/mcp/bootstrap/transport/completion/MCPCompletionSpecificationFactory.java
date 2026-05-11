@@ -35,9 +35,9 @@ import java.util.Objects;
  * MCP completion specification factory.
  */
 public final class MCPCompletionSpecificationFactory {
-
+    
     private final MCPCompletionService completionService;
-
+    
     private final List<MCPCompletionTargetDescriptor> completionTargetDescriptors;
     
     public MCPCompletionSpecificationFactory(final MCPRuntimeContext runtimeContext) {

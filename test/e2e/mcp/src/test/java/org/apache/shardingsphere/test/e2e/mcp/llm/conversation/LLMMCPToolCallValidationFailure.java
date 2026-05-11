@@ -17,5 +17,29 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
-record LLMMCPToolCallValidationFailure(String traceKind, String failureType, String message) {
+final class LLMMCPToolCallValidationFailure {
+    
+    private final String traceKind;
+    
+    private final String failureType;
+    
+    private final String message;
+    
+    LLMMCPToolCallValidationFailure(final String traceKind, final String failureType, final String message) {
+        this.traceKind = traceKind;
+        this.failureType = failureType;
+        this.message = message;
+    }
+    
+    String traceKind() {
+        return traceKind;
+    }
+    
+    String failureType() {
+        return failureType;
+    }
+    
+    String message() {
+        return message;
+    }
 }

@@ -24,6 +24,13 @@ This inventory mirrors `.specify/specs/011-mcp-llm-product-quality-100/` for the
 Current strict score: **78/100**.
 Target score: **100/100**.
 
+Latest independent 80-dimension baseline:
+
+- MCP production modules: **78/100** average.
+- MCP E2E module: **76/100** average.
+- Every score item is an independent 100-point gate.
+- Detailed gates are maintained in `.specify/specs/011-mcp-llm-product-quality-100/eighty-dimension-requirements.md`.
+
 The score includes model friendliness, natural interaction, semantic clarity, code readability,
 architecture clarity, decoupling, contract stability, recovery, safety, test credibility,
 evolvability, and operations readiness.
@@ -46,10 +53,24 @@ evolvability, and operations readiness.
 - LLM usability scenarios default to preview, manual-only, and approval-violation checks.
 - Extended LLM scenarios are non-blocking only for model-performance outcomes.
 - Deterministic extended checks remain hard assertions.
+- User has confirmed the recommended defaults for unresolved scoring-policy questions.
+- Automated command or artifact evidence is mandatory for a final 100-point score claim.
+- Manual review can support the final score but cannot be the only evidence.
+- H2 and MySQL are mandatory runtime/dialect evidence.
+- PostgreSQL and openGauss are optional evidence unless a touched change targets them.
+- Standalone MCP runtime evidence is mandatory.
+- Cluster or registry-governance compatibility is risk-tracked unless a touched change targets it.
+- Refactoring is allowed only in small reviewable slices that reduce reading cost, contract drift, or test ambiguity.
+- Final delivery includes code, tests, Speckit, scorecard, and usage or rollback documentation when behavior changes require handoff.
 
 ## P0 Requirements
 
 - Stay on branch `001-shardingsphere-mcp`.
+- Do not run Speckit branch creation scripts, `git switch`, or `git checkout`.
+- Treat all 80 independent score items as mandatory 100-point gates for MCP and MCP E2E unless an exception is explicitly approved.
+- Fix the current `ToolHandlerRegistryTest` blocker by replacing stale descriptor field-count assertions with semantic assertions.
+- Split native LLM tool-call metrics from harness text-recovery metrics.
+- Replace fixed readiness sleeps with bounded polling behavior or record a justified deterministic exception.
 - Separate design-clarity completion from strict product-quality scoring.
 - Replace scripted LLM usability tasks with natural user-intent tasks.
 - Keep protocol-contract tests separate when exact first calls are required.

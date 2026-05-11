@@ -34,19 +34,19 @@ import java.util.Map;
  * Execute read-only SQL query tool handler.
  */
 public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabaseHandlerContext> {
-
+    
     private static final MCPToolDescriptor TOOL_DESCRIPTOR = MCPDescriptorRegistry.getRequiredToolDescriptor("execute_query");
-
+    
     @Override
     public Class<MCPDatabaseHandlerContext> getContextType() {
         return MCPDatabaseHandlerContext.class;
     }
-
+    
     @Override
     public MCPToolDescriptor getToolDescriptor() {
         return TOOL_DESCRIPTOR;
     }
-
+    
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
@@ -56,7 +56,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         return databaseContext.getExecutionFacade().execute(SQLExecutionToolHandlerSupport.createExecutionRequest(toolCall, toolArguments,
                 resolveSchema(databaseContext, toolArguments), sql, "execute_query"));
     }
-
+    
     private String resolveSchema(final MCPDatabaseHandlerContext databaseContext, final MCPToolArguments toolArguments) {
         String result = toolArguments.getStringArgument("schema");
         if (!result.isEmpty()) {
@@ -69,7 +69,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
         List<MCPSchemaMetadata> schemas = databaseContext.getMetadataQueryFacade().querySchemas(database);
         return 1 == schemas.size() ? schemas.iterator().next().getSchema() : "";
     }
-
+    
     private void checkReadOnlyQuery(final MCPToolArguments toolArguments, final String sql) {
         ClassificationResult classificationResult = new StatementClassifier().classify(sql);
         if (!SQLExecutionToolHandlerSupport.isReadOnlyStatement(classificationResult.getStatementClass())) {
@@ -77,7 +77,7 @@ public final class ExecuteQueryToolHandler implements MCPToolHandler<MCPDatabase
                     "execute_query", "execute_update", classificationResult, createSuggestedArguments(toolArguments, classificationResult));
         }
     }
-
+    
     private Map<String, Object> createSuggestedArguments(final MCPToolArguments toolArguments, final ClassificationResult classificationResult) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         SQLExecutionToolHandlerSupport.putIfNotEmpty(result, "database", toolArguments.getStringArgument("database"));

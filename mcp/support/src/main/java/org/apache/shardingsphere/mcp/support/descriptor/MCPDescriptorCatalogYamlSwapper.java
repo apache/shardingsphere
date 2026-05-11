@@ -44,10 +44,10 @@ import java.util.List;
 import java.util.Map;
 
 final class MCPDescriptorCatalogYamlSwapper {
-
+    
     private MCPDescriptorCatalogYamlSwapper() {
     }
-
+    
     static MCPDescriptorCatalog swap(final Collection<YamlMCPDescriptorCatalog> yamlCatalogs) {
         Collection<MCPResourceDescriptor> resourceDescriptors = new LinkedList<>();
         Collection<MCPToolDescriptor> toolDescriptors = new LinkedList<>();
@@ -63,7 +63,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return new MCPDescriptorCatalog(resourceDescriptors, toolDescriptors, promptDescriptors, completionTargetDescriptors, resourceNavigationDescriptors);
     }
-
+    
     private static Collection<MCPResourceDescriptor> swapResourceDescriptors(final Collection<YamlMCPResourceDescriptor> yamlDescriptors) {
         Collection<MCPResourceDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -74,7 +74,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static List<MCPResourceParameterDescriptor> swapResourceParameters(final Collection<YamlMCPResourceParameterDescriptor> yamlParameters) {
         List<MCPResourceParameterDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceParameterDescriptor each : emptyIfNull(yamlParameters)) {
@@ -82,12 +82,12 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static MCPResourceAnnotations swapResourceAnnotations(final YamlMCPResourceAnnotations yamlAnnotations) {
         return null == yamlAnnotations ? MCPResourceAnnotations.EMPTY
                 : new MCPResourceAnnotations(yamlAnnotations.getAudience(), yamlAnnotations.getPriority(), yamlAnnotations.getLastModified());
     }
-
+    
     private static Collection<MCPToolDescriptor> swapToolDescriptors(final Collection<YamlMCPToolDescriptor> yamlDescriptors) {
         Collection<MCPToolDescriptor> result = new LinkedList<>();
         for (YamlMCPToolDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -96,7 +96,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static Collection<MCPPromptDescriptor> swapPromptDescriptors(final Collection<YamlMCPPromptDescriptor> yamlDescriptors) {
         Collection<MCPPromptDescriptor> result = new LinkedList<>();
         for (YamlMCPPromptDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -105,7 +105,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static List<MCPPromptArgumentDescriptor> swapPromptArguments(final Collection<YamlMCPPromptArgumentDescriptor> yamlArguments) {
         List<MCPPromptArgumentDescriptor> result = new LinkedList<>();
         for (YamlMCPPromptArgumentDescriptor each : emptyIfNull(yamlArguments)) {
@@ -113,7 +113,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static Collection<MCPCompletionTargetDescriptor> swapCompletionTargetDescriptors(final Collection<YamlMCPCompletionTargetDescriptor> yamlDescriptors) {
         Collection<MCPCompletionTargetDescriptor> result = new LinkedList<>();
         for (YamlMCPCompletionTargetDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -122,7 +122,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static Collection<MCPResourceNavigationDescriptor> swapResourceNavigationDescriptors(final Collection<YamlMCPResourceNavigationDescriptor> yamlDescriptors) {
         Collection<MCPResourceNavigationDescriptor> result = new LinkedList<>();
         for (YamlMCPResourceNavigationDescriptor each : emptyIfNull(yamlDescriptors)) {
@@ -131,7 +131,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static List<MCPToolFieldDefinition> swapToolFields(final Collection<YamlMCPToolFieldDefinition> yamlFields) {
         List<MCPToolFieldDefinition> result = new LinkedList<>();
         for (YamlMCPToolFieldDefinition each : emptyIfNull(yamlFields)) {
@@ -139,7 +139,7 @@ final class MCPDescriptorCatalogYamlSwapper {
         }
         return result;
     }
-
+    
     private static MCPToolValueDefinition swapValueDefinition(final YamlMCPToolValueDefinition yamlValueDefinition) {
         if (null == yamlValueDefinition) {
             throw new IllegalStateException("MCP tool value definition is required.");
@@ -159,21 +159,21 @@ final class MCPDescriptorCatalogYamlSwapper {
                 .pattern(yamlValueDefinition.getPattern())
                 .build();
     }
-
+    
     private static MCPToolValueDefinition swapNullableValueDefinition(final YamlMCPToolValueDefinition yamlValueDefinition) {
         return null == yamlValueDefinition ? null : swapValueDefinition(yamlValueDefinition);
     }
-
+    
     private static MCPToolAnnotations swapToolAnnotations(final YamlMCPToolAnnotations yamlAnnotations) {
         return null == yamlAnnotations ? MCPToolAnnotations.EMPTY
                 : new MCPToolAnnotations(yamlAnnotations.getTitle(), yamlAnnotations.getReadOnlyHint(), yamlAnnotations.getDestructiveHint(), yamlAnnotations.getIdempotentHint(),
                         yamlAnnotations.getOpenWorldHint(), yamlAnnotations.getReturnDirect());
     }
-
+    
     private static <T> Collection<T> emptyIfNull(final Collection<T> values) {
         return null == values ? Collections.emptyList() : values;
     }
-
+    
     private static Map<String, Object> emptyMapIfNull(final Map<String, Object> values) {
         return null == values ? Collections.emptyMap() : values;
     }

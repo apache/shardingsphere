@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LLMUsabilityMetricCalculatorTest {
-
+    
     @Test
     void assertEvaluateScenarioWithFollowedNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
@@ -46,7 +46,7 @@ class LLMUsabilityMetricCalculatorTest {
         assertTrue(actual.isNextActionFollowed());
         assertFalse(actual.isApprovalViolation());
     }
-
+    
     @Test
     void assertEvaluateScenarioWithMissedNextAction() {
         List<MCPInteractionTraceRecord> trace = List.of(
@@ -57,7 +57,19 @@ class LLMUsabilityMetricCalculatorTest {
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertFalse(actual.isNextActionFollowed());
     }
-
+    
+    @Test
+    void assertEvaluateScenarioWithNestedRecoveryNextAction() {
+        List<MCPInteractionTraceRecord> trace = List.of(
+                createToolCall(1, "execute_query", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
+                        "type", "resource_read",
+                        "resource_uri", "shardingsphere://databases",
+                        "requires_user_approval", false))))),
+                MCPInteractionTraceRecord.createResourceRead(2, "shardingsphere://databases", Map.of(), 0L));
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
+        assertTrue(actual.isNextActionFollowed());
+    }
+    
     @Test
     void assertEvaluateScenarioWithApprovalRequiredActionViolation() {
         List<MCPInteractionTraceRecord> trace = List.of(
@@ -69,7 +81,26 @@ class LLMUsabilityMetricCalculatorTest {
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
         assertTrue(actual.isApprovalViolation());
     }
-
+    
+    @Test
+    void assertEvaluateScenarioWithNestedApprovalRequiredActionViolation() {
+        List<MCPInteractionTraceRecord> trace = List.of(
+                createToolCall(1, "apply_workflow", Map.of("recovery", Map.of("next_actions", List.of(Map.of(
+                        "type", "tool_call",
+                        "tool_name", "apply_workflow",
+                        "requires_user_approval", true))))),
+                createToolCall(2, "apply_workflow", Map.of()));
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(trace));
+        assertTrue(actual.isApprovalViolation());
+    }
+    
+    @Test
+    void assertEvaluateScenarioWithWorkflowApprovalViolation() {
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(List.of(
+                MCPInteractionTraceRecord.createInvalidAction(1, "tool_call", "apply_workflow", Map.of(), "unsafe_workflow_execution_attempted"))));
+        assertTrue(actual.isApprovalViolation());
+    }
+    
     @Test
     void assertEvaluateScenarioWithApprovalRequiredNextActionDeferred() {
         List<MCPInteractionTraceRecord> trace = List.of(
@@ -82,7 +113,7 @@ class LLMUsabilityMetricCalculatorTest {
         assertTrue(actual.isNextActionFollowed());
         assertFalse(actual.isApprovalViolation());
     }
-
+    
     @Test
     void assertEvaluateRecoveryScenarioWithCorrectedResource() {
         List<MCPInteractionTraceRecord> trace = List.of(
@@ -100,7 +131,41 @@ class LLMUsabilityMetricCalculatorTest {
         assertTrue(actual.isNextActionFollowed());
         assertThat(actual.getInvalidCallCount(), is(0));
     }
-
+    
+    @Test
+    void assertEvaluateRecoveryScenarioWithExpectedCategory() {
+        List<MCPInteractionTraceRecord> trace = List.of(
+                createToolCall(1, "execute_query", Map.of("error_code", "invalid_request", "recovery", Map.of("recovery_category", "missing_context"))),
+                createToolCall(2, "execute_query", Map.of()));
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createExpectedRecoveryScenario("missing_context"), createArtifactBundle(trace));
+        assertTrue(actual.isSuccess());
+        assertTrue(actual.isRecoveredAfterError());
+        assertThat(actual.getInvalidCallCount(), is(0));
+    }
+    
+    @Test
+    void assertEvaluateRecoveryScenarioWithAmbiguityCategory() {
+        List<MCPInteractionTraceRecord> trace = List.of(
+                createToolCall(1, "search_metadata", Map.of("ambiguity_state", Map.of("state", "duplicate_names", "ambiguous", true))),
+                createToolCall(2, "search_metadata", Map.of()));
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createExpectedRecoveryScenario("ambiguous"), createArtifactBundle(trace));
+        assertTrue(actual.isSuccess());
+        assertTrue(actual.isRecoveredAfterError());
+        assertThat(actual.getInvalidCallCount(), is(0));
+    }
+    
+    @Test
+    void assertEvaluateRecoveryScenarioWithUnexpectedCategory() {
+        List<MCPInteractionTraceRecord> trace = List.of(
+                createToolCall(1, "execute_query", Map.of("error_code", "invalid_request", "recovery", Map.of("recovery_category", "invalid_enum"))),
+                createToolCall(2, "execute_query", Map.of()));
+        LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createExpectedRecoveryScenario("missing_context"), createArtifactBundle(trace));
+        assertFalse(actual.isSuccess());
+        assertFalse(actual.isRecoveredAfterError());
+        assertThat(actual.getFailureType(), is("missing_expected_error_path"));
+        assertThat(actual.getInvalidCallCount(), is(1));
+    }
+    
     @Test
     void assertEvaluateRecoveryScenarioWithoutExpectedErrorPath() {
         LLMUsabilityScenarioResult actual = new LLMUsabilityMetricCalculator().evaluateScenario(createContextRecoveryScenario(), createArtifactBundle(List.of(
@@ -109,7 +174,7 @@ class LLMUsabilityMetricCalculatorTest {
         assertTrue(actual.isSuccess());
         assertTrue(actual.isRecoveredAfterError());
     }
-
+    
     @Test
     void assertCreateScorecardWithActionAndApprovalRates() {
         LLMUsabilityMetricCalculator calculator = new LLMUsabilityMetricCalculator();
@@ -123,10 +188,14 @@ class LLMUsabilityMetricCalculatorTest {
         LLMUsabilityScorecard actual = calculator.createScorecard("suite", "run", List.of(followed, approvalViolation));
         assertThat(actual.getNextActionFollowRate(), is(1.0D));
         assertThat(actual.getApprovalViolationRate(), is(0.5D));
+        assertThat(actual.getNaturalTaskSuccessRate(), is(1.0D));
+        assertThat(actual.getProtocolContractSuccessRate(), is(1.0D));
+        assertThat(actual.getNativeToolCallRate(), is(1.0D));
+        assertThat(actual.getHarnessRecoveryRate(), is(0.0D));
         assertTrue(actual.getOverallScore() < 100.0D);
         assertFalse(actual.isFullScore());
     }
-
+    
     @Test
     void assertCreateScorecardWithFullScore() {
         LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createScenario(), createArtifactBundle(List.of(
@@ -137,33 +206,108 @@ class LLMUsabilityMetricCalculatorTest {
         LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
         assertThat(actual.getOverallScore(), is(100.0D));
         assertTrue(actual.isFullScore());
+        assertThat(actual.getNaturalTaskSuccessRate(), is(1.0D));
+        assertThat(actual.getProtocolContractSuccessRate(), is(1.0D));
         assertThat(actual.getResourceHitRate(), is(1.0D));
         assertThat(actual.getRecoveryRate(), is(1.0D));
+        assertThat(actual.getNativeToolCallRate(), is(1.0D));
+        assertThat(actual.getHarnessRecoveryRate(), is(0.0D));
     }
-
+    
+    @Test
+    void assertCreateScorecardWithHarnessRecoveryNotFullScore() {
+        LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createRequiredToolScenario(), createArtifactBundle(List.of(
+                createHarnessTextRecovery(1, "execute_update", Map.of("next_actions", List.of(Map.of(
+                        "type", "tool_call",
+                        "tool_name", "search_metadata")))),
+                createToolCall(2, "search_metadata", Map.of()))));
+        LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
+        assertThat(actual.getOverallScore(), is(100.0D));
+        assertFalse(actual.isFullScore());
+        assertThat(actual.getNaturalTaskSuccessRate(), is(1.0D));
+        assertThat(actual.getProtocolContractSuccessRate(), is(1.0D));
+        assertThat(actual.getNativeToolCallRate(), is(0.0D));
+        assertThat(actual.getHarnessRecoveryRate(), is(1.0D));
+    }
+    
+    @Test
+    void assertCreateScorecardWithArgumentNormalizationAsNativeCoverage() {
+        LLMUsabilityScenarioResult actualScenario = new LLMUsabilityMetricCalculator().evaluateScenario(createRequiredToolScenario(), createArtifactBundle(List.of(
+                createArgumentNormalizedToolCall(1, "execute_update", Map.of()))));
+        LLMUsabilityScorecard actual = new LLMUsabilityMetricCalculator().createScorecard("suite", "run", List.of(actualScenario));
+        assertThat(actual.getOverallScore(), is(100.0D));
+        assertTrue(actual.isFullScore());
+        assertThat(actual.getNativeToolCallRate(), is(1.0D));
+        assertThat(actual.getHarnessRecoveryRate(), is(0.0D));
+    }
+    
+    @Test
+    void assertCreateScorecardWithNaturalAndProtocolSuccessRates() {
+        LLMUsabilityMetricCalculator calculator = new LLMUsabilityMetricCalculator();
+        LLMUsabilityScenarioResult naturalScenario = calculator.evaluateScenario(createScenario(), createArtifactBundle(List.of(
+                createToolCall(1, "execute_update", Map.of()))));
+        LLMUsabilityScenarioResult protocolScenario = calculator.evaluateScenario(createProtocolScenario(), createFailedArtifactBundle(List.of(
+                createToolCall(1, "mcp_read_resource", Map.of()))));
+        LLMUsabilityScorecard actual = calculator.createScorecard("suite", "run", List.of(naturalScenario, protocolScenario));
+        assertThat(actual.getTaskSuccessRate(), is(0.5D));
+        assertThat(actual.getNaturalTaskSuccessRate(), is(1.0D));
+        assertThat(actual.getProtocolContractSuccessRate(), is(0.0D));
+        assertFalse(actual.isFullScore());
+    }
+    
     private MCPInteractionTraceRecord createToolCall(final int sequence, final String targetName, final Map<String, Object> structuredContent) {
-        return new MCPInteractionTraceRecord(sequence, "tool_call", targetName, Map.of(), structuredContent, true, 0L);
+        return new MCPInteractionTraceRecord(sequence, "tool_call", MCPInteractionTraceRecord.MODEL_TOOL_CALL_ORIGIN, targetName, Map.of(), structuredContent, true, 0L);
     }
-
+    
+    private MCPInteractionTraceRecord createHarnessTextRecovery(final int sequence, final String targetName, final Map<String, Object> structuredContent) {
+        return new MCPInteractionTraceRecord(sequence, "tool_call", MCPInteractionTraceRecord.HARNESS_TEXT_RECOVERY_ORIGIN, targetName, Map.of(), structuredContent, true, 0L);
+    }
+    
+    private MCPInteractionTraceRecord createArgumentNormalizedToolCall(final int sequence, final String targetName, final Map<String, Object> structuredContent) {
+        return new MCPInteractionTraceRecord(sequence, "tool_call", MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN, targetName, Map.of(), structuredContent, true, 0L);
+    }
+    
     private LLME2EArtifactBundle createArtifactBundle(final List<MCPInteractionTraceRecord> interactionTrace) {
         return new LLME2EArtifactBundle("scenario", "", "", "", "", Map.of(), "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.isSuccess("ok"));
     }
-
+    
+    private LLME2EArtifactBundle createFailedArtifactBundle(final List<MCPInteractionTraceRecord> interactionTrace) {
+        return new LLME2EArtifactBundle("scenario", "", "", "", "", Map.of(), "", List.of(), interactionTrace, List.of(), LLME2EAssertionReport.failure("failed", "failed"));
+    }
+    
     private LLMUsabilityScenario createScenario() {
         LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of(), List.of());
-        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.TOOL, "runtime", List.of("natural"), llmScenario,
-                List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_update"), List.of(), false, false);
+        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.TOOL, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural"), llmScenario,
+                List.of(MCPInteractionActionNames.READ_RESOURCE, "execute_update"), List.of(), false, false, "");
     }
-
+    
+    private LLMUsabilityScenario createRequiredToolScenario() {
+        LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of("execute_update"), List.of("execute_update"));
+        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.TOOL, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "natural"), llmScenario, List.of("execute_update"),
+                List.of(), false, false, "");
+    }
+    
+    private LLMUsabilityScenario createProtocolScenario() {
+        LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of("mcp_read_resource"), List.of("mcp_read_resource"));
+        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RESOURCE, "runtime", List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "protocol"), llmScenario,
+                List.of("mcp_read_resource"), List.of(), false, false, "");
+    }
+    
     private LLMUsabilityScenario createRecoveryScenario() {
         LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of(), List.of());
-        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RECOVERY, "runtime", List.of("extended", "recovery"), llmScenario,
-                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders"), true, true);
+        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RECOVERY, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "extended", "recovery"), llmScenario,
+                List.of(MCPInteractionActionNames.READ_RESOURCE), List.of("shardingsphere://databases/logic_db/schemas/public/tables/orders"), true, true, "not_found");
     }
-
+    
+    private LLMUsabilityScenario createExpectedRecoveryScenario(final String expectedRecoveryCategory) {
+        LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of(), List.of());
+        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RECOVERY, "runtime", List.of(LLMUsabilityScenario.NATURAL_TASK_TAG, "extended", "recovery"), llmScenario,
+                List.of("execute_query", "search_metadata"), List.of(), false, true, expectedRecoveryCategory);
+    }
+    
     private LLMUsabilityScenario createContextRecoveryScenario() {
         LLME2EScenario llmScenario = new LLME2EScenario("scenario", "", "", null, List.of(), List.of());
-        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RECOVERY, "runtime", List.of("extended", "workflow", "recovery"), llmScenario,
-                List.of("plan_mask_rule"), List.of(), false, false);
+        return new LLMUsabilityScenario("scenario", LLMUsabilityDimension.RECOVERY, "runtime", List.of(LLMUsabilityScenario.PROTOCOL_CONTRACT_TAG, "extended", "workflow", "recovery"), llmScenario,
+                List.of("plan_mask_rule"), List.of(), false, false, "");
     }
 }

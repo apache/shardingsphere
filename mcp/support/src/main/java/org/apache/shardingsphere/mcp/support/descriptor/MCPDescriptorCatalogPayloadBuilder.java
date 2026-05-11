@@ -38,18 +38,21 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 final class MCPDescriptorCatalogPayloadBuilder {
-
+    
     private final MCPDescriptorCatalog catalog;
-
+    
+    private final MCPModelFirstContractPayloadBuilder modelFirstContractPayloadBuilder;
+    
     private MCPDescriptorCatalogPayloadBuilder(final MCPDescriptorCatalog catalog) {
         this.catalog = catalog;
+        modelFirstContractPayloadBuilder = new MCPModelFirstContractPayloadBuilder(catalog);
     }
-
+    
     static Map<String, Object> build(final MCPDescriptorCatalog catalog, final Collection<String> supportedResources, final Collection<String> supportedTools,
                                      final Collection<?> supportedStatements) {
         return new MCPDescriptorCatalogPayloadBuilder(catalog).build(supportedResources, supportedTools, supportedStatements);
     }
-
+    
     private Map<String, Object> build(final Collection<String> supportedResources, final Collection<String> supportedTools, final Collection<?> supportedStatements) {
         Map<String, Object> result = new LinkedHashMap<>(16, 1F);
         List<Map<String, Object>> resources = catalog.getResourceDescriptors().stream().filter(each -> !each.isTemplated()).map(this::toResourcePayload).toList();
@@ -59,15 +62,16 @@ final class MCPDescriptorCatalogPayloadBuilder {
         List<Map<String, Object>> completionTargets = catalog.getCompletionTargetDescriptors().stream().map(this::toCompletionTargetPayload).toList();
         List<Map<String, Object>> resourceNavigation = catalog.getResourceNavigationDescriptors().stream().map(this::toResourceNavigationPayload).toList();
         result.put("response_mode", MCPResponseMode.CATALOG);
+        result.put("model_first_summary", modelFirstContractPayloadBuilder.createModelFirstSummary());
         result.put("supportedResources", supportedResources);
         result.put("supportedTools", supportedTools);
         result.put("supportedStatementClasses", supportedStatements);
-        result.put("model_contract", createModelContract());
-        result.put("surface_summary", createSurfaceSummary());
-        result.put("field_naming_contract", createFieldNamingContract());
-        result.put("next_action_contract", createNextActionContract());
-        result.put("common_flows", createCommonFlows());
-        result.put("security_hints", createSecurityHints());
+        result.put("model_contract", modelFirstContractPayloadBuilder.createModelContract());
+        result.put("surface_summary", modelFirstContractPayloadBuilder.createSurfaceSummary());
+        result.put("field_naming_contract", modelFirstContractPayloadBuilder.createFieldNamingContract());
+        result.put("next_action_contract", modelFirstContractPayloadBuilder.createNextActionContract());
+        result.put("common_flows", modelFirstContractPayloadBuilder.createCommonFlows());
+        result.put("security_hints", modelFirstContractPayloadBuilder.createSecurityHints());
         result.put("resources", resources);
         result.put("resourceTemplates", resourceTemplates);
         result.put("tools", tools);
@@ -78,11 +82,11 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("fingerprints", createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation));
         return result;
     }
-
+    
     static String createDescriptorCatalogFingerprint(final MCPDescriptorCatalog catalog) {
         return new MCPDescriptorCatalogPayloadBuilder(catalog).createDescriptorCatalogFingerprint();
     }
-
+    
     private String createDescriptorCatalogFingerprint() {
         List<Map<String, Object>> resources = catalog.getResourceDescriptors().stream().filter(each -> !each.isTemplated()).map(this::toResourcePayload).toList();
         List<Map<String, Object>> resourceTemplates = catalog.getResourceDescriptors().stream().filter(MCPResourceDescriptor::isTemplated).map(this::toResourcePayload).toList();
@@ -92,85 +96,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         List<Map<String, Object>> resourceNavigation = catalog.getResourceNavigationDescriptors().stream().map(this::toResourceNavigationPayload).toList();
         return String.valueOf(createFingerprints(resources, resourceTemplates, tools, prompts, completionTargets, resourceNavigation).get("descriptorCatalog"));
     }
-
-    private List<Map<String, Object>> createNextActionContract() {
-        return List.of(
-                createNextActionContractEntry("resource_read", List.of("order", "type", "title", "resource_uri", "requires_user_approval"),
-                        List.of("reason", "depends_on"), "Read an MCP resource before choosing another call."),
-                createNextActionContractEntry("tool_call", List.of("order", "type", "title", "tool_name", "arguments", "requires_user_approval"),
-                        List.of("reason", "depends_on"), "Call another MCP tool with server-suggested arguments."),
-                createNextActionContractEntry("completion",
-                        List.of("order", "type", "title", "reference_type", "reference", "argument_name", "context_arguments", "requires_user_approval"),
-                        List.of("argument_prefix", "missing_context_arguments", "resume_target_type", "resume_target", "resume_arguments", "reason", "depends_on"),
-                        "Use MCP completion for one argument before retrying."),
-                createNextActionContractEntry("ask_user", List.of("order", "type", "title", "question", "requires_user_approval"),
-                        List.of("required_inputs", "reason", "depends_on"), "Ask the user for missing input or approval."),
-                createNextActionContractEntry("terminal", List.of("order", "type", "title", "requires_user_approval"),
-                        List.of("reason", "depends_on"), "Stop the current MCP flow and report the result."));
-    }
-
-    private Map<String, Object> createNextActionContractEntry(final String actionType, final List<String> requiredFields, final List<String> optionalFields, final String description) {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("type", actionType);
-        result.put("required_fields", requiredFields);
-        result.put("optional_fields", optionalFields);
-        result.put("description", description);
-        return result;
-    }
-
-    private Map<String, Object> createSurfaceSummary() {
-        Map<String, Object> result = new LinkedHashMap<>(8, 1F);
-        result.put("first_resource", "shardingsphere://capabilities");
-        result.put("metadata_resource", "shardingsphere://databases");
-        result.put("metadata_search_tool", "search_metadata");
-        result.put("read_only_sql_tool", "execute_query");
-        result.put("side_effect_sql_tool", "execute_update");
-        result.put("workflow_tools", List.of("apply_workflow", "validate_workflow"));
-        result.put("approval_rule", "Preview first and continue only after explicit user approval when requires_user_approval is true.");
-        result.put("completion_rule", "Use local completion hints on fields, prompts, and resources before guessing identifiers.");
-        return result;
-    }
-
-    private Map<String, Object> createFieldNamingContract() {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("protocol_fields", List.of("supportedResources", "supportedTools", "resourceTemplates", "completionTargets", "resourceNavigation", "protocolAvailability"));
-        result.put("payload_fields", "ShardingSphere-owned structured payload fields use snake_case.");
-        result.put("descriptor_fields", "Descriptor-derived MCP schema fields keep the protocol or JSON Schema field names required by MCP clients.");
-        result.put("alias_rule", "Do not assume camelCase and snake_case variants are aliases unless the same descriptor explicitly documents both.");
-        result.put("cleanup_rule", "Prefer one canonical ShardingSphere payload field over parallel compatibility aliases.");
-        return result;
-    }
-
-    private List<Map<String, Object>> createCommonFlows() {
-        return List.of(
-                createCommonFlow("inspect_metadata", List.of("read_resource shardingsphere://capabilities", "read_resource shardingsphere://databases",
-                        "call_tool search_metadata", "read_resource returned resource.uri"), "Stop when the requested metadata detail resource is read.",
-                        List.of("search_metadata"), List.of("shardingsphere://capabilities", "shardingsphere://databases")),
-                createCommonFlow("read_only_sql", List.of("read_resource shardingsphere://databases/{database}/capabilities", "call_tool execute_query"),
-                        "Use one SELECT or EXPLAIN ANALYZE statement and stop after the result is reported.",
-                        List.of("execute_query"), List.of("shardingsphere://databases/{database}/capabilities")),
-                createCommonFlow("side_effecting_sql", List.of("call_tool execute_update execution_mode=preview", "ask_user approved_by_user",
-                        "call_tool execute_update execution_mode=execute approved_by_user=true"),
-                        "Never execute until the previewed SQL and side-effect scope are approved by the user.", List.of("execute_update"), List.of()),
-                createCommonFlow("workflow_plan_apply_validate", List.of("call_tool descriptor-backed feature planning tool", "call_tool apply_workflow execution_mode=preview",
-                        "ask_user approved_by_user", "call_tool apply_workflow review-then-execute approved_by_user=true", "call_tool validate_workflow"),
-                        "Reuse the same current-session plan_id and stop after validation succeeds.",
-                        List.of("apply_workflow", "validate_workflow"), List.of()),
-                createCommonFlow("recover_from_error", List.of("follow recovery.next_actions", "read_resource shardingsphere://capabilities when suggested", "ask_user only when uncertain"),
-                        "Do not invent replacement calls while structured recovery actions are present.", List.of(), List.of("shardingsphere://capabilities")));
-    }
-
-    private Map<String, Object> createCommonFlow(final String flowId, final List<String> steps, final String stopCondition, final List<String> referencedTools,
-                                                 final List<String> referencedResources) {
-        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
-        result.put("flow_id", flowId);
-        result.put("steps", steps);
-        result.put("stop_condition", stopCondition);
-        result.put("referenced_tools", referencedTools);
-        result.put("referenced_resources", referencedResources);
-        return result;
-    }
-
+    
     private Map<String, Object> toResourcePayload(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(14, 1F);
         result.put(descriptor.isTemplated() ? "uriTemplate" : "uri", descriptor.getUriTemplate());
@@ -197,31 +123,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
-    private Map<String, Object> createModelContract() {
-        Map<String, Object> result = new LinkedHashMap<>(9, 1F);
-        result.put("public_surface_source", "shardingsphere://capabilities");
-        result.put("safe_first_resource", "shardingsphere://capabilities");
-        result.put("metadata_first_resource", "shardingsphere://databases");
-        result.put("sql_tool_selection", Map.of(
-                "read_only", "Use execute_query for one SELECT or EXPLAIN ANALYZE statement.",
-                "side_effecting", "Use execute_update with execution_mode=preview before asking for user approval."));
-        result.put("workflow_session_rule", "Reuse the current-session plan_id returned by a planning tool; re-plan when the plan is unavailable.");
-        result.put("side_effect_rule", "Preview before side effects and continue only after explicit user approval with approved_by_user=true.");
-        result.put("next_action_rule", "Use canonical next_actions fields: type, tool_name, resource_uri, arguments, and requires_user_approval.");
-        result.put("detail_resource_rule", "Read each resource payload_contract before assuming detail fields.");
-        result.put("recovery_rule", "When a call fails with recovery.next_actions, follow those structured actions before inventing a new call.");
-        return result;
-    }
-
-    private Map<String, Object> createSecurityHints() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        result.put("http_access_token", "HTTP transport may require an Authorization bearer token; capabilities never exposes secrets.");
-        result.put("remote_access", "Prefer loopback access unless the operator explicitly configures remote exposure.");
-        result.put("stdio_stdout", "STDIO transport must keep MCP protocol frames on stdout and send logs to stderr or files.");
-        return result;
-    }
-
+    
     private Map<String, Object> createResourcePayloadContract(final MCPResourceDescriptor descriptor) {
         Object resourceKind = descriptor.getResourceKind();
         if ("list".equals(resourceKind)) {
@@ -235,7 +137,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return Map.of();
     }
-
+    
     private Map<String, Object> createListResourcePayloadContract(final MCPResourceDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("response_kind", "list");
@@ -246,7 +148,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("continuation", "continuation_mode is none, pagination, or search_metadata. next_page_token is present only for pagination.");
         return result;
     }
-
+    
     private Map<String, Object> createDetailResourcePayloadContract(final MCPResourceDescriptor descriptor) {
         if ("runtime-status".equals(descriptor.getName())) {
             return createRuntimeStatusResourcePayloadContract();
@@ -267,17 +169,17 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("pagination", "Detail resources are not paginated.");
         return result;
     }
-
+    
     private Map<String, Object> createCapabilityResourcePayloadContract() {
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("response_kind", "capability-catalog");
-        result.put("stable_fields", List.of("response_mode", "model_contract", "surface_summary", "field_naming_contract", "next_action_contract", "common_flows", "security_hints", "resources",
-                "resourceTemplates", "tools", "prompts", "completionTargets", "resourceNavigation", "protocolAvailability"));
-        result.put("model_first_hop", "Read model_contract before choosing metadata, SQL, or workflow calls.");
+        result.put("stable_fields", List.of("response_mode", "model_first_summary", "model_contract", "surface_summary", "field_naming_contract", "next_action_contract", "common_flows",
+                "security_hints", "resources", "resourceTemplates", "tools", "prompts", "completionTargets", "resourceNavigation", "protocolAvailability"));
+        result.put("model_first_hop", "Read model_first_summary before choosing metadata, SQL, or workflow calls.");
         result.put("fingerprints", "Use fingerprints to compare descriptor payload shape across calls.");
         return result;
     }
-
+    
     private Map<String, Object> createDatabaseCapabilityResourcePayloadContract() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("response_kind", "detail-object");
@@ -287,22 +189,23 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("not_found_behavior", "The resource returns a not_found error when the logical database capability is unavailable.");
         return result;
     }
-
+    
     private Map<String, Object> createRuntimeStatusResourcePayloadContract() {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("response_kind", "runtime-status");
         result.put("stable_fields", List.of("response_mode", "server_status", "status", "transport", "active_transport", "configured_database_count", "databases",
-                "capability_fingerprint", "resources_to_read", "next_actions"));
+                "readiness", "redaction_summary", "diagnostics", "capability_fingerprint", "resources_to_read", "next_actions"));
         result.put("database_fields", List.of("database", "database_type", "driver_category", "schema_count", "metadata_visibility", "capability_visibility",
                 "feature_visibility", "capabilities", "resource"));
+        result.put("diagnostic_fields", List.of("current_category", "safe_categories", "operator_next_actions", "secret_policy"));
         result.put("secret_rule", "Runtime status never exposes JDBC credentials, bearer tokens, raw environment variables, or stack traces.");
         return result;
     }
-
+    
     private String createObjectScope(final MCPResourceDescriptor descriptor) {
         return null != descriptor.getObjectScope() ? descriptor.getObjectScope() : Objects.toString(descriptor.getFeature(), "resource");
     }
-
+    
     private Map<String, Object> toParameterPayload(final MCPResourceParameterDescriptor parameter) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("name", parameter.getName());
@@ -316,7 +219,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> toToolPayload(final MCPToolDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("name", descriptor.getName());
@@ -332,7 +235,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> toPromptPayload(final MCPPromptDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("name", descriptor.getName());
@@ -345,7 +248,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> toPromptArgumentPayload(final MCPPromptArgumentDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("name", descriptor.getName());
@@ -358,7 +261,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> toCompletionTargetPayload(final MCPCompletionTargetDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(5, 1F);
         result.put("referenceType", descriptor.getReferenceType());
@@ -370,7 +273,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> toResourceNavigationPayload(final MCPResourceNavigationDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(7, 1F);
         result.put("from", descriptor.getFrom());
@@ -382,7 +285,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("description", descriptor.getDescription());
         return result;
     }
-
+    
     private Map<String, Object> toFieldPayload(final MCPToolFieldDefinition field) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("name", field.getName());
@@ -394,7 +297,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> createCompletionHint(final String argumentName) {
         List<Map<String, Object>> references = catalog.getCompletionTargetDescriptors().stream()
                 .filter(each -> each.getArguments().contains(argumentName)).map(this::createCompletionReferenceHint).toList();
@@ -410,7 +313,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> createCompletionReferenceHint(final MCPCompletionTargetDescriptor descriptor) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         result.put("referenceType", descriptor.getReferenceType());
@@ -418,7 +321,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("maxValues", descriptor.getMaxValues());
         return result;
     }
-
+    
     private List<String> createCompletionRequiredContextArguments(final String argumentName) {
         if ("schema".equals(argumentName)) {
             return List.of("database");
@@ -431,7 +334,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return List.of();
     }
-
+    
     private String resolveReferenceType(final String reference) {
         if (catalog.getResourceDescriptors().stream().anyMatch(each -> each.getUriTemplate().equals(reference))) {
             return reference.contains("{") ? "resource_template" : "resource";
@@ -444,7 +347,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return "unknown";
     }
-
+    
     private Map<String, Object> toResourceAnnotationsPayload(final MCPResourceAnnotations annotations) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
         if (!annotations.getAudience().isEmpty()) {
@@ -458,7 +361,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result;
     }
-
+    
     private Map<String, Object> toToolAnnotationsPayload(final MCPToolAnnotations annotations) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         putIfPresent(result, "title", annotations.getTitle());
@@ -469,19 +372,19 @@ final class MCPDescriptorCatalogPayloadBuilder {
         putIfPresent(result, "returnDirect", annotations.getReturnDirect());
         return result;
     }
-
+    
     private void putIfPresent(final Map<String, Object> target, final String key, final Object value) {
         if (null != value) {
             target.put(key, value);
         }
     }
-
+    
     private void putIfNotEmpty(final Map<String, Object> target, final String key, final Collection<?> values) {
         if (!values.isEmpty()) {
             target.put(key, values);
         }
     }
-
+    
     private Map<String, Object> createProtocolAvailability(final boolean hasResourceNavigation) {
         Map<String, Object> result = new LinkedHashMap<>(12, 1F);
         result.put("resources", true);
@@ -494,7 +397,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("resourceNavigation", hasResourceNavigation);
         return result;
     }
-
+    
     private Map<String, Object> createFingerprints(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
                                                    final List<Map<String, Object>> tools, final List<Map<String, Object>> prompts,
                                                    final List<Map<String, Object>> completionTargets, final List<Map<String, Object>> resourceNavigation) {
@@ -512,7 +415,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         result.put("modelFacingSchemas", createHash(createModelFacingSchemas(resources, resourceTemplates, tools)));
         return result;
     }
-
+    
     private List<Map<String, Object>> createModelFacingSchemas(final List<Map<String, Object>> resources, final List<Map<String, Object>> resourceTemplates,
                                                                final List<Map<String, Object>> tools) {
         List<Map<String, Object>> result = new LinkedList<>();
@@ -521,17 +424,17 @@ final class MCPDescriptorCatalogPayloadBuilder {
         tools.stream().map(this::createToolSchema).forEach(result::add);
         return result;
     }
-
+    
     private Map<String, Object> createResourceSchema(final Map<String, Object> resource) {
         return resource.containsKey("uriTemplate")
                 ? Map.of("uriTemplate", resource.get("uriTemplate"), "parameters", resource.get("parameters"))
                 : Map.of("uri", resource.get("uri"), "parameters", resource.get("parameters"));
     }
-
+    
     private Map<String, Object> createToolSchema(final Map<String, Object> tool) {
         return Map.of("name", tool.get("name"), "inputFields", tool.get("inputFields"), "outputSchema", tool.get("outputSchema"));
     }
-
+    
     private String createHash(final Object value) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -541,7 +444,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
             throw new IllegalStateException("SHA-256 is not available.", ex);
         }
     }
-
+    
     private String toHex(final byte[] bytes) {
         StringBuilder result = new StringBuilder(bytes.length * 2);
         for (byte each : bytes) {
@@ -553,7 +456,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result.toString();
     }
-
+    
     private String canonicalize(final Object value) {
         if (null == value) {
             return "null";
@@ -569,7 +472,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return "\"" + escape(String.valueOf(value)) + "\"";
     }
-
+    
     private String canonicalizeMap(final Map<?, ?> value) {
         StringBuilder result = new StringBuilder("{");
         List<? extends Entry<?, ?>> entries = value.entrySet().stream()
@@ -583,7 +486,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result.append('}').toString();
     }
-
+    
     private String canonicalizeCollection(final Collection<?> value) {
         StringBuilder result = new StringBuilder("[");
         int index = 0;
@@ -595,7 +498,7 @@ final class MCPDescriptorCatalogPayloadBuilder {
         }
         return result.append(']').toString();
     }
-
+    
     private String escape(final String value) {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }

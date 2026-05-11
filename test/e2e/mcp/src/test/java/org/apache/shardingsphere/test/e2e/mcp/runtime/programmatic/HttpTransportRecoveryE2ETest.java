@@ -1,0 +1,187 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
+
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
+import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
+import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIf;
+
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@EnabledIf("isEnabled")
+class HttpTransportRecoveryE2ETest extends AbstractHttpProgrammaticRuntimeE2ETest {
+    
+    private static boolean isEnabled() {
+        return MCPE2ECondition.isContractEnabled();
+    }
+    
+    @Test
+    void assertRecoverMissingDatabase() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query", Map.of("schema", "public", "sql", "SELECT * FROM orders"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        assertThat(String.valueOf(payload.get("error_code")), is("invalid_request"));
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "missing_context");
+        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        assertThat(String.valueOf(nextAction.get("type")), is("resource_read"));
+        assertThat(String.valueOf(nextAction.get("resource_uri")), is("shardingsphere://databases"));
+        HttpResponse<String> followUp = sendResourceReadRequest(httpClient, sessionId, String.valueOf(nextAction.get("resource_uri")));
+        assertThat(followUp.statusCode(), is(200));
+        Map<String, Object> resourcePayload = getFirstResourcePayload(followUp.body());
+        assertThat(String.valueOf(resourcePayload.get("response_mode")), is("list"));
+        assertTrue(String.valueOf(resourcePayload.get("items")).contains("logic_db"));
+        assertModelFacingPayloadContract(payload);
+        assertModelFacingPayloadContract(resourcePayload);
+    }
+    
+    @Test
+    void assertRecoverUnsupportedTarget() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+                Map.of("database", "logic_db", "schema", "public", "sql", "SELECT * FROM orders", "execution_mode", "preview"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsupported_target");
+        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        assertThat(String.valueOf(nextAction.get("tool_name")), is("execute_query"));
+        HttpResponse<String> followUp = sendToolCallRequest(httpClient, sessionId, "execute_query", castToMap(nextAction.get("arguments")));
+        assertThat(followUp.statusCode(), is(200));
+        assertThat(String.valueOf(getStructuredContent(followUp.body()).get("result_kind")), is("result_set"));
+        assertModelFacingPayloadContract(payload);
+    }
+    
+    @Test
+    void assertRecoverInvalidExecutionMode() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_update",
+                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1", "execution_mode", "run"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "invalid_enum");
+        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        assertThat(String.valueOf(nextAction.get("tool_name")), is("execute_update"));
+        Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
+        assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
+        assertThat(String.valueOf(retryArguments.get("database")), is("logic_db"));
+        assertThat(String.valueOf(retryArguments.get("schema")), is("public"));
+        HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "execute_update", retryArguments);
+        assertThat(retry.statusCode(), is(200));
+        assertThat(String.valueOf(getStructuredContent(retry.body()).get("result_kind")), is("preview"));
+        assertModelFacingPayloadContract(payload);
+    }
+    
+    @Test
+    void assertRecoverWrongSqlTool() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, "execute_query",
+                Map.of("database", "logic_db", "schema", "public", "sql", "UPDATE orders SET status = status WHERE order_id = -1"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "unsafe_sql");
+        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        assertThat(String.valueOf(nextAction.get("tool_name")), is("execute_update"));
+        Map<String, Object> retryArguments = castToMap(nextAction.get("arguments"));
+        assertThat(String.valueOf(retryArguments.get("execution_mode")), is("preview"));
+        HttpResponse<String> retry = sendToolCallRequest(httpClient, sessionId, "execute_update", retryArguments);
+        assertThat(retry.statusCode(), is(200));
+        assertThat(String.valueOf(getStructuredContent(retry.body()).get("result_kind")), is("preview"));
+        assertModelFacingPayloadContract(payload);
+    }
+    
+    @Test
+    void assertRecoverStaleWorkflowPlan() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
+                Map.of("plan_id", "plan-missing", "execution_mode", "preview"));
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> payload = getStructuredContent(actual.body());
+        Map<String, Object> recovery = assertRecoveryCategory(payload, "stale_workflow");
+        assertThat(String.valueOf(recovery.get("plan_id")), is("plan-missing"));
+        Map<String, Object> nextAction = getFirstNextAction(recovery);
+        assertThat(String.valueOf(nextAction.get("type")), is("completion"));
+        assertThat(String.valueOf(nextAction.get("argument_name")), is("plan_id"));
+        HttpResponse<String> completion = sendCompletionRequest(httpClient, sessionId, createCompletionReference(nextAction), String.valueOf(nextAction.get("argument_name")));
+        assertThat(completion.statusCode(), is(200));
+        Map<String, Object> completionPayload = getResultPayload(completion);
+        assertThat(castToMap(completionPayload.get("completion")).get("total"), is(0));
+        assertModelFacingPayloadContract(payload);
+        assertModelFacingPayloadContract(completionPayload);
+    }
+    
+    private Map<String, Object> assertRecoveryCategory(final Map<String, Object> payload, final String expectedRecoveryCategory) {
+        Map<String, Object> result = castToMap(payload.get("recovery"));
+        assertThat(String.valueOf(result.get("recovery_category")), is(expectedRecoveryCategory));
+        return result;
+    }
+    
+    private Map<String, Object> getFirstNextAction(final Map<String, Object> recovery) {
+        return castToMapList(recovery.get("next_actions")).iterator().next();
+    }
+    
+    private HttpResponse<String> sendCompletionRequest(final HttpClient httpClient, final String sessionId, final Map<String, Object> reference,
+                                                       final String argumentName) throws IOException, InterruptedException {
+        Map<String, Object> params = new LinkedHashMap<>(2, 1F);
+        params.put("ref", reference);
+        params.put("argument", Map.of("name", argumentName, "value", ""));
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                "completion-1", "completion/complete", params));
+    }
+    
+    private Map<String, Object> createCompletionReference(final Map<String, Object> action) {
+        String referenceType = Objects.toString(action.get("reference_type"), "");
+        String reference = Objects.toString(action.get("reference"), "");
+        return "resource".equals(referenceType) ? Map.of("type", "ref/resource", "uri", reference) : Map.of("type", "ref/prompt", "name", reference);
+    }
+    
+    private Map<String, Object> getResultPayload(final HttpResponse<String> response) {
+        return castToMap(parseJsonBody(response.body()).get("result"));
+    }
+    
+    private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
+        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
+        MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
+    }
+    
+    private List<Map<String, Object>> castToMapList(final Object value) {
+        return ((List<?>) value).stream().map(this::castToMap).toList();
+    }
+}

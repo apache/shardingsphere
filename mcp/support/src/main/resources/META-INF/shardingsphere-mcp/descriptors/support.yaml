@@ -480,12 +480,12 @@ tools:
               impact:
                 type: string
                 description: "Impact of the mismatch."
-              suggested_next_action:
+              remediation:
                 type: string
-                description: "Suggested next action for the mismatch."
-        recommended_recovery:
+                description: "Specific remediation guidance for the mismatch."
+        recovery_guidance:
           type: string
-          description: "Suggested next action when validation fails."
+          description: "Recovery guidance when validation fails."
         next_actions:
           type: array
           description: "Ordered model-facing recommendations after validation."
@@ -528,7 +528,7 @@ tools:
           status: passed
           sections: []
           mismatches: []
-          recommended_recovery: ""
+          recovery_guidance: ""
           next_actions:
             - order: 1
               type: terminal

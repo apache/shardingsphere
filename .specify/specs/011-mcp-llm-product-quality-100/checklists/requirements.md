@@ -36,6 +36,14 @@
 - [x] Mandatory live gate does not require a paid external API key.
 - [x] Compatibility is explicitly out of scope for the unreleased MCP contract.
 - [x] Packaged HTTP diagnostics are mandatory and STDIO diagnostics are practical-scope.
+- [x] The independent 80-dimension score model is captured in `eighty-dimension-requirements.md`.
+- [x] The target is every independent score item reaching 100, not an additive total.
+- [x] The latest MCP and MCP E2E independent baselines are recorded.
+- [x] Current blocking findings are captured as explicit requirements and checkpoint evidence records the resolved blockers.
+- [x] Recommended defaults are recorded as confirmed decisions.
+- [x] Automated evidence is mandatory for every final 100-point score claim.
+- [x] H2 and MySQL are mandatory evidence; PostgreSQL and openGauss are optional unless touched.
+- [x] Standalone runtime is mandatory evidence; cluster/governance is risk-tracked unless touched.
 
 ## Clarity
 
@@ -44,6 +52,10 @@
 - [x] Tasks are grouped by P0/P1/P2 priority.
 - [x] Tasks name likely target paths where useful.
 - [x] Verification tasks are separated from implementation tasks.
+- [x] Speckit branch creation is explicitly forbidden for this sweep.
+- [x] Native LLM tool-call scoring is separated from harness recovery scoring.
+- [x] Manual review cannot be the only evidence for a 100 score.
+- [x] Refactoring scope is constrained to small reviewable slices with a clear quality reason.
 
 ## Risk Coverage
 
@@ -55,3 +67,7 @@
 - [x] Runtime and packaged diagnostic failures are covered.
 - [x] Side-effect execution requires explicit approval while preview remains allowed.
 - [x] Extended scenarios hard-fail if unapproved side effects are not blocked.
+- [x] Stale descriptor contract assertions are called out as a P0 gate and fixed by semantic assertions.
+- [x] Fixed-sleep live-model readiness is called out as a stability risk and fixed by bounded polling.
+- [x] Native tool-call scoring is protected from harness recovery over-crediting.
+- [x] The remaining `git diff --check` and Spotless conflict is documented as a final-gate caveat.

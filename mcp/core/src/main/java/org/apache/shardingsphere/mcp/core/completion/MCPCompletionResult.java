@@ -29,15 +29,15 @@ import java.util.Map;
  */
 @Getter
 public final class MCPCompletionResult {
-
+    
     private final List<String> values;
-
+    
     private final int total;
-
+    
     private final boolean hasMore;
-
+    
     private final Map<String, Object> meta;
-
+    
     public MCPCompletionResult(final List<String> values, final int total, final boolean hasMore, final Map<String, Object> meta) {
         this.values = List.copyOf(values);
         this.total = total;

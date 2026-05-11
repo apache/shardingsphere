@@ -165,18 +165,18 @@ public final class WorkflowValidationSupport {
      * @param expected expected value
      * @param actual actual value
      * @param impact mismatch impact
-     * @param suggestedNextAction suggested next action
+     * @param remediation remediation guidance
      * @return mismatch payload
      */
     public Map<String, Object> createMismatch(final String code, final String layer, final String expected,
-                                              final String actual, final String impact, final String suggestedNextAction) {
+                                              final String actual, final String impact, final String remediation) {
         Map<String, Object> result = new LinkedHashMap<>(6, 1F);
         result.put("code", code);
         result.put("layer", layer);
         result.put("expected", expected);
         result.put("actual", actual);
         result.put("impact", impact);
-        result.put("suggested_next_action", suggestedNextAction);
+        result.put("remediation", remediation);
         return result;
     }
     
@@ -235,7 +235,7 @@ public final class WorkflowValidationSupport {
         result.put("issues", List.of(new WorkflowIssue(issueCode, "error", "validating", message, userAction, false, Map.of()).toMap()));
         result.put("overall_status", WorkflowLifecycle.STATUS_FAILED);
         result.put("mismatches", List.of());
-        result.put("recommended_recovery", userAction);
+        result.put("recovery_guidance", userAction);
         result.put("next_actions", List.of());
         result.put("requires_user_approval", false);
         return result;

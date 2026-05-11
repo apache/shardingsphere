@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WorkflowRequestBinderTest {
-
+    
     @Test
     void assertBindPlanningRequestBindsCommonFieldsAndFeatureCallbacks() {
         Map<String, Object> arguments = new LinkedHashMap<>();
@@ -74,7 +74,7 @@ class WorkflowRequestBinderTest {
         assertThat(actualStructuredIntentEvidence.get(), is(Map.of("field_semantics", "identifier")));
         assertThat(actualUserOverrides.get(), is(Map.of("algorithm_type", "MD5")));
     }
-
+    
     @Test
     void assertBindPlanningRequestIgnoresPlanIdPlaceholder() {
         WorkflowRequest actual = WorkflowRequestBinder.bindPlanningRequest(Map.of("plan_id", "plan_id", "database", "logic_db"),
@@ -85,7 +85,7 @@ class WorkflowRequestBinderTest {
         assertThat(actual.getPlanId(), is(""));
         assertThat(actual.getDatabase(), is("logic_db"));
     }
-
+    
     @Test
     void assertBindPlanningRequestRejectsConflictingUserOverrides() {
         Map<String, Object> arguments = Map.of("algorithm_type", "AES", "user_overrides", Map.of("algorithm_type", "MD5"));
@@ -96,7 +96,7 @@ class WorkflowRequestBinderTest {
                         (request, userOverrides) -> request.setAlgorithmType(String.valueOf(userOverrides.get("algorithm_type")))));
         assertThat(actual.getConflictingArguments(), is(List.of("algorithm_type conflicts with user_overrides.algorithm_type")));
     }
-
+    
     @Test
     void assertBindPlanningRequestSkipsMissingObjectMaps() {
         AtomicInteger actualStructuredIntentCount = new AtomicInteger();

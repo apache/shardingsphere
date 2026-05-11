@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
-import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 
@@ -126,7 +124,7 @@ final class LLMMCPToolDefinitionFactory {
         return Map.of("type", "function", "function", Map.of(
                 "name", toolDescriptor.getName(),
                 "description", toolDescriptor.getDescription(),
-                "parameters", createParameterSchema(toolDescriptor.getFields())));
+                "parameters", toolDescriptor.toInputSchema()));
     }
     
     private MCPToolDescriptor getToolDescriptor(final String toolName) {
@@ -142,26 +140,4 @@ final class LLMMCPToolDefinitionFactory {
         return Map.of("type", "object", "properties", Map.of(), "additionalProperties", false);
     }
     
-    private Map<String, Object> createParameterSchema(final List<MCPToolFieldDefinition> fields) {
-        Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
-        List<String> required = new LinkedList<>();
-        for (MCPToolFieldDefinition each : fields) {
-            properties.put(each.getName(), createValueSchema(each.getValueDefinition()));
-            if (each.isRequired()) {
-                required.add(each.getName());
-            }
-        }
-        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        result.put("type", "object");
-        result.put("properties", properties);
-        result.put("additionalProperties", true);
-        if (!required.isEmpty()) {
-            result.put("required", required);
-        }
-        return result;
-    }
-    
-    private Map<String, Object> createValueSchema(final MCPToolValueDefinition valueDefinition) {
-        return valueDefinition.toSchemaFragment();
-    }
 }

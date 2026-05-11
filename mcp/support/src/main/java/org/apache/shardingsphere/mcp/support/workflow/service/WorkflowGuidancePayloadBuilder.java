@@ -110,7 +110,7 @@ public final class WorkflowGuidancePayloadBuilder {
      */
     public static void appendValidationGuidance(final Map<String, Object> payload, final WorkflowContextSnapshot snapshot, final ValidationReport validationReport) {
         boolean failed = WorkflowLifecycle.STATUS_FAILED.equals(validationReport.getOverallStatus());
-        payload.put("recommended_recovery", failed ? createValidationRecovery(snapshot) : "");
+        payload.put("recovery_guidance", failed ? createValidationRecovery(snapshot) : "");
         payload.put("next_actions", failed ? createValidationFailureActions(snapshot) : List.of(createStopAction()));
         payload.put("requires_user_approval", failed && isManualOnlyWorkflow(snapshot));
     }

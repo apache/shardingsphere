@@ -315,8 +315,10 @@ class MCPJdbcMetadataLoaderTest {
     @Test
     void assertLoadWithMismatchedDatabaseType() throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration("MySQL", createConnectionWithoutSchema("H2"));
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> load(Map.of("logic_db", runtimeDatabaseConfiguration)));
-        assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class, () -> load(Map.of("logic_db", runtimeDatabaseConfiguration)));
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: invalid_configuration."));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
+        assertThat(actual.getCause().getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
     
     @ParameterizedTest(name = "{0}")
@@ -335,8 +337,10 @@ class MCPJdbcMetadataLoaderTest {
                                                          final String probeResult) throws SQLException {
         RuntimeDatabaseConfiguration runtimeDatabaseConfiguration = createMockRuntimeDatabaseConfiguration(configuredDatabaseType,
                 createConnectionWithoutSchema("MySQL", "jdbc:mysql://metadata-loader/test", Map.of(probeQuery, probeResult)));
-        IllegalStateException actual = assertThrows(IllegalStateException.class, () -> load(Map.of("logic_db", runtimeDatabaseConfiguration)));
-        assertThat(actual.getMessage(), is(String.format("Configured databaseType `%s` does not match actual database type `MySQL` for database `logic_db`.", configuredDatabaseType)));
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class, () -> load(Map.of("logic_db", runtimeDatabaseConfiguration)));
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: invalid_configuration."));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
+        assertThat(actual.getCause().getMessage(), is(String.format("Configured databaseType `%s` does not match actual database type `MySQL` for database `logic_db`.", configuredDatabaseType)));
     }
     
     @ParameterizedTest(name = "{0}")

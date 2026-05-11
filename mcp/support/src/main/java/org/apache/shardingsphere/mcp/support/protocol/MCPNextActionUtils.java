@@ -35,47 +35,49 @@ public final class MCPNextActionUtils {
     /**
      * Create a read-resource action.
      *
-     * @param targetResource target resource URI
+     * @param resourceUri resource URI
      * @param reason action reason
      * @return action payload
      */
-    public static Map<String, Object> readResource(final String targetResource, final String reason) {
+    public static Map<String, Object> readResource(final String resourceUri, final String reason) {
         Map<String, Object> result = createBaseAction("resource_read", "Read resource", reason, false);
-        result.put("resource_uri", targetResource);
+        result.put("resource_uri", resourceUri);
         return result;
     }
     
     /**
      * Create a tool-call action.
      *
-     * @param targetTool target tool
+     * @param toolName tool name
      * @param reason action reason
-     * @param requiredArguments required arguments
+     * @param arguments tool arguments
      * @param requiresUserApproval requires user approval
      * @return action payload
      */
-    public static Map<String, Object> callTool(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
-        Map<String, Object> result = createBaseAction("tool_call", "Call " + targetTool, reason, requiresUserApproval);
-        result.put("tool_name", targetTool);
-        result.put("arguments", requiredArguments);
+    public static Map<String, Object> callTool(final String toolName, final String reason, final Map<String, Object> arguments, final boolean requiresUserApproval) {
+        Map<String, Object> result = createBaseAction("tool_call", "Call " + toolName, reason, requiresUserApproval);
+        result.put("tool_name", toolName);
+        result.put("arguments", arguments);
         return result;
     }
     
     /**
      * Create a retry-tool action.
      *
-     * @param targetTool optional target tool
+     * @param toolName tool name
      * @param reason action reason
-     * @param requiredArguments required arguments
+     * @param arguments tool arguments
      * @param requiresUserApproval requires user approval
      * @return action payload
+     * @throws IllegalArgumentException when tool name is blank
      */
-    public static Map<String, Object> retryTool(final String targetTool, final String reason, final Map<String, Object> requiredArguments, final boolean requiresUserApproval) {
-        Map<String, Object> result = createBaseAction("tool_call", null == targetTool || targetTool.isBlank() ? "Retry tool" : "Retry " + targetTool, reason, requiresUserApproval);
-        result.put("arguments", requiredArguments);
-        if (null != targetTool && !targetTool.isBlank()) {
-            result.put("tool_name", targetTool);
+    public static Map<String, Object> retryTool(final String toolName, final String reason, final Map<String, Object> arguments, final boolean requiresUserApproval) {
+        if (toolName.isBlank()) {
+            throw new IllegalArgumentException("Tool name is required for a retry action.");
         }
+        Map<String, Object> result = createBaseAction("tool_call", "Retry " + toolName, reason, requiresUserApproval);
+        result.put("arguments", arguments);
+        result.put("tool_name", toolName);
         return result;
     }
     

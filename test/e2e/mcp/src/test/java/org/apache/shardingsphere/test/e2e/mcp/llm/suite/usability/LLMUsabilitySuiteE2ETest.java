@@ -42,32 +42,32 @@ import java.util.Map;
 @Tag("llm-e2e")
 @EnabledIf("isEnabled")
 class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
-
+    
     private static final String SUITE_ID = "llm-usability-h2";
-
+    
     private static final String RUNTIME_KIND = "h2";
-
+    
     private static final String DATABASE_NAME = "logic_db";
-
+    
     private static final String TABLE_NAME = "orders";
-
+    
     private static final String COUNT_ORDERS_SQL = "SELECT COUNT(*) AS total_orders FROM orders";
-
+    
     private static OllamaLLMRuntimeSupport.ModelRuntime llmRuntime;
-
+    
     private final LLMRuntimeFixtureFactory runtimeFixtureFactory = new LLMRuntimeFixtureFactory();
-
+    
     private final LLMUsabilitySuiteRunner suiteRunner = new LLMUsabilitySuiteRunner();
-
+    
     private final LLMUsabilityScenarioCatalog scenarioCatalog = new LLMUsabilityScenarioCatalog();
-
+    
     private Fixture currentRuntimeFixture;
-
+    
     @BeforeAll
     static void prepareLLMRuntime() throws InterruptedException {
         llmRuntime = OllamaLLMRuntimeSupport.prepare(LLME2EConfiguration.load());
     }
-
+    
     @AfterAll
     static void closeLLMRuntime() {
         if (null != llmRuntime) {
@@ -75,7 +75,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
             llmRuntime = null;
         }
     }
-
+    
     @AfterEach
     void closeRuntimeFixture() {
         if (null != currentRuntimeFixture) {
@@ -87,7 +87,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
     private static boolean isEnabled() {
         return MCPE2ECondition.isLLMEnabled();
     }
-
+    
     @Test
     void assertUsabilityBaseline() throws IOException, InterruptedException {
         LLMConversationExecutor conversationExecutor = new LLMConversationExecutor(getRequiredLLMConfiguration());
@@ -102,36 +102,36 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 each -> conversationExecutor.runConversation(SUITE_ID + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
     }
-
+    
     private List<LLMUsabilityScenario> createCoreScenarios() {
         Fixture fixture = getRequiredRuntimeFixture();
         return scenarioCatalog.createCoreGate(RUNTIME_KIND, DATABASE_NAME, fixture.schemaName(), TABLE_NAME, COUNT_ORDERS_SQL,
                 fixture.totalOrders());
     }
-
+    
     private List<LLMUsabilityScenario> createExtendedScenarios() {
         Fixture fixture = getRequiredRuntimeFixture();
         return scenarioCatalog.createExtendedScore(RUNTIME_KIND, DATABASE_NAME, fixture.schemaName(), TABLE_NAME, COUNT_ORDERS_SQL,
                 fixture.totalOrders());
     }
-
+    
     private static LLME2EConfiguration getRequiredLLMConfiguration() {
         if (null == llmRuntime) {
             throw new IllegalStateException("LLM runtime was not initialized.");
         }
         return llmRuntime.getConfiguration();
     }
-
+    
     @Override
     protected RuntimeTransport getTransport() {
         return RuntimeTransport.HTTP;
     }
-
+    
     @Override
     protected Map<String, RuntimeDatabaseConfiguration> getRuntimeDatabases() {
         return getRequiredRuntimeFixture().runtimeDatabases();
     }
-
+    
     @Override
     protected void prepareRuntimeFixture() throws IOException {
         if (null != currentRuntimeFixture) {
@@ -140,7 +140,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
         currentRuntimeFixture = runtimeFixtureFactory.createMultiDatabaseH2Fixture(getTempDir(), DATABASE_NAME, "analytics_db",
                 getTransport());
     }
-
+    
     private Fixture getRequiredRuntimeFixture() {
         if (null == currentRuntimeFixture) {
             throw new IllegalStateException("LLM usability runtime fixture was not initialized.");

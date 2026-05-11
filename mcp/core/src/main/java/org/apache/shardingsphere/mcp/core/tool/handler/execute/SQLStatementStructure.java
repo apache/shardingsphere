@@ -19,6 +19,37 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import java.util.Collection;
 
-record SQLStatementStructure(String mainSql, String statementType, boolean containsDataModifyingCommonTableExpression,
-                             Collection<SQLCommonTableExpression> commonTableExpressions) {
+final class SQLStatementStructure {
+    
+    private final String mainSql;
+    
+    private final String statementType;
+    
+    private final boolean containsDataModifyingCommonTableExpression;
+    
+    private final Collection<SQLCommonTableExpression> commonTableExpressions;
+    
+    SQLStatementStructure(final String mainSql, final String statementType, final boolean containsDataModifyingCommonTableExpression,
+                          final Collection<SQLCommonTableExpression> commonTableExpressions) {
+        this.mainSql = mainSql;
+        this.statementType = statementType;
+        this.containsDataModifyingCommonTableExpression = containsDataModifyingCommonTableExpression;
+        this.commonTableExpressions = commonTableExpressions;
+    }
+    
+    String mainSql() {
+        return mainSql;
+    }
+    
+    String statementType() {
+        return statementType;
+    }
+    
+    boolean containsDataModifyingCommonTableExpression() {
+        return containsDataModifyingCommonTableExpression;
+    }
+    
+    Collection<SQLCommonTableExpression> commonTableExpressions() {
+        return commonTableExpressions;
+    }
 }

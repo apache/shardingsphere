@@ -27,25 +27,31 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 public final class LLMUsabilityScenario {
-
+    
+    public static final String NATURAL_TASK_TAG = "natural-task";
+    
+    public static final String PROTOCOL_CONTRACT_TAG = "protocol-contract";
+    
     private final String scenarioId;
-
+    
     private final LLMUsabilityDimension dimension;
-
+    
     private final String runtimeKind;
-
+    
     private final List<String> tags;
-
+    
     private final LLME2EScenario llmScenario;
-
+    
     private final List<String> expectedFirstActionNames;
-
+    
     private final List<String> expectedResourceUris;
-
+    
     private final boolean resourceHitRequired;
-
+    
     private final boolean recoveryExpected;
-
+    
+    private final String expectedRecoveryCategory;
+    
     /**
      * Is query scenario.
      *
@@ -53,5 +59,23 @@ public final class LLMUsabilityScenario {
      */
     public boolean isQueryScenario() {
         return LLMUsabilityDimension.TOOL == dimension || LLMUsabilityDimension.RECOVERY == dimension || LLMUsabilityDimension.RESOURCE == dimension;
+    }
+    
+    /**
+     * Is natural task.
+     *
+     * @return natural task
+     */
+    public boolean isNaturalTask() {
+        return tags.contains(NATURAL_TASK_TAG);
+    }
+    
+    /**
+     * Is protocol contract.
+     *
+     * @return protocol contract
+     */
+    public boolean isProtocolContract() {
+        return tags.contains(PROTOCOL_CONTRACT_TAG);
     }
 }

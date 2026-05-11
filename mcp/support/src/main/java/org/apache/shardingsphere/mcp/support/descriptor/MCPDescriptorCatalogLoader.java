@@ -28,7 +28,7 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPDescriptorCatalogLoader {
-
+    
     /**
      * Load MCP descriptor catalog from classpath.
      *

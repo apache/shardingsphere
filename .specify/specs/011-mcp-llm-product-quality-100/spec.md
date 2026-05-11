@@ -62,29 +62,73 @@ The target is not another readability-only cleanup. The target is a production-g
 - Extended LLM scenarios are non-blocking only for model-performance outcomes.
   Deterministic checks such as environment readiness, contract shape, safety blocking,
   artifact validity, score range, and secret leakage MUST remain hard assertions.
+- All 80 independent score items are mandatory for MCP production and MCP E2E unless an exception is explicitly recorded and approved.
+- A 100 score requires automated command or artifact evidence; manual review can support the decision but cannot be the only evidence.
+- Native model tool calls and harness recovery behavior must be scored separately.
+- Live LLM E2E remains opt-in for default PR CI.
+- H2 and MySQL are mandatory dialect/runtime evidence for the 100-point target.
+- PostgreSQL and openGauss are optional follow-up evidence unless a touched change directly targets them.
+- Standalone MCP runtime is mandatory evidence; cluster or registry-governance compatibility is recorded as a risk unless touched.
+- Refactoring is allowed only in small reviewable slices that reduce reading cost, contract drift, or test ambiguity.
+- Final delivery must update code, tests, Speckit, scorecard, and usage or rollback documentation where the changed behavior needs handoff.
 
 ## Strict Score Baseline
 
-The current strict score is **78/100**.
+The original strict score baseline was **78/100**.
+The current implementation checkpoint score is **88/100**.
 
 This score is intentionally lower than the previous design-clarity score.
 The previous score measured whether code responsibilities were cleaned up.
 This score measures whether MCP behaves like a polished product surface for real LLM clients.
 
+## Latest Independent Review Baseline
+
+The latest 80-dimension review uses independent 100-point gates for every dimension instead of one additive total.
+
+- MCP production modules current average: **78/100**.
+- MCP E2E current average: **76/100**.
+- The target is for every independent dimension to reach **100/100**, not for the average to reach 100.
+- Detailed 80-dimension requirements live in `eighty-dimension-requirements.md`.
+- Resolved verification blocker: `ToolHandlerRegistryTest` now uses semantic descriptor assertions and passes.
+- Resolved LLM scoring risk: native model tool calls and harness recovery are recorded and scored separately.
+- Resolved E2E stability risk: live-model readiness now uses bounded polling with structured failure diagnostics.
+- Additional readiness cleanup: MySQL JDBC readiness and packaged HTTP startup polling are bounded by remaining deadlines.
+- Remaining final-gate caveat: `git diff --check` conflicts with Spotless blank-line indentation for touched Java files;
+  scoped `checkstyle:check` and `spotless:check` pass.
+
+## Implementation Evidence
+
+- `ToolHandlerRegistryTest` passes in the scoped MCP core command.
+- Targeted MCP E2E conversation, scorecard, tool-definition, scenario-catalog, artifact-writer, and LLM client tests pass.
+- Scoped MCP Checkstyle and Spotless gates pass.
+- Opt-in live LLM suite with Dockerized Ollama `qwen3:1.7b` passes.
+- Enabled MySQL HTTP runtime smoke for `assertReadCapabilitiesWithActualMySQLBackend` passes.
+- Phase 6 code-boundary tests and Phase 7 runtime diagnostic tests pass, including programmatic HTTP runtime diagnostics.
+- Packaged HTTP and STDIO runtime diagnostic smoke assertions are implemented and remain opt-in through the existing
+  distribution E2E condition.
+- Prompt-injection safety tests prove the LLM harness rejects forged side-effect approvals, and HTTP E2E separately proves
+  the production-client explicit approval path remains functional.
+- Live run id: `20260510002520-0f366331`.
+- Core live scorecard result: `overallScore=100`, `fullScore=true`, `nativeToolCallRate=1`, `harnessRecoveryRate=0`.
+- Extended live scorecard result: `overallScore=92.6190476190476`, `fullScore=false`, deterministic assertions passed.
+
 ## 100-Point Score Model
 
-- LLM use friendliness and zero-guessing: **10 points**, current **7/10**
+- LLM use friendliness and zero-guessing: **10 points**, current **8/10**
 - Interaction naturalness: **8 points**, current **6/8**
-- Semantic clarity: **8 points**, current **6.5/8**
-- Code readability: **10 points**, current **8/10**
-- Architecture clarity: **10 points**, current **8/10**
-- Decoupling: **8 points**, current **6.5/8**
-- Protocol contract completeness and drift protection: **10 points**, current **8/10**
-- Error recovery and diagnostics: **8 points**, current **6.5/8**
-- Safety and approval boundaries: **8 points**, current **7/8**
-- Test credibility for real LLM behavior: **10 points**, current **7/10**
-- Evolvability: **5 points**, current **4/5**
-- Operations and release readiness: **5 points**, current **3.5/5**
+- Semantic clarity: **8 points**, current **7.5/8**
+- Code readability: **10 points**, current **8.5/10**
+- Architecture clarity: **10 points**, current **8.5/10**
+- Decoupling: **8 points**, current **7/8**
+- Protocol contract completeness and drift protection: **10 points**, current **9/10**
+- Error recovery and diagnostics: **8 points**, current **8/8**
+- Safety and approval boundaries: **8 points**, current **8/8**
+- Test credibility for real LLM behavior: **10 points**, current **8.5/10**
+- Evolvability: **5 points**, current **4.5/5**
+- Operations and release readiness: **5 points**, current **4.5/5**
+
+This weighted model is retained as historical context for the strict product-quality score.
+The active requirement sweep uses the independent 80-dimension model in `eighty-dimension-requirements.md`.
 
 ## User Stories & Tests
 
@@ -196,6 +240,8 @@ The system should expose safe diagnostics without leaking secrets.
 - **MPQ-FR-012**: Completion MUST help fill database, schema, table, column, index, sequence, and workflow `plan_id` from current runtime context.
 - **MPQ-FR-013**: Side-effecting SQL and workflow execution MUST allow `preview` without approval.
   Real execution MUST require an explicit approval signal before execution.
+  LLM harnesses MUST reject model-supplied forged approvals; production MCP clients remain responsible for providing truthful
+  explicit approval unless a future server-verified approval token design is accepted.
 - **MPQ-FR-014**: SQL safety checks MUST be covered by dialect-aware examples or documented unsupported cases; complex SQL must fail safe.
 - **MPQ-FR-015**: Model-facing response maps that recur across modules SHOULD be backed by small typed payload builders or contract factories when that reduces drift.
 - **MPQ-FR-016**: `MCPErrorConverter` and catalog payload construction MUST not become unbounded policy sinks; new recovery and catalog families need named boundaries.

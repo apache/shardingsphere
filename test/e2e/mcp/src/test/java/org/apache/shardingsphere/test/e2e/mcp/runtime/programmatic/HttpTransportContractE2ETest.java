@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.runtime.programmatic;
 
+import org.apache.shardingsphere.mcp.support.workflow.descriptor.WorkflowToolDescriptors;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
+import org.apache.shardingsphere.test.e2e.mcp.support.assertion.MCPModelContractAssertions;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.client.MCPHttpTransportTestSupport;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
@@ -41,6 +43,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     
     private static final List<String> OFFICIAL_TOOL_NAMES = List.of(
             "search_metadata", "execute_query", "execute_update", "apply_workflow", "validate_workflow", "plan_encrypt_rule", "plan_mask_rule");
+    
+    private static final String PLAN_MASK_TOOL_NAME = "plan_mask_rule";
     
     private static boolean isEnabled() {
         return MCPE2ECondition.isContractEnabled();
@@ -130,6 +134,45 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertTrue((Boolean) actualProtocolAvailability.get("prompts"));
         assertTrue((Boolean) actualProtocolAvailability.get("completions"));
         assertTrue((Boolean) actualProtocolAvailability.get("resourceNavigation"));
+        assertModelFacingPayloadContract(actualCapabilities);
+    }
+    
+    @Test
+    void assertExposeSecretFreeRuntimeDiagnostics() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> actual = sendResourceReadRequest(httpClient, sessionId, "shardingsphere://runtime");
+        assertThat(actual.statusCode(), is(200));
+        Map<String, Object> actualRuntimeStatus = getFirstResourcePayload(actual.body());
+        assertThat(actualRuntimeStatus.get("status"), is("available"));
+        assertThat(actualRuntimeStatus.get("active_transport"), is("http"));
+        assertModelFacingPayloadContract(actualRuntimeStatus);
+        Map<String, Object> actualDiagnostics = castToMap(actualRuntimeStatus.get("diagnostics"));
+        assertThat(actualDiagnostics.get("current_category"), is("ready"));
+        assertTrue(((List<?>) actualDiagnostics.get("safe_categories")).contains("invalid_configuration"));
+        assertTrue(castToMapList(actualDiagnostics.get("operator_next_actions")).stream().anyMatch(each -> "invalid_configuration".equals(each.get("category"))));
+        assertThat(castToMap(actualRuntimeStatus.get("redaction_summary")).get("marker"), is("******"));
+        assertRuntimeStatusSecretSafe(actualRuntimeStatus);
+    }
+    
+    @Test
+    void assertExposeResourceAndPromptListContracts() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> resourceListResponse = sendResourceListRequest(httpClient, sessionId);
+        assertThat(resourceListResponse.statusCode(), is(200));
+        Map<String, Object> resourceListPayload = getResultPayload(resourceListResponse);
+        assertModelFacingPayloadContract(resourceListPayload);
+        List<Map<String, Object>> actualResources = castToMapList(resourceListPayload.get("resources"));
+        assertTrue(actualResources.stream().anyMatch(each -> "shardingsphere://capabilities".equals(each.get("uri"))));
+        HttpResponse<String> promptListResponse = sendPromptListRequest(httpClient, sessionId);
+        assertThat(promptListResponse.statusCode(), is(200));
+        Map<String, Object> promptListPayload = getResultPayload(promptListResponse);
+        assertModelFacingPayloadContract(promptListPayload);
+        List<Map<String, Object>> actualPrompts = castToMapList(promptListPayload.get("prompts"));
+        assertTrue(actualPrompts.stream().anyMatch(each -> "inspect_metadata".equals(each.get("name"))));
     }
     
     @Test
@@ -140,15 +183,17 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> promptResponse = sendPromptGetRequest(httpClient, sessionId, "inspect_metadata",
                 Map.of("database", "logic_db", "schema", "public", "query", "orders"));
         assertThat(promptResponse.statusCode(), is(200));
-        Map<String, Object> promptPayload = castToMap(parseJsonBody(promptResponse.body()).get("result"));
+        Map<String, Object> promptPayload = getResultPayload(promptResponse);
         assertTrue(String.valueOf(promptPayload).contains("Stop conditions"));
         assertTrue(String.valueOf(promptPayload).contains("stopConditions"));
+        assertModelFacingPayloadContract(promptPayload);
         HttpResponse<String> completionResponse = sendCompletionRequest(httpClient, sessionId, Map.of("type", "ref/prompt", "name", "inspect_metadata"),
                 "schema", "pub", Map.of());
         assertThat(completionResponse.statusCode(), is(200));
-        Map<String, Object> completionPayload = castToMap(parseJsonBody(completionResponse.body()).get("result"));
+        Map<String, Object> completionPayload = getResultPayload(completionResponse);
         assertTrue(String.valueOf(completionPayload).contains("missing_context"));
         assertTrue(String.valueOf(completionPayload).contains("missingContextArguments"));
+        assertModelFacingPayloadContract(completionPayload);
     }
     
     @Test
@@ -159,7 +204,8 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         HttpResponse<String> actual = sendRawPostRequest(httpClient, createSessionHeaders(sessionId),
                 MCPHttpTransportTestSupport.createJsonRpcRequestBody("tools-list-1", "tools/list", Map.of()));
         assertThat(actual.statusCode(), is(200));
-        Map<String, Object> actualResult = castToMap(parseJsonBody(actual.body()).get("result"));
+        Map<String, Object> actualResult = getResultPayload(actual);
+        assertModelFacingPayloadContract(actualResult);
         Map<String, Object> actualSearchMetadataTool = castToMapList(actualResult.get("tools")).stream()
                 .filter(each -> "search_metadata".equals(each.get("name"))).findFirst().orElseThrow(IllegalStateException::new);
         Map<String, Object> actualSearchMetadataOutputProperties = castToMap(castToMap(actualSearchMetadataTool.get("outputSchema")).get("properties"));
@@ -173,6 +219,40 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
     }
     
     @Test
+    void assertExposeWorkflowPayloadContracts() throws IOException, InterruptedException {
+        launchHttpTransport();
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String sessionId = initializeSession(httpClient);
+        HttpResponse<String> planResponse = sendToolCallRequest(httpClient, sessionId, PLAN_MASK_TOOL_NAME,
+                createMaskRulePlanArguments());
+        assertThat(planResponse.statusCode(), is(200));
+        Map<String, Object> planPayload = getStructuredContent(planResponse.body());
+        assertThat(String.valueOf(planPayload.get("status")), is("planned"));
+        assertThat(String.valueOf(castToMapList(planPayload.get("next_actions")).get(0).get("tool_name")), is(WorkflowToolDescriptors.APPLY_TOOL_NAME));
+        assertModelFacingPayloadContract(planPayload);
+        String planId = String.valueOf(planPayload.get("plan_id"));
+        HttpResponse<String> previewResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
+                Map.of("plan_id", planId, "execution_mode", "preview"));
+        assertThat(previewResponse.statusCode(), is(200));
+        Map<String, Object> previewPayload = getStructuredContent(previewResponse.body());
+        assertThat(String.valueOf(previewPayload.get("status")), is("preview"));
+        assertFalse((Boolean) previewPayload.get("would_apply"));
+        assertModelFacingPayloadContract(previewPayload);
+        HttpResponse<String> manualApplyResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.APPLY_TOOL_NAME,
+                Map.of("plan_id", planId, "execution_mode", "manual-only"));
+        assertThat(manualApplyResponse.statusCode(), is(200));
+        Map<String, Object> manualApplyPayload = getStructuredContent(manualApplyResponse.body());
+        assertThat(String.valueOf(manualApplyPayload.get("status")), is("awaiting-manual-execution"));
+        assertModelFacingPayloadContract(manualApplyPayload);
+        HttpResponse<String> validationResponse = sendToolCallRequest(httpClient, sessionId, WorkflowToolDescriptors.VALIDATE_TOOL_NAME, Map.of("plan_id", planId));
+        assertThat(validationResponse.statusCode(), is(200));
+        Map<String, Object> validationPayload = getStructuredContent(validationResponse.body());
+        assertThat(String.valueOf(validationPayload.get("status")), is("failed"));
+        assertFalse(String.valueOf(validationPayload.get("recovery_guidance")).isEmpty());
+        assertModelFacingPayloadContract(validationPayload);
+    }
+    
+    @Test
     void assertRejectExecuteUpdateWithoutExecutionMode() throws IOException, InterruptedException {
         launchHttpTransport();
         HttpClient httpClient = HttpClient.newHttpClient();
@@ -182,12 +262,15 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         assertThat(actual.statusCode(), is(200));
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
         assertThat(String.valueOf(structuredContent.get("error_code")), is("invalid_request"));
+        assertModelFacingPayloadContract(structuredContent);
         Map<String, Object> recovery = castToMap(structuredContent.get("recovery"));
+        Map<String, Object> expectedArguments = Map.of("database", "logic_db", "schema", "public",
+                "sql", "UPDATE orders SET status = 'PAID' WHERE order_id = 1", "execution_mode", "preview");
         assertThat(recovery.get("category"), is("missing_execution_mode"));
-        assertThat(recovery.get("suggested_arguments"), is(Map.of("execution_mode", "preview")));
+        assertThat(recovery.get("suggested_arguments"), is(expectedArguments));
         Map<String, Object> retryAction = castToMapList(recovery.get("next_actions")).iterator().next();
         assertThat(String.valueOf(retryAction.get("type")), is("tool_call"));
-        assertThat(castToMap(retryAction.get("arguments")), is(Map.of("execution_mode", "preview")));
+        assertThat(castToMap(retryAction.get("arguments")), is(expectedArguments));
         assertTrue((Boolean) retryAction.get("requires_user_approval"));
     }
     
@@ -202,6 +285,7 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         Map<String, Object> structuredContent = getStructuredContent(actual.body());
         assertThat(String.valueOf(structuredContent.get("result_kind")), is("preview"));
         assertFalse((Boolean) structuredContent.get("would_execute"));
+        assertModelFacingPayloadContract(structuredContent);
         List<Map<String, Object>> nextActions = castToMapList(structuredContent.get("next_actions"));
         assertThat(nextActions.stream().map(each -> String.valueOf(each.get("type"))).toList(), is(List.of("ask_user", "tool_call")));
         Map<String, Object> callToolAction = nextActions.get(1);
@@ -224,6 +308,16 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
                 is(List.of("Please provide logical database first.")));
     }
     
+    private HttpResponse<String> sendResourceListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                "resources-list-1", "resources/list", Map.of()));
+    }
+    
+    private HttpResponse<String> sendPromptListRequest(final HttpClient httpClient, final String sessionId) throws IOException, InterruptedException {
+        return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
+                "prompts-list-1", "prompts/list", Map.of()));
+    }
+    
     private HttpResponse<String> sendPromptGetRequest(final HttpClient httpClient, final String sessionId, final String promptName,
                                                       final Map<String, Object> arguments) throws IOException, InterruptedException {
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
@@ -240,6 +334,34 @@ class HttpTransportContractE2ETest extends AbstractHttpProgrammaticRuntimeE2ETes
         }
         return sendRawPostRequest(httpClient, createSessionHeaders(sessionId), MCPHttpTransportTestSupport.createJsonRpcRequestBody(
                 "completion-1", "completion/complete", params));
+    }
+    
+    private Map<String, Object> createMaskRulePlanArguments() {
+        return Map.of(
+                "database", "logic_db",
+                "schema", "public",
+                "table", "orders",
+                "column", "status",
+                "operation_type", "create",
+                "algorithm_type", "KEEP_FIRST_N_LAST_M",
+                "primary_algorithm_properties", Map.of("first-n", "1", "last-m", "1", "replace-char", "*"));
+    }
+    
+    private Map<String, Object> getResultPayload(final HttpResponse<String> response) {
+        return castToMap(parseJsonBody(response.body()).get("result"));
+    }
+    
+    private void assertModelFacingPayloadContract(final Map<String, Object> payload) {
+        MCPModelContractAssertions.assertNoBannedPublicFields(payload);
+        MCPModelContractAssertions.assertCanonicalNextActionLists(payload);
+    }
+    
+    private void assertRuntimeStatusSecretSafe(final Map<String, Object> runtimeStatus) {
+        String actualPayload = String.valueOf(runtimeStatus);
+        assertFalse(actualPayload.contains("Authorization: Bearer"));
+        assertFalse(actualPayload.contains("runtime-secret"));
+        assertFalse(actualPayload.contains("jdbc:"));
+        assertFalse(actualPayload.contains("at org.apache."));
     }
     
     private List<Map<String, Object>> castToMapList(final Object value) {

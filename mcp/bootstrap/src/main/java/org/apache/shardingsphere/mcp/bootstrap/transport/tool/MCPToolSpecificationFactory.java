@@ -31,7 +31,6 @@ import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.tool.MCPToolController;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -78,7 +77,7 @@ public final class MCPToolSpecificationFactory {
                 .name(toolDescriptor.getName())
                 .title(toolDescriptor.getTitle())
                 .description(toolDescriptor.getDescription())
-                .inputSchema(createInputSchema(toolDescriptor.getFields()));
+                .inputSchema(createInputSchema(toolDescriptor.toInputSchema()));
         if (!toolDescriptor.getOutputSchema().isEmpty()) {
             result.outputSchema(toolDescriptor.getOutputSchema());
         }
@@ -91,16 +90,13 @@ public final class MCPToolSpecificationFactory {
         return result.build();
     }
     
-    private McpSchema.JsonSchema createInputSchema(final List<MCPToolFieldDefinition> fields) {
-        Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
-        List<String> required = new ArrayList<>(fields.size());
-        for (MCPToolFieldDefinition each : fields) {
-            properties.put(each.getName(), each.getValueDefinition().toSchemaFragment());
-            if (each.isRequired()) {
-                required.add(each.getName());
-            }
-        }
-        return new McpSchema.JsonSchema("object", properties, required, false, Collections.emptyMap(), Collections.emptyMap());
+    @SuppressWarnings("unchecked")
+    private McpSchema.JsonSchema createInputSchema(final Map<String, Object> inputSchema) {
+        Map<String, Object> properties = (Map<String, Object>) inputSchema.get("properties");
+        List<String> required = (List<String>) inputSchema.get("required");
+        boolean additionalProperties = Boolean.TRUE.equals(inputSchema.get("additionalProperties"));
+        return new McpSchema.JsonSchema(String.valueOf(inputSchema.get("type")), properties, required, additionalProperties, Collections.emptyMap(),
+                Collections.emptyMap());
     }
     
     private McpSchema.ToolAnnotations createToolAnnotations(final MCPToolAnnotations annotations) {

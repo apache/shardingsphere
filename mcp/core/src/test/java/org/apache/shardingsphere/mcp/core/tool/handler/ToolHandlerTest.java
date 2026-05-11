@@ -94,6 +94,18 @@ class ToolHandlerTest {
     }
     
     @Test
+    void assertHandleSearchMetadataIgnoresQueryInObjectTypes() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "public", "query", "orders", "object_types", List.of("table", "orders"))));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(((List<?>) actualPayload.get("items")).size(), is(1));
+            assertThat(((MetadataSearchHit) ((List<?>) actualPayload.get("items")).get(0)).getName(), is("orders"));
+            assertThat(((Map<?, ?>) actualPayload.get("search_context")).get("object_types"), is(List.of("table")));
+        }
+    }
+    
+    @Test
     void assertHandleSearchMetadataWithEmptyQuery() {
         try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
             MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("database", "logic_db")));
@@ -173,6 +185,29 @@ class ToolHandlerTest {
             assertThat(actualNextAction.get("type"), is("ask_user"));
             assertThat(actualNextAction.get("required_inputs"), is(List.of("database", "schema", "object_types")));
             assertThat(actualNextAction.get("order"), is(1));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithPrefixNameAmbiguity() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext(createDuplicatedTableMetadata()))) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1", Map.of("query", "order")));
+            Map<?, ?> actualAmbiguityState = (Map<?, ?>) actual.toPayload().get("ambiguity_state");
+            assertTrue((Boolean) actualAmbiguityState.get("ambiguous"));
+            assertThat(actualAmbiguityState.get("candidate_count"), is(2));
+            assertThat(actualAmbiguityState.get("duplicated_names"), is(List.of("orders")));
+        }
+    }
+    
+    @Test
+    void assertHandleSearchMetadataWithoutUnrelatedChildAmbiguity() {
+        try (MCPRequestScope requestContext = new MCPRequestScope(createSearchRuntimeContext())) {
+            MCPResponse actual = new SearchMetadataToolHandler().handle(requestContext, new MCPToolCall("session-1",
+                    Map.of("database", "logic_db", "schema", "public", "query", "orders")));
+            Map<String, Object> actualPayload = actual.toPayload();
+            assertThat(((List<?>) actualPayload.get("items")).size(), is(5));
+            assertFalse(actualPayload.containsKey("ambiguity_state"));
+            assertFalse(actualPayload.containsKey("next_actions"));
         }
     }
     

@@ -66,21 +66,21 @@ import java.util.Objects;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPErrorConverter {
-
+    
     private static final String INVALID_REQUEST = "invalid_request";
-
+    
     private static final String NOT_FOUND = "not_found";
-
+    
     private static final String UNSUPPORTED = "unsupported";
-
+    
     private static final String TIMEOUT = "timeout";
-
+    
     private static final String TRANSACTION_STATE_ERROR = "transaction_state_error";
-
+    
     private static final String QUERY_FAILED = "query_failed";
-
+    
     private static final String UNAVAILABLE = "unavailable";
-
+    
     /**
      * Convert throwable to MCP error.
      *
@@ -141,12 +141,12 @@ public final class MCPErrorConverter {
         }
         return createError(UNAVAILABLE, cause, "Service is temporarily unavailable.");
     }
-
+    
     private static MCPErrorResponse createError(final String errorCode, final Throwable cause, final String defaultMessage) {
         String message = Objects.toString(cause.getMessage(), defaultMessage).trim();
         return new MCPErrorResponse(errorCode, message, createRecovery(cause));
     }
-
+    
     private static Map<String, Object> createRecovery(final Throwable cause) {
         if (cause instanceof UnsupportedToolException) {
             return createUnsupportedToolRecovery(((UnsupportedToolException) cause).getToolName());
@@ -200,11 +200,11 @@ public final class MCPErrorConverter {
             return createInvalidPageTokenRecovery();
         }
         if (cause instanceof MCPWorkflowStateException) {
-            return createWorkflowStateRecovery();
+            return createWorkflowStateRecovery((MCPWorkflowStateException) cause);
         }
         return Map.of();
     }
-
+    
     private static Map<String, Object> createUnsupportedToolRecovery(final String toolName) {
         Map<String, Object> result = createBaseRecovery("unsupported_tool", "Call one of the supported tools returned by tools/list.");
         result.put("tool_name", toolName);
@@ -214,7 +214,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static Map<String, Object> createUnsupportedResourceRecovery(final String resourceUri) {
         Map<String, Object> result = createBaseRecovery("unsupported_resource", "Read one of the supported resources or templates returned by resources/list and resources/templates/list.");
         result.put("resource", MCPResourceHintUtils.create(resourceUri, "resource", "inspect_detail", "Unsupported resource URI requested.", "recovery"));
@@ -224,7 +224,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static Map<String, Object> createSQLToolMismatchRecovery(final SQLToolMismatchException cause) {
         boolean requiresUserApproval = "execute_update".equals(cause.getTargetTool());
         Map<String, Object> result = createBaseRecovery(createSQLToolMismatchCategory(cause),
@@ -241,7 +241,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", requiresUserApproval);
         return result;
     }
-
+    
     private static Map<String, Object> createMetadataIntrospectionSQLRecovery(final MetadataIntrospectionSQLStatementException cause) {
         Map<String, Object> result = createBaseRecovery("metadata_introspection_sql",
                 "Use logical metadata resources or search_metadata instead of console-style metadata SQL.");
@@ -256,91 +256,83 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static String createSQLToolMismatchCategory(final SQLToolMismatchException cause) {
         return "execute_update".equals(cause.getTargetTool()) ? "unsafe_sql_attempted" : "read_only_sql_sent_to_update_tool";
     }
-
+    
     private static String createSQLToolMismatchActionReason(final SQLToolMismatchException cause) {
         return "execute_update".equals(cause.getTargetTool())
                 ? "Retry side-effecting SQL in preview mode with the normalized SQL and preserved context."
                 : "Retry the read-only SQL with execute_query using the normalized SQL and preserved context.";
     }
-
+    
     private static Map<String, Object> createMissingExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
         return "apply_workflow".equals(cause.getToolName()) ? createMissingWorkflowExecutionModeRecovery(cause) : createMissingUpdateExecutionModeRecovery(cause);
     }
-
+    
     private static Map<String, Object> createMissingUpdateExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
-        Map<String, Object> result = createBaseRecovery("missing_execution_mode",
-                "Retry the same side-effecting tool with execution_mode=preview, review the preview, then ask the user for approval.");
-        result.put("missing_fields", List.of("execution_mode"));
-        result.put("field", "execution_mode");
-        result.put("source_tool", cause.getToolName());
-        result.put("tool_name", cause.getToolName());
-        result.put("allowed_values", cause.getAllowedValues());
-        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
-        result.put("next_actions", List.of(MCPNextActionUtils.retryTool(cause.getToolName(), "Retry the same side-effecting tool in preview mode.", Map.of("execution_mode", "preview"), true)));
-        result.put("requires_user_approval", true);
-        result.put("ask_user_when_uncertain", true);
-        return result;
+        return createExecutionModeRecovery("missing_execution_mode",
+                "Retry the same side-effecting tool with execution_mode=preview, review the preview, then ask the user for approval.",
+                cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry the same side-effecting tool in preview mode.", true, true);
     }
-
+    
     private static Map<String, Object> createMissingWorkflowExecutionModeRecovery(final MCPExecutionModeRequiredException cause) {
-        Map<String, Object> result = createBaseRecovery("missing_execution_mode",
-                "Retry apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.");
-        result.put("missing_fields", List.of("execution_mode"));
-        result.put("field", "execution_mode");
-        result.put("source_tool", cause.getToolName());
-        result.put("tool_name", cause.getToolName());
-        result.put("allowed_values", cause.getAllowedValues());
-        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
-        result.put("next_actions", List.of(MCPNextActionUtils.retryTool(cause.getToolName(), "Retry apply_workflow with execution_mode=preview first.", Map.of("execution_mode", "preview"), true)));
-        result.put("requires_user_approval", true);
-        result.put("ask_user_when_uncertain", true);
-        return result;
+        return createExecutionModeRecovery("missing_execution_mode",
+                "Retry apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.",
+                cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry apply_workflow with execution_mode=preview first.", true, true);
     }
-
+    
     private static Map<String, Object> createInvalidExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
         return "apply_workflow".equals(cause.getToolName()) ? createInvalidWorkflowExecutionModeRecovery(cause) : createInvalidUpdateExecutionModeRecovery(cause);
     }
-
+    
     private static Map<String, Object> createInvalidUpdateExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
-        Map<String, Object> result = createBaseRecovery("invalid_enum_value", "Retry with execution_mode=preview or execution_mode=execute.");
-        result.put("field", "execution_mode");
-        result.put("allowed_values", cause.getAllowedValues());
-        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
-        result.put("next_actions", List.of(MCPNextActionUtils.callTool(cause.getToolName(), "Retry execute_update with execution_mode=preview first.", Map.of("execution_mode", "preview"), true)));
-        result.put("requires_user_approval", true);
-        result.put("ask_user_when_uncertain", true);
-        return result;
+        return createExecutionModeRecovery("invalid_enum_value", "Retry with execution_mode=preview or execution_mode=execute.", cause.getToolName(), cause.getAllowedValues(),
+                cause.getSuggestedArguments(), "Retry execute_update with execution_mode=preview first.", false, false);
     }
-
+    
     private static Map<String, Object> createInvalidWorkflowExecutionModeRecovery(final MCPInvalidExecutionModeException cause) {
-        Map<String, Object> result = createBaseRecovery("invalid_enum_value",
-                "Retry apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.");
+        return createExecutionModeRecovery("invalid_enum_value",
+                "Retry apply_workflow with execution_mode=preview, review the preview, then use review-then-execute or manual-only after approval.",
+                cause.getToolName(), cause.getAllowedValues(), cause.getSuggestedArguments(), "Retry apply_workflow with execution_mode=preview first.", false, false);
+    }
+    
+    private static Map<String, Object> createExecutionModeRecovery(final String category, final String modelAction, final String toolName, final List<String> allowedValues,
+                                                                   final Map<String, Object> sourceSuggestedArguments, final String retryReason, final boolean missingField,
+                                                                   final boolean retryTool) {
+        Map<String, Object> result = createBaseRecovery(category, modelAction);
+        if (missingField) {
+            result.put("missing_fields", List.of("execution_mode"));
+        }
         result.put("field", "execution_mode");
-        result.put("allowed_values", cause.getAllowedValues());
-        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
-        result.put("next_actions", List.of(MCPNextActionUtils.callTool(cause.getToolName(), "Retry apply_workflow with execution_mode=preview first.", Map.of("execution_mode", "preview"), true)));
+        result.put("source_tool", toolName);
+        result.put("tool_name", toolName);
+        result.put("allowed_values", allowedValues);
+        Map<String, Object> suggestedArguments = getSuggestedArguments(sourceSuggestedArguments, Map.of("execution_mode", "preview"));
+        result.put("suggested_arguments", suggestedArguments);
+        result.put("next_actions", List.of(retryTool
+                ? MCPNextActionUtils.retryTool(toolName, retryReason, suggestedArguments, true)
+                : MCPNextActionUtils.callTool(toolName, retryReason, suggestedArguments, true)));
         result.put("requires_user_approval", true);
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static Map<String, Object> createInvalidApprovedStepsRecovery(final MCPInvalidApprovedStepsException cause) {
         Map<String, Object> result = createBaseRecovery("invalid_enum_value",
                 "Retry apply_workflow with approved_steps copied from preview_artifacts.approval_step, or omit approved_steps to apply every artifact.");
+        Map<String, Object> suggestedArguments = getSuggestedArguments(cause.getSuggestedArguments(), Map.of("execution_mode", "preview"));
         result.put("field", "approved_steps");
         result.put("allowed_values", cause.getAllowedValues());
-        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
+        result.put("suggested_arguments", suggestedArguments);
         result.put("next_actions", List.of(MCPNextActionUtils.callTool("apply_workflow", "Preview again, then copy only visible approval_step values into approved_steps after user approval.",
-                Map.of("execution_mode", "preview"), true)));
+                suggestedArguments, true)));
         result.put("requires_user_approval", true);
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static Map<String, Object> createUserApprovalRequiredRecovery(final MCPUserApprovalRequiredException cause) {
         Map<String, Object> result = createBaseRecovery("approval_required", "Ask the user to approve the previewed side effects before retrying real execution.");
         result.put("missing_fields", List.of("approved_by_user"));
@@ -356,7 +348,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static Map<String, Object> createWorkflowArgumentConflictRecovery(final WorkflowArgumentConflictException cause) {
         Map<String, Object> result = createBaseRecovery("workflow_argument_conflict", "Ask the user which public workflow argument value to keep, then retry with only one value.");
         List<String> argumentFields = createWorkflowArgumentConflictFields(cause.getConflictingArguments());
@@ -368,15 +360,15 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static List<String> createWorkflowArgumentConflictFields(final List<String> conflictingArguments) {
         return conflictingArguments.stream().map(MCPErrorConverter::getWorkflowArgumentConflictField).distinct().toList();
     }
-
+    
     private static List<Map<String, Object>> createWorkflowArgumentConflictQuestions(final List<String> conflictingArguments) {
         return conflictingArguments.stream().map(MCPErrorConverter::createWorkflowArgumentConflictQuestion).toList();
     }
-
+    
     private static Map<String, Object> createWorkflowArgumentConflictQuestion(final String conflict) {
         String field = getWorkflowArgumentConflictField(conflict);
         return Map.of(
@@ -385,12 +377,12 @@ public final class MCPErrorConverter {
                 "input_type", "string",
                 "display_message", String.format("Choose one value for `%s`, or remove the duplicate path.", field));
     }
-
+    
     private static String getWorkflowArgumentConflictField(final String conflict) {
         int conflictSeparatorIndex = conflict.indexOf(" conflicts with ");
         return 0 < conflictSeparatorIndex ? conflict.substring(0, conflictSeparatorIndex) : conflict;
     }
-
+    
     private static Map<String, Object> createMissingArgumentRecovery(final String argumentName) {
         boolean missingDatabase = "database".equals(argumentName);
         String category = missingDatabase ? "missing_database" : "missing_argument";
@@ -404,7 +396,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static List<Map<String, Object>> createMissingArgumentResourcesToRead(final String argumentName) {
         if ("database".equals(argumentName)) {
             return createResourceHintList("shardingsphere://databases", "logical-database", "Read logical databases before retrying with a database argument.");
@@ -414,7 +406,7 @@ public final class MCPErrorConverter {
         }
         return List.of();
     }
-
+    
     private static Map<String, Object> createInvalidObjectTypesRecovery(final MCPInvalidMetadataObjectTypesException cause) {
         Map<String, Object> result = createBaseRecovery("invalid_enum_value", "Retry with one or more allowed object_types values.");
         result.put("field", "object_types");
@@ -427,7 +419,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static Map<String, Object> createInvalidPageTokenRecovery() {
         Map<String, Object> result = createBaseRecovery("invalid_page_token",
                 "Retry without page_token, or use the next_page_token returned by the previous search page.");
@@ -445,12 +437,12 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static Map<String, Object> createInvalidToolArgumentRecovery(final MCPInvalidToolArgumentException cause) {
         return createInvalidIntegerArgumentRecovery(cause.getArgumentPath(), cause.getSuggestedValue(), cause.getSourceTool(), cause.getTargetTool(), cause.getMinimumValue(),
                 cause.getMaximumValue());
     }
-
+    
     private static Map<String, Object> createInvalidIntegerArgumentRecovery(final String fieldName, final int suggestedValue, final String sourceTool, final String targetTool,
                                                                             final int minimumValue, final int maximumValue) {
         Map<String, Object> result = createBaseRecovery("invalid_integer_argument", "Retry with an integer value inside the documented bounds.");
@@ -472,14 +464,14 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static List<Map<String, Object>> createInvalidIntegerArgumentNextActions(final String fieldName, final String targetTool, final Map<String, Object> suggestedArguments) {
         if (targetTool.isEmpty()) {
             return List.of(MCPNextActionUtils.askUser("Ask the user for a bounded integer value before retrying.", List.of(fieldName), false));
         }
         return List.of(MCPNextActionUtils.retryTool(targetTool, "Retry with a bounded integer argument.", suggestedArguments, false));
     }
-
+    
     private static Map<String, Object> createMultipleStatementsRecovery() {
         Map<String, Object> result = createBaseRecovery("multiple_sql_statements", "Split the user intent into separate MCP calls and handle each statement independently.");
         result.put("ask_user_when_uncertain", true);
@@ -488,7 +480,7 @@ public final class MCPErrorConverter {
         result.put("next_actions", List.of(MCPNextActionUtils.askUser("Ask the user which single statement should be handled first.", List.of("single_sql_statement"), true)));
         return result;
     }
-
+    
     private static Map<String, Object> createUnsupportedStatementRecovery() {
         Map<String, Object> result = createBaseRecovery("unsupported_sql_statement", "Ask the user for a supported SELECT, EXPLAIN ANALYZE, DML, DDL, DCL, transaction, or savepoint statement.");
         result.put("resources_to_read", createResourceHintList("shardingsphere://capabilities", "capability", "Read supported SQL statement classes before retrying."));
@@ -496,7 +488,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static Map<String, Object> createBannedStatementRecovery() {
         Map<String, Object> result = createBaseRecovery("banned_sql_statement", "Do not execute this SQL through MCP; ask the user for a safer supported operation.");
         result.put("resources_to_read", createResourceHintList("shardingsphere://capabilities", "capability", "Read supported safe alternatives before asking the user."));
@@ -505,9 +497,10 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
-    private static Map<String, Object> createWorkflowStateRecovery() {
-        Map<String, Object> result = createBaseRecovery("workflow_state_error", "Use current-session completion to select an available plan_id, or re-run the matching planning tool.");
+    
+    private static Map<String, Object> createWorkflowStateRecovery(final MCPWorkflowStateException cause) {
+        Map<String, Object> result = createBaseRecovery("stale_workflow", "Use current-session completion to select an available plan_id, or re-run the matching planning tool.");
+        result.put("plan_id", cause.getPlanId());
         result.put("resources_to_read", createResourceHintList("shardingsphere://capabilities", "capability", "Read workflow-capable MCP tools before re-planning."));
         result.put("completion_first", Map.of("argument", "plan_id", "scope", "current MCP session"));
         result.put("next_actions", MCPNextActionUtils.ordered(
@@ -518,7 +511,7 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", false);
         return result;
     }
-
+    
     private static Map<String, Object> createRuntimeDatabaseConnectionRecovery(final RuntimeDatabaseConnectionException cause) {
         Map<String, Object> result = createBaseRecovery(cause.getCategory(), createRuntimeDatabaseConnectionModelAction(cause));
         result.put("database", cause.getDatabaseName());
@@ -531,20 +524,23 @@ public final class MCPErrorConverter {
         result.put("ask_user_when_uncertain", true);
         return result;
     }
-
+    
     private static String createRuntimeDatabaseConnectionModelAction(final RuntimeDatabaseConnectionException cause) {
-        if ("missing_jdbc_driver".equals(cause.getCategory())) {
+        if (RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER.equals(cause.getCategory())) {
             return "Install or configure the JDBC driver for the MCP runtime database, then retry.";
         }
-        if ("authentication_failed".equals(cause.getCategory())) {
+        if (RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED.equals(cause.getCategory())) {
             return "Check the runtime database credentials outside MCP, then retry.";
         }
-        if ("connection_timeout".equals(cause.getCategory())) {
+        if (RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT.equals(cause.getCategory())) {
             return "Check database reachability and timeout settings, then retry.";
+        }
+        if (RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION.equals(cause.getCategory())) {
+            return "Fix the MCP runtime database configuration outside MCP, then retry.";
         }
         return "Check the runtime database availability and configuration, then retry.";
     }
-
+    
     private static Map<String, Object> createBaseRecovery(final String category, final String modelAction) {
         Map<String, Object> result = new LinkedHashMap<>(8, 1F);
         result.put("response_mode", MCPResponseMode.RECOVERY);
@@ -554,10 +550,28 @@ public final class MCPErrorConverter {
         result.put("model_action", modelAction);
         return result;
     }
-
+    
     private static String normalizeRecoveryCategory(final String category) {
+        if (isRuntimeRecoveryCategory(category)) {
+            return "unavailable_runtime";
+        }
+        if ("banned_sql_statement".equals(category)) {
+            return "terminal_operator_action";
+        }
         if (category.startsWith("missing_")) {
             return "missing_context";
+        }
+        if (category.startsWith("unsupported_") || "read_only_sql_sent_to_update_tool".equals(category)) {
+            return "unsupported_target";
+        }
+        if ("invalid_enum_value".equals(category)) {
+            return "invalid_enum";
+        }
+        if ("unsafe_sql_attempted".equals(category) || "multiple_sql_statements".equals(category)) {
+            return "unsafe_sql";
+        }
+        if ("stale_workflow".equals(category) || "workflow_state_error".equals(category)) {
+            return "stale_workflow";
         }
         if (category.endsWith("_not_found")) {
             return "not_found";
@@ -565,16 +579,23 @@ public final class MCPErrorConverter {
         if (category.contains("conflict")) {
             return "ambiguous";
         }
-        if (category.contains("unavailable") || category.contains("authentication_failed") || category.contains("connection_timeout")) {
-            return "terminal";
-        }
         return "validation";
     }
-
+    
+    private static boolean isRuntimeRecoveryCategory(final String category) {
+        return RuntimeDatabaseConnectionException.CATEGORY_MISSING_JDBC_DRIVER.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_AUTHENTICATION_FAILED.equals(category)
+                || RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_TIMEOUT.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION.equals(category)
+                || RuntimeDatabaseConnectionException.CATEGORY_DATABASE_UNAVAILABLE.equals(category) || RuntimeDatabaseConnectionException.CATEGORY_CONNECTION_FAILED.equals(category);
+    }
+    
+    private static Map<String, Object> getSuggestedArguments(final Map<String, Object> suggestedArguments, final Map<String, Object> defaultArguments) {
+        return suggestedArguments.isEmpty() ? defaultArguments : suggestedArguments;
+    }
+    
     private static List<Map<String, Object>> createResourceHintList(final String uri, final String resourceKind, final String reason) {
         return List.of(MCPResourceHintUtils.create(uri, resourceKind, "read_first", reason, "resources_to_read"));
     }
-
+    
     private static List<Map<String, Object>> createMissingArgumentNextActions(final String argumentName) {
         List<Map<String, Object>> resources = createMissingArgumentResourcesToRead(argumentName);
         if (resources.isEmpty()) {

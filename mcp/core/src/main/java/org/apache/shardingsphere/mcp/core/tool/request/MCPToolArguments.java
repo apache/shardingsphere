@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -39,9 +40,9 @@ import java.util.Set;
  */
 @RequiredArgsConstructor
 public final class MCPToolArguments {
-
+    
     private final Map<String, Object> arguments;
-
+    
     /**
      * Get object types.
      *
@@ -50,6 +51,18 @@ public final class MCPToolArguments {
      * @throws MCPInvalidRequestException object types is malformed or unsupported
      */
     public Set<SupportedMCPMetadataObjectType> getObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
+        return getObjectTypes(supportedObjectTypes, Set.of());
+    }
+    
+    /**
+     * Get object types.
+     *
+     * @param supportedObjectTypes supported object types
+     * @param ignoredUnsupportedValues unsupported values to ignore
+     * @return object types
+     * @throws MCPInvalidRequestException object types is malformed or unsupported
+     */
+    public Set<SupportedMCPMetadataObjectType> getObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes, final Set<String> ignoredUnsupportedValues) {
         Object rawValue = arguments.get("object_types");
         if (null == rawValue) {
             return Collections.emptySet();
@@ -63,12 +76,13 @@ public final class MCPToolArguments {
         }
         Set<SupportedMCPMetadataObjectType> result = new LinkedHashSet<>(objectTypes.size(), 1F);
         for (Object each : objectTypes) {
-            result.add(resolveObjectType(each, supportedObjectTypes));
+            resolveObjectType(each, supportedObjectTypes, ignoredUnsupportedValues).ifPresent(result::add);
         }
         return result;
     }
-
-    private SupportedMCPMetadataObjectType resolveObjectType(final Object objectType, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
+    
+    private Optional<SupportedMCPMetadataObjectType> resolveObjectType(final Object objectType, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes,
+                                                                       final Set<String> ignoredUnsupportedValues) {
         String actualValue = Objects.toString(objectType, "").trim();
         if (actualValue.isEmpty()) {
             throw new MCPInvalidRequestException("object_types cannot contain blank values.");
@@ -76,18 +90,29 @@ public final class MCPToolArguments {
         try {
             SupportedMCPMetadataObjectType result = SupportedMCPMetadataObjectType.valueOf(actualValue.toUpperCase(Locale.ENGLISH));
             if (supportedObjectTypes.contains(result)) {
-                return result;
+                return Optional.of(result);
             }
         } catch (final IllegalArgumentException ignored) {
-            throw new MCPInvalidMetadataObjectTypesException(actualValue, createAllowedObjectTypes(supportedObjectTypes));
+        }
+        if (containsIgnoreCase(ignoredUnsupportedValues, actualValue)) {
+            return Optional.empty();
         }
         throw new MCPInvalidMetadataObjectTypesException(actualValue, createAllowedObjectTypes(supportedObjectTypes));
     }
-
+    
+    private boolean containsIgnoreCase(final Set<String> values, final String value) {
+        for (String each : values) {
+            if (each.equalsIgnoreCase(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private List<String> createAllowedObjectTypes(final Set<SupportedMCPMetadataObjectType> supportedObjectTypes) {
         return supportedObjectTypes.stream().map(each -> each.name().toLowerCase(Locale.ENGLISH)).toList();
     }
-
+    
     /**
      * Get string argument.
      *
@@ -97,7 +122,7 @@ public final class MCPToolArguments {
     public String getStringArgument(final String name) {
         return Objects.toString(arguments.get(name), "").trim();
     }
-
+    
     /**
      * Get integer argument.
      *
@@ -123,7 +148,7 @@ public final class MCPToolArguments {
             return defaultValue;
         }
     }
-
+    
     /**
      * Get bounded integer argument.
      *
@@ -142,7 +167,7 @@ public final class MCPToolArguments {
         }
         return result;
     }
-
+    
     private int parseIntegerArgument(final String name, final Object value, final int defaultValue) {
         if (null == value) {
             return defaultValue;
@@ -157,7 +182,7 @@ public final class MCPToolArguments {
             throw new MCPInvalidRequestException(String.format("%s must be an integer.", name), ex);
         }
     }
-
+    
     /**
      * Get boolean argument.
      *
@@ -179,7 +204,7 @@ public final class MCPToolArguments {
         }
         return Boolean.parseBoolean(actualValue);
     }
-
+    
     /**
      * Get string collection argument.
      *
@@ -200,7 +225,7 @@ public final class MCPToolArguments {
         }
         return result;
     }
-
+    
     /**
      * Get string map argument.
      *

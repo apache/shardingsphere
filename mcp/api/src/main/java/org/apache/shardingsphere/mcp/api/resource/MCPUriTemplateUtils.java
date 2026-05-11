@@ -34,9 +34,9 @@ import java.util.regex.Pattern;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MCPUriTemplateUtils {
-
+    
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([^}]+)}");
-
+    
     /**
      * Judge whether URI is a URI template.
      *
@@ -46,7 +46,7 @@ public final class MCPUriTemplateUtils {
     public static boolean isTemplated(final String uriTemplate) {
         return null != uriTemplate && uriTemplate.contains("{");
     }
-
+    
     /**
      * Extract URI template variable names.
      *
@@ -61,7 +61,7 @@ public final class MCPUriTemplateUtils {
         }
         return result;
     }
-
+    
     /**
      * Expand URI template when all variables are present.
      *
@@ -76,7 +76,7 @@ public final class MCPUriTemplateUtils {
         }
         return Optional.of(expandKnownVariables(uriTemplate, variables));
     }
-
+    
     /**
      * Expand URI template with all required variables.
      *
@@ -88,7 +88,7 @@ public final class MCPUriTemplateUtils {
         return expandIfComplete(uriTemplate, variables).orElseThrow(
                 () -> new IllegalArgumentException(String.format("Missing URI template variables %s for `%s`.", getMissingVariableNames(uriTemplate, variables), uriTemplate)));
     }
-
+    
     private static List<String> getMissingVariableNames(final String uriTemplate, final Map<String, String> variables) {
         List<String> result = new LinkedList<>();
         for (String each : extractVariableNames(uriTemplate)) {
@@ -98,7 +98,7 @@ public final class MCPUriTemplateUtils {
         }
         return result;
     }
-
+    
     private static String expandKnownVariables(final String uriTemplate, final Map<String, String> variables) {
         String result = uriTemplate;
         for (String each : extractVariableNames(uriTemplate)) {
@@ -106,7 +106,7 @@ public final class MCPUriTemplateUtils {
         }
         return result;
     }
-
+    
     /**
      * Encode one MCP resource URI path segment.
      *

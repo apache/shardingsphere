@@ -61,7 +61,8 @@ public final class MCPJdbcDatabaseProfileLoader {
      * @param databaseName database name
      * @param runtimeDatabaseConfig runtime database configuration
      * @return runtime database profile
-     * @throws IllegalStateException when profile loading fails
+     * @throws RuntimeDatabaseConnectionException when runtime database connection or configuration fails
+     * @throws IllegalStateException when profile metadata loading fails
      */
     public RuntimeDatabaseProfile load(final String databaseName, final RuntimeDatabaseConfiguration runtimeDatabaseConfig) {
         try (Connection connection = runtimeDatabaseConfig.openConnection(databaseName)) {
@@ -87,8 +88,8 @@ public final class MCPJdbcDatabaseProfileLoader {
             return compatibleBranchDatabaseType.get();
         }
         if (!expectedDatabaseType.equalsIgnoreCase(actualDatabaseType)) {
-            throw new IllegalStateException(String.format("Configured databaseType `%s` does not match actual database type `%s` for database `%s`.",
-                    configuredType, actualDatabaseType, databaseName));
+            throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName, new IllegalStateException(String.format(
+                    "Configured databaseType `%s` does not match actual database type `%s` for database `%s`.", configuredType, actualDatabaseType, databaseName)));
         }
         return actualDatabaseType;
     }
@@ -105,7 +106,8 @@ public final class MCPJdbcDatabaseProfileLoader {
             result = resolveDatabaseTypeFromJdbcUrl(jdbcUrl);
         }
         if (null == result) {
-            throw new IllegalStateException(String.format("Actual database type cannot be determined for database `%s`.", databaseName));
+            throw RuntimeDatabaseConnectionException.invalidConfiguration(databaseName,
+                    new IllegalStateException(String.format("Actual database type cannot be determined for database `%s`.", databaseName)));
         }
         return result;
     }

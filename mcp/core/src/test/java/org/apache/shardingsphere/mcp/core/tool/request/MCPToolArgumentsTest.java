@@ -42,6 +42,13 @@ class MCPToolArgumentsTest {
     }
     
     @ParameterizedTest(name = "{0}")
+    @MethodSource("getObjectTypesWithIgnoredUnsupportedValuesCases")
+    void assertGetObjectTypesWithIgnoredUnsupportedValues(final String name, final Map<String, Object> rawArguments, final Set<String> ignoredUnsupportedValues,
+                                                          final Set<SupportedMCPMetadataObjectType> expectedObjectTypes) {
+        assertThat(new MCPToolArguments(rawArguments).getObjectTypes(Set.of(SupportedMCPMetadataObjectType.TABLE), ignoredUnsupportedValues), is(expectedObjectTypes));
+    }
+    
+    @ParameterizedTest(name = "{0}")
     @MethodSource("invalidObjectTypesCases")
     void assertGetObjectTypesWithInvalidArgument(final String name, final Map<String, Object> rawArguments, final Set<SupportedMCPMetadataObjectType> supportedObjectTypes,
                                                  final String expectedMessage) {
@@ -98,6 +105,12 @@ class MCPToolArgumentsTest {
                 Arguments.of("normalized object types", Map.of("object_types", List.of("table", " VIEW ", "table")),
                         Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW),
                         Set.of(SupportedMCPMetadataObjectType.TABLE, SupportedMCPMetadataObjectType.VIEW)));
+    }
+    
+    private static Stream<Arguments> getObjectTypesWithIgnoredUnsupportedValuesCases() {
+        return Stream.of(
+                Arguments.of("ignored query value", Map.of("object_types", List.of("table", "orders")), Set.of("orders"), Set.of(SupportedMCPMetadataObjectType.TABLE)),
+                Arguments.of("only ignored query value", Map.of("object_types", List.of("orders")), Set.of("orders"), Set.of()));
     }
     
     private static Stream<Arguments> invalidObjectTypesCases() {

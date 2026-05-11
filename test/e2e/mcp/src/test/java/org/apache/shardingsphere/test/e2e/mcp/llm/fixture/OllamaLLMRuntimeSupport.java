@@ -38,15 +38,15 @@ import java.time.Duration;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class OllamaLLMRuntimeSupport {
-
+    
     private static final String OLLAMA_IMAGE = "ollama/ollama:latest";
-
+    
     private static final String REQUIRED_PROVIDER = "openai-compatible";
-
+    
     private static final String REQUIRED_MODEL = "qwen3:1.7b";
-
+    
     private static final int OLLAMA_PORT = 11434;
-
+    
     /**
      * Prepare the required local LLM runtime.
      *
@@ -67,19 +67,19 @@ public final class OllamaLLMRuntimeSupport {
         new LLMChatModelClient(actualConfig, HttpClient.newHttpClient()).waitUntilReady();
         return ModelRuntime.container(actualConfig, container);
     }
-
+    
     private static void requireDockerAvailable() {
         if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
             throw new IllegalStateException("Docker is required to start Ollama and pull qwen3:1.7b for MCP LLM E2E.");
         }
     }
-
+    
     private static void validateRequiredModel(final LLME2EConfiguration config) {
         if (!REQUIRED_PROVIDER.equals(config.getModelProvider()) || !REQUIRED_MODEL.equals(config.getModelName())) {
             throw new IllegalStateException("MCP LLM E2E requires provider openai-compatible and model qwen3:1.7b.");
         }
     }
-
+    
     private static boolean isModelReady(final LLME2EConfiguration config) throws InterruptedException {
         try {
             new LLMChatModelClient(config.withReadinessTimeouts(2, 2), HttpClient.newHttpClient()).waitUntilReady();
@@ -88,14 +88,14 @@ public final class OllamaLLMRuntimeSupport {
             return false;
         }
     }
-
+    
     private static GenericContainer<?> createContainer() {
         return new GenericContainer<>(DockerImageName.parse(OLLAMA_IMAGE))
                 .withExposedPorts(OLLAMA_PORT)
                 .waitingFor(Wait.forHttp("/api/tags").forPort(OLLAMA_PORT).forStatusCode(200))
                 .withStartupTimeout(Duration.ofMinutes(3));
     }
-
+    
     private static void pullModel(final GenericContainer<?> container, final String modelName) {
         try {
             Container.ExecResult actual = container.execInContainer("ollama", "pull", modelName);
@@ -109,26 +109,26 @@ public final class OllamaLLMRuntimeSupport {
             throw new IllegalStateException("Interrupted while pulling Ollama model `qwen3:1.7b`.", ex);
         }
     }
-
+    
     /**
      * Prepared model runtime.
      */
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     @Getter
     public static final class ModelRuntime implements AutoCloseable {
-
+        
         private final LLME2EConfiguration configuration;
-
+        
         private final GenericContainer<?> container;
-
+        
         private static ModelRuntime external(final LLME2EConfiguration config) {
             return new ModelRuntime(config, null);
         }
-
+        
         private static ModelRuntime container(final LLME2EConfiguration config, final GenericContainer<?> container) {
             return new ModelRuntime(config, container);
         }
-
+        
         @Override
         public void close() {
             if (null != container) {

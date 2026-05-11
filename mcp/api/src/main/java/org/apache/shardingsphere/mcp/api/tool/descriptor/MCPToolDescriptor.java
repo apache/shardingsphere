@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,5 +58,27 @@ public final class MCPToolDescriptor {
         this.outputSchema = null == outputSchema ? Collections.emptyMap() : outputSchema;
         this.annotations = null == annotations ? MCPToolAnnotations.EMPTY : annotations;
         this.meta = null == meta ? Collections.emptyMap() : meta;
+    }
+    
+    /**
+     * To input schema.
+     *
+     * @return input schema
+     */
+    public Map<String, Object> toInputSchema() {
+        Map<String, Object> properties = new LinkedHashMap<>(fields.size(), 1F);
+        List<String> required = new ArrayList<>(fields.size());
+        for (MCPToolFieldDefinition each : fields) {
+            properties.put(each.getName(), each.getValueDefinition().toSchemaFragment());
+            if (each.isRequired()) {
+                required.add(each.getName());
+            }
+        }
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
+        result.put("type", "object");
+        result.put("properties", properties);
+        result.put("required", required);
+        result.put("additionalProperties", false);
+        return result;
     }
 }

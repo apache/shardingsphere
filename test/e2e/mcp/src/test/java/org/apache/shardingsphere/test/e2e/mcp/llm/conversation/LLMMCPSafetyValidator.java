@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
+import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.StatementClassifier;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPStatement;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +32,8 @@ final class LLMMCPSafetyValidator {
     private static final String EXECUTION_MODE_PREVIEW = "preview";
     
     private static final String EXECUTION_MODE_MANUAL_ONLY = "manual-only";
+    
+    private final StatementClassifier statementClassifier = new StatementClassifier();
     
     Optional<LLMMCPToolCallValidationFailure> validate(final String actionName, final Map<String, Object> arguments) {
         if (MCPInteractionActionNames.READ_RESOURCE.equals(actionName) && Objects.toString(arguments.get("uri"), "").trim().isEmpty()) {
@@ -53,8 +58,12 @@ final class LLMMCPSafetyValidator {
     
     private boolean isReadOnlyQuery(final Map<String, Object> arguments) {
         String sql = Objects.toString(arguments.get("sql"), "").trim();
-        String normalizedSql = sql.toUpperCase(Locale.ENGLISH);
-        return normalizedSql.startsWith("SELECT") && (6 == normalizedSql.length() || Character.isWhitespace(normalizedSql.charAt(6))) && !normalizedSql.contains(";");
+        try {
+            SupportedMCPStatement statementClass = statementClassifier.classify(sql).getStatementClass();
+            return SupportedMCPStatement.QUERY == statementClass || SupportedMCPStatement.EXPLAIN_ANALYZE == statementClass;
+        } catch (final MCPInvalidRequestException | MCPUnsupportedException | IllegalArgumentException ignored) {
+            return false;
+        }
     }
     
     private boolean isSafeWorkflowExecutionMode(final Map<String, Object> arguments) {

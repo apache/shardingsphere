@@ -29,17 +29,17 @@ import java.util.Collections;
  */
 @Getter
 public final class MCPDescriptorCatalog {
-
+    
     private final Collection<MCPResourceDescriptor> resourceDescriptors;
-
+    
     private final Collection<MCPToolDescriptor> toolDescriptors;
-
+    
     private final Collection<MCPPromptDescriptor> promptDescriptors;
-
+    
     private final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors;
-
+    
     private final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors;
-
+    
     public MCPDescriptorCatalog(final Collection<MCPResourceDescriptor> resourceDescriptors, final Collection<MCPToolDescriptor> toolDescriptors,
                                 final Collection<MCPPromptDescriptor> promptDescriptors, final Collection<MCPCompletionTargetDescriptor> completionTargetDescriptors,
                                 final Collection<MCPResourceNavigationDescriptor> resourceNavigationDescriptors) {

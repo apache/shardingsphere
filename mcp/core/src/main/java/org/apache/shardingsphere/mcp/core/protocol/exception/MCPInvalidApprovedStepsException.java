@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Exception for invalid workflow approval steps.
@@ -32,8 +33,15 @@ public final class MCPInvalidApprovedStepsException extends MCPInvalidRequestExc
     
     private final List<String> allowedValues;
     
+    private final Map<String, Object> suggestedArguments;
+    
     public MCPInvalidApprovedStepsException(final List<String> allowedValues) {
+        this(allowedValues, Map.of());
+    }
+    
+    public MCPInvalidApprovedStepsException(final List<String> allowedValues, final Map<String, Object> suggestedArguments) {
         super(String.format("approved_steps must contain only %s.", allowedValues));
         this.allowedValues = allowedValues;
+        this.suggestedArguments = suggestedArguments;
     }
 }

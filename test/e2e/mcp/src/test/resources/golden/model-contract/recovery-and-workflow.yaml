@@ -1,0 +1,244 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+executeUpdateMissingExecutionMode:
+  response_mode: recovery
+  error_code: invalid_request
+  message: execute_update execution_mode is required.
+  recovery:
+    category: missing_execution_mode
+    source_tool: execute_update
+    tool_name: execute_update
+    suggested_arguments:
+      database: logic_db
+      schema: public
+      sql: UPDATE orders SET status = 'PAID' WHERE order_id = 1
+      execution_mode: preview
+    next_actions:
+      - order: 1
+        type: tool_call
+        title: Retry execute_update
+        tool_name: execute_update
+        arguments:
+          database: logic_db
+          schema: public
+          sql: UPDATE orders SET status = 'PAID' WHERE order_id = 1
+          execution_mode: preview
+        requires_user_approval: true
+        reason: Retry the same side-effecting tool in preview mode.
+  next_actions: []
+executeUpdatePreview:
+  response_mode: preview
+  result_kind: preview
+  would_execute: false
+  classification:
+  preview:
+  next_actions:
+    - order: 1
+      type: ask_user
+      title: Ask user for approval
+      requires_user_approval: true
+      question: Review normalized_sql and side_effect_scope with the user before execution.
+      required_inputs:
+        - approved_by_user
+      reason: Review normalized_sql and side_effect_scope with the user before execution.
+    - order: 2
+      type: tool_call
+      title: Call execute_update
+      tool_name: execute_update
+      arguments:
+        database: logic_db
+        schema: public
+        sql: UPDATE orders SET status = 'PAID' WHERE order_id = 1
+        execution_mode: execute
+        approved_by_user: true
+      requires_user_approval: true
+      reason: After explicit approval, call execute_update with suggested_arguments.
+workflowPlan:
+  response_mode: planning
+  plan_id: <plan_id>
+  workflow_kind: mask.rule
+  status: planned
+  current_step: review
+  global_steps:
+    - Confirm database, table, column and target lifecycle
+    - Inspect existing mask rules and logical metadata
+    - Clarify masking intent and choose algorithm
+    - Collect algorithm properties
+    - Generate DistSQL artifacts
+    - Review artifacts and choose execution mode
+    - Execute or export artifacts
+    - Validate and summarize
+  algorithm_recommendations:
+    - algorithm_role: primary
+      algorithm_type: KEEP_FIRST_N_LAST_M
+      recommendation_score: 100
+      recommendation_reason: User specified algorithm.
+      risk_notes: ''
+  property_requirements:
+    - algorithm_role: primary
+      property_key: first-n
+      required: true
+      secret: false
+      description: Characters to keep from the left.
+      default_value: ''
+    - algorithm_role: primary
+      property_key: last-m
+      required: true
+      secret: false
+      description: Characters to keep from the right.
+      default_value: ''
+    - algorithm_role: primary
+      property_key: replace-char
+      required: true
+      secret: false
+      description: Replacement character.
+      default_value: '*'
+  review_focus:
+    artifact_categories:
+      - distsql_artifacts
+      - algorithm_properties
+    side_effect_scope:
+      - rule-metadata
+    manual_only: false
+    requires_user_approval: true
+    next_review_action: call_apply_workflow_preview
+  next_actions:
+    - order: 1
+      type: tool_call
+      title: Call apply_workflow
+      tool_name: apply_workflow
+      arguments:
+        execution_mode: preview
+        plan_id: <plan_id>
+      requires_user_approval: false
+      reason: Preview workflow artifacts before asking the user to approve execution.
+workflowApplyPreview:
+  response_mode: preview
+  plan_id: <plan_id>
+  status: preview
+  would_apply: false
+  execution_mode: preview
+  execution_preview:
+  requires_user_approval: true
+  next_actions:
+    - order: 1
+      type: ask_user
+      title: Ask user for approval
+      requires_user_approval: true
+      question: Review preview_artifacts and approve only the intended workflow side effects.
+      required_inputs:
+        - approved_by_user
+      reason: Review preview_artifacts and approve only the intended workflow side effects.
+    - order: 2
+      type: tool_call
+      title: Call apply_workflow
+      tool_name: apply_workflow
+      arguments:
+        approved_by_user: true
+        plan_id: <plan_id>
+        execution_mode: review-then-execute
+      requires_user_approval: true
+      reason: Apply workflow artifacts only after the user approves the previewed side effects.
+workflowApplyManualOnly:
+  response_mode: manual_only
+  plan_id: <plan_id>
+  status: awaiting-manual-execution
+  execution_mode: manual-only
+  manual_artifact_summary:
+    ddl_artifact_count: 0
+    index_plan_count: 0
+    distsql_artifact_count: 1
+    total_artifact_count: 1
+    external_execution_required: true
+    requires_user_confirmation: true
+    validation_blocked_until: manual_artifacts_executed
+    validation_tool_after_manual_execution: validate_workflow
+    validation_arguments_after_manual_execution:
+      plan_id: <plan_id>
+  manual_artifact_package:
+    ddl_artifacts: []
+    index_plan: []
+    distsql_artifacts:
+      - operation_type: create
+        sql: |-
+          CREATE MASK RULE orders (
+          COLUMNS(
+          (NAME=status, TYPE(NAME='keep_first_n_last_m', PROPERTIES('first-n'='1', 'last-m'='1', 'replace-char'='*')))
+          ))
+        redaction:
+          applied: false
+          marker: '******'
+          redacted_properties: []
+          redacted_count: 0
+          redaction_summary:
+            categories: []
+            marker: '******'
+            redacted_count: 0
+  requires_user_approval: true
+  next_actions:
+    - order: 1
+      type: ask_user
+      title: Ask user for approval
+      requires_user_approval: true
+      question: Confirm the manual artifacts were executed outside MCP before validation.
+      required_inputs:
+        - manual_artifacts_executed
+      reason: Confirm the manual artifacts were executed outside MCP before validation.
+workflowValidate:
+  response_mode: validation
+  plan_id: <plan_id>
+  status: failed
+  overall_status: failed
+  sections:
+    - layer: ddl
+      status: skipped
+      evidence: []
+      details: Mask workflows do not require physical DDL validation.
+    - layer: rule
+      status: failed
+      evidence: []
+      details: Mask rule is missing.
+    - layer: logical_metadata
+      status: passed
+      evidence:
+        table: orders
+        column: status
+      details: Logical table and column are still visible from Proxy metadata.
+    - layer: sql_executability
+      status: passed
+      evidence:
+        - SELECT status FROM orders
+      details: Validation SQL is executable from the logical view.
+  mismatches:
+    - code: WF-VAL-002
+      layer: rule
+      expected: status
+      actual: ''
+      impact: Mask rule is missing.
+      remediation: Create or alter the mask rule again.
+  recovery_guidance: Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again.
+  requires_user_approval: false
+  next_actions:
+    - order: 1
+      type: tool_call
+      title: Call plan_mask_rule
+      tool_name: plan_mask_rule
+      arguments:
+        plan_id: <plan_id>
+      requires_user_approval: false
+      reason: Re-plan with corrected metadata or algorithm choices.

@@ -35,12 +35,12 @@ import java.nio.file.Path;
  */
 @RequiredArgsConstructor
 public final class LLMConversationExecutor {
-
+    
     @Getter
     private final LLME2EConfiguration configuration;
-
+    
     private final LLME2EArtifactWriter artifactWriter = new LLME2EArtifactWriter();
-
+    
     /**
      * Run one conversation scenario.
      *
@@ -59,7 +59,7 @@ public final class LLMConversationExecutor {
         artifactWriter.write(artifactDirectory, artifactBundle);
         return new ConversationResult(artifactBundle, artifactDirectory);
     }
-
+    
     /**
      * Assert model is ready before preparing expensive runtime fixtures.
      *
@@ -68,7 +68,7 @@ public final class LLMConversationExecutor {
     public void assertModelReady() throws InterruptedException {
         new LLMChatModelClient(configuration, HttpClient.newHttpClient()).waitUntilReady();
     }
-
+    
     /**
      * Conversation result.
      *

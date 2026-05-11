@@ -30,25 +30,25 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 class WorkflowIntentResolverSupportTest {
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getResolveOperationTypeCases")
     void assertResolveOperationType(final String name, final WorkflowRequest request, final String expectedOperationType) {
         assertThat(WorkflowIntentResolverSupport.resolveOperationType(request), is(expectedOperationType));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getResolveFieldSemanticsCases")
     void assertResolveFieldSemantics(final String name, final WorkflowRequest request, final String expectedFieldSemantics) {
         assertThat(WorkflowIntentResolverSupport.resolveFieldSemantics(request), is(expectedFieldSemantics));
     }
-
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("getResolveExecutionModeCases")
     void assertResolveExecutionMode(final String name, final WorkflowRequest request, final String expectedExecutionMode) {
         assertThat(WorkflowIntentResolverSupport.resolveExecutionMode(request, null), is(expectedExecutionMode));
     }
-
+    
     @Test
     void assertResolveExecutionModeRecordsManualInference() {
         WorkflowRequest request = new WorkflowRequest();
@@ -58,7 +58,7 @@ class WorkflowIntentResolverSupportTest {
         assertThat(WorkflowIntentResolverSupport.resolveExecutionMode(request, clarifiedIntent), is("manual-only"));
         assertThat(clarifiedIntent.getInferredValues().get("execution_mode"), is("manual-only"));
     }
-
+    
     private static Stream<Arguments> getResolveOperationTypeCases() {
         WorkflowRequest explicitRequest = new WorkflowRequest();
         explicitRequest.setOperationType("alter");
@@ -79,7 +79,7 @@ class WorkflowIntentResolverSupportTest {
                 Arguments.of("chinese alter intent heuristic", chineseAlterRequest, "alter"),
                 Arguments.of("default create", defaultRequest, "create"));
     }
-
+    
     private static Stream<Arguments> getResolveFieldSemanticsCases() {
         WorkflowRequest explicitRequest = new WorkflowRequest();
         explicitRequest.setFieldSemantics("email");
@@ -111,7 +111,7 @@ class WorkflowIntentResolverSupportTest {
                 Arguments.of("address heuristic", addressRequest, "address"),
                 Arguments.of("fallback to column", defaultRequest, "customer_code"));
     }
-
+    
     private static Stream<Arguments> getResolveExecutionModeCases() {
         WorkflowRequest explicitRequest = new WorkflowRequest();
         explicitRequest.setExecutionMode("manual-only");

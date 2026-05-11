@@ -1,0 +1,144 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+resources:
+  - uri: shardingsphere://capabilities
+    name: server-capability-catalog
+    title: ShardingSphere MCP Capability Catalog
+    mimeType: application/json
+  - uri: shardingsphere://databases
+    name: logical-databases
+    title: Logical Databases
+    mimeType: application/json
+  - uri: shardingsphere://features/encrypt/algorithms
+    name: encrypt-algorithms
+    title: Encrypt Algorithms
+    mimeType: application/json
+  - uri: shardingsphere://features/mask/algorithms
+    name: mask-algorithms
+    title: Mask Algorithms
+    mimeType: application/json
+  - uri: shardingsphere://runtime
+    name: runtime-status
+    title: Runtime Status
+    mimeType: application/json
+resourceTemplates:
+  - uriTemplate: shardingsphere://databases/{database}
+    name: logical-database-detail
+    title: Logical Database Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/capabilities
+    name: database-capabilities
+    title: Database Capabilities
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas
+    name: schemas
+    title: Schemas
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}
+    name: schema-detail
+    title: Schema Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences
+    name: sequences
+    title: Sequences
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}
+    name: sequence-detail
+    title: Sequence Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables
+    name: tables
+    title: Tables
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}
+    name: table-detail
+    title: Table Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns
+    name: table-columns
+    title: Table Columns
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}
+    name: table-column-detail
+    title: Table Column Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes
+    name: table-indexes
+    title: Table Indexes
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}
+    name: table-index-detail
+    title: Table Index Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views
+    name: views
+    title: Views
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}
+    name: view-detail
+    title: View Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns
+    name: view-columns
+    title: View Columns
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}
+    name: view-column-detail
+    title: View Column Detail
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://features/encrypt/databases/{database}/rules
+    name: encrypt-rules
+    title: Encrypt Rules
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://features/encrypt/databases/{database}/tables/{table}/rules
+    name: encrypt-table-rule
+    title: Encrypt Table Rule
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://features/mask/databases/{database}/rules
+    name: mask-rules
+    title: Mask Rules
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://features/mask/databases/{database}/tables/{table}/rules
+    name: mask-table-rule
+    title: Mask Table Rule
+    mimeType: application/json
+    parameters: []
+  - uriTemplate: shardingsphere://workflows/{plan_id}
+    name: workflow-plan
+    title: Workflow Plan
+    mimeType: application/json
+    parameters: []

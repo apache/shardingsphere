@@ -19,10 +19,30 @@ package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
 import java.util.Locale;
 
-record SQLStatementToken(String text, String upperText, boolean quotedIdentifier) {
+final class SQLStatementToken {
+    
+    private final String text;
+    
+    private final String upperText;
+    
+    private final boolean quotedIdentifier;
     
     SQLStatementToken(final String text, final boolean quotedIdentifier) {
-        this(text, text.toUpperCase(Locale.ENGLISH), quotedIdentifier);
+        this.text = text;
+        upperText = text.toUpperCase(Locale.ENGLISH);
+        this.quotedIdentifier = quotedIdentifier;
+    }
+    
+    String text() {
+        return text;
+    }
+    
+    String upperText() {
+        return upperText;
+    }
+    
+    boolean quotedIdentifier() {
+        return quotedIdentifier;
     }
     
     boolean identifier() {

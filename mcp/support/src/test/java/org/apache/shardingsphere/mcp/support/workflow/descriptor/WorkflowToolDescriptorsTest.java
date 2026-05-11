@@ -29,7 +29,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkflowToolDescriptorsTest {
-
+    
     @Test
     void assertCreatePlanningLoadsDescriptor() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createPlanning("plan_encrypt_rule");
@@ -44,7 +44,7 @@ class WorkflowToolDescriptorsTest {
         assertThat(actual.getFields().get(9).getValueDefinition().toSchemaFragment().get("enum"), is(List.of("review-then-execute", "manual-only")));
         assertTrue(actual.getFields().get(7).getValueDefinition().toSchemaFragment().containsKey("properties"));
     }
-
+    
     @Test
     void assertCreateExecutionBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createExecution();
@@ -60,7 +60,7 @@ class WorkflowToolDescriptorsTest {
         assertThat(actual.getFields().get(3).getValueDefinition().toSchemaFragment().get("type"), is("boolean"));
         assertTrue(actual.getAnnotations().getDestructiveHint());
     }
-
+    
     @Test
     void assertCreateValidationBuildsExpectedFields() {
         MCPToolDescriptor actual = WorkflowToolDescriptors.createValidation();

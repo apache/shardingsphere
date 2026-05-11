@@ -43,6 +43,8 @@ class RuntimeStatusHandlerTest {
             assertThat(actual.get("active_transport"), is("http"));
             assertThat(actual.get("configured_database_count"), is(3));
             assertTrue(((List<?>) actual.get("databases")).stream().map(each -> ((Map<?, ?>) each).get("database")).anyMatch("logic_db"::equals));
+            assertThat(((Map<?, ?>) actual.get("redaction_summary")).get("marker"), is("******"));
+            assertRuntimeDiagnostics(actual, "ready");
             assertTrue(String.valueOf(actual.get("capability_fingerprint")).matches("[0-9a-f]{64}"));
             assertRuntimeCapability((List<?>) actual.get("databases"), "logic_db");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities", "shardingsphere://databases")));
@@ -61,12 +63,29 @@ class RuntimeStatusHandlerTest {
             Map<?, ?> readiness = (Map<?, ?>) actual.get("readiness");
             assertFalse((Boolean) readiness.get("ready"));
             assertThat(readiness.get("reason"), is("No runtime databases are configured."));
+            assertRuntimeDiagnostics(actual, "invalid_configuration");
             assertThat(extractResourceUris((List<?>) actual.get("resources_to_read")), is(List.of("shardingsphere://capabilities")));
             List<?> nextActions = (List<?>) actual.get("next_actions");
             assertThat(((Map<?, ?>) nextActions.get(0)).get("type"), is("resource_read"));
             assertThat(((Map<?, ?>) nextActions.get(1)).get("type"), is("ask_user"));
             assertThat(((Map<?, ?>) nextActions.get(1)).get("required_inputs"), is(List.of("runtimeDatabases")));
         }
+    }
+    
+    private void assertRuntimeDiagnostics(final Map<String, Object> payload, final String expectedCategory) {
+        Map<?, ?> actualDiagnostics = (Map<?, ?>) payload.get("diagnostics");
+        assertThat(actualDiagnostics.get("current_category"), is(expectedCategory));
+        List<?> actualSafeCategories = (List<?>) actualDiagnostics.get("safe_categories");
+        assertTrue(actualSafeCategories.contains("missing_jdbc_driver"));
+        assertTrue(actualSafeCategories.contains("authentication_failed"));
+        assertTrue(actualSafeCategories.contains("connection_timeout"));
+        assertTrue(actualSafeCategories.contains("invalid_configuration"));
+        assertTrue(actualSafeCategories.contains("database_unavailable"));
+        assertTrue(actualSafeCategories.contains("connection_failed"));
+        List<?> actualOperatorNextActions = (List<?>) actualDiagnostics.get("operator_next_actions");
+        assertThat(actualOperatorNextActions.size(), is(6));
+        assertThat(((Map<?, ?>) actualOperatorNextActions.get(3)).get("category"), is("invalid_configuration"));
+        assertTrue((Boolean) ((Map<?, ?>) actualOperatorNextActions.get(3)).get("secret_safe"));
     }
     
     private void assertRuntimeCapability(final List<?> databases, final String databaseName) {

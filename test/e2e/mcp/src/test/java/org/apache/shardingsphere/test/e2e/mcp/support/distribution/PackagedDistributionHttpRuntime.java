@@ -32,6 +32,8 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
     
     private static final long STARTUP_TIMEOUT_MILLIS = TimeUnit.SECONDS.toMillis(20L);
     
+    private static final long STARTUP_POLL_INTERVAL_MILLIS = 250L;
+    
     private final PreparedPackagedDistribution distribution;
     
     private final PackagedDistributionProcessSupport processSupport;
@@ -68,7 +70,10 @@ public final class PackagedDistributionHttpRuntime implements AutoCloseable {
             } catch (final IOException | IllegalStateException ex) {
                 lastException = new IllegalStateException("Packaged MCP HTTP distribution is not ready yet.", ex);
                 closeInteractionClientQuietly(result);
-                Thread.sleep(250L);
+                long remainingMillis = deadline - System.currentTimeMillis();
+                if (0L < remainingMillis) {
+                    Thread.sleep(Math.min(STARTUP_POLL_INTERVAL_MILLIS, remainingMillis));
+                }
             }
         }
         throw createStartupFailure(lastException);

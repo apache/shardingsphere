@@ -21,6 +21,7 @@ import lombok.Getter;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPInvalidRequestException;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Exception for an invalid MCP execution mode.
@@ -34,9 +35,16 @@ public final class MCPInvalidExecutionModeException extends MCPInvalidRequestExc
     
     private final List<String> allowedValues;
     
+    private final Map<String, Object> suggestedArguments;
+    
     public MCPInvalidExecutionModeException(final String toolName, final List<String> allowedValues) {
+        this(toolName, allowedValues, Map.of());
+    }
+    
+    public MCPInvalidExecutionModeException(final String toolName, final List<String> allowedValues, final Map<String, Object> suggestedArguments) {
         super(String.format("%s execution_mode must be one of %s.", toolName, allowedValues));
         this.toolName = toolName;
         this.allowedValues = allowedValues;
+        this.suggestedArguments = suggestedArguments;
     }
 }

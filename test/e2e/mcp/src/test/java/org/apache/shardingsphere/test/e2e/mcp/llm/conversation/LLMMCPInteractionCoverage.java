@@ -28,16 +28,16 @@ import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class LLMMCPInteractionCoverage {
-
+    
     static boolean hasRequiredInteractionCoverage(final Collection<String> requiredActionNames, final Collection<MCPInteractionTraceRecord> interactionTrace) {
         return findMissingRequiredInteractionNames(requiredActionNames, interactionTrace).isEmpty();
     }
-
+    
     static List<String> findMissingRequiredInteractionNames(final Collection<String> requiredActionNames, final Collection<MCPInteractionTraceRecord> interactionTrace) {
         Set<String> coveredActionNames = getCoveredInteractionNames(interactionTrace);
         return requiredActionNames.stream().filter(each -> !coveredActionNames.contains(each)).toList();
     }
-
+    
     private static Set<String> getCoveredInteractionNames(final Collection<MCPInteractionTraceRecord> interactionTrace) {
         Set<String> result = new LinkedHashSet<>();
         for (MCPInteractionTraceRecord each : interactionTrace) {
@@ -47,7 +47,7 @@ final class LLMMCPInteractionCoverage {
         }
         return result;
     }
-
+    
     private static boolean isSuccessfulInteraction(final MCPInteractionTraceRecord interactionTraceRecord) {
         return interactionTraceRecord.isValid() && !interactionTraceRecord.getStructuredContent().containsKey("error_code");
     }

@@ -32,6 +32,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -74,8 +75,9 @@ class LLMChatModelClientTest {
                 .thenReturn(modelListResponse, completionResponse);
         IllegalStateException actualException = assertThrows(IllegalStateException.class, () -> new LLMChatModelClient(createConfiguration(1), httpClient).waitUntilReady());
         verify(httpClient, times(2)).send(any(HttpRequest.class), ArgumentMatchers.<HttpResponse.BodyHandler<String>>any());
-        assertThat(actualException.getMessage(),
-                is("Model service is not ready for `qwen3:1.7b`. Last readiness failure: completion readiness request returned HTTP 401 with error code `unauthorized`."));
+        assertTrue(actualException.getMessage().startsWith("Model service is not ready for `qwen3:1.7b` after 1 readiness attempt(s), elapsedMillis="));
+        assertTrue(actualException.getMessage().endsWith(
+                "timeoutSeconds=1. Last readiness failure: completion readiness request returned HTTP 401 with error code `unauthorized`."));
     }
     
     private LLME2EConfiguration createConfiguration(final int readyTimeoutSeconds) {

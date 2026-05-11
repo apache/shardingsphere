@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.test.e2e.mcp.llm.conversation;
 
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.test.e2e.mcp.support.transport.MCPInteractionActionNames;
 import org.junit.jupiter.api.Test;
 
@@ -28,35 +30,117 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class LLMMCPToolDefinitionFactoryTest {
-
+    
     @Test
     void assertOfficialToolDefinitionsUseProductionDescriptors() {
-        List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(List.of("execute_update", "apply_workflow"));
-        assertApprovalField(findTool(actual, "execute_update"));
-        assertApprovalField(findTool(actual, "apply_workflow"));
+        List<MCPToolDescriptor> toolDescriptors = ToolHandlerRegistry.getSupportedToolDescriptors();
+        List<String> toolNames = toolDescriptors.stream().map(MCPToolDescriptor::getName).toList();
+        List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(toolNames);
+        assertThat(getToolNames(actual), is(toolNames));
+        for (MCPToolDescriptor each : toolDescriptors) {
+            assertOfficialToolDefinition(findTool(actual, each.getName()), each);
+        }
     }
-
+    
     @Test
     void assertProtocolBridgeToolDefinitionsKeepBridgeSchemas() {
-        List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(List.of(MCPInteractionActionNames.LIST_RESOURCES, MCPInteractionActionNames.READ_RESOURCE));
-        Map<?, ?> listResourcesParameters = getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCES));
-        assertThat(listResourcesParameters.get("properties"), is(Map.of()));
-        Map<?, ?> readResourceParameters = getParameters(findTool(actual, MCPInteractionActionNames.READ_RESOURCE));
-        assertThat(((Map<?, ?>) ((Map<?, ?>) readResourceParameters.get("properties")).get("uri")).get("type"), is("string"));
-        assertThat(readResourceParameters.get("required"), is(List.of("uri")));
+        List<String> bridgeToolNames = List.of(
+                MCPInteractionActionNames.LIST_RESOURCES,
+                MCPInteractionActionNames.READ_RESOURCE,
+                MCPInteractionActionNames.LIST_PROMPTS,
+                MCPInteractionActionNames.GET_PROMPT,
+                MCPInteractionActionNames.COMPLETE);
+        List<Map<String, Object>> actual = new LLMMCPToolDefinitionFactory().create(bridgeToolNames);
+        assertThat(getToolNames(actual), is(bridgeToolNames));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_RESOURCES)));
+        assertReadResourceBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.READ_RESOURCE)));
+        assertEmptyObjectSchema(getParameters(findTool(actual, MCPInteractionActionNames.LIST_PROMPTS)));
+        assertGetPromptBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.GET_PROMPT)));
+        assertCompleteBridgeSchema(getParameters(findTool(actual, MCPInteractionActionNames.COMPLETE)));
     }
-
+    
+    private void assertOfficialToolDefinition(final Map<?, ?> toolDefinition, final MCPToolDescriptor toolDescriptor) {
+        assertThat(toolDefinition.get("type"), is("function"));
+        Map<?, ?> function = getFunction(toolDefinition);
+        assertThat(function.get("name"), is(toolDescriptor.getName()));
+        assertThat(function.get("description"), is(toolDescriptor.getDescription()));
+        Map<?, ?> parameters = getParameters(toolDefinition);
+        assertThat(parameters, is(toolDescriptor.toInputSchema()));
+        Map<?, ?> actualProperties = getProperties(parameters);
+        if (actualProperties.containsKey("approved_by_user")) {
+            assertApprovalField(toolDefinition);
+        }
+    }
+    
+    private void assertEmptyObjectSchema(final Map<?, ?> parameters) {
+        assertThat(parameters.get("type"), is("object"));
+        assertThat(parameters.get("properties"), is(Map.of()));
+        assertFalse((Boolean) parameters.get("additionalProperties"));
+    }
+    
+    private void assertReadResourceBridgeSchema(final Map<?, ?> parameters) {
+        assertThat(parameters.get("type"), is("object"));
+        assertThat(getFieldType(parameters, "uri"), is("string"));
+        assertThat(parameters.get("required"), is(List.of("uri")));
+        assertFalse((Boolean) parameters.get("additionalProperties"));
+    }
+    
+    private void assertGetPromptBridgeSchema(final Map<?, ?> parameters) {
+        assertThat(parameters.get("type"), is("object"));
+        assertThat(getFieldType(parameters, "name"), is("string"));
+        assertThat(getFieldType(parameters, "arguments"), is("object"));
+        assertThat(parameters.get("required"), is(List.of("name")));
+        assertFalse((Boolean) parameters.get("additionalProperties"));
+    }
+    
+    private void assertCompleteBridgeSchema(final Map<?, ?> parameters) {
+        assertThat(parameters.get("type"), is("object"));
+        Map<?, ?> reference = getField(parameters, "reference");
+        assertThat(reference.get("type"), is("object"));
+        assertThat(getFieldType(reference, "type"), is("string"));
+        assertThat(((Map<?, ?>) getProperties(reference).get("type")).get("enum"), is(List.of("ref/prompt", "ref/resource")));
+        assertThat(getFieldType(reference, "name"), is("string"));
+        assertThat(getFieldType(reference, "uri"), is("string"));
+        assertThat(reference.get("required"), is(List.of("type")));
+        assertFalse((Boolean) reference.get("additionalProperties"));
+        assertThat(getFieldType(parameters, "argument_name"), is("string"));
+        assertThat(getFieldType(parameters, "argument_value"), is("string"));
+        assertThat(getFieldType(parameters, "context_arguments"), is("object"));
+        assertThat(parameters.get("required"), is(List.of("reference", "argument_name")));
+        assertFalse((Boolean) parameters.get("additionalProperties"));
+    }
+    
     private void assertApprovalField(final Map<?, ?> toolDefinition) {
         Map<?, ?> parameters = getParameters(toolDefinition);
         Map<?, ?> approvedByUser = (Map<?, ?>) ((Map<?, ?>) parameters.get("properties")).get("approved_by_user");
         assertThat(approvedByUser.get("type"), is("boolean"));
         assertFalse(((List<?>) parameters.get("required")).contains("approved_by_user"));
     }
-
+    
     private Map<?, ?> getParameters(final Map<?, ?> toolDefinition) {
-        return (Map<?, ?>) ((Map<?, ?>) toolDefinition.get("function")).get("parameters");
+        return (Map<?, ?>) getFunction(toolDefinition).get("parameters");
     }
-
+    
+    private Map<?, ?> getFunction(final Map<?, ?> toolDefinition) {
+        return (Map<?, ?>) toolDefinition.get("function");
+    }
+    
+    private Map<?, ?> getProperties(final Map<?, ?> schema) {
+        return (Map<?, ?>) schema.get("properties");
+    }
+    
+    private Map<?, ?> getField(final Map<?, ?> schema, final String fieldName) {
+        return (Map<?, ?>) getProperties(schema).get(fieldName);
+    }
+    
+    private Object getFieldType(final Map<?, ?> schema, final String fieldName) {
+        return getField(schema, fieldName).get("type");
+    }
+    
+    private List<String> getToolNames(final List<Map<String, Object>> toolDefinitions) {
+        return toolDefinitions.stream().map(each -> String.valueOf(getFunction(each).get("name"))).toList();
+    }
+    
     private Map<?, ?> findTool(final List<Map<String, Object>> toolDefinitions, final String toolName) {
         return toolDefinitions.stream()
                 .filter(each -> toolName.equals(((Map<?, ?>) each.get("function")).get("name")))

@@ -65,9 +65,10 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPToolCall toolCall) {
         MCPToolArguments toolArguments = new MCPToolArguments(toolCall.getArguments());
+        String query = toolArguments.getStringArgument("query");
         MetadataSearchRequest request = new MetadataSearchRequest(
-                toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), toolArguments.getStringArgument("query"),
-                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES),
+                toolArguments.getStringArgument("database"), toolArguments.getStringArgument("schema"), query,
+                toolArguments.getObjectTypes(SUPPORTED_OBJECT_TYPES, query.isEmpty() ? Set.of() : Set.of(query)),
                 resolvePageSize(toolArguments),
                 toolArguments.getStringArgument("page_token"));
         MetadataSearchResult searchResult = new SearchMetadataToolService(databaseContext.getMetadataQueryFacade()).execute(request);
@@ -92,7 +93,7 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
             result.put("next_actions", List.of(createEmptySearchNextAction(request)));
             return result;
         }
-        List<String> duplicatedNames = findDuplicatedNames(searchResult.getAmbiguityCandidates());
+        List<String> duplicatedNames = findDuplicatedNames(searchResult.getAmbiguityCandidates(), request.getQuery());
         List<Map<String, Object>> nextActions = createResultNextActions(request, searchResult, duplicatedNames);
         if (!nextActions.isEmpty()) {
             result.put("next_actions", nextActions);
@@ -153,15 +154,22 @@ public final class SearchMetadataToolHandler implements MCPToolHandler<MCPDataba
         }
     }
     
-    private List<String> findDuplicatedNames(final List<MetadataSearchHit> items) {
+    private List<String> findDuplicatedNames(final List<MetadataSearchHit> items, final String query) {
         Set<String> observedNames = new LinkedHashSet<>();
         Set<String> duplicatedNames = new LinkedHashSet<>();
         for (MetadataSearchHit each : items) {
+            if (!isAmbiguityCandidate(each, query)) {
+                continue;
+            }
             if (!observedNames.add(each.getName())) {
                 duplicatedNames.add(each.getName());
             }
         }
         return new LinkedList<>(duplicatedNames);
+    }
+    
+    private boolean isAmbiguityCandidate(final MetadataSearchHit searchHit, final String query) {
+        return query.isEmpty() || searchHit.getMatchedFields().contains("name");
     }
     
     private Map<String, Object> createAmbiguityState(final List<MetadataSearchHit> items, final List<String> duplicatedNames) {

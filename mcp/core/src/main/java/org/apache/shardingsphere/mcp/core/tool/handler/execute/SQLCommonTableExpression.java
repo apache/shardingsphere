@@ -17,5 +17,22 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.execute;
 
-record SQLCommonTableExpression(String aliasName, SQLStatementStructure statementStructure) {
+final class SQLCommonTableExpression {
+    
+    private final String aliasName;
+    
+    private final SQLStatementStructure statementStructure;
+    
+    SQLCommonTableExpression(final String aliasName, final SQLStatementStructure statementStructure) {
+        this.aliasName = aliasName;
+        this.statementStructure = statementStructure;
+    }
+    
+    String aliasName() {
+        return aliasName;
+    }
+    
+    SQLStatementStructure statementStructure() {
+        return statementStructure;
+    }
 }

@@ -59,7 +59,7 @@ class WorkflowValidationSupportTest {
         Map<String, Object> actualResult = validationSupport.checkValidatePreconditions("session-2", snapshot);
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
-        assertThat(actualResult.get("recommended_recovery"), is("Continue the workflow from the same session that created the plan."));
+        assertThat(actualResult.get("recovery_guidance"), is("Continue the workflow from the same session that created the plan."));
         assertFalse((Boolean) actualResult.get("requires_user_approval"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SESSION_OWNERSHIP_MISMATCH));
     }
@@ -73,7 +73,7 @@ class WorkflowValidationSupportTest {
         Map<String, Object> actualResult = validationSupport.checkValidatePreconditions("session-1", snapshot);
         assertThat(actualResult.get("status"), is("failed"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
-        assertThat(actualResult.get("recommended_recovery"), is("Execute the workflow first or continue from a validatable status."));
+        assertThat(actualResult.get("recovery_guidance"), is("Execute the workflow first or continue from a validatable status."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.WORKFLOW_STATUS_INVALID));
     }
     
@@ -164,7 +164,8 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("response_mode"), is("validation"));
         assertThat(actualResult.get("status"), is("validated"));
         assertThat(actualResult.get("plan_id"), is("plan-1"));
-        assertThat(actualResult.get("recommended_recovery"), is(""));
+        assertThat(actualResult.get("recovery_guidance"), is(""));
+        assertFalse(actualResult.containsKey("recommended_recovery"));
         assertFalse(actualResult.containsKey("recommended_next_tool"));
         List<?> actualNextActions = (List<?>) actualResult.get("next_actions");
         assertThat(((Map<?, ?>) actualNextActions.get(0)).get("type"), is("terminal"));
@@ -188,7 +189,7 @@ class WorkflowValidationSupportTest {
         assertThat(actualResult.get("response_mode"), is("validation"));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("issues")).get(0)).get("code"), is(WorkflowIssueCode.SQL_EXECUTABILITY_FAILED));
         assertThat(actualResult.get("status"), is("failed"));
-        assertThat(actualResult.get("recommended_recovery"), is("Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again."));
+        assertThat(actualResult.get("recovery_guidance"), is("Inspect mismatches, adjust the plan or runtime state, then run validate_workflow again."));
         assertThat(((Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0)).get("type"), is("ask_user"));
     }
     
@@ -219,7 +220,7 @@ class WorkflowValidationSupportTest {
         workflowSessionContext.save(snapshot);
         Map<String, Object> actualResult = validationSupport.finalizeValidation(workflowSessionContext, snapshot, validationReport);
         Map<?, ?> actualNextAction = (Map<?, ?>) ((List<?>) actualResult.get("next_actions")).get(0);
-        assertThat(actualResult.get("recommended_recovery"), is("Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run validate_workflow again."));
+        assertThat(actualResult.get("recovery_guidance"), is("Manual-only artifacts are exported but not executed by MCP. Execute them manually, then run validate_workflow again."));
         assertTrue((Boolean) actualResult.get("requires_user_approval"));
         assertThat(actualNextAction.get("type"), is("ask_user"));
         assertThat(actualNextAction.get("required_inputs"), is(List.of("manual_artifacts_executed")));
@@ -235,7 +236,8 @@ class WorkflowValidationSupportTest {
         assertThat(actualMismatch.get("expected"), is("expected"));
         assertThat(actualMismatch.get("actual"), is("actual"));
         assertThat(actualMismatch.get("impact"), is("impact"));
-        assertThat(actualMismatch.get("suggested_next_action"), is("fix it"));
+        assertThat(actualMismatch.get("remediation"), is("fix it"));
+        assertFalse(actualMismatch.containsKey("suggested_next_action"));
     }
     
     private WorkflowContextSnapshot createSnapshot() {
