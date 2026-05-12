@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mcp.support.descriptor;
 
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
+import org.apache.shardingsphere.mcp.support.security.MCPClientSafetyPolicy;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -121,10 +122,11 @@ final class MCPModelFirstContractPayloadBuilder {
     }
     
     Map<String, Object> createSecurityHints() {
-        Map<String, Object> result = new LinkedHashMap<>(3, 1F);
+        Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         result.put("http_access_token", "HTTP transport may require an Authorization bearer token; capabilities never exposes secrets.");
         result.put("remote_access", "Prefer loopback access unless the operator explicitly configures remote exposure.");
         result.put("stdio_stdout", "STDIO transport must keep MCP protocol frames on stdout and send logs to stderr or files.");
+        result.put("client_safety_policy", MCPClientSafetyPolicy.createModelFacingPayload());
         return result;
     }
     

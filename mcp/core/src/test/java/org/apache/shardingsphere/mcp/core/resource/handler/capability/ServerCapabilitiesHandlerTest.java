@@ -158,6 +158,10 @@ class ServerCapabilitiesHandlerTest {
         assertTrue(actual.containsKey("http_access_token"));
         assertTrue(actual.containsKey("remote_access"));
         assertTrue(actual.containsKey("stdio_stdout"));
+        Map<?, ?> actualClientSafetyPolicy = (Map<?, ?>) actual.get("client_safety_policy");
+        assertThat(actualClientSafetyPolicy.get("identity_scope"), is("mcp_session"));
+        assertThat(((Map<?, ?>) actualClientSafetyPolicy.get("tool_call_limit")).get("scope"), is("session"));
+        assertTrue(String.valueOf(actualClientSafetyPolicy.get("abuse_guard")).contains("counted before dispatch"));
     }
     
     private void assertLegacyPayloadFieldsAbsent(final Map<String, Object> capabilities) {

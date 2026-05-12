@@ -26,6 +26,7 @@ import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTimeoutException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPTransactionStateException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnavailableException;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedResourceUriException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
@@ -57,6 +58,8 @@ public final class MCPErrorConverter {
     
     private static final String UNAVAILABLE = "unavailable";
     
+    private static final String RATE_LIMITED = "rate_limited";
+    
     /**
      * Convert throwable to MCP error.
      *
@@ -87,6 +90,9 @@ public final class MCPErrorConverter {
         }
         if (cause instanceof MCPQueryFailedException) {
             return createError(QUERY_FAILED, cause, "MCP query failed.");
+        }
+        if (cause instanceof MCPToolCallLimitExceededException) {
+            return createError(RATE_LIMITED, cause, "MCP tool call limit exceeded.");
         }
         if (cause instanceof MCPUnavailableException) {
             return createError(UNAVAILABLE, cause, "Service is temporarily unavailable.");

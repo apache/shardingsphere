@@ -31,8 +31,10 @@ class MCPToolDescriptorTest {
     @Test
     void assertToInputSchema() {
         MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo tool.", List.of(
-                        new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true),
-                        new MCPToolFieldDefinition("object_types", MCPToolValueDefinition.array("Object types.", MCPToolValueDefinition.string("Object type.")), false)), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+                new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true),
+                new MCPToolFieldDefinition("object_types",
+                        MCPToolValueDefinition.array("Object types.", MCPToolValueDefinition.string("Object type.")), false)),
+                Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
         Map<String, Object> expectedProperties = Map.of(
                 "query", Map.of("type", "string", "description", "Search query."),
                 "object_types", Map.of("type", "array", "description", "Object types.", "items",

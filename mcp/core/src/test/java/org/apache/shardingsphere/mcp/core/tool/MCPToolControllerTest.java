@@ -74,6 +74,23 @@ class MCPToolControllerTest {
         }
     }
     
+    @Test
+    void assertHandleWithToolCallLimitExceeded() {
+        MCPResponse response = mock(MCPResponse.class);
+        when(response.toPayload()).thenReturn(Map.of("items", 1));
+        try (MockedStatic<ToolHandlerRegistry> mocked = mockStatic(ToolHandlerRegistry.class)) {
+            mocked.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-1"), eq("search_metadata"), eq(Map.of("query", "order"))))
+                    .thenReturn(Optional.of(response));
+            MCPToolController controller = new MCPToolController(ResourceTestDataFactory.createRuntimeContext(), new MCPToolCallLimiter(1));
+            controller.handle("session-1", "search_metadata", Map.of("query", "order"));
+            Map<String, Object> actual = controller.handle("session-1", "search_metadata", Map.of("query", "order")).toPayload();
+            Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+            assertThat(actual.get("error_code"), is("rate_limited"));
+            assertThat(actual.get("message"), is("MCP session exceeded the maximum tool call quota of 1."));
+            assertThat(actualRecovery.get("category"), is("tool_call_limit_exceeded"));
+        }
+    }
+    
     private MCPToolController createController() {
         return new MCPToolController(ResourceTestDataFactory.createRuntimeContext());
     }

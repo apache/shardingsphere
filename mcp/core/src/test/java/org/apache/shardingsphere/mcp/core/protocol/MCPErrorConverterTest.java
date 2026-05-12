@@ -31,6 +31,7 @@ import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataO
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMissingToolArgumentException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPMultipleSQLStatementsException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUnsupportedSQLStatementException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPUserApprovalRequiredException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPWorkflowStateException;
@@ -397,6 +398,18 @@ class MCPErrorConverterTest {
         assertThat(actualRecovery.get("database"), is("logic_db"));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(0)).get("order"), is(1));
         assertThat(((Map<?, ?>) ((List<?>) actualRecovery.get("next_actions")).get(1)).get("depends_on"), is(List.of(1)));
+    }
+    
+    @Test
+    void assertConvertToolCallLimitExceededWithRecovery() {
+        Map<String, Object> actual = MCPErrorConverter.convert(new MCPToolCallLimitExceededException("session-1", "search_metadata", 1)).toPayload();
+        Map<?, ?> actualRecovery = (Map<?, ?>) actual.get("recovery");
+        assertThat(actual.get("error_code"), is("rate_limited"));
+        assertThat(actualRecovery.get("category"), is("tool_call_limit_exceeded"));
+        assertThat(actualRecovery.get("identity_scope"), is("mcp_session"));
+        assertThat(actualRecovery.get("tool_name"), is("search_metadata"));
+        assertThat(actualRecovery.get("max_tool_calls_per_session"), is(1));
+        assertThat(getFirstResourceToReadUri(actualRecovery), is("shardingsphere://capabilities"));
     }
     
     @Test

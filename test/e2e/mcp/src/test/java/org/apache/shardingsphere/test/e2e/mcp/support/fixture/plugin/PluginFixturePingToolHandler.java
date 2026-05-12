@@ -36,7 +36,8 @@ import java.util.Map;
  */
 public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPServiceHandlerContext> {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping", "Return a fixture ping response for packaged plugin discovery.", List.of(new MCPToolFieldDefinition("message", MCPToolValueDefinition.string("Fixture message."), true)), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping", "Return a fixture ping response for packaged plugin discovery.",
+            List.of(new MCPToolFieldDefinition("message", MCPToolValueDefinition.string("Fixture message."), true)), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
     
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {

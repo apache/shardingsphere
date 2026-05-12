@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidMetadataObjectTypesException;
 import org.apache.shardingsphere.mcp.core.protocol.exception.MCPInvalidToolArgumentException;
+import org.apache.shardingsphere.mcp.core.protocol.exception.MCPToolCallLimitExceededException;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
@@ -69,6 +70,21 @@ final class MCPBasicRecoveryPayloadFactory {
                 MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP runtime capabilities and configured database names."),
                 MCPNextActionUtils.dependsOn(MCPNextActionUtils.askUser(
                         "Ask the operator to fix the MCP runtime database configuration before retrying.", List.of("runtime_database_configuration"), false), 1)));
+        result.put("requires_user_approval", false);
+        result.put("ask_user_when_uncertain", true);
+        return result;
+    }
+    
+    static Map<String, Object> createToolCallLimitRecovery(final MCPToolCallLimitExceededException cause) {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
+                "tool_call_limit_exceeded", "Stop the current loop, summarize progress, or start a new MCP session before retrying.");
+        result.put("identity_scope", "mcp_session");
+        result.put("session_id", cause.getSessionId());
+        result.put("tool_name", cause.getToolName());
+        result.put("max_tool_calls_per_session", cause.getMaxToolCallsPerSession());
+        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+                "shardingsphere://capabilities", "capability", "Read the current MCP safety policy before retrying."));
+        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read current MCP safety policy and tool call limits.")));
         result.put("requires_user_approval", false);
         result.put("ask_user_when_uncertain", true);
         return result;

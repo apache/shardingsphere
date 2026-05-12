@@ -78,7 +78,7 @@ Those commands must be recorded in `scorecard.md` before the related dimensions 
 |------|---------|-----------------------------|---------------|
 | H2 HTTP production runtime | Enabled | Default MCP plus E2E scoped test command | exit `0`, `test/e2e/mcp` `240` tests with `14` skipped |
 | H2 STDIO production runtime | Opt-in | `-Dmcp.e2e.production.stdio.enabled=true` with `ProductionH2*` and `ProductionMultiDatabaseE2ETest` | exit `0`, `84` tests, `0` skipped |
-| MySQL HTTP and STDIO runtime | Opt-in | `-Dmcp.e2e.production.mysql.enabled=true -Dmcp.e2e.production.stdio.enabled=true -Dtest=ProductionMySQLRuntimeSmokeE2ETest` | exit `0`, `22` tests, `0` skipped |
+| MySQL HTTP and STDIO runtime | Opt-in | MySQL plus STDIO flags with `ProductionMySQLRuntimeSmokeE2ETest` | exit `0`, `22` tests, `0` skipped |
 | Packaged distribution HTTP and STDIO | Opt-in | Build `distribution/mcp`, then `PackagedDistributionSmokeE2ETest` | exit `0`, packaged HTTP and STDIO smoke passed |
 | Packaged plugin discovery | Opt-in | `PackagedDistributionPluginDiscoveryE2ETest` | exit `0`, plugin discovery passed |
 | Live LLM usability | Opt-in | `-Pllm-e2e -Dtest=LLMSmokeE2ETest,LLMUsabilitySuiteE2ETest` | exit `0`, `5` tests, core and extended scorecards `100/100` |
@@ -110,5 +110,12 @@ Opt-in runtime evidence:
 - Live LLM artifacts: core and extended scorecards both reported `overallScore=100`, `fullScore=true`,
   `invalidCallRate=0`, `approvalViolationRate=0`, and `harnessRecoveryRate=0`.
 
-This evidence closes the current STDIO, MySQL, packaged distribution, and live LLM readiness gaps.
-It does not close performance-budget, safety-boundary, protocol-conformance, historical revalidation, or decoupling gaps.
+Final perfect-score slice:
+
+- MCP API/support/core safety, protocol, and performance budget tests: exit `0`, `72` tests.
+- H2 capability E2E smoke after safety-policy payload change: exit `0`, `7` tests.
+- MCP API/support/core Checkstyle with dependencies: exit `0`, `0 Checkstyle violations`.
+- MCP API/support/core Spotless with dependencies: exit `0`, all clean.
+
+This evidence closes the current performance-budget, safety-boundary, protocol-conformance,
+historical revalidation, and decoupling gaps.

@@ -17,12 +17,11 @@
 
 package org.apache.shardingsphere.mcp.core.tool;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.error.MCPErrorConverter;
 import org.apache.shardingsphere.mcp.core.protocol.exception.UnsupportedToolException;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
 
 import java.util.Map;
@@ -30,10 +29,21 @@ import java.util.Map;
 /**
  * MCP tool controller.
  */
-@RequiredArgsConstructor
 public final class MCPToolController {
     
     private final MCPRuntimeContext runtimeContext;
+    
+    private final MCPToolCallLimiter toolCallLimiter;
+    
+    public MCPToolController(final MCPRuntimeContext runtimeContext) {
+        this(runtimeContext, new MCPToolCallLimiter());
+    }
+    
+    MCPToolController(final MCPRuntimeContext runtimeContext, final MCPToolCallLimiter toolCallLimiter) {
+        this.runtimeContext = runtimeContext;
+        this.toolCallLimiter = toolCallLimiter;
+        runtimeContext.getSessionManager().addSessionCloseListener(toolCallLimiter::releaseSession);
+    }
     
     /**
      * Handle tool call.
@@ -44,8 +54,11 @@ public final class MCPToolController {
      * @return MCP response
      */
     public MCPResponse handle(final String sessionId, final String toolName, final Map<String, Object> arguments) {
-        try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
-            return ToolHandlerRegistry.dispatch(requestScope, sessionId, toolName, arguments).orElseThrow(() -> new UnsupportedToolException(toolName));
+        try {
+            toolCallLimiter.acquire(sessionId, toolName);
+            try (MCPRequestScope requestScope = new MCPRequestScope(runtimeContext)) {
+                return ToolHandlerRegistry.dispatch(requestScope, sessionId, toolName, arguments).orElseThrow(() -> new UnsupportedToolException(toolName));
+            }
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

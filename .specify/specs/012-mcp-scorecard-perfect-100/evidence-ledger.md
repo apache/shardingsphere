@@ -277,11 +277,70 @@ MCP_LLM_RUN_ID=ra001-final-20260512015143 \
 - Result: exit `0`, `Tests run: 66, Failures: 0, Errors: 0, Skipped: 0`.
 - Resulting guardrail: a green live LLM Maven run now requires both core and extended scorecards to be `100/100`.
 
+### EV-021
+
+- Dimension: Production and E2E safety boundary.
+- Status: `current`.
+- Evidence: Added `MCPClientSafetyPolicy`, `MCPToolCallLimiter`, `MCPToolCallLimitExceededException`, `rate_limited` error conversion,
+  recovery guidance, and `security_hints.client_safety_policy` in `shardingsphere://capabilities`.
+- Result: The enforced boundary is MCP-session scoped. Every tool call is counted before dispatch, invalid calls are counted, exhausted sessions return
+  `rate_limited`, and the production runtime states that external model calls are outside the MCP server.
+
+### EV-022
+
+- Dimension: Production safety, protocol surface, and performance budget tests.
+- Status: `current`.
+- Evidence command:
+
+```bash
+MCP_SCORE_TESTS=MCPToolDescriptorTest,MCPClientSafetyPolicyTest,MCPModelFirstContractPayloadBuilderTest
+MCP_SCORE_TESTS=$MCP_SCORE_TESTS,MCPToolCallLimiterTest,MCPToolControllerTest,MCPErrorConverterTest
+MCP_SCORE_TESTS=$MCP_SCORE_TESTS,ServerCapabilitiesHandlerTest,ToolHandlerRegistryTest,MCPPerformanceBudgetSmokeTest
+./mvnw -pl mcp/api,mcp/support,mcp/core -am -DskipITs -Dspotless.skip=true \
+  -Dtest="$MCP_SCORE_TESTS" \
+  test -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+```
+
+- Result: exit `0`; `mcp/api` `1` test, `mcp/support` `7` tests, and `mcp/core` `66` tests all passed.
+- Budget result: `MCPPerformanceBudgetSmokeTest` ran `4` tests in `0.196 s`, covering descriptor generation, request-scope creation, metadata search,
+  and SQL classification budgets.
+
+### EV-023
+
+- Dimension: E2E capability surface safety and compatibility.
+- Status: `current`.
+- Evidence command:
+
+```bash
+./mvnw -pl test/e2e/mcp -DskipITs -Dspotless.skip=true \
+  -Dtest=ProductionH2CapabilityDiscoveryE2ETest,ProductionH2RuntimeSmokeE2ETest \
+  test -Dsurefire.failIfNoSpecifiedTests=false -B -ntp
+```
+
+- Result: exit `0`, `Tests run: 7, Failures: 0, Errors: 0, Skipped: 0`.
+
+### EV-024
+
+- Dimension: Protocol, historical, safety, and performance traceability.
+- Status: `current`.
+- Evidence artifacts:
+  `protocol-evidence-matrix.md`, `historical-evidence-map.md`, `safety-boundary.md`, and `performance-budget.md`.
+- Result: Historical `011` evidence is mapped only through current `012` commands, protocol rows have production and E2E evidence, safety has an enforced
+  session-scope boundary, and E2E lane budgets are explicit.
+
+### EV-025
+
+- Dimension: Final style gates for MCP API/support/core chain.
+- Status: `current`.
+- Evidence commands:
+
+```bash
+./mvnw -pl mcp/support,mcp/core -am -DskipTests -DskipITs -Dspotless.skip=true -Pcheck checkstyle:check -B -ntp
+./mvnw -pl mcp/support,mcp/core -am -DskipTests -DskipITs -Pcheck spotless:check -B -ntp
+```
+
+- Result: both commands exited `0`; `mcp/api`, `mcp/support`, and `mcp/core` were Checkstyle and Spotless clean.
+
 ## Open Risks
 
-| ID | Dimension | Missing Evidence | Required Next Step |
-|----|-----------|------------------|--------------------|
-| OR-001 | Historical 100 evidence | `011` commands and artifacts are not revalidated for this checkpoint. | Map every historical command to a dimension and rerun or mark stale. |
-| OR-003 | E2E performance | Default full E2E duration is recorded. Live LLM and resource budgets are still not recorded. | Define lane budgets and record command durations. |
-| OR-004 | Production performance | Descriptor, metadata, request-scope, and SQL execution budgets are not recorded. | Add lightweight performance smokes or measured command evidence. |
-| OR-005 | Production decoupling | Static registry and hardcoded context boundaries still require proof or refactoring. | Add bounded extension tests or reduce coupling in small slices. |
+None for this checkpoint.
