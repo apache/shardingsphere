@@ -32,7 +32,7 @@ public final class MCPUriVariables {
     
     /**
      * Whether to contains variable.
-     * 
+     *
      * @param variableName variable name
      * @return contains variable or not
      */

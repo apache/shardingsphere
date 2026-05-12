@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,21 +32,25 @@ class MCPResourceDescriptorTest {
     
     @Test
     void assertIsTemplated() {
-        assertTrue(new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json").isTemplated());
-        assertFalse(new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", "application/json").isTemplated());
+        assertTrue(new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json", Collections.emptyList(),
+                MCPResourceAnnotations.EMPTY, null, null, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyMap()).isTemplated());
+        assertFalse(new MCPResourceDescriptor("shardingsphere://databases", "databases", "Databases", "List databases.", "application/json", Collections.emptyList(),
+                MCPResourceAnnotations.EMPTY, null, null, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyMap()).isTemplated());
     }
     
     @Test
     void assertGetUriTemplate() {
-        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json");
+        MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://databases/{database}", "database", "Database", "Read one database.", "application/json", Collections.emptyList(),
+                MCPResourceAnnotations.EMPTY, null, null, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyMap());
         assertThat(actual.getUriTemplate(), is("shardingsphere://databases/{database}"));
     }
     
     @Test
     void assertMetaDoesNotChangeTypedFields() {
         MCPResourceDescriptor actual = new MCPResourceDescriptor("shardingsphere://features/encrypt/algorithms", "encrypt-algorithms", "Encrypt Algorithms",
-                "List encrypt algorithms.", "application/json", List.of(), MCPResourceAnnotations.EMPTY,
-                Map.of("resourceKind", "list", "feature", "encrypt", "relatedTools", List.of("plan_encrypt_rule"), "runtimeVisibility", "ShardingSphere-Proxy"));
+                "List encrypt algorithms.", "application/json", List.of(), MCPResourceAnnotations.EMPTY, null, null, null, Collections.emptyList(),
+                Collections.emptyList(), Collections.emptyList(), Map.of("resourceKind", "list", "feature", "encrypt", "relatedTools", List.of("plan_encrypt_rule"),
+                        "runtimeVisibility", "ShardingSphere-Proxy"));
         assertThat(actual.getResourceKind(), is((String) null));
         assertThat(actual.getFeature(), is((String) null));
         assertThat(actual.getRelatedTools(), is(List.of()));

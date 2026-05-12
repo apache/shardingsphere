@@ -18,14 +18,15 @@
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 /**
  * MCP resource descriptor.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPResourceDescriptor {
     
@@ -56,35 +57,6 @@ public final class MCPResourceDescriptor {
     private final List<String> useBefore;
     
     private final Map<String, Object> meta;
-    
-    public MCPResourceDescriptor(final String uriTemplate, final String name, final String title, final String description, final String mimeType) {
-        this(uriTemplate, name, title, description, mimeType, Collections.emptyList(), MCPResourceAnnotations.EMPTY, Collections.emptyMap());
-    }
-    
-    public MCPResourceDescriptor(final String uriTemplate, final String name, final String title, final String description, final String mimeType,
-                                 final List<MCPResourceParameterDescriptor> parameters, final MCPResourceAnnotations annotations, final Map<String, Object> meta) {
-        this(uriTemplate, name, title, description, mimeType, parameters, annotations, null, null, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), meta);
-    }
-    
-    public MCPResourceDescriptor(final String uriTemplate, final String name, final String title, final String description, final String mimeType,
-                                 final List<MCPResourceParameterDescriptor> parameters, final MCPResourceAnnotations annotations, final String resourceKind,
-                                 final String objectScope, final String feature, final List<String> relatedTools, final List<String> relatedResources,
-                                 final List<String> useBefore, final Map<String, Object> meta) {
-        this.uriTemplate = uriTemplate;
-        this.name = name;
-        this.title = title;
-        this.description = description;
-        this.mimeType = mimeType;
-        this.parameters = null == parameters ? Collections.emptyList() : parameters;
-        this.annotations = null == annotations ? MCPResourceAnnotations.EMPTY : annotations;
-        this.resourceKind = resourceKind;
-        this.objectScope = objectScope;
-        this.feature = feature;
-        this.relatedTools = null == relatedTools ? Collections.emptyList() : relatedTools;
-        this.relatedResources = null == relatedResources ? Collections.emptyList() : relatedResources;
-        this.useBefore = null == useBefore ? Collections.emptyList() : useBefore;
-        this.meta = null == meta ? Collections.emptyMap() : meta;
-    }
     
     /**
      * Judge whether the resource is a URI template.

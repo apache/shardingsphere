@@ -20,10 +20,12 @@ package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
+import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceAnnotations;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -41,8 +43,9 @@ public final class PluginFixtureStatusResourceHandler implements MCPResourceHand
     
     @Override
     public MCPResourceDescriptor getResourceDescriptor() {
-        return new MCPResourceDescriptor(URI_PATTERN, "test-fixture-status", "Test Fixture Status",
-                "Read the packaged MCP test fixture status used by e2e plugin discovery tests.", "application/json");
+        return new MCPResourceDescriptor(URI_PATTERN, "test-fixture-status", "Test Fixture Status", "Read the packaged MCP test fixture status used by e2e plugin discovery tests.", "application/json",
+                Collections.emptyList(),
+                MCPResourceAnnotations.EMPTY, null, null, null, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyMap());
     }
     
     @Override
