@@ -40,6 +40,8 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     
     private static final long PROCESS_STOP_TIMEOUT_SECONDS = 5L;
     
+    private static final int STDERR_DIAGNOSTIC_MAX_CHARS = 4096;
+    
     private static final String INITIALIZE_REQUEST_ID = "init-1";
     
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -108,9 +110,9 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
         Map<String, Object> initializeResponse = sendRequest(INITIALIZE_REQUEST_ID, "initialize",
                 MCPInteractionProtocolSupport.createInitializeRequestParams(getClientName()));
         if (MCPInteractionPayloads.hasJsonRpcError(initializeResponse)) {
-            throw new IllegalStateException("Failed to initialize STDIO MCP session: "
+            throw createRuntimeFailureException("Failed to initialize STDIO MCP session: "
                     + MCPInteractionPayloads.getJsonRpcErrorPayload(initializeResponse).get("message")
-                    + ". stderr: " + getStdErrorOutput());
+                    + ".");
         }
         notifyServer("notifications/initialized", Map.of());
     }
@@ -154,16 +156,16 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
                 return result;
             }
         }
-        throw createRuntimeFailureException("STDIO MCP runtime did not return a response. stderr: " + getStdErrorOutput());
+        throw createRuntimeFailureException("STDIO MCP runtime did not return a response.");
     }
     
     private void waitForNormalExit() throws InterruptedException {
         if (!process.waitFor(PROCESS_STOP_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
             destroyProcess();
-            throw createRuntimeFailureException("STDIO MCP process did not exit after stdin closed. stderr: " + getStdErrorOutput());
+            throw createRuntimeFailureException("STDIO MCP process did not exit after stdin closed.");
         }
         if (0 != process.exitValue()) {
-            throw createRuntimeFailureException("STDIO MCP process exited with code " + process.exitValue() + ". stderr: " + getStdErrorOutput());
+            throw createRuntimeFailureException("STDIO MCP process exited with code " + process.exitValue() + ".");
         }
     }
     
@@ -180,15 +182,27 @@ abstract class AbstractProcessMCPStdioInteractionClient extends AbstractMCPInter
     }
     
     private String getStdErrorOutput() {
-        return String.join(System.lineSeparator(), stdErrorMessages);
+        if (stdErrorMessages.isEmpty()) {
+            return "<empty>";
+        }
+        String result = String.join(System.lineSeparator(), stdErrorMessages);
+        return result.length() <= STDERR_DIAGNOSTIC_MAX_CHARS ? result : result.substring(0, STDERR_DIAGNOSTIC_MAX_CHARS) + "...<truncated>";
     }
     
     private IllegalStateException createRuntimeFailureException(final String defaultMessage) {
-        String actualMessage = getRuntimeFailureMessage();
-        return new IllegalStateException(null == actualMessage ? defaultMessage : actualMessage);
+        return new IllegalStateException(createRuntimeFailureMessage(defaultMessage));
     }
     
-    private String getRuntimeFailureMessage() {
+    private String createRuntimeFailureMessage(final String defaultMessage) {
+        String actualMessage = getProcessFailureMessage();
+        return (null == actualMessage ? defaultMessage : defaultMessage + " Process failure: " + appendSentenceTerminator(actualMessage)) + " stderr: " + getStdErrorOutput();
+    }
+    
+    private String appendSentenceTerminator(final String value) {
+        return value.endsWith(".") ? value : value + ".";
+    }
+    
+    private String getProcessFailureMessage() {
         return stdErrorMessages.stream().filter(each -> each.startsWith("Exception in thread "))
                 .map(this::extractFailureMessage).findFirst().orElse(null);
     }

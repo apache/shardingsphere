@@ -27,8 +27,8 @@ import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescript
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceParameterDescriptor;
 import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
-import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.core.resource.handler.ResourceHandlerRegistry;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -68,11 +68,9 @@ class MCPResourceSpecificationFactoryTest {
     @Test
     void assertCreateResourceSpecificationsHandleReadResource() {
         try (MockedStatic<ResourceHandlerRegistry> mockedResourceHandlerRegistry = mockStatic(ResourceHandlerRegistry.class)) {
-            Map<String, Object> expectedPayload = Map.of("status", "ok");
-            MCPResponse response = () -> expectedPayload;
             mockedResourceHandlerRegistry.when(ResourceHandlerRegistry::getSupportedResourceDescriptors).thenReturn(List.of(createResourceDescriptor()));
             mockedResourceHandlerRegistry.when(() -> ResourceHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("shardingsphere://capabilities")))
-                    .thenReturn(Optional.of(response));
+                    .thenReturn(Optional.of(new MCPMapResponse(Map.of("status", "ok"))));
             MCPRuntimeContext runtimeContext = mock(MCPRuntimeContext.class, RETURNS_DEEP_STUBS);
             when(runtimeContext.getSessionManager().getTransactionResourceManager().getRuntimeDatabases()).thenReturn(Collections.emptyMap());
             SyncResourceSpecification actualSpecification = new MCPResourceSpecificationFactory(runtimeContext).createResourceSpecifications().get(0);

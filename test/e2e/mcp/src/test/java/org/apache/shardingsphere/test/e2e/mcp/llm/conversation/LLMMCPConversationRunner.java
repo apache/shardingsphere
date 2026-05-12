@@ -188,12 +188,19 @@ public final class LLMMCPConversationRunner {
     
     private LLMChatCompletion completeTurn(final LLME2EScenario scenario, final List<LLMChatMessage> messages, final LLMMCPConversationArtifacts artifacts,
                                            final boolean finalAnswerRequested) throws IOException, InterruptedException {
-        final String toolChoice = finalAnswerRequested ? "none" : artifacts.getInteractionTrace().isEmpty() ? "required" : "auto";
+        final String toolChoice = createToolChoice(scenario, artifacts, finalAnswerRequested);
         final LLMChatCompletion result = llmChatClient.complete(messages,
                 finalAnswerRequested ? List.of() : toolDefinitionFactory.create(scenario.getAllowedToolNames()),
                 toolChoice, finalAnswerRequested);
         artifacts.addRawModelOutput(result.getRawResponse());
         return result;
+    }
+    
+    private String createToolChoice(final LLME2EScenario scenario, final LLMMCPConversationArtifacts artifacts, final boolean finalAnswerRequested) {
+        if (finalAnswerRequested) {
+            return "none";
+        }
+        return LLMMCPInteractionCoverage.hasRequiredInteractionCoverage(scenario.getRequiredToolNames(), artifacts.getInteractionTrace()) ? "auto" : "required";
     }
     
     private LLME2EArtifactBundle processToolCallCompletion(final LLME2EScenario scenario, final LLMChatCompletion completion,

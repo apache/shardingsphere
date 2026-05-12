@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mcp.support.descriptor;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriTemplateUtils;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceDescriptor;
 import org.apache.shardingsphere.mcp.api.resource.descriptor.MCPResourceParameterDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResponseMode;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
 
 import java.util.Collection;
 import java.util.HashSet;

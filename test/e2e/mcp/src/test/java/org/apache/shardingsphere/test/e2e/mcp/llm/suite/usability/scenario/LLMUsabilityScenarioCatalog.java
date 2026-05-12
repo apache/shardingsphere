@@ -172,7 +172,8 @@ public final class LLMUsabilityScenarioCatalog {
                     new LLME2EScenario("extended-workflow-context-recovery-" + runtimeKind, SYSTEM_PROMPT,
                             "Read exact runtime resource `shardingsphere://runtime`, plan a MD5 mask workflow for `" + tableName
                                     + "` column `status` without qualifying the column name, then use the exact plan_id from the planning response to preview and export manual artifacts. "
-                                    + "Do not validate the workflow before manual artifacts are executed. Then verify `" + query + "`." + toolContext,
+                                    + "Do not validate the workflow before manual artifacts are executed. After manual artifacts are exported, still call execute_query for the independent "
+                                    + "read-only verification `" + query + "` before the final answer." + toolContext,
                             new LLMStructuredAnswer(databaseName, schemaName, tableName, query, totalOrders, List.of(
                                     MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "execute_query")),
                             List.of(MCPInteractionActionNames.READ_RESOURCE, "plan_mask_rule", "apply_workflow", "execute_query"),

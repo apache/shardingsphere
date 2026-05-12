@@ -590,16 +590,15 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> planArguments = Map.of("database", DATABASE_NAME, "schema", SCHEMA_NAME, "table", TABLE_NAME, "column", "status");
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "plan_mask_rule", planArguments, "plan-response"));
-        when(mcpInteractionClient.call("plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1"));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", "plan_mask_rule", planArguments, "plan-response"),
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response-1"));
+        when(mcpInteractionClient.call("plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("missing_required_tool_coverage"));
-        verify(llmChatClient, times(2)).complete(actualMessages.capture(), anyList(), eq("auto"), eq(false));
-        final List<LLMChatMessage> actualThirdTurnMessages = actualMessages.getAllValues().get(1);
+        verify(llmChatClient, times(3)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
+        final List<LLMChatMessage> actualThirdTurnMessages = actualMessages.getAllValues().get(2);
         final String actualRetryInstruction = actualThirdTurnMessages.get(actualThirdTurnMessages.size() - 1).getContent();
         assertThat(actualRetryInstruction, CoreMatchers.containsString("Remaining required MCP tools: apply_workflow"));
         assertThat(actualRetryInstruction, CoreMatchers.containsString("set plan_id `plan-1`"));
@@ -640,15 +639,15 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> completionReference = Map.of("type", "ref/prompt", "name", PROMPT_NAME);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", MCPInteractionActionNames.COMPLETE, Map.of("argument_name", "schema", "argument_value", "pub"), "bad-completion-response"));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(new LLMChatCompletion("",
-                List.of(
-                        new LLMToolCall("tool-2", MCPInteractionActionNames.COMPLETE, JsonUtils.toJsonString(Map.of(
-                                "reference", completionReference,
-                                "argument_name", "schema",
-                                "argument_value", "pub"))),
-                        new LLMToolCall("tool-3", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
-                "retry-completion-response"));
+                createToolCallCompletion("tool-1", MCPInteractionActionNames.COMPLETE, Map.of("argument_name", "schema", "argument_value", "pub"), "bad-completion-response"),
+                new LLMChatCompletion("",
+                        List.of(
+                                new LLMToolCall("tool-2", MCPInteractionActionNames.COMPLETE, JsonUtils.toJsonString(Map.of(
+                                        "reference", completionReference,
+                                        "argument_name", "schema",
+                                        "argument_value", "pub"))),
+                                new LLMToolCall("tool-3", "execute_query", JsonUtils.toJsonString(executeQueryArguments))),
+                        "retry-completion-response"));
         when(mcpInteractionClient.complete(completionReference, "schema", "pub", Map.of())).thenReturn(Map.of("completion", Map.of("values", List.of(SCHEMA_NAME))));
         when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
@@ -675,10 +674,9 @@ class LLMMCPConversationRunnerTest {
         completionArguments.put("context_arguments", completionContext);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", MCPInteractionActionNames.COMPLETE, completionArguments, "completion-response"));
-        when(mcpInteractionClient.complete(completionReference, "schema", "pub", completionContext)).thenReturn(Map.of("completion", Map.of("values", List.of(SCHEMA_NAME))));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", MCPInteractionActionNames.COMPLETE, completionArguments, "completion-response"),
                 createToolCallCompletion("tool-2", "execute_query", executeQueryArguments, "query-response"));
+        when(mcpInteractionClient.complete(completionReference, "schema", "pub", completionContext)).thenReturn(Map.of("completion", Map.of("values", List.of(SCHEMA_NAME))));
         when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
                 createFinalAnswerCompletion(List.of(MCPInteractionActionNames.COMPLETE, "execute_query"), 2, "final-answer-response"));
@@ -699,11 +697,10 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> completionArguments = Map.of("argument_name", "schema", "argument_value", "pub");
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", MCPInteractionActionNames.GET_PROMPT, getPromptArguments, "prompt-response"));
-        when(mcpInteractionClient.getPrompt(PROMPT_NAME, Map.of())).thenReturn(Map.of("messages", List.of()));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", MCPInteractionActionNames.GET_PROMPT, getPromptArguments, "prompt-response"),
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.COMPLETE, completionArguments, "completion-response"),
                 createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
+        when(mcpInteractionClient.getPrompt(PROMPT_NAME, Map.of())).thenReturn(Map.of("messages", List.of()));
         when(mcpInteractionClient.complete(completionReference, "schema", "pub", Map.of())).thenReturn(Map.of("completion", Map.of("values", List.of(SCHEMA_NAME))));
         when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
@@ -725,14 +722,13 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", MCPInteractionActionNames.READ_RESOURCE, runtimeArguments, "runtime-response"));
+                createToolCallCompletion("tool-1", MCPInteractionActionNames.READ_RESOURCE, runtimeArguments, "runtime-response"),
+                createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, capabilitiesArguments, "capabilities-response"),
+                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.readResource("shardingsphere://runtime")).thenReturn(Map.of("next_actions", List.of(Map.of(
                 "type", "resource_read",
                 "resource_uri", RESOURCE_URI,
                 "requires_user_approval", false))));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, capabilitiesArguments, "capabilities-response"),
-                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.readResource(RESOURCE_URI)).thenReturn(Map.of("response_mode", "capabilities"));
         when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
@@ -741,8 +737,8 @@ class LLMMCPConversationRunnerTest {
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        verify(llmChatClient, times(2)).complete(actualMessages.capture(), anyList(), eq("auto"), eq(false));
-        assertTrue(containsMessage(actualMessages.getAllValues().get(0), "Call mcp_read_resource with uri `" + RESOURCE_URI + "` now"));
+        verify(llmChatClient, times(3)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
+        assertTrue(containsMessage(actualMessages.getAllValues().get(1), "Call mcp_read_resource with uri `" + RESOURCE_URI + "` now"));
     }
     
     @Test
@@ -755,15 +751,14 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "plan_mask_rule", planArguments, "plan-response"));
+                createToolCallCompletion("tool-1", "plan_mask_rule", planArguments, "plan-response"),
+                createToolCallCompletion("tool-2", "apply_workflow", Map.of("plan_id", "plan_id", "execution_mode", "preview"), "apply-response"),
+                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.call("plan_mask_rule", planArguments)).thenReturn(Map.of("plan_id", "plan-1", "next_actions", List.of(Map.of(
                 "type", "tool_call",
                 "tool_name", "apply_workflow",
                 "arguments", applyArguments,
                 "requires_user_approval", false))));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-2", "apply_workflow", Map.of("plan_id", "plan_id", "execution_mode", "preview"), "apply-response"),
-                createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
         when(mcpInteractionClient.call("apply_workflow", applyArguments)).thenReturn(Map.of("response_mode", "preview"));
         when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
@@ -773,9 +768,9 @@ class LLMMCPConversationRunnerTest {
         
         assertTrue(actual.getAssertionReport().isSuccess());
         assertThat(actual.getInteractionTrace().get(1).getActionOrigin(), CoreMatchers.is(MCPInteractionTraceRecord.HARNESS_ARGUMENT_NORMALIZATION_ORIGIN));
-        verify(llmChatClient, times(2)).complete(actualMessages.capture(), anyList(), eq("auto"), eq(false));
-        assertTrue(containsMessage(actualMessages.getAllValues().get(0), "Call `apply_workflow` now with exactly these arguments"));
-        assertTrue(containsMessage(actualMessages.getAllValues().get(0), "\"plan_id\":\"plan-1\""));
+        verify(llmChatClient, times(3)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
+        assertTrue(containsMessage(actualMessages.getAllValues().get(1), "Call `apply_workflow` now with exactly these arguments"));
+        assertTrue(containsMessage(actualMessages.getAllValues().get(1), "\"plan_id\":\"plan-1\""));
     }
     
     @Test
@@ -788,11 +783,10 @@ class LLMMCPConversationRunnerTest {
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         final ArgumentCaptor<List<LLMChatMessage>> actualMessages = createChatMessagesCaptor();
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", MCPInteractionActionNames.LIST_RESOURCES, Map.of(), "list-response"));
-        when(mcpInteractionClient.listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", MCPInteractionActionNames.LIST_RESOURCES, Map.of(), "list-response"),
                 createToolCallCompletion("tool-2", MCPInteractionActionNames.READ_RESOURCE, readResourceArguments, "resource-response"),
                 createToolCallCompletion("tool-3", "execute_query", executeQueryArguments, "query-response"));
+        when(mcpInteractionClient.listResources()).thenReturn(Map.of("resources", List.of(Map.of("uri", RESOURCE_URI))));
         when(mcpInteractionClient.readResource(tableResourceUri)).thenReturn(Map.of("found", true));
         when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(createResultSetPayload(2));
         when(llmChatClient.complete(anyList(), eq(List.of()), eq("none"), eq(true))).thenReturn(
@@ -801,9 +795,9 @@ class LLMMCPConversationRunnerTest {
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertTrue(actual.getAssertionReport().isSuccess());
-        verify(llmChatClient, times(2)).complete(actualMessages.capture(), anyList(), eq("auto"), eq(false));
-        assertTrue(containsMessage(actualMessages.getAllValues().get(0), "Use exactly `" + tableResourceUri + "` as uri"));
-        assertTrue(containsMessage(actualMessages.getAllValues().get(0), "do not copy parameter schema"));
+        verify(llmChatClient, times(3)).complete(actualMessages.capture(), anyList(), eq("required"), eq(false));
+        assertTrue(containsMessage(actualMessages.getAllValues().get(1), "Use exactly `" + tableResourceUri + "` as uri"));
+        assertTrue(containsMessage(actualMessages.getAllValues().get(1), "do not copy parameter schema"));
     }
     
     @Test
@@ -845,15 +839,14 @@ class LLMMCPConversationRunnerTest {
         final LLMMCPConversationRunner actualRunner = createRunner(2);
         final Map<String, Object> executeQueryArguments = createExecuteQueryArguments(QUERY);
         when(llmChatClient.complete(anyList(), anyList(), eq("required"), eq(false))).thenReturn(
-                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"));
-        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(Map.of("error_code", "tool_failed"));
-        when(llmChatClient.complete(anyList(), anyList(), eq("auto"), eq(false))).thenReturn(
+                createToolCallCompletion("tool-1", "execute_query", executeQueryArguments, "tool-call-response"),
                 new LLMChatCompletion("I already know the answer.", List.of(), "direct-answer-response"));
+        when(mcpInteractionClient.call("execute_query", executeQueryArguments)).thenReturn(Map.of("error_code", "tool_failed"));
         
         final LLME2EArtifactBundle actual = actualRunner.run(actualScenario);
         
         assertThat(actual.getAssertionReport().getFailureType(), CoreMatchers.is("missing_required_tool_coverage"));
-        verify(llmChatClient).complete(anyList(), anyList(), eq("auto"), eq(false));
+        verify(llmChatClient, times(2)).complete(anyList(), anyList(), eq("required"), eq(false));
     }
     
     @Test

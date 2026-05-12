@@ -46,6 +46,8 @@ public final class PackagedDistributionTestSupport {
     
     private static final String DIST_PATTERN = "apache-shardingsphere-mcp-";
     
+    private static final String DISTRIBUTION_PACKAGE_COMMAND = "./mvnw -pl distribution/mcp -am -DskipTests package";
+    
     private PackagedDistributionTestSupport() {
     }
     
@@ -88,8 +90,13 @@ public final class PackagedDistributionTestSupport {
     }
     
     private static Path findRequiredDistributionHome() throws IOException {
-        return findDistributionHome().orElseThrow(() -> new IllegalStateException(
-                "Packaged MCP distribution was not found. Run `./mvnw -pl distribution/mcp -am -DskipTests package` first."));
+        return findDistributionHome().orElseThrow(PackagedDistributionTestSupport::createMissingDistributionHomeException);
+    }
+    
+    private static IllegalStateException createMissingDistributionHomeException() {
+        Path expectedTargetDirectory = findRepositoryRoot().resolve("distribution/mcp/target");
+        return new IllegalStateException("Packaged MCP distribution was not found. Run `" + DISTRIBUTION_PACKAGE_COMMAND
+                + "` first or set `-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `" + expectedTargetDirectory + "`.");
     }
     
     private static Optional<Path> resolveConfiguredDistributionHome() {
@@ -213,11 +220,11 @@ public final class PackagedDistributionTestSupport {
     }
     
     public record PreparedPackagedDistribution(Path home, Path configFile, RuntimeTransport transport, int httpPort) {
-        
+
         public Path getStartScript() {
             return PackagedDistributionProcessSupport.resolveStartScript(home);
         }
-        
+
         public URI getEndpointUri() {
             return URI.create(String.format("http://127.0.0.1:%d/mcp", httpPort));
         }

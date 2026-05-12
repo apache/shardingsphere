@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.llm.suite.usability.assessment;
 
 import org.apache.shardingsphere.infra.util.json.JsonUtils;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,31 +45,48 @@ public final class LLMUsabilityReportWriter {
     private String createSummary(final LLMUsabilityScorecard scorecard) {
         StringBuilder result = new StringBuilder();
         result.append("# LLM Usability Scorecard").append(System.lineSeparator()).append(System.lineSeparator());
-        result.append("- suiteId: ").append(scorecard.getSuiteId()).append(System.lineSeparator());
-        result.append("- runId: ").append(scorecard.getRunId()).append(System.lineSeparator());
-        result.append("- overallScore: ").append(scorecard.getOverallScore()).append(System.lineSeparator());
-        result.append("- fullScore: ").append(scorecard.isFullScore()).append(System.lineSeparator());
-        result.append("- taskSuccessRate: ").append(scorecard.getTaskSuccessRate()).append(System.lineSeparator());
-        result.append("- naturalTaskSuccessRate: ").append(scorecard.getNaturalTaskSuccessRate()).append(System.lineSeparator());
-        result.append("- protocolContractSuccessRate: ").append(scorecard.getProtocolContractSuccessRate()).append(System.lineSeparator());
-        result.append("- firstCorrectActionRate: ").append(scorecard.getFirstCorrectActionRate()).append(System.lineSeparator());
-        result.append("- invalidCallRate: ").append(scorecard.getInvalidCallRate()).append(System.lineSeparator());
-        result.append("- averageRoundTrips: ").append(scorecard.getAverageRoundTrips()).append(System.lineSeparator());
-        result.append("- queryAnswerFidelity: ").append(scorecard.getQueryAnswerFidelity()).append(System.lineSeparator());
-        result.append("- boundaryConfusionRate: ").append(scorecard.getBoundaryConfusionRate()).append(System.lineSeparator());
-        result.append("- resourceHitRate: ").append(scorecard.getResourceHitRate()).append(System.lineSeparator());
-        result.append("- recoveryRate: ").append(scorecard.getRecoveryRate()).append(System.lineSeparator());
-        result.append("- nextActionFollowRate: ").append(scorecard.getNextActionFollowRate()).append(System.lineSeparator());
-        result.append("- approvalViolationRate: ").append(scorecard.getApprovalViolationRate()).append(System.lineSeparator());
-        result.append("- nativeToolCallRate: ").append(scorecard.getNativeToolCallRate()).append(System.lineSeparator());
-        result.append("- harnessRecoveryRate: ").append(scorecard.getHarnessRecoveryRate()).append(System.lineSeparator());
+        appendSummaryItem(result, "suiteId", scorecard.getSuiteId());
+        appendSummaryItem(result, "runId", scorecard.getRunId());
+        appendSummaryItem(result, "overallScore", scorecard.getOverallScore());
+        appendSummaryItem(result, "fullScore", scorecard.isFullScore());
+        appendSummaryItem(result, "taskSuccessRate", scorecard.getTaskSuccessRate());
+        appendSummaryItem(result, "naturalTaskSuccessRate", scorecard.getNaturalTaskSuccessRate());
+        appendSummaryItem(result, "protocolContractSuccessRate", scorecard.getProtocolContractSuccessRate());
+        appendSummaryItem(result, "firstCorrectActionRate", scorecard.getFirstCorrectActionRate());
+        appendSummaryItem(result, "invalidCallRate", scorecard.getInvalidCallRate());
+        appendSummaryItem(result, "averageRoundTrips", scorecard.getAverageRoundTrips());
+        appendSummaryItem(result, "queryAnswerFidelity", scorecard.getQueryAnswerFidelity());
+        appendSummaryItem(result, "boundaryConfusionRate", scorecard.getBoundaryConfusionRate());
+        appendSummaryItem(result, "resourceHitRate", scorecard.getResourceHitRate());
+        appendSummaryItem(result, "recoveryRate", scorecard.getRecoveryRate());
+        appendSummaryItem(result, "nextActionFollowRate", scorecard.getNextActionFollowRate());
+        appendSummaryItem(result, "approvalViolationRate", scorecard.getApprovalViolationRate());
+        appendSummaryItem(result, "nativeToolCallRate", scorecard.getNativeToolCallRate());
+        appendSummaryItem(result, "harnessRecoveryRate", scorecard.getHarnessRecoveryRate());
         result.append(System.lineSeparator()).append("## Scenario Results").append(System.lineSeparator());
         for (LLMUsabilityScenarioResult each : scorecard.getScenarioResults()) {
-            result.append("- ").append(each.getScenarioId()).append(": ")
-                    .append(each.isSuccess() ? "PASS" : "FAIL")
-                    .append(" (").append(each.getFailureType().isEmpty() ? "ok" : each.getFailureType()).append(")")
-                    .append(System.lineSeparator());
+            appendScenarioResult(result, each);
         }
         return result.toString();
+    }
+    
+    private void appendSummaryItem(final StringBuilder result, final String name, final Object value) {
+        result.append("- ").append(name).append(": ").append(value).append(System.lineSeparator());
+    }
+    
+    private void appendScenarioResult(final StringBuilder result, final LLMUsabilityScenarioResult scenarioResult) {
+        result.append("- ").append(scenarioResult.getScenarioId())
+                .append(": ").append(scenarioResult.isSuccess() ? "PASS" : "FAIL")
+                .append(" failureType=").append(getTextOrDefault(scenarioResult.getFailureType()))
+                .append(", roundTrips=").append(scenarioResult.getRoundTripCount())
+                .append(", invalidCalls=").append(scenarioResult.getInvalidCallCount())
+                .append(", nativeToolCall=").append(scenarioResult.isNativeToolCallCoverage())
+                .append(", harnessRecovery=").append(scenarioResult.isHarnessRecoveryUsed())
+                .append(", message=").append(getTextOrDefault(scenarioResult.getMessage()))
+                .append(System.lineSeparator());
+    }
+    
+    private String getTextOrDefault(final String value) {
+        return null == value || value.isBlank() ? "ok" : value;
     }
 }

@@ -52,7 +52,8 @@ abstract class AbstractProductionProxyWorkflowE2ETest extends AbstractProduction
     
     @Override
     protected final void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the Proxy-backed workflow E2E tests.");
+        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
+                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the Proxy-backed workflow E2E tests."));
         try {
             runtimeFixture = ProxyEncryptWorkflowRuntimeTestSupport.createFixture();
         } catch (final SQLException ex) {

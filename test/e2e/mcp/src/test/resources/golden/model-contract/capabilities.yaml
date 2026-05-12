@@ -208,7 +208,7 @@ protocolAvailability:
   resourceNavigation: true
 fingerprints:
   algorithm: sha256
-  descriptorCatalog: df4c537c6066555443c0b0f15683a1491730b158032f72c9e7b189be8bc07b55
+  descriptorCatalog: 71cabe21086e0d6a17889a0d3508450fd641aa5b190e57279a389d872fa9bd6b
   promptSet: 535a347026ede505b7ffbddac70dd38f9886d83563af88e9aefc27d8f680888e
   resourceNavigation: c34767ca08cfe63fbe9c95f1bb7b529770cd64b4bdcd6d948ea7733de95a6746
   modelFacingSchemas: a5e654b13e0cff4da035be8bbf398b91a10582f8611f1aa970ddeb84da7868f5

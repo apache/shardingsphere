@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mcp.api.resource.descriptor;
 
 import lombok.Getter;
-import org.apache.shardingsphere.mcp.api.resource.MCPUriTemplateUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -93,6 +92,6 @@ public final class MCPResourceDescriptor {
      * @return true if the resource is a URI template
      */
     public boolean isTemplated() {
-        return MCPUriTemplateUtils.isTemplated(uriTemplate);
+        return null != uriTemplate && uriTemplate.contains("{");
     }
 }

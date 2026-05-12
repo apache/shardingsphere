@@ -36,6 +36,7 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * E2E-local MySQL-backed runtime test support.
@@ -81,11 +82,42 @@ public final class MySQLRuntimeTestSupport {
      * @return whether Docker is available
      */
     public static boolean isDockerAvailable() {
+        return getDockerUnavailableReason().isEmpty();
+    }
+    
+    /**
+     * Get Docker readiness diagnostic when Testcontainers cannot use Docker.
+     *
+     * @return Docker unavailable reason
+     */
+    public static Optional<String> getDockerUnavailableReason() {
         try {
-            return DockerClientFactory.instance().isDockerAvailable();
-        } catch (final IllegalStateException ignored) {
-            return false;
+            return DockerClientFactory.instance().isDockerAvailable()
+                    ? Optional.empty()
+                    : Optional.of("Testcontainers Docker client reported Docker unavailable.");
+        } catch (final IllegalStateException ex) {
+            return Optional.of(createDockerUnavailableReason(ex));
         }
+    }
+    
+    /**
+     * Create Docker-required message with bounded readiness diagnostics.
+     *
+     * @param scenarioMessage scenario message
+     * @return Docker-required message
+     */
+    public static String createDockerRequiredMessage(final String scenarioMessage) {
+        return createDockerRequiredMessage(scenarioMessage, getDockerUnavailableReason());
+    }
+    
+    static String createDockerRequiredMessage(final String scenarioMessage, final Optional<String> unavailableReason) {
+        return unavailableReason.map(each -> scenarioMessage + " Docker readiness diagnostic: " + each).orElse(scenarioMessage);
+    }
+    
+    private static String createDockerUnavailableReason(final IllegalStateException ex) {
+        return null == ex.getMessage() || ex.getMessage().isBlank()
+                ? "Testcontainers Docker availability check failed without a message."
+                : ex.getMessage();
     }
     
     /**

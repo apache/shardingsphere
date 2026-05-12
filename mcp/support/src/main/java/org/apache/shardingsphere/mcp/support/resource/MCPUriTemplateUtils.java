@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource;
+package org.apache.shardingsphere.mcp.support.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -36,16 +36,6 @@ import java.util.regex.Pattern;
 public final class MCPUriTemplateUtils {
     
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{([^}]+)}");
-    
-    /**
-     * Judge whether URI is a URI template.
-     *
-     * @param uriTemplate URI template
-     * @return true if the URI contains template variables
-     */
-    public static boolean isTemplated(final String uriTemplate) {
-        return null != uriTemplate && uriTemplate.contains("{");
-    }
     
     /**
      * Extract URI template variable names.

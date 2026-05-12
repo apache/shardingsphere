@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.e2e.mcp.runtime.production;
 
 import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConfiguration;
+import org.apache.shardingsphere.mcp.support.database.metadata.jdbc.RuntimeDatabaseConnectionException;
 import org.apache.shardingsphere.test.e2e.mcp.env.MCPE2ECondition;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeConfigurationTestSupport;
 import org.apache.shardingsphere.test.e2e.mcp.support.runtime.H2RuntimeTestSupport;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -117,8 +119,26 @@ class ProductionMultiDatabaseE2ETest extends AbstractTransportParameterizedProdu
     @MethodSource("transports")
     void assertRejectMismatchedDatabaseType(final String name, final RuntimeTransport transport) {
         useTransport(transport);
+        if (RuntimeTransport.HTTP == transport) {
+            assertHttpRejectMismatchedDatabaseType();
+            return;
+        }
+        assertStdioRejectMismatchedDatabaseType();
+    }
+    
+    private void assertHttpRejectMismatchedDatabaseType() {
+        RuntimeDatabaseConnectionException actual = assertThrows(RuntimeDatabaseConnectionException.class, () -> openAndCloseInteractionClient("MySQL", "H2"));
+        assertThat(actual.getMessage(), is("Runtime database `logic_db` connection failed: invalid_configuration."));
+        assertThat(actual.getCategory(), is(RuntimeDatabaseConnectionException.CATEGORY_INVALID_CONFIGURATION));
+        assertThat(actual.getCause().getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
+    }
+    
+    private void assertStdioRejectMismatchedDatabaseType() {
         IllegalStateException actual = assertThrows(IllegalStateException.class, () -> openAndCloseInteractionClient("MySQL", "H2"));
-        assertThat(actual.getMessage(), is("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
+        assertThat(actual.getMessage(), containsString("STDIO MCP runtime did not return a response."));
+        assertThat(actual.getMessage(), containsString("Process failure: invalid_configuration."));
+        assertThat(actual.getMessage(), containsString("Runtime database `logic_db` connection failed: invalid_configuration."));
+        assertThat(actual.getMessage(), containsString("Configured databaseType `MySQL` does not match actual database type `H2` for database `logic_db`."));
     }
     
     private Map<String, RuntimeDatabaseConfiguration> createRuntimeDatabases(final String firstDatabaseType, final String secondDatabaseType) {

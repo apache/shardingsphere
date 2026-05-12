@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.api.resource.MCPUriTemplateUtils;
 import org.apache.shardingsphere.mcp.support.protocol.MCPResourceHintUtils;
+import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -47,6 +47,8 @@ public final class OllamaLLMRuntimeSupport {
     
     private static final int OLLAMA_PORT = 11434;
     
+    private static ModelRuntime sharedContainerRuntime;
+    
     /**
      * Prepare the required local LLM runtime.
      *
@@ -54,23 +56,29 @@ public final class OllamaLLMRuntimeSupport {
      * @return prepared LLM runtime
      * @throws InterruptedException interrupted exception
      */
-    public static ModelRuntime prepare(final LLME2EConfiguration config) throws InterruptedException {
+    public static synchronized ModelRuntime prepare(final LLME2EConfiguration config) throws InterruptedException {
         validateRequiredModel(config);
+        if (null != sharedContainerRuntime && sharedContainerRuntime.isReusable()) {
+            return sharedContainerRuntime;
+        }
         if (isModelReady(config)) {
             return ModelRuntime.external(config);
         }
         requireDockerAvailable();
-        GenericContainer<?> container = createContainer();
+        final GenericContainer<?> container = createContainer();
         container.start();
         pullModel(container, config.getModelName());
-        LLME2EConfiguration actualConfig = config.withBaseUrl(String.format("http://%s:%d/v1", container.getHost(), container.getMappedPort(OLLAMA_PORT)));
+        final LLME2EConfiguration actualConfig = config.withBaseUrl(String.format("http://%s:%d/v1", container.getHost(), container.getMappedPort(OLLAMA_PORT)));
         new LLMChatModelClient(actualConfig, HttpClient.newHttpClient()).waitUntilReady();
-        return ModelRuntime.container(actualConfig, container);
+        sharedContainerRuntime = ModelRuntime.container(actualConfig, container);
+        registerShutdownHook(sharedContainerRuntime);
+        return sharedContainerRuntime;
     }
     
     private static void requireDockerAvailable() {
         if (!MySQLRuntimeTestSupport.isDockerAvailable()) {
-            throw new IllegalStateException("Docker is required to start Ollama and pull qwen3:1.7b for MCP LLM E2E.");
+            throw new IllegalStateException(MySQLRuntimeTestSupport.createDockerRequiredMessage(
+                    "Docker is required to start Ollama and pull qwen3:1.7b for MCP LLM E2E."));
         }
     }
     
@@ -98,7 +106,7 @@ public final class OllamaLLMRuntimeSupport {
     
     private static void pullModel(final GenericContainer<?> container, final String modelName) {
         try {
-            Container.ExecResult actual = container.execInContainer("ollama", "pull", modelName);
+            final Container.ExecResult actual = container.execInContainer("ollama", "pull", modelName);
             if (0 != actual.getExitCode()) {
                 throw new IllegalStateException(String.format("Ollama model pull failed for `%s`: %s%s", modelName, actual.getStdout(), actual.getStderr()));
             }
@@ -108,6 +116,10 @@ public final class OllamaLLMRuntimeSupport {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Interrupted while pulling Ollama model `qwen3:1.7b`.", ex);
         }
+    }
+    
+    private static void registerShutdownHook(final ModelRuntime runtime) {
+        Runtime.getRuntime().addShutdownHook(new Thread(runtime::stop, "mcp-llm-ollama-shutdown"));
     }
     
     /**
@@ -131,6 +143,17 @@ public final class OllamaLLMRuntimeSupport {
         
         @Override
         public void close() {
+            if (this == sharedContainerRuntime) {
+                return;
+            }
+            stop();
+        }
+        
+        private boolean isReusable() {
+            return null != container && container.isRunning();
+        }
+        
+        private void stop() {
             if (null != container) {
                 container.stop();
             }

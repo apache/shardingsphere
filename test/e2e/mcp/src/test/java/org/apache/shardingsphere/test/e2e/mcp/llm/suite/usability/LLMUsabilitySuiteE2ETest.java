@@ -97,7 +97,7 @@ class LLMUsabilitySuiteE2ETest extends AbstractConfigBackedRuntimeE2ETest {
                 this::createCoreScenarios,
                 each -> conversationExecutor.runConversation(SUITE_ID + "/core/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());
-        suiteRunner.recordExtendedSuite(SUITE_ID + "/extended",
+        suiteRunner.assertExtendedSuite(SUITE_ID + "/extended",
                 this::createExtendedScenarios,
                 each -> conversationExecutor.runConversation(SUITE_ID + "/extended/" + each.getScenarioId(), each, createInteractionClient()),
                 conversationExecutor.getConfiguration());

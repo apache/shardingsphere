@@ -1,0 +1,111 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mcp.core.protocol.error;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.MetadataIntrospectionSQLStatementException;
+import org.apache.shardingsphere.mcp.core.tool.handler.execute.SQLToolMismatchException;
+import org.apache.shardingsphere.mcp.support.protocol.MCPNextActionUtils;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * MCP SQL recovery payload factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+final class MCPSQLRecoveryPayloadFactory {
+    
+    static Map<String, Object> createSQLToolMismatchRecovery(final SQLToolMismatchException cause) {
+        boolean requiresUserApproval = "execute_update".equals(cause.getTargetTool());
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(createSQLToolMismatchCategory(cause),
+                requiresUserApproval ? "Use execute_update in preview mode, then ask for approval before execution." : "Use execute_query for this read-only SQL.");
+        result.put("source_tool", cause.getSourceTool());
+        result.put("statement_class", cause.getClassificationResult().getStatementClass().name().toLowerCase(Locale.ENGLISH));
+        result.put("statement_type", cause.getClassificationResult().getStatementType());
+        result.put("normalized_sql", cause.getClassificationResult().getNormalizedSql());
+        cause.getClassificationResult().getTargetObjectName().ifPresent(optional -> result.put("target_object", optional));
+        cause.getClassificationResult().getSavepointName().ifPresent(optional -> result.put("savepoint", optional));
+        result.put("suggested_arguments", cause.getSuggestedArguments());
+        result.put("next_actions", List.of(MCPNextActionUtils.callTool(cause.getTargetTool(), createSQLToolMismatchActionReason(cause), cause.getSuggestedArguments(), requiresUserApproval)));
+        result.put("requires_user_approval", requiresUserApproval);
+        result.put("ask_user_when_uncertain", requiresUserApproval);
+        return result;
+    }
+    
+    static Map<String, Object> createMetadataIntrospectionSQLRecovery(final MetadataIntrospectionSQLStatementException cause) {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
+                "metadata_introspection_sql", "Use logical metadata resources or search_metadata instead of console-style metadata SQL.");
+        result.put("statement_type", cause.getStatementType());
+        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+                "shardingsphere://databases", "logical-database", "Read logical databases before choosing a metadata scope."));
+        result.put("suggested_arguments", Map.of("page_size", 100));
+        result.put("next_actions", MCPNextActionUtils.ordered(
+                MCPNextActionUtils.readResource("shardingsphere://databases", "Read logical databases before choosing a metadata scope."),
+                MCPNextActionUtils.dependsOn(MCPNextActionUtils.callTool("search_metadata",
+                        "Search metadata with an explicit database, schema, query, or object_types scope instead of executing metadata SQL.", Map.of("page_size", 100), false), 1)));
+        result.put("requires_user_approval", false);
+        result.put("ask_user_when_uncertain", false);
+        return result;
+    }
+    
+    static Map<String, Object> createMultipleStatementsRecovery() {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
+                "multiple_sql_statements", "Split the user intent into separate MCP calls and handle each statement independently.");
+        result.put("ask_user_when_uncertain", true);
+        result.put("requires_user_approval", true);
+        result.put("suggested_arguments", Map.of("execution_mode", "preview"));
+        result.put("next_actions", List.of(MCPNextActionUtils.askUser(
+                "Ask the user which single statement should be handled first.", List.of("single_sql_statement"), true)));
+        return result;
+    }
+    
+    static Map<String, Object> createUnsupportedStatementRecovery() {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
+                "unsupported_sql_statement", "Ask the user for a supported SELECT, EXPLAIN ANALYZE, DML, DDL, DCL, transaction, or savepoint statement.");
+        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+                "shardingsphere://capabilities", "capability", "Read supported SQL statement classes before retrying."));
+        result.put("next_actions", List.of(MCPNextActionUtils.readResource("shardingsphere://capabilities", "Read supported statement classes before retrying.")));
+        result.put("ask_user_when_uncertain", true);
+        return result;
+    }
+    
+    static Map<String, Object> createBannedStatementRecovery() {
+        Map<String, Object> result = MCPRecoveryPayloadSupport.createBaseRecovery(
+                "banned_sql_statement", "Do not execute this SQL through MCP; ask the user for a safer supported operation.");
+        result.put("resources_to_read", MCPRecoveryPayloadSupport.createResourceHintList(
+                "shardingsphere://capabilities", "capability", "Read supported safe alternatives before asking the user."));
+        result.put("next_actions", List.of(MCPNextActionUtils.askUser(
+                "Ask for a safer supported operation instead of executing the banned SQL.", List.of("safe_sql_or_metadata_request"), true)));
+        result.put("requires_user_approval", true);
+        result.put("ask_user_when_uncertain", true);
+        return result;
+    }
+    
+    private static String createSQLToolMismatchCategory(final SQLToolMismatchException cause) {
+        return "execute_update".equals(cause.getTargetTool()) ? "unsafe_sql_attempted" : "read_only_sql_sent_to_update_tool";
+    }
+    
+    private static String createSQLToolMismatchActionReason(final SQLToolMismatchException cause) {
+        return "execute_update".equals(cause.getTargetTool())
+                ? "Retry side-effecting SQL in preview mode with the normalized SQL and preserved context."
+                : "Retry the read-only SQL with execute_query using the normalized SQL and preserved context.";
+    }
+}

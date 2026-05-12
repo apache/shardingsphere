@@ -96,7 +96,7 @@ public final class LLMRuntimeFixtureFactory {
      * @throws IOException IO exception
      */
     public Fixture createMySQLFixture(final String logicalDatabase, final String assumptionMessage) throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), assumptionMessage);
+        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), () -> MySQLRuntimeTestSupport.createDockerRequiredMessage(assumptionMessage));
         try {
             MySQLRuntimeTestSupport.LLMMySQLRuntimeFixture actualFixture = MySQLRuntimeTestSupport.createLLMRuntimeFixture(logicalDatabase);
             return new Fixture(actualFixture.getSchemaName(), actualFixture.getTotalOrders(), actualFixture.getRuntimeDatabases(), actualFixture::close);

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.mcp.bootstrap.transport.tool;
 
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
+import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import io.modelcontextprotocol.spec.McpSchema.TextContent;
-import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
 import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.core.protocol.response.MCPErrorResponse;
 import org.apache.shardingsphere.mcp.core.tool.handler.ToolHandlerRegistry;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
@@ -84,8 +85,7 @@ class MCPToolSpecificationFactoryTest {
     @Test
     void assertCreateToolSpecificationsHandleNullArguments() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
-            Map<String, Object> expectedPayload = Map.of("status", "ok");
-            MCPResponse response = () -> expectedPayload;
+            MCPResponse response = new MCPMapResponse(Map.of("status", "ok"));
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("search_metadata")));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("search_metadata"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
@@ -95,7 +95,7 @@ class MCPToolSpecificationFactoryTest {
             McpSyncServerExchange exchange = mock(McpSyncServerExchange.class);
             when(exchange.sessionId()).thenReturn("session-id");
             CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest("search_metadata", null));
-            assertThat(actual.structuredContent(), is(expectedPayload));
+            assertThat(actual.structuredContent(), is(Map.of("status", "ok")));
             assertThat(((TextContent) actual.content().get(0)).text(), is("{\"status\":\"ok\"}"));
             assertFalse(actual.isError());
         }
@@ -126,10 +126,8 @@ class MCPToolSpecificationFactoryTest {
     void assertCreateToolSpecificationsHandleInteractiveElicitation() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             String toolName = "custom_planning_tool";
-            Map<String, Object> clarifyingPayload = createClarifyingPayload();
-            Map<String, Object> expectedPayload = Map.of("status", "planned");
-            MCPResponse clarifyingResponse = () -> clarifyingPayload;
-            MCPResponse plannedResponse = () -> expectedPayload;
+            MCPResponse clarifyingResponse = new MCPMapResponse(createClarifyingPayload());
+            MCPResponse plannedResponse = new MCPMapResponse(Map.of("status", "planned"));
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor(toolName)));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq(toolName), any()))
                     .thenReturn(Optional.of(clarifyingResponse), Optional.of(plannedResponse));
@@ -139,7 +137,7 @@ class MCPToolSpecificationFactoryTest {
             McpSyncServerExchange exchange = createElicitationExchange(new McpSchema.ElicitResult(McpSchema.ElicitResult.Action.ACCEPT,
                     Map.of("custom_properties.secret-key", "foo_secret", "requires_review", true)));
             CallToolResult actual = actualSpecification.callHandler().apply(exchange, new CallToolRequest(toolName, Map.of()));
-            assertThat(actual.structuredContent(), is(expectedPayload));
+            assertThat(actual.structuredContent(), is(Map.of("status", "planned")));
             verify(exchange).createElicitation(any());
             mockedToolHandlerRegistry.verify(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq(toolName), eq(createElicitedArguments())));
         }
@@ -149,7 +147,7 @@ class MCPToolSpecificationFactoryTest {
     void assertCreateToolSpecificationsSkipElicitationForNonPlanningTool() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
-            MCPResponse response = () -> expectedPayload;
+            MCPResponse response = new MCPMapResponse(expectedPayload);
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createToolDescriptor("custom_tool")));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("custom_tool"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
@@ -167,7 +165,7 @@ class MCPToolSpecificationFactoryTest {
     void assertCreateToolSpecificationsFallbackWithoutElicitation() {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
-            MCPResponse response = () -> expectedPayload;
+            MCPResponse response = new MCPMapResponse(expectedPayload);
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("plan_encrypt_rule")));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("plan_encrypt_rule"), eq(Map.of())))
                     .thenReturn(Optional.of(response));
@@ -195,7 +193,7 @@ class MCPToolSpecificationFactoryTest {
     private void assertCreateToolSpecificationsFallbackWhenElicitationAction(final McpSchema.ElicitResult.Action action) {
         try (MockedStatic<ToolHandlerRegistry> mockedToolHandlerRegistry = mockStatic(ToolHandlerRegistry.class)) {
             Map<String, Object> expectedPayload = createClarifyingPayload();
-            MCPResponse response = () -> expectedPayload;
+            MCPResponse response = new MCPMapResponse(expectedPayload);
             mockedToolHandlerRegistry.when(ToolHandlerRegistry::getSupportedToolDescriptors).thenReturn(List.of(createPlanningToolDescriptor("plan_encrypt_rule")));
             mockedToolHandlerRegistry.when(() -> ToolHandlerRegistry.dispatch(any(MCPRequestScope.class), eq("session-id"), eq("plan_encrypt_rule"), eq(Map.of())))
                     .thenReturn(Optional.of(response));

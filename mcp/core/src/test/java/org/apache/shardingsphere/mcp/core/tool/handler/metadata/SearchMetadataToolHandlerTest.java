@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.core.tool.handler;
+package org.apache.shardingsphere.mcp.core.tool.handler.metadata;
 
-import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
-import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
-import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
-import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
-import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
-import org.apache.shardingsphere.mcp.core.tool.handler.metadata.SearchMetadataToolHandler;
+import org.apache.shardingsphere.mcp.core.context.MCPRequestScope;
+import org.apache.shardingsphere.mcp.core.context.MCPRuntimeContext;
+import org.apache.shardingsphere.mcp.core.resource.ResourceTestDataFactory;
+import org.apache.shardingsphere.mcp.core.tool.response.MetadataSearchHit;
+import org.apache.shardingsphere.mcp.support.database.capability.SupportedMCPMetadataObjectType;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPDatabaseMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
@@ -42,7 +41,7 @@ import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ToolHandlerTest {
+class SearchMetadataToolHandlerTest {
     
     @Test
     void assertGetSearchMetadataToolDescriptor() {

@@ -68,9 +68,11 @@ final class LLMUsabilitySuiteRunner {
         assertDeterministicContract(evaluatedSuite);
     }
     
-    void recordExtendedSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
+    void assertExtendedSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,
                              final ConversationRunner conversationRunner, final LLME2EConfiguration configuration) throws IOException {
-        assertDeterministicContract(evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration));
+        EvaluatedSuite evaluatedSuite = evaluateSuite(suiteId, scenarioSupplier, conversationRunner, configuration);
+        assertFullScore(evaluatedSuite.scorecard(), evaluatedSuite.scenarios());
+        assertDeterministicContract(evaluatedSuite);
     }
     
     private EvaluatedSuite evaluateSuite(final String suiteId, final Supplier<List<LLMUsabilityScenario>> scenarioSupplier,

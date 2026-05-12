@@ -63,7 +63,8 @@ class ProductionMySQLRuntimeSmokeE2ETest extends AbstractTransportParameterizedP
     
     @Override
     protected void prepareRuntimeFixture() throws IOException {
-        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(), "Docker is required for the MySQL-backed production runtime smoke test.");
+        Assumptions.assumeTrue(MySQLRuntimeTestSupport.isDockerAvailable(),
+                () -> MySQLRuntimeTestSupport.createDockerRequiredMessage("Docker is required for the MySQL-backed production runtime smoke test."));
         container = MySQLRuntimeTestSupport.createContainer();
         container.start();
         try {

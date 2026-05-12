@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mcp.api.resource;
+package org.apache.shardingsphere.mcp.support.resource;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,17 +25,9 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPUriTemplateUtilsTest {
-    
-    @Test
-    void assertIsTemplated() {
-        assertTrue(MCPUriTemplateUtils.isTemplated("shardingsphere://databases/{database}"));
-        assertFalse(MCPUriTemplateUtils.isTemplated("shardingsphere://databases"));
-    }
     
     @Test
     void assertExtractVariableNames() {
@@ -50,6 +42,18 @@ class MCPUriTemplateUtilsTest {
     }
     
     @Test
+    void assertExpandIfCompleteWithMissingVariable() {
+        Optional<String> actual = MCPUriTemplateUtils.expandIfComplete("shardingsphere://databases/{database}/schemas/{schema}", Map.of("database", "logic_db"));
+        assertThat(actual, is(Optional.empty()));
+    }
+    
+    @Test
+    void assertExpandIfCompleteWithNullVariables() {
+        Optional<String> actual = MCPUriTemplateUtils.expandIfComplete("shardingsphere://databases/{database}", null);
+        assertThat(actual, is(Optional.empty()));
+    }
+    
+    @Test
     void assertExpandRequired() {
         String actual = MCPUriTemplateUtils.expandRequired("shardingsphere://databases/{database}/schemas/{schema}", Map.of("database", "logic_db", "schema", "public"));
         assertThat(actual, is("shardingsphere://databases/logic_db/schemas/public"));
@@ -60,12 +64,6 @@ class MCPUriTemplateUtilsTest {
         String actual = MCPUriTemplateUtils.expandRequired("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
                 Map.of("database", "逻辑 库", "schema", "public/main", "table", "orders?archive%2026"));
         assertThat(actual, is("shardingsphere://databases/%E9%80%BB%E8%BE%91%20%E5%BA%93/schemas/public%2Fmain/tables/orders%3Farchive%252026"));
-    }
-    
-    @Test
-    void assertExpandIfCompleteWithMissingVariable() {
-        Optional<String> actual = MCPUriTemplateUtils.expandIfComplete("shardingsphere://databases/{database}/schemas/{schema}", Map.of("database", "logic_db"));
-        assertThat(actual, is(Optional.empty()));
     }
     
     @Test

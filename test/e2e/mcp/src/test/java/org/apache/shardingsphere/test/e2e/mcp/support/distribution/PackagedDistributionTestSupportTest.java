@@ -124,6 +124,26 @@ class PackagedDistributionTestSupportTest {
         }
     }
     
+    @Test
+    void assertPrepareFailsWithMissingDistributionHome() throws IOException {
+        final Path repositoryRoot = tempDir.resolve("repo");
+        Files.createDirectories(repositoryRoot.resolve("distribution/mcp"));
+        final String actualOriginalHome = System.getProperty("mcp.distribution.home");
+        final String actualOriginalProjectDirectory = System.getProperty("maven.multiModuleProjectDirectory");
+        System.clearProperty("mcp.distribution.home");
+        System.setProperty("maven.multiModuleProjectDirectory", repositoryRoot.toString());
+        try {
+            final IllegalStateException actual = assertThrows(IllegalStateException.class,
+                    () -> PackagedDistributionTestSupport.prepare(tempDir.resolve("missing-distribution"), RuntimeTransport.HTTP));
+            assertThat(actual.getMessage(), is("Packaged MCP distribution was not found. Run `./mvnw -pl distribution/mcp -am -DskipTests package` first"
+                    + " or set `-Dmcp.distribution.home=/path/to/apache-shardingsphere-mcp-*`. Checked `"
+                    + repositoryRoot.resolve("distribution/mcp/target").toAbsolutePath().normalize() + "`."));
+        } finally {
+            restoreDistributionHome(actualOriginalHome);
+            restoreProjectDirectory(actualOriginalProjectDirectory);
+        }
+    }
+    
     @ParameterizedTest(name = "{0}")
     @MethodSource("prepareCases")
     void assertPrepareWithTransport(final String caseName, final RuntimeTransport transport, final boolean httpEnabled, final boolean stdioEnabled) throws IOException {

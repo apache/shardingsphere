@@ -19,8 +19,6 @@ package org.apache.shardingsphere.mcp.core.resource.handler;
 
 import org.apache.shardingsphere.mcp.api.MCPHandlerContext;
 import org.apache.shardingsphere.mcp.api.protocol.exception.MCPUnsupportedException;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
-import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.resource.MCPResourceHandler;
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
@@ -39,6 +37,8 @@ import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPSchemaMe
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPTableMetadata;
 import org.apache.shardingsphere.mcp.support.database.metadata.model.MCPViewMetadata;
 import org.apache.shardingsphere.mcp.support.database.response.MCPDatabaseCapabilityResponse;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
+import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -52,11 +52,12 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ResourceHandlerTest {
+class CoreResourceHandlerSurfaceTest {
     
     private final MCPRuntimeContext runtimeContext = ResourceTestDataFactory.createRuntimeContext();
     
@@ -74,12 +75,12 @@ class ResourceHandlerTest {
             MCPResponse actual = handle(handlerCase.getHandler(), requestContext, parseUriVariables(handlerCase.getExpectedUriPattern(), handlerCase.getResourceUri()));
             Map<String, Object> actualPayload = actual.toPayload();
             if (HandlerResultType.DATABASE_CAPABILITY == handlerCase.getExpectedType()) {
-                assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPDatabaseCapabilityResponse.class));
+                assertThat(actual, isA(MCPDatabaseCapabilityResponse.class));
                 assertThat(actualPayload.get("database"), is(handlerCase.getExpectedDatabase()));
                 return;
             }
             if (HandlerResultType.SERVICE_CAPABILITY == handlerCase.getExpectedType()) {
-                assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMapResponse.class));
+                assertThat(actual, isA(MCPMapResponse.class));
                 assertTrue(((List<?>) actualPayload.get("supportedResources")).contains("shardingsphere://capabilities"));
                 assertTrue(((List<?>) actualPayload.get("prompts")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
                 assertTrue(((List<?>) actualPayload.get("completionTargets")).stream().map(String::valueOf).anyMatch(each -> each.contains("inspect_metadata")));
@@ -130,11 +131,11 @@ class ResourceHandlerTest {
     
     private void assertMetadataResponse(final HandlerCase handlerCase, final MCPResponse actual, final Map<String, Object> actualPayload) {
         if (actualPayload.containsKey("resource_kind")) {
-            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPMapResponse.class));
+            assertThat(actual, isA(MCPMapResponse.class));
             assertThat(actualPayload.get("resource_kind"), is("detail"));
             assertThat(actualPayload.get("found"), is(!handlerCase.getExpectedObjectNames().isEmpty()));
         } else {
-            assertThat(actual, org.hamcrest.Matchers.instanceOf(MCPItemsResponse.class));
+            assertThat(actual, isA(MCPItemsResponse.class));
         }
         assertThat(actualPayload.get("count"), is(handlerCase.getExpectedObjectNames().size()));
         assertThat(actualPayload.get("self_uri"), is(handlerCase.getResourceUri()));
@@ -169,16 +170,16 @@ class ResourceHandlerTest {
     }
     
     private List<String> extractResourceUris(final List<?> resources) {
-        final List<String> result = new LinkedList<>();
-        for (final Object each : resources) {
+        List<String> result = new LinkedList<>();
+        for (Object each : resources) {
             result.add((String) ((Map<?, ?>) each).get("uri"));
         }
         return result;
     }
     
     private List<String> extractMetadataNames(final Map<String, Object> payload) {
-        final List<String> result = new LinkedList<>();
-        for (final Object each : getMetadataItems(payload)) {
+        List<String> result = new LinkedList<>();
+        for (Object each : getMetadataItems(payload)) {
             if (each instanceof MCPDatabaseMetadata) {
                 result.add(((MCPDatabaseMetadata) each).getDatabase());
                 continue;

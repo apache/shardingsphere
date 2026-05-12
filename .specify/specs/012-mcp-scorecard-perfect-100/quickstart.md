@@ -1,0 +1,114 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements. See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License. You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+# Quickstart: MCP Scorecard Perfect 100
+
+## Read Order
+
+1. `spec.md`
+2. `scorecard.md`
+3. `evidence-ledger.md`
+4. `reanalysis.md`
+5. `tasks.md`
+6. `plan.md`
+7. `research.md`
+8. `data-model.md`
+9. `checklists/requirements.md`
+
+## Current Gate
+
+This package is a requirement and planning artifact.
+It does not claim that the current implementation is 100/100.
+
+Current baseline:
+
+- MCP production modules: `87.5/100`.
+- MCP E2E module: `86.3/100`.
+- Required target: every dimension `100/100`.
+
+## Local Validation
+
+Run these read-only checks after editing this package:
+
+```bash
+git status --short --branch
+find .specify/specs/012-mcp-scorecard-perfect-100 specs/008-mcp-scorecard-perfect-100 -type f | sort
+rg -n "git switch|git checkout|branch-changing|100/100|Target" .specify/specs/012-mcp-scorecard-perfect-100 specs/008-mcp-scorecard-perfect-100
+```
+
+Expected result:
+
+- The branch remains `001-shardingsphere-mcp`.
+- The new Speckit package and repo-visible handoff files exist.
+- Branch-changing commands appear only as forbidden constraints.
+
+## Future Implementation Verification
+
+When code or tests change, use scoped commands such as:
+
+```bash
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap,test/e2e/mcp \
+  -DskipITs -Dspotless.skip=true clean test -B -ntp
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap,test/e2e/mcp \
+  -DskipTests -DskipITs -Dspotless.skip=true -Pcheck checkstyle:check -B -ntp
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap,test/e2e/mcp \
+  -DskipTests -DskipITs -Pcheck spotless:check -B -ntp
+```
+
+Opt-in evidence may also require MySQL, STDIO, distribution, and live LLM commands.
+Those commands must be recorded in `scorecard.md` before the related dimensions can reach 100.
+
+## E2E Evidence Lane Matrix
+
+| Lane | Default | Current command or artifact | Latest result |
+|------|---------|-----------------------------|---------------|
+| H2 HTTP production runtime | Enabled | Default MCP plus E2E scoped test command | exit `0`, `test/e2e/mcp` `240` tests with `14` skipped |
+| H2 STDIO production runtime | Opt-in | `-Dmcp.e2e.production.stdio.enabled=true` with `ProductionH2*` and `ProductionMultiDatabaseE2ETest` | exit `0`, `84` tests, `0` skipped |
+| MySQL HTTP and STDIO runtime | Opt-in | `-Dmcp.e2e.production.mysql.enabled=true -Dmcp.e2e.production.stdio.enabled=true -Dtest=ProductionMySQLRuntimeSmokeE2ETest` | exit `0`, `22` tests, `0` skipped |
+| Packaged distribution HTTP and STDIO | Opt-in | Build `distribution/mcp`, then `PackagedDistributionSmokeE2ETest` | exit `0`, packaged HTTP and STDIO smoke passed |
+| Packaged plugin discovery | Opt-in | `PackagedDistributionPluginDiscoveryE2ETest` | exit `0`, plugin discovery passed |
+| Live LLM usability | Opt-in | `-Pllm-e2e -Dtest=LLMSmokeE2ETest,LLMUsabilitySuiteE2ETest` | exit `0`, `5` tests, core and extended scorecards `100/100` |
+
+## Current Implementation Verification
+
+This checkpoint now has current default-lane and opt-in runtime evidence:
+
+- Final tests command:
+
+```bash
+./mvnw -pl mcp/api,mcp/support,mcp/core,mcp/features/encrypt,mcp/features/mask,mcp/bootstrap,test/e2e/mcp \
+  -DskipITs -Dspotless.skip=true clean test -B -ntp
+```
+
+- Result: exit `0`, all seven selected modules `SUCCESS`, total `03:22 min`.
+- Counts: `mcp/api` `13`, `mcp/support` `278`, `mcp/core` `418`, `mcp/features/encrypt` `69`, `mcp/features/mask` `52`, `mcp/bootstrap` `170`.
+- E2E counts: `test/e2e/mcp` `240` with `14` skipped.
+- Checkstyle: exit `0`, `0 Checkstyle violations`.
+- Spotless: exit `0`, all selected modules clean.
+
+Opt-in runtime evidence:
+
+- STDIO runtime command: exit `0`, `84` tests, total `08:25 min`.
+- MySQL HTTP plus STDIO command: exit `0`, `22` tests, total `02:55 min`.
+- Distribution package command: exit `0`, all `50` reactor modules `SUCCESS`, total `15.463 s`.
+- Packaged HTTP, STDIO, and plugin smoke command: exit `0`, `3` tests, total `6.124 s`.
+- Live LLM smoke plus usability command: exit `0`, `5` tests, total `32:12 min`, run ID `ra001-final-20260512015143`.
+- Live LLM artifacts: core and extended scorecards both reported `overallScore=100`, `fullScore=true`,
+  `invalidCallRate=0`, `approvalViolationRate=0`, and `harnessRecoveryRate=0`.
+
+This evidence closes the current STDIO, MySQL, packaged distribution, and live LLM readiness gaps.
+It does not close performance-budget, safety-boundary, protocol-conformance, historical revalidation, or decoupling gaps.
