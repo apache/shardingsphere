@@ -159,7 +159,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     private String createRequestedToken(final MCPUriVariables uriVariables) {
-        return Stream.of("column", "index", "sequence", "view", "table", "schema", "database").filter(uriVariables::containsVariable).findFirst().map(uriVariables::getVariable).orElse("");
+        return Stream.of("column", "index", "sequence", "view", "table", "schema", "database").filter(uriVariables::containsVariable).findFirst().map(uriVariables::getValue).orElse("");
     }
     
     private void appendLargeResultGuidance(final Map<String, Object> payload, final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final int itemCount) {
@@ -179,10 +179,10 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     private Map<String, Object> createNarrowSearchArguments(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
         if (uriVariables.containsVariable("database")) {
-            result.put("database", uriVariables.getVariable("database"));
+            result.put("database", uriVariables.getValue("database"));
         }
         if (uriVariables.containsVariable("schema")) {
-            result.put("schema", uriVariables.getVariable("schema"));
+            result.put("schema", uriVariables.getValue("schema"));
         }
         result.put("object_types", Collections.singletonList(resolveSearchObjectType(descriptor)));
         result.put("page_size", LARGE_RESULT_THRESHOLD);

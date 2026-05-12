@@ -31,18 +31,6 @@ public final class MCPUriVariables {
     private final Map<String, String> variables;
     
     /**
-     * Get variable.
-     *
-     * @param variableName variable name
-     * @return variable value
-     */
-    public String getVariable(final String variableName) {
-        String result = variables.get(variableName);
-        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing URI variable `%s`.", variableName)));
-        return result;
-    }
-    
-    /**
      * Whether to contains variable.
      * 
      * @param variableName variable name
@@ -50,5 +38,17 @@ public final class MCPUriVariables {
      */
     public boolean containsVariable(final String variableName) {
         return variables.containsKey(variableName);
+    }
+    
+    /**
+     * Get variable value.
+     *
+     * @param variableName variable name
+     * @return variable value
+     */
+    public String getValue(final String variableName) {
+        String result = variables.get(variableName);
+        ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing URI variable `%s`.", variableName)));
+        return result;
     }
 }

@@ -46,7 +46,7 @@ public final class DatabaseCapabilitiesHandler implements MCPResourceHandler<MCP
     @Override
     public MCPResponse handle(final MCPDatabaseHandlerContext databaseContext, final MCPUriVariables uriVariables) {
         var databaseCapabilityProvider = databaseContext.getCapabilityFacade();
-        String databaseName = uriVariables.getVariable("database");
+        String databaseName = uriVariables.getValue("database");
         return databaseCapabilityProvider.provide(databaseName).<MCPResponse>map(MCPDatabaseCapabilityResponse::new).orElseThrow(DatabaseCapabilityNotFoundException::new);
     }
 }

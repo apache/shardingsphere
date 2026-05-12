@@ -46,7 +46,7 @@ public final class WorkflowPlanHandler implements MCPResourceHandler<MCPWorkflow
     
     @Override
     public MCPResponse handle(final MCPWorkflowHandlerContext handlerContext, final MCPUriVariables uriVariables) {
-        WorkflowContextSnapshot snapshot = handlerContext.getWorkflowSessionContext().getRequired(uriVariables.getVariable("plan_id"));
+        WorkflowContextSnapshot snapshot = handlerContext.getWorkflowSessionContext().getRequired(uriVariables.getValue("plan_id"));
         return new MCPMapResponse(WorkflowPlanPayloadBuilder.build(snapshot));
     }
 }

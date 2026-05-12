@@ -73,7 +73,7 @@ class MetadataResourceHandlerTest {
     @Test
     void assertHandleDetailResource() {
         MetadataResourceHandler handler = new MetadataResourceHandler("shardingsphere://databases/{database}",
-                (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getVariable("database"))));
+                (requestContext, uriVariables) -> List.of(Map.of("database", uriVariables.getValue("database"))));
         MCPUriVariables uriVariables = new MCPUriVariables(Map.of("database", "逻辑 库/2026?"));
         MCPResponse actual = handler.handle(mock(MCPDatabaseHandlerContext.class), uriVariables);
         assertThat(actual.toPayload(), is(Map.of("response_mode", "detail", "resource_kind", "detail", "object_scope", "logical-database", "found", true,

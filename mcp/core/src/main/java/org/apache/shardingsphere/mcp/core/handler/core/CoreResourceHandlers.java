@@ -53,59 +53,59 @@ final class CoreResourceHandlers {
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}",
                 (requestContext, uriVariables) -> singletonOrEmpty(
-                        requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getVariable("database")))));
+                        requestContext.getMetadataQueryFacade().queryDatabase(uriVariables.getValue("database")))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas",
-                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySchemas(uriVariables.getVariable("database"))));
+                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySchemas(uriVariables.getValue("database"))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}",
                 (requestContext, uriVariables) -> singletonOrEmpty(
-                        requestContext.getMetadataQueryFacade().querySchema(uriVariables.getVariable("database"), uriVariables.getVariable("schema")))));
+                        requestContext.getMetadataQueryFacade().querySchema(uriVariables.getValue("database"), uriVariables.getValue("schema")))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/sequences",
-                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySequences(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))));
+                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().querySequences(uriVariables.getValue("database"), uriVariables.getValue("schema"))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/sequences/{sequence}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().querySequence(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("sequence")))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("sequence")))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables",
-                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTables(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))));
+                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTables(uriVariables.getValue("database"), uriVariables.getValue("schema"))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/views",
-                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViews(uriVariables.getVariable("database"), uriVariables.getVariable("schema"))));
+                (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViews(uriVariables.getValue("database"), uriVariables.getValue("schema"))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTable(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table")))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table")))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryTableColumns(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryTableColumn(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("column")))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("column")))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/views/{view}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryView(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view")))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("view")))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryViewColumns(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("view"))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/views/{view}/columns/{column}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryViewColumn(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("view"), uriVariables.getVariable("column")))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("view"), uriVariables.getValue("column")))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes",
                 (requestContext, uriVariables) -> requestContext.getMetadataQueryFacade().queryIndexes(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"))));
         result.add(createMetadataResourceHandler(
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/indexes/{index}",
                 (requestContext, uriVariables) -> singletonOrEmpty(requestContext.getMetadataQueryFacade().queryIndex(
-                        uriVariables.getVariable("database"), uriVariables.getVariable("schema"), uriVariables.getVariable("table"), uriVariables.getVariable("index")))));
+                        uriVariables.getValue("database"), uriVariables.getValue("schema"), uriVariables.getValue("table"), uriVariables.getValue("index")))));
         return result;
     }
     

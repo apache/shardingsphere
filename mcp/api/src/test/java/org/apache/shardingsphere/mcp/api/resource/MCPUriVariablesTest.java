@@ -32,19 +32,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class MCPUriVariablesTest {
     
     @Test
-    void assertGetVariable() {
-        String actual = new MCPUriVariables(Map.of("foo_variable", "bar_value")).getVariable("foo_variable");
+    void assertGetValue() {
+        String actual = new MCPUriVariables(Map.of("foo_variable", "bar_value")).getValue("foo_variable");
         assertThat(actual, is("bar_value"));
     }
     
     @ParameterizedTest(name = "{0}")
-    @MethodSource("assertGetVariableFailureCases")
-    void assertGetVariableFailure(final String name, final MCPUriVariables uriVariables) {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> uriVariables.getVariable("foo_variable"));
+    @MethodSource("assertGetValueFailureCases")
+    void assertGetValueFailure(final String name, final MCPUriVariables uriVariables) {
+        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> uriVariables.getValue("foo_variable"));
         assertThat(actual.getMessage(), is("Missing URI variable `foo_variable`."));
     }
     
-    private static Stream<Arguments> assertGetVariableFailureCases() {
+    private static Stream<Arguments> assertGetValueFailureCases() {
         return Stream.of(
                 Arguments.of("missing variable", new MCPUriVariables(Map.of())),
                 Arguments.of("empty variable", new MCPUriVariables(Map.of("foo_variable", ""))));

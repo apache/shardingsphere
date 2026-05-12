@@ -69,13 +69,13 @@ public final class MCPUriTemplateUtils {
     }
     
     private static List<String> getMissingVariableNames(final String uriTemplate, final MCPUriVariables variables) {
-        return extractVariableNames(uriTemplate).stream().filter(variables::containsVariable).map(variables::getVariable).collect(Collectors.toList());
+        return extractVariableNames(uriTemplate).stream().filter(variables::containsVariable).map(variables::getValue).collect(Collectors.toList());
     }
     
     private static String expandKnownVariables(final String uriTemplate, final MCPUriVariables variables) {
         String result = uriTemplate;
         for (String each : extractVariableNames(uriTemplate)) {
-            result = result.replace("{" + each + "}", encodePathSegment(variables.getVariable(each)));
+            result = result.replace("{" + each + "}", encodePathSegment(variables.getValue(each)));
         }
         return result;
     }

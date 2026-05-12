@@ -63,10 +63,10 @@ class MCPUriPatternTest {
                 "shardingsphere://databases/{database}/schemas/{schema}/tables/{table}/columns/{column}")
                 .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders/columns/order_id");
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getVariable("database"), is("logic_db"));
-        assertThat(actual.orElseThrow().getVariable("schema"), is("public"));
-        assertThat(actual.orElseThrow().getVariable("table"), is("orders"));
-        assertThat(actual.orElseThrow().getVariable("column"), is("order_id"));
+        assertThat(actual.orElseThrow().getValue("database"), is("logic_db"));
+        assertThat(actual.orElseThrow().getValue("schema"), is("public"));
+        assertThat(actual.orElseThrow().getValue("table"), is("orders"));
+        assertThat(actual.orElseThrow().getValue("column"), is("order_id"));
     }
     
     @Test
@@ -74,7 +74,7 @@ class MCPUriPatternTest {
         Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://databases/{database}/schemas/{schema}/tables/{table}")
                 .parse("shardingsphere://databases/logic_db/schemas/public/tables/orders%3Farchive");
         assertTrue(actual.isPresent());
-        assertThat(actual.orElseThrow().getVariable("table"), is("orders?archive"));
+        assertThat(actual.orElseThrow().getValue("table"), is("orders?archive"));
     }
     
     @Test
@@ -97,6 +97,6 @@ class MCPUriPatternTest {
     @Test
     void assertGetVariableWithMissingVariable() {
         Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
-        assertThrows(IllegalArgumentException.class, () -> actual.orElseThrow().getVariable("database"));
+        assertThrows(IllegalArgumentException.class, () -> actual.orElseThrow().getValue("database"));
     }
 }
