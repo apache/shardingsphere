@@ -214,8 +214,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        Map<String, String> variables = uriVariables.getVariables();
-        Optional<String> selfUri = MCPUriTemplateUtils.expandIfComplete(descriptor.getUriTemplate(), variables);
+        Optional<String> selfUri = MCPUriTemplateUtils.expandIfComplete(descriptor.getUriTemplate(), uriVariables);
         selfUri.ifPresent(uri -> result.put("self_uri", uri));
         String parentUri = createParentUri(selfUri);
         if (!parentUri.isEmpty()) {
@@ -225,14 +224,14 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
         List<Map<String, Object>> nextResources = MCPDescriptorRegistry.getResourceNavigationDescriptors().stream()
                 .filter(each -> descriptor.getUriTemplate().equals(each.getFrom()))
                 .filter(each -> each.getTo().startsWith("shardingsphere://"))
-                .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), variables)).flatMap(Optional::stream).toList();
+                .map(each -> createNextResourceHint(each.getTo(), each.getDescription(), uriVariables)).flatMap(Optional::stream).toList();
         if (!nextResources.isEmpty()) {
             result.put("next_resources", nextResources);
         }
         return result;
     }
     
-    private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final Map<String, String> variables) {
+    private Optional<Map<String, Object>> createNextResourceHint(final String uriTemplate, final String description, final MCPUriVariables variables) {
         return MCPUriTemplateUtils.expandIfComplete(uriTemplate, variables)
                 .map(uri -> MCPResourceHintUtils.create(uri, resolveResourceKind(uri), "inspect_detail", description, "next_resources"));
     }

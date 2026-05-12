@@ -19,8 +19,10 @@ package org.apache.shardingsphere.mcp.core.resource.uri;
 
 import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 import org.junit.jupiter.api.Test;
+import org.mockito.internal.configuration.plugins.Plugins;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,10 +45,10 @@ class MCPUriPatternTest {
     }
     
     @Test
-    void assertParse() {
+    void assertParse() throws ReflectiveOperationException {
         Optional<MCPUriVariables> actual = new MCPUriPattern("shardingsphere://capabilities").parse("shardingsphere://capabilities");
         assertTrue(actual.isPresent());
-        assertTrue(actual.orElseThrow().getVariables().isEmpty());
+        assertTrue(((Map<?, ?>) Plugins.getMemberAccessor().get(MCPUriVariables.class.getDeclaredField("variables"), actual.get())).isEmpty());
     }
     
     @Test

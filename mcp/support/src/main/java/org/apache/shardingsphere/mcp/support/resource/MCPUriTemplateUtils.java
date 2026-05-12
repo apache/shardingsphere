@@ -19,15 +19,16 @@ package org.apache.shardingsphere.mcp.support.resource;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.mcp.api.resource.MCPUriVariables;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * MCP URI template utilities.
@@ -59,7 +60,7 @@ public final class MCPUriTemplateUtils {
      * @param variables URI variables
      * @return expanded URI, or empty when at least one variable is missing
      */
-    public static Optional<String> expandIfComplete(final String uriTemplate, final Map<String, String> variables) {
+    public static Optional<String> expandIfComplete(final String uriTemplate, final MCPUriVariables variables) {
         List<String> missingVariableNames = getMissingVariableNames(uriTemplate, variables);
         if (!missingVariableNames.isEmpty()) {
             return Optional.empty();
@@ -67,32 +68,14 @@ public final class MCPUriTemplateUtils {
         return Optional.of(expandKnownVariables(uriTemplate, variables));
     }
     
-    /**
-     * Expand URI template with all required variables.
-     *
-     * @param uriTemplate URI template
-     * @param variables URI variables
-     * @return expanded URI
-     */
-    public static String expandRequired(final String uriTemplate, final Map<String, String> variables) {
-        return expandIfComplete(uriTemplate, variables).orElseThrow(
-                () -> new IllegalArgumentException(String.format("Missing URI template variables %s for `%s`.", getMissingVariableNames(uriTemplate, variables), uriTemplate)));
+    private static List<String> getMissingVariableNames(final String uriTemplate, final MCPUriVariables variables) {
+        return extractVariableNames(uriTemplate).stream().filter(variables::containsVariable).map(variables::getVariable).collect(Collectors.toList());
     }
     
-    private static List<String> getMissingVariableNames(final String uriTemplate, final Map<String, String> variables) {
-        List<String> result = new LinkedList<>();
-        for (String each : extractVariableNames(uriTemplate)) {
-            if (null == variables || null == variables.get(each)) {
-                result.add(each);
-            }
-        }
-        return result;
-    }
-    
-    private static String expandKnownVariables(final String uriTemplate, final Map<String, String> variables) {
+    private static String expandKnownVariables(final String uriTemplate, final MCPUriVariables variables) {
         String result = uriTemplate;
         for (String each : extractVariableNames(uriTemplate)) {
-            result = result.replace("{" + each + "}", encodePathSegment(variables.get(each)));
+            result = result.replace("{" + each + "}", encodePathSegment(variables.getVariable(each)));
         }
         return result;
     }
