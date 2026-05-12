@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -30,8 +31,8 @@ class MCPToolDescriptorTest {
     @Test
     void assertToInputSchema() {
         MCPToolDescriptor actual = new MCPToolDescriptor("foo_tool", "Foo Tool", "Foo tool.", List.of(
-                new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true),
-                new MCPToolFieldDefinition("object_types", MCPToolValueDefinition.array("Object types.", MCPToolValueDefinition.string("Object type.")), false)));
+                        new MCPToolFieldDefinition("query", MCPToolValueDefinition.string("Search query."), true),
+                        new MCPToolFieldDefinition("object_types", MCPToolValueDefinition.array("Object types.", MCPToolValueDefinition.string("Object type.")), false)), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
         Map<String, Object> expectedProperties = Map.of(
                 "query", Map.of("type", "string", "description", "Search query."),
                 "object_types", Map.of("type", "array", "description", "Object types.", "items",

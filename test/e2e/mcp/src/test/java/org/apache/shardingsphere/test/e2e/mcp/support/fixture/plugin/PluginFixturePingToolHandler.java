@@ -20,12 +20,14 @@ package org.apache.shardingsphere.test.e2e.mcp.support.fixture.plugin;
 import org.apache.shardingsphere.mcp.api.protocol.response.MCPResponse;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolCall;
 import org.apache.shardingsphere.mcp.api.tool.MCPToolHandler;
+import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolAnnotations;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolDescriptor;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolFieldDefinition;
 import org.apache.shardingsphere.mcp.api.tool.descriptor.MCPToolValueDefinition;
 import org.apache.shardingsphere.mcp.core.context.MCPServiceHandlerContext;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -34,9 +36,7 @@ import java.util.Map;
  */
 public final class PluginFixturePingToolHandler implements MCPToolHandler<MCPServiceHandlerContext> {
     
-    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping",
-            "Return a fixture ping response for packaged plugin discovery.",
-            List.of(new MCPToolFieldDefinition("message", MCPToolValueDefinition.string("Fixture message."), true)));
+    private static final MCPToolDescriptor TOOL_DESCRIPTOR = new MCPToolDescriptor("fixture_ping", "Fixture Ping", "Return a fixture ping response for packaged plugin discovery.", List.of(new MCPToolFieldDefinition("message", MCPToolValueDefinition.string("Fixture message."), true)), Collections.emptyMap(), MCPToolAnnotations.EMPTY, Collections.emptyMap());
     
     @Override
     public Class<MCPServiceHandlerContext> getContextType() {

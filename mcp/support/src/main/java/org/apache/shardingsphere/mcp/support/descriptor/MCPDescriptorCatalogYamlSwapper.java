@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 final class MCPDescriptorCatalogYamlSwapper {
     
@@ -133,11 +134,8 @@ final class MCPDescriptorCatalogYamlSwapper {
     }
     
     private static List<MCPToolFieldDefinition> swapToolFields(final Collection<YamlMCPToolFieldDefinition> yamlFields) {
-        List<MCPToolFieldDefinition> result = new LinkedList<>();
-        for (YamlMCPToolFieldDefinition each : emptyIfNull(yamlFields)) {
-            result.add(new MCPToolFieldDefinition(each.getName(), swapValueDefinition(each.getValueDefinition()), each.isRequired()));
-        }
-        return result;
+        return emptyIfNull(yamlFields).stream()
+                .map(each -> new MCPToolFieldDefinition(each.getName(), swapValueDefinition(each.getValueDefinition()), each.isRequired())).collect(Collectors.toList());
     }
     
     private static MCPToolValueDefinition swapValueDefinition(final YamlMCPToolValueDefinition yamlValueDefinition) {
