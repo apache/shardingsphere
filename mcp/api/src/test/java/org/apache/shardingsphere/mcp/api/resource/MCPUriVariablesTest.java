@@ -18,35 +18,42 @@
 package org.apache.shardingsphere.mcp.api.resource;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MCPUriVariablesTest {
     
     @Test
-    void assertGetValue() {
-        String actual = new MCPUriVariables(Map.of("foo_variable", "bar_value")).getValue("foo_variable");
-        assertThat(actual, is("bar_value"));
+    void assertContainsVariable() {
+        assertTrue(new MCPUriVariables(Map.of("foo_variable", "foo_value")).containsVariable("foo_variable"));
     }
     
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("assertGetValueFailureCases")
-    void assertGetValueFailure(final String name, final MCPUriVariables uriVariables) {
-        IllegalArgumentException actual = assertThrows(IllegalArgumentException.class, () -> uriVariables.getValue("foo_variable"));
-        assertThat(actual.getMessage(), is("Missing URI variable `foo_variable`."));
+    @Test
+    void assertDoesNotContainsVariable() {
+        assertFalse(new MCPUriVariables(Map.of("foo_variable", "foo_value")).containsVariable("bar_variable"));
     }
     
-    private static Stream<Arguments> assertGetValueFailureCases() {
-        return Stream.of(
-                Arguments.of("missing variable", new MCPUriVariables(Map.of())),
-                Arguments.of("empty variable", new MCPUriVariables(Map.of("foo_variable", ""))));
+    @Test
+    void assertGetValueSuccess() {
+        assertThat(new MCPUriVariables(Map.of("foo_variable", "foo_value")).getValue("foo_variable"), is("foo_value"));
+    }
+    
+    @Test
+    void assertGetValueFalidWithMissedVariable() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPUriVariables(Collections.emptyMap()).getValue("foo_variable"));
+        assertThat(ex.getMessage(), is("Missing URI variable `foo_variable`."));
+    }
+    
+    @Test
+    void assertGetValueFalidWithEmptyVariable() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> new MCPUriVariables(Collections.singletonMap("foo_variable", "")).getValue("foo_variable"));
+        assertThat(ex.getMessage(), is("Missing URI variable `foo_variable`."));
     }
 }
