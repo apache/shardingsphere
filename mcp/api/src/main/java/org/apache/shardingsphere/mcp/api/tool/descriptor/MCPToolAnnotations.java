@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.mcp.api.tool.descriptor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * MCP tool annotations.
  */
+@RequiredArgsConstructor
 @Getter
 public final class MCPToolAnnotations {
     
@@ -38,16 +40,6 @@ public final class MCPToolAnnotations {
     private final Boolean openWorldHint;
     
     private final Boolean returnDirect;
-    
-    public MCPToolAnnotations(final String title, final Boolean readOnlyHint, final Boolean destructiveHint, final Boolean idempotentHint,
-                              final Boolean openWorldHint, final Boolean returnDirect) {
-        this.title = title;
-        this.readOnlyHint = readOnlyHint;
-        this.destructiveHint = destructiveHint;
-        this.idempotentHint = idempotentHint;
-        this.openWorldHint = openWorldHint;
-        this.returnDirect = returnDirect;
-    }
     
     /**
      * Judge whether annotations are empty.
