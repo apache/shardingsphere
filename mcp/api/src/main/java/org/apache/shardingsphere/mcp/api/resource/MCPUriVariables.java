@@ -43,4 +43,14 @@ public final class MCPUriVariables {
         ShardingSpherePreconditions.checkNotEmpty(result, () -> new IllegalArgumentException(String.format("Missing URI variable `%s`.", variableName)));
         return result;
     }
+    
+    /**
+     * Whether to contains variable.
+     * 
+     * @param variableName variable name
+     * @return contains variable or not
+     */
+    public boolean containsVariable(final String variableName) {
+        return variables.containsKey(variableName);
+    }
 }

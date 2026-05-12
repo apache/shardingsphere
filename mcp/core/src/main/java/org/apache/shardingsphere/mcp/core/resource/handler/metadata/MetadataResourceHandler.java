@@ -31,11 +31,13 @@ import org.apache.shardingsphere.mcp.support.protocol.response.MCPItemsResponse;
 import org.apache.shardingsphere.mcp.support.protocol.response.MCPMapResponse;
 import org.apache.shardingsphere.mcp.support.resource.MCPUriTemplateUtils;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.stream.Stream;
 
 /**
  * Metadata resource handler backed by one metadata loader function.
@@ -157,14 +159,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     }
     
     private String createRequestedToken(final MCPUriVariables uriVariables) {
-        Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
-        for (String each : List.of("column", "index", "sequence", "view", "table", "schema", "database")) {
-            String value = variables.get(each);
-            if (null != value && !value.isEmpty()) {
-                return value;
-            }
-        }
-        return "";
+        return Stream.of("column", "index", "sequence", "view", "table", "schema", "database").filter(uriVariables::containsVariable).findFirst().map(uriVariables::getVariable).orElse("");
     }
     
     private void appendLargeResultGuidance(final Map<String, Object> payload, final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final int itemCount) {
@@ -183,18 +178,15 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private Map<String, Object> createNarrowSearchArguments(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(4, 1F);
-        Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
-        putIfNotEmpty(result, "database", variables.get("database"));
-        putIfNotEmpty(result, "schema", variables.get("schema"));
-        result.put("object_types", List.of(resolveSearchObjectType(descriptor)));
+        if (uriVariables.containsVariable("database")) {
+            result.put("database", uriVariables.getVariable("database"));
+        }
+        if (uriVariables.containsVariable("schema")) {
+            result.put("schema", uriVariables.getVariable("schema"));
+        }
+        result.put("object_types", Collections.singletonList(resolveSearchObjectType(descriptor)));
         result.put("page_size", LARGE_RESULT_THRESHOLD);
         return result;
-    }
-    
-    private void putIfNotEmpty(final Map<String, Object> target, final String key, final String value) {
-        if (null != value && !value.isEmpty()) {
-            target.put(key, value);
-        }
     }
     
     private String resolveSearchObjectType(final MCPResourceDescriptor descriptor) {
@@ -222,7 +214,7 @@ public final class MetadataResourceHandler implements MCPResourceHandler<MCPData
     
     private Map<String, Object> createNavigationPayload(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables) {
         Map<String, Object> result = new LinkedHashMap<>(3, 1F);
-        Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
+        Map<String, String> variables = uriVariables.getVariables();
         Optional<String> selfUri = MCPUriTemplateUtils.expandIfComplete(descriptor.getUriTemplate(), variables);
         selfUri.ifPresent(uri -> result.put("self_uri", uri));
         String parentUri = createParentUri(selfUri);

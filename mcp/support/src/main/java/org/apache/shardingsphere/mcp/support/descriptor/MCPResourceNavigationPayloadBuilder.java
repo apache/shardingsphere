@@ -55,7 +55,7 @@ public final class MCPResourceNavigationPayloadBuilder {
      */
     public static Map<String, Object> create(final MCPResourceDescriptor descriptor, final MCPUriVariables uriVariables, final String parentUriTemplate) {
         Map<String, Object> result = new LinkedHashMap<>(2, 1F);
-        Map<String, String> variables = null == uriVariables || null == uriVariables.getVariables() ? Map.of() : uriVariables.getVariables();
+        Map<String, String> variables = uriVariables.getVariables();
         MCPUriTemplateUtils.expandIfComplete(descriptor.getUriTemplate(), variables).ifPresent(uri -> result.put("self_uri", uri));
         Optional<String> parentUri = MCPUriTemplateUtils.expandIfComplete(parentUriTemplate, variables);
         parentUri.filter(uri -> !uri.isEmpty()).ifPresent(uri -> result.put("parent_resource", createParentResourceHint(uri)));
