@@ -24,8 +24,18 @@
     <show-status-from-readwrite-splitting-rules sql-case-id="show-status-from-readwrite-splitting-rules" />
     
     <show-table-metadata sql-case-id="show-table-metadata">
-        <table-name>t_order</table-name>
+        <table-name name="t_order" />
         <database name="database_name" start-index="33" stop-index="45" />
+    </show-table-metadata>
+    <show-table-metadata sql-case-id="show-table-metadata-with-back-quoted-database-name">
+        <table-name name="t_order" />
+        <database name="database_name" start-index="33" stop-index="47" start-delimiter="`" end-delimiter="`" />
+    </show-table-metadata>
+    <show-table-metadata sql-case-id="show-table-metadata-with-back-quoted-table-name">
+        <table-name name="T_ORDER" start-delimiter="`" end-delimiter="`" />
+    </show-table-metadata>
+    <show-table-metadata sql-case-id="show-table-metadata-with-double-quoted-table-name">
+        <table-name name="T_ORDER" start-delimiter="&quot;" end-delimiter="&quot;" />
     </show-table-metadata>
     
     <show-authority-rule sql-case-id="show-authority-rule" />

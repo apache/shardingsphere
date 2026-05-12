@@ -20,13 +20,18 @@ package org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.statement.type.ral.queryable.show.ShowTableMetaDataStatement;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.database.DatabaseAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.segment.identifier.IdentifierValueAssert;
 import org.apache.shardingsphere.test.it.sql.parser.internal.asserts.statement.ExistingAssert;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.identifier.ExpectedIdentifier;
 import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ral.ShowTableMetaDataStatementTestCase;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 /**
  * Show table meta data statement assert.
@@ -43,8 +48,23 @@ public final class ShowTableMetaDataStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowTableMetaDataStatement actual, final ShowTableMetaDataStatementTestCase expected) {
         if (ExistingAssert.assertIs(assertContext, actual, expected)) {
-            DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getDatabase());
-            assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames(), is(expected.getTableNames()));
+            if (null == expected.getDatabase()) {
+                assertNull(actual.getFromDatabase(), assertContext.getText("From database assertion error:"));
+            } else {
+                DatabaseAssert.assertIs(assertContext, actual.getFromDatabase().getDatabase(), expected.getDatabase());
+            }
+            assertNotNull(actual.getTableNames(), assertContext.getText("Table assertion error:"));
+            assertNotNull(expected.getTableNames(), assertContext.getText("Table assertion error:"));
+            assertThat(assertContext.getText("Table assertion error:"), actual.getTableNames().size(), is(expected.getTableNames().size()));
+            for (ExpectedIdentifier each : expected.getTableNames()) {
+                IdentifierValue actualTableName = findTableName(actual, each);
+                assertNotNull(actualTableName, assertContext.getText("Table assertion error:"));
+                IdentifierValueAssert.assertIs(assertContext, actualTableName, each, "Table");
+            }
         }
+    }
+    
+    private static IdentifierValue findTableName(final ShowTableMetaDataStatement actual, final ExpectedIdentifier expected) {
+        return actual.getTableNames().stream().filter(each -> expected.getName().equals(each.getValue())).findFirst().orElse(null);
     }
 }

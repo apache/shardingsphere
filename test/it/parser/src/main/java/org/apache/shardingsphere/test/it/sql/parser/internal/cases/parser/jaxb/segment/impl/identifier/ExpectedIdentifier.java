@@ -15,58 +15,12 @@
  * limitations under the License.
  */
 
-grammar BaseRule;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.identifier;
 
-import Symbol, Keyword, Literals;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.AbstractExpectedIdentifierSQLSegment;
 
-literal
-    : STRING_ | (MINUS_)? INT_ | TRUE | FALSE
-    ;
-
-algorithmDefinition
-    : TYPE LP_ NAME EQ_ algorithmTypeName (COMMA_ propertiesDefinition)? RP_
-    ;
-
-algorithmTypeName
-    : STRING_
-    ;
-
-propertiesDefinition
-    : PROPERTIES LP_ properties? RP_
-    ;
-
-properties
-    : property (COMMA_ property)*
-    ;
-
-property
-    : key=STRING_ EQ_ value=literal
-    ;
-
-databaseName
-    : distSQLIdentifier
-    ;
-
-schemaName
-    : distSQLIdentifier
-    ;
-
-tableName
-    : distSQLIdentifier
-    ;
-
-resourceName
-    : distSQLIdentifier
-    ;
-
-storageUnitName
-    : distSQLIdentifier
-    ;
-
-metadata
-    : STRING_
-    ;
-
-distSQLIdentifier
-    : IDENTIFIER_ | QUOTED_IDENTIFIER_
-    ;
+/**
+ * Expected identifier.
+ */
+public final class ExpectedIdentifier extends AbstractExpectedIdentifierSQLSegment {
+}

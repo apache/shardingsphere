@@ -53,6 +53,7 @@ import org.apache.shardingsphere.mode.metadata.manager.resource.SwitchingResourc
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistFacade;
 import org.apache.shardingsphere.mode.persist.PersistServiceFacade;
 import org.apache.shardingsphere.test.infra.fixture.jdbc.MockedDataSource;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -279,6 +280,21 @@ class ContextManagerTest {
             schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
                     .thenReturn(Collections.singletonMap("foo_schema", schema));
             contextManager.reloadTable(database, "foo_schema", "foo_tbl");
+        }
+        verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
+    }
+    
+    @Test
+    void assertReloadTableWithQuotedIdentifier() {
+        PersistServiceFacade persistServiceFacade = mockPersistServiceFacade();
+        setPersistServiceFacade(persistServiceFacade);
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(table.getName()).thenReturn("FOO_TBL");
+        ShardingSphereSchema schema = new ShardingSphereSchema("foo_schema", databaseType, Collections.singleton(table), Collections.emptyList());
+        try (MockedStatic<GenericSchemaBuilder> schemaBuilderMock = mockStatic(GenericSchemaBuilder.class)) {
+            schemaBuilderMock.when(() -> GenericSchemaBuilder.build(anySet(), any(DatabaseType.class), any(GenericSchemaBuilderMaterial.class)))
+                    .thenReturn(Collections.singletonMap("foo_schema", schema));
+            contextManager.reloadTable(database, "foo_schema", new IdentifierValue("\"FOO_TBL\""));
         }
         verify(persistServiceFacade.getMetaDataFacade().getDatabaseMetaDataFacade().getTable()).persist("foo_db", "foo_schema", Collections.singleton(table));
     }

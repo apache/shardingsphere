@@ -16,13 +16,19 @@ RefreshTableMetadata ::=
   'REFRESH' 'TABLE' 'METADATA' (tableName | tableName 'FROM' 'STORAGE' 'UNIT' storageUnitName ('SCHEMA' schemaName)?)?
 
 tableName ::=
-  identifier
+  distSQLIdentifier
 
 storageUnitName ::=
-  identifier
+  distSQLIdentifier
 
 schemaName ::=
-  identifier
+  distSQLIdentifier
+
+distSQLIdentifier ::=
+  identifier | quotedIdentifier
+
+quotedIdentifier ::=
+  '`' identifier '`' | '"' identifier '"'
 ```
 {{% /tab %}}
 {{% tab name="铁路图" %}}
@@ -38,30 +44,32 @@ schemaName ::=
 
 - 如果 `SCHEMA` 中不存在表，则会删除该 `SCHEMA`。
 
+- `tableName`、`storageUnitName` 和 `schemaName` 可以写成不带引号的标识符、反引号包裹的标识符或双引号包裹的标识符。
+
 ### 示例
 
 - 刷新指定存储单元中指定 `SCHEMA` 中指定表的元数据
 
 ```sql
-REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+REFRESH TABLE METADATA `t_order` FROM STORAGE UNIT "ds_1" SCHEMA `db_schema`;
 ```
 
 - 刷新指定存储单元中指定 `SCHEMA` 中所有表的元数据
 
 ```sql
-REFRESH TABLE METADATA FROM STORAGE UNIT ds_1 SCHEMA db_schema;
+REFRESH TABLE METADATA FROM STORAGE UNIT `ds_1` SCHEMA "db_schema";
 ```
 
 - 刷新指定存储单元中指定表的元数据
 
 ```sql
-REFRESH TABLE METADATA t_order FROM STORAGE UNIT ds_1;
+REFRESH TABLE METADATA "t_order" FROM STORAGE UNIT ds_1;
 ```
 
 - 刷新指定表的元数据
 
 ```sql
-REFRESH TABLE METADATA t_order;
+REFRESH TABLE METADATA `t_order`;
 ```
 
 - 刷新所有表的元数据

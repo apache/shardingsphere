@@ -16,10 +16,16 @@ ShowTableMetadata ::=
   'SHOW' 'TABLE' 'METADATA' tableName (',' tableName)* ('FROM' databaseName)?
 
 tableName ::=
-  identifier
+  distSQLIdentifier
 
 databaseName ::=
-  identifier
+  distSQLIdentifier
+
+distSQLIdentifier ::=
+  identifier | quotedIdentifier
+
+quotedIdentifier ::=
+  '`' identifier '`' | '"' identifier '"'
 ```
 {{% /tab %}}
 {{% tab name="Railroad diagram" %}}
@@ -40,16 +46,18 @@ databaseName ::=
 
 - When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
 
+- `tableName` and `databaseName` can be unquoted identifiers, backtick-quoted identifiers, or double-quoted identifiers.
+
 ### Example
 
 - Query matadata of multiple tables from specified database
 
 ```sql
-SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
+SHOW TABLE METADATA t_order, `t_order_1` FROM "sharding_db";
 ```
 
 ```sql
-mysql> SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
+mysql> SHOW TABLE METADATA t_order, `t_order_1` FROM "sharding_db";
 +-------------------+------------+--------+----------+
 | schema_name       | table_name | type   | name     |
 +-------------------+------------+--------+----------+
@@ -68,11 +76,11 @@ mysql> SHOW TABLE METADATA t_order, t_order_1 FROM sharding_db;
 - Query metadata of one table from specified database
 
 ```sql
-SHOW TABLE METADATA t_order FROM sharding_db;
+SHOW TABLE METADATA "t_order" FROM `sharding_db`;
 ```
 
 ```sql
-mysql> SHOW TABLE METADATA t_order FROM sharding_db;
+mysql> SHOW TABLE METADATA "t_order" FROM `sharding_db`;
 +-------------------+------------+--------+----------+
 | schema_name       | table_name | type   | name     |
 +-------------------+------------+--------+----------+
@@ -87,11 +95,11 @@ mysql> SHOW TABLE METADATA t_order FROM sharding_db;
 - Query metadata of multiple tables from current database
 
 ```sql
-SHOW TABLE METADATA t_order, t_order_1;
+SHOW TABLE METADATA `t_order`, "t_order_1";
 ```
 
 ```sql
-mysql> SHOW TABLE METADATA t_order, t_order_1;
+mysql> SHOW TABLE METADATA `t_order`, "t_order_1";
 +-------------------+------------+--------+----------+
 | schema_name       | table_name | type   | name     |
 +-------------------+------------+--------+----------+
@@ -110,11 +118,11 @@ mysql> SHOW TABLE METADATA t_order, t_order_1;
 - Query metadata of one table from current database
 
 ```sql
-SHOW TABLE METADATA t_order;
+SHOW TABLE METADATA "t_order";
 ```
 
 ```sql
-mysql> SHOW TABLE METADATA t_order;
+mysql> SHOW TABLE METADATA "t_order";
 +-------------------+------------+--------+----------+
 | schema_name       | table_name | type   | name     |
 +-------------+------------+--------+----------+

@@ -21,12 +21,15 @@ import Alphabet, Symbol;
 
 IDENTIFIER_
     : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ_ ~'`'+ BQ_
+    ;
+
+QUOTED_IDENTIFIER_
+    : BQ_ ~'`'+ BQ_
+    | DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_
     ;
 
 STRING_
-    : (DQ_ ('\\'. | '""' | ~('"' | '\\'))* DQ_)
-    | (SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_)
+    : SQ_ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ_
     ;
 
 INT_

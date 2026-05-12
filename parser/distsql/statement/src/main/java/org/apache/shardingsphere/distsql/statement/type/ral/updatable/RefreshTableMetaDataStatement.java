@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.distsql.statement.type.ral.updatable;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.sql.parser.statement.core.value.identifier.IdentifierValue;
 
 import java.util.Optional;
 
@@ -27,11 +28,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class RefreshTableMetaDataStatement extends UpdatableRALStatement {
     
-    private final String tableName;
+    private final IdentifierValue tableName;
     
     private final String storageUnitName;
     
-    private final String schemaName;
+    private final IdentifierValue schemaName;
     
     public RefreshTableMetaDataStatement() {
         this(null, null, null);
@@ -42,7 +43,7 @@ public final class RefreshTableMetaDataStatement extends UpdatableRALStatement {
      *
      * @return table name
      */
-    public Optional<String> getTableName() {
+    public Optional<IdentifierValue> getTableName() {
         return Optional.ofNullable(tableName);
     }
     
@@ -60,7 +61,7 @@ public final class RefreshTableMetaDataStatement extends UpdatableRALStatement {
      *
      * @return schema name
      */
-    public Optional<String> getSchemaName() {
+    public Optional<IdentifierValue> getSchemaName() {
         return Optional.ofNullable(schemaName);
     }
 }
